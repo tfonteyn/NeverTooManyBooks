@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -171,10 +172,11 @@ public class FileManager {
 
                         try {
                             @Nullable
-                            final String fileSpec = se.searchCoverByIsbn(context, isbn, cIdx, size);
-                            if (fileSpec != null) {
+                            final Optional<String> oFileSpec =
+                                    se.searchCoverByIsbn(context, isbn, cIdx, size);
+                            if (oFileSpec.isPresent()) {
                                 final ImageFileInfo imageFileInfo =
-                                        new ImageFileInfo(isbn, fileSpec, size, engineId);
+                                        new ImageFileInfo(isbn, oFileSpec.get(), size, engineId);
                                 files.put(isbn, imageFileInfo);
 
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {

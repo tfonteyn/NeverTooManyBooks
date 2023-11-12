@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -228,13 +229,13 @@ public class OpenLibrarySearchEngine
      *
      * <br><br>{@inheritDoc}
      */
-    @Nullable
+    @NonNull
     @Override
     @WorkerThread
-    public String searchCoverByIsbn(@NonNull final Context context,
-                                    @NonNull final String validIsbn,
-                                    @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final Size size)
+    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
+                                              @NonNull final String validIsbn,
+                                              @IntRange(from = 0, to = 1) final int cIdx,
+                                              @Nullable final Size size)
             throws StorageException {
         final String sizeParam;
         if (size == null) {
@@ -255,7 +256,7 @@ public class OpenLibrarySearchEngine
         }
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
-        return saveImage(context, url, validIsbn, cIdx, size).orElse(null);
+        return saveImage(context, url, validIsbn, cIdx, size);
     }
 
     @Override

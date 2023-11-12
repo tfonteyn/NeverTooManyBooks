@@ -31,6 +31,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -504,12 +505,12 @@ public class KbNlHtmlSearchEngine
      *
      * <br><br>{@inheritDoc}
      */
-    @Nullable
+    @NonNull
     @Override
-    public String searchCoverByIsbn(@NonNull final Context context,
-                                    @NonNull final String validIsbn,
-                                    @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final Size size)
+    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
+                                              @NonNull final String validIsbn,
+                                              @IntRange(from = 0, to = 1) final int cIdx,
+                                              @Nullable final Size size)
             throws StorageException {
         final String sizeParam;
         if (size == null) {
@@ -530,6 +531,6 @@ public class KbNlHtmlSearchEngine
         }
 
         final String url = String.format(BASE_URL_COVERS, validIsbn, sizeParam);
-        return saveImage(context, url, validIsbn, cIdx, size).orElse(null);
+        return saveImage(context, url, validIsbn, cIdx, size);
     }
 }

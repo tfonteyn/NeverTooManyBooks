@@ -389,28 +389,28 @@ public class IsfdbSearchEngine
                 .collect(Collectors.toList());
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public String searchCoverByIsbn(@NonNull final Context context,
-                                    @NonNull final String validIsbn,
-                                    @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final Size size)
+    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
+                                              @NonNull final String validIsbn,
+                                              @IntRange(from = 0, to = 1) final int cIdx,
+                                              @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
 
         final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
-        if (!editions.isEmpty()) {
-            final Edition edition = editions.get(0);
-            final Document document = loadDocumentByEdition(context, edition);
-            if (isCancelled()) {
-                return null;
-            }
-
-            return parseCovers(context, document, edition.getIsbn(), 0)
-                    // let the system resolve any path variations
-                    .map(fileSpec -> new File(fileSpec).getAbsolutePath())
-                    .orElse(null);
+        if (editions.isEmpty()) {
+            return Optional.empty();
         }
-        return null;
+
+        final Edition edition = editions.get(0);
+        final Document document = loadDocumentByEdition(context, edition);
+        if (isCancelled()) {
+            return Optional.empty();
+        }
+
+        return parseCovers(context, document, edition.getIsbn(), 0)
+                // let the system resolve any path variations
+                .map(fileSpec -> new File(fileSpec).getAbsolutePath());
     }
 
     /**

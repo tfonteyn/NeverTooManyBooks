@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -204,12 +205,12 @@ public class KbNlSearchEngine
      *
      * <br><br>{@inheritDoc}
      */
-    @Nullable
+    @NonNull
     @Override
-    public String searchCoverByIsbn(@NonNull final Context context,
-                                    @NonNull final String validIsbn,
-                                    @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final Size size)
+    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
+                                              @NonNull final String validIsbn,
+                                              @IntRange(from = 0, to = 1) final int cIdx,
+                                              @Nullable final Size size)
             throws StorageException {
         final String sizeParam;
         if (size == null) {
@@ -230,6 +231,6 @@ public class KbNlSearchEngine
         }
 
         final String url = String.format(BASE_URL_COVERS, validIsbn, sizeParam);
-        return saveImage(context, url, validIsbn, cIdx, size).orElse(null);
+        return saveImage(context, url, validIsbn, cIdx, size);
     }
 }

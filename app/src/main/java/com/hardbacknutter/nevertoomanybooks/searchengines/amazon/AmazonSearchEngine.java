@@ -293,12 +293,12 @@ public class AmazonSearchEngine
         }
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public String searchCoverByIsbn(@NonNull final Context context,
-                                    @NonNull final String validIsbn,
-                                    @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final Size size)
+    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
+                                              @NonNull final String validIsbn,
+                                              @IntRange(from = 0, to = 1) final int cIdx,
+                                              @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
 
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, validIsbn);
@@ -307,13 +307,12 @@ public class AmazonSearchEngine
         checkCaptcha(context, url, document);
 
         if (isCancelled()) {
-            return null;
+            return Optional.empty();
         }
 
         return parseCovers(context, document, validIsbn, 0)
                 // let the system resolve any path variations
-                .map(fileSpec -> new File(fileSpec).getAbsolutePath())
-                .orElse(null);
+                .map(fileSpec -> new File(fileSpec).getAbsolutePath());
     }
 
     /**

@@ -31,9 +31,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -366,11 +366,11 @@ public interface SearchEngine
          * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
-        @Nullable
-        String searchCoverByIsbn(@NonNull Context context,
-                                 @NonNull String validIsbn,
-                                 @IntRange(from = 0, to = 1) int cIdx,
-                                 @Nullable Size size)
+        @NonNull
+        Optional<String> searchCoverByIsbn(@NonNull Context context,
+                                           @NonNull String validIsbn,
+                                           @IntRange(from = 0, to = 1) int cIdx,
+                                           @Nullable Size size)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -385,9 +385,7 @@ public interface SearchEngine
          * @param validIsbn to search for, <strong>must</strong> be valid.
          * @param cIdx      0..n image index
          *
-         * @return ArrayList with a single fileSpec (This is for convenience, as the result
-         *         is meant to be stored into the book-data as a parcelable array;
-         *         and it allows extending to multiple images at a future time)
+         * @return fileSpec
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
@@ -395,28 +393,21 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        default List<String> searchBestCoverByIsbn(@NonNull final Context context,
-                                                   @NonNull final String validIsbn,
-                                                   @IntRange(from = 0, to = 1) final int cIdx)
+        default Optional<String> searchBestCoverByIsbn(@NonNull final Context context,
+                                                       @NonNull final String validIsbn,
+                                                       @IntRange(from = 0, to = 1) final int cIdx)
                 throws StorageException,
                        SearchException,
                        CredentialsException {
 
-            final List<String> list = new ArrayList<>();
-            String fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
-                                                Size.Large);
-            if (fileSpec == null && supportsMultipleCoverSizes()) {
-                fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
-                                             Size.Medium);
-                if (fileSpec == null) {
-                    fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
-                                                 Size.Small);
+            Optional<String> oFileSpec = searchCoverByIsbn(context, validIsbn, cIdx, Size.Large);
+            if (oFileSpec.isEmpty() && supportsMultipleCoverSizes()) {
+                oFileSpec = searchCoverByIsbn(context, validIsbn, cIdx, Size.Medium);
+                if (oFileSpec.isEmpty()) {
+                    oFileSpec = searchCoverByIsbn(context, validIsbn, cIdx, Size.Small);
                 }
             }
-            if (fileSpec != null) {
-                list.add(fileSpec);
-            }
-            return list;
+            return oFileSpec;
         }
     }
 }
