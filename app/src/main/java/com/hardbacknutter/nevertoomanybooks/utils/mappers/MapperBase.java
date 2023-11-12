@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -33,8 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 abstract class MapperBase
         implements Mapper {
 
-    /** map to translate site book format terminology with our own. */
-    static final Map<String, Integer> MAPPER = new HashMap<>();
+    @NonNull
+    abstract Map<String, Integer> getMappings();
 
     @Override
     public void map(@NonNull final Context context,
@@ -44,13 +43,15 @@ abstract class MapperBase
         if (value != null && !value.isEmpty()) {
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final String lcValue = value.toLowerCase(userLocale);
-            final Optional<String> oKey = MAPPER.keySet().stream()
+            final Map<String, Integer> mapper = getMappings();
+            final Optional<String> oKey = mapper.keySet()
+                                                .stream()
                                                 .filter(lcValue::startsWith)
                                                 .findFirst();
 
             if (oKey.isPresent()) {
                 //noinspection DataFlowIssue
-                value = (context.getString(MAPPER.get(oKey.get()))
+                value = (context.getString(mapper.get(oKey.get()))
                          + ' ' + value.substring(oKey.get().length()).trim())
                         .trim();
             }

@@ -78,12 +78,8 @@ class ResultsAccumulator {
         this.engineLocales = engineLocales;
         this.systemLocale = systemLocale;
 
-        if (FormatMapper.isMappingAllowed(context)) {
-            mappers.add(new FormatMapper());
-        }
-        if (ColorMapper.isMappingAllowed(context)) {
-            mappers.add(new ColorMapper());
-        }
+        ColorMapper.create(context).ifPresent(mappers::add);
+        FormatMapper.create(context).ifPresent(mappers::add);
     }
 
     private static void dbgLogValueCopied(@NonNull final String method,
@@ -94,6 +90,7 @@ class ResultsAccumulator {
                                     "value=`" + dataToAdd + '`');
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void dbgLogValueAppended(@NonNull final String method,
                                             @NonNull final String key,
                                             @Nullable final Object dataToAdd) {

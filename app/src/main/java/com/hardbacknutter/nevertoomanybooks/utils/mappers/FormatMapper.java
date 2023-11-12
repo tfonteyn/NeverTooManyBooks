@@ -24,6 +24,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -39,79 +43,93 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public final class FormatMapper
         extends MapperBase {
 
+    /** Maps site format terminology to our own. */
+    private static final Map<String, Integer> MAPPINGS = new HashMap<>();
+
     // use all lowercase keys!
     static {
         // ### Plain hardcover ###
-        MAPPER.put("hc", R.string.book_format_hardcover);
-        MAPPER.put("hardcover", R.string.book_format_hardcover);
-        MAPPER.put("hardback", R.string.book_format_hardcover);
+        MAPPINGS.put("hc", R.string.book_format_hardcover);
+        MAPPINGS.put("hardcover", R.string.book_format_hardcover);
+        MAPPINGS.put("hardback", R.string.book_format_hardcover);
         // dutch - KBNL
-        MAPPER.put("geb.", R.string.book_format_hardcover);
+        MAPPINGS.put("geb.", R.string.book_format_hardcover);
         // dutch - KBNL
-        MAPPER.put("gebonden", R.string.book_format_hardcover);
+        MAPPINGS.put("gebonden", R.string.book_format_hardcover);
         // french - BOL
-        MAPPER.put("couverture rigide", R.string.book_format_hardcover);
+        MAPPINGS.put("couverture rigide", R.string.book_format_hardcover);
         // portuguese
-        MAPPER.put("capa dura", R.string.book_format_hardcover);
+        MAPPINGS.put("capa dura", R.string.book_format_hardcover);
 
 
         // ### Plain paperback ###
 
-        MAPPER.put("mmpb", R.string.book_format_paperback);
-        MAPPER.put("mass market paperback", R.string.book_format_paperback);
-        MAPPER.put("pb", R.string.book_format_paperback);
-        MAPPER.put("paperback", R.string.book_format_paperback);
+        MAPPINGS.put("mmpb", R.string.book_format_paperback);
+        MAPPINGS.put("mass market paperback", R.string.book_format_paperback);
+        MAPPINGS.put("pb", R.string.book_format_paperback);
+        MAPPINGS.put("paperback", R.string.book_format_paperback);
         // dutch - KBNL
-        MAPPER.put("pbk.", R.string.book_format_paperback);
+        MAPPINGS.put("pbk.", R.string.book_format_paperback);
         // french - BOL
-        MAPPER.put("broché", R.string.book_format_paperback);
+        MAPPINGS.put("broché", R.string.book_format_paperback);
         // portuguese
-        MAPPER.put("capa mole", R.string.book_format_paperback);
+        MAPPINGS.put("capa mole", R.string.book_format_paperback);
 
         // ### Mid-size (a.k.a 'trade') format paperback ###
-        MAPPER.put("tp", R.string.book_format_paperback_large);
+        MAPPINGS.put("tp", R.string.book_format_paperback_large);
 
 
         // ### Large format softcover ###
         // dutch - stripinfo.be
-        MAPPER.put("softcover", R.string.book_format_softcover);
+        MAPPINGS.put("softcover", R.string.book_format_softcover);
 
 
         // ### e-books ###
-        MAPPER.put("ebook", R.string.book_format_ebook);
-        MAPPER.put("e-book", R.string.book_format_ebook);
+        MAPPINGS.put("ebook", R.string.book_format_ebook);
+        MAPPINGS.put("e-book", R.string.book_format_ebook);
         // dutch - stripinfo.be
-        MAPPER.put("digitaal", R.string.book_format_ebook);
+        MAPPINGS.put("digitaal", R.string.book_format_ebook);
         // french - BOL
-        MAPPER.put("livre numérique", R.string.book_format_ebook);
+        MAPPINGS.put("livre numérique", R.string.book_format_ebook);
 
 
         // ### Audio-books ###
-        MAPPER.put("audio cassette", R.string.book_format_audiobook);
-        MAPPER.put("audio cd", R.string.book_format_audiobook);
+        MAPPINGS.put("audio cassette", R.string.book_format_audiobook);
+        MAPPINGS.put("audio cd", R.string.book_format_audiobook);
         // dutch - BOL
-        MAPPER.put("digitaal luisterboek", R.string.book_format_audiobook);
+        MAPPINGS.put("digitaal luisterboek", R.string.book_format_audiobook);
         // french - BOL
-        MAPPER.put("livre audio numérique", R.string.book_format_audiobook);
+        MAPPINGS.put("livre audio numérique", R.string.book_format_audiobook);
         // portuguese
-        MAPPER.put("audiolivro", R.string.book_format_audiobook);
+        MAPPINGS.put("audiolivro", R.string.book_format_audiobook);
 
 
         // ### Special ###
-        MAPPER.put("digest", R.string.book_format_digest);
-        MAPPER.put("unknown", R.string.unknown);
+        MAPPINGS.put("digest", R.string.book_format_digest);
+        MAPPINGS.put("unknown", R.string.unknown);
         // english - GoogleBooks
-        MAPPER.put("dimensions", R.string.book_format_dimensions);
+        MAPPINGS.put("dimensions", R.string.book_format_dimensions);
     }
 
-    public static boolean isMappingAllowed(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_search_reformat_format, true);
+    @NonNull
+    public static Optional<Mapper> create(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_search_reformat_format, true)) {
+            return Optional.of(new FormatMapper());
+        } else {
+            return Optional.empty();
+        }
     }
 
     @NonNull
     @Override
     public String getKey() {
         return DBKey.FORMAT;
+    }
+
+    @NonNull
+    @Override
+    Map<String, Integer> getMappings() {
+        return MAPPINGS;
     }
 }

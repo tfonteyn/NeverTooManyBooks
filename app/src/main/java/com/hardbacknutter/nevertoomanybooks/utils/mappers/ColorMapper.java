@@ -24,47 +24,76 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * System wide book color representation. Color is mainly meant for comics.
- * <p>
- * Note that the KBNL SearchEngine does it's own mapping.
  */
 public final class ColorMapper
         extends MapperBase {
 
+    /** Maps site color terminology to our own. */
+    private static final Map<String, Integer> MAPPINGS = new HashMap<>();
+
     // use all lowercase keys!
     static {
         // stripinfo.be
-        MAPPER.put("kleur", R.string.book_color_full_color);
-        MAPPER.put("zwart/wit", R.string.book_color_black_and_white);
-        MAPPER.put("Zwart/wit met steunkleur", R.string.book_color_support_color);
+        MAPPINGS.put("kleur", R.string.book_color_full_color);
+        MAPPINGS.put("zwart/wit", R.string.book_color_black_and_white);
+        MAPPINGS.put("zwart/wit met steunkleur", R.string.book_color_support_color);
 
         // lastdodo.nl
-        MAPPER.put("gekleurd", R.string.book_color_full_color);
-        MAPPER.put("ongekleurd", R.string.book_color_black_and_white);
+        MAPPINGS.put("gekleurd", R.string.book_color_full_color);
+        MAPPINGS.put("ongekleurd", R.string.book_color_black_and_white);
+        // Based on the term used in "Suske en Wiske Tweekleuren reeks"
+        MAPPINGS.put("gedeeltelijk gekleurd", R.string.book_color_support_color);
 
         // bedetheque
-        MAPPER.put("N&B", R.string.book_color_black_and_white);
-        MAPPER.put("Monochromie", R.string.book_color_black_and_white);
+        MAPPINGS.put("n&b", R.string.book_color_black_and_white);
+        MAPPINGS.put("monochromie", R.string.book_color_black_and_white);
         // B&W with 1 or 2 support colors
-        MAPPER.put("Bichromie", R.string.book_color_support_color);
-        // extremely seldom used; we'll set to same as "Bichromie"
-        MAPPER.put("Trichromie", R.string.book_color_support_color);
-        MAPPER.put("Quadrichromie", R.string.book_color_full_color);
+        MAPPINGS.put("bichromie", R.string.book_color_support_color);
+        // extremely seldom used; map the same as "Bichromie"
+        MAPPINGS.put("trichromie", R.string.book_color_support_color);
+        // extremely seldom used; map as full-color
+        MAPPINGS.put("quadrichromie", R.string.book_color_full_color);
 
+        // kbnl
+        // As usual on this site, the data is unstructured... we do our best
+        MAPPINGS.put("gekleurde illustraties", R.string.book_color_full_color);
+        MAPPINGS.put("gekleurde ill", R.string.book_color_full_color);
+        MAPPINGS.put("blauw-witte illustraties", R.string.book_color_black_and_white);
+        MAPPINGS.put("ill", R.string.book_color_black_and_white);
+        MAPPINGS.put("zw. ill", R.string.book_color_black_and_white);
+        MAPPINGS.put("w. tek", R.string.book_color_black_and_white);
+        MAPPINGS.put("ill.(zw./w.)", R.string.book_color_black_and_white);
     }
+
+    @NonNull
+    public static Optional<Mapper> create(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_search_reformat_color, true)) {
+            return Optional.of(new ColorMapper());
+        } else {
+            return Optional.empty();
+        }
+    }
+
     @NonNull
     @Override
     public String getKey() {
         return DBKey.COLOR;
     }
 
-    public static boolean isMappingAllowed(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_search_reformat_color, true);
+    @NonNull
+    @Override
+    Map<String, Integer> getMappings() {
+        return MAPPINGS;
     }
 }

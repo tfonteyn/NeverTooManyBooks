@@ -36,7 +36,7 @@ public interface Mapper {
     String getKey();
 
     /**
-     * The current value is read from the bundle, and replaced by the mapped value if found.
+     * The current value is read from the Book, and replaced by the mapped value if found.
      *
      * @param context Current context
      * @param book    with {@link #getKey} entry to map
