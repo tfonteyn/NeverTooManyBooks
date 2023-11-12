@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -81,6 +83,30 @@ class ResultsAccumulator {
         if (ColorMapper.isMappingAllowed(context)) {
             mappers.add(new ColorMapper());
         }
+    }
+
+    private static void dbgLogValueCopied(@NonNull final String method,
+                                          @NonNull final String key,
+                                          @Nullable final Object dataToAdd) {
+        LoggerFactory.getLogger().d(TAG, method, "copied",
+                                    "key=" + key,
+                                    "value=`" + dataToAdd + '`');
+    }
+
+    private static void dbgLogValueAppended(@NonNull final String method,
+                                            @NonNull final String key,
+                                            @Nullable final Object dataToAdd) {
+        LoggerFactory.getLogger().d(TAG, method, "appended",
+                                    "key=" + key,
+                                    "value=`" + dataToAdd + '`');
+    }
+
+    private static void dbgLogValueSkipped(@NonNull final String method,
+                                           @NonNull final String key,
+                                           @Nullable final Object dataToAdd) {
+        LoggerFactory.getLogger().d(TAG, method, "skipping",
+                                    "key=" + key,
+                                    "value=`" + dataToAdd + '`');
     }
 
     /**
@@ -168,9 +194,7 @@ class ResultsAccumulator {
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processLanguage", "skipping",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueSkipped("processLanguage", key, dataToAdd);
             }
             return;
         }
@@ -186,9 +210,7 @@ class ResultsAccumulator {
         book.putString(key, dataToAdd);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "processLanguage", "copied",
-                                        "key=" + key,
-                                        "value=`" + dataToAdd + '`');
+            dbgLogValueCopied("processLanguage", key, dataToAdd);
         }
     }
 
@@ -221,9 +243,7 @@ class ResultsAccumulator {
         if (previous == null || previous.trim().isEmpty()) {
             dstBook.putString(key, dataToAdd);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processDate", "copied",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueCopied("processDate", key, dataToAdd);
             }
             return;
         }
@@ -243,18 +263,14 @@ class ResultsAccumulator {
                 dstBook.putString(key, newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    LoggerFactory.getLogger().d(TAG, "processDate", "copied",
-                                                "key=" + key,
-                                                "value=`" + dataToAdd + '`');
+                    dbgLogValueCopied("processDate", key, dataToAdd);
                 }
                 return;
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "processDate", "skipping",
-                                        "key=" + key,
-                                        "value=`" + dataToAdd + '`');
+            dbgLogValueSkipped("processDate", key, dataToAdd);
         }
     }
 
@@ -281,13 +297,9 @@ class ResultsAccumulator {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             if (list.isEmpty()) {
-                LoggerFactory.getLogger().d(TAG, "processList", "copied",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueCopied("processList", key, dataToAdd);
             } else {
-                LoggerFactory.getLogger().d(TAG, "processList", "appended",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueAppended("processList", key, dataToAdd);
             }
         }
 
@@ -320,9 +332,7 @@ class ResultsAccumulator {
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processMoney", "skipping",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueSkipped("processMoney", key, dataToAdd);
             }
             return;
         }
@@ -331,9 +341,7 @@ class ResultsAccumulator {
         if (dataToAdd instanceof Money) {
             book.putMoney(key, (Money) dataToAdd);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processMoney", "copied",
-                                            "key=" + key,
-                                            "Money=`" + dataToAdd + '`');
+                dbgLogValueCopied("processMoney", key, dataToAdd);
             }
             return;
         }
@@ -341,9 +349,7 @@ class ResultsAccumulator {
             book.putDouble(key, (double) dataToAdd);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processMoney", "copied",
-                                            "key=" + key,
-                                            "double=`" + dataToAdd + '`');
+                dbgLogValueCopied("processMoney", key, dataToAdd.toString());
             }
             return;
         }
@@ -355,15 +361,11 @@ class ResultsAccumulator {
             book.putMoney(key, money);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processMoney", "copied",
-                                            "key=" + key,
-                                            "data=`" + dataToAdd + '`');
+                dbgLogValueCopied("processMoney", key, dataToAdd);
             }
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processMoney", "skipping",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueSkipped("processMoney", key, dataToAdd);
             }
         }
     }
@@ -391,9 +393,7 @@ class ResultsAccumulator {
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processRating", "skipping",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueSkipped("processDouble", key, dataToAdd);
             }
             return;
         }
@@ -403,9 +403,7 @@ class ResultsAccumulator {
             book.putFloat(key, (float) dataToAdd);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processRating", "copied",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueCopied("processDouble", key, dataToAdd);
             }
             return;
         }
@@ -416,14 +414,12 @@ class ResultsAccumulator {
             book.putFloat(key, rating);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processRating", "copied",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueCopied("processRating", key, dataToAdd);
             }
         } catch (@NonNull final IllegalArgumentException e) {
             // covers NumberFormatException
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processRating", e,
+                LoggerFactory.getLogger().d(TAG, "processDouble", e,
                                             "key=" + key,
                                             "data=`" + dataToAdd + '`');
             }
@@ -453,9 +449,7 @@ class ResultsAccumulator {
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processGenericKey", "skipping",
-                                            "key=" + key,
-                                            "value=`" + dataToAdd + '`');
+                dbgLogValueSkipped("processGenericKey", key, dataToAdd);
             }
             return;
         }
@@ -464,10 +458,7 @@ class ResultsAccumulator {
         book.put(key, dataToAdd);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "processGenericKey", "copied",
-                                        "key=" + key,
-                                        "double=`" + dataToAdd + '`');
+            dbgLogValueCopied("processGenericKey", key, dataToAdd);
         }
     }
-
 }
