@@ -64,17 +64,18 @@ class ResultsAccumulator {
                                                         CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0],
                                                         CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
 
-    private final Map<EngineId, SearchEngine> engineCache;
+    @NonNull
+    private final Map<EngineId, Locale> engineLocales;
     /** Mappers to apply. */
     private final Collection<Mapper> mappers = new ArrayList<>();
     @NonNull
     private final Locale systemLocale;
 
     ResultsAccumulator(@NonNull final Context context,
-                       @NonNull final Map<EngineId, SearchEngine> engineCache,
+                       @NonNull final Map<EngineId, Locale> engineLocales,
                        @NonNull final Locale systemLocale) {
 
-        this.engineCache = engineCache;
+        this.engineLocales = engineLocales;
         this.systemLocale = systemLocale;
 
         if (FormatMapper.isMappingAllowed(context)) {
@@ -112,51 +113,46 @@ class ResultsAccumulator {
     /**
      * Accumulate all data from the given sites.
      * <p>
-     * The Bundle will contain by default only String and ArrayList based data.
-     * Long etc... types will be stored as String data.
-     * <p>
-     * NEWTHINGS: if you add a new Search task that adds non-string based data,
-     * handle that here.
+     * NEWTHINGS: when adding a new Search task that adds non-string based data,
+     *  also handle that here.
      *
      * @param context Current context
-     * @param sites   the ordered list of engines
-     * @param book    Destination bundle
+     * @param results ordered Map of engineId's and the Book we found for that engine
+     * @param book    to update; this is the Book which will be returned as
+     *                the final result for this search.
      */
     void process(@NonNull final Context context,
-                 @NonNull final List<EngineId> sites,
-                 @NonNull final Map<EngineId, SearchCoordinator.WrappedTaskResult> searchResultsBySite,
+                 @NonNull final Map<EngineId, Book> results,
                  @NonNull final Book book) {
-        sites.forEach(engineId -> {
-            final SearchCoordinator.WrappedTaskResult siteData = searchResultsBySite.get(engineId);
-            if (siteData != null && siteData.result != null && !siteData.result.isEmpty()) {
-                final SearchEngine searchEngine = engineCache.get(engineId);
-                //noinspection DataFlowIssue
-                final Locale siteLocale = searchEngine.getLocale(context);
-                final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-                final RealNumberParser realNumberParser = new RealNumberParser(locales);
-                final DateParser dateParser = new FullDateParser(systemLocale, locales);
-                siteData.result.keySet().forEach(key -> {
-                    if (DBKey.DATE_KEYS.contains(key)) {
-                        processDate(key, siteData.result, book, dateParser);
+        results.forEach((engineId, result) -> {
+            final Locale siteLocale = engineLocales.get(engineId);
+            // Sanity check, should never be null... flw
+            Objects.requireNonNull(siteLocale);
 
-                    } else if (DBKey.MONEY_KEYS.contains(key)) {
-                        processMoney(key, siteData.result, book, siteLocale, realNumberParser);
+            final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+            final RealNumberParser realNumberParser = new RealNumberParser(locales);
+            final DateParser dateParser = new FullDateParser(systemLocale, locales);
+            result.keySet().forEach(key -> {
+                if (DBKey.DATE_KEYS.contains(key)) {
+                    processDate(key, result, book, dateParser);
 
-                    } else if (LIST_KEYS.contains(key)) {
-                        processList(key, siteData.result, book);
+                } else if (DBKey.MONEY_KEYS.contains(key)) {
+                    processMoney(key, result, book, siteLocale, realNumberParser);
 
-                    } else if (DBKey.LANGUAGE.equals(key)) {
-                        processLanguage(context, key, siteData.result, book, siteLocale);
+                } else if (LIST_KEYS.contains(key)) {
+                    processList(key, result, book);
 
-                    } else if (DBKey.RATING.equals(key)) {
-                        processRating(key, siteData.result, book, realNumberParser);
+                } else if (DBKey.LANGUAGE.equals(key)) {
+                    processLanguage(context, key, result, book, siteLocale);
 
-                    } else {
-                        // when we get here, we should only have String, int, or long data
-                        processGenericKey(key, siteData.result, book, realNumberParser);
-                    }
-                });
-            }
+                } else if (DBKey.RATING.equals(key)) {
+                    processDouble(key, result, book, realNumberParser);
+
+                } else {
+                    // when we get here, we should only have String, int, or long data
+                    processGenericKey(key, result, book, realNumberParser);
+                }
+            });
         });
 
         // run the mappers
@@ -371,14 +367,14 @@ class ResultsAccumulator {
     }
 
     /**
-     * Accumulate rating data.
+     * Accumulate {@code double} or {@code float} data.
      *
      * @param key              Key of data
      * @param siteData         Source Bundle
      * @param book             Destination bundle
      * @param realNumberParser shared for the current site
      */
-    private void processRating(@NonNull final String key,
+    private void processDouble(@NonNull final String key,
                                @NonNull final Book siteData,
                                @NonNull final Book book,
                                @NonNull final RealNumberParser realNumberParser) {
@@ -408,6 +404,7 @@ class ResultsAccumulator {
             return;
         }
 
+        //noinspection OverlyBroadCatchBlock
         try {
             // this is a fallback in case the SearchEngine has not already parsed the data!
             final float rating = realNumberParser.toFloat(dataToAdd);

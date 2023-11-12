@@ -36,11 +36,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,7 +108,7 @@ public class SearchCoordinator
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
 
     /** Accumulates the results from <strong>individual</strong> search tasks. */
-    private final Map<EngineId, WrappedTaskResult> searchResultsBySite =
+    private final Map<EngineId, SearchResult> resultsBySite =
             new EnumMap<>(EngineId.class);
 
     /** Accumulates the last message from <strong>individual</strong> search tasks. */
@@ -195,9 +197,9 @@ public class SearchCoordinator
 
         // ALWAYS store, even when null!
         // Presence of the site/task id in the map is an indication that the site was processed
-        synchronized (searchResultsBySite) {
-            searchResultsBySite.put(engineId, new WrappedTaskResult(
-                    searchTask.getSearchBy(), result));
+        synchronized (resultsBySite) {
+            resultsBySite.put(engineId, new SearchResult(
+                    engineId, searchTask.getSearchBy(), result));
         }
 
         // clear obsolete progress status
@@ -342,7 +344,15 @@ public class SearchCoordinator
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
-            resultsAccumulator = new ResultsAccumulator(context, engineCache, systemLocale);
+
+            final Map<EngineId, Locale> engineLocales = engineCache
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> entry.getValue().getLocale(context)));
+
+            resultsAccumulator = new ResultsAccumulator(context, engineLocales, systemLocale);
 
             listElementPrefixString = context.getString(R.string.list_element);
 
@@ -388,33 +398,63 @@ public class SearchCoordinator
         // searching by native-web-id on a site which was NOT on the active list.
         // We use this somewhat convoluted method to make sure the priority order is kept.
         // Keep in mind that the results are NOT ordered by priority, but by first-ready.
-        activeEngines.addAll(searchResultsBySite.keySet());
+        activeEngines.addAll(resultsBySite.keySet());
 
-        // This list will be the actual order of the result we apply, based on the
-        // actual results and the site order as set by the user.
+        final Map<EngineId, Book> results = determineOrder(activeEngines, book);
+
+        // Merge the data we have in the order as decided upon above.
+        // no synchronized needed, at this point all other threads have finished.
+        resultsAccumulator.process(context, results, book);
+
+        // If we did not get an ISBN, use the one we originally searched for.
+        final String isbnStr = book.getString(DBKey.BOOK_ISBN, null);
+        if (isbnStr == null || isbnStr.isEmpty()) {
+            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
+        }
+
+        // If we did not get a title, use the one we originally searched for.
+        final String title = book.getString(DBKey.TITLE, null);
+        if (title == null || title.isEmpty()) {
+            book.putString(DBKey.TITLE, titleSearchText);
+        }
+
+        return book;
+    }
+
+    /**
+     * Determine the order in which to apply the results from the list of sites.
+     * <p>
+     * The order will be based on the site order as set by the user AND the actual results.
+     *
+     * @param activeEngines all engines we searched
+     * @param book          to access/set the ISBN of.
+     *
+     * @return an ordered Map of engineId's and the Book we found for that engine
+     */
+    @NonNull
+    private Map<EngineId, Book> determineOrder(@NonNull final Set<EngineId> activeEngines,
+                                               @NonNull final Book book) {
+
         final List<EngineId> sitesInOrder = new ArrayList<>();
 
         if (isbn.isValid(strictIsbn)) {
             final Collection<EngineId> sitesWithoutIsbn = new ArrayList<>();
 
-            for (final EngineId engineId : activeEngines) {
+            activeEngines.forEach(engineId -> {
                 // no synchronized needed, at this point all other threads have finished.
-                if (searchResultsBySite.containsKey(engineId)) {
-                    final WrappedTaskResult siteData = searchResultsBySite.get(engineId);
+                final SearchResult siteData = resultsBySite.get(engineId);
+                if (siteData != null) {
+                    siteData.getResult().ifPresent(result -> {
 
-                    // any results for this site?
-                    if (siteData != null && siteData.result != null
-                        && !siteData.result.isEmpty()) {
-
-                        if (siteData.searchBy == SearchEngine.SearchBy.ExternalId && !strictIsbn) {
+                        if (siteData.getSearchBy() == SearchEngine.SearchBy.ExternalId
+                            && !strictIsbn) {
                             // We searched by website id and didn't insist on an exact ISBN
                             // so we SHOULD be pretty sure about the data...
                             sitesInOrder.add(engineId);
 
-                        } else if (siteData.result.contains(DBKey.BOOK_ISBN)) {
+                        } else if (result.contains(DBKey.BOOK_ISBN)) {
                             // We did a general search with an ISBN; check if it matches
-                            final String isbnFound = siteData.result
-                                    .getString(DBKey.BOOK_ISBN, null);
+                            final String isbnFound = result.getString(DBKey.BOOK_ISBN, null);
                             if (isbnFound != null && !isbnFound.isEmpty()
                                 && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
                                 sitesInOrder.add(engineId);
@@ -433,9 +473,9 @@ public class SearchCoordinator
                             // The result did not have an ISBN at all.
                             sitesWithoutIsbn.add(engineId);
                         }
-                    }
+                    });
                 }
-            }
+            });
 
             // now add the less reliable ones at the end of the list.
             sitesInOrder.addAll(sitesWithoutIsbn);
@@ -448,23 +488,18 @@ public class SearchCoordinator
             sitesInOrder.addAll(activeEngines);
         }
 
-        // Merge the data we have in the order as decided upon above.
-        // no synchronized needed, at this point all other threads have finished.
-        resultsAccumulator.process(context, sitesInOrder, searchResultsBySite, book);
-
-        // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = book.getString(DBKey.BOOK_ISBN, null);
-        if (isbnStr == null || isbnStr.isEmpty()) {
-            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
-        }
-
-        // If we did not get a title, use the one we originally searched for.
-        final String title = book.getString(DBKey.TITLE, null);
-        if (title == null || title.isEmpty()) {
-            book.putString(DBKey.TITLE, titleSearchText);
-        }
-
-        return book;
+        //noinspection DataFlowIssue
+        return sitesInOrder
+                .stream()
+                .map(resultsBySite::get)
+                .filter(Objects::nonNull)
+                .filter(result -> result.getResult().isPresent())
+                // We now have non-null and 'present' results,
+                // create the ORDERED map with engineId's and the Book we found for that engine
+                .collect(Collectors.toMap(SearchResult::getEngineId,
+                                          searchResult -> searchResult.getResult().get(),
+                                          (existingKey, replacement) -> existingKey,
+                                          LinkedHashMap::new));
     }
 
     @Override
@@ -568,7 +603,7 @@ public class SearchCoordinator
         cancelRequested.set(false);
 
         // no synchronized needed, at this point there are no other threads
-        searchResultsBySite.clear();
+        resultsBySite.clear();
         searchErrorsBySite.clear();
 
         isbn = new ISBN(isbnSearchText, strictIsbn);
@@ -758,8 +793,8 @@ public class SearchCoordinator
                                                      .collect(Collectors.toList());
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
-            synchronized (searchResultsBySite) {
-                if (!searchResultsBySite.containsKey(engineId)) {
+            synchronized (resultsBySite) {
+                if (!resultsBySite.containsKey(engineId)) {
                     if (startSearch(context, engineId)) {
                         atLeastOneStarted = true;
                     }
@@ -788,8 +823,8 @@ public class SearchCoordinator
                                                      .collect(Collectors.toList());
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
-            synchronized (searchResultsBySite) {
-                if (!searchResultsBySite.containsKey(engineId)) {
+            synchronized (resultsBySite) {
+                if (!resultsBySite.containsKey(engineId)) {
                     final boolean started = startSearch(context, engineId);
                     if (started) {
                         return true;
@@ -1009,17 +1044,44 @@ public class SearchCoordinator
         this.baseMessage = baseMessage;
     }
 
-    public static class WrappedTaskResult {
+    /**
+     * Value class encapsulating
+     * where a result came from + how the search was done + the result itself.
+     * The result itself can be {@code null} if nothing was found.
+     */
+    static class SearchResult {
 
         @Nullable
-        final SearchEngine.SearchBy searchBy;
-        @Nullable
-        final Book result;
+        private final Book result;
+        @NonNull
+        private final EngineId engineId;
+        @NonNull
+        private final SearchEngine.SearchBy searchBy;
 
-        WrappedTaskResult(@Nullable final SearchEngine.SearchBy searchBy,
-                          @Nullable final Book result) {
+        SearchResult(@NonNull final EngineId engineId,
+                     @NonNull final SearchEngine.SearchBy searchBy,
+                     @Nullable final Book result) {
+            this.engineId = engineId;
             this.searchBy = searchBy;
             this.result = result;
+        }
+
+        @NonNull
+        EngineId getEngineId() {
+            return engineId;
+        }
+
+        @NonNull
+        SearchEngine.SearchBy getSearchBy() {
+            return searchBy;
+        }
+
+        @NonNull
+        Optional<Book> getResult() {
+            if (result == null || result.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(result);
         }
     }
 
