@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,7 @@ public class IsfdbXmlPublicationTest
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));

@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.Before;
@@ -68,11 +69,10 @@ public class UserCollectionTest
     BookshelfMapper bookshelfMapper;
     private StripInfoSearchEngine searchEngine;
 
-    @Override
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));

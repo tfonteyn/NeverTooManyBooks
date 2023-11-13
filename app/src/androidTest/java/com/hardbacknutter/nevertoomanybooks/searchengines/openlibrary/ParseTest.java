@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class ParseTest
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));

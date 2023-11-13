@@ -25,6 +25,7 @@ import android.os.StrictMode;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.IOException;
@@ -36,24 +37,23 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.Before;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings({"OverlyBroadThrowsClause", "MissingJavadoc"})
 public abstract class BaseDBTest {
 
     protected ServiceLocator serviceLocator;
     protected Context context;
 
-    @Before
     @CallSuper
-    public void setup()
+    public void setup(@NonNull final String localeCode)
             throws DaoWriteException, StorageException {
-
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                                        .detectLeakedSqlLiteObjects()
                                        .detectLeakedClosableObjects()
@@ -62,7 +62,13 @@ public abstract class BaseDBTest {
                                        .build());
 
         serviceLocator = ServiceLocator.getInstance();
-        context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+        context = serviceLocator.getAppContext();
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(Prefs.pk_ui_locale, localeCode)
+                         .apply();
+        context = serviceLocator.getLocalizedAppContext();
 
         CoverVolume.initVolume(context, 0);
         ServiceLocator.getInstance().getDb();

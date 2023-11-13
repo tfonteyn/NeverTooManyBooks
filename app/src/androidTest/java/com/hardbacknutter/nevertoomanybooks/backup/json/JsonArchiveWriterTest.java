@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +63,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @MediumTest
+@SuppressWarnings("MissingJavadoc")
 public class JsonArchiveWriterTest
         extends BaseDBTest {
 
@@ -75,7 +77,8 @@ public class JsonArchiveWriterTest
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
         bookInDb = new DbPrep().maybeInstallTestData(context);

@@ -28,6 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
 import org.junit.Before;
@@ -52,7 +53,7 @@ public class AuthorParseTest
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));

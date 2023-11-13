@@ -32,7 +32,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -41,6 +43,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @MediumTest
+@SuppressWarnings("MissingJavadoc")
 public class AuthorTest
         extends BaseSetup {
 
@@ -50,10 +53,10 @@ public class AuthorTest
     private Locale bookLocale;
     private AuthorDao authorDao;
 
-    @Override
+    @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         bookLocale = Locale.getDefault();
         authorDao = serviceLocator.getAuthorDao();

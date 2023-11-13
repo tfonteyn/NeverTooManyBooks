@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -36,8 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-
-import org.junit.Before;
 
 
 /**
@@ -63,10 +62,10 @@ public abstract class BaseSetup
     protected final Book[] book = new Book[5];
     protected final long[] bookId = new long[5];
 
-    @Before
-    public void setup()
+    @CallSuper
+    public void setup(@NonNull final String localeCode)
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(localeCode);
 
         clearDatabase();
 

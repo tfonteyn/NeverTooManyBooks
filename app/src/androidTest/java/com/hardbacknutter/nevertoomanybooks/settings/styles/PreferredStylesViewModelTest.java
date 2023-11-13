@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -52,6 +53,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+@SuppressWarnings("MissingJavadoc")
 public class PreferredStylesViewModelTest
         extends BaseDBTest {
 
@@ -67,7 +69,8 @@ public class PreferredStylesViewModelTest
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+
         final Style aDefault = ServiceLocator.getInstance().getStyles().getDefault();
         listVm = new PreferredStylesViewModel();
         listVm.init(createArgs(aDefault));

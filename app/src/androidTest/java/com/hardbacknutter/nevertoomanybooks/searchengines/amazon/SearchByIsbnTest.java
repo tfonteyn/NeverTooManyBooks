@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +42,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Does live lookups to the website !
  */
+@SuppressWarnings("MissingJavadoc")
 public class SearchByIsbnTest
         extends BaseDBTest {
 
@@ -52,7 +54,7 @@ public class SearchByIsbnTest
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
