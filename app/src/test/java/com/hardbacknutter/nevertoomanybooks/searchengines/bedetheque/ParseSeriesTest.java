@@ -23,6 +23,8 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.stream.Stream;
+
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
@@ -32,7 +34,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,6 +49,36 @@ public class ParseSeriesTest
     private BedethequeSearchEngine searchEngine;
     private Book book;
 
+    @NonNull
+    static Stream<Arguments> readArgs() {
+        return Stream.of(
+
+                Arguments.of("Lucky Luke", "Lucky Luke", null),
+                Arguments.of("Lucky Luke Classics (en espagnol - Ediciones Kraken)",
+                             "Lucky Luke Classics (en espagnol - Ediciones Kraken)",
+                             "espagnol"),
+                Arguments.of("Lucky Luke (Les aventures de)",
+                             "Lucky Luke (Les aventures de)",
+                             null),
+                Arguments.of(" Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
+                             " Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
+                             null),
+                Arguments.of("Lucky Luke (As aventuras de) (en portugais)",
+                             "Lucky Luke (As aventuras de)",
+                             "portugais"),
+
+                Arguments.of("Afrique, petit Chaka... (L')",
+                             "L'Afrique, petit Chaka...",
+                             null),
+                Arguments.of("Légende (du disque) de Bob Marley (La)",
+                             "La Légende (du disque) de Bob Marley",
+                             null),
+                Arguments.of("Legende (en néerlandais)",
+                             "Legende",
+                             "néerlandais")
+        );
+    }
+
     @BeforeEach
     public void setup()
             throws Exception {
@@ -55,33 +89,8 @@ public class ParseSeriesTest
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
-    @Test
-    void parse01() {
-        checkSeries("Lucky Luke", "Lucky Luke", null);
-        checkSeries("Lucky Luke Classics (en espagnol - Ediciones Kraken)",
-                    "Lucky Luke Classics (en espagnol - Ediciones Kraken)",
-                    "espagnol");
-        checkSeries("Lucky Luke (Les aventures de)",
-                    "Lucky Luke (Les aventures de)",
-                    null);
-        checkSeries(" Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
-                    " Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
-                    null);
-        checkSeries("Lucky Luke (As aventuras de) (en portugais)",
-                    "Lucky Luke (As aventuras de)",
-                    "portugais");
-
-        checkSeries("Afrique, petit Chaka... (L')",
-                    "L'Afrique, petit Chaka...",
-                    null);
-        checkSeries("Légende (du disque) de Bob Marley (La)",
-                    "La Légende (du disque) de Bob Marley",
-                    null);
-        checkSeries("Legende (en néerlandais)",
-                    "Legende",
-                    "néerlandais");
-    }
-
+    @ParameterizedTest
+    @MethodSource("readArgs")
     void checkSeries(@NonNull final String name,
                      @NonNull final String expected,
                      @Nullable final String lang) {
