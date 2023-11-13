@@ -545,7 +545,7 @@ public class BookDaoHelper {
                 }
 
                 if (fileSpec.isEmpty()) {
-                    // An empty fileSpec indicates we need to delete the cover
+                    // A *present* but empty fileSpec indicates we need to delete the cover
                     coverStorageSupplier.get().delete(uuid, cIdx);
                 } else {
                     // Rename the temp file to the uuid permanent file name
