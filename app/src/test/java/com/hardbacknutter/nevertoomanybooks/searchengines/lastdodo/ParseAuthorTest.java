@@ -20,33 +20,43 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
-import org.junit.jupiter.api.Test;
+import androidx.annotation.NonNull;
+
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ParseAuthorTest {
 
-    @Test
-    void names01() {
-        String[] names;
+    @NonNull
+    static Stream<Arguments> readArgs() {
+        return Stream.of(
+                Arguments.of("Robert Velter",
+                             new String[]{"Robert Velter"}),
+                Arguments.of("Robert Velter (Rob Vel)",
+                             new String[]{"Robert Velter",
+                                     "Rob Vel"}),
+                Arguments.of("Robert Velter (Rob-Vel,Bozz)",
+                             new String[]{"Robert Velter",
+                                     "Rob-Vel", "Bozz"}),
+                Arguments.of("Don (*3)",
+                             new String[]{"Don (*3)"})
+        );
+    }
 
-        names = LastDodoSearchEngine.parseAuthorNames("Robert Velter");
-        assertEquals(names[0], "Robert Velter");
-        assertEquals(1, names.length);
+    @ParameterizedTest
+    @MethodSource("readArgs")
+    void names01(@NonNull final String input,
+                 @NonNull final String[] expected) {
 
-        names = LastDodoSearchEngine.parseAuthorNames("Robert Velter (Rob Vel)");
-        assertEquals(names[0], "Robert Velter");
-        assertEquals(2, names.length);
-        assertEquals(names[1], "Rob Vel");
-
-        names = LastDodoSearchEngine.parseAuthorNames("Robert Velter (Rob-Vel,Bozz)");
-        assertEquals(names[0], "Robert Velter");
-        assertEquals(3, names.length);
-        assertEquals(names[1], "Rob-Vel");
-        assertEquals(names[2], "Bozz");
-
-        names = LastDodoSearchEngine.parseAuthorNames("Don (*3)");
-        assertEquals(names[0], "Don (*3)");
-        assertEquals(1, names.length);
+        final String[] names = LastDodoSearchEngine.parseAuthorNames(input);
+        assertEquals(expected.length, names.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], names[i]);
+        }
     }
 }
