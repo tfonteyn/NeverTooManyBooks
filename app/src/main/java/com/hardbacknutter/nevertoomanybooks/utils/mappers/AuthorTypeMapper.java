@@ -26,110 +26,96 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_AFTERWORD;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ARTIST;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COLORIST;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_CONTRIBUTOR;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_ARTIST;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_INKING;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_EDITOR;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_FOREWORD;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INKING;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INTRODUCTION;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_NARRATOR;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ORIGINAL_SCRIPT_WRITER;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_PSEUDONYM;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_TRANSLATOR;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_UNKNOWN;
-import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
  * Translate author types/roles into our own internal type codes.
  * <p>
- * Not based on MapperBase, as the mapping has to be int based.
+ * Not based on {@link Mapper}, as the mapping is not done on a Book/Bundle key.
+ * <p>
+ * Note the Locale is passed into the mapping method, and not in the constructor.
  */
 public class AuthorTypeMapper {
 
     /** Log tag. */
     private static final String TAG = "AuthorTypeMapper";
 
-    private static final Map<String, Integer> MAPPER = new HashMap<>();
+    private static final Map<String, Integer> MAPPINGS = new HashMap<>();
 
     // use all lowercase keys (unless they are diacritic)
     // NEWTHINGS: author type: add site-labels as needed
     static {
         // English
-        MAPPER.put("author", TYPE_WRITER);
-        MAPPER.put("adapter", TYPE_WRITER);
+        MAPPINGS.put("author", Author.TYPE_WRITER);
+        MAPPINGS.put("adapter", Author.TYPE_WRITER);
 
-        MAPPER.put("original script writer", TYPE_ORIGINAL_SCRIPT_WRITER);
+        MAPPINGS.put("original script writer", Author.TYPE_ORIGINAL_SCRIPT_WRITER);
 
-        MAPPER.put("narrator", TYPE_NARRATOR);
-        MAPPER.put("reading", TYPE_NARRATOR);
+        MAPPINGS.put("narrator", Author.TYPE_NARRATOR);
+        MAPPINGS.put("reading", Author.TYPE_NARRATOR);
 
-        MAPPER.put("illuminator", TYPE_ARTIST);
-        MAPPER.put("illustrator", TYPE_ARTIST);
-        MAPPER.put("illustrations", TYPE_ARTIST);
+        MAPPINGS.put("illuminator", Author.TYPE_ARTIST);
+        MAPPINGS.put("illustrator", Author.TYPE_ARTIST);
+        MAPPINGS.put("illustrations", Author.TYPE_ARTIST);
 
-        MAPPER.put("coverart", TYPE_COVER_ARTIST);
-        MAPPER.put("cover artist", TYPE_COVER_ARTIST);
-        MAPPER.put("cover illustrator", TYPE_COVER_ARTIST);
+        MAPPINGS.put("coverart", Author.TYPE_COVER_ARTIST);
+        MAPPINGS.put("cover artist", Author.TYPE_COVER_ARTIST);
+        MAPPINGS.put("cover illustrator", Author.TYPE_COVER_ARTIST);
 
-        MAPPER.put("colorist", TYPE_COLORIST);
+        MAPPINGS.put("colorist", Author.TYPE_COLORIST);
 
-        MAPPER.put("pseudonym", TYPE_PSEUDONYM);
+        MAPPINGS.put("pseudonym", Author.TYPE_PSEUDONYM);
 
-        MAPPER.put("editor", TYPE_EDITOR);
+        MAPPINGS.put("editor", Author.TYPE_EDITOR);
 
-        MAPPER.put("translator", TYPE_TRANSLATOR);
-        MAPPER.put("translator, annotations", TYPE_TRANSLATOR | TYPE_CONTRIBUTOR);
+        MAPPINGS.put("translator", Author.TYPE_TRANSLATOR);
+        MAPPINGS.put("translator, annotations", Author.TYPE_TRANSLATOR | Author.TYPE_CONTRIBUTOR);
 
-        MAPPER.put("preface", TYPE_FOREWORD);
-        MAPPER.put("foreword", TYPE_FOREWORD);
-        MAPPER.put("foreword by", TYPE_FOREWORD);
-        MAPPER.put("afterword", TYPE_AFTERWORD);
+        MAPPINGS.put("preface", Author.TYPE_FOREWORD);
+        MAPPINGS.put("foreword", Author.TYPE_FOREWORD);
+        MAPPINGS.put("foreword by", Author.TYPE_FOREWORD);
+        MAPPINGS.put("afterword", Author.TYPE_AFTERWORD);
 
-        MAPPER.put("introduction", TYPE_INTRODUCTION);
+        MAPPINGS.put("introduction", Author.TYPE_INTRODUCTION);
 
-        MAPPER.put("contributor", TYPE_CONTRIBUTOR);
-        MAPPER.put("additional material", TYPE_CONTRIBUTOR);
+        MAPPINGS.put("contributor", Author.TYPE_CONTRIBUTOR);
+        MAPPINGS.put("additional material", Author.TYPE_CONTRIBUTOR);
 
 
         // French, unless listed above
-        MAPPER.put("text", TYPE_WRITER);
-        MAPPER.put("auteur", TYPE_WRITER);
-        MAPPER.put("scénario", TYPE_WRITER);
-        MAPPER.put("dessins", TYPE_ARTIST);
-        MAPPER.put("dessin", TYPE_ARTIST);
-        MAPPER.put("Inker", TYPE_INKING);
-        MAPPER.put("avec la contribution de", TYPE_CONTRIBUTOR);
-        MAPPER.put("contribution", TYPE_CONTRIBUTOR);
-        MAPPER.put("couleurs", TYPE_COLORIST);
-        MAPPER.put("traduction", TYPE_TRANSLATOR);
+        MAPPINGS.put("text", Author.TYPE_WRITER);
+        MAPPINGS.put("auteur", Author.TYPE_WRITER);
+        MAPPINGS.put("scénario", Author.TYPE_WRITER);
+        MAPPINGS.put("dessins", Author.TYPE_ARTIST);
+        MAPPINGS.put("dessin", Author.TYPE_ARTIST);
+        MAPPINGS.put("Inker", Author.TYPE_INKING);
+        MAPPINGS.put("avec la contribution de", Author.TYPE_CONTRIBUTOR);
+        MAPPINGS.put("contribution", Author.TYPE_CONTRIBUTOR);
+        MAPPINGS.put("couleurs", Author.TYPE_COLORIST);
+        MAPPINGS.put("traduction", Author.TYPE_TRANSLATOR);
 
         // Dutch, unless listed above
-        MAPPER.put("scenario", TYPE_WRITER);
-        MAPPER.put("tekeningen", TYPE_ARTIST);
-        MAPPER.put("inkting", TYPE_INKING);
-        MAPPER.put("inkting cover", TYPE_COVER_INKING);
-        MAPPER.put("inkleuring", TYPE_COLORIST);
-        MAPPER.put("vertaler", TYPE_TRANSLATOR);
+        MAPPINGS.put("scenario", Author.TYPE_WRITER);
+        MAPPINGS.put("tekeningen", Author.TYPE_ARTIST);
+        MAPPINGS.put("inkting", Author.TYPE_INKING);
+        MAPPINGS.put("inkting cover", Author.TYPE_COVER_INKING);
+        MAPPINGS.put("inkleuring", Author.TYPE_COLORIST);
+        MAPPINGS.put("vertaler", Author.TYPE_TRANSLATOR);
 
         // German, unless listed above
-        MAPPER.put("autor", TYPE_WRITER);
-        MAPPER.put("Übersetzer", TYPE_TRANSLATOR);
-        MAPPER.put("Übersetzung", TYPE_TRANSLATOR);
+        MAPPINGS.put("autor", Author.TYPE_WRITER);
+        MAPPINGS.put("Übersetzer", Author.TYPE_TRANSLATOR);
+        MAPPINGS.put("Übersetzung", Author.TYPE_TRANSLATOR);
 
         // Spanish, unless listed above
-        MAPPER.put("escritor", TYPE_WRITER);
-        MAPPER.put("traductor", TYPE_TRANSLATOR);
-        MAPPER.put("ilustrador", TYPE_ARTIST);
-        MAPPER.put("dibujos", TYPE_ARTIST);
+        MAPPINGS.put("escritor", Author.TYPE_WRITER);
+        MAPPINGS.put("traductor", Author.TYPE_TRANSLATOR);
+        MAPPINGS.put("ilustrador", Author.TYPE_ARTIST);
+        MAPPINGS.put("dibujos", Author.TYPE_ARTIST);
 
         // Italian, unless listed above
-        MAPPER.put("testi", TYPE_WRITER);
-        MAPPER.put("disegni", TYPE_ARTIST);
+        MAPPINGS.put("testi", Author.TYPE_WRITER);
+        MAPPINGS.put("disegni", Author.TYPE_ARTIST);
 
         // There are obviously MANY missing.... both for the listed languages above and for
         // other languages not even considered here.
@@ -139,13 +125,13 @@ public class AuthorTypeMapper {
 
     public int map(@NonNull final Locale locale,
                    @NonNull final String typeName) {
-        final Integer mapped = MAPPER.get(typeName.toLowerCase(locale).trim());
+        final Integer mapped = MAPPINGS.get(typeName.toLowerCase(locale).trim());
         if (mapped != null) {
             return mapped;
         }
 
         // unknown, log it for future enhancement.
         LoggerFactory.getLogger().w(TAG, "map|typeName=`" + typeName + "`");
-        return TYPE_UNKNOWN;
+        return Author.TYPE_UNKNOWN;
     }
 }
