@@ -19,9 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import androidx.annotation.NonNull;
+
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -29,7 +32,9 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,51 +46,36 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class JDKMoneyFormatterTest
         extends Base {
 
-    @Test
-    void formatUS() {
-        final FieldFormatter<Money> f = new MoneyFormatter(Locale.US);
+    private static final double VALUE = 1234.50d;
 
-        Money money;
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
-        assertNotNull(money);
-        assertEquals("$1,234.50", f.format(context, money));
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.GBP));
-        assertNotNull(money);
-        assertEquals("£1,234.50", f.format(context, money));
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.EUR));
-        assertNotNull(money);
-        assertEquals("€1,234.50", f.format(context, money));
+    @NonNull
+    static Stream<Arguments> readArgs() {
+        return Stream.of(
+                Arguments.of(Locale.US, MoneyParser.USD, VALUE, "$1,234.50"),
+                Arguments.of(Locale.US, MoneyParser.GBP, VALUE, "£1,234.50"),
+                Arguments.of(Locale.US, MoneyParser.EUR, VALUE, "€1,234.50"),
+
+                Arguments.of(Locale.UK, MoneyParser.USD, VALUE, "US$1,234.50"),
+                Arguments.of(Locale.UK, MoneyParser.GBP, VALUE, "£1,234.50"),
+                Arguments.of(Locale.UK, MoneyParser.EUR, VALUE, "€1,234.50"),
+
+                Arguments.of(Locale.GERMANY, MoneyParser.USD, VALUE, "1.234,50 $"),
+                Arguments.of(Locale.GERMANY, MoneyParser.GBP, VALUE, "1.234,50 £"),
+                Arguments.of(Locale.GERMANY, MoneyParser.EUR, VALUE, "1.234,50 €")
+        );
     }
 
-    @Test
-    void formatUK() {
-        final FieldFormatter<Money> f = new MoneyFormatter(Locale.UK);
+    @ParameterizedTest
+    @MethodSource("readArgs")
+    void formatUS(@NonNull final Locale locale,
+                  @NonNull final String currencyCode,
+                  final double input,
+                  @NonNull final String expected) {
 
-        Money money;
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
+        final FieldFormatter<Money> f = new MoneyFormatter(locale);
+        final Money money = new Money(BigDecimal.valueOf(input),
+                                      Currency.getInstance(currencyCode));
         assertNotNull(money);
-        assertEquals("US$1,234.50", f.format(context, money));
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.GBP));
-        assertNotNull(money);
-        assertEquals("£1,234.50", f.format(context, money));
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.EUR));
-        assertNotNull(money);
-        assertEquals("€1,234.50", f.format(context, money));
-    }
-
-    @Test
-    void formatGERMANY() {
-        final FieldFormatter<Money> f = new MoneyFormatter(Locale.GERMANY);
-
-        Money money;
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
-        assertNotNull(money);
-        assertEquals("1.234,50 $", f.format(context, money));
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.GBP));
-        assertNotNull(money);
-        assertEquals("1.234,50 £", f.format(context, money));
-        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.EUR));
-        assertNotNull(money);
-        assertEquals("1.234,50 €", f.format(context, money));
+        assertEquals(expected, f.format(context, money));
     }
 }
