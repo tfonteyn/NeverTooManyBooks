@@ -194,22 +194,12 @@ public class Money
      * Get the currency part.
      *
      * @return monetary currency
-     */
-    @Nullable
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    /**
-     * Convenience method. Get the ISO currency code.
-     *
-     * @return ISO 4217 code or {@code null} if the currency is not set
      *
      * @see <a href="https://en.wikipedia.org/wiki/ISO_4217">ISO 4217</a>
      */
     @Nullable
-    public String getCurrencyCode() {
-        return currency == null ? null : currency.getCurrencyCode();
+    public Currency getCurrency() {
+        return currency;
     }
 
     /**

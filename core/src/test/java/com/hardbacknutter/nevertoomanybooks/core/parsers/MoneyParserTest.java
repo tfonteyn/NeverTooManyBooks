@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.core.parsers;
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -107,6 +108,8 @@ class MoneyParserTest {
         final Money money = moneyParser.parse(source);
         assertNotNull(money);
         assertEquals(value, money.getValue());
-        assertEquals(code, money.getCurrencyCode());
+        final Currency currency = money.getCurrency();
+        assertNotNull(currency);
+        assertEquals(code, currency.getCurrencyCode());
     }
 }

@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Set;
 
@@ -507,8 +508,9 @@ public class DataManager
     public void putMoney(@NonNull final String key,
                          @NonNull final Money money) {
         rawData.putDouble(key, money.getValue().doubleValue());
-        if (money.getCurrency() != null) {
-            rawData.putString(key + DBKey.CURRENCY_SUFFIX, money.getCurrencyCode());
+        final Currency currency = money.getCurrency();
+        if (currency != null) {
+            rawData.putString(key + DBKey.CURRENCY_SUFFIX, currency.getCurrencyCode());
         }
     }
 

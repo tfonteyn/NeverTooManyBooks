@@ -94,12 +94,12 @@ public class MoneyFormatter
         } catch (@NonNull final IllegalArgumentException e) {
             if (BuildConfig.DEBUG /* always */) {
                 LoggerFactory.getLogger()
-                             .e(TAG, e, "currency=" + rawValue.getCurrencyCode()
+                             .e(TAG, e, "currency=" + currency.getCurrencyCode()
                                         + "|value=" + rawValue.getValue());
             }
 
             return context.getString(R.string.fallback_currency_format,
-                                     rawValue.getCurrencyCode(),
+                                     currency.getCurrencyCode(),
                                      rawValue.getValue().doubleValue());
         }
     }
