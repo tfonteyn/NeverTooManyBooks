@@ -23,10 +23,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDoneException;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -385,8 +383,14 @@ public class StripInfoReader
             dataToMerge = siBook;
             // but while we don't need the back cover, we might need the front cover
             // which *is* available on the collection page.
+            // Try to get get it, and stick it straight into the BKEY_TMP_FILE_SPEC[0]
             if (coversWanted[0]) {
-                downloadFrontCover(context, externalId, dataToMerge);
+                final String url = dataToMerge.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
+                if (url != null && !url.isEmpty()) {
+                    searchEngine.saveImage(context, url, String.valueOf(externalId), 0, null)
+                                .ifPresent(fileSpec -> dataToMerge
+                                        .putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec));
+                }
             }
         }
 
@@ -427,16 +431,4 @@ public class StripInfoReader
         }
     }
 
-    @WorkerThread
-    private void downloadFrontCover(@NonNull final Context context,
-                                    @IntRange(from = 1) final long externalId,
-                                    @NonNull final Book cData)
-            throws StorageException {
-        final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
-        if (url != null && !url.isEmpty()) {
-            searchEngine.saveImage(context, url, String.valueOf(externalId), 0, null)
-                        .ifPresent(fileSpec -> cData
-                                .putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec));
-        }
-    }
 }
