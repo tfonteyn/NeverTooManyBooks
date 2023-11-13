@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -763,5 +760,4 @@
     <string name="ps_sort_author_name_family_first">Ordenar primero por apellido,\npor ejemplo «Pérez Galdós, Benito»</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Asignar estanterías</string>
-    <string name="lbl_strip_info_mapped_bookshelf_digital_books">Estantería asignada a tus libros digitales</string>
 </resources>
