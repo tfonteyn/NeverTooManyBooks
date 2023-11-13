@@ -22,10 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -33,30 +33,51 @@ abstract class MapperBase
         implements Mapper {
 
     @NonNull
-    abstract Map<String, Integer> getMappings();
+    private final String key;
 
-    @Override
-    public void map(@NonNull final Context context,
-                    @NonNull final Book book) {
+    /**
+     * key: the text that needs replacing.
+     * value: for {@link #mapString} the StringRes for the replacement,
+     */
+    @NonNull
+    private final Map<String, Integer> mappings;
 
-        String value = book.getString(getKey(), null);
-        if (value != null && !value.isEmpty()) {
-            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final String lcValue = value.toLowerCase(userLocale);
-            final Map<String, Integer> mapper = getMappings();
-            final Optional<String> oKey = mapper.keySet()
-                                                .stream()
-                                                .filter(lcValue::startsWith)
-                                                .findFirst();
+    MapperBase(@NonNull final String key,
+               @NonNull final Map<String, Integer> mappings) {
+        this.key = key;
+        this.mappings = mappings;
+    }
 
-            if (oKey.isPresent()) {
-                //noinspection DataFlowIssue
-                value = (context.getString(mapper.get(oKey.get()))
-                         + ' ' + value.substring(oKey.get().length()).trim())
-                        .trim();
-            }
-            // return either the found mapping, or the incoming value.
-            book.putString(getKey(), value);
+    @VisibleForTesting
+    @NonNull
+    String getKey() {
+        return key;
+    }
+
+    @VisibleForTesting
+    @NonNull
+    Map<String, Integer> getMappings() {
+        return mappings;
+    }
+
+    void mapString(@NonNull final Context context,
+                   @NonNull final Book book) {
+        final String value = book.getString(key, null);
+        if (value == null || value.isEmpty()) {
+            return;
         }
+
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final String lcValue = value.toLowerCase(userLocale);
+        // We do a "startsWith" substitution; and concatenate any remaining characters.
+        //noinspection DataFlowIssue
+        mappings.keySet()
+                .stream()
+                .filter(lcValue::startsWith)
+                .findFirst()
+                .map(key -> (context.getString(mappings.get(key))
+                             + ' ' + value.substring(key.length()).trim())
+                        .trim())
+                .ifPresent(replacement -> book.putString(key, replacement));
     }
 }

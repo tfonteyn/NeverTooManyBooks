@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -111,6 +113,14 @@ public final class FormatMapper
         MAPPINGS.put("dimensions", R.string.book_format_dimensions);
     }
 
+    /**
+     * Constructor.
+     */
+    @VisibleForTesting
+    public FormatMapper() {
+        super(DBKey.FORMAT, MAPPINGS);
+    }
+
     @NonNull
     public static Optional<Mapper> create(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
@@ -121,15 +131,9 @@ public final class FormatMapper
         }
     }
 
-    @NonNull
     @Override
-    public String getKey() {
-        return DBKey.FORMAT;
-    }
-
-    @NonNull
-    @Override
-    Map<String, Integer> getMappings() {
-        return MAPPINGS;
+    public void map(@NonNull final Context context,
+                    @NonNull final Book book) {
+        mapString(context, book);
     }
 }

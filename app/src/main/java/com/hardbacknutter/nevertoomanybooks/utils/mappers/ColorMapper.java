@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -75,6 +77,14 @@ public final class ColorMapper
         MAPPINGS.put("ill.(zw./w.)", R.string.book_color_black_and_white);
     }
 
+    /**
+     * Constructor.
+     */
+    @VisibleForTesting
+    public ColorMapper() {
+        super(DBKey.COLOR, MAPPINGS);
+    }
+
     @NonNull
     public static Optional<Mapper> create(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
@@ -85,15 +95,9 @@ public final class ColorMapper
         }
     }
 
-    @NonNull
     @Override
-    public String getKey() {
-        return DBKey.COLOR;
-    }
-
-    @NonNull
-    @Override
-    Map<String, Integer> getMappings() {
-        return MAPPINGS;
+    public void map(@NonNull final Context context,
+                    @NonNull final Book book) {
+        mapString(context, book);
     }
 }

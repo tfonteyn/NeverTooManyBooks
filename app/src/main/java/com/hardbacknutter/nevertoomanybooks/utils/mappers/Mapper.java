@@ -25,21 +25,14 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
+@FunctionalInterface
 public interface Mapper {
-
-    /**
-     * The key which this mapper will be mapping.
-     *
-     * @return key
-     */
-    @NonNull
-    String getKey();
 
     /**
      * The current value is read from the Book, and replaced by the mapped value if found.
      *
      * @param context Current context
-     * @param book    with {@link #getKey} entry to map
+     * @param book    to update
      */
     void map(@NonNull Context context,
              @NonNull Book book);
