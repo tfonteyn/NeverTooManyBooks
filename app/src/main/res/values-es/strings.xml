@@ -763,4 +763,5 @@
     <string name="ps_sort_author_name_family_first">Ordenar primero por apellido,\npor ejemplo «Pérez Galdós, Benito»</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Asignar estanterías</string>
+    <string name="lbl_strip_info_mapped_bookshelf_digital_books">Estantería asignada a tus libros digitales</string>
 </resources>
