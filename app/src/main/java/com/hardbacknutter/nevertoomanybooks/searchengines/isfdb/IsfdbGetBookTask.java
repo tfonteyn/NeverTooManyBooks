@@ -112,6 +112,7 @@ public class IsfdbGetBookTask
         if (edition != null) {
             final Book book = new Book();
             searchEngine.fetchByEdition(context, edition, fetchCovers, book);
+            CoverFileSpecArray.process(book);
             return book;
 
         } else if (isfdbId != 0) {
