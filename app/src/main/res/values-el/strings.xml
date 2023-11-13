@@ -703,8 +703,6 @@
     <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s «%2$s»;</string>
     <string name="error_updates_aborted">Οι ενημερώσεις ματαιώθηκαν</string>
     <string name="lbl_country">Χώρα</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Βιβλιοθήκη που έχει ανατεθεί στη λίστα επιθυμιών σας</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Βιβλιοθήκη για τα δικά σας βιβλία</string>
     <string name="pt_search_show_shopping_options">Εμφάνιση μενού αγορών</string>
     <string name="lbl_standardize">Τυποποιώ</string>
     <string name="lbl_author_pseudonym_of_X">ψε. %1$s</string>
@@ -751,4 +749,5 @@
     <string name="ps_sort_author_name_given_first">Ταξινόμηση με βάση τα προγενέστερα ονόματα,\nγια παράδειγμα «Κωστής  Παλαμάς»</string>
     <string name="ps_sort_author_name_family_first">Ταξινόμηση με πρώτο το επώνυμο,\nγια παράδειγμα «Παλαμάς, Κωστής»</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">Αναθέστε βιβλιοθήκες</string>
 </resources>

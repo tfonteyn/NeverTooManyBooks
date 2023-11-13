@@ -713,8 +713,6 @@
     <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“\?</string>
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Police na knihy přiřazená k vašemu seznamu přání</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Polička na knihy přiřazená vašim vlastním knihám</string>
     <string name="pt_search_show_shopping_options">Zobrazit nákupní nabídky</string>
     <string name="lbl_standardize">Standardizovat</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
@@ -768,4 +766,5 @@
     <string name="ps_sort_author_name_given_first">Řazení podle prvních křestních jmen,\ntj. „Karel Čapek“</string>
     <string name="ps_sort_author_name_family_first">Řazení podle příjmení na prvním místě,\ntj. „Čapek, Karel“</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">Přiřazení polic na knihy</string>
 </resources>

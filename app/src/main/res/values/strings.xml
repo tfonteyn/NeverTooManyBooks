@@ -564,9 +564,14 @@
          a wishlist from some websites. -->
     <string name="bookshelf_my_wishlist">Wish List</string>
 
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bookshelf assigned to your wish-list</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Bookshelf assigned to your owned books</string>
-    <string name="lbl_strip_info_mapped_bookshelf_digital_books">Bookshelf assigned to your digital books</string>
+    <!-- header for a screen where the user can map/assign local bookshelves to remote bookshelves. -->
+    <string name="lbl_assign_bookshelves">Assign bookshelves</string>
+    <string name="lbl_strip_info_bookshelf_assigned_to_wishlist"
+            translatable="false">@string/bookshelf_my_wishlist</string>
+    <string name="lbl_strip_info_bookshelf_assigned_to_owned_books"
+            translatable="false">@string/lbl_owned</string>
+    <string name="lbl_strip_info_bookshelf_assigned_to_digital_books"
+            translatable="false">@string/book_format_ebook</string>
 
     <!-- endregion -->
     <!-- region ========== Book editions values NEWTHINGS: add book edition: add label here. -->

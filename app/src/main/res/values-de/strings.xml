@@ -702,8 +702,6 @@
     <string name="info_purge_blns_item_name">Knotenstatus von %1$s „%2$s“ löschen\?</string>
     <string name="error_updates_aborted">Aktualisierungen abgebrochen</string>
     <string name="lbl_country">Land</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bücherregal Ihrer Wunschliste zugewiesen</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Bücherregal für Ihre eigenen Bücher</string>
     <string name="pt_search_show_shopping_options">Standardisieren</string>
     <string name="lbl_standardize">Einkaufsmenüs anzeigen</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
@@ -750,4 +748,5 @@
     <string name="ps_sort_author_name_given_first">Sortierung nach den Vornamen zuerst,\nz.B. „Franz  Kafka“</string>
     <string name="ps_sort_author_name_family_first">Sortierung nach dem Familiennamen zuerst,\nz.B. „Kafka, Franz“</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">Bücherregale zuweisen</string>
 </resources>

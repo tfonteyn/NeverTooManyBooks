@@ -491,7 +491,6 @@
     <string name="lbl_number">Número</string>
     <string name="lbl_site_book_id">ID do livro do site</string>
     <string name="lbl_select_website">Selecione um site:</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estante atribuída à sua lista de desejos</string>
     <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_authors">Autores</string>
@@ -538,7 +537,6 @@
     <string name="lbl_date_published">Data de Publicação</string>
     <string name="pe_ui_theme_day_night">Dia / Noite</string>
     <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Estante atribuída a livros que já possui</string>
     <string name="confirm_email_file">Gostaria de enviar este ficheiro como um e-mail?</string>
     <string name="X_action_validate">Validar</string>
     <string name="action_merge">Unir</string>
@@ -780,4 +778,5 @@
     <string name="ps_sort_author_name_given_first">Ordenar primeiro pelos nomes próprios,\npor exemplo, “Luís de Camões”</string>
     <string name="ps_sort_author_name_family_first">Ordenar primeiro pelo apelido,\npor exemplo, “de Camões, Luís”</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">Atribuir estantes de livros</string>
 </resources>

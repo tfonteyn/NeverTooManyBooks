@@ -708,8 +708,6 @@
     <string name="info_purge_blns_item_name">Effacer l’état du nœud de %1$s « %2$s » ?</string>
     <string name="error_updates_aborted">Mises à jour annulées</string>
     <string name="lbl_country">Pays</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bibliothèque assignée à votre liste de souhaits</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Bibliothèque assignée à vos propres livres</string>
     <string name="pt_search_show_shopping_options">Afficher les menus d’achat</string>
     <string name="lbl_standardize">Standardiser</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
@@ -756,4 +754,5 @@
     <string name="ps_sort_author_name_given_first">Trier sur les prénoms en premier,\npar exemple « Jules Verne »</string>
     <string name="ps_sort_author_name_family_first">Trier sur le nom de famille en premier,\npar exemple « Verne, Jules »</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">Attribuer des étagères</string>
 </resources>

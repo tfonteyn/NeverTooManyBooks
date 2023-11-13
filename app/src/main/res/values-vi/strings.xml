@@ -227,4 +227,5 @@
     <string name="ps_sort_author_name_given_first">Sắp xếp theo tên đã cho trước.ví dụ,\n “Nhat Hanh, Thich”</string>
     <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\nví dụ. “Thich Nhat Hanh”</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">Gán giá sách</string>
 </resources>

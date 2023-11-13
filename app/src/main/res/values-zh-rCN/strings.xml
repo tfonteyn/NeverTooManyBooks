@@ -371,4 +371,5 @@
     <string name="book_format_digest">小型</string>
     <string name="action_edit_defaults">编辑默认设置</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">分配书架</string>
 </resources>

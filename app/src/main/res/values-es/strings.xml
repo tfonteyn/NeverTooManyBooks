@@ -715,8 +715,6 @@
     <string name="info_purge_blns_all">Borrar el estado del nodo de todas las listas</string>
     <string name="info_purge_blns_item_name">¿Borrar el estado del nodo de %1$s «%2$s»\?</string>
     <string name="error_updates_aborted">Actualizaciones canceladas</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Estantería asignada a libros que ya posee</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estantería asignada a su lista de deseos</string>
     <string name="lbl_country">País</string>
     <string name="pt_search_show_shopping_options">Mostrar menús de compras</string>
     <string name="lbl_standardize">Estandarizar</string>
@@ -764,4 +762,5 @@
     <string name="ps_sort_author_name_given_first">Ordenar primero por los apellidos,\npor ejemplo «Benito Pérez Galdós»</string>
     <string name="ps_sort_author_name_family_first">Ordenar primero por apellido,\npor ejemplo «Pérez Galdós, Benito»</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_assign_bookshelves">Asignar estanterías</string>
 </resources>
