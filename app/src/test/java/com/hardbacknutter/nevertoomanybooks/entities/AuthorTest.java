@@ -19,7 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import org.junit.jupiter.api.Test;
+import androidx.annotation.NonNull;
+
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,133 +35,45 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 class AuthorTest {
 
-    @Test
-    void fromString00() {
-        final Author author = Author.from("Asimov, Isaac");
-        assertNotNull(author);
-        assertEquals("Asimov", author.getFamilyName());
-        assertEquals("Isaac", author.getGivenNames());
+    @NonNull
+    static Stream<Arguments> readArgs() {
+        return Stream.of(
+                Arguments.of("Asimov, Isaac", "Asimov", "Isaac"),
+                Arguments.of("Isaac Asimov", "Asimov", "Isaac"),
+                Arguments.of("James Tiptree, Jr.", "Tiptree Jr.", "James"),
+                Arguments.of("Ursula Le Guin", "Le Guin", "Ursula"),
+                Arguments.of("Charles Emerson Winchester", "Winchester", "Charles Emerson"),
+                Arguments.of("Charles Emerson Winchester (The Third one)",
+                             "Winchester (The Third one)", "Charles Emerson"),
+                Arguments.of("Charles Emerson Winchester III", "Winchester III", "Charles Emerson"),
+                Arguments.of("Charles Emerson Winchester, jr.", "Winchester jr.",
+                             "Charles Emerson"),
+                Arguments.of("Charles Emerson Winchester jr.", "Winchester jr.", "Charles Emerson"),
+                // yes, there REALLY is a book with an author named like this...
+                Arguments.of("Don (*3)", "Don (*3)", ""),
+                Arguments.of("(*3), Don", "(*3)", "Don"),
+                Arguments.of("Robert Velter (Rob Vel)", "Velter (Rob Vel)", "Robert"),
+                Arguments.of("Robert Velter (Rob-vel,Bozz)", "Velter (Rob-vel,Bozz)", "Robert"),
+                Arguments.of("Robert Velter Jr. (Rob-vel,Bozz)", "Velter Jr. (Rob-vel,Bozz)",
+                             "Robert"),
+
+                /*
+                 * https://en.wikipedia.org/wiki/List_of_Georgian_writers
+                 * https://ka.wikipedia.org/wiki/%E1%83%A5%E1%83%90%E1%83%A0%E1%83%97%E1%83%95%E1%83%94%E1%83%9A%E1%83%98_%E1%83%9B%E1%83%AC%E1%83%94%E1%83%A0%E1%83%9A%E1%83%94%E1%83%91%E1%83%98%E1%83%A1_%E1%83%A1%E1%83%98%E1%83%90
+                 * Alexander Abasheli
+                 */
+                Arguments.of("ალექსანდრე აბაშელი", "აბაშელი", "ალექსანდრე")
+        );
     }
 
-    @Test
-    void fromString01() {
-        final Author author = Author.from("Isaac Asimov");
+    @ParameterizedTest
+    @MethodSource("readArgs")
+    void fromString00(@NonNull final String source,
+                      @NonNull final String familyName,
+                      @NonNull final String givenNames) {
+        final Author author = Author.from(source);
         assertNotNull(author);
-        assertEquals("Asimov", author.getFamilyName());
-        assertEquals("Isaac", author.getGivenNames());
-    }
-
-    @Test
-    void fromString09() {
-        final Author author = Author.from("James Tiptree, Jr.");
-        assertNotNull(author);
-        assertEquals("Tiptree Jr.", author.getFamilyName());
-        assertEquals("James", author.getGivenNames());
-    }
-
-    @Test
-    void fromString10() {
-        final Author author = Author.from("Ursula Le Guin");
-        assertNotNull(author);
-        assertEquals("Le Guin", author.getFamilyName());
-        assertEquals("Ursula", author.getGivenNames());
-    }
-
-    @Test
-    void fromString11() {
-        final Author author = Author.from("Charles Emerson Winchester");
-        assertNotNull(author);
-        assertEquals("Winchester", author.getFamilyName());
-        assertEquals("Charles Emerson", author.getGivenNames());
-    }
-
-    @Test
-    void fromString12() {
-        final Author author = Author.from("Charles Emerson Winchester (The Third one)");
-        assertNotNull(author);
-        assertEquals("Winchester (The Third one)", author.getFamilyName());
-        assertEquals("Charles Emerson", author.getGivenNames());
-    }
-
-    @Test
-    void fromString20() {
-        final Author author = Author.from("Charles Emerson Winchester III");
-        assertNotNull(author);
-        assertEquals("Winchester III", author.getFamilyName());
-        assertEquals("Charles Emerson", author.getGivenNames());
-    }
-
-    @Test
-    void fromString21() {
-        final Author author = Author.from("Charles Emerson Winchester, jr.");
-        assertNotNull(author);
-        assertEquals("Winchester jr.", author.getFamilyName());
-        assertEquals("Charles Emerson", author.getGivenNames());
-    }
-
-    @Test
-    void fromString22() {
-        final Author author = Author.from("Charles Emerson Winchester jr.");
-        assertNotNull(author);
-        assertEquals("Winchester jr.", author.getFamilyName());
-        assertEquals("Charles Emerson", author.getGivenNames());
-    }
-
-    @Test
-    void fromString30() {
-        // yes, there REALLY is a book with an author named like this...
-        final Author author = Author.from("Don (*3)");
-        assertNotNull(author);
-        assertEquals("Don (*3)", author.getFamilyName());
-        assertEquals("", author.getGivenNames());
-    }
-
-    @Test
-    void fromString31() {
-        // yes, there REALLY is a book with an author named like this...
-        final Author author = Author.from("(*3), Don");
-        assertNotNull(author);
-        assertEquals("(*3)", author.getFamilyName());
-        assertEquals("Don", author.getGivenNames());
-    }
-
-    @Test
-    void fromString40() {
-        // real name (alias,alias,...)
-        final Author author = Author.from("Robert Velter (Rob Vel)");
-        assertNotNull(author);
-        assertEquals("Velter (Rob Vel)", author.getFamilyName());
-        assertEquals("Robert", author.getGivenNames());
-    }
-
-    @Test
-    void fromString41() {
-        // real name (alias,alias,...)
-        final Author author = Author.from("Robert Velter (Rob-vel,Bozz)");
-        assertNotNull(author);
-        assertEquals("Velter (Rob-vel,Bozz)", author.getFamilyName());
-        assertEquals("Robert", author.getGivenNames());
-    }
-
-    @Test
-    void fromString42() {
-        // real name (alias,alias,...)
-        final Author author = Author.from("Robert Velter Jr. (Rob-vel,Bozz)");
-        assertNotNull(author);
-        assertEquals("Velter Jr. (Rob-vel,Bozz)", author.getFamilyName());
-        assertEquals("Robert", author.getGivenNames());
-    }
-
-    /**
-     * https://en.wikipedia.org/wiki/List_of_Georgian_writers
-     * https://ka.wikipedia.org/wiki/%E1%83%A5%E1%83%90%E1%83%A0%E1%83%97%E1%83%95%E1%83%94%E1%83%9A%E1%83%98_%E1%83%9B%E1%83%AC%E1%83%94%E1%83%A0%E1%83%9A%E1%83%94%E1%83%91%E1%83%98%E1%83%A1_%E1%83%A1%E1%83%98%E1%83%90
-     */
-    @Test
-    void fromGeorgian50() {
-        // Alexander Abasheli
-        final Author author = Author.from("ალექსანდრე აბაშელი");
-        assertNotNull(author);
-        assertEquals("აბაშელი", author.getFamilyName());
-        assertEquals("ალექსანდრე", author.getGivenNames());
+        assertEquals(familyName, author.getFamilyName());
+        assertEquals(givenNames, author.getGivenNames());
     }
 }
