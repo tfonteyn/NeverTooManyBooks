@@ -221,30 +221,32 @@ public class CalibreContentServerWriter
         final String calibreUuid = book.getString(DBKey.CALIBRE_BOOK_UUID);
 
         // ENHANCE: full sync in one go.
-        //  The logic below is TO SLOW as we fetch each book individually
+        //  The logic below is slow as we fetch each book individually
+        //  but on a local/home network it's good enough
         final JSONObject calibreBook = server.getBook(library.getLibraryStringId(), calibreUuid);
 
-        String dateStr = null;
+        Optional<LocalDateTime> remoteDate = Optional.empty();
         if (!calibreBook.isNull(CalibreBookJsonKey.LAST_MODIFIED)) {
             try {
-                dateStr = calibreBook.getString(CalibreBookJsonKey.LAST_MODIFIED);
+                final String dateStr = calibreBook.getString(CalibreBookJsonKey.LAST_MODIFIED);
+                remoteDate = dateParser.parse(dateStr);
             } catch (@NonNull final JSONException ignore) {
                 // ignore
             }
         }
 
-        final LocalDateTime remoteTime = dateParser.parse(dateStr);
-        // sanity check, the remote should always have this date field.
-        if (remoteTime != null) {
-            // is our data newer then the server data ?
-            final LocalDateTime localTime = book.getLastModified(dateParser);
-            if (localTime != null && localTime.isAfter(remoteTime)) {
-                final JSONObject identifiers =
-                        calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
-                final JSONObject changes = collectChanges(library, identifiers, book);
-                server.pushChanges(library.getLibraryStringId(), calibreId, changes);
-                results.addBook(book.getId());
-            }
+        final Optional<LocalDateTime> localDate = book.getLastModified(dateParser);
+
+        // Both should always be present, but paranoia...
+        final boolean isNewer = localDate.isPresent() && remoteDate.isPresent()
+                                // is our data newer then the server data ?
+                                && localDate.get().isAfter(remoteDate.get());
+        if (isNewer) {
+            final JSONObject identifiers =
+                    calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
+            final JSONObject changes = collectChanges(library, identifiers, book);
+            server.pushChanges(library.getLibraryStringId(), calibreId, changes);
+            results.addBook(book.getId());
         }
     }
 

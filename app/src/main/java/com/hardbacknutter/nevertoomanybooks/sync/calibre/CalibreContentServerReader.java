@@ -475,12 +475,15 @@ public class CalibreContentServerReader
                         // Get the full local book data; overwrite it with remote data
                         // as needed, and update. We don't use a delta.
                         final Book book = Book.from(databaseBookId);
-                        final LocalDateTime localDate = book.getLastModified(dateParser);
-                        final LocalDateTime remoteDate = calibreBook.getLastModified(dateParser);
-                        // Neither should be null, but paranoia
-                        if (localDate != null && remoteDate != null
-                            && remoteDate.isAfter(localDate)) {
+                        final Optional<LocalDateTime> localDate = book.getLastModified(dateParser);
+                        final Optional<LocalDateTime> remoteDate = calibreBook.getLastModified(
+                                dateParser);
 
+                        // Both should always be present, but paranoia...
+                        final boolean isNewer = localDate.isPresent() && remoteDate.isPresent()
+                                                // is the server data newer then our data ?
+                                                && remoteDate.get().isAfter(localDate.get());
+                        if (isNewer) {
                             updateBook(context, calibreBook, book);
 
                         } else {
@@ -600,10 +603,7 @@ public class CalibreContentServerReader
 
         // "last_modified": "2020-11-20T11:17:51+00:00",
         final String calibreLastModified = calibreBook.getString(CalibreBookJsonKey.LAST_MODIFIED);
-        final LocalDateTime lastModified = dateParser.parse(calibreLastModified);
-        if (lastModified != null) {
-            book.setLastModified(lastModified);
-        }
+        dateParser.parse(calibreLastModified).ifPresent(book::setLastModified);
 
         // paranoia ...
         if (!calibreBook.isNull(CalibreBookJsonKey.TITLE)) {
