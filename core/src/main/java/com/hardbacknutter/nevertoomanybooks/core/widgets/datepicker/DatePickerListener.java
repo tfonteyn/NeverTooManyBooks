@@ -24,8 +24,6 @@ import androidx.annotation.NonNull;
 @FunctionalInterface
 public interface DatePickerListener {
 
-    long NO_SELECTION = -1L;
-
     /**
      * Callback handler.
      * <p>
@@ -33,16 +31,17 @@ public interface DatePickerListener {
      *
      * <pre>
      *     {@code
-     *          Instant.ofEpochMilli(selections[i])
+     *          Instant.ofEpochMilli(selections[0])
      *                 .atZone(ZoneId.systemDefault())
      *                 .format(DateTimeFormatter.ISO_LOCAL_DATE)
      *     }
      * </pre>
      * Instant.ofEpochMilli(selections[0])
      *
-     * @param fieldIds   the field(s) this dialog was bound to
-     * @param selections the selected date(s)
+     * @param fieldIds   one or two field resource ids this dialog was bound to
+     * @param selections one or two values with the selected date(s);
+     *                   either/both can be {@code null}
      */
     void onResult(@NonNull int[] fieldIds,
-                  @NonNull long[] selections);
+                  @NonNull Long[] selections);
 }

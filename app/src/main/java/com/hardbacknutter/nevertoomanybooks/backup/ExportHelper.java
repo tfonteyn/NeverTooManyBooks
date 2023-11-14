@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -179,7 +180,7 @@ public class ExportHelper
 
         try {
             dataWriter = encoding.createWriter(context, getRecordTypes(),
-                                               getLastDone(context),
+                                               getLastDone(context).orElse(null),
                                                tmpFile);
 
             results.add(dataWriter.write(context, progressListener));
@@ -230,8 +231,8 @@ public class ExportHelper
      *
      * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
      */
-    @Nullable
-    private LocalDateTime getLastDone(@NonNull final Context context) {
+    @NonNull
+    private Optional<LocalDateTime> getLastDone(@NonNull final Context context) {
         if (isIncremental()) {
             final String key;
             if (encoding == ArchiveEncoding.Zip) {
@@ -247,7 +248,7 @@ public class ExportHelper
                 return dateParser.parse(lastDone);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**

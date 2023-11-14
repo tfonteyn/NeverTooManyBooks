@@ -359,9 +359,9 @@ public abstract class EditBookBaseFragment
     }
 
     private void onDateSet(@NonNull final int[] fieldIds,
-                           @NonNull final long[] selections) {
+                           @NonNull final Long[] selections) {
         for (int i = 0; i < fieldIds.length; i++) {
-            if (selections[i] == DatePickerListener.NO_SELECTION) {
+            if (selections[i] == null) {
                 onDateSet(fieldIds[i], "");
             } else {
                 onDateSet(fieldIds[i], Instant.ofEpochMilli(selections[i])

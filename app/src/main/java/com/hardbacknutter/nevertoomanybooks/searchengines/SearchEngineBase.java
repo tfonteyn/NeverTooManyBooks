@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -498,10 +497,7 @@ public abstract class SearchEngineBase
                                        @NonNull final Book book) {
 
         if (dateStr != null && !dateStr.isBlank()) {
-            final LocalDateTime date = getDateParser(context, siteLocale).parse(dateStr);
-            if (date != null) {
-                book.setPublicationDate(date);
-            }
+            getDateParser(context, siteLocale).parse(dateStr).ifPresent(book::setPublicationDate);
         }
     }
 }

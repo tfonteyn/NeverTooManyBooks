@@ -152,14 +152,22 @@ public final class WrappedMaterialDatePicker<S>
             this.dateParser = dateParser;
         }
 
+        /**
+         * Parse the given date String to the number of milliseconds
+         * from the epoch of 1970-01-01T00:00:00Z.
+         * and return a {@code Long} suitable to use as a 'selection' for the Android date-picker.
+         *
+         * @param value       to parse
+         * @param todayIfNone flag
+         *
+         * @return 'selection' value, otherwise {@code null}
+         */
         @Nullable
-        private Long getInstant(@Nullable final String value,
-                                final boolean todayIfNone) {
-            final Instant date = dateParser.parseToInstant(value, todayIfNone);
-            if (date != null) {
-                return date.toEpochMilli();
-            }
-            return null;
+        private Long parseToInstant(@Nullable final String value,
+                                    final boolean todayIfNone) {
+            return dateParser.parseToInstant(value, todayIfNone)
+                             .map(Instant::toEpochMilli)
+                             .orElse(null);
         }
 
         /**
@@ -177,7 +185,7 @@ public final class WrappedMaterialDatePicker<S>
                            @Nullable final String value,
                            final boolean todayIfNone) {
 
-            final Long selection = getInstant(value, todayIfNone);
+            final Long selection = parseToInstant(value, todayIfNone);
 
             new WrappedMaterialDatePicker<>(requestKey,
                                             MaterialDatePicker.Builder
@@ -231,8 +239,8 @@ public final class WrappedMaterialDatePicker<S>
                            @Nullable final String timeEnd,
                            final boolean todayIfNone) {
 
-            Long startSelection = getInstant(timeStart, todayIfNone);
-            Long endSelection = getInstant(timeEnd, todayIfNone);
+            Long startSelection = parseToInstant(timeStart, todayIfNone);
+            Long endSelection = parseToInstant(timeEnd, todayIfNone);
 
             // both set ? then make sure the order is correct
             if (startSelection != null && endSelection != null && startSelection > endSelection) {
@@ -276,8 +284,9 @@ public final class WrappedMaterialDatePicker<S>
              * </pre>
              * Instant.ofEpochMilli(selections[0])
              *
-             * @param fieldIds   the field(s) this dialog was bound to
-             * @param selections the selected date(s)
+             * @param fieldIds   one or two field resource ids this dialog was bound to
+             * @param selections one or two values with the selected date(s);
+             *                   either/both can be {@code null}
              */
             void onResult(@NonNull int[] fieldIds,
                           @NonNull long[] selections);

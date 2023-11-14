@@ -49,11 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -334,8 +332,9 @@ public class SyncReaderFragment
         vb.calibreLibrary.setText(library.getName(), false);
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final DateParser isoDateParser = new ISODateParser(systemLocale);
-        updateSyncDate(isoDateParser.parse(library.getLastSyncDateAsString()));
+        final LocalDateTime date = new ISODateParser(systemLocale)
+                .parse(library.getLastSyncDateAsString()).orElse(null);
+        updateSyncDate(date);
 
         vb.archiveContent.setText(getString(R.string.name_colon_value,
                                             getString(R.string.lbl_books),
@@ -345,9 +344,10 @@ public class SyncReaderFragment
     }
 
     private void onSyncDateSet(@NonNull final int[] fieldIds,
-                               @NonNull final long[] selections) {
+                               @NonNull final Long[] selections) {
+        // The arrays have either one field (which can be null) or none
         if (selections.length > 0) {
-            if (selections[0] == DatePickerListener.NO_SELECTION) {
+            if (selections[0] == null) {
                 updateSyncDate(null);
             } else {
                 final LocalDateTime sd = Instant.ofEpochMilli(selections[0])

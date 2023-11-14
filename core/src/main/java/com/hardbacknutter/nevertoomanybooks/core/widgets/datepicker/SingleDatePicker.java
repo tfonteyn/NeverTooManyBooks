@@ -42,6 +42,7 @@ public class SingleDatePicker
     /**
      * Constructor.
      *
+     * @param fm         The FragmentManager this fragment will be added to.
      * @param titleResId for the dialog screen
      * @param fieldId    field this dialog is bound to
      */
@@ -54,7 +55,8 @@ public class SingleDatePicker
     /**
      * Launch the dialog to select a single date.
      *
-     * @param value current selection (a parsable date string), or {@code null} for none
+     * @param value    current selection (a parsable date string), or {@code null} for none
+     * @param listener to receive the results
      */
     public void launch(@Nullable final String value,
                        @NonNull final DatePickerListener listener) {
@@ -64,7 +66,8 @@ public class SingleDatePicker
     /**
      * Launch the dialog to select a single date.
      *
-     * @param date current selection, or {@code null} for none
+     * @param date     current selection, or {@code null} for none
+     * @param listener to receive the results
      */
     public void launch(@Nullable final LocalDateTime date,
                        @NonNull final DatePickerListener listener) {
@@ -103,8 +106,7 @@ public class SingleDatePicker
         }
 
         if (listener != null && listener.get() != null) {
-            listener.get().onResult(fieldIds, new long[]{
-                    selection == null ? DatePickerListener.NO_SELECTION : selection});
+            listener.get().onResult(fieldIds, new Long[]{selection});
         }
     }
 }

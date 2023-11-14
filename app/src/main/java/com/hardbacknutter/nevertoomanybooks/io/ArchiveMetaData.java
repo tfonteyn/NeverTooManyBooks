@@ -167,13 +167,7 @@ public class ArchiveMetaData
      */
     @NonNull
     public Optional<LocalDateTime> getCreatedLocalDate(@NonNull final Locale systemLocale) {
-        final LocalDateTime date = new ISODateParser(systemLocale)
-                .parse(getData().getString(INFO_CREATED_DATE));
-        if (date != null) {
-            return Optional.of(date);
-        } else {
-            return Optional.empty();
-        }
+        return new ISODateParser(systemLocale).parse(getData().getString(INFO_CREATED_DATE));
     }
 
     /**

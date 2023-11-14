@@ -23,6 +23,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -88,6 +89,8 @@ abstract class DatePickerBase<S>
      * Developer note: yes, BOTH the {@link #listener} and the underlying
      * {@link MaterialDatePicker} listener must be set here AND at launch
      * time to ensure their validity after a screen rotation.
+     *
+     * @param listener to receive the results
      */
     public void onResume(@NonNull final DatePickerListener listener) {
         this.listener = new WeakReference<>(listener);
@@ -102,15 +105,47 @@ abstract class DatePickerBase<S>
         }
     }
 
+    /**
+     * Parse the given date String to the number of milliseconds
+     * from the epoch of 1970-01-01T00:00:00Z,
+     * and return a {@code Long} suitable to use as a 'selection' for the Android date-picker.
+     *
+     * @param value       to parse
+     * @param todayIfNone flag
+     *
+     * @return 'selection' value, otherwise {@code null}
+     */
     @Nullable
     Long parseDate(@Nullable final String value,
                    final boolean todayIfNone) {
         Objects.requireNonNull(dateParser, "dateParser was NULL, call setDateParser() first");
+        return dateParser.parseToInstant(value, todayIfNone)
+                         .map(Instant::toEpochMilli)
+                         .orElse(null);
+    }
 
-        final Instant date = dateParser.parseToInstant(value, todayIfNone);
-        if (date != null) {
-            return date.toEpochMilli();
+    /**
+     * Parse the given date Strings to the number of milliseconds
+     * from the epoch of 1970-01-01T00:00:00Z,
+     * and return a {@code Pair} suitable to use as a 'selection' for the Android date-picker.
+     *
+     * @param startDate   to parse
+     * @param endDate     to parse
+     * @param todayIfNone flag
+     *
+     * @return Pair with 'selection' values, both of which can be {@code null}
+     */
+    @NonNull
+    Pair<Long, Long> parseRange(@Nullable final String startDate,
+                                @Nullable final String endDate,
+                                final boolean todayIfNone) {
+        final Long startSelection = parseDate(startDate, todayIfNone);
+        final Long endSelection = parseDate(endDate, todayIfNone);
+        // both set ? then make sure the order is correct
+        if (startSelection != null && endSelection != null && startSelection > endSelection) {
+            return new Pair<>(endSelection, startSelection);
+        } else {
+            return new Pair<>(startSelection, endSelection);
         }
-        return null;
     }
 }

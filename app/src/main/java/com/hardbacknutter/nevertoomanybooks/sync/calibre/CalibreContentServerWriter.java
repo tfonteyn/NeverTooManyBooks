@@ -150,7 +150,7 @@ public class CalibreContentServerWriter
                 @Nullable
                 final LocalDateTime dateSince;
                 if (helper.isIncremental()) {
-                    dateSince = dateParser.parse(library.getLastSyncDateAsString());
+                    dateSince = dateParser.parse(library.getLastSyncDateAsString()).orElse(null);
                 } else {
                     dateSince = null;
                 }

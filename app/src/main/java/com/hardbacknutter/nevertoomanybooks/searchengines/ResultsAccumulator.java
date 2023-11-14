@@ -26,7 +26,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -247,20 +246,14 @@ class ResultsAccumulator {
         //
         // Overwrite with the new date IF we can parse it, i.e. it's a FULL date
         // AND if the previous one was NOT a full date.
-        final LocalDateTime newDate = dateParser.parse(dataToAdd);
-        if (newDate != null) {
+        dateParser.parse(dataToAdd).ifPresent(newDate -> {
             // URGENT: this call is using the CURRENT Locales.. but the 'previous'
             //  data is from a different site! but see below... paranoia
-            if (dateParser.parse(previous) == null) {
+            if (dateParser.parse(previous).isEmpty()) {
                 // previous date was invalid or partial, use the new one instead.
                 dstBook.putString(key, newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    dbgLogValueCopied("processDate", key, dataToAdd);
-                }
-                return;
             }
-        }
+        });
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             dbgLogValueSkipped("processDate", key, dataToAdd);

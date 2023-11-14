@@ -41,7 +41,7 @@ public class DateRangePicker
     /**
      * Constructor.
      *
-     * @param fm               The FragmentManager this fragment dialog be added to.
+     * @param fm               The FragmentManager this fragment will be added to.
      * @param titleResId       for the dialog screen
      * @param startDateFieldId field to bind the start-date to
      * @param endDateFieldId   field to bind the end-date to
@@ -66,21 +66,12 @@ public class DateRangePicker
 
         this.listener = new WeakReference<>(listener);
 
-        final Long startSelection = parseDate(startDate, todayIfNone);
-        final Long endSelection = parseDate(endDate, todayIfNone);
-        final Pair<Long, Long> selection;
-
-        // both set ? then make sure the order is correct
-        if (startSelection != null && endSelection != null && startSelection > endSelection) {
-            selection = new Pair<>(endSelection, startSelection);
-        } else {
-            selection = new Pair<>(startSelection, endSelection);
-        }
-
         //noinspection unchecked
         MaterialDatePicker<Pair<Long, Long>> picker = (MaterialDatePicker<Pair<Long, Long>>)
                 fragmentManager.findFragmentByTag(fragmentTag);
         if (picker == null) {
+            final Pair<Long, Long> selection = parseRange(startDate, endDate, todayIfNone);
+
             picker = MaterialDatePicker.Builder
                     .dateRangePicker()
                     .setTitleText(titleResId)
@@ -104,17 +95,11 @@ public class DateRangePicker
         }
 
         if (listener != null && listener.get() != null) {
-            final long[] selections;
             if (selection == null) {
-                selections = new long[]{DatePickerListener.NO_SELECTION};
+                listener.get().onResult(fieldIds, new Long[]{});
             } else {
-                final long start = selection.first != null ? selection.first
-                                                           : DatePickerListener.NO_SELECTION;
-                final long end = selection.second != null ? selection.second
-                                                          : DatePickerListener.NO_SELECTION;
-                selections = new long[]{start, end};
+                listener.get().onResult(fieldIds, new Long[]{selection.first, selection.second});
             }
-            listener.get().onResult(fieldIds, selections);
         }
     }
 }

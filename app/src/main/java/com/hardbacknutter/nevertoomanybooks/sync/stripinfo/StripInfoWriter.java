@@ -107,7 +107,8 @@ public class StripInfoWriter
         @Nullable
         final LocalDateTime dateSince;
         if (syncWriterHelper.isIncremental()) {
-            dateSince = dateParser.parse(global.getString(StripInfoAuth.PK_LAST_SYNC, null));
+            dateSince = dateParser.parse(global.getString(StripInfoAuth.PK_LAST_SYNC, null))
+                                  .orElse(null);
         } else {
             dateSince = null;
         }

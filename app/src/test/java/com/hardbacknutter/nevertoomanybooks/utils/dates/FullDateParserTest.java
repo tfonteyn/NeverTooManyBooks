@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
@@ -30,19 +31,23 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 class FullDateParserTest
         extends Base {
 
     // 1987-02-25; i.e. the day > possible month number (1..12)
-    private final LocalDateTime w_2017_01_12 = LocalDateTime.of(2017, 1, 12, 0, 0);
+    private final Optional<LocalDateTime> w_2017_01_12 =
+            Optional.of(LocalDateTime.of(2017, 1, 12, 0, 0));
 
     // 1987-06-25; i.e. the day > possible month number (1..12)
-    private final LocalDateTime s_1987_06_25 = LocalDateTime.of(1987, 6, 25, 0, 0);
+    private final Optional<LocalDateTime> s_1987_06_25 =
+            Optional.of(LocalDateTime.of(1987, 6, 25, 0, 0));
 
     // 1987-06; partial date
-    private final LocalDateTime s_1987_06_01 = LocalDateTime.of(1987, 6, 1, 0, 0);
+    private final Optional<LocalDateTime> s_1987_06_01 =
+            Optional.of(LocalDateTime.of(1987, 6, 1, 0, 0));
 
 
     @Test
@@ -51,49 +56,49 @@ class FullDateParserTest
         final DateParser parser = new FullDateParser(locales.get(0), locales);
 
         // Matches due to MM-dd pattern being before dd-MM
-        assertEquals(LocalDateTime.of(2017, 1, 12,
-                                      11, 57, 41),
+        assertEquals(Optional.of(LocalDateTime.of(2017, 1, 12,
+                                                  11, 57, 41)),
                      parser.parse("01-12-2017 11:57:41"));
 
         // Matches due to MM-dd pattern being before dd-MM
-        assertEquals(LocalDateTime.of(2017, 1, 12,
-                                      11, 57),
+        assertEquals(Optional.of(LocalDateTime.of(2017, 1, 12,
+                                                  11, 57)),
                      parser.parse("01-12-2017 11:57"));
 
 
         // No match due to MM-dd pattern being before dd-MM
-        assertNotEquals(LocalDateTime.of(2017, 1, 12,
-                                         11, 57, 41),
+        assertNotEquals(Optional.of(LocalDateTime.of(2017, 1, 12,
+                                                     11, 57, 41)),
                         parser.parse("12-01-2017 11:57:41"));
 
         // No match due to MM-dd pattern being before dd-MM
-        assertNotEquals(LocalDateTime.of(2017, 1, 12,
-                                         11, 57),
+        assertNotEquals(Optional.of(LocalDateTime.of(2017, 1, 12,
+                                                     11, 57)),
                         parser.parse("12-01-2017 11:57"));
 
 
-        assertEquals(LocalDateTime.of(2017, 6, 25,
-                                      11, 57, 41),
+        assertEquals(Optional.of(LocalDateTime.of(2017, 6, 25,
+                                                  11, 57, 41)),
                      parser.parse("06-25-2017 11:57:41"));
 
-        assertEquals(LocalDateTime.of(2017, 6, 25,
-                                      11, 57),
+        assertEquals(Optional.of(LocalDateTime.of(2017, 6, 25,
+                                                  11, 57)),
                      parser.parse("06-25-2017 11:57"));
 
-        assertEquals(LocalDateTime.of(2017, 6, 25,
-                                      11, 57, 41),
+        assertEquals(Optional.of(LocalDateTime.of(2017, 6, 25,
+                                                  11, 57, 41)),
                      parser.parse("25-06-2017 11:57:41"));
 
-        assertEquals(LocalDateTime.of(2017, 6, 25,
-                                      11, 57),
+        assertEquals(Optional.of(LocalDateTime.of(2017, 6, 25,
+                                                  11, 57)),
                      parser.parse("25-06-2017 11:57"));
 
 
-        assertEquals(LocalDateTime.of(1987, 6, 25,
-                                      0, 0, 0),
+        assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25,
+                                                  0, 0, 0)),
                      parser.parse("25-06-1987"));
-        assertEquals(LocalDateTime.of(1987, 6, 25,
-                                      0, 0, 0),
+        assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25,
+                                                  0, 0, 0)),
                      parser.parse("06-25-1987"));
     }
 
@@ -109,7 +114,7 @@ class FullDateParserTest
 
         assertEquals(w_2017_01_12, parser.parse("12 january 2017"));
         // french without the france locale enabled
-        assertNull(parser.parse("12 janvier 2017"));
+        assertTrue(parser.parse("12 janvier 2017").isEmpty());
 
         // day 01 is implied
         assertEquals(s_1987_06_01, parser.parse("Jun 1987"));

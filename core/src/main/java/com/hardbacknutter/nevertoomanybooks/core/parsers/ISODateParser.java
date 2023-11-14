@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Parser for dates coming from the database or other sources
@@ -48,8 +49,13 @@ public class ISODateParser
     /** List of patterns we'll use to parse ISO datetime stamps.. */
     private Collection<DateTimeFormatter> parsers;
 
-    public ISODateParser(@NonNull final Locale locale) {
-        this.locale = locale;
+    /**
+     * Constructor.
+     *
+     * @param systemLocale to use for parsing
+     */
+    public ISODateParser(@NonNull final Locale systemLocale) {
+        this.locale = systemLocale;
     }
 
     /**
@@ -59,19 +65,19 @@ public class ISODateParser
      *
      * @param dateStr String to parse
      *
-     * @return Resulting date if parsed, otherwise {@code null}
+     * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */
-    @Nullable
+    @NonNull
     @Override
-    public LocalDateTime parse(@Nullable final String dateStr) {
+    public Optional<LocalDateTime> parse(@Nullable final String dateStr) {
         if (dateStr == null) {
-            return null;
+            return Optional.empty();
         }
 
         final int len = dateStr.length();
         // invalid lengths
         if (len < 4 || len == 5 || len == 6 || len == 8 || len == 9) {
-            return null;
+            return Optional.empty();
         }
 
         // Check the partial patterns first.
@@ -79,15 +85,15 @@ public class ISODateParser
             switch (len) {
                 case 4:
                     // yyyy
-                    return Year.parse(dateStr).atDay(1).atStartOfDay();
+                    return Optional.of(Year.parse(dateStr).atDay(1).atStartOfDay());
 
                 case 7:
                     // yyyy-MM
-                    return YearMonth.parse(dateStr).atDay(1).atStartOfDay();
+                    return Optional.of(YearMonth.parse(dateStr).atDay(1).atStartOfDay());
 
                 case 10:
                     // yyyy-MM-dd
-                    return LocalDate.parse(dateStr).atStartOfDay();
+                    return Optional.of(LocalDate.parse(dateStr).atStartOfDay());
 
                 default:
                     break;
@@ -101,13 +107,13 @@ public class ISODateParser
         }
         for (final DateTimeFormatter dtf : parsers) {
             try {
-                return LocalDateTime.parse(dateStr, dtf);
+                return Optional.of(LocalDateTime.parse(dateStr, dtf));
             } catch (@NonNull final DateTimeParseException ignore) {
                 // ignore and try the next one
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

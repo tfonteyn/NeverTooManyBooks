@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Parser for dates comes from the internet and/or the user (either as direct input, or by import).
@@ -119,11 +120,11 @@ public class FullDateParser
      *
      * @param dateStr String to parse
      *
-     * @return Resulting date if parsed, otherwise {@code null}
+     * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */
-    @Nullable
+    @NonNull
     @Override
-    public LocalDateTime parse(@Nullable final String dateStr) {
+    public Optional<LocalDateTime> parse(@Nullable final String dateStr) {
         return parse(dateStr, null);
     }
 
@@ -134,37 +135,33 @@ public class FullDateParser
      * @param dateStr String to parse
      * @param locale  to try first; i.e. before the pre-defined list.
      *
-     * @return Resulting date if successfully parsed, otherwise {@code null}
+     * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */
-    @Nullable
+    @NonNull
     @Override
-    public LocalDateTime parse(@Nullable final String dateStr,
-                               @Nullable final Locale locale) {
+    public Optional<LocalDateTime> parse(@Nullable final String dateStr,
+                                         @Nullable final Locale locale) {
         if (dateStr == null || dateStr.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        // Try ISO first, then numerical, and lastly the extensive text based.
-        LocalDateTime result = isoDateParser.parse(dateStr);
-
-        if (result == null) {
+        // Try ISO first,
+        return isoDateParser.parse(dateStr).or(() -> {
+            // then numerical,
             if (numericalParsers == null) {
                 numericalParsers = new ArrayList<>();
                 addPatterns(numericalParsers, NUMERICAL_PATTERNS, locales);
             }
-            result = parse(numericalParsers, dateStr, locale);
-
-            if (result == null) {
+            return parse(numericalParsers, dateStr, locale).or(() -> {
+                // or lastly the extensive text based.
                 if (textParsers == null) {
                     textParsers = new ArrayList<>();
                     addPatterns(textParsers, TEXT_PATTERNS, locales);
                     addEnglish(textParsers, TEXT_PATTERNS, locales);
                 }
-                result = parse(textParsers, dateStr, locale);
-            }
-        }
-
-        return result;
+                return parse(textParsers, dateStr, locale);
+            });
+        });
     }
 
     /**
@@ -175,18 +172,18 @@ public class FullDateParser
      * @param dateStr     String to parse
      * @param firstLocale (optional) Locale to apply/try before the default list.
      *
-     * @return Resulting date if parsed, otherwise {@code null}
+     * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */
-    @Nullable
-    private LocalDateTime parse(@NonNull final Iterable<DateTimeFormatter> parsers,
-                                @NonNull final CharSequence dateStr,
-                                @Nullable final Locale firstLocale) {
+    @NonNull
+    private Optional<LocalDateTime> parse(@NonNull final Iterable<DateTimeFormatter> parsers,
+                                          @NonNull final CharSequence dateStr,
+                                          @Nullable final Locale firstLocale) {
 
         // Try the specified Locale first
         if (firstLocale != null) {
             for (final DateTimeFormatter dtf : parsers) {
                 try {
-                    return LocalDateTime.parse(dateStr, dtf.withLocale(firstLocale));
+                    return Optional.of(LocalDateTime.parse(dateStr, dtf.withLocale(firstLocale)));
                 } catch (@NonNull final DateTimeParseException ignore) {
                     // ignore and try the next one
                 }
@@ -196,13 +193,13 @@ public class FullDateParser
         // Parse with the default locales, using the default ResolverStyle
         for (final DateTimeFormatter dtf : parsers) {
             try {
-                return LocalDateTime.parse(dateStr, dtf);
+                return Optional.of(LocalDateTime.parse(dateStr, dtf));
             } catch (@NonNull final DateTimeParseException ignore) {
                 // ignore and try the next one
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

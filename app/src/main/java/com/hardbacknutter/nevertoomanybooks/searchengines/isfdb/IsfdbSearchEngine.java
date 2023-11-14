@@ -33,7 +33,6 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -864,11 +863,9 @@ public class IsfdbSearchEngine
                                 // Note that partial dates, e.g. "1987", "1978-03"
                                 // will get 'completed' to "1987-01-01", "1978-03-01"
                                 // This should be acceptable IMHO.
-                                final LocalDateTime date = getDateParser(context, siteLocale)
-                                        .parse(tmpString, siteLocale);
-                                if (date != null) {
-                                    book.setPublicationDate(date);
-                                }
+                                getDateParser(context, siteLocale)
+                                        .parse(tmpString, siteLocale)
+                                        .ifPresent(book::setPublicationDate);
                             }
                             break;
                         }
