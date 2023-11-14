@@ -25,7 +25,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * Validator to apply a default value and validate as a Date.
+ * <p>
+ * Meant to be used for free-text entry in date fields.
  */
 public class DateValidator
         implements DataValidator {
@@ -71,16 +72,14 @@ public class DateValidator
 
         String value = dataManager.getString(key, null);
         if (value == null || value.isEmpty()) {
-            value = defaultValue;
+            dataManager.putString(key, defaultValue);
         } else {
-            final LocalDateTime date = fullDateParser.parse(value);
-            if (date != null) {
-                value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            } else {
-                throw new ValidatorException(context.getString(R.string.vldt_date_expected_for_x,
-                                                               context.getString(errorLabelResId)));
-            }
+            value = fullDateParser.parse(value)
+                                  .map(date -> date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                                  .orElseThrow(() -> new ValidatorException(
+                                          context.getString(R.string.vldt_date_expected_for_x,
+                                                            context.getString(errorLabelResId))));
+            dataManager.putString(key, value);
         }
-        dataManager.putString(key, value);
     }
 }
