@@ -28,6 +28,7 @@ import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -331,8 +332,8 @@ public interface BookDao {
      *
      * @return date
      */
-    @Nullable
-    LocalDateTime getLastUpdateDate(@IntRange(from = 1) long id);
+    @NonNull
+    Optional<LocalDateTime> getLastUpdateDate(@IntRange(from = 1) long id);
 
     /**
      * Flags used during {@link #insert(Context, Book, Set)}

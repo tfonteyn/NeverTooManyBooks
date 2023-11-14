@@ -36,6 +36,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -817,8 +818,8 @@ public class BookDaoImpl
         return getColumnAsStringArrayList(sql);
     }
 
-    @Nullable
-    public LocalDateTime getLastUpdateDate(@IntRange(from = 1) final long id) {
+    @NonNull
+    public Optional<LocalDateTime> getLastUpdateDate(@IntRange(from = 1) final long id) {
         try (SynchronizedStatement stmt =
                      db.compileStatement(Sql.Get.LAST_UPDATE_DATE_BY_BOOK_ID)) {
             stmt.bindLong(1, id);
