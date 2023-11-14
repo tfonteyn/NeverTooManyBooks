@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -522,13 +523,13 @@ public class DataManager
      *
      * @return value or {@code null} if parsing did not produce a {@link LocalDateTime} object
      */
-    @Nullable
-    protected LocalDateTime getLocalDateTime(@NonNull final String key,
-                                             @NonNull final DateParser dateParser) {
+    @NonNull
+    protected Optional<LocalDateTime> getLocalDateTime(@NonNull final String key,
+                                                       @NonNull final DateParser dateParser) {
         if (rawData.containsKey(key)) {
             return dateParser.parse(rawData.getString(key));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 

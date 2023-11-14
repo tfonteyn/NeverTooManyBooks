@@ -1256,10 +1256,10 @@ public class Book
      *
      * @param dateParser to use
      *
-     * @return the last date-time; or {@code null} if never saved.
+     * @return the last date-time; or {@code Optional.empty()} if never saved.
      */
-    @Nullable
-    public LocalDateTime getLastModified(@NonNull final DateParser dateParser) {
+    @NonNull
+    public Optional<LocalDateTime> getLastModified(@NonNull final DateParser dateParser) {
         return getLocalDateTime(DBKey.DATE_LAST_UPDATED__UTC, dateParser);
     }
 
