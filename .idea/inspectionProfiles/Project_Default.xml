@@ -121,7 +121,9 @@
       <option name="m_maxLength" value="26" />
     </inspection_tool>
     <inspection_tool class="LongLine" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="MagicNumber" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="MagicNumber" enabled="true" level="WARNING" enabled_by_default="true">
+      <scope name="Tests" level="WARNING" enabled="false" />
+    </inspection_tool>
     <inspection_tool class="MapReplaceableByEnumMap" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MethodOnlyUsedFromInnerClass" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreMethodsAccessedFromAnonymousClass" value="false" />
