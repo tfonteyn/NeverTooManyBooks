@@ -492,6 +492,7 @@ public class JsonRecordReader
             return;
         }
 
+        // A row represents on JSON book object
         int row = 1;
         // Instance in time when we last send a progress message
         long lastUpdateTime = 0;
@@ -516,6 +517,7 @@ public class JsonRecordReader
             }
             try {
                 final Book book = bookCoder.decode(books.getJSONObject(i));
+                // Books MUST have a UUID or we will NOT import them here.
                 final String importUuid = book.getString(DBKey.BOOK_UUID, null);
                 if (importUuid != null && !importUuid.isEmpty()) {
                     final long importNumericId = book.getLong(DBKey.PK_ID);
@@ -527,8 +529,8 @@ public class JsonRecordReader
                         db.setTransactionSuccessful();
                     }
                 } else {
-                    final String msg = context.getString(R.string.error_record_must_contain_column,
-                                                         DBKey.BOOK_UUID);
+                    final String msg = context.getString(
+                            R.string.error_record_must_contain_column, DBKey.BOOK_UUID);
                     results.handleRowException(context, row, new DataReaderException(msg), msg);
                 }
             } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
