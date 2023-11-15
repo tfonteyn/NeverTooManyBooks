@@ -172,7 +172,7 @@ public abstract class BaseRecordReader
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-            LoggerFactory.getLogger().d(TAG, "importBook",
+            LoggerFactory.getLogger().d(TAG, "insertBook",
                                         "preImport=" + preImportId, preImportUuid,
                                         "postImport=" + book.getId(),
                                         book.getString(DBKey.BOOK_UUID, null),
