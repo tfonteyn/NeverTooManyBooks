@@ -111,7 +111,8 @@ public class DbPrep {
             throws IOException, DataReaderException, StorageException {
 
         final File file = new File(context.getCacheDir(), "testdata.json");
-        final int resId = com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata;
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.testdata_json_archive;
 
         final Context ic = InstrumentationRegistry.getInstrumentation().getContext();
         try (final InputStream is = ic.getResources().openRawResource(resId);
