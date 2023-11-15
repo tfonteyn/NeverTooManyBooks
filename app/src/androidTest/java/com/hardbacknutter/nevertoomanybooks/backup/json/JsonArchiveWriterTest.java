@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -82,7 +83,8 @@ public class JsonArchiveWriterTest
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
         bookInDb = new DbPrep().maybeInstallTestData(context);
-        nrOfStyles = serviceLocator.getStyles().getStyles(true).size();
+        // +1 for the global style which will be added during export
+        nrOfStyles = serviceLocator.getStyles().getStyles(true).size() + 1;
     }
 
     @Test
@@ -155,8 +157,9 @@ public class JsonArchiveWriterTest
         // Now modify/delete some books. We have at least 10 books to play with
         final List<Long> ids = exportResults.getBooksExported();
 
-        final long deletedBookId = ids.get(3);
-        final long modifiedBookId = ids.get(5);
+        final Random random = new Random();
+        final long deletedBookId = ids.get(random.nextInt(10) + 1);
+        final long modifiedBookId = ids.get(random.nextInt(10) + 1);
 
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         bookDao.delete(deletedBookId);
