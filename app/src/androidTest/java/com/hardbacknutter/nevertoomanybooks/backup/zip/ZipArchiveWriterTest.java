@@ -140,7 +140,8 @@ public class ZipArchiveWriterTest
         // ImportHelper.Updates.OnlyNewer ... so we don't actually import anything
         assertEquals(0, importResults.booksCreated);
         assertEquals(0, importResults.booksUpdated);
-        assertEquals(0, importResults.booksSkipped);
+        // We skipped all of them
+        assertEquals(expectedNrOfBooks, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
     }
 }
