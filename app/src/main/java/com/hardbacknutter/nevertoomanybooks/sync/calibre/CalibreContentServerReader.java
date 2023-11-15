@@ -487,11 +487,11 @@ public class CalibreContentServerReader
                             updateBook(context, calibreBook, book);
 
                         } else {
-                            results.booksFailed++;
+                            results.booksSkipped++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                                 LoggerFactory.getLogger()
                                              .d(TAG, "handleBook", updateOption,
-                                                "FAIL",
+                                                "Skip",
                                                 "calibreUuid=" + calibreBook.getString(
                                                         DBKey.CALIBRE_BOOK_UUID),
                                                 "book=" + book.getId(),
@@ -505,8 +505,10 @@ public class CalibreContentServerReader
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "handleBook", updateOption,
+                                            "Skip",
                                             "calibreUuid=" + calibreBook.getString(
-                                                    DBKey.CALIBRE_BOOK_UUID));
+                                                    DBKey.CALIBRE_BOOK_UUID),
+                                            calibreBook.getString(CalibreBookJsonKey.TITLE));
                         }
                         break;
                     }
