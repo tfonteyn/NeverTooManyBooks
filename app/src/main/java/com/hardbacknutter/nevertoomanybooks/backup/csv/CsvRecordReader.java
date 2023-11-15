@@ -23,7 +23,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -34,13 +33,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -57,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -222,32 +218,19 @@ public class CsvRecordReader
             try {
                 final String[] csvDataRow = parse(context, row, books.get(row));
 
-                if (csvDataRow.length != csvColumnNames.length) {
-                    throw new DataReaderException(context.getString(
-                            R.string.error_import_csv_column_count_mismatch, row));
-                }
-
-                final Book book = bookCoder.decode(context, csvColumnNames, csvDataRow);
-
-                // Do we have a UUID for the book in the import ?
-                final boolean hasUuid = handleUuid(book);
-                // Do we have an ID for the book in the import ?
-                final long importNumericId = extractNumericId(book);
-
-                // ALWAYS let the UUID trump the ID; we may be importing someone else's list
-                if (hasUuid) {
-                    final String importUuid = book.getString(DBKey.BOOK_UUID);
-                    importBookWithUuid(context, book, importUuid, importNumericId);
-
-                } else if (importNumericId > 0) {
-                    importBookWithId(context, book, importNumericId);
-
-                } else {
+                if (csvDataRow.length == csvColumnNames.length) {
+                    final Book book = bookCoder.decode(context, csvColumnNames, csvDataRow);
+                    preprocessId(book);
+                    preprocessUuid(book);
                     importBook(context, book);
-                }
 
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
+                    if (txLock != null) {
+                        db.setTransactionSuccessful();
+                    }
+                } else {
+                    final String msg = context.getString(
+                            R.string.error_import_csv_column_count_mismatch, row);
+                    results.handleRowException(context, row, new DataReaderException(msg), msg);
                 }
             } catch (@NonNull final DaoWriteException | DataReaderException
                                     | SQLiteDoneException e) {
@@ -276,113 +259,36 @@ public class CsvRecordReader
     }
 
     /**
-     * insert or update a single book which has a potentially usable id.
+     * Process the (optional) ID into a known format/type.
      *
-     * @param context         Current context
-     * @param book            to import
-     * @param importNumericId the numeric id for the book as found in the import.
-     *
-     * @throws StorageException  The covers directory is not available
-     * @throws DaoWriteException on failure
+     * @param book the book
      */
-    private void importBookWithId(@NonNull final Context context,
-                                  @NonNull final Book book,
-                                  @IntRange(from = 1) final long importNumericId)
-            throws StorageException, DaoWriteException {
-        // Add the importNumericId back to the book.
-        book.putLong(DBKey.PK_ID, importNumericId);
+    private void preprocessId(@NonNull final Book book) {
 
-        // Is that id already in use ?
-        if (bookDao.bookExistsById(importNumericId)) {
-            // The id is in use, we will be updating an existing book (if allowed).
+        // String: see book init, we copied all fields we find in the import file as text.
+        final String idStr = book.getString(DBKey.PK_ID, null);
+        // ALWAYS remove the String typed id first!
+        book.remove(DBKey.PK_ID);
 
-            // This is risky as we might overwrite a different book which happens
-            // to have the same id, but other than skipping there is no other option for now.
-            // Ideally, we should ask the user presenting a choice "skip/overwrite"
-            switch (getUpdateOption()) {
-                case Overwrite: {
-                    bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,
-                                                         BookDao.BookFlag.UseUpdateDateIfPresent));
-                    results.booksUpdated++;
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                        LoggerFactory.getLogger().d(TAG, "importBookWithId", "Overwrite",
-                                                    "importNumericId=" + importNumericId,
-                                                    book.getTitle());
-                    }
-                    break;
-                }
-                case OnlyNewer: {
-                    final LocalDateTime localDate = bookDao.getLastUpdateDate(importNumericId);
-                    if (localDate != null) {
-                        final LocalDateTime importDate = book.getLastModified(dateParser);
+        if (idStr != null && !idStr.isEmpty()) {
+            // convert it to the expected "long" type
+            try {
+                final long id = Long.parseLong(idStr);
+                // Add it back to the book as a long
+                book.putLong(DBKey.PK_ID, id);
 
-                        if (importDate != null && importDate.isAfter(localDate)) {
-
-                            bookDao.update(context, book,
-                                           Set.of(BookDao.BookFlag.RunInBatch,
-                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
-                            results.booksUpdated++;
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                                LoggerFactory.getLogger().d(TAG, "importBookWithId", "OnlyNewer",
-                                                            "importNumericId=" + importNumericId,
-                                                            book.getTitle());
-                            }
-                        }
-                    }
-                    break;
-                }
-                case Skip: {
-                    results.booksSkipped++;
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                        LoggerFactory.getLogger().d(TAG, "importBookWithId", "Skip",
-                                                    "importNumericId=" + importNumericId,
-                                                    book.getTitle());
-                    }
-                    break;
-                }
+            } catch (@NonNull final NumberFormatException ignore) {
+                // don't log, we'll continue without an id
             }
-
-        } else {
-            // The id is not in use, simply insert the book using the given importNumericId,
-            // explicitly allowing the id to be reused
-            final long insId = bookDao.insert(context, book,
-                                              Set.of(BookDao.BookFlag.RunInBatch,
-                                                     BookDao.BookFlag.UseIdIfPresent));
-            results.booksCreated++;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                LoggerFactory.getLogger().d(TAG, "importBookWithId", "INSERT",
-                                            "importNumericId=" + importNumericId,
-                                            "insId=" + insId,
-                                            book.getTitle());
-            }
-
-        }
-    }
-
-    private void importBook(@NonNull final Context context,
-                            @NonNull final Book book)
-            throws StorageException,
-                   DaoWriteException {
-        // Always import books which have no UUID/ID, even if the book is a potential duplicate.
-        // We don't try and search/match but leave it to the user.
-        final long insId = bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
-        results.booksCreated++;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-            LoggerFactory.getLogger().d(TAG, "importBook",
-                                        "UUID=''", "ID=0",
-                                        "insId=" + insId,
-                                        book.getTitle());
         }
     }
 
     /**
-     * Process the UUID if present.
+     * Process the (optional) UUID into a known format/type.
      *
      * @param book the book
-     *
-     * @return {@code true} if the book has a UUID
      */
-    private boolean handleUuid(@NonNull final Book book) {
+    private void preprocessUuid(@NonNull final Book book) {
 
         @Nullable
         final String uuid;
@@ -399,46 +305,18 @@ public class CsvRecordReader
             uuid = book.getString("uuid", null);
             // ALWAYS remove as we won't use this key again.
             book.remove("uuid");
-            // but if we got a UUID from it, store it again, using the correct key
+            // but if we got a UUID from it, store that UUID using the correct key
             if (uuid != null && !uuid.isEmpty()) {
                 book.putString(DBKey.BOOK_UUID, uuid);
             }
-        } else {
-            uuid = null;
         }
-
-        return uuid != null && !uuid.isEmpty();
-    }
-
-    /**
-     * Process the ID if present. <strong>It will be removed from the Book.</strong>
-     *
-     * @param book the book
-     *
-     * @return the id, if any.
-     */
-    private long extractNumericId(@NonNull final Book book) {
-        // Do we have a numeric id in the import ?
-        // String: see book init, we copied all fields we find in the import file as text.
-        final String idStr = book.getString(DBKey.PK_ID, null);
-        // ALWAYS remove here to avoid type-issues further down. We'll re-add if needed.
-        book.remove(DBKey.PK_ID);
-
-        if (idStr != null && !idStr.isEmpty()) {
-            try {
-                return Long.parseLong(idStr);
-            } catch (@NonNull final NumberFormatException ignore) {
-                // don't log, it's fine.
-            }
-        }
-        return 0;
     }
 
     /**
      * This CSV parser is not a complete parser, but it is "good enough".
      *
      * @param context Current context
-     * @param row     row number
+     * @param row     row number; used for error reporting
      * @param line    with CSV fields
      *
      * @return an array representing the row

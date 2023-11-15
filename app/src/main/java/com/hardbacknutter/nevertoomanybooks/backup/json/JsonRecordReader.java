@@ -520,10 +520,8 @@ public class JsonRecordReader
                 // Books MUST have a UUID or we will NOT import them here.
                 final String importUuid = book.getString(DBKey.BOOK_UUID, null);
                 if (importUuid != null && !importUuid.isEmpty()) {
-                    final long importNumericId = book.getLong(DBKey.PK_ID);
-                    book.remove(DBKey.PK_ID);
 
-                    importBookWithUuid(context, book, importUuid, importNumericId);
+                    importBook(context, book);
 
                     if (txLock != null) {
                         db.setTransactionSuccessful();
