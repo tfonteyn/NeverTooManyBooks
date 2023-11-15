@@ -252,8 +252,7 @@ public class StripInfoReader
 
                         for (final Book siBook : page) {
                             if (!searchEngine.isCancelled()) {
-                                handleBook(context, siBook);
-
+                                importBook(context, siBook);
                                 results.booksProcessed++;
 
                                 // Due to the network access, we're not adding
@@ -302,7 +301,7 @@ public class StripInfoReader
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
-    private void handleBook(@NonNull final Context context,
+    private void importBook(@NonNull final Context context,
                             @NonNull final Book siBook)
             throws StorageException,
                    SearchException,
@@ -319,7 +318,10 @@ public class StripInfoReader
                 switch (updateOption) {
                     case Overwrite: {
                         final Book book = Book.from(cursor);
-                        updateBook(context, externalId, siBook, book);
+                        final Book delta = createUpdateDelta(context, siBook, book);
+                        if (delta != null) {
+                            updateBook(context, externalId, book, delta);
+                        }
                         break;
                     }
                     case OnlyNewer: {
@@ -328,11 +330,7 @@ public class StripInfoReader
                         break;
                     }
                     case Skip: {
-                        results.booksSkipped++;
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
-                            LoggerFactory.getLogger().d(TAG, "processPage", updateOption,
-                                                        "externalId=" + externalId);
-                        }
+                        skipBook(externalId);
                         break;
                     }
                 }
@@ -352,31 +350,29 @@ public class StripInfoReader
         }
     }
 
-    private void updateBook(@NonNull final Context context,
-                            final long externalId,
-                            @NonNull final Book siBook,
-                            @NonNull final Book book)
+    @Nullable
+    private Book createUpdateDelta(@NonNull final Context context,
+                                   @NonNull final Book siBook,
+                                   @NonNull final Book book)
             throws StorageException,
                    SearchException,
                    CredentialsException,
-                   DaoWriteException,
                    IOException {
-
-        // The delta values we'll be updating
-        final Book delta;
 
         final Map<String, SyncField> fieldsWanted = syncProcessor.filter(book);
         final boolean[] coversWanted = {
                 fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[0]),
-                fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[1])};
+                fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[1])
+        };
+
+        final String externalIdStr = String.valueOf(siBook.getLong(DBKey.SID_STRIP_INFO));
 
         final Book dataToMerge;
         if (coversWanted[1]) {
             // The back cover is *not* available on the collection page.
             // Download the full data set from the server.
             // The siBook data is superseded by this new data.
-            dataToMerge = searchEngine
-                    .searchByExternalId(context, String.valueOf(externalId), coversWanted);
+            dataToMerge = searchEngine.searchByExternalId(context, externalIdStr, coversWanted);
             CoverFileSpecArray.process(dataToMerge);
         } else {
             // We have all we need in the incoming siBook
@@ -387,7 +383,7 @@ public class StripInfoReader
             if (coversWanted[0]) {
                 final String url = dataToMerge.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
                 if (url != null && !url.isEmpty()) {
-                    searchEngine.saveImage(context, url, String.valueOf(externalId), 0, null)
+                    searchEngine.saveImage(context, url, externalIdStr, 0, null)
                                 .ifPresent(fileSpec -> dataToMerge
                                         .putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec));
                 }
@@ -395,22 +391,8 @@ public class StripInfoReader
         }
 
         // Extract the delta from the dataToMerge
-        delta = syncProcessor.process(context, book.getId(), book,
-                                      fieldsWanted, dataToMerge,
-                                      realNumberParser);
-
-        if (delta != null) {
-            bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,
-                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
-            results.booksUpdated++;
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
-                LoggerFactory.getLogger().d(TAG, "updateBook", updateOption,
-                                            "externalId=" + externalId,
-                                            "book=" + book.getId(),
-                                            book.getTitle());
-            }
-        }
+        return syncProcessor.process(context, book.getId(), book, fieldsWanted, dataToMerge,
+                                     realNumberParser);
     }
 
     private void insertBook(@NonNull final Context context,
@@ -421,14 +403,43 @@ public class StripInfoReader
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
+        final String preImportUuid = book.getString(DBKey.BOOK_UUID, null);
+        final long preImportId = book.getId();
+
         bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
-            LoggerFactory.getLogger().d(TAG, "insertBook", updateOption,
+            LoggerFactory.getLogger().d(TAG, "insertBook",
+                                        "preImport=" + preImportId, preImportUuid,
+                                        "postImport=" + book.getId(),
+                                        book.getString(DBKey.BOOK_UUID, null),
+                                        book.getTitle());
+        }
+    }
+
+    private void updateBook(@NonNull final Context context,
+                            final long externalId,
+                            final Book book,
+                            final Book delta)
+            throws StorageException, DaoWriteException {
+        bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,
+                                              BookDao.BookFlag.UseUpdateDateIfPresent));
+        results.booksUpdated++;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
+            LoggerFactory.getLogger().d(TAG, "updateBook", updateOption,
+                                        "externalId=" + externalId,
                                         "book=" + book.getId(),
                                         book.getTitle());
         }
     }
 
+    private void skipBook(final long externalId) {
+        results.booksSkipped++;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
+            LoggerFactory.getLogger().d(TAG, "processPage",
+                                        "externalId=" + externalId);
+        }
+    }
 }
