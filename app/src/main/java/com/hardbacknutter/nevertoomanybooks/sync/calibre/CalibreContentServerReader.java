@@ -419,7 +419,7 @@ public class CalibreContentServerReader
                                                 bookListVirtualLibs.getJSONArray(key));
                             }
 
-                            handleBook(context, convert(context, calibreBook));
+                            importBook(context, convert(context, calibreBook));
 
                             results.booksProcessed++;
                             // Due to the network access, we're not adding
@@ -454,9 +454,10 @@ public class CalibreContentServerReader
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
-    private void handleBook(@NonNull final Context context,
+    private void importBook(@NonNull final Context context,
                             @NonNull final Book calibreBook)
-            throws StorageException, IOException {
+            throws StorageException,
+                   IOException {
         try {
             final String calibreUuid = calibreBook.getString(DBKey.CALIBRE_BOOK_UUID);
             // check if we already have the calibre book in the local database
@@ -490,12 +491,11 @@ public class CalibreContentServerReader
                             results.booksSkipped++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                                 LoggerFactory.getLogger()
-                                             .d(TAG, "handleBook", updateOption,
+                                             .d(TAG, "importBook", updateOption,
                                                 "Skip",
                                                 "calibreUuid=" + calibreBook.getString(
                                                         DBKey.CALIBRE_BOOK_UUID),
-                                                "book=" + book.getId(),
-                                                book.getTitle());
+                                                "book=" + book.getId(), book.getTitle());
                             }
                         }
                         break;
@@ -504,7 +504,7 @@ public class CalibreContentServerReader
                         results.booksSkipped++;
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                             LoggerFactory.getLogger()
-                                         .d(TAG, "handleBook", updateOption,
+                                         .d(TAG, "importBook", updateOption,
                                             "Skip",
                                             "calibreUuid=" + calibreBook.getString(
                                                     DBKey.CALIBRE_BOOK_UUID),
