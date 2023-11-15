@@ -25,16 +25,13 @@ import android.net.Uri;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.TestUtils;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -57,7 +54,6 @@ public class DbPrep {
             com.hardbacknutter.nevertoomanybooks.test.R.raw.cover1,
             com.hardbacknutter.nevertoomanybooks.test.R.raw.cover2
     };
-    private static final int BUFFER_SIZE = 32768;
 
     /**
      * Copy a file from the raw test resources to the temp picture directory.
@@ -73,20 +69,7 @@ public class DbPrep {
             throws StorageException, IOException {
 
         final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
-        final File file = new File(tempDir, COVER[cIdx]);
-        final int resId = coverResId[cIdx];
-
-        final Context ic = InstrumentationRegistry.getInstrumentation().getContext();
-        try (final InputStream is = ic.getResources().openRawResource(resId);
-             final OutputStream os = new FileOutputStream(file)) {
-            final byte[] buffer = new byte[BUFFER_SIZE];
-            int nRead;
-            while ((nRead = is.read(buffer)) > 0) {
-                os.write(buffer, 0, nRead);
-            }
-            os.flush();
-        }
-        return file;
+        return TestUtils.createFile(coverResId[cIdx], new File(tempDir, COVER[cIdx]));
     }
 
     public long maybeInstallTestData(@NonNull final Context context)
@@ -110,20 +93,10 @@ public class DbPrep {
     private void installTestData(@NonNull final Context context)
             throws IOException, DataReaderException, StorageException {
 
-        final File file = new File(context.getCacheDir(), "testdata.json");
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.testdata_json_archive;
-
-        final Context ic = InstrumentationRegistry.getInstrumentation().getContext();
-        try (final InputStream is = ic.getResources().openRawResource(resId);
-             final OutputStream os = new FileOutputStream(file)) {
-            final byte[] buffer = new byte[BUFFER_SIZE];
-            int nRead;
-            while ((nRead = is.read(buffer)) > 0) {
-                os.write(buffer, 0, nRead);
-            }
-            os.flush();
-        }
+        final File file = TestUtils.createFile(
+                resId, new File(context.getCacheDir(), "testdata.json"));
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
