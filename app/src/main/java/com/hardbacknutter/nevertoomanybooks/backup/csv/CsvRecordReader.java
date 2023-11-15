@@ -120,26 +120,18 @@ public class CsvRecordReader
     /** Log tag. */
     private static final String TAG = "CsvRecordReader";
 
-    @NonNull
-    private final BookCoder bookCoder;
-
     /**
      * Constructor.
      * <p>
      * Only supports {@link RecordType#Books}.
      *
-     * @param context      Current context
      * @param systemLocale to use for ISO date parsing
      * @param updateOption options
      */
     @AnyThread
-    public CsvRecordReader(@NonNull final Context context,
-                           @NonNull final Locale systemLocale,
+    public CsvRecordReader(@NonNull final Locale systemLocale,
                            @NonNull final DataReader.Updates updateOption) {
         super(systemLocale, updateOption);
-
-        final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
-        bookCoder = new BookCoder(context, defaultStyle);
     }
 
     @Override
@@ -218,6 +210,9 @@ public class CsvRecordReader
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         Synchronizer.SyncLock txLock = null;
+
+        final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
+        final BookCoder bookCoder = new BookCoder(context, defaultStyle);
 
         while (row < books.size() && !progressListener.isCancelled()) {
 

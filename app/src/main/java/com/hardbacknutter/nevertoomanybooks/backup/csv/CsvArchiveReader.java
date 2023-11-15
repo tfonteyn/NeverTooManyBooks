@@ -113,7 +113,7 @@ public class CsvArchiveReader
         FileUtils.copy(source, destination);
 
         try (InputStream is = context.getContentResolver().openInputStream(uri);
-             RecordReader recordReader = new CsvRecordReader(context, systemLocale,
+             RecordReader recordReader = new CsvRecordReader(systemLocale,
                                                              updateOption)) {
             if (is == null) {
                 throw new FileNotFoundException(uri.toString());

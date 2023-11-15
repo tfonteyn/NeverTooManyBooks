@@ -160,7 +160,7 @@ public enum RecordEncoding {
                                                         allowedTypes,
                                                         updateOption));
             case Csv: {
-                return Optional.of(new CsvRecordReader(context, systemLocale,
+                return Optional.of(new CsvRecordReader(systemLocale,
                                                        updateOption));
             }
             case Xml:
