@@ -28,6 +28,7 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,8 +93,8 @@ public class MoneyParser {
         return new Money(value, null);
     }
 
-    @Nullable
-    private static Money parseBritishPreDecimal(@NonNull final MatchResult matcher) {
+    @NonNull
+    private static Optional<Money> parseBritishPreDecimal(@NonNull final MatchResult matcher) {
         try {
             int shillings = 0;
             int pence = 0;
@@ -112,12 +113,12 @@ public class MoneyParser {
             // made up of 12 pence, a total of 240 pence. Madness...
             final double value = ((shillings * 12) + pence) / 240d;
             final Currency currency = Currency.getInstance(GBP);
-            return new Money(BigDecimal.valueOf(value), currency);
+            return Optional.of(new Money(BigDecimal.valueOf(value), currency));
 
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -186,8 +187,8 @@ public class MoneyParser {
      * @return a Money object with or without currency
      *         or {@code null} if parsing failed.
      */
-    @Nullable
-    public Money parse(@NonNull final CharSequence valueWithCurrency) {
+    @NonNull
+    public Optional<Money> parse(@NonNull final CharSequence valueWithCurrency) {
         try {
             // website html cleaning: replace any "&nbsp;" by " "
             // and strip the whole thing
@@ -195,7 +196,7 @@ public class MoneyParser {
                                            .replaceAll(" ")
                                            .strip();
             if (vwc.isEmpty()) {
-                return null;
+                return Optional.empty();
             }
 
             // If the string does not start with a digit,
@@ -203,8 +204,8 @@ public class MoneyParser {
             if (!Character.isDigit(vwc.charAt(0))) {
                 final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(vwc, 2);
                 if (data.length > 1) {
-                    final Money parse = parse(data[1], data[0]);
-                    if (parse != null) {
+                    final Optional<Money> parse = parse(data[1], data[0]);
+                    if (parse.isPresent()) {
                         return parse;
                     }
                 }
@@ -228,7 +229,7 @@ public class MoneyParser {
         } catch (@NonNull final IllegalArgumentException e) {
             // covers NumberFormatException
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -238,11 +239,10 @@ public class MoneyParser {
      * @param currencyStr to parse
      *
      * @return a Money object with or without currency
-     *         or {@code null} if parsing failed.
      */
-    @Nullable
-    public Money parse(@Nullable final String valueStr,
-                       @Nullable final String currencyStr) {
+    @NonNull
+    public Optional<Money> parse(@Nullable final String valueStr,
+                                 @Nullable final String currencyStr) {
 
         Currency currency = null;
         if (currencyStr != null && !currencyStr.isEmpty()) {
@@ -263,15 +263,16 @@ public class MoneyParser {
         }
 
         if (valueStr != null && !valueStr.isEmpty()) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 final double value = realNumberParser.parseDouble(valueStr);
-                return new Money(BigDecimal.valueOf(value), currency);
+                return Optional.of(new Money(BigDecimal.valueOf(value), currency));
 
             } catch (@NonNull final IllegalArgumentException ignore) {
                 // covers NumberFormatException
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**

@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -181,10 +182,10 @@ public class BookDaoHelper {
                 // Verify a price without a currency.
                 // This check should not be needed as it SHOULD have been done before.
                 // ... but paranoia...
-                final Money money = moneyParser.parse(book.getString(key));
+                final Optional<Money> money = moneyParser.parse(book.getString(key));
                 // If the currency could be decoded, store the Money back into the book
-                if (money != null) {
-                    book.putMoney(key, money);
+                if (money.isPresent()) {
+                    book.putMoney(key, money.get());
                     return;
                 }
                 // else just leave the original text in the book

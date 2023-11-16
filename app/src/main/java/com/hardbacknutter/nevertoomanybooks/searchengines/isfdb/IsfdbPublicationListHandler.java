@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -326,9 +327,9 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String tmpString = builder.toString().trim();
-                    final Money money = moneyParser.parse(tmpString);
-                    if (money != null) {
-                        book.putMoney(DBKey.PRICE_LISTED, money);
+                    final Optional<Money> money = moneyParser.parse(tmpString);
+                    if (money.isPresent()) {
+                        book.putMoney(DBKey.PRICE_LISTED, money.get());
                     } else {
                         // parsing failed, store the string as-is;
                         // no separate currency!

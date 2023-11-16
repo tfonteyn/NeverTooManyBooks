@@ -341,19 +341,9 @@ class ResultsAccumulator {
         }
 
         // this is a fallback in case the SearchEngine has not already parsed the data!
-        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
-        final Money money = moneyParser.parse(dataToAdd.toString());
-        if (money != null) {
-            book.putMoney(key, money);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                dbgLogValueCopied("processMoney", key, dataToAdd);
-            }
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                dbgLogValueSkipped("processMoney", key, dataToAdd);
-            }
-        }
+        new MoneyParser(siteLocale, realNumberParser)
+                .parse(dataToAdd.toString())
+                .ifPresent(money -> book.putMoney(key, money));
     }
 
     /**

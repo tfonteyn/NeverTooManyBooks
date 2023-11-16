@@ -924,10 +924,10 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    final Money money = getMoneyParser(context, siteLocale)
-                                            .parse(tmpString);
-                                    if (money != null) {
-                                        book.putMoney(DBKey.PRICE_LISTED, money);
+                                    final Optional<Money> money =
+                                            getMoneyParser(context, siteLocale).parse(tmpString);
+                                    if (money.isPresent()) {
+                                        book.putMoney(DBKey.PRICE_LISTED, money.get());
                                     } else {
                                         // parsing failed, store the string as-is;
                                         // no separate currency!

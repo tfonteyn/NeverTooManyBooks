@@ -414,9 +414,10 @@ public class AmazonSearchEngine
             return;
         }
 
-        final Money money = getMoneyParser(context, siteLocale).parse(price.text().strip());
-        if (money != null) {
-            book.putMoney(DBKey.PRICE_LISTED, money);
+        final Optional<Money> money = getMoneyParser(context, siteLocale)
+                .parse(price.text().strip());
+        if (money.isPresent()) {
+            book.putMoney(DBKey.PRICE_LISTED, money.get());
         } else {
             // parsing failed, store the string as-is;
             // no separate currency!

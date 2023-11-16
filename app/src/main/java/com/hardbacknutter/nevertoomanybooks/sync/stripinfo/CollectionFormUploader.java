@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -264,21 +263,19 @@ public class CollectionFormUploader {
         if (book.contains(DBKey.PRICE_PAID)) {
             final Object v = book.get(DBKey.PRICE_PAID, realNumberParser);
             if (v != null) {
+                final String valueStr = String.valueOf(v);
                 if (book.contains(DBKey.PRICE_PAID_CURRENCY)) {
-                    final Money money = moneyParser
-                            .parse(String.valueOf(v), book.getString(DBKey.PRICE_PAID_CURRENCY));
-                    if (money != null) {
-                        // The site does not store a currency; it's hardcoded/supposed to be EURO.
-                        // So always convert it to EURO and than send it.
-                        builder.appendQueryParameter(FF_AANKOOP_PRIJS,
-                                                     String.valueOf(money.toEuro()));
-                    } else {
-                        // just send the value string as-is
-                        builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(v));
-                    }
+                    // The site does not store a currency; it's hardcoded/supposed to be EURO.
+                    final String value = moneyParser
+                            .parse(valueStr, book.getString(DBKey.PRICE_PAID_CURRENCY))
+                            // So always convert it to EURO
+                            .map(money -> String.valueOf(money.toEuro()))
+                            // or else just send the value string as-is
+                            .orElseGet(() -> valueStr);
+                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, value);
                 } else {
                     // just send the value string as-is
-                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(v));
+                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, valueStr);
                 }
             }
         }
