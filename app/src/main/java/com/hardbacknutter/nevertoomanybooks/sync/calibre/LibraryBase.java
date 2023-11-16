@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -43,6 +44,7 @@ abstract class LibraryBase
     @NonNull
     private String name;
 
+    @IntRange(from = 0)
     private long mappedBookshelfId;
 
     /**
@@ -52,7 +54,7 @@ abstract class LibraryBase
      * @param mappedBookshelfId the {@link Bookshelf} id this library is mapped to
      */
     LibraryBase(@NonNull final String name,
-                final long mappedBookshelfId) {
+                @IntRange(from = 0) final long mappedBookshelfId) {
         this.name = name;
         this.mappedBookshelfId = mappedBookshelfId;
     }
@@ -99,7 +101,7 @@ abstract class LibraryBase
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(@IntRange(from = 0) final long id) {
         this.id = id;
     }
 
@@ -120,10 +122,11 @@ abstract class LibraryBase
         this.name = name;
     }
 
-    public void setMappedBookshelf(final long id) {
+    public void setMappedBookshelf(@IntRange(from = 0) final long id) {
         mappedBookshelfId = id;
     }
 
+    @IntRange(from = 0)
     public long getMappedBookshelfId() {
         return mappedBookshelfId;
     }

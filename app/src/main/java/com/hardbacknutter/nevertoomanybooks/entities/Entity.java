@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
@@ -38,8 +39,9 @@ public interface Entity {
     /**
      * Get the database row id of the Entity.
      *
-     * @return id
+     * @return id; can be {@code 0} if the entity is considered 'new' and not stored yet
      */
+    @IntRange(from = 0)
     long getId();
 
     /**
