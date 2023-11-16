@@ -113,7 +113,7 @@ public class CalibreLibrary
                           @NonNull final String libraryStringId,
                           @NonNull final String name,
                           @NonNull final Bookshelf mappedBookshelf) {
-        super(name, mappedBookshelf);
+        super(name, mappedBookshelf.getId());
 
         this.libraryStringId = libraryStringId;
         this.uuid = uuid;

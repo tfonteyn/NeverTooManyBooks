@@ -60,18 +60,6 @@ abstract class LibraryBase
     }
 
     /**
-     * Constructor without ID.
-     *
-     * @param name            the Calibre name for the library
-     * @param mappedBookshelf the {@link Bookshelf} this library is mapped to
-     */
-    LibraryBase(@NonNull final String name,
-                @NonNull final Bookshelf mappedBookshelf) {
-        this.name = name;
-        mappedBookshelfId = mappedBookshelf.getId();
-    }
-
-    /**
      * Full constructor.
      *
      * @param id      row id

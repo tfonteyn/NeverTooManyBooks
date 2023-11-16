@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,7 +84,7 @@ public class CalibreVirtualLibrary
                                  @NonNull final String name,
                                  @NonNull final String expr,
                                  @NonNull final Bookshelf mappedBookshelf) {
-        super(name, mappedBookshelf);
+        super(name, mappedBookshelf.getId());
 
         this.libraryId = libraryId;
         searchExpression = expr;
