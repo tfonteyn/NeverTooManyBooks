@@ -23,9 +23,9 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -40,8 +40,8 @@ public interface CalibreLibraryDao {
      *
      * @return physical library
      */
-    @Nullable
-    CalibreLibrary getLibraryById(long id);
+    @NonNull
+    Optional<CalibreLibrary> getLibraryById(@IntRange(from = 1) long id);
 
     /**
      * Get the <strong>physical</strong> {@link CalibreLibrary} for the given uuid.
@@ -50,8 +50,8 @@ public interface CalibreLibraryDao {
      *
      * @return physical library
      */
-    @Nullable
-    CalibreLibrary findLibraryByUuid(@NonNull String uuid);
+    @NonNull
+    Optional<CalibreLibrary> findLibraryByUuid(@NonNull String uuid);
 
     /**
      * Get the <strong>physical</strong> {@link CalibreLibrary} for the given libraryStringId.
@@ -60,9 +60,14 @@ public interface CalibreLibraryDao {
      *
      * @return physical library
      */
-    @Nullable
-    CalibreLibrary findLibraryByStringId(@NonNull String libraryStringId);
+    @NonNull
+    Optional<CalibreLibrary> findLibraryByStringId(@NonNull String libraryStringId);
 
+    /**
+     * Get a list of all the libraries we have local knowledge of.
+     *
+     * @return list
+     */
     @NonNull
     List<CalibreLibrary> getAllLibraries();
 
@@ -75,9 +80,9 @@ public interface CalibreLibraryDao {
      *
      * @return virtual library
      */
-    @Nullable
-    CalibreVirtualLibrary getVirtualLibrary(long libraryId,
-                                            @NonNull String name);
+    @NonNull
+    Optional<CalibreVirtualLibrary> getVirtualLibrary(@IntRange(from = 1) long libraryId,
+                                                      @NonNull String name);
 
     /**
      * Update a {@link CalibreVirtualLibrary}.

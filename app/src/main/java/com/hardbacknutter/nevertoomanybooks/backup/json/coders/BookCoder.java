@@ -101,12 +101,9 @@ public class BookCoder
         // library for this book but there is no other/more library data on the book itself.
         // We need to explicitly load the library and encode a reference for it.
         if (DBKey.FK_CALIBRE_LIBRARY.equals(key)) {
-            final CalibreLibrary library = book.getCalibreLibrary();
-            if (library != null) {
-                // FK as it's a reference
-                out.put(DBKey.FK_CALIBRE_LIBRARY,
-                        calibreLibraryCoder.encodeReference(library));
-            }
+            // FK as it's a reference
+            book.getCalibreLibrary().ifPresent(library -> out
+                    .put(DBKey.FK_CALIBRE_LIBRARY, calibreLibraryCoder.encodeReference(library)));
 
         } else if (element instanceof String) {
             if (!((String) element).isEmpty()) {

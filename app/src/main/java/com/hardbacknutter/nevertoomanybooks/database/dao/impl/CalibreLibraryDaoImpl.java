@@ -25,10 +25,10 @@ import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -150,8 +150,8 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    @Nullable
-    public CalibreLibrary getLibraryById(final long id) {
+    @NonNull
+    public Optional<CalibreLibrary> getLibraryById(final long id) {
         try (Cursor cursor = db.rawQuery(SELECT_LIBRARY_BY_ID,
                                          new String[]{String.valueOf(id)})) {
             return loadLibrary(cursor);
@@ -159,32 +159,32 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    @Nullable
-    public CalibreLibrary findLibraryByUuid(@NonNull final String uuid) {
+    @NonNull
+    public Optional<CalibreLibrary> findLibraryByUuid(@NonNull final String uuid) {
         try (Cursor cursor = db.rawQuery(SELECT_LIBRARY_BY_UUID, new String[]{uuid})) {
             return loadLibrary(cursor);
         }
     }
 
+    @NonNull
     @Override
-    @Nullable
-    public CalibreLibrary findLibraryByStringId(@NonNull final String libraryStringId) {
+    public Optional<CalibreLibrary> findLibraryByStringId(@NonNull final String libraryStringId) {
         try (Cursor cursor = db.rawQuery(SELECT_LIBRARY_BY_STRING_ID,
                                          new String[]{libraryStringId})) {
             return loadLibrary(cursor);
         }
     }
 
-    @Nullable
-    private CalibreLibrary loadLibrary(@NonNull final Cursor cursor) {
+    @NonNull
+    private Optional<CalibreLibrary> loadLibrary(@NonNull final Cursor cursor) {
         if (cursor.moveToFirst()) {
             final CursorRow rowData = new CursorRow(cursor);
             final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKey.PK_ID),
                                                               rowData);
             library.setVirtualLibraries(getVirtualLibraries(library.getId()));
-            return library;
+            return Optional.of(library);
         }
-        return null;
+        return Optional.empty();
     }
 
 
@@ -318,19 +318,20 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    @Nullable
-    public CalibreVirtualLibrary getVirtualLibrary(final long libraryId,
-                                                   @NonNull final String name) {
+    @NonNull
+    public Optional<CalibreVirtualLibrary> getVirtualLibrary(final long libraryId,
+                                                             @NonNull final String name) {
 
         try (Cursor cursor = db.rawQuery(SELECT_VLIB_BY_LIBRARY_ID_AND_NAME,
                                          new String[]{String.valueOf(libraryId), name})) {
 
             final CursorRow rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return new CalibreVirtualLibrary(rowData.getLong(DBKey.PK_ID), rowData);
+                return Optional.of(new CalibreVirtualLibrary(rowData.getLong(DBKey.PK_ID),
+                                                             rowData));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
