@@ -518,10 +518,10 @@ public final class CalibreContentServer
             @Nullable
             CalibreLibrary library = null;
             if (!uuid.isEmpty()) {
-                library = libraryDao.findLibraryByUuid(uuid);
+                library = libraryDao.findLibraryByUuid(uuid).orElse(null);
             }
             if (library == null) {
-                library = libraryDao.findLibraryByStringId(libraryId);
+                library = libraryDao.findLibraryByStringId(libraryId).orElse(null);
             }
             if (library == null) {
                 // must be a new one.
@@ -573,26 +573,27 @@ public final class CalibreContentServer
                                          @NonNull final JSONObject virtualLibraries)
             throws JSONException {
 
-        final List<CalibreVirtualLibrary> vlibs = new ArrayList<>();
+        final List<CalibreVirtualLibrary> vLibs = new ArrayList<>();
 
         final Iterator<String> it = virtualLibraries.keys();
         while (it.hasNext()) {
             final String name = it.next();
             final String expr = virtualLibraries.getString(name);
 
-            CalibreVirtualLibrary dbVirtLib = dao.getVirtualLibrary(library.getId(), name);
-            if (dbVirtLib == null) {
-                dbVirtLib = new CalibreVirtualLibrary(library.getId(), name, expr,
-                                                      library.getMappedBookshelfId());
-            } else {
-                dbVirtLib.setName(name);
-                dbVirtLib.setExpr(expr);
-            }
-            vlibs.add(dbVirtLib);
+            dao.getVirtualLibrary(library.getId(), name).ifPresentOrElse(vLib -> {
+                // Update existing
+                vLib.setName(name);
+                vLib.setExpr(expr);
+                vLibs.add(vLib);
+            }, () -> {
+                // create new
+                vLibs.add(new CalibreVirtualLibrary(library.getId(), name, expr,
+                                                    library.getMappedBookshelfId()));
+            });
         }
 
         // hook them up to the library itself; always overwriting the current(previous) list.
-        library.setVirtualLibraries(vlibs);
+        library.setVirtualLibraries(vLibs);
     }
 
     private void loadCustomFieldDefinitions(@NonNull final CalibreLibrary library,

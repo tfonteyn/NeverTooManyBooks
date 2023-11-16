@@ -947,22 +947,24 @@ public class Book
      *
      * @return library
      */
-    @Nullable
-    public CalibreLibrary getCalibreLibrary() {
+    @NonNull
+    public Optional<CalibreLibrary> getCalibreLibrary() {
         // We MIGHT have it (probably not) ...
         if (contains(BKEY_CALIBRE_LIBRARY)) {
-            return getParcelable(BKEY_CALIBRE_LIBRARY);
-
+            final CalibreLibrary library = getParcelable(BKEY_CALIBRE_LIBRARY);
+            if (library == null) {
+                return Optional.empty();
+            } else {
+                return Optional.of(library);
+            }
         } else {
             // but if not, go explicitly fetch it.
-            final CalibreLibrary library = ServiceLocator
+            final Optional<CalibreLibrary> library = ServiceLocator
                     .getInstance().getCalibreLibraryDao()
                     .getLibraryById(getLong(DBKey.FK_CALIBRE_LIBRARY));
-
-            if (library != null) {
-                // store for reuse
-                putParcelable(BKEY_CALIBRE_LIBRARY, library);
-            }
+            // store for reuse
+            library.ifPresent(
+                    calibreLibrary -> putParcelable(BKEY_CALIBRE_LIBRARY, calibreLibrary));
             return library;
         }
     }
