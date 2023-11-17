@@ -181,6 +181,15 @@ public class CollectionFormUploader {
         setBooleanByMode(book, wanted ? "inWishlist" : "notInWishlist");
     }
 
+    /**
+     * Post a request to the site to set the rating of the given book.
+     *
+     * @param book to set
+     *
+     * @throws IOException              on generic/other IO failures
+     * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException         on storage related failures
+     */
     @WorkerThread
     public void setRating(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
@@ -270,8 +279,8 @@ public class CollectionFormUploader {
                             .parse(valueStr, book.getString(DBKey.PRICE_PAID_CURRENCY))
                             // So always convert it to EURO
                             .map(money -> String.valueOf(money.toEuro()))
-                            // or else just send the value string as-is
-                            .orElseGet(() -> valueStr);
+                            // or else just use the value string as-is
+                            .orElse(valueStr);
                     builder.appendQueryParameter(FF_AANKOOP_PRIJS, value);
                 } else {
                     // just send the value string as-is
@@ -303,6 +312,15 @@ public class CollectionFormUploader {
         doPost(postBody);
     }
 
+    /**
+     * Post a request to the site to delete the given book from our collection.
+     *
+     * @param book to delete
+     *
+     * @throws IOException              on generic/other IO failures
+     * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException         on storage related failures
+     */
     @WorkerThread
     public void delete(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
@@ -434,6 +452,9 @@ public class CollectionFormUploader {
         }));
     }
 
+    /**
+     * Request to cancel an ongoing post (to the site).
+     */
     public void cancel() {
         futureHttpPost.cancel();
     }

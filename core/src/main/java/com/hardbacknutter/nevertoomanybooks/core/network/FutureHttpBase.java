@@ -406,6 +406,9 @@ public abstract class FutureHttpBase<T> {
         throw new IOException(saxCause);
     }
 
+    /**
+     * Request to cancel an ongoing http request.
+     */
     public void cancel() {
         synchronized (this) {
             if (futureHttp != null) {
