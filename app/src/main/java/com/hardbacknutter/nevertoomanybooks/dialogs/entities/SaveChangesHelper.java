@@ -90,6 +90,7 @@ final class SaveChangesHelper {
                 return true;
 
             } catch (@NonNull final DaoWriteException ignore) {
+                // ignore; report failure by returning 'false' below
             }
         }
         return false;
