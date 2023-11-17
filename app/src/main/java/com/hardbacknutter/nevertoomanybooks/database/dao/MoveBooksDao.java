@@ -30,6 +30,17 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
+/**
+ * Implemented by DAO's which have a 1:many relation between their {@link Entity}
+ * they manage and a list of Books.
+ * <p>
+ * The method {@link #moveBooks(Context, Entity, Entity)} allows to move
+ * a list of books owned by one Entity to being owned by another Entity.
+ * Typical use is to merge two Entities deleting the 'source' Entity after
+ * the move is finished.
+ *
+ * @param <T> Entity managed by the DAO (e.g. Author, Publisher,..)
+ */
 public interface MoveBooksDao<T extends Entity> {
 
     /**
