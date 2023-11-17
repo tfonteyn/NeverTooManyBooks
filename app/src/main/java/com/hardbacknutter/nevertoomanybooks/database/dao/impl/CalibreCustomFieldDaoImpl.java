@@ -173,8 +173,8 @@ public class CalibreCustomFieldDaoImpl
     }
 
     private long find(@NonNull final CalibreCustomField calibreCustomField) {
-        try (SynchronizedStatement stmt = db.compileStatement(SELECT_BY_ID)) {
-            stmt.bindLong(1, calibreCustomField.getId());
+        try (SynchronizedStatement stmt = db.compileStatement(SELECT_BY_NAME)) {
+            stmt.bindString(1, calibreCustomField.getCalibreKey());
             return stmt.simpleQueryForLongOrZero();
         }
     }
