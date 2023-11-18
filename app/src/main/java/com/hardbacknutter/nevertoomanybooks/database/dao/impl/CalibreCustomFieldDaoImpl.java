@@ -121,8 +121,8 @@ public class CalibreCustomFieldDaoImpl
         calibreCustomField.setId(id);
     }
 
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
     @Override
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final CalibreCustomField calibreCustomField)
             throws DaoInsertException {
         try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {

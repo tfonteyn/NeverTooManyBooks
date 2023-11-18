@@ -54,11 +54,10 @@ public interface BookDao {
     boolean touch(@NonNull Book book);
 
     /**
-     * Create a new Book using the details provided.
+     * Create a new {@link Book}.
      *
      * @param context Current context
-     * @param book    A collection with the columns to be set. May contain extra data.
-     *                The id will be updated.
+     * @param book    object to insert. Will be updated with the id.
      * @param flags   See {@link BookFlag} for flag definitions
      *
      * @return the row id of the newly inserted row

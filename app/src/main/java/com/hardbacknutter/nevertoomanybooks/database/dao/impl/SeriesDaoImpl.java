@@ -377,6 +377,7 @@ public class SeriesDaoImpl
     }
 
     @Override
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,
                        @NonNull final Locale bookLocale)

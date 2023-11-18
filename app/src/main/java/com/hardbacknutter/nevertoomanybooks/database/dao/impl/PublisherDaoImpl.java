@@ -331,6 +331,7 @@ public class PublisherDaoImpl
     }
 
     @Override
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
                        @NonNull final Publisher publisher,
                        @NonNull final Locale bookLocale)

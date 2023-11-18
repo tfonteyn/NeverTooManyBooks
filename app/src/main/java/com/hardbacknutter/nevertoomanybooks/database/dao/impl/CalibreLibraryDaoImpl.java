@@ -245,8 +245,8 @@ public class CalibreLibraryDaoImpl
         library.setId(id);
     }
 
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
     @Override
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final CalibreLibrary library)
             throws DaoInsertException {
 
