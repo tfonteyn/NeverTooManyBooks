@@ -292,7 +292,7 @@ public class JsonRecordReader
                                   progressListener);
                     }
                 }
-            } catch (@NonNull final JSONException e) {
+            } catch (@NonNull final JSONException | UncheckedDaoWriteException e) {
                 // Unpack if possible
                 if (e.getCause() instanceof DaoWriteException) {
                     throw new DataReaderException(context.getString(
@@ -409,7 +409,9 @@ public class JsonRecordReader
     private void readCalibreLibraries(@NonNull final Context context,
                                       @NonNull final JSONObject root,
                                       @NonNull final Style defaultStyle)
-            throws JSONException {
+            throws JSONException,
+                   UncheckedDaoWriteException {
+
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreLibraries.getName());
         if (jsonRoot != null) {
             final CalibreLibraryDao libraryDao = ServiceLocator.getInstance()
@@ -423,7 +425,11 @@ public class JsonRecordReader
                             // The library already exists
                             switch (getUpdateOption()) {
                                 case Overwrite: {
-                                    libraryDao.update(library);
+                                    try {
+                                        libraryDao.update(library);
+                                    } catch (@NonNull final DaoWriteException e) {
+                                        throw new UncheckedDaoWriteException(e);
+                                    }
                                     break;
                                 }
                                 case OnlyNewer:
@@ -431,14 +437,20 @@ public class JsonRecordReader
                                     break;
                             }
                         } else {
-                            libraryDao.insert(library);
+                            try {
+                                libraryDao.insert(library);
+                            } catch (@NonNull final DaoWriteException e) {
+                                throw new UncheckedDaoWriteException(e);
+                            }
                         }
                     });
         }
     }
 
     private void readCalibreCustomFields(@NonNull final JSONObject root)
-            throws JSONException {
+            throws JSONException,
+                   UncheckedDaoWriteException {
+
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreCustomFields.getName());
         if (jsonRoot != null) {
             final CalibreCustomFieldDao dao =
@@ -452,7 +464,11 @@ public class JsonRecordReader
                             // The field already exists
                             switch (getUpdateOption()) {
                                 case Overwrite: {
-                                    dao.update(calibreCustomField);
+                                    try {
+                                        dao.update(calibreCustomField);
+                                    } catch (@NonNull final DaoWriteException e) {
+                                        throw new UncheckedDaoWriteException(e);
+                                    }
                                     break;
                                 }
                                 case OnlyNewer:
@@ -460,7 +476,11 @@ public class JsonRecordReader
                                     break;
                             }
                         } else {
-                            dao.insert(calibreCustomField);
+                            try {
+                                dao.insert(calibreCustomField);
+                            } catch (@NonNull final DaoWriteException e) {
+                                throw new UncheckedDaoWriteException(e);
+                            }
                         }
                     });
         }

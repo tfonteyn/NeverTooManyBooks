@@ -22,12 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -43,6 +47,9 @@ public class CalibreCustomFieldDaoImpl
 
     private static final String TAG = "CalibreCustomFieldDao";
 
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+
     private static final String BASE_SELECT =
             SELECT_ + DBKey.PK_ID
             + ',' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
@@ -53,6 +60,8 @@ public class CalibreCustomFieldDaoImpl
     private static final String SELECT_BY_ID =
             BASE_SELECT + _WHERE_ + DBKey.PK_ID + "=?";
 
+    private static final String SELECT_BY_NAME =
+            BASE_SELECT + _WHERE_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + "=?";
 
     private static final String SELECT_ALL =
             BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + _COLLATION;
@@ -84,6 +93,7 @@ public class CalibreCustomFieldDaoImpl
      * @param db Database Access
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
+        //noinspection CheckStyle
         final String[][] all = {
                 {"#read", CalibreCustomField.TYPE_BOOL, DBKey.READ__BOOL},
 
@@ -111,8 +121,10 @@ public class CalibreCustomFieldDaoImpl
         calibreCustomField.setId(id);
     }
 
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     @Override
-    public long insert(@NonNull final CalibreCustomField calibreCustomField) {
+    public long insert(@NonNull final CalibreCustomField calibreCustomField)
+            throws DaoInsertException {
         try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             stmt.bindString(2, calibreCustomField.getType());
@@ -120,24 +132,37 @@ public class CalibreCustomFieldDaoImpl
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 calibreCustomField.setId(iId);
+                return iId;
             }
-            return iId;
+
+            throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField, e);
         }
     }
 
     @Override
-    public boolean update(@NonNull final CalibreCustomField calibreCustomField) {
+    public void update(@NonNull final CalibreCustomField calibreCustomField)
+            throws DaoUpdateException {
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, calibreCustomField.getCalibreKey());
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, calibreCustomField.getType());
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.getDbKey());
 
-        final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
-                                           DBKey.PK_ID + "=?",
-                                           new String[]{String.valueOf(
-                                                   calibreCustomField.getId())});
-        return 0 < rowsAffected;
+        try {
+            final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
+                                               DBKey.PK_ID + "=?",
+                                               new String[]{String.valueOf(
+                                                       calibreCustomField.getId())});
+            if (rowsAffected > 0) {
+                return;
+            }
+
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField, e);
+        }
     }
 
     @Override

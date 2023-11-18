@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
@@ -85,24 +86,6 @@ public interface CalibreLibraryDao {
                                                       @NonNull String name);
 
     /**
-     * Update a {@link CalibreVirtualLibrary}.
-     *
-     * @param library to update
-     *
-     * @return {@code true} for success.
-     */
-    boolean update(@NonNull CalibreVirtualLibrary library);
-
-    /**
-     * Creates a new {@link CalibreLibrary} in the database.
-     *
-     * @param library object to insert. Will be updated with the id.
-     *
-     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
-     */
-    long insert(@NonNull CalibreLibrary library);
-
-    /**
      * Find a {@link CalibreLibrary} by using the <strong>name</strong> fields.
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
      * <p>
@@ -115,13 +98,27 @@ public interface CalibreLibraryDao {
                @NonNull CalibreLibrary library);
 
     /**
+     * Creates a new {@link CalibreLibrary} in the database.
+     *
+     * @param library object to insert. Will be updated with the id.
+     *
+     * @return the row id of the newly inserted row
+     *
+     * @throws DaoWriteException on failure
+     */
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    long insert(@NonNull CalibreLibrary library)
+            throws DaoWriteException;
+
+    /**
      * Update a {@link CalibreLibrary}.
      *
      * @param library to update
      *
-     * @return {@code true} for success.
+     * @throws DaoWriteException on failure
      */
-    boolean update(@NonNull CalibreLibrary library);
+    void update(@NonNull CalibreLibrary library)
+            throws DaoWriteException;
 
     /**
      * Delete the passed {@link CalibreLibrary}.
@@ -132,6 +129,16 @@ public interface CalibreLibraryDao {
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean delete(@NonNull CalibreLibrary library);
+
+    /**
+     * Update a {@link CalibreVirtualLibrary}.
+     *
+     * @param library to update
+     *
+     * @throws DaoWriteException on failure
+     */
+    void update(@NonNull CalibreVirtualLibrary library)
+            throws DaoWriteException;
 
     /**
      * Check that a book with the passed Calibre UUID exists and return the id of the book, or zero.

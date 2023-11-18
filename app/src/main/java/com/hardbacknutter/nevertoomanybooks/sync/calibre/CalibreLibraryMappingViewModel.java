@@ -96,7 +96,8 @@ public class CalibreLibraryMappingViewModel
     }
 
 
-    void mapBookshelfToLibrary(@NonNull final Bookshelf bookshelf) {
+    void mapBookshelfToLibrary(@NonNull final Bookshelf bookshelf)
+            throws DaoWriteException {
         if (bookshelf.getId() != currentLibrary.getMappedBookshelfId()) {
             currentLibrary.setMappedBookshelf(bookshelf.getId());
             calibreLibraryDao.update(currentLibrary);
@@ -104,7 +105,8 @@ public class CalibreLibraryMappingViewModel
     }
 
     void mapBookshelfToVirtualLibrary(@NonNull final Bookshelf bookshelf,
-                                      final int position) {
+                                      final int position)
+            throws DaoWriteException {
 
         final CalibreVirtualLibrary vlib = currentLibrary.getVirtualLibraries().get(position);
         if (bookshelf.getId() != vlib.getMappedBookshelfId()) {

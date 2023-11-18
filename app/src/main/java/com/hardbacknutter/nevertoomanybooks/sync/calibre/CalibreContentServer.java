@@ -71,6 +71,9 @@ import javax.net.ssl.TrustManagerFactory;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
@@ -464,15 +467,17 @@ public final class CalibreContentServer
      *
      * @param context Current context
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException       on generic/other IO failures
+     * @throws StorageException  on storage related failures
+     * @throws JSONException     upon any parsing error
+     * @throws DaoWriteException on failure to update the database
      */
     @WorkerThread
     public void readMetaData(@NonNull final Context context)
             throws IOException,
                    StorageException,
-                   JSONException {
+                   JSONException,
+                   DaoWriteException {
 
         libraries.clear();
         defaultLibrary = null;
@@ -492,6 +497,12 @@ public final class CalibreContentServer
         final JSONObject libraryDetails = source.optJSONObject("library_details");
         calibreExtensionInstalled = libraryDetails != null;
 
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+
+        Synchronizer.SyncLock txLock = null;
+        if (!db.inTransaction()) {
+            txLock = db.beginTransaction(true);
+        }
         final Iterator<String> it = libraryMap.keys();
         while (it.hasNext()) {
             final String libraryId = it.next();
@@ -562,6 +573,10 @@ public final class CalibreContentServer
             if (calibreIds != null && !calibreIds.isEmpty()) {
                 loadCustomFieldDefinitions(library, calibreIds.getInt(0));
             }
+        }
+
+        if (txLock != null) {
+            db.setTransactionSuccessful();
         }
 
         // Sanity check

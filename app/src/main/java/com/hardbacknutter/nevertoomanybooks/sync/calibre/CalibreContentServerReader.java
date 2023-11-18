@@ -296,7 +296,8 @@ public class CalibreContentServerReader
     private void readLibraryMetaData(@NonNull final Context context)
             throws StorageException,
                    IOException,
-                   JSONException {
+                   JSONException,
+                   DaoWriteException {
 
         server.readMetaData(context);
         if (library == null) {
@@ -314,7 +315,7 @@ public class CalibreContentServerReader
 
         try {
             readLibraryMetaData(context);
-        } catch (@NonNull final JSONException e) {
+        } catch (@NonNull final JSONException | DaoWriteException e) {
             throw new DataReaderException(e);
         }
 
@@ -433,14 +434,13 @@ public class CalibreContentServerReader
             } while (valid && num > 0 && totalNum > offset + num
                      && !progressListener.isCancelled());
 
-        } catch (@NonNull final JSONException e) {
+            // always set the sync date!
+            library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
+            calibreLibraryDao.update(library);
+
+        } catch (@NonNull final JSONException | DaoWriteException e) {
             throw new DataReaderException(e);
         }
-
-        // always set the sync date!
-        library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
-
-        calibreLibraryDao.update(library);
 
         return results;
     }

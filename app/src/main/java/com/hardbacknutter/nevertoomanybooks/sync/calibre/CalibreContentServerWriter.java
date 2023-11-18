@@ -39,6 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -163,7 +164,7 @@ public class CalibreContentServerWriter
                 library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
                 libraryDao.update(library);
             }
-        } catch (@NonNull final JSONException e) {
+        } catch (@NonNull final JSONException | DaoWriteException e) {
             throw new DataWriterException(e);
         }
         return results;

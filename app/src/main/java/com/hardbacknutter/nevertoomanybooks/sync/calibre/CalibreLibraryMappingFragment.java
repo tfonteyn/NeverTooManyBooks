@@ -120,10 +120,14 @@ public class CalibreLibraryMappingFragment
         bookshelfAdapter = new EntityArrayAdapter<>(getContext(), bookshelfList);
         vb.bookshelf.setAdapter(bookshelfAdapter);
         vb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
-            final Bookshelf bookshelf = bookshelfAdapter.getItem(position);
-            //noinspection DataFlowIssue
-            vm.mapBookshelfToLibrary(bookshelf);
-            vb.bookshelf.setText(bookshelf.getName());
+            try {
+                final Bookshelf bookshelf = bookshelfAdapter.getItem(position);
+                //noinspection DataFlowIssue
+                vm.mapBookshelfToLibrary(bookshelf);
+                vb.bookshelf.setText(bookshelf.getName());
+            } catch (@NonNull final DaoWriteException e) {
+                ErrorDialog.show(getContext(), TAG, e);
+            }
         });
 
         vb.btnCreate.setOnClickListener(btn -> {
@@ -296,6 +300,7 @@ public class CalibreLibraryMappingFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            final Context context = requireContext();
 
             final Holder holder = new Holder(
                     RowEditCalibreLibraryBinding.inflate(inflater, parent, false));
@@ -303,9 +308,13 @@ public class CalibreLibraryMappingFragment
             holder.vb.bookshelf.setAdapter(bookshelfAdapter);
             holder.vb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
                 final Bookshelf bookshelf = bookshelfAdapter.getItem(position);
-                //noinspection DataFlowIssue
-                vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
-                holder.vb.bookshelf.setText(bookshelf.getName());
+                try {
+                    //noinspection DataFlowIssue
+                    vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
+                    holder.vb.bookshelf.setText(bookshelf.getName());
+                } catch (@NonNull final DaoWriteException e) {
+                    ErrorDialog.show(context, TAG, e);
+                }
             });
 
             holder.vb.btnCreate.setOnClickListener(btn -> {
@@ -313,11 +322,11 @@ public class CalibreLibraryMappingFragment
                     btn.setEnabled(false);
                     //noinspection DataFlowIssue
                     final Bookshelf bookshelf = vm.createVirtualLibraryAsBookshelf(
-                            getContext(), holder.getBindingAdapterPosition());
+                            context, holder.getBindingAdapterPosition());
                     addBookshelf(bookshelf, holder.vb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    ErrorDialog.show(getContext(), TAG, e);
+                    ErrorDialog.show(context, TAG, e);
                 }
             });
 
