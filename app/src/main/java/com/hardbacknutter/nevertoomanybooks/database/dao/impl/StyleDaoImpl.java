@@ -23,8 +23,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -42,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -95,6 +99,8 @@ public class StyleDaoImpl
             + _WHERE_ + DBKey.STYLE_UUID + "=?";
 
     private static final String INSERT_STYLE;
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
 
     static {
         final StringBuilder tmp = new StringBuilder(
@@ -203,6 +209,16 @@ public class StyleDaoImpl
                     .collect(Collectors.joining(","));
     }
 
+    /**
+     * Insert the style.
+     * <strong>Exception handling MUST be done by the caller</strong>
+     *
+     * @param style     to insert
+     * @param styleName the name
+     * @param stmt      statement to run
+     *
+     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     */
     private static long doInsert(@NonNull final Style style,
                                  @Nullable final String styleName,
                                  @NonNull final ExtSQLiteStatement stmt) {
@@ -295,21 +311,28 @@ public class StyleDaoImpl
         throw new IllegalStateException();
     }
 
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     @Override
     public long insert(@NonNull final Context context,
-                       @NonNull final Style style) {
+                       @NonNull final Style style)
+            throws DaoInsertException {
         try (SynchronizedStatement stmt = db.compileStatement(INSERT_STYLE)) {
             final long iId = doInsert(style, style.getLabel(context), stmt);
             if (iId > 0) {
                 style.setId(iId);
+                return iId;
             }
-            return iId;
+
+            throw new DaoInsertException(ERROR_INSERT_FROM + style);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoInsertException(ERROR_INSERT_FROM + style, e);
         }
     }
 
     @Override
-    public boolean update(@NonNull final Context context,
-                          @NonNull final Style style) {
+    public void update(@NonNull final Context context,
+                       @NonNull final Style style)
+            throws DaoUpdateException {
         final ContentValues cv = new ContentValues();
         // Note that the StyleType is NEVER updated.
 
@@ -347,15 +370,22 @@ public class StyleDaoImpl
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
         }
 
-        return 0 < db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
-                             DBKey.PK_ID + "=?",
-                             new String[]{String.valueOf(style.getId())});
+        try {
+            final int rowsAffected = db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
+                                               DBKey.PK_ID + "=?",
+                                               new String[]{String.valueOf(style.getId())});
+            if (rowsAffected > 0) {
+                return;
+            }
+
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + style);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
+        }
     }
 
     @Override
     public boolean delete(@NonNull final Style style) {
-
-        final int rowsAffected;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -367,21 +397,22 @@ public class StyleDaoImpl
 
             try (SynchronizedStatement stmt = db.compileStatement(DELETE_STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
-                rowsAffected = stmt.executeUpdateDelete();
-            }
-            if (txLock != null) {
-                db.setTransactionSuccessful();
+                final int rowsAffected = stmt.executeUpdateDelete();
+
+                if (rowsAffected > 0) {
+                    style.setId(0);
+
+                    if (txLock != null) {
+                        db.setTransactionSuccessful();
+                    }
+                }
+                return rowsAffected == 1;
             }
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-
-        if (rowsAffected > 0) {
-            style.setId(0);
-        }
-        return rowsAffected == 1;
     }
 
     @Override

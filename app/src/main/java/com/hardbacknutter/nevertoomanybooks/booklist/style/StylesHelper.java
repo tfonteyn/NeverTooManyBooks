@@ -36,10 +36,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 
 /**
  * Helper class encapsulating {@link StyleDao} access and internal in-memory caches.
+ * <p>
+ * URGENT: exception/error handling is sloppy. We're assuming all db actions go well
  */
 public class StylesHelper {
 
@@ -230,24 +233,26 @@ public class StylesHelper {
         int order = 0;
 
         final StyleDao dao = styleDaoSupplier.get();
-
-        // sort the preferred styles at the top
-        for (final Style style : styles) {
-            if (style.isPreferred()) {
-                style.setMenuPosition(order);
-                dao.update(context, style);
-                order++;
+        try {
+            // sort the preferred styles at the top
+            for (final Style style : styles) {
+                if (style.isPreferred()) {
+                    style.setMenuPosition(order);
+                    dao.update(context, style);
+                    order++;
+                }
             }
-        }
-        // followed by the non preferred styles
-        for (final Style style : styles) {
-            if (!style.isPreferred()) {
-                style.setMenuPosition(order);
-                dao.update(context, style);
-                order++;
+            // followed by the non preferred styles
+            for (final Style style : styles) {
+                if (!style.isPreferred()) {
+                    style.setMenuPosition(order);
+                    dao.update(context, style);
+                    order++;
+                }
             }
+        } catch (@NonNull final DaoWriteException ignore) {
+            // ignore
         }
-
         // keep it safe and easy, just clear the caches; almost certainly overkill
         cache.clear();
     }
@@ -285,15 +290,23 @@ public class StylesHelper {
         style.setId(dao.getStyleIdByUuid(style.getUuid()));
 
         if (style.getId() == 0) {
-            if (dao.insert(context, style) > 0) {
-                cache.put(style.getUuid(), style);
-                return true;
-            }
-            return false;
-
+            return insert(context, style);
         } else {
             return update(context, style);
         }
+    }
+
+    private boolean insert(@NonNull final Context context,
+                           @NonNull final Style style) {
+        try {
+            if (styleDaoSupplier.get().insert(context, style) > 0) {
+                cache.put(style.getUuid(), style);
+                return true;
+            }
+        } catch (@NonNull final DaoWriteException ignore) {
+            // ignore
+        }
+        return false;
     }
 
     /**
@@ -320,7 +333,9 @@ public class StylesHelper {
             }
         }
 
-        if (styleDaoSupplier.get().update(context, style)) {
+        try {
+            styleDaoSupplier.get().update(context, style);
+
             if (style.getType() == StyleType.Global) {
                 // ensure both the global style and any inheriting styles get reloaded
                 globalStyle = null;
@@ -330,6 +345,9 @@ public class StylesHelper {
                 cache.put(style.getUuid(), style);
             }
             return true;
+
+        } catch (@NonNull final DaoWriteException ignore) {
+            // ignore
         }
         return false;
     }
