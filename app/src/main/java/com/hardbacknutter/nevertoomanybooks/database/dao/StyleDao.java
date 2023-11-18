@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -83,7 +82,7 @@ public interface StyleDao {
             throws DaoWriteException;
 
     /**
-     * Update a {@link Style} - both {@link UserStyle} and {@link BuiltinStyle} can be updated.
+     * Update the given {@link Style}.
      *
      * @param context Current context
      * @param style   to update

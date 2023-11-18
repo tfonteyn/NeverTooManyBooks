@@ -364,17 +364,16 @@ public class PublisherDaoImpl
             throws DaoUpdateException {
 
         final Locale locale = publisher.getLocale(context).orElse(bookLocale);
-        final OrderByData obd =
-                OrderByData.create(context, reorderHelperSupplier.get(),
-                                   publisher.getName(), locale);
+        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
+                                                   publisher.getName(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, publisher.getName());
             stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
             stmt.bindLong(3, publisher.getId());
 
-            final boolean success = 0 < stmt.executeUpdateDelete();
-            if (success) {
+            final int rowsAffected = stmt.executeUpdateDelete();
+            if (rowsAffected > 0) {
                 return;
             }
 
@@ -423,7 +422,7 @@ public class PublisherDaoImpl
     public void moveBooks(@NonNull final Context context,
                           @NonNull final Publisher source,
                           @NonNull final Publisher target)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -497,7 +496,7 @@ public class PublisherDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } catch (@NonNull final RuntimeException | DaoWriteException e) {
+            } catch (@NonNull final RuntimeException | DaoInsertException e) {
                 LoggerFactory.getLogger().e(TAG, e);
 
             } finally {

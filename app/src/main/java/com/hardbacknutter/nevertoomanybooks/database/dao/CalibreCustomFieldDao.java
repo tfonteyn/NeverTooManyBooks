@@ -53,7 +53,7 @@ public interface CalibreCustomFieldDao {
             throws DaoWriteException;
 
     /**
-     * Update a {@link CalibreCustomField}.
+     * Update the given {@link CalibreCustomField}.
      *
      * @param calibreCustomField to update
      *

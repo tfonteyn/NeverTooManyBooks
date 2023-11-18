@@ -586,13 +586,14 @@ public class AuthorDaoImpl
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context).orElse(userLocale);
 
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
 
-            final boolean success;
+            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
                 stmt.bindString(2, SqlEncode
@@ -603,10 +604,10 @@ public class AuthorDaoImpl
                 stmt.bindBoolean(5, author.isComplete());
 
                 stmt.bindLong(6, author.getId());
-                success = 0 < stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete();
             }
 
-            if (success) {
+            if (rowsAffected > 0) {
                 insertOrUpdateRealAuthor(context, bookLocale, author, author.getId());
 
                 if (txLock != null) {
@@ -715,7 +716,7 @@ public class AuthorDaoImpl
 
     private void insertPseudonymLink(final long authorId,
                                      final long realAuthorId)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
             stmt.bindLong(1, authorId);

@@ -191,7 +191,7 @@ public interface EntityBookLinksDao<T extends Entity>
             throws DaoWriteException;
 
     /**
-     * Update a {@link T}.
+     * Update the given {@link T}.
      *
      * @param context    Current context
      * @param item       to update

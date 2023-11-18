@@ -111,7 +111,7 @@ public interface CalibreLibraryDao {
             throws DaoWriteException;
 
     /**
-     * Update a {@link CalibreLibrary}.
+     * Update the given {@link CalibreLibrary}.
      *
      * @param library to update
      *
@@ -131,7 +131,7 @@ public interface CalibreLibraryDao {
     boolean delete(@NonNull CalibreLibrary library);
 
     /**
-     * Update a {@link CalibreVirtualLibrary}.
+     * Update the given {@link CalibreVirtualLibrary}.
      *
      * @param library to update
      *

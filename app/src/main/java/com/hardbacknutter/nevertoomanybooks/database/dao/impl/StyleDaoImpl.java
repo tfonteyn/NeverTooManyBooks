@@ -373,9 +373,9 @@ public class StyleDaoImpl
         }
 
         try {
-            final int rowsAffected = db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(style.getId())});
+            final int rowsAffected = getDb().update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
+                                                    DBKey.PK_ID + "=?",
+                                                    new String[]{String.valueOf(style.getId())});
             if (rowsAffected > 0) {
                 return;
             }

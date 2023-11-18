@@ -240,6 +240,7 @@ public class FtsDaoImpl
         final String tmpTableName = "books_fts_rebuilding";
         final TableDefinition ftsTemp = DBDefinitions.createFtsTableDefinition(tmpTableName);
 
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
@@ -292,6 +293,8 @@ public class FtsDaoImpl
                        @IntRange(from = 1) final long bookId)
             throws TransactionException {
 
+        final SynchronizedDb db = getDb();
+
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
@@ -312,6 +315,8 @@ public class FtsDaoImpl
     public void update(@NonNull final Context context,
                        @IntRange(from = 1) final long bookId)
             throws TransactionException {
+
+        final SynchronizedDb db = getDb();
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -348,6 +353,8 @@ public class FtsDaoImpl
                               @NonNull final Cursor cursor,
                               @NonNull final String sql)
             throws TransactionException {
+
+        final SynchronizedDb db = getDb();
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {

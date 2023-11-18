@@ -76,7 +76,7 @@ public interface BedethequeCacheDao {
             throws DaoWriteException;
 
     /**
-     * Update a {@link BdtAuthor}.
+     * Update the given {@link BdtAuthor}.
      *
      * @param bdtAuthor to update
      * @param locale    to use

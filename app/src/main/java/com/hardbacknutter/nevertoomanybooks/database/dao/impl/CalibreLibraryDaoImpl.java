@@ -251,6 +251,7 @@ public class CalibreLibraryDaoImpl
     public long insert(@NonNull final CalibreLibrary library)
             throws DaoInsertException {
 
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -292,6 +293,7 @@ public class CalibreLibraryDaoImpl
     public void update(@NonNull final CalibreLibrary library)
             throws DaoInsertException, DaoUpdateException {
 
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -395,9 +397,9 @@ public class CalibreLibraryDaoImpl
         cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
 
         try {
-            final int rowsAffected = db.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(library.getId())});
+            final int rowsAffected = getDb().update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
+                                                    DBKey.PK_ID + "=?",
+                                                    new String[]{String.valueOf(library.getId())});
             if (rowsAffected > 0) {
                 return;
             }

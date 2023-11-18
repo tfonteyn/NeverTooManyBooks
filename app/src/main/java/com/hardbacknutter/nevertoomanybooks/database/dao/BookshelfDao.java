@@ -144,7 +144,7 @@ public interface BookshelfDao
             throws DaoWriteException;
 
     /**
-     * Update a bookshelf.
+     * Update the given {@link Bookshelf}.
      *
      * @param context   Current context
      * @param bookshelf to update

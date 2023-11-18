@@ -348,11 +348,10 @@ public class BookDaoImpl
             // Reminder: We're updating ONLY the fields present in the ContentValues.
             // Other fields in the database row are not affected.
             // go !
-            final boolean success =
-                    0 < db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
-                                  new String[]{String.valueOf(book.getId())});
+            final int rowsAffected = db.update(TBL_BOOKS.getName(), cv, DBKey.PK_ID + "=?",
+                                               new String[]{String.valueOf(book.getId())});
 
-            if (success) {
+            if (rowsAffected > 0) {
                 // always lookup the UUID
                 final String uuid = getBookUuid(book.getId());
                 SanityCheck.requireValue(uuid, ERROR_UUID);
@@ -364,7 +363,6 @@ public class BookDaoImpl
 
                 try {
                     bookDaoHelper.persistCovers();
-
                 } catch (@NonNull final IOException e) {
                     throw new DaoCoverException(ERROR_STORING_COVERS + book);
                 }
@@ -372,9 +370,10 @@ public class BookDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } else {
-                throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
+                return;
             }
+
+            throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
             throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book, e);
 

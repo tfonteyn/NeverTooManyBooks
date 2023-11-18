@@ -319,6 +319,7 @@ public class BookshelfDaoImpl
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
 
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -364,6 +365,7 @@ public class BookshelfDaoImpl
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
 
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -371,7 +373,7 @@ public class BookshelfDaoImpl
             }
 
             final TopRowListPosition topRowListPosition = bookshelf.getTopRowPosition();
-            final boolean success;
+            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
@@ -379,9 +381,9 @@ public class BookshelfDaoImpl
                 stmt.bindLong(4, topRowListPosition.getViewOffset());
                 stmt.bindLong(5, bookshelf.getId());
 
-                success = 0 < stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete();
             }
-            if (success) {
+            if (rowsAffected > 0) {
                 storeFilters(context, bookshelf.getId(), bookshelf);
 
                 if (txLock != null) {

@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public interface FtsDao {
 
@@ -61,7 +62,7 @@ public interface FtsDao {
     void rebuild(@NonNull Context context);
 
     /**
-     * Insert an FTS record for the given book.
+     * Insert an FTS record for the given {@link Book}.
      * <p>
      * <strong>Transaction:</strong> required
      *
@@ -75,7 +76,7 @@ public interface FtsDao {
             throws TransactionException;
 
     /**
-     * Update an FTS record for the given book.
+     * Update an FTS record for the given {@link Book}.
      * <p>
      * <strong>Transaction:</strong> required
      *

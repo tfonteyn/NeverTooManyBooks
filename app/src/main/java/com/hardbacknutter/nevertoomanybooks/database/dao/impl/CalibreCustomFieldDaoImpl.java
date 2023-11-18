@@ -127,7 +127,7 @@ public class CalibreCustomFieldDaoImpl
     public long insert(@NonNull final CalibreCustomField calibreCustomField)
             throws DaoInsertException {
 
-        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = getDb().compileStatement(INSERT)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             stmt.bindString(2, calibreCustomField.getType());
             stmt.bindString(3, calibreCustomField.getDbKey());
@@ -153,10 +153,10 @@ public class CalibreCustomFieldDaoImpl
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.getDbKey());
 
         try {
-            final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(
-                                                       calibreCustomField.getId())});
+            final int rowsAffected = getDb().update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
+                                                    DBKey.PK_ID + "=?",
+                                                    new String[]{String.valueOf(
+                                                            calibreCustomField.getId())});
             if (rowsAffected > 0) {
                 return;
             }

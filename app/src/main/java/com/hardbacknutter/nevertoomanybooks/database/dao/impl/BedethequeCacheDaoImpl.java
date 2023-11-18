@@ -197,7 +197,7 @@ public class BedethequeCacheDaoImpl
     @Override
     public void update(@NonNull final BdtAuthor bdtAuthor,
                        @NonNull final Locale locale)
-            throws DaoWriteException {
+            throws DaoUpdateException {
 
         final String resolvedName = bdtAuthor.getResolvedName();
 
@@ -207,7 +207,7 @@ public class BedethequeCacheDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final boolean success;
+            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, bdtAuthor.getName());
                 stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
@@ -221,9 +221,9 @@ public class BedethequeCacheDaoImpl
                     stmt.bindString(6, SqlEncode.orderByColumn(resolvedName, locale));
                 }
                 stmt.bindLong(7, bdtAuthor.getId());
-                success = 0 < stmt.executeUpdateDelete();
+                rowsAffected = stmt.executeUpdateDelete();
             }
-            if (success) {
+            if (rowsAffected > 0) {
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }

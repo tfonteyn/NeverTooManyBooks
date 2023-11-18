@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -410,10 +409,11 @@ public class SeriesDaoImpl
                        @NonNull final Locale bookLocale)
             throws DaoUpdateException {
 
+        final SynchronizedDb db = getDb();
+
         final Locale locale = series.getLocale(context).orElse(bookLocale);
-        final OrderByData obd =
-                OrderByData.create(context, reorderHelperSupplier.get(),
-                                   series.getTitle(), locale);
+        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
+                                                   series.getTitle(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
@@ -421,8 +421,8 @@ public class SeriesDaoImpl
             stmt.bindBoolean(3, series.isComplete());
             stmt.bindLong(4, series.getId());
 
-            final boolean success = 0 < stmt.executeUpdateDelete();
-            if (success) {
+            final int rowsAffected = stmt.executeUpdateDelete();
+            if (rowsAffected > 0) {
                 return;
             }
 
@@ -471,7 +471,7 @@ public class SeriesDaoImpl
     public void moveBooks(@NonNull final Context context,
                           @NonNull final Series source,
                           @NonNull final Series target)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -545,7 +545,7 @@ public class SeriesDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } catch (@NonNull final RuntimeException | DaoWriteException e) {
+            } catch (@NonNull final RuntimeException | DaoInsertException e) {
                 LoggerFactory.getLogger().e(TAG, e);
             } finally {
                 if (txLock != null) {
