@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -87,7 +86,7 @@ public class BedethequeCacheDaoImpl
     @Override
     public boolean insert(@NonNull final Locale locale,
                           @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
 
         if (Build.VERSION.SDK_INT < 30) {
             return insertApiPre30(locale, recordSupplier);
@@ -131,7 +130,7 @@ public class BedethequeCacheDaoImpl
 
     private boolean insertApiPre30(@NonNull final Locale locale,
                                    @NonNull final Supplier<BdtAuthor> recordSupplier)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
 
         BdtAuthor bdtAuthor = null;
 

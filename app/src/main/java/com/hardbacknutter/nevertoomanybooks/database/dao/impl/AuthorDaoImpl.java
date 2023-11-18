@@ -382,14 +382,14 @@ public class AuthorDaoImpl
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.AUTHOR_IS_COMPLETE, complete);
 
-        final boolean success =
-                0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(author.getId())});
+        final int rowsAffected = db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
+                                           new String[]{String.valueOf(author.getId())});
 
-        if (success) {
+        if (rowsAffected > 0) {
             author.setComplete(complete);
+            return true;
         }
-        return success;
+        return false;
     }
 
     /**
@@ -586,7 +586,6 @@ public class AuthorDaoImpl
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context).orElse(userLocale);
 
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -683,7 +682,6 @@ public class AuthorDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Author author) {
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {

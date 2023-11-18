@@ -306,7 +306,6 @@ public class TocEntryDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final TocEntry tocEntry) {
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {

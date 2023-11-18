@@ -409,8 +409,6 @@ public class SeriesDaoImpl
                        @NonNull final Locale bookLocale)
             throws DaoUpdateException {
 
-        final SynchronizedDb db = getDb();
-
         final Locale locale = series.getLocale(context).orElse(bookLocale);
         final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
                                                    series.getTitle(), locale);
@@ -435,7 +433,6 @@ public class SeriesDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Series series) {
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {

@@ -373,9 +373,9 @@ public class StyleDaoImpl
         }
 
         try {
-            final int rowsAffected = getDb().update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
-                                                    DBKey.PK_ID + "=?",
-                                                    new String[]{String.valueOf(style.getId())});
+            final int rowsAffected = db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
+                                               DBKey.PK_ID + "=?",
+                                               new String[]{String.valueOf(style.getId())});
             if (rowsAffected > 0) {
                 return;
             }
@@ -388,7 +388,6 @@ public class StyleDaoImpl
 
     @Override
     public boolean delete(@NonNull final Style style) {
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {

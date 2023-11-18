@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -45,9 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  */
 public interface EntityBookLinksDao<T extends Entity>
         extends MoveBooksDao<T> {
-
-    @NonNull
-    SynchronizedDb getDb();
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields

@@ -386,7 +386,6 @@ public class PublisherDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {

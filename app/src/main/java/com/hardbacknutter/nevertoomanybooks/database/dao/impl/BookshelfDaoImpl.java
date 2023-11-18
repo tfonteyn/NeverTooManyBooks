@@ -319,7 +319,6 @@ public class BookshelfDaoImpl
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
 
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -365,7 +364,6 @@ public class BookshelfDaoImpl
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
 
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -404,7 +402,6 @@ public class BookshelfDaoImpl
 
     @Override
     public boolean delete(@NonNull final Bookshelf bookshelf) {
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {

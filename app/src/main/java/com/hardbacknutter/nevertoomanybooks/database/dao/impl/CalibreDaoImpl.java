@@ -157,9 +157,9 @@ public class CalibreDaoImpl
     @Override
     public boolean delete(@NonNull final Book book) {
         try {
-            return 0 < getDb().delete(DBDefinitions.TBL_CALIBRE_BOOKS.getName(),
-                                      DBKey.FK_BOOK + "=?",
-                                      new String[]{String.valueOf(book.getId())});
+            return 0 < db.delete(DBDefinitions.TBL_CALIBRE_BOOKS.getName(),
+                                 DBKey.FK_BOOK + "=?",
+                                 new String[]{String.valueOf(book.getId())});
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
             return false;
         }

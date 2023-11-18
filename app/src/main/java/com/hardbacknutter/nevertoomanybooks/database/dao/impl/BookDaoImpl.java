@@ -425,7 +425,6 @@ public class BookDaoImpl
     public int deleteByUuid(@NonNull final List<String> uuids) {
         final List<String> actuallyDeleted = new ArrayList<>();
 
-        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
