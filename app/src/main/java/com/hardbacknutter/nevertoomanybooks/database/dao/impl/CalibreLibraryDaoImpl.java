@@ -259,25 +259,25 @@ public class CalibreLibraryDaoImpl
 
             // The getMappedBookshelfId MUST have been previously verified/'fixId' against
             // the BookshelfDao!
+            final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(INSERT_LIBRARY)) {
                 stmt.bindString(1, library.getUuid());
                 stmt.bindString(2, library.getLibraryStringId());
                 stmt.bindString(3, library.getName());
                 stmt.bindString(4, library.getLastSyncDateAsString());
                 stmt.bindLong(5, library.getMappedBookshelfId());
-                final long iId = stmt.executeInsert();
-                if (iId > 0) {
-                    insertVirtualLibraries(library);
-
-                    if (txLock != null) {
-                        db.setTransactionSuccessful();
-                    }
-
-                    library.setId(iId);
-                    return iId;
-                }
+                iId = stmt.executeInsert();
             }
+            if (iId > 0) {
+                insertVirtualLibraries(library);
 
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+
+                library.setId(iId);
+                return iId;
+            }
             throw new DaoInsertException(ERROR_INSERT_FROM + library);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + library, e);

@@ -23,7 +23,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -567,7 +566,7 @@ public class AuthorDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + author);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + author, e);
 
         } finally {
@@ -617,7 +616,7 @@ public class AuthorDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + author);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
             throw new DaoUpdateException(ERROR_UPDATE_FROM + author, e);
         } finally {
             if (txLock != null) {

@@ -317,6 +317,7 @@ public class StyleDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Style style)
             throws DaoInsertException {
+
         try (SynchronizedStatement stmt = db.compileStatement(INSERT_STYLE)) {
             final long iId = doInsert(style, style.getLabel(context), stmt);
             if (iId > 0) {

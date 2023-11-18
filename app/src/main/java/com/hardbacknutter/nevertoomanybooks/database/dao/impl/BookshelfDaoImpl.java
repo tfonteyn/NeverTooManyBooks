@@ -347,7 +347,7 @@ public class BookshelfDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {

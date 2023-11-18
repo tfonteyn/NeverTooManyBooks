@@ -265,7 +265,7 @@ public class PublisherDaoImpl
                                @NonNull final Collection<Publisher> list,
                                final boolean lookupLocale,
                                @NonNull final Locale bookLocale)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -336,12 +336,11 @@ public class PublisherDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Publisher publisher,
                        @NonNull final Locale bookLocale)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         final Locale locale = publisher.getLocale(context).orElse(bookLocale);
-        final OrderByData obd =
-                OrderByData.create(context, reorderHelperSupplier.get(),
-                                   publisher.getName(), locale);
+        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
+                                                   publisher.getName(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, publisher.getName());
@@ -362,7 +361,7 @@ public class PublisherDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Publisher publisher,
                        @NonNull final Locale bookLocale)
-            throws DaoWriteException {
+            throws DaoUpdateException {
 
         final Locale locale = publisher.getLocale(context).orElse(bookLocale);
         final OrderByData obd =

@@ -301,7 +301,7 @@ public class BookDaoImpl
             }
             return newBookId;
 
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
             throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book, e);
 
         } finally {

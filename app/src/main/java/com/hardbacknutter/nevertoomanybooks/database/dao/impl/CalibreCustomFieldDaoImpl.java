@@ -126,6 +126,7 @@ public class CalibreCustomFieldDaoImpl
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final CalibreCustomField calibreCustomField)
             throws DaoInsertException {
+
         try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             stmt.bindString(2, calibreCustomField.getType());

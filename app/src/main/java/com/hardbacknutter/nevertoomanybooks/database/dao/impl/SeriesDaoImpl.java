@@ -309,7 +309,7 @@ public class SeriesDaoImpl
                                @NonNull final Collection<Series> list,
                                final boolean lookupLocale,
                                @NonNull final Locale bookLocale)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -357,7 +357,7 @@ public class SeriesDaoImpl
                         if (!current.equals(series)) {
                             try {
                                 update(context, series, bookLocale);
-                            } catch (@NonNull final DaoWriteException e) {
+                            } catch (@NonNull final DaoUpdateException e) {
                                 throw new UncheckedDaoWriteException(e);
                             }
                         }
@@ -382,12 +382,11 @@ public class SeriesDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,
                        @NonNull final Locale bookLocale)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
-        final OrderByData obd =
-                OrderByData.create(context, reorderHelperSupplier.get(),
-                                   series.getTitle(), locale);
+        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
+                                                   series.getTitle(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, series.getTitle());
@@ -409,7 +408,7 @@ public class SeriesDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Series series,
                        @NonNull final Locale bookLocale)
-            throws DaoWriteException {
+            throws DaoUpdateException {
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
         final OrderByData obd =
