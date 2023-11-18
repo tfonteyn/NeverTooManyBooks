@@ -36,15 +36,16 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 
 /**
  * Helper class encapsulating {@link StyleDao} access and internal in-memory caches.
- * <p>
- * URGENT: exception/error handling is sloppy. We're assuming all db actions go well
  */
 public class StylesHelper {
+
+    private static final String TAG = "StylesHelper";
 
     /** Preference for the current default style UUID to use. */
     private static final String PK_DEFAULT_STYLE = "bookList.style.current";
@@ -232,31 +233,37 @@ public class StylesHelper {
                                 @NonNull final Collection<Style> styles) {
         int order = 0;
 
-        final StyleDao dao = styleDaoSupplier.get();
+        final List<Style> sortedStyles = new ArrayList<>();
+
+        // sort the preferred styles at the top
+        for (final Style style : styles) {
+            if (style.isPreferred()) {
+                style.setMenuPosition(order);
+                sortedStyles.add(style);
+                order++;
+            }
+        }
+        // followed by the non preferred styles
+        for (final Style style : styles) {
+            if (!style.isPreferred()) {
+                style.setMenuPosition(order);
+                sortedStyles.add(style);
+                order++;
+            }
+        }
+
         try {
-            // sort the preferred styles at the top
-            for (final Style style : styles) {
-                if (style.isPreferred()) {
-                    style.setMenuPosition(order);
-                    dao.update(context, style);
-                    order++;
-                }
+            final StyleDao dao = styleDaoSupplier.get();
+            for (final Style style : sortedStyles) {
+                dao.update(context, style);
             }
-            // followed by the non preferred styles
-            for (final Style style : styles) {
-                if (!style.isPreferred()) {
-                    style.setMenuPosition(order);
-                    dao.update(context, style);
-                    order++;
-                }
-            }
-        } catch (@NonNull final DaoWriteException ignore) {
-            // ignore
+        } catch (@NonNull final DaoWriteException e) {
+            // ignore, but log it.
+            LoggerFactory.getLogger().e(TAG, e);
         }
         // keep it safe and easy, just clear the caches; almost certainly overkill
         cache.clear();
     }
-
 
     /**
      * Save the given style.
@@ -270,7 +277,6 @@ public class StylesHelper {
      *
      * @throws IllegalStateException if the UUID is missing
      */
-    @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsert(@NonNull final Context context,
                                   @NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
@@ -283,11 +289,9 @@ public class StylesHelper {
             return update(context, style);
         }
 
-        final StyleDao dao = styleDaoSupplier.get();
-
         // resolve the id based on the UUID
         // e.g. we might be importing a style with a known UUID
-        style.setId(dao.getStyleIdByUuid(style.getUuid()));
+        style.setId(styleDaoSupplier.get().getStyleIdByUuid(style.getUuid()));
 
         if (style.getId() == 0) {
             return insert(context, style);
@@ -310,44 +314,47 @@ public class StylesHelper {
     }
 
     /**
-     * Update the given style.
+     * Update the given styles.
      *
      * @param context Current context
-     * @param style   to update
+     * @param styles  to update
      *
-     * @return {@code true} on success
+     * @return {@code true} if all styles updates successfully.
      *
      * @throws IllegalStateException if the UUID is missing
      */
     public boolean update(@NonNull final Context context,
-                          @NonNull final Style style) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (style.getUuid().isEmpty()) {
-                throw new IllegalStateException(ERROR_MISSING_UUID);
-            }
-            // Reminder: do NOT require a positive value here!
-            // It's perfectly fine to update builtin styles;
-            // ONLY NEW styles must be rejected
-            if (style.getId() == 0) {
-                throw new IllegalStateException("A new Style cannot be updated");
-            }
-        }
-
+                          @NonNull final Style... styles) {
         try {
-            styleDaoSupplier.get().update(context, style);
+            for (final Style style : styles) {
+                if (BuildConfig.DEBUG /* always */) {
+                    if (style.getUuid().isEmpty()) {
+                        throw new IllegalStateException(ERROR_MISSING_UUID);
+                    }
+                    // Reminder: do NOT require a positive value here!
+                    // It's perfectly fine to update builtin styles;
+                    // ONLY NEW styles must be rejected
+                    if (style.getId() == 0) {
+                        throw new IllegalStateException("A new Style cannot be updated");
+                    }
+                }
 
-            if (style.getType() == StyleType.Global) {
-                // ensure both the global style and any inheriting styles get reloaded
-                globalStyle = null;
-                cache.clear();
-            } else {
-                // replace (or insert) in the cache
-                cache.put(style.getUuid(), style);
+                styleDaoSupplier.get().update(context, style);
+
+                if (style.getType() == StyleType.Global) {
+                    // ensure both the global style and any inheriting styles get reloaded
+                    globalStyle = null;
+                    cache.clear();
+                } else {
+                    // replace (or insert) in the cache
+                    cache.put(style.getUuid(), style);
+                }
             }
             return true;
 
-        } catch (@NonNull final DaoWriteException ignore) {
-            // ignore
+        } catch (@NonNull final DaoWriteException e) {
+            // ignore, but log it.
+            LoggerFactory.getLogger().e(TAG, e);
         }
         return false;
     }

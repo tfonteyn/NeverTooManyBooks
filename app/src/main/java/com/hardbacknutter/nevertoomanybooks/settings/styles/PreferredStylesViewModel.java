@@ -275,13 +275,12 @@ public class PreferredStylesViewModel
                 // replace the original row with the new one
                 styleList.set(templateRow, style);
 
-                // Make the new one preferred and update it
+                // Promote the new style.
                 style.setPreferred(true);
-                stylesHelper.update(context, style);
-
-                // And demote the original and update it
+                // Demote the original
                 templateStyle.setPreferred(false);
-                stylesHelper.update(context, templateStyle);
+                //  and update them
+                stylesHelper.update(context, style, templateStyle);
 
                 // Re-add the original at the very end of the list.
                 styleList.add(templateStyle);

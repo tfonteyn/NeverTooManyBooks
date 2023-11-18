@@ -191,8 +191,7 @@ public class StyleViewModel
     boolean updateOrInsertStyle(@NonNull final Context context) {
         //noinspection DataFlowIssue
         if (styleDataStore.isModified()) {
-            ServiceLocator.getInstance().getStyles().updateOrInsert(context, style);
-            return true;
+            return ServiceLocator.getInstance().getStyles().updateOrInsert(context, style);
         }
         return false;
     }

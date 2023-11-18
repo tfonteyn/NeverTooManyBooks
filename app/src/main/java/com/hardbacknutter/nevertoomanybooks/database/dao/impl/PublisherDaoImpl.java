@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -312,7 +311,7 @@ public class PublisherDaoImpl
                         if (!current.equals(publisher)) {
                             try {
                                 update(context, publisher, bookLocale);
-                            } catch (@NonNull final DaoWriteException e) {
+                            } catch (@NonNull final DaoUpdateException e) {
                                 throw new UncheckedDaoWriteException(e);
                             }
                         }
