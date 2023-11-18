@@ -57,6 +57,11 @@ public interface BedethequeCacheDao {
 
     /**
      * Create the {@link BdtAuthor}s as supplied into the database.
+     * <p>
+     * There can be 100's or even 1000's of Authors. Pass an Supplier
+     * to the insert method so we can read/insert one-by-one.
+     * <p>
+     * Because this method deals with a list of items to insert, it returns a simple boolean.
      *
      * @param locale         to use
      * @param recordSupplier a supplier which delivers a {@link BdtAuthor} to insert,

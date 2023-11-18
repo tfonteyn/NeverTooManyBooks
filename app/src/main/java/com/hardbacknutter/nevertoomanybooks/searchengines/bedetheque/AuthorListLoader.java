@@ -90,6 +90,8 @@ class AuthorListLoader {
     @VisibleForTesting
     boolean parseAuthorList(@NonNull final Document document) {
 
+        // There can be 100's or even 1000's of Authors. Pass an iterator
+        // to the insert method so we can parse/insert one-by-one.
         final Iterator<Element> iterator = document.select("ul.nav-liste > li > a")
                                                    .iterator();
 

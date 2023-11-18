@@ -49,6 +49,8 @@ public interface CalibreDao {
      * Store the Calibre data for the given {@link Book}.
      * <p>
      * New {@link CalibreLibrary} are added, existing ones are NOT updated.
+     * <p>
+     * Because this method deals with a list of items to insert, it returns a simple boolean.
      *
      * @param context Current context
      * @param book    to process
