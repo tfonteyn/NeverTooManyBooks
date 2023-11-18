@@ -88,6 +88,11 @@ abstract class BaseDaoImpl {
         this.db = db;
     }
 
+    @NonNull
+    public SynchronizedDb getDb() {
+        return db;
+    }
+
     /**
      * Execute the given SQL, and fetches column 0 as an {@code ArrayList<String>}.
      *
