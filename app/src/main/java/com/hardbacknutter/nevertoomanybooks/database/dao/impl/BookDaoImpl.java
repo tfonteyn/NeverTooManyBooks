@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.text.TextUtils;
 
@@ -414,12 +415,19 @@ public class BookDaoImpl
         return deleteByUuid(List.of(uuid)) == 1;
     }
 
+    /**
+     * Delete the books for the given list of UUIDs.
+     *
+     * @param uuids list of book UUIDs
+     *
+     * @return the number of books deleted (i.e rowsAffected)
+     */
     @Override
     public int deleteByUuid(@NonNull final List<String> uuids) {
         final List<String> actuallyDeleted = new ArrayList<>();
 
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
-        //noinspection CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -435,10 +443,13 @@ public class BookDaoImpl
                 }
             }
 
+            // At this point all database actions were successful.
             // Now delete the covers for those actually deleted books.
             // Note that if anything goes wrong here:
             // - the database will be rolled back as expected.
-            // - the already deleted covers will NOT be restored!
+            // - the already deleted covers will NOT be restored
+            //   automatically. The user can however restore them
+            //   one-by-one if they enabled the undo facility for covers.
             // but what could go wrong during a file-delete op... flw... oh well.
             actuallyDeleted.forEach(uuid -> {
                 for (int cIdx = 0; cIdx < 2; cIdx++) {
@@ -449,8 +460,8 @@ public class BookDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e, "Failed to delete book");
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
 
         } finally {
             if (txLock != null) {

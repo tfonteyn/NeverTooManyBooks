@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
@@ -435,19 +436,36 @@ public class SeriesDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Series series) {
+        final SynchronizedDb db = getDb();
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
 
-        final int rowsAffected;
+            final int rowsAffected;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
+                stmt.bindLong(1, series.getId());
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+            if (rowsAffected > 0) {
+                series.setId(0);
+                fixPositions(context);
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
-            stmt.bindLong(1, series.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+                return true;
+            }
+            return false;
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            return false;
+
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
-
-        if (rowsAffected > 0) {
-            series.setId(0);
-            fixPositions(context);
-        }
-        return rowsAffected == 1;
     }
 
     @Override

@@ -32,7 +32,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -158,8 +157,7 @@ public interface BookshelfDao
 
 
     /**
-     * Delete the passed {@link Bookshelf}.
-     * Cleans up {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} as well.
+     * Delete the given {@link Bookshelf}.
      *
      * @param bookshelf to delete
      *

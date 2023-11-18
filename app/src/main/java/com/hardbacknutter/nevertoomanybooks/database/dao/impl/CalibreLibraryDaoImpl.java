@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
@@ -331,20 +332,19 @@ public class CalibreLibraryDaoImpl
 
     @Override
     public boolean delete(@NonNull final CalibreLibrary library) {
-
         final int rowsAffected;
-
-        try (SynchronizedStatement stmt = db.compileStatement(DELETE_LIBRARY_BY_ID)) {
+        try (SynchronizedStatement stmt = getDb().compileStatement(DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
             rowsAffected = stmt.executeUpdateDelete();
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            return false;
         }
-
         if (rowsAffected > 0) {
             library.setId(0);
+            return true;
         }
-        return rowsAffected == 1;
+        return false;
     }
-
 
     /**
      * Get the list of Calibre <strong>virtual</strong>libraries for the given library id.

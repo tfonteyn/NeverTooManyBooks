@@ -103,7 +103,7 @@ public interface BookDao {
     }
 
     /**
-     * Delete the given book (and its covers).
+     * Delete the given {@link Book} (and its covers).
      *
      * @param book to delete
      *
@@ -112,7 +112,7 @@ public interface BookDao {
     boolean delete(@NonNull Book book);
 
     /**
-     * Delete the given book (and its covers).
+     * Delete the given {@link Book} (and its covers).
      *
      * @param bookLight to delete
      *
@@ -121,7 +121,7 @@ public interface BookDao {
     boolean delete(@NonNull BookLight bookLight);
 
     /**
-     * Delete the given book (and its covers).
+     * Delete the given {@link Book} (and its covers).
      *
      * @param id of the book.
      *
@@ -130,7 +130,7 @@ public interface BookDao {
     boolean delete(@IntRange(from = 1) long id);
 
     /**
-     * Delete the given list of books (and its covers).
+     * Delete the given list of {@link Book}s (and their covers).
      *
      * @param uuids list of book UUIDs
      *

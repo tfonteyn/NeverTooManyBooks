@@ -27,6 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+
 public interface CoverCacheDao {
 
     /**
@@ -37,9 +39,9 @@ public interface CoverCacheDao {
     int count();
 
     /**
-     * Delete the cached covers associated with the passed book uuid.
+     * Delete the cached covers associated with the passed {@link Book} uuid.
      *
-     * @param uuid to delete
+     * @param uuid of the book to delete
      *
      * @return {@code true} if a row was deleted
      */

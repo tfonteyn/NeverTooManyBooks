@@ -40,7 +40,8 @@ public interface StripInfoDao {
             throws DaoWriteException;
 
     /**
-     * Delete all data related to StripInfo from the database (but leaves them in the book object).
+     * Delete all data related to StripInfo from the database.
+     * The StripInfo specific fields are however left in the {@link Book} object.
      *
      * @param book to process
      *

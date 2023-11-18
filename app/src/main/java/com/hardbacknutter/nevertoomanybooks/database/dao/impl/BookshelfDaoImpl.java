@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
@@ -262,7 +263,7 @@ public class BookshelfDaoImpl
      * @param bookId  of the book
      * @param list    the list of bookshelves
      *
-     * @throws DaoInsertException    on failure
+     * @throws DaoInsertException   on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
     public void insertOrUpdate(@NonNull final Context context,
@@ -401,9 +402,7 @@ public class BookshelfDaoImpl
 
     @Override
     public boolean delete(@NonNull final Bookshelf bookshelf) {
-
-        final int rowsAffected;
-
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -412,23 +411,28 @@ public class BookshelfDaoImpl
 
             purgeNodeStates(bookshelf.getId());
 
+            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
-            if (txLock != null) {
-                db.setTransactionSuccessful();
+            if (rowsAffected > 0) {
+                bookshelf.setId(0);
+
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+                return true;
             }
+            return false;
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            return false;
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-
-        if (rowsAffected > 0) {
-            bookshelf.setId(0);
-        }
-        return rowsAffected == 1;
     }
 
     @Override

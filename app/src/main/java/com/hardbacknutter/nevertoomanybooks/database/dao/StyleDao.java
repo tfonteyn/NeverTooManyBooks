@@ -30,7 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 public interface StyleDao {
 
@@ -96,8 +95,7 @@ public interface StyleDao {
             throws DaoWriteException;
 
     /**
-     * Delete a {@link Style}.
-     * Cleans up {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} as well.
+     * Delete the given {@link Style}.
      *
      * @param style to delete
      *

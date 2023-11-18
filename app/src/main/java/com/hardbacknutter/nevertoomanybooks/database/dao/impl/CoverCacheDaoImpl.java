@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -147,14 +148,15 @@ public class CoverCacheDaoImpl
     @Override
     public boolean delete(@NonNull final String uuid) {
         try {
-            // starts with the uuid, remove all sizes and indexes
+            // Remove files where the name starts with the uuid,
+            // which will remove all sizes and indexes
             return 0 < db.delete(CacheDbHelper.TBL_IMAGE.getName(),
                                  CacheDbHelper.IMAGE_ID + " LIKE ?",
                                  new String[]{uuid + '%'});
-        } catch (@NonNull final SQLiteException e) {
-            LoggerFactory.getLogger().e(TAG, e);
+
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            return false;
         }
-        return false;
     }
 
     @Override

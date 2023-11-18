@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
@@ -386,7 +387,7 @@ public class StyleDaoImpl
 
     @Override
     public boolean delete(@NonNull final Style style) {
-
+        final SynchronizedDb db = getDb();
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -395,19 +396,23 @@ public class StyleDaoImpl
 
             purgeNodeStatesByStyle(style.getId());
 
+            final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(DELETE_STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
-                final int rowsAffected = stmt.executeUpdateDelete();
-
-                if (rowsAffected > 0) {
-                    style.setId(0);
-
-                    if (txLock != null) {
-                        db.setTransactionSuccessful();
-                    }
-                }
-                return rowsAffected == 1;
+                rowsAffected = stmt.executeUpdateDelete();
             }
+            if (rowsAffected > 0) {
+                style.setId(0);
+
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+                return true;
+            }
+            return false;
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            return false;
+
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

@@ -65,7 +65,8 @@ public interface CalibreDao {
             throws DaoWriteException;
 
     /**
-     * Delete all data related to Calibre from the database (but leaves them in the book object).
+     * Delete all data related to Calibre from the database.
+     * The Calibre specific fields are however left in the {@link Book} object.
      *
      * @param book to process
      *

@@ -63,7 +63,7 @@ public interface CalibreCustomFieldDao {
             throws DaoWriteException;
 
     /**
-     * Delete the passed {@link CalibreCustomField}.
+     * Delete the given {@link CalibreCustomField}.
      *
      * @param calibreCustomField to delete
      *

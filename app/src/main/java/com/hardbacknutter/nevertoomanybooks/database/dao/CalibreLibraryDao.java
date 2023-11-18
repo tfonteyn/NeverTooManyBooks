@@ -121,7 +121,7 @@ public interface CalibreLibraryDao {
             throws DaoWriteException;
 
     /**
-     * Delete the passed {@link CalibreLibrary}.
+     * Delete the given {@link CalibreLibrary}.
      *
      * @param library to delete
      *

@@ -132,7 +132,7 @@ public interface TocEntryDao {
             throws DaoWriteException;
 
     /**
-     * Delete the passed {@link TocEntry}.
+     * Delete the given {@link TocEntry}.
      *
      * @param context  Current context
      * @param tocEntry to delete.
