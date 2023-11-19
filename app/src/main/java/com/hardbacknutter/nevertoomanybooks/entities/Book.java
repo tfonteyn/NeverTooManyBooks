@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
@@ -997,15 +998,16 @@ public class Book
     public void ensureBookshelf(@NonNull final Context context) {
         final List<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
-            Bookshelf bookshelf = Bookshelf
-                    .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
-                    .orElseThrow();
+            final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+            Bookshelf bookshelf = bookshelfDao.getBookshelf(context,
+                                                            Bookshelf.PREFERRED,
+                                                            Bookshelf.DEFAULT)
+                                              .orElseThrow();
             if (bookshelf.isAllBooks()) {
                 // the user was "on" the "All Books" virtual shelf.
                 // For lack of anything better, set the default shelf instead.
-                bookshelf = Bookshelf
-                        .getBookshelf(context, Bookshelf.DEFAULT)
-                        .orElseThrow();
+                bookshelf = bookshelfDao.getBookshelf(context, Bookshelf.DEFAULT)
+                                        .orElseThrow();
             }
             list.add(bookshelf);
         }

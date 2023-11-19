@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -36,20 +37,21 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 public class BookshelfMapper {
 
     /** The {@link Bookshelf} to which the wishlist is mapped. */
-    public static final String PK_BOOKSHELF_WISHLIST =
+    static final String PK_BOOKSHELF_WISHLIST =
             EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.wishlist";
     /** The {@link Bookshelf} to which the owned-books list is mapped. */
-    public static final String PK_BOOKSHELF_OWNED =
+    static final String PK_BOOKSHELF_OWNED =
             EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.owned";
     /** The {@link Bookshelf} to which the digital-books list is mapped. */
-    public static final String PK_BOOKSHELF_DIGITAL =
+    static final String PK_BOOKSHELF_DIGITAL =
             EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.digital";
 
     @NonNull
     private static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
                                                     @NonNull final String key) {
         final int id = IntListPref.getInt(context, key, 0);
-        return id == 0 ? Optional.empty() : Bookshelf.getBookshelf(context, id);
+        return id == 0 ? Optional.empty() : ServiceLocator.getInstance().getBookshelfDao()
+                                                          .getBookshelf(context, id);
     }
 
     /**

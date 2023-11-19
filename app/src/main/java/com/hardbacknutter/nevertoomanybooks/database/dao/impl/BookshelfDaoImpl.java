@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
@@ -108,6 +110,62 @@ public class BookshelfDaoImpl
                    + ",'" + context.getString(R.string.bookshelf_my_books)
                    + "'," + BuiltinStyle.DEFAULT_ID
                    + ')');
+    }
+
+    @NonNull
+    private Optional<Bookshelf> getAllBooksBookshelf(@NonNull final Context context) {
+        final Bookshelf bookshelf = new Bookshelf(
+                context.getString(R.string.bookshelf_all_books),
+                ServiceLocator.getInstance().getStyles().getDefault());
+        bookshelf.setId(Bookshelf.ALL_BOOKS);
+        return Optional.of(bookshelf);
+    }
+
+    @NonNull
+    private Optional<Bookshelf> getDefaultBookshelf(@NonNull final Context context) {
+        final Bookshelf bookshelf = new Bookshelf(
+                context.getString(R.string.bookshelf_my_books),
+                ServiceLocator.getInstance().getStyles().getDefault());
+        bookshelf.setId(Bookshelf.DEFAULT);
+        return Optional.of(bookshelf);
+    }
+
+    @NonNull
+    private Optional<Bookshelf> getPreferredBookshelf(@NonNull final Context context) {
+        final String name = PreferenceManager.getDefaultSharedPreferences(context)
+                                             .getString(Bookshelf.PK_BOOKSHELF_CURRENT, null);
+        if (name != null && !name.isEmpty()) {
+            return findByName(name);
+        }
+        return Optional.empty();
+    }
+
+    @NonNull
+    public Optional<Bookshelf> getBookshelf(@NonNull final Context context,
+                                            final long id) {
+        if (id == 0) {
+            return Optional.empty();
+        } else if (id == Bookshelf.ALL_BOOKS) {
+            return getAllBooksBookshelf(context);
+        } else if (id == Bookshelf.DEFAULT) {
+            return getDefaultBookshelf(context);
+        } else if (id == Bookshelf.PREFERRED) {
+            return getPreferredBookshelf(context);
+        } else {
+            return getById(id);
+        }
+    }
+
+    @NonNull
+    public Optional<Bookshelf> getBookshelf(@NonNull final Context context,
+                                            @NonNull final long... ids) {
+        for (final long id : ids) {
+            final Optional<Bookshelf> bookshelf = getBookshelf(context, id);
+            if (bookshelf.isPresent()) {
+                return bookshelf;
+            }
+        }
+        return Optional.empty();
     }
 
     @NonNull

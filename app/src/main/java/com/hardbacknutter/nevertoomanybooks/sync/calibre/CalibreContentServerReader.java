@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -837,13 +838,14 @@ public class CalibreContentServerReader
         // Current list, will be empty for new books
         final List<Bookshelf> bookShelves = book.getBookshelves();
 
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
         // Add the physical library mapped Bookshelf
         //noinspection DataFlowIssue
-        final Bookshelf mappedBookshelf = Bookshelf.getBookshelf(context,
-                                                                 library.getMappedBookshelfId(),
-                                                                 Bookshelf.PREFERRED,
-                                                                 Bookshelf.DEFAULT)
-                                                   .orElseThrow();
+        final Bookshelf mappedBookshelf = bookshelfDao.getBookshelf(context,
+                                                                    library.getMappedBookshelfId(),
+                                                                    Bookshelf.PREFERRED,
+                                                                    Bookshelf.DEFAULT)
+                                                      .orElseThrow();
 
         if (bookShelves.isEmpty()) {
             // new book
@@ -869,7 +871,7 @@ public class CalibreContentServerReader
                        .findFirst()
                        // it will always be present of course.
                        .ifPresent(vlib -> {
-                           final Bookshelf vlibMappedBookshelf = Bookshelf
+                           final Bookshelf vlibMappedBookshelf = bookshelfDao
                                    .getBookshelf(context,
                                                  vlib.getMappedBookshelfId(),
                                                  library.getMappedBookshelfId())

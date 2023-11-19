@@ -133,8 +133,9 @@ public class BookTest {
         //noinspection ResultOfMethodCallIgnored
         FileUtils.collectFiles(tempDir, jpgFilter).forEach(File::delete);
 
-
-        bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT).orElseThrow();
+        bookshelf[0] = serviceLocator.getBookshelfDao()
+                                     .getBookshelf(context, Bookshelf.DEFAULT)
+                                     .orElseThrow();
         bookshelfList.clear();
         bookshelfList.add(bookshelf[0]);
 

@@ -31,10 +31,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
@@ -71,11 +69,13 @@ public class Bookshelf
             return new Bookshelf[size];
         }
     };
-    /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
+    /**
+     * The 'first' bookshelf created at install time. We allow renaming it, but not deleting.
+     */
     public static final int DEFAULT = 1;
 
     /**
-     * the virtual 'All Books' representing our complete library.
+     * The virtual 'All Books' representing our complete library.
      * Note we use -1, as {@code 0} is generally used for a 'new' item.
      * i.e. when the user creates a new shelf, it has id==0 before it's saved.
      */
@@ -90,7 +90,8 @@ public class Bookshelf
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
      */
-    private static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    public static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+
     @SuppressWarnings("FieldNotUsedInToString")
     private final List<PFilter<?>> filters = new ArrayList<>();
 
@@ -168,78 +169,6 @@ public class Bookshelf
         filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(id));
 
         topRowAdapterPosition = new TopRowListPosition(in.readInt(), in.readInt());
-    }
-
-    /**
-     * Get the specified bookshelf.
-     *
-     * @param context Current context
-     * @param id      of bookshelf to get
-     *
-     * @return the bookshelf
-     */
-    @NonNull
-    public static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
-                                                   final long id) {
-        if (id == 0) {
-            return Optional.empty();
-        } else if (id == ALL_BOOKS) {
-            return getAllBooksBookshelf(context);
-        } else if (id == DEFAULT) {
-            return getDefaultBookshelf(context);
-        } else if (id == PREFERRED) {
-            return getPreferredBookshelf(context);
-        } else {
-            return ServiceLocator.getInstance().getBookshelfDao().getById(id);
-        }
-    }
-
-    /**
-     * Get the first of the specified bookshelf id's found.
-     *
-     * @param context Current context
-     * @param ids     list of bookshelves to get in order of preference
-     *
-     * @return the bookshelf
-     */
-    @NonNull
-    public static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
-                                                   @NonNull final long... ids) {
-        for (final long id : ids) {
-            final Optional<Bookshelf> bookshelf = getBookshelf(context, id);
-            if (bookshelf.isPresent()) {
-                return bookshelf;
-            }
-        }
-        return Optional.empty();
-    }
-
-    @NonNull
-    private static Optional<Bookshelf> getAllBooksBookshelf(@NonNull final Context context) {
-        final Bookshelf bookshelf = new Bookshelf(
-                context.getString(R.string.bookshelf_all_books),
-                ServiceLocator.getInstance().getStyles().getDefault());
-        bookshelf.setId(ALL_BOOKS);
-        return Optional.of(bookshelf);
-    }
-
-    @NonNull
-    private static Optional<Bookshelf> getDefaultBookshelf(@NonNull final Context context) {
-        final Bookshelf bookshelf = new Bookshelf(
-                context.getString(R.string.bookshelf_my_books),
-                ServiceLocator.getInstance().getStyles().getDefault());
-        bookshelf.setId(DEFAULT);
-        return Optional.of(bookshelf);
-    }
-
-    @NonNull
-    private static Optional<Bookshelf> getPreferredBookshelf(@NonNull final Context context) {
-        final String name = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getString(PK_BOOKSHELF_CURRENT, null);
-        if (name != null && !name.isEmpty()) {
-            return ServiceLocator.getInstance().getBookshelfDao().findByName(name);
-        }
-        return Optional.empty();
     }
 
     /**

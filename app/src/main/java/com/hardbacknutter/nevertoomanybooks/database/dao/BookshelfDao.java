@@ -40,6 +40,30 @@ public interface BookshelfDao
         extends MoveBooksDao<Bookshelf> {
 
     /**
+     * Get the specified bookshelf.
+     *
+     * @param context Current context
+     * @param id      of bookshelf to get
+     *
+     * @return the bookshelf
+     */
+    @NonNull
+    Optional<Bookshelf> getBookshelf(@NonNull Context context,
+                                     long id);
+
+    /**
+     * Get the first of the specified bookshelf id's found.
+     *
+     * @param context Current context
+     * @param ids     list of bookshelves to get in order of preference
+     *
+     * @return the bookshelf
+     */
+    @NonNull
+    Optional<Bookshelf> getBookshelf(@NonNull Context context,
+                                     @NonNull long... ids);
+
+    /**
      * Find a {@link Bookshelf} by using the <strong>name</strong> fields
      * of the passed {@link Bookshelf}. The incoming object is not modified.
      *

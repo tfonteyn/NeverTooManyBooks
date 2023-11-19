@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -224,18 +226,20 @@ public class CalibreLibraryDaoImpl
     public void fixId(@NonNull final Context context,
                       @NonNull final CalibreLibrary library) {
 
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+
         // using the mapped bookshelf-if, lookup the actual Bookshelf (with fallbacks)
-        final Bookshelf libBookshelf = Bookshelf.getBookshelf(context,
-                                                              library.getMappedBookshelfId(),
-                                                              Bookshelf.PREFERRED,
-                                                              Bookshelf.DEFAULT)
-                                                .orElseThrow();
+        final Bookshelf libBookshelf = bookshelfDao.getBookshelf(context,
+                                                                 library.getMappedBookshelfId(),
+                                                                 Bookshelf.PREFERRED,
+                                                                 Bookshelf.DEFAULT)
+                                                   .orElseThrow();
         // and update the id
         library.setMappedBookshelf(libBookshelf.getId());
 
         // repeat for each virtual library, with fallback the above library Bookshelf.
         library.getVirtualLibraries().forEach(vLib -> {
-            final Bookshelf vLibBookshelf = Bookshelf
+            final Bookshelf vLibBookshelf = bookshelfDao
                     .getBookshelf(context, vLib.getMappedBookshelfId())
                     .orElse(libBookshelf);
             vLib.setMappedBookshelf(vLibBookshelf.getId());

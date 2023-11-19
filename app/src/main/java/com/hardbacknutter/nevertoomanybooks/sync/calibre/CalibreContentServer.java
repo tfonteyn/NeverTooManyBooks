@@ -82,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -482,11 +483,13 @@ public final class CalibreContentServer
         libraries.clear();
         defaultLibrary = null;
 
-        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final CalibreLibraryDao libraryDao = serviceLocator.getCalibreLibraryDao();
+        final BookshelfDao bookshelfDao = serviceLocator.getBookshelfDao();
 
-        final long currentBookshelfId = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED)
-                                                 .map(Bookshelf::getId)
-                                                 .orElse((long) Bookshelf.DEFAULT);
+        final long currentBookshelfId = bookshelfDao.getBookshelf(context, Bookshelf.PREFERRED)
+                                                    .map(Bookshelf::getId)
+                                                    .orElse((long) Bookshelf.DEFAULT);
 
         final JSONObject source = new JSONObject(
                 fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
@@ -497,7 +500,7 @@ public final class CalibreContentServer
         final JSONObject libraryDetails = source.optJSONObject("library_details");
         calibreExtensionInstalled = libraryDetails != null;
 
-        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+        final SynchronizedDb db = serviceLocator.getDb();
 
         Synchronizer.SyncLock txLock = null;
         if (!db.inTransaction()) {

@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -133,12 +134,15 @@ abstract class LibraryBase
     Bookshelf createAsBookshelf(@NonNull final Context context)
             throws DaoWriteException {
 
-        final Bookshelf current = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED,
-                                                         Bookshelf.DEFAULT)
-                                           .orElseThrow();
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+
+        final Bookshelf current = bookshelfDao.getBookshelf(context,
+                                                            Bookshelf.PREFERRED,
+                                                            Bookshelf.DEFAULT)
+                                              .orElseThrow();
 
         final Bookshelf bookshelf = new Bookshelf(name, current.getStyle());
-        ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf);
+        bookshelfDao.insert(context, bookshelf);
 
         mappedBookshelfId = bookshelf.getId();
         return bookshelf;

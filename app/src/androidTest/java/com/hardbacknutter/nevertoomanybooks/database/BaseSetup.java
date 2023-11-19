@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -130,8 +129,10 @@ public abstract class BaseSetup
     }
 
     private void initBookshelves() {
-        final Style defStyle = ServiceLocator.getInstance().getStyles().getDefault();
-        bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT).orElseThrow();
+        final Style defStyle = serviceLocator.getStyles().getDefault();
+        bookshelf[0] = serviceLocator.getBookshelfDao()
+                                     .getBookshelf(context, Bookshelf.DEFAULT)
+                                     .orElseThrow();
         bookshelf[1] = new Bookshelf(TestConstants.BOOKSHELF + "1", defStyle);
         bookshelf[2] = new Bookshelf(TestConstants.BOOKSHELF + "2", defStyle);
         bookshelf[3] = new Bookshelf(TestConstants.BOOKSHELF + "3", defStyle);

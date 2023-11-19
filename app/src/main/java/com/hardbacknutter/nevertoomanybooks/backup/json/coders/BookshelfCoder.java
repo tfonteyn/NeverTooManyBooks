@@ -28,6 +28,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -120,16 +121,17 @@ public class BookshelfCoder
     @Override
     public Optional<Bookshelf> decodeReference(@NonNull final JSONObject data)
             throws JSONException {
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         final String name = data.optString(DBKey.BOOKSHELF_NAME);
         if (name != null && !name.isEmpty()) {
-            final Optional<Bookshelf> bookshelf = ServiceLocator
-                    .getInstance().getBookshelfDao().findByName(name);
+
+            final Optional<Bookshelf> bookshelf = bookshelfDao.findByName(name);
             if (bookshelf.isPresent()) {
                 return bookshelf;
             }
         }
 
-        return Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+        return bookshelfDao.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
     }
 }

@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -180,6 +181,7 @@ public class BooksOnBookshelfViewModel
     private SearchCriteria searchCriteria;
     /** Database Access. */
     private BookDao bookDao;
+    private BookshelfDao bookshelfDao;
 
     /** Preferred booklist state in next rebuild. */
     private RebuildBooklist rebuildMode;
@@ -304,8 +306,10 @@ public class BooksOnBookshelfViewModel
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {
 
+
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
+            bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
             // first start of the activity, read from user preference
             rebuildMode = RebuildBooklist.getPreferredMode(context);
@@ -334,8 +338,10 @@ public class BooksOnBookshelfViewModel
                 // check for an explicit bookshelf set
                 if (args.containsKey(DBKey.FK_BOOKSHELF)) {
                     // might be null, that's ok.
-                    bookshelf = Bookshelf.getBookshelf(context, args.getInt(DBKey.FK_BOOKSHELF))
-                                         .orElse(null);
+                    bookshelf = bookshelfDao
+                            .getBookshelf(context,
+                                          args.getInt(DBKey.FK_BOOKSHELF))
+                            .orElse(null);
                 }
             }
         } else {
@@ -353,8 +359,10 @@ public class BooksOnBookshelfViewModel
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
         if (bookshelf == null) {
-            bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
-                                 .orElseThrow();
+            bookshelf = bookshelfDao.getBookshelf(context,
+                                                  Bookshelf.PREFERRED,
+                                                  Bookshelf.DEFAULT)
+                                    .orElseThrow();
         }
 
         // preserve the current Layout so we can react to style/layout changes
@@ -395,8 +403,8 @@ public class BooksOnBookshelfViewModel
      */
     void reloadBookshelfList(@NonNull final Context context) {
         bookshelfList.clear();
-        bookshelfList.add(Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS).orElseThrow());
-        bookshelfList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
+        bookshelfList.add(bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS).orElseThrow());
+        bookshelfList.addAll(bookshelfDao.getAll());
     }
 
     /**
@@ -456,11 +464,11 @@ public class BooksOnBookshelfViewModel
                          final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
-        bookshelf = ServiceLocator.getInstance().getBookshelfDao()
-                                  .getById(bookshelfId).orElseGet(
-                        () -> Bookshelf.getBookshelf(context, Bookshelf.PREFERRED,
-                                                     Bookshelf.ALL_BOOKS)
-                                       .orElseThrow());
+        bookshelf = bookshelfDao.getById(bookshelfId).orElseGet(
+                () -> bookshelfDao.getBookshelf(context,
+                                                Bookshelf.PREFERRED,
+                                                Bookshelf.ALL_BOOKS)
+                                  .orElseThrow());
         bookshelf.setAsPreferred(context);
 
         if (previousBookshelfId != bookshelf.getId()) {
@@ -474,7 +482,7 @@ public class BooksOnBookshelfViewModel
     @SuppressWarnings("UnusedReturnValue")
     private boolean reloadSelectedBookshelf(@NonNull final Context context) {
 
-        final Bookshelf newBookshelf = Bookshelf
+        final Bookshelf newBookshelf = bookshelfDao
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS)
                 .orElseThrow();
         if (newBookshelf.equals(bookshelf)) {
@@ -818,7 +826,7 @@ public class BooksOnBookshelfViewModel
                     books = ServiceLocator.getInstance().getPublisherDao().getBookIds(id);
                     break;
                 case BooklistGroup.BOOKSHELF:
-                    books = ServiceLocator.getInstance().getBookshelfDao().getBookIds(id);
+                    books = bookshelfDao.getBookIds(id);
                     break;
                 default:
                     throw new IllegalArgumentException(String.valueOf(groupId));
@@ -1135,7 +1143,7 @@ public class BooksOnBookshelfViewModel
      * @param bookshelf to delete
      */
     void delete(@NonNull final Bookshelf bookshelf) {
-        if (ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf)) {
+        if (bookshelfDao.delete(bookshelf)) {
             triggerRebuildList.setValue(false);
         }
     }

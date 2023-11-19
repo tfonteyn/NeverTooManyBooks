@@ -153,8 +153,7 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookshelves(@NonNull final Context context) {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        serviceLocator.getBookshelfDao().getAll().forEach(
+        ServiceLocator.getInstance().getBookshelfDao().getAll().forEach(
                 bookshelf -> bookshelf.validateStyle(context));
     }
 

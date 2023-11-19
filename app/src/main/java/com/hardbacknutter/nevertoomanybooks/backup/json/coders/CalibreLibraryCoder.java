@@ -49,6 +49,9 @@ public class CalibreLibraryCoder
     @NonNull
     private final JsonCoder<Bookshelf> bookshelfCoder;
 
+    @NonNull
+    private final BookshelfDao bookshelfDao;
+
     /**
      * Constructor.
      *
@@ -59,6 +62,7 @@ public class CalibreLibraryCoder
                                @NonNull final Style defaultStyle) {
         this.context = context;
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
+        bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
     }
 
     @NonNull
@@ -73,11 +77,12 @@ public class CalibreLibraryCoder
         data.put(DBKey.CALIBRE_LIBRARY_NAME, library.getName());
         data.put(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
 
-        final Bookshelf libraryBookshelf = Bookshelf.getBookshelf(context,
-                                                                  library.getMappedBookshelfId(),
-                                                                  Bookshelf.PREFERRED,
-                                                                  Bookshelf.DEFAULT)
-                                                    .orElseThrow();
+        final Bookshelf libraryBookshelf = bookshelfDao
+                .getBookshelf(context,
+                              library.getMappedBookshelfId(),
+                              Bookshelf.PREFERRED,
+                              Bookshelf.DEFAULT)
+                .orElseThrow();
 
         // We could just encode a reference to the bookshelf,
         // but the space-saving would be minuscule.
@@ -180,8 +185,6 @@ public class CalibreLibraryCoder
             }
         }
 
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-
         final Bookshelf libraryBookshelf = bookshelfCoder
                 .decode(data.getJSONObject(DBKey.FK_BOOKSHELF));
         bookshelfDao.fixId(libraryBookshelf);
@@ -269,11 +272,10 @@ public class CalibreLibraryCoder
     private long v3resolveBookshelf(@NonNull final JSONObject data,
                                     @NonNull final String libName)
             throws DaoWriteException {
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // try original
-        Bookshelf bookshelf = Bookshelf.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF))
-                                       .orElse(null);
+        Bookshelf bookshelf = bookshelfDao.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF))
+                                          .orElse(null);
         if (bookshelf == null) {
             // have we created the workaround before?
             final String name = "Calibre '" + libName + "'";

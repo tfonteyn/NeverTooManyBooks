@@ -34,6 +34,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 @SuppressWarnings("WeakerAccess")
@@ -54,14 +55,18 @@ public class EditBookshelvesViewModel
      */
     private long weCameFromBookshelfId;
 
+    private BookshelfDao bookshelfDao;
+
     /**
      * Pseudo constructor.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     void init(@Nullable final Bundle args) {
-        if (list == null) {
-            list = ServiceLocator.getInstance().getBookshelfDao().getAll();
+        if (bookshelfDao == null) {
+            bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+
+            list = bookshelfDao.getAll();
             if (args != null) {
                 weCameFromBookshelfId = args.getLong(DBKey.FK_BOOKSHELF);
                 if (weCameFromBookshelfId > 0) {
@@ -127,7 +132,7 @@ public class EditBookshelvesViewModel
      */
     void onBookshelfEdited(final long bookshelfId) {
         list.clear();
-        list.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
+        list.addAll(bookshelfDao.getAll());
         selectedPosition = findSelectedPosition(bookshelfId);
     }
 
@@ -137,7 +142,7 @@ public class EditBookshelvesViewModel
      * @param bookshelf to delete
      */
     void deleteBookshelf(@NonNull final Bookshelf bookshelf) {
-        ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf);
+        bookshelfDao.delete(bookshelf);
         list.remove(bookshelf);
         selectedPosition = RecyclerView.NO_POSITION;
     }
@@ -149,7 +154,7 @@ public class EditBookshelvesViewModel
      */
     void purgeNodeStates(@NonNull final Bookshelf bookshelf) {
         try {
-            ServiceLocator.getInstance().getBookshelfDao().purgeNodeStates(bookshelf);
+            bookshelfDao.purgeNodeStates(bookshelf);
         } catch (@NonNull final DaoWriteException e) {
             // ignore, but log it.
             LoggerFactory.getLogger().e(TAG, e);
