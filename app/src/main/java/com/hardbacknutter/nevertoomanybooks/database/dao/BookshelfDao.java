@@ -40,6 +40,15 @@ public interface BookshelfDao
         extends MoveBooksDao<Bookshelf> {
 
     /**
+     * Set the given {@link Bookshelf} as the current/preferred.
+     *
+     * @param context   Current context
+     * @param bookshelf to set
+     */
+    void setAsPreferred(@NonNull Context context,
+                        @NonNull Bookshelf bookshelf);
+
+    /**
      * Get the specified bookshelf.
      *
      * @param context Current context

@@ -67,6 +67,11 @@ public class BookshelfDaoImpl
         extends BaseDaoImpl
         implements BookshelfDao {
 
+    /**
+     * Preference name - the bookshelf to load next time we startup.
+     * Storing the name and not the id. If you export/import... the id will be different.
+     */
+    public static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     /** Log tag. */
     private static final String TAG = "BookshelfDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
@@ -133,11 +138,20 @@ public class BookshelfDaoImpl
     @NonNull
     private Optional<Bookshelf> getPreferredBookshelf(@NonNull final Context context) {
         final String name = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getString(Bookshelf.PK_BOOKSHELF_CURRENT, null);
+                                             .getString(PK_BOOKSHELF_CURRENT, null);
         if (name != null && !name.isEmpty()) {
             return findByName(name);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void setAsPreferred(@NonNull final Context context,
+                               @NonNull final Bookshelf bookshelf) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(PK_BOOKSHELF_CURRENT, bookshelf.getName())
+                         .apply();
     }
 
     @NonNull

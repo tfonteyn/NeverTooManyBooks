@@ -25,7 +25,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -69,6 +68,7 @@ public class Bookshelf
             return new Bookshelf[size];
         }
     };
+
     /**
      * The 'first' bookshelf created at install time. We allow renaming it, but not deleting.
      */
@@ -80,17 +80,12 @@ public class Bookshelf
      * i.e. when the user creates a new shelf, it has id==0 before it's saved.
      */
     public static final int ALL_BOOKS = -1;
+
     /**
      * The user preferred shelf as stored in preferences.
      * WARNING: this can be either a normal bookshelf, ot the "All Books" virtual shelf.
      */
     public static final int PREFERRED = -2;
-
-    /**
-     * Preference name - the bookshelf to load next time we startup.
-     * Storing the name and not the id. If you export/import... the id will be different.
-     */
-    public static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
 
     @SuppressWarnings("FieldNotUsedInToString")
     private final List<PFilter<?>> filters = new ArrayList<>();
@@ -177,8 +172,7 @@ public class Bookshelf
      * @param context Current context
      */
     public void setAsPreferred(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putString(PK_BOOKSHELF_CURRENT, name).apply();
+        ServiceLocator.getInstance().getBookshelfDao().setAsPreferred(context, this);
     }
 
     @Override
