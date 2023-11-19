@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -318,10 +319,10 @@ public class Bookshelf
      */
     @NonNull
     public Style getStyle() {
+        // Validate and use the default if needed.
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+        final Style style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 
-        // Always validate first
-        final Style style = ServiceLocator.getInstance().getStyles()
-                                          .getStyleOrDefault(styleUuid);
         // the previous uuid might have been overruled so we always refresh it
         styleUuid = style.getUuid();
         return style;

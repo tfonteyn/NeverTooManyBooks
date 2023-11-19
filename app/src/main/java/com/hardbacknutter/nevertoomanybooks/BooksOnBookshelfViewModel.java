@@ -504,9 +504,10 @@ public class BooksOnBookshelfViewModel
      */
     void onStyleChanged(@NonNull final Context context,
                         @NonNull final String styleUuid) {
-        // Always validate first
+        // Validate and use the default if needed.
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-        final Style style = stylesHelper.getStyleOrDefault(styleUuid);
+        final Style style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
+
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         // set as the global default.

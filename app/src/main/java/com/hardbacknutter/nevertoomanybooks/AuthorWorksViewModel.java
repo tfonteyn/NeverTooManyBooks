@@ -33,6 +33,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -90,9 +91,11 @@ public class AuthorWorksViewModel
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
 
-            // the style is allowed to be 'null' here. If it is, the default will be used.
+            // The style CAN be 'null' here.
             final String styleUuid = args.getString(Style.BKEY_UUID);
-            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(styleUuid);
+            // Validate and use the default if needed.
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 
             final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
             if (authorId <= 0) {

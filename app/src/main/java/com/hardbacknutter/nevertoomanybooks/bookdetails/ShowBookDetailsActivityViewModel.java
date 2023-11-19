@@ -29,6 +29,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -78,9 +79,11 @@ public class ShowBookDetailsActivityViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (style == null) {
-            // the style can be 'null' here. If so, the default one will be used.
+            // The style CAN be 'null' here.
             final String styleUuid = args.getString(Style.BKEY_UUID);
-            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(styleUuid);
+            // Validate and use the default if needed.
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 
             menuHandlers = MenuHandlerFactory.create();
         }

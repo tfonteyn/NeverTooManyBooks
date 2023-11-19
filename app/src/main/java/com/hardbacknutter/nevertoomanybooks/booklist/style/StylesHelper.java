@@ -97,41 +97,23 @@ public class StylesHelper {
     }
 
     /**
-     * Get the specified style; {@code null} if not found.
+     * Get the specified style.
      *
      * @param uuid UUID of the style to get.
      *
-     * @return the style, or {@code null} if not found
+     * @return the style
      */
     @NonNull
-    public Optional<Style> getStyle(@NonNull final String uuid) {
+    public Optional<Style> getStyle(@Nullable final String uuid) {
+        if (uuid == null || uuid.isEmpty()) {
+            return Optional.empty();
+        }
         final Style style = getAllStyles().get(uuid);
         return style == null ? Optional.empty() : Optional.of(style);
     }
 
     /**
-     * Get the specified style. If not found, {@link #getDefault()} will be returned.
-     *
-     * @param uuid UUID of the style to get.
-     *
-     * @return the style, or the default style if not found
-     */
-    @NonNull
-    public Style getStyleOrDefault(@Nullable final String uuid) {
-        if (uuid != null) {
-            // Try to get user or builtin style
-            final Style style = getAllStyles().get(uuid);
-            if (style != null) {
-                return style;
-            }
-        }
-
-        // fall back to the user default.
-        return getDefault();
-    }
-
-    /**
-     * Get the user default style, or if none found, the Builtin default.
+     * Get the user default style, or if none found, fallback to the Builtin default.
      *
      * @return the style.
      */
