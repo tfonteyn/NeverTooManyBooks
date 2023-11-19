@@ -36,8 +36,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 
 /**
@@ -325,7 +328,13 @@ public class StylesHelper {
      */
     public boolean update(@NonNull final Context context,
                           @NonNull final Style... styles) {
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+            // Update the database first, and commit the transaction
             for (final Style style : styles) {
                 if (BuildConfig.DEBUG /* always */) {
                     if (style.getUuid().isEmpty()) {
@@ -340,7 +349,12 @@ public class StylesHelper {
                 }
 
                 styleDaoSupplier.get().update(context, style);
-
+            }
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+            // Now update the caches.
+            for (final Style style : styles) {
                 if (style.getType() == StyleType.Global) {
                     // ensure both the global style and any inheriting styles get reloaded
                     globalStyle = null;
@@ -355,6 +369,10 @@ public class StylesHelper {
         } catch (@NonNull final DaoWriteException e) {
             // ignore, but log it.
             LoggerFactory.getLogger().e(TAG, e);
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
         return false;
     }
