@@ -389,12 +389,19 @@ public class StylesHelper {
     }
 
     /**
-     * Purge Booklist node state data for the given Style.<br>
-     * Called when a style is deleted or manually from the Styles management context menu.
+     * Purge book list node state data for the given {@link Style}.
+     * <p>
+     * Called when a {@link Style} is deleted or manually from the
+     * {@link Style} management context menu.
      *
-     * @param styleId to purge
+     * @param style to purge
      */
-    public void purgeNodeStatesByStyle(final long styleId) {
-        styleDaoSupplier.get().purgeNodeStatesByStyle(styleId);
+    public void purgeNodeStates(@NonNull final Style style) {
+        try {
+            styleDaoSupplier.get().purgeNodeStates(style);
+        } catch (@NonNull final DaoWriteException e) {
+            // ignore, but log it.
+            LoggerFactory.getLogger().e(TAG, e);
+        }
     }
 }

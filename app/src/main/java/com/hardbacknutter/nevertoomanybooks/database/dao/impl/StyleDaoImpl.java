@@ -394,7 +394,7 @@ public class StyleDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            purgeNodeStatesByStyle(style.getId());
+            purgeNodeStates(style);
 
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(DELETE_STYLE_BY_ID)) {
@@ -410,7 +410,7 @@ public class StyleDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final DaoUpdateException | SQLException | IllegalArgumentException e) {
             return false;
 
         } finally {
@@ -421,11 +421,15 @@ public class StyleDaoImpl
     }
 
     @Override
-    public void purgeNodeStatesByStyle(final long styleId) {
+    public void purgeNodeStates(@NonNull final Style style)
+            throws DaoUpdateException {
         try (SynchronizedStatement stmt = db
                 .compileStatement(DELETE_BOOK_LIST_NODE_STATE_BY_STYLE)) {
-            stmt.bindLong(1, styleId);
+            stmt.bindLong(1, style.getId());
             stmt.executeUpdateDelete();
+
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
         }
     }
 }

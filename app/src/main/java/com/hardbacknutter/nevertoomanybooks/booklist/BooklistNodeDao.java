@@ -54,6 +54,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  *      <li>{@link #setNode(long, int, boolean, int)}: update a single node (and it's branch).</li>
  *      <li>{@link #restoreSavedState()}: restore the tree view for all nodes from storage.</li>
  * </ul>
+ * <p>
+ * Dev. note: purging by Style/Bookshelf is not provided here but can instead by found in their
+ * respective DAOs.
+ * This because there is no single BooklistNodeDao during the lifetime of the app,
+ * but instead a new one is created alongside a BooklistBuilder instance.
  */
 public class BooklistNodeDao {
 

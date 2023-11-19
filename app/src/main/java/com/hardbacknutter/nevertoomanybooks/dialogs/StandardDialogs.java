@@ -309,10 +309,10 @@ public final class StandardDialogs {
      * @param entityLabel the label of the entity
      * @param onConfirm   Runnable to execute if the user clicks the confirm button.
      */
-    public static void purgeBLNS(@NonNull final Context context,
-                                 @StringRes final int label,
-                                 @NonNull final String entityLabel,
-                                 @NonNull final Runnable onConfirm) {
+    public static void purgeNodeStates(@NonNull final Context context,
+                                       @StringRes final int label,
+                                       @NonNull final String entityLabel,
+                                       @NonNull final Runnable onConfirm) {
 
         final String msg = context.getString(R.string.info_purge_blns_item_name,
                                              context.getString(label),

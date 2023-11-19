@@ -31,12 +31,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 @SuppressWarnings("WeakerAccess")
 public class EditBookshelvesViewModel
         extends ViewModel {
+
+    private static final String TAG = "EditBookshelvesViewMode";
 
     /** Currently selected row. */
     private int selectedPosition = RecyclerView.NO_POSITION;
@@ -139,12 +143,16 @@ public class EditBookshelvesViewModel
     }
 
     /**
-     * User explicitly wants to purge the BLNS for the given Bookshelf.
+     * User explicitly wants to purge the node states for the given Bookshelf.
      *
-     * @param bookshelfId to purge
+     * @param bookshelf to purge
      */
-    void purgeBLNS(final long bookshelfId) {
-        ServiceLocator.getInstance().getBookshelfDao()
-                      .purgeNodeStates(bookshelfId);
+    void purgeNodeStates(@NonNull final Bookshelf bookshelf) {
+        try {
+            ServiceLocator.getInstance().getBookshelfDao().purgeNodeStates(bookshelf);
+        } catch (@NonNull final DaoWriteException e) {
+            // ignore, but log it.
+            LoggerFactory.getLogger().e(TAG, e);
+        }
     }
 }

@@ -104,11 +104,16 @@ public interface StyleDao {
     boolean delete(@NonNull Style style);
 
     /**
-     * Purge Booklist node state data for the given Style.<br>
-     * Called when a style is deleted or manually from the Styles management context menu.
+     * Purge book list node state data for the given {@link Style}.
+     * <p>
+     * Called when a {@link Style} is deleted or manually from the
+     * {@link Style} management context menu.
      *
-     * @param styleId to purge
+     * @param style to purge
+     *
+     * @throws DaoWriteException on failure
      */
-    void purgeNodeStatesByStyle(long styleId);
+    void purgeNodeStates(@NonNull Style style)
+            throws DaoWriteException;
 
 }

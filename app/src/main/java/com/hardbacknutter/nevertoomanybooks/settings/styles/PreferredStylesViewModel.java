@@ -320,11 +320,11 @@ public class PreferredStylesViewModel
     }
 
     /**
-     * User explicitly wants to purge the BLNS for the given Style.
+     * User explicitly wants to purge the node states for the given Style.
      *
-     * @param styleId to purge
+     * @param style to purge
      */
-    void purgeBLNS(final long styleId) {
-        stylesHelper.purgeNodeStatesByStyle(styleId);
+    void purgeNodeStates(@NonNull final Style style) {
+        stylesHelper.purgeNodeStates(style);
     }
 }

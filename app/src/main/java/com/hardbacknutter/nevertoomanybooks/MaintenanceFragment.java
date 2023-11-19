@@ -109,7 +109,7 @@ public class MaintenanceFragment
 
         vb.btnResetTips.setOnClickListener(this::onResetTips);
         vb.btnPurgeFiles.setOnClickListener(this::onPurgeFiles);
-        vb.btnPurgeBlns.setOnClickListener(this::onPurgeBlns);
+        vb.btnPurgeBlns.setOnClickListener(this::onPurgeNodeStates);
 
         vb.btnSyncDeletedBooks.setOnClickListener(this::onSyncDeletedBooks);
         vb.btnClearDeletedBooks.setOnClickListener(this::onClearDeletedBooks);
@@ -246,7 +246,7 @@ public class MaintenanceFragment
                 .show();
     }
 
-    private void onPurgeBlns(@NonNull final View v) {
+    private void onPurgeNodeStates(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.lbl_purge_blns)

@@ -171,9 +171,12 @@ public interface BookshelfDao
      * Called when a {@link Bookshelf} is deleted or manually from the
      * {@link Bookshelf} management context menu.
      *
-     * @param bookshelfId to purge
+     * @param bookshelf to purge
+     *
+     * @throws DaoWriteException on failure
      */
-    void purgeNodeStates(long bookshelfId);
+    void purgeNodeStates(@NonNull Bookshelf bookshelf)
+            throws DaoWriteException;
 
     /**
      * Get a list of book ID's for the given {@link Bookshelf}.

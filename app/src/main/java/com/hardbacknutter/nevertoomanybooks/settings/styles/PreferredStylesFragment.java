@@ -310,8 +310,8 @@ public class PreferredStylesFragment
         } else if (itemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
             //noinspection DataFlowIssue
-            StandardDialogs.purgeBLNS(context, R.string.lbl_style, style.getLabel(context),
-                                      () -> vm.purgeBLNS(style.getId()));
+            StandardDialogs.purgeNodeStates(context, R.string.lbl_style, style.getLabel(context),
+                                            () -> vm.purgeNodeStates(style));
             return true;
         }
 

@@ -246,8 +246,9 @@ public class EditBookshelvesFragment
         } else if (itemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
             //noinspection DataFlowIssue
-            StandardDialogs.purgeBLNS(context, R.string.lbl_bookshelf, bookshelf.getLabel(context),
-                                      () -> vm.purgeBLNS(bookshelf.getId()));
+            StandardDialogs.purgeNodeStates(context, R.string.lbl_bookshelf,
+                                            bookshelf.getLabel(context),
+                                            () -> vm.purgeNodeStates(bookshelf));
             return true;
         }
 
