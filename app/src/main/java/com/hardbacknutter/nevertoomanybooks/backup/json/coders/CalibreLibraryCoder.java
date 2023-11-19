@@ -83,17 +83,17 @@ public class CalibreLibraryCoder
         // but the space-saving would be minuscule.
         data.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(libraryBookshelf));
 
-        final List<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
-        if (!vlibs.isEmpty()) {
+        final List<CalibreVirtualLibrary> vLibs = library.getVirtualLibraries();
+        if (!vLibs.isEmpty()) {
             final JSONArray vlArray = new JSONArray();
-            for (final CalibreVirtualLibrary vlib : vlibs) {
+            for (final CalibreVirtualLibrary vLib : vLibs) {
                 final JSONObject vlData = new JSONObject();
-                vlData.put(DBKey.PK_ID, vlib.getId());
-                vlData.put(DBKey.CALIBRE_LIBRARY_NAME, vlib.getName());
-                vlData.put(DBKey.CALIBRE_VIRT_LIB_EXPR, vlib.getExpr());
+                vlData.put(DBKey.PK_ID, vLib.getId());
+                vlData.put(DBKey.CALIBRE_LIBRARY_NAME, vLib.getName());
+                vlData.put(DBKey.CALIBRE_VIRT_LIB_EXPR, vLib.getExpr());
 
-                final Bookshelf vlibBookshelf = Bookshelf
-                        .getBookshelf(context, vlib.getMappedBookshelfId())
+                final Bookshelf vlibBookshelf = bookshelfDao
+                        .getBookshelf(context, vLib.getMappedBookshelfId())
                         .orElse(libraryBookshelf);
 
                 vlData.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(vlibBookshelf));
@@ -197,7 +197,7 @@ public class CalibreLibraryCoder
 
         final JSONArray vlArray = data.optJSONArray(TAG_VL);
         if (vlArray != null) {
-            final List<CalibreVirtualLibrary> vlibs = new ArrayList<>();
+            final List<CalibreVirtualLibrary> vLibs = new ArrayList<>();
             for (int i = 0; i < vlArray.length(); i++) {
                 final JSONObject vlData = vlArray.getJSONObject(i);
 
@@ -205,16 +205,16 @@ public class CalibreLibraryCoder
                         .decode(vlData.getJSONObject(DBKey.FK_BOOKSHELF));
                 bookshelfDao.fixId(vlibBookshelf);
 
-                final CalibreVirtualLibrary vlib = new CalibreVirtualLibrary(
+                final CalibreVirtualLibrary vLib = new CalibreVirtualLibrary(
                         library.getId(),
                         vlData.getString(DBKey.CALIBRE_LIBRARY_NAME),
                         vlData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR),
                         vlibBookshelf);
-                vlib.setId(vlData.getLong(DBKey.PK_ID));
+                vLib.setId(vlData.getLong(DBKey.PK_ID));
 
-                vlibs.add(vlib);
+                vLibs.add(vLib);
             }
-            library.setVirtualLibraries(vlibs);
+            library.setVirtualLibraries(vLibs);
         }
         return library;
     }
@@ -245,22 +245,22 @@ public class CalibreLibraryCoder
 
         final JSONArray vlArray = data.optJSONArray(TAG_VL);
         if (vlArray != null) {
-            final List<CalibreVirtualLibrary> vlibs = new ArrayList<>();
+            final List<CalibreVirtualLibrary> vLibs = new ArrayList<>();
             for (int i = 0; i < vlArray.length(); i++) {
                 final JSONObject vlData = vlArray.getJSONObject(i);
-                final String vlibName = vlData.getString(DBKey.CALIBRE_LIBRARY_NAME);
-                final long vlibBookshelfId = v3resolveBookshelf(vlData, "v-" + libName);
+                final String vLibName = vlData.getString(DBKey.CALIBRE_LIBRARY_NAME);
+                final long vLibBookshelfId = v3resolveBookshelf(vlData, "v-" + libName);
 
-                final CalibreVirtualLibrary vlib = new CalibreVirtualLibrary(
+                final CalibreVirtualLibrary vLib = new CalibreVirtualLibrary(
                         library.getId(),
-                        vlibName,
+                        vLibName,
                         vlData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR),
-                        vlibBookshelfId);
-                vlib.setId(vlData.getLong(DBKey.PK_ID));
+                        vLibBookshelfId);
+                vLib.setId(vlData.getLong(DBKey.PK_ID));
 
-                vlibs.add(vlib);
+                vLibs.add(vLib);
             }
-            library.setVirtualLibraries(vlibs);
+            library.setVirtualLibraries(vLibs);
         }
 
         return library;
