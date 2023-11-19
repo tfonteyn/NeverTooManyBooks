@@ -29,7 +29,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 

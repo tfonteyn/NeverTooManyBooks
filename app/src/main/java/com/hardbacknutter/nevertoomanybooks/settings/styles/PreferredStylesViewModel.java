@@ -38,7 +38,7 @@ import java.util.stream.IntStream;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 @SuppressWarnings("WeakerAccess")

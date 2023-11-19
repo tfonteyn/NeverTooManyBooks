@@ -27,9 +27,9 @@ import android.os.LocaleList;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 
 import org.mockito.Mock;
 
