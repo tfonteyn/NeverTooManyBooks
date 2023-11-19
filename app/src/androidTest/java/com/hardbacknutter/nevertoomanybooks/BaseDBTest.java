@@ -71,7 +71,7 @@ public abstract class BaseDBTest {
         context = serviceLocator.getLocalizedAppContext();
 
         CoverVolume.initVolume(context, 0);
-        ServiceLocator.getInstance().getDb();
+        serviceLocator.getDb();
     }
 
     @NonNull

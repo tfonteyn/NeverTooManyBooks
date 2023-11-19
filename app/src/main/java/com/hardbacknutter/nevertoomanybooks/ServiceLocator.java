@@ -534,7 +534,8 @@ public class ServiceLocator {
     public BookshelfDao getBookshelfDao() {
         synchronized (this) {
             if (bookshelfDao == null) {
-                bookshelfDao = new BookshelfDaoImpl(getDb());
+                bookshelfDao = new BookshelfDaoImpl(getDb(),
+                                                    this::getStyles);
             }
         }
         return bookshelfDao;
@@ -594,7 +595,8 @@ public class ServiceLocator {
     public FtsDao getFtsDao() {
         synchronized (this) {
             if (ftsDao == null) {
-                ftsDao = new FtsDaoImpl(getDb());
+                ftsDao = new FtsDaoImpl(getDb(),
+                                        this::getStyles);
             }
         }
         return ftsDao;

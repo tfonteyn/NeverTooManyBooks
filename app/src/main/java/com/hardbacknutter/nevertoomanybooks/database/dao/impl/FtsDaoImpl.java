@@ -29,9 +29,9 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -159,14 +160,19 @@ public class FtsDaoImpl
     private static final int NANO_TO_MILLIS = 1_000_000;
     /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
+    @NonNull
+    private final Supplier<StylesHelper> stylesHelperSupplier;
 
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db                   Underlying database
+     * @param stylesHelperSupplier deferred supplier for the {@link StylesHelper}
      */
-    public FtsDaoImpl(@NonNull final SynchronizedDb db) {
+    public FtsDaoImpl(@NonNull final SynchronizedDb db,
+                      @NonNull final Supplier<StylesHelper> stylesHelperSupplier) {
         super(db, TAG);
+        this.stylesHelperSupplier = stylesHelperSupplier;
     }
 
     /**
@@ -364,10 +370,9 @@ public class FtsDaoImpl
         // Accumulator for TOCEntry titles for each book
         final List<String> tocList = new ArrayList<>();
 
-        final boolean givenNameFirst = ServiceLocator.getInstance()
-                                                     .getStyles()
-                                                     .getGlobalStyle()
-                                                     .isShowAuthorByGivenName();
+        final boolean givenNameFirst = stylesHelperSupplier.get()
+                                                           .getGlobalStyle()
+                                                           .isShowAuthorByGivenName();
 
         // Indexes of fields in the inner-loop cursors, -2 for 'not initialised yet'
         int colGivenNames = -2;

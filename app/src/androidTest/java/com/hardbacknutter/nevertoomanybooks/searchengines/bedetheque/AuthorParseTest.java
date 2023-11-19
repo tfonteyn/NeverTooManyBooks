@@ -27,6 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -49,6 +50,7 @@ public class AuthorParseTest
     private BedethequeAuthorResolver resolver;
 
     private BedethequeSearchEngine searchEngine;
+    private BedethequeCacheDao bedethequeCacheDao;
 
     @Before
     public void setup()
@@ -60,7 +62,8 @@ public class AuthorParseTest
 
         resolver = new BedethequeAuthorResolver(context, new TestProgressListener(TAG));
 
-        ServiceLocator.getInstance().getBedethequeCacheDao().clearCache();
+        bedethequeCacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
+        bedethequeCacheDao.clearCache();
     }
 
     @Test
@@ -116,8 +119,7 @@ public class AuthorParseTest
         // and one of them not having a firstname set.
         // FIXME: figure out why we get less authors in the cache than expected, low
         //  priority as this is a cache only.
-        final int countAuthors = ServiceLocator.getInstance().getBedethequeCacheDao()
-                                               .countAuthors();
+        final int countAuthors = bedethequeCacheDao.countAuthors();
         assertEquals(2578, countAuthors);
 //        assertEquals(2585, countAuthors);
     }

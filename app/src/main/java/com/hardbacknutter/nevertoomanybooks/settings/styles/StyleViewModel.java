@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 public class StyleViewModel
@@ -108,6 +109,8 @@ public class StyleViewModel
         return labelResId;
     }
 
+    private StylesHelper stylesHelper;
+
     /**
      * Pseudo constructor.
      *
@@ -117,8 +120,10 @@ public class StyleViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
         if (style == null) {
+            stylesHelper = ServiceLocator.getInstance().getStyles();
+
             if (args.getBoolean(BKEY_GLOBAL_STYLE, false)) {
-                style = (WritableStyle) ServiceLocator.getInstance().getStyles().getGlobalStyle();
+                style = (WritableStyle) stylesHelper.getGlobalStyle();
 
             } else {
                 final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
@@ -126,10 +131,9 @@ public class StyleViewModel
                 // ALWAYS pass the original style uuid back.
                 templateUuid = uuid;
 
-                final Style dbStyle = ServiceLocator.getInstance().getStyles()
-                                                    .getStyle(uuid)
-                                                    .orElseThrow(() -> new IllegalArgumentException(
-                                                            "uuid not found: " + uuid));
+                final Style dbStyle = stylesHelper.getStyle(uuid)
+                                                  .orElseThrow(() -> new IllegalArgumentException(
+                                                          "uuid not found: " + uuid));
 
                 @EditStyleContract.EditAction
                 final int action = args.getInt(EditStyleContract.BKEY_ACTION,
@@ -191,7 +195,7 @@ public class StyleViewModel
     boolean updateOrInsertStyle(@NonNull final Context context) {
         //noinspection DataFlowIssue
         if (styleDataStore.isModified()) {
-            return ServiceLocator.getInstance().getStyles().updateOrInsert(context, style);
+            return stylesHelper.updateOrInsert(context, style);
         }
         return false;
     }

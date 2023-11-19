@@ -66,6 +66,7 @@ import static org.junit.Assert.assertTrue;
  *
  * <strong>IMPORTANT:</strong> this test is configured to accept all certificates!
  */
+@SuppressWarnings("MissingJavadoc")
 public class CalibreContentServerTest {
 
     /** 10.0.2.2 is a special alias in the emulator which redirects to the host 127.0.0.1. */
@@ -74,12 +75,14 @@ public class CalibreContentServerTest {
     private static final String PASSWORD = "test";
 
     private CalibreContentServer server;
+    private Context context;
 
     @Before
     public void setup()
             throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException,
                    CertificateException {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        this.context = ServiceLocator.getInstance().getLocalizedAppContext();
+
         server = new CalibreContentServer.Builder(context)
                 .setUrl(URL)
                 .setUser(USERNAME)
@@ -99,14 +102,12 @@ public class CalibreContentServerTest {
 
     @Test
     public void filenames()
-            throws CertificateException, FileNotFoundException {
+            throws FileNotFoundException {
 
         final List<Author> authors = new ArrayList<>();
         authors.add(new Author("Clarke", "Arthur C. "));
         final List<Series> series = new ArrayList<>();
         series.add(new Series("Rama"));
-
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final Book book = new Book();
         book.setAuthors(authors);

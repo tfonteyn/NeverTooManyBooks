@@ -35,10 +35,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.BookshelfMergeHelper;
@@ -76,14 +77,19 @@ public class BookshelfDaoImpl
     private static final String TAG = "BookshelfDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
+    @NonNull
+    private final Supplier<StylesHelper> stylesHelperSupplier;
 
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db                   Underlying database
+     * @param stylesHelperSupplier deferred supplier for the {@link StylesHelper}
      */
-    public BookshelfDaoImpl(@NonNull final SynchronizedDb db) {
+    public BookshelfDaoImpl(@NonNull final SynchronizedDb db,
+                            @NonNull final Supplier<StylesHelper> stylesHelperSupplier) {
         super(db, TAG);
+        this.stylesHelperSupplier = stylesHelperSupplier;
     }
 
     /**
@@ -121,7 +127,7 @@ public class BookshelfDaoImpl
     private Optional<Bookshelf> getAllBooksBookshelf(@NonNull final Context context) {
         final Bookshelf bookshelf = new Bookshelf(
                 context.getString(R.string.bookshelf_all_books),
-                ServiceLocator.getInstance().getStyles().getDefault());
+                stylesHelperSupplier.get().getDefault());
         bookshelf.setId(Bookshelf.ALL_BOOKS);
         return Optional.of(bookshelf);
     }
@@ -130,7 +136,7 @@ public class BookshelfDaoImpl
     private Optional<Bookshelf> getDefaultBookshelf(@NonNull final Context context) {
         final Bookshelf bookshelf = new Bookshelf(
                 context.getString(R.string.bookshelf_my_books),
-                ServiceLocator.getInstance().getStyles().getDefault());
+                stylesHelperSupplier.get().getDefault());
         bookshelf.setId(Bookshelf.DEFAULT);
         return Optional.of(bookshelf);
     }

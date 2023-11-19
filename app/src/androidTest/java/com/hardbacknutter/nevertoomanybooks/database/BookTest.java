@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -69,7 +70,9 @@ import static org.junit.Assert.assertTrue;
 /** Do NOT extend BaseSetup ! */
 @SuppressWarnings({"TypeMayBeWeakened",
         "MismatchedQueryAndUpdateOfCollection",
-        "MismatchedReadAndWriteOfArray"})
+        "MismatchedReadAndWriteOfArray",
+        "OverlyBroadThrowsClause",
+        "MissingJavadoc"})
 @MediumTest
 public class BookTest {
 
@@ -95,6 +98,9 @@ public class BookTest {
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
 
+    private CoverStorage coverStorage;
+
+
     /**
      * Clean the database.
      * Empty the temp directory.
@@ -111,6 +117,7 @@ public class BookTest {
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final SynchronizedDb db = serviceLocator.getDb();
+        coverStorage = serviceLocator.getCoverStorage();
 
         TestConstants.deleteTocs(db);
         TestConstants.deleteBooks(db);
@@ -123,10 +130,10 @@ public class BookTest {
         final int actualVolume = CoverVolume.initVolume(context, 0);
         assertEquals(0, actualVolume);
 
-        final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
+        final File coverDir = coverStorage.getDir();
         assertNotNull(NEED_A_PICTURES_DIRECTORY, coverDir);
 
-        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
+        final File tempDir = coverStorage.getTempDir();
         assertNotNull(NEED_A_TEMP_DIRECTORY, tempDir);
 
         // empty the temp dir
@@ -187,10 +194,10 @@ public class BookTest {
         final Context context = serviceLocator.getLocalizedAppContext();
         final BookDao bookDao = serviceLocator.getBookDao();
 
-        final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
+        final File coverDir = coverStorage.getDir();
         assertNotNull(NEED_A_PICTURES_DIRECTORY, coverDir);
 
-        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
+        final File tempDir = coverStorage.getTempDir();
         assertNotNull(NEED_A_TEMP_DIRECTORY, tempDir);
 
         // Do the initial insert and test it
@@ -302,7 +309,7 @@ public class BookTest {
             throws StorageException {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
-        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
+        final File tempDir = coverStorage.getTempDir();
         assertEquals(tempDir.getAbsolutePath()
                      + File.separatorChar + DbPrep.COVER[cIdx],
                      book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null));
@@ -348,9 +355,8 @@ public class BookTest {
         final BookDao bookDao = serviceLocator.getBookDao();
         final long bookId = prepareAndInsertBook(context, bookDao);
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
-        final Bundle args = ServiceLocator.getInstance().newBundle();
+        final Bundle args = serviceLocator.newBundle();
         args.putLong(DBKey.FK_BOOK, bookId);
-
         // FIXME: FAILS with Cannot invoke setValue on a background thread
         //  but the code does work in normal usage
         vm.init(context, args, s1.get());
@@ -378,7 +384,7 @@ public class BookTest {
         book.setAuthors(authorList);
         book.setPublishers(publisherList);
 
-        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
+        final File tempDir = coverStorage.getTempDir();
         book.setCover(0, new File(tempDir, DbPrep.COVER[0]));
         // we're in 'Dirty' mode, so must be a temp file
         mustHaveTempCover(context, book, 0);
@@ -425,7 +431,7 @@ public class BookTest {
         mustHavePersistedCover(book, 0);
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
+        final File tempDir = coverStorage.getTempDir();
         final List<File> tempFiles = FileUtils.collectFiles(tempDir, jpgFilter, 10);
         // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
         assertEquals(1, tempFiles.size());
