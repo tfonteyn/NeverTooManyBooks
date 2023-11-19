@@ -227,12 +227,7 @@ public class Bookshelf
 
         styleUuid = style.getUuid();
 
-        try {
-            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, this);
-        }
+        doUpdate(context);
     }
 
     /**
@@ -314,12 +309,7 @@ public class Bookshelf
                                    @NonNull final TopRowListPosition position) {
         topRowAdapterPosition = position;
 
-        try {
-            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, this);
-        }
+        doUpdate(context);
     }
 
     /**
@@ -329,14 +319,24 @@ public class Bookshelf
      */
     public void validateStyle(@NonNull final Context context) {
         final String uuid = styleUuid;
+        // Resolving the style might change it (i.e. a different UUID)
         final Style style = getStyle();
         if (!uuid.equals(style.getUuid())) {
-            try {
-                ServiceLocator.getInstance().getBookshelfDao().update(context, this);
-            } catch (@NonNull final DaoWriteException e) {
-                // log, but ignore - should never happen unless disk full
-                LoggerFactory.getLogger().e(TAG, e, this);
-            }
+            doUpdate(context);
+        }
+    }
+
+    /**
+     * Update the database for this Bookshelf.
+     *
+     * @param context Current context
+     */
+    private void doUpdate(@NonNull final Context context) {
+        try {
+            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, this);
         }
     }
 
