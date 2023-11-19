@@ -394,16 +394,6 @@ public class Bookshelf
         this.styleUuid = styleUuid;
     }
 
-    /**
-     * Check if this is a regular shelf, or if this one represents our complete library.
-     *
-     * @return {@code true} for ALL books.
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isAllBooks() {
-        return id == ALL_BOOKS;
-    }
-
     @NonNull
     @Override
     public List<String> getNameFields() {

@@ -246,7 +246,7 @@ class BooklistBuilder {
         final int instanceId = ID_COUNTER.incrementAndGet();
 
         final TableBuilder tableBuilder = new TableBuilder(
-                instanceId, style, !bookshelf.isAllBooks(), rebuildMode);
+                instanceId, style, bookshelf, rebuildMode);
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
@@ -363,19 +363,20 @@ class BooklistBuilder {
         /**
          * Constructor.
          *
-         * @param instanceId            to create a unique table name
-         * @param style                 to apply to the list
-         * @param isFilteredOnBookshelf whether we're filtering on a specific Bookshelf,
-         *                              or if we're using the 'all books'
-         * @param rebuildMode           the mode to use for restoring the saved state.
+         * @param instanceId  to create a unique table name
+         * @param style       to apply to the list
+         * @param bookshelf   to display
+         * @param rebuildMode the mode to use for restoring the saved state.
          */
         TableBuilder(final int instanceId,
                      @NonNull final Style style,
-                     final boolean isFilteredOnBookshelf,
+                     @NonNull final Bookshelf bookshelf,
                      @NonNull final RebuildBooklist rebuildMode) {
 
             this.style = style;
-            filteredOnBookshelf = isFilteredOnBookshelf;
+            // whether we're filtering on a specific Bookshelf,
+            // or if we're using the 'all books'
+            filteredOnBookshelf = bookshelf.getId() != Bookshelf.ALL_BOOKS;
             this.rebuildMode = rebuildMode;
 
             /*

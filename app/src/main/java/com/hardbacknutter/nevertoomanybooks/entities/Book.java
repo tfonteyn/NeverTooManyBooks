@@ -1003,7 +1003,7 @@ public class Book
                                                             Bookshelf.PREFERRED,
                                                             Bookshelf.DEFAULT)
                                               .orElseThrow();
-            if (bookshelf.isAllBooks()) {
+            if (bookshelf.getId() == Bookshelf.ALL_BOOKS) {
                 // the user was "on" the "All Books" virtual shelf.
                 // For lack of anything better, set the default shelf instead.
                 bookshelf = bookshelfDao.getBookshelf(context, Bookshelf.DEFAULT)

@@ -453,7 +453,7 @@ public class BoBTask
 
         // Add a filter on the current Bookshelf?
         // Only consider doing this if this is NOT the "All books" Bookshelf
-        if (!bookshelf.isAllBooks()) {
+        if (bookshelf.getId() != Bookshelf.ALL_BOOKS) {
             // and only if the current style does NOT contain the Bookshelf group.
             if (!style.hasGroup(BooklistGroup.BOOKSHELF)) {
                 // do we already have a Bookshelf based filter?
