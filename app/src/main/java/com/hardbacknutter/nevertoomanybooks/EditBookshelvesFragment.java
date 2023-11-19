@@ -223,7 +223,7 @@ public class EditBookshelvesFragment
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
-            if (bookshelf.getId() > Bookshelf.DEFAULT) {
+            if (bookshelf.getId() > Bookshelf.HARD_DEFAULT) {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
                     vm.deleteBookshelf(bookshelf);

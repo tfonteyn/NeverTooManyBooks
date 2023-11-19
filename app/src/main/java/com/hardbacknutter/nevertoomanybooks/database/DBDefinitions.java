@@ -186,7 +186,7 @@ public final class DBDefinitions {
     /**
      * Foreign key.
      * When a style is deleted, this key will be (re)set to
-     * {@link BuiltinStyle#DEFAULT_ID}
+     * {@link BuiltinStyle#HARD_DEFAULT_ID}
      */
     public static final Domain DOM_FK_STYLE;
 
@@ -602,7 +602,7 @@ public final class DBDefinitions {
         DOM_FK_STYLE =
                 new Domain.Builder(DBKey.FK_STYLE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BuiltinStyle.DEFAULT_ID)
+                        .withDefault(BuiltinStyle.HARD_DEFAULT_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
                         .build();
 

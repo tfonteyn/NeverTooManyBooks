@@ -77,6 +77,6 @@ public class EditBookshelvesContract
         }
 
         // the last edited/inserted shelf
-        return Optional.of(intent.getLongExtra(DBKey.FK_BOOKSHELF, Bookshelf.DEFAULT));
+        return Optional.of(intent.getLongExtra(DBKey.FK_BOOKSHELF, Bookshelf.HARD_DEFAULT));
     }
 }

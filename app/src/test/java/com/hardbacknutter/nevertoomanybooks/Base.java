@@ -158,7 +158,7 @@ public class Base {
         doAnswer(invocation -> locales.get(invocation.getArgument(0)))
                 .when(localeList).get(anyInt());
 
-        when(style.getUuid()).thenReturn(BuiltinStyle.DEFAULT_UUID);
+        when(style.getUuid()).thenReturn(BuiltinStyle.HARD_DEFAULT_UUID);
         when(stylesHelper.getDefault()).thenReturn(style);
 
         when(coverStorage.getDir()).thenReturn(getTmpDir());

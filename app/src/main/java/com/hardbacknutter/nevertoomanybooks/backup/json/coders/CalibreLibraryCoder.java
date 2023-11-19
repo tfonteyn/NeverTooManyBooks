@@ -80,8 +80,8 @@ public class CalibreLibraryCoder
         final Bookshelf libraryBookshelf = bookshelfDao
                 .getBookshelf(context,
                               library.getMappedBookshelfId(),
-                              Bookshelf.PREFERRED,
-                              Bookshelf.DEFAULT)
+                              Bookshelf.USER_DEFAULT,
+                              Bookshelf.HARD_DEFAULT)
                 .orElseThrow();
 
         // We could just encode a reference to the bookshelf,
@@ -282,7 +282,7 @@ public class CalibreLibraryCoder
             bookshelf = bookshelfDao.findByName(name).orElse(null);
             if (bookshelf == null) {
                 // make a new one
-                bookshelf = new Bookshelf(name, BuiltinStyle.DEFAULT_UUID);
+                bookshelf = new Bookshelf(name, BuiltinStyle.HARD_DEFAULT_UUID);
                 bookshelfDao.insert(context, bookshelf);
             }
         }

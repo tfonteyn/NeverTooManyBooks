@@ -72,7 +72,7 @@ public class Bookshelf
     /**
      * The 'first' bookshelf created at install time. We allow renaming it, but not deleting.
      */
-    public static final int DEFAULT = 1;
+    public static final int HARD_DEFAULT = 1;
 
     /**
      * The virtual 'All Books' representing our complete library.
@@ -85,7 +85,7 @@ public class Bookshelf
      * The user preferred shelf as stored in preferences.
      * WARNING: this can be either a normal bookshelf, ot the "All Books" virtual shelf.
      */
-    public static final int PREFERRED = -2;
+    public static final int USER_DEFAULT = -2;
 
     @SuppressWarnings("FieldNotUsedInToString")
     private final List<PFilter<?>> filters = new ArrayList<>();

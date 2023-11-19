@@ -141,7 +141,7 @@ public class BookTest {
         FileUtils.collectFiles(tempDir, jpgFilter).forEach(File::delete);
 
         bookshelf[0] = serviceLocator.getBookshelfDao()
-                                     .getBookshelf(context, Bookshelf.DEFAULT)
+                                     .getBookshelf(context, Bookshelf.HARD_DEFAULT)
                                      .orElseThrow();
         bookshelfList.clear();
         bookshelfList.add(bookshelf[0]);
@@ -349,7 +349,7 @@ public class BookTest {
         final Context context = serviceLocator.getLocalizedAppContext();
 
         final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.DEFAULT_UUID);
+        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID);
         assertTrue(s1.isPresent());
 
         final BookDao bookDao = serviceLocator.getBookDao();

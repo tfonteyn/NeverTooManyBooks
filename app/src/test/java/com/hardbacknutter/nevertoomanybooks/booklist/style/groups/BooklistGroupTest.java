@@ -46,7 +46,7 @@ class BooklistGroupTest {
         final Optional<BuiltinStyle.Definition> definition =
                 BuiltinStyle.getAll()
                             .stream()
-                            .filter(def -> def.getId() == BuiltinStyle.DEFAULT_ID)
+                            .filter(def -> BuiltinStyle.HARD_DEFAULT_UUID.equals(def.getUuid()))
                             .findFirst();
         assertTrue(definition.isPresent());
 

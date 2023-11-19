@@ -126,12 +126,12 @@ public class StylesHelper {
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager
                 .getDefaultSharedPreferences(appContextSupplier.get())
-                .getString(PK_DEFAULT_STYLE, BuiltinStyle.DEFAULT_UUID);
+                .getString(PK_DEFAULT_STYLE, BuiltinStyle.HARD_DEFAULT_UUID);
 
         // Get the user or builtin or worst case the builtin default.
         final Style style = allStyles.get(uuid);
         //noinspection DataFlowIssue
-        return style != null ? style : allStyles.get(BuiltinStyle.DEFAULT_UUID);
+        return style != null ? style : allStyles.get(BuiltinStyle.HARD_DEFAULT_UUID);
     }
 
     /**

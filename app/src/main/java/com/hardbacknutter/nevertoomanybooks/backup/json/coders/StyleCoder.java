@@ -226,7 +226,7 @@ public class StyleCoder
                 style = stylesHelper.getStyle(uuid).orElseGet(
                         // It's a recognized Builtin Style, but it's deprecated.
                         // We return the default builtin style instead.
-                        () -> stylesHelper.getStyle(BuiltinStyle.DEFAULT_UUID).orElseThrow());
+                        () -> stylesHelper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID).orElseThrow());
                 break;
             }
             case Global: {

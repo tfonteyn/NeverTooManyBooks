@@ -54,11 +54,11 @@ public final class BuiltinStyle
      * which we were supposed to be using; i.e. this is a FALLBACK.
      * while the {@link GlobalStyle} is a holder for the global DEFAULT values.
      */
-    public static final String DEFAULT_UUID;
+    public static final String HARD_DEFAULT_UUID;
     /**
-     * Matching id for {@link #DEFAULT_UUID}.
+     * Matching id for {@link #HARD_DEFAULT_UUID}.
      */
-    public static final int DEFAULT_ID;
+    public static final int HARD_DEFAULT_ID;
 
     /** We need a random style for testing. Currently set to -9: ID_PUBLICATION_DATA. */
     @VisibleForTesting
@@ -208,13 +208,13 @@ public final class BuiltinStyle
     );
 
     static {
-        DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
+        HARD_DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
 
-        DEFAULT_UUID = ALL.stream()
-                          .filter(def -> def.getId() == DEFAULT_ID)
-                          .findFirst()
-                          .map(Definition::getUuid)
-                          .orElseThrow();
+        HARD_DEFAULT_UUID = ALL.stream()
+                               .filter(def -> def.getId() == HARD_DEFAULT_ID)
+                               .findFirst()
+                               .map(Definition::getUuid)
+                               .orElseThrow();
     }
 
     /**

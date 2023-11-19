@@ -843,8 +843,8 @@ public class CalibreContentServerReader
         //noinspection DataFlowIssue
         final Bookshelf mappedBookshelf = bookshelfDao.getBookshelf(context,
                                                                     library.getMappedBookshelfId(),
-                                                                    Bookshelf.PREFERRED,
-                                                                    Bookshelf.DEFAULT)
+                                                                    Bookshelf.USER_DEFAULT,
+                                                                    Bookshelf.HARD_DEFAULT)
                                                       .orElseThrow();
 
         if (bookShelves.isEmpty()) {

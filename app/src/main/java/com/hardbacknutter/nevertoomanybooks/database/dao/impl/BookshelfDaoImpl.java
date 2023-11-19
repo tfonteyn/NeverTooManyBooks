@@ -108,7 +108,7 @@ public class BookshelfDaoImpl
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
                    + ",'" + context.getString(R.string.bookshelf_all_books)
-                   + "'," + BuiltinStyle.DEFAULT_ID
+                   + "'," + BuiltinStyle.HARD_DEFAULT_ID
                    + ')');
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
@@ -117,9 +117,9 @@ public class BookshelfDaoImpl
                    + ',' + DBKey.BOOKSHELF_NAME
                    + ',' + DBKey.FK_STYLE
                    + ") VALUES ("
-                   + Bookshelf.DEFAULT
+                   + Bookshelf.HARD_DEFAULT
                    + ",'" + context.getString(R.string.bookshelf_my_books)
-                   + "'," + BuiltinStyle.DEFAULT_ID
+                   + "'," + BuiltinStyle.HARD_DEFAULT_ID
                    + ')');
     }
 
@@ -137,7 +137,7 @@ public class BookshelfDaoImpl
         final Bookshelf bookshelf = new Bookshelf(
                 context.getString(R.string.bookshelf_my_books),
                 stylesHelperSupplier.get().getDefault());
-        bookshelf.setId(Bookshelf.DEFAULT);
+        bookshelf.setId(Bookshelf.HARD_DEFAULT);
         return Optional.of(bookshelf);
     }
 
@@ -167,9 +167,9 @@ public class BookshelfDaoImpl
             return Optional.empty();
         } else if (id == Bookshelf.ALL_BOOKS) {
             return getAllBooksBookshelf(context);
-        } else if (id == Bookshelf.DEFAULT) {
+        } else if (id == Bookshelf.HARD_DEFAULT) {
             return getDefaultBookshelf(context);
-        } else if (id == Bookshelf.PREFERRED) {
+        } else if (id == Bookshelf.USER_DEFAULT) {
             return getPreferredBookshelf(context);
         } else {
             return getById(id);

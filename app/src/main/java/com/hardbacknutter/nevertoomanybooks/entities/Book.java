@@ -1000,13 +1000,13 @@ public class Book
         if (list.isEmpty()) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
             Bookshelf bookshelf = bookshelfDao.getBookshelf(context,
-                                                            Bookshelf.PREFERRED,
-                                                            Bookshelf.DEFAULT)
+                                                            Bookshelf.USER_DEFAULT,
+                                                            Bookshelf.HARD_DEFAULT)
                                               .orElseThrow();
             if (bookshelf.getId() == Bookshelf.ALL_BOOKS) {
                 // the user was "on" the "All Books" virtual shelf.
                 // For lack of anything better, set the default shelf instead.
-                bookshelf = bookshelfDao.getBookshelf(context, Bookshelf.DEFAULT)
+                bookshelf = bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT)
                                         .orElseThrow();
             }
             list.add(bookshelf);

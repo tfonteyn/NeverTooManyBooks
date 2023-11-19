@@ -360,8 +360,8 @@ public class BooksOnBookshelfViewModel
         // or use the default == first start of the app
         if (bookshelf == null) {
             bookshelf = bookshelfDao.getBookshelf(context,
-                                                  Bookshelf.PREFERRED,
-                                                  Bookshelf.DEFAULT)
+                                                  Bookshelf.USER_DEFAULT,
+                                                  Bookshelf.HARD_DEFAULT)
                                     .orElseThrow();
         }
 
@@ -431,7 +431,7 @@ public class BooksOnBookshelfViewModel
         for (int i = 0; i < bookshelfList.size(); i++) {
             final long id = bookshelfList.get(i).getId();
             // find the position of the default shelf.
-            if (id == Bookshelf.DEFAULT) {
+            if (id == Bookshelf.HARD_DEFAULT) {
                 defaultPosition = i;
             }
             // find the position of the selected shelf
@@ -466,7 +466,7 @@ public class BooksOnBookshelfViewModel
 
         bookshelf = bookshelfDao.getById(bookshelfId).orElseGet(
                 () -> bookshelfDao.getBookshelf(context,
-                                                Bookshelf.PREFERRED,
+                                                Bookshelf.USER_DEFAULT,
                                                 Bookshelf.ALL_BOOKS)
                                   .orElseThrow());
         bookshelf.setAsPreferred(context);
@@ -483,7 +483,7 @@ public class BooksOnBookshelfViewModel
     private boolean reloadSelectedBookshelf(@NonNull final Context context) {
 
         final Bookshelf newBookshelf = bookshelfDao
-                .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS)
+                .getBookshelf(context, Bookshelf.USER_DEFAULT, Bookshelf.ALL_BOOKS)
                 .orElseThrow();
         if (newBookshelf.equals(bookshelf)) {
             return false;
@@ -1315,7 +1315,7 @@ public class BooksOnBookshelfViewModel
         // was changed...
         final Style style = getStyle();
         // so we reset the style to recover.. and restarting the app will work.
-        onStyleChanged(context, BuiltinStyle.DEFAULT_UUID);
+        onStyleChanged(context, BuiltinStyle.HARD_DEFAULT_UUID);
         // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
         throw new IllegalStateException("Style=" + style);
     }

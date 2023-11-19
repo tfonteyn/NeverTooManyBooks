@@ -62,9 +62,9 @@ public class UserCollectionTest
     private final ProgressListener logger =
             new TestProgressListener("UserCollectionTest");
     private final Bookshelf ownedBookshelf = new Bookshelf(
-            "owned", BuiltinStyle.DEFAULT_UUID);
+            "owned", BuiltinStyle.HARD_DEFAULT_UUID);
     private final Bookshelf wishlistBookshelf = new Bookshelf(
-            "wishlist", BuiltinStyle.DEFAULT_UUID);
+            "wishlist", BuiltinStyle.HARD_DEFAULT_UUID);
     @Mock
     BookshelfMapper bookshelfMapper;
     private StripInfoSearchEngine searchEngine;

@@ -131,7 +131,7 @@ public abstract class BaseSetup
     private void initBookshelves() {
         final Style defStyle = serviceLocator.getStyles().getDefault();
         bookshelf[0] = serviceLocator.getBookshelfDao()
-                                     .getBookshelf(context, Bookshelf.DEFAULT)
+                                     .getBookshelf(context, Bookshelf.HARD_DEFAULT)
                                      .orElseThrow();
         bookshelf[1] = new Bookshelf(TestConstants.BOOKSHELF + "1", defStyle);
         bookshelf[2] = new Bookshelf(TestConstants.BOOKSHELF + "2", defStyle);
