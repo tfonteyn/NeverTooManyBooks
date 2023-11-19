@@ -115,7 +115,7 @@ public class StylesHelper {
     }
 
     /**
-     * Get the user default style, or if none found, fallback to the Builtin default.
+     * Get the user default style, or if none found, fallback to the Builtin hard-default.
      *
      * @return the style.
      */
@@ -135,7 +135,7 @@ public class StylesHelper {
     }
 
     /**
-     * store the given style as the user default one.
+     * Store the given style as the user's default.
      *
      * @param uuid style to set
      */
