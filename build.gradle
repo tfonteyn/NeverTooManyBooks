@@ -56,7 +56,7 @@ ext {
 
     // https://developer.android.com/jetpack/androidx/versions
 
-    androidxActivityVersion = '1.8.0'
+    androidxActivityVersion = '1.8.1'
     androidxAnnotationVersion = '1.7.0'
     androidxAppcompatVersion = "1.6.1"
     androidxCameraxVersion = '1.3.0'
@@ -77,7 +77,7 @@ ext {
     androidxRecyclerviewVersion = '1.3.2'
 //        androidxSlidingpanelayoutVersion = "1.2.0"
     androidxViewpager2Version = "1.1.0-beta02"
-    androidxWindowVersion = "1.1.0"
+    androidxWindowVersion = '1.2.0'
 
     // https://github.com/material-components/material-components-android/releases
     googleMaterialVersion = '1.10.0'
