@@ -111,13 +111,13 @@ public class TocEntryDaoImpl
         final Author primaryAuthor = tocEntry.getPrimaryAuthor();
         authorDaoSupplier.get().fixId(context, primaryAuthor, localeSupplier);
 
-        final long id = find(context, tocEntry, localeSupplier);
+        final long id = findByName(context, tocEntry, localeSupplier);
         tocEntry.setId(id);
     }
 
-    private long find(@NonNull final Context context,
-                      @NonNull final TocEntry tocEntry,
-                      @NonNull final Supplier<Locale> localeSupplier) {
+    private long findByName(@NonNull final Context context,
+                            @NonNull final TocEntry tocEntry,
+                            @NonNull final Supplier<Locale> localeSupplier) {
 
         final Locale locale = localeSupplier.get();
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
