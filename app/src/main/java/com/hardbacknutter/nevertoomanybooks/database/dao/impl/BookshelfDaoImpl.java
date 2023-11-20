@@ -325,7 +325,8 @@ public class BookshelfDaoImpl
 
     @Override
     public void fixId(@NonNull final Bookshelf bookshelf) {
-        bookshelf.setId(findByName(bookshelf).map(Bookshelf::getId).orElse(0L));
+        final long found = findByName(bookshelf).map(Bookshelf::getId).orElse(0L);
+        bookshelf.setId(found);
     }
 
     /**
