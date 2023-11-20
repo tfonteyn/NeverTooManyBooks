@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -243,7 +243,10 @@
         <module name="LocalVariableName" />
         <module name="MemberName" />
         <module name="MethodName" />
-        <module name="MethodTypeParameterName" />
+        <module name="MethodTypeParameterName">
+            <property name="format"
+                      value="^[A-Z]{1,3}$" />
+        </module>
         <module name="PackageName" />
         <module name="ParameterName" />
         <module name="StaticVariableName" />
