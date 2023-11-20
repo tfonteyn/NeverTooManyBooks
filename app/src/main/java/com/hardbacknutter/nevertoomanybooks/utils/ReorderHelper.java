@@ -111,7 +111,7 @@ public final class ReorderHelper {
                                     @NonNull final String text,
                                     @NonNull final Locale locale) {
         if (forSorting(context)) {
-            return reorder(context, text, locale);
+            return reorder(context, text, locale, LocaleListUtils.asList(context));
         } else {
             return text;
         }
