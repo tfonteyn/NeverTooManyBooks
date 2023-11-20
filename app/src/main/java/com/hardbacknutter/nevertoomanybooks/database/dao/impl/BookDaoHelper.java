@@ -134,14 +134,10 @@ public class BookDaoHelper {
         // Handle TITLE
         if (book.contains(DBKey.TITLE)) {
             final String title = book.getTitle();
-            final String reorderedTitle;
-            if (reorderHelperSupplier.get().forSorting(context)) {
-                reorderedTitle = reorderHelperSupplier.get().reorder(context, title, bookLocale);
-            } else {
-                reorderedTitle = title;
-            }
+            final String obTitle = reorderHelperSupplier
+                    .get().reorderForSorting(context, title, bookLocale);
 
-            book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(reorderedTitle, bookLocale));
+            book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obTitle, bookLocale));
         }
 
         // store only valid bits. The 'get' will normalise any incorrect 'long' value

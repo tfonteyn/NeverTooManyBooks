@@ -103,13 +103,14 @@ public class SeriesDaoImpl
                                        @NonNull final Series series,
                                        @NonNull final Supplier<Locale> localeSupplier) {
 
-        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
-                                                   series.getTitle(),
-                                                   localeSupplier.get());
+        final Locale locale = localeSupplier.get();
+        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+        final String text = series.getTitle();
+        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                SqlEncode.orderByColumn(series.getTitle(), obd.getLocale()),
-                SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale())})) {
+                SqlEncode.orderByColumn(series.getTitle(), locale),
+                SqlEncode.orderByColumn(obTitle, locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Series(rowData.getLong(DBKey.PK_ID), rowData));
@@ -384,12 +385,13 @@ public class SeriesDaoImpl
             throws DaoInsertException {
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
-        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
-                                                   series.getTitle(), locale);
+        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+        final String text = series.getTitle();
+        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -410,12 +412,13 @@ public class SeriesDaoImpl
             throws DaoUpdateException {
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
-        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
-                                                   series.getTitle(), locale);
+        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+        final String text = series.getTitle();
+        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             stmt.bindLong(4, series.getId());
 

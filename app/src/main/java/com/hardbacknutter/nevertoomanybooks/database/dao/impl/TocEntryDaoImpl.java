@@ -119,13 +119,15 @@ public class TocEntryDaoImpl
                       @NonNull final TocEntry tocEntry,
                       @NonNull final Supplier<Locale> localeSupplier) {
 
-        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
-                                                   tocEntry.getTitle(), localeSupplier.get());
+        final Locale locale = localeSupplier.get();
+        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+        final String text = tocEntry.getTitle();
+        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
-            stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), obd.getLocale()));
-            stmt.bindString(3, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), locale));
+            stmt.bindString(3, SqlEncode.orderByColumn(obTitle, locale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -236,15 +238,15 @@ public class TocEntryDaoImpl
                     authorDao.insert(context, author, bookLocale);
                 }
 
-                final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
-                                                           tocEntry.getTitle(),
-                                                           listLocaleSupplier.apply(tocEntry));
+                final Locale locale = listLocaleSupplier.apply(tocEntry);
+                final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+                final String text = tocEntry.getTitle();
+                final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, author.getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
-                    stmtInsToc.bindString(3, SqlEncode
-                            .orderByColumn(obd.getTitle(), obd.getLocale()));
+                    stmtInsToc.bindString(3, SqlEncode.orderByColumn(obTitle, locale));
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
 
@@ -259,8 +261,7 @@ public class TocEntryDaoImpl
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
                     stmtUpdToc.bindString(1, tocEntry.getTitle());
-                    stmtUpdToc.bindString(2, SqlEncode
-                            .orderByColumn(obd.getTitle(), obd.getLocale()));
+                    stmtUpdToc.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());

@@ -239,13 +239,8 @@ public class MaintenanceDaoImpl
         final String title = cursor.getString(1);
         final String currentObTitle = cursor.getString(2);
 
-        final String rebuildObTitle;
-        if (reorderHelperSupplier.get().forSorting(context)) {
-            rebuildObTitle = reorderHelperSupplier.get().reorder(context, title, locale, locales);
-        } else {
-            // Use the actual/original title
-            rebuildObTitle = title;
-        }
+        final String rebuildObTitle = reorderHelperSupplier
+                .get().reorderForSorting(context, title, locale, locales);
 
         // only update the database if actually needed.
         if (!currentObTitle.equals(rebuildObTitle)) {

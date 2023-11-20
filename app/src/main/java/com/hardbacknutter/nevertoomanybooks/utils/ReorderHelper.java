@@ -44,6 +44,19 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
  *     <li>Publisher name</li>
  * </ul>
  * This is <strong>NOT</strong> used for Authors.
+ * <p>
+ * URGENT: mismatch between book language and series/pub name -> wrong OB name
+ * best example: "Het beste uit Robbedoes" nr 11 which is a french book in a dutch series.
+ * <p>
+ * Problem cases with a book in language X with title in language X
+ * - series name is in a different language -> we use the book language,
+ *   or when doing a lookup the language of the first book in the series
+ * <p>
+ * - publisher name is in a different language as compared to the book
+ * -> we always use the book language
+ * <p>
+ * - tocEntry title is in a different language as compared to the book
+ * -> we always use the book language
  */
 public final class ReorderHelper {
 
@@ -78,13 +91,58 @@ public final class ReorderHelper {
      *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    public boolean forSorting(@NonNull final Context context) {
+    private boolean forSorting(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
 
     /**
-     * Try reordering using the device Locale list.
+     * <strong>Conditionally</strong> reorder the given text
+     * for <strong>use as the OrderBy column</strong>.
+     *
+     * @param context Current context
+     * @param text    to reorder
+     * @param locale  to use for reordering
+     *
+     * @return the reordered text or the original text, as to-be used for sorting.
+     */
+    @NonNull
+    public String reorderForSorting(@NonNull final Context context,
+                                    @NonNull final String text,
+                                    @NonNull final Locale locale) {
+        if (forSorting(context)) {
+            return reorder(context, text, locale);
+        } else {
+            return text;
+        }
+    }
+
+    /**
+     * <strong>Conditionally</strong> reorder the given text
+     * for <strong>use as the OrderBy column</strong>.
+     *
+     * @param context     Current context
+     * @param text        to reorder
+     * @param firstLocale to try first
+     * @param localeList  to try if the the firstLocale fails
+     *
+     * @return the reordered text or the original text, as to-be used for sorting.
+     */
+    @NonNull
+    public String reorderForSorting(@NonNull final Context context,
+                                    @NonNull final String text,
+                                    @Nullable final Locale firstLocale,
+                                    @NonNull final List<Locale> localeList) {
+        if (forSorting(context)) {
+            return reorder(context, text, firstLocale, localeList);
+        } else {
+            return text;
+        }
+    }
+
+    /**
+     * <strong>Unconditionally</strong> reorder the given text.
+     * Uses the device Locale list.
      *
      * @param context Current context
      * @param title   to reorder
@@ -98,7 +156,8 @@ public final class ReorderHelper {
     }
 
     /**
-     * Try reordering using the 'locale' or the device Locale list.
+     * <strong>Unconditionally</strong> reorder the given text.
+     * Uses the given Locale or the device Locale list.
      *
      * @param context Current context
      * @param title   to reorder
@@ -114,7 +173,8 @@ public final class ReorderHelper {
     }
 
     /**
-     * Try reordering using the 'language' or the given Locale list.
+     * <strong>Unconditionally</strong> reorder the given text.
+     * Uses the given language or the given Locale list.
      *
      * @param context    Current context
      * @param title      to reorder
@@ -139,7 +199,7 @@ public final class ReorderHelper {
     }
 
     /**
-     * Unconditionally reformat the given (title) string.
+     * <strong>Unconditionally</strong> reorder the given text.
      * <p>
      * This method does the actual re-ordering.
      * It move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".

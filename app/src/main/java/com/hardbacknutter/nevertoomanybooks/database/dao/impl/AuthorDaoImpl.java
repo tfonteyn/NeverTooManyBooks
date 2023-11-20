@@ -163,11 +163,11 @@ public class AuthorDaoImpl
                                        @NonNull final Author author,
                                        @NonNull final Supplier<Locale> localeSupplier) {
 
-        final Locale authorLocale = localeSupplier.get();
+        final Locale locale = localeSupplier.get();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                SqlEncode.orderByColumn(author.getFamilyName(), authorLocale),
-                SqlEncode.orderByColumn(author.getGivenNames(), authorLocale)})) {
+                SqlEncode.orderByColumn(author.getFamilyName(), locale),
+                SqlEncode.orderByColumn(author.getGivenNames(), locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Author(rowData.getLong(DBKey.PK_ID), rowData));
@@ -531,10 +531,10 @@ public class AuthorDaoImpl
                        @NonNull final Author author,
                        @NonNull final Locale bookLocale)
             throws DaoWriteException {
-        // bookLocale is not used.
 
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final Locale authorLocale = author.getLocale(context).orElse(userLocale);
+        // bookLocale is not used.
+        final Locale locale = author.getLocale(context).orElseGet(
+                () -> context.getResources().getConfiguration().getLocales().get(0));
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -545,11 +545,9 @@ public class AuthorDaoImpl
             final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, SqlEncode
-                        .orderByColumn(author.getFamilyName(), authorLocale));
+                stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, SqlEncode
-                        .orderByColumn(author.getGivenNames(), authorLocale));
+                stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindBoolean(5, author.isComplete());
                 iId = stmt.executeInsert();
             }
@@ -581,10 +579,10 @@ public class AuthorDaoImpl
                        @NonNull final Author author,
                        @NonNull final Locale bookLocale)
             throws DaoWriteException {
-        // bookLocale is not used.
 
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final Locale authorLocale = author.getLocale(context).orElse(userLocale);
+        // bookLocale is not used.
+        final Locale locale = author.getLocale(context).orElseGet(
+                () -> context.getResources().getConfiguration().getLocales().get(0));
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -595,11 +593,9 @@ public class AuthorDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, SqlEncode
-                        .orderByColumn(author.getFamilyName(), authorLocale));
+                stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, SqlEncode
-                        .orderByColumn(author.getGivenNames(), authorLocale));
+                stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindBoolean(5, author.isComplete());
 
                 stmt.bindLong(6, author.getId());
