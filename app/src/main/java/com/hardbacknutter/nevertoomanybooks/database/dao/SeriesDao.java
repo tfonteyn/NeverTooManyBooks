@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface SeriesDao
-        extends EntityBookLinksDao<Series> {
+        extends EntityOwningBooksDao<Series>, MoveBooksDao<Series> {
 
     /**
      * Get a unique list of all {@link Series} titles.

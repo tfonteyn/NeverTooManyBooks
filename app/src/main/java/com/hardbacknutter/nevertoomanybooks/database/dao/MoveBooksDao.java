@@ -31,8 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * Implemented by DAO's which have a 1:many relation between their {@link Entity}
- * they manage and a list of Books.
+ * DAO interface for entities which have a 1:N relation with a book.
  * <p>
  * The method {@link #moveBooks(Context, Entity, Entity)} allows to move
  * a list of books owned by one Entity to being owned by another Entity.

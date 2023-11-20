@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface PublisherDao
-        extends EntityBookLinksDao<Publisher> {
+        extends EntityOwningBooksDao<Publisher>, MoveBooksDao<Publisher> {
 
     /**
      * Get a unique list of all publisher names.

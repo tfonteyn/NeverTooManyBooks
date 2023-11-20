@@ -38,12 +38,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * The base DAO interface for all entities which have a N:1 relation with a book.
+ * DAO interface for entities which have a 1:N relation with a book.
  *
- * @param <T> type of the {@link Entity}
+ * @param <T> Entity managed by the DAO (e.g. Author, Publisher,..)
  */
-public interface EntityBookLinksDao<T extends Entity>
-        extends MoveBooksDao<T> {
+public interface EntityOwningBooksDao<T extends Entity> {
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields

@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.EntityBookLinksDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.EntityOwningBooksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MoveBooksDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -47,13 +47,14 @@ final class SaveChangesHelper {
     private SaveChangesHelper() {
     }
 
-    static <T extends Entity> boolean save(@NonNull final DialogFragment fragment,
-                                           @NonNull final EntityBookLinksDao<T> dao,
-                                           @NonNull final T item,
-                                           final boolean nameChanged,
-                                           @NonNull final Locale bookLocale,
-                                           @NonNull final Consumer<T> onSuccess,
-                                           @StringRes final int mergeMessageResId) {
+    static <T extends Entity, DAO extends EntityOwningBooksDao<T> & MoveBooksDao<T>>
+    boolean save(@NonNull final DialogFragment fragment,
+                 @NonNull final DAO dao,
+                 @NonNull final T item,
+                 final boolean nameChanged,
+                 @NonNull final Locale bookLocale,
+                 @NonNull final Consumer<T> onSuccess,
+                 @StringRes final int mergeMessageResId) {
         final Context context = fragment.requireContext();
 
         if (item.getId() > 0 && !nameChanged) {
