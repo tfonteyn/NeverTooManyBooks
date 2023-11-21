@@ -240,6 +240,13 @@ public class BookshelfDaoImpl
         return db.rawQuery(Sql.SELECT_ALL, null);
     }
 
+    @Override
+    public long count() {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
     @NonNull
     @Override
     public List<PFilter<?>> getFilters(final long bookshelfId) {
@@ -642,14 +649,8 @@ public class BookshelfDaoImpl
                 DELETE_FROM_ + TBL_BOOKSHELF.getName()
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
-        /**
-         * Get the id of a {@link Bookshelf} by name.
-         * The lookup is by EQUALITY and CASE-SENSITIVE.
-         */
-        private static final String FIND_ID =
-                SELECT_ + DBKey.PK_ID
-                + _FROM_ + TBL_BOOKSHELF.getName()
-                + _WHERE_ + DBKey.BOOKSHELF_NAME + "=?" + _COLLATION;
+        private static final String COUNT_ALL =
+                SELECT_COUNT_FROM_ + TBL_BOOKSHELF.getName();
 
         /** All {@link Bookshelf}, all columns; linked with the styles table. */
         private static final String SELECT_ALL =
@@ -661,7 +662,10 @@ public class BookshelfDaoImpl
                 + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
                 + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
 
-        /** Get a {@link Bookshelf} by its name; linked with the styles table. */
+        /**
+         * Find a {@link Bookshelf} by name; linked with the styles table.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         */
         private static final String FIND_BY_NAME =
                 SELECT_ALL
                 + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + "=?" + _COLLATION;

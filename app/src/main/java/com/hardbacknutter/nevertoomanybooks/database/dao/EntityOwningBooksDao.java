@@ -53,13 +53,6 @@ public interface EntityOwningBooksDao<T extends Entity> {
     int fixPositions(@NonNull Context context);
 
     /**
-     * Get a simple/total count of the items.
-     *
-     * @return count
-     */
-    long count();
-
-    /**
      * Count the books for the given {@link T}.
      *
      * @param context    Current context

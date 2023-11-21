@@ -70,6 +70,13 @@ public interface EntityDao<T extends Entity> {
     Cursor fetchAll();
 
     /**
+     * Get a simple/total count of the items.
+     *
+     * @return count
+     */
+    long count();
+
+    /**
      * Find a {@link T} by using the <strong>name</strong> fields.
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
      * <p>

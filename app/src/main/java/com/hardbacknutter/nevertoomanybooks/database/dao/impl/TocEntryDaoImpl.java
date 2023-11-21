@@ -195,6 +195,13 @@ public class TocEntryDaoImpl
     }
 
     @Override
+    public long count() {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    @Override
     @NonNull
     public List<BookLight> getBookTitles(@IntRange(from = 1) final long id,
                                          @NonNull final Author author) {
@@ -508,6 +515,9 @@ public class TocEntryDaoImpl
          */
         static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
                 DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
+
+        private static final String COUNT_ALL =
+                SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.getName();
 
         /** Count the number of {@link TocEntry}'s by an {@link Author}. */
         private static final String COUNT_TOC_ENTRIES =
