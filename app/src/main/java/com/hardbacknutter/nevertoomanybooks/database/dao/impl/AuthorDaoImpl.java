@@ -133,7 +133,7 @@ public class AuthorDaoImpl
 
     @NonNull
     @Override
-    public Optional<Author> getById(@IntRange(from = 1) final long id) {
+    public Optional<Author> findById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Author(id, new CursorRow(cursor)));
@@ -436,7 +436,7 @@ public class AuthorDaoImpl
 
         // If we do already have it, update the object
         if (author.getId() > 0) {
-            final Optional<Author> dbAuthor = getById(author.getId());
+            final Optional<Author> dbAuthor = findById(author.getId());
             // Sanity check
             if (dbAuthor.isPresent()) {
                 // copy any updated fields
@@ -498,7 +498,7 @@ public class AuthorDaoImpl
                     // Otherwise the trigger after_update_on" + TBL_AUTHORS
                     // thereby setting DATE_LAST_UPDATED__UTC for
                     // ALL books by that author
-                    getById(author.getId()).ifPresent(current -> {
+                    findById(author.getId()).ifPresent(current -> {
                         if (!current.equals(author)) {
                             try {
                                 update(context, author, bookLocale);

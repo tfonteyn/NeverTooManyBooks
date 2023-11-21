@@ -40,7 +40,7 @@ public interface EntityDao<T extends Entity> {
      * @return the {@link T}
      */
     @NonNull
-    Optional<T> getById(@IntRange(from = 1) long id);
+    Optional<T> findById(@IntRange(from = 1) long id);
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields of the given {@link T}.

@@ -87,7 +87,7 @@ public class SeriesDaoImpl
 
     @NonNull
     @Override
-    public Optional<Series> getById(@IntRange(from = 1) final long id) {
+    public Optional<Series> findById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.GET_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Series(id, new CursorRow(cursor)));
@@ -289,7 +289,7 @@ public class SeriesDaoImpl
 
         // If we do already have it, update the object
         if (series.getId() > 0) {
-            final Optional<Series> dbSeries = getById(series.getId());
+            final Optional<Series> dbSeries = findById(series.getId());
             // Sanity check
             if (dbSeries.isPresent()) {
                 // copy any updated fields
@@ -352,7 +352,7 @@ public class SeriesDaoImpl
                     // Otherwise the trigger after_update_on" + TBL_SERIES
                     // thereby setting DATE_LAST_UPDATED__UTC for
                     // ALL books by that series
-                    getById(series.getId()).ifPresent(current -> {
+                    findById(series.getId()).ifPresent(current -> {
                         if (!current.equals(series)) {
                             try {
                                 update(context, series, bookLocale);

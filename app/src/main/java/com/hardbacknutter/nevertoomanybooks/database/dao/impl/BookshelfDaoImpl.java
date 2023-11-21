@@ -172,7 +172,7 @@ public class BookshelfDaoImpl
         } else if (id == Bookshelf.USER_DEFAULT) {
             return getPreferredBookshelf(context);
         } else {
-            return getById(id);
+            return findById(id);
         }
     }
 
@@ -190,7 +190,7 @@ public class BookshelfDaoImpl
 
     @NonNull
     @Override
-    public Optional<Bookshelf> getById(@IntRange(from = 1) final long id) {
+    public Optional<Bookshelf> findById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Bookshelf(id, new CursorRow(cursor)));
@@ -198,6 +198,14 @@ public class BookshelfDaoImpl
                 return Optional.empty();
             }
         }
+    }
+
+    @Override
+    @NonNull
+    public Optional<Bookshelf> findByName(@NonNull final Context context,
+                                          @NonNull final Bookshelf bookshelf,
+                                          @NonNull final Locale locale) {
+        return findByName(bookshelf.getName());
     }
 
     @Override
@@ -212,14 +220,6 @@ public class BookshelfDaoImpl
                 return Optional.empty();
             }
         }
-    }
-
-    @Override
-    @NonNull
-    public Optional<Bookshelf> findByName(@NonNull final Context context,
-                                          @NonNull final Bookshelf bookshelf,
-                                          @NonNull final Locale locale) {
-        return findByName(bookshelf.getName());
     }
 
     @Override

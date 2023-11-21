@@ -97,7 +97,7 @@ class Formatter
                     final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
                     if (realAuthorId != 0) {
                         final Optional<Author> realAuthor = serviceLocator.getAuthorDao()
-                                                                          .getById(realAuthorId);
+                                                                          .findById(realAuthorId);
                         if (realAuthor.isPresent()) {
                             return realAuthor.get().getStyledName(context, style, text);
                         }

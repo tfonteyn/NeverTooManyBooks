@@ -325,7 +325,7 @@ public class Author
         }
 
         if (rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
-            realAuthor = ServiceLocator.getInstance().getAuthorDao().getById(
+            realAuthor = ServiceLocator.getInstance().getAuthorDao().findById(
                     rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR)).orElse(null);
         }
     }

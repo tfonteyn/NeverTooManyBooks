@@ -105,7 +105,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_AUTHOR)) {
             final long id = holder.getLong(DBKey.FK_AUTHOR);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getAuthorDao().getById(id).orElse(null);
+                result = ServiceLocator.getInstance().getAuthorDao().findById(id).orElse(null);
             }
         }
 
@@ -148,7 +148,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_SERIES)) {
             final long id = holder.getLong(DBKey.FK_SERIES);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getSeriesDao().getById(id).orElse(null);
+                result = ServiceLocator.getInstance().getSeriesDao().findById(id).orElse(null);
             }
         }
 
@@ -191,7 +191,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_BOOKSHELF)) {
             final long id = holder.getLong(DBKey.FK_BOOKSHELF);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getBookshelfDao().getById(id).orElse(null);
+                result = ServiceLocator.getInstance().getBookshelfDao().findById(id).orElse(null);
             }
         }
 
@@ -234,7 +234,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_PUBLISHER)) {
             final long id = holder.getLong(DBKey.FK_PUBLISHER);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getPublisherDao().getById(id).orElse(null);
+                result = ServiceLocator.getInstance().getPublisherDao().findById(id).orElse(null);
             }
         }
 

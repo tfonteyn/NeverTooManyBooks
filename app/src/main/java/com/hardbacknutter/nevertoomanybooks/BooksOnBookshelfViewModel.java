@@ -464,7 +464,7 @@ public class BooksOnBookshelfViewModel
                          final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
-        bookshelf = bookshelfDao.getById(bookshelfId).orElseGet(
+        bookshelf = bookshelfDao.findById(bookshelfId).orElseGet(
                 () -> bookshelfDao.getBookshelf(context,
                                                 Bookshelf.USER_DEFAULT,
                                                 Bookshelf.ALL_BOOKS)

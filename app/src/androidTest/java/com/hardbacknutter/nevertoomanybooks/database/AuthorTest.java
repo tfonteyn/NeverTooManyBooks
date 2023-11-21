@@ -73,7 +73,7 @@ public class AuthorTest
         authorId[0] = authorDao.insert(context, author[0], bookLocale);
         assertTrue(authorId[0] > 0);
 
-        author[0] = authorDao.getById(authorId[0]).orElseThrow();
+        author[0] = authorDao.findById(authorId[0]).orElseThrow();
         assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
         assertEquals(TestConstants.AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
         assertFalse(author[0].isComplete());
@@ -81,7 +81,7 @@ public class AuthorTest
         author[0].setComplete(true);
         authorDao.update(context, author[0], bookLocale);
 
-        author[0] = authorDao.getById(authorId[0]).orElseThrow();
+        author[0] = authorDao.findById(authorId[0]).orElseThrow();
         assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
         assertEquals(TestConstants.AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
         assertTrue(author[0].isComplete());
@@ -130,7 +130,7 @@ public class AuthorTest
         // should have become author[0]
         assertEquals(author[0].getId(), author[1].getId());
         // original should still be there with original name
-        tmpAuthor = authorDao.getById(authorId[1]).orElseThrow();
+        tmpAuthor = authorDao.findById(authorId[1]).orElseThrow();
         assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "1", tmpAuthor.getFamilyName());
 
         // rename an Author to another EXISTING name and MERGE books

@@ -103,7 +103,7 @@ public class AuthorWorksViewModel
             }
 
             author = ServiceLocator.getInstance().getAuthorDao()
-                                   .getById(authorId)
+                                   .findById(authorId)
                                    .orElseThrow();
 
             final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);

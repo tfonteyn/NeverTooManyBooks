@@ -91,7 +91,7 @@ public class TocEntryDaoImpl
 
     @NonNull
     @Override
-    public Optional<TocEntry> getById(@IntRange(from = 1) final long id) {
+    public Optional<TocEntry> findById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new TocEntry(id, new CursorRow(cursor)));
