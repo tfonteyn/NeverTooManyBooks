@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,14 +56,6 @@ public interface AuthorDao
      */
     @NonNull
     List<String> getNames(@NonNull String key);
-
-    /**
-     * Get all Authors; mainly for the purpose of exports.
-     *
-     * @return Cursor over all Authors
-     */
-    @NonNull
-    Cursor fetchAll();
 
     /**
      * Remove duplicates. We keep the first occurrence.

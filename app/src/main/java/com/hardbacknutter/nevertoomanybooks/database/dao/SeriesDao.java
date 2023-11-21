@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -46,14 +45,6 @@ public interface SeriesDao
      */
     @NonNull
     List<String> getNames();
-
-    /**
-     * Get all series; mainly for the purpose of exports.
-     *
-     * @return Cursor over all series
-     */
-    @NonNull
-    Cursor fetchAll();
 
     /**
      * Remove duplicates. We keep the first occurrence.

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -98,7 +97,8 @@ public interface BookshelfDao
     List<PFilter<?>> getFilters(long bookshelfId);
 
     /**
-     * Convenience method, fetch all shelves, and return them as a List.
+     * Convenience method, fetch all shelves, and return them as a List
+     * ordered by Bookshelf name.
      * <p>
      * <strong>Note:</strong> we do not include the 'All Books' shelf.
      *
@@ -106,15 +106,6 @@ public interface BookshelfDao
      */
     @NonNull
     List<Bookshelf> getAll();
-
-    /**
-     * Get all Bookshelves; mainly for the purpose of exports.
-     * <strong>Note:</strong> we do not include the 'All Books' shelf.
-     *
-     * @return Cursor over all Bookshelves
-     */
-    @NonNull
-    Cursor fetchAllUserShelves();
 
     /**
      * Passed a list of Objects, remove duplicates. We keep the first occurrence.

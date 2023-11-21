@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -57,6 +58,16 @@ public interface EntityDao<T extends Entity> {
     Optional<T> findByName(@NonNull Context context,
                            @NonNull T item,
                            @NonNull Locale locale);
+
+    /**
+     * Fetch all {@link T}s by creating a Cursor on the whole table.
+     * <p>
+     * No guarantee on how the rows are ordered.
+     *
+     * @return Cursor over all {@link T}s
+     */
+    @NonNull
+    Cursor fetchAll();
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields.

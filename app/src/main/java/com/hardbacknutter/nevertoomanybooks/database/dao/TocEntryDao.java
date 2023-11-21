@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -142,12 +141,4 @@ public interface TocEntryDao
      * Delete orphaned records.
      */
     void purge();
-
-    /**
-     * Get all TOC entries; mainly for the purpose of backups.
-     *
-     * @return Cursor over all TOC entries
-     */
-    @NonNull
-    Cursor fetchAll();
 }

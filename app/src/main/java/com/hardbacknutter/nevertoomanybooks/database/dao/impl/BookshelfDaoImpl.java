@@ -225,7 +225,7 @@ public class BookshelfDaoImpl
     @NonNull
     public List<Bookshelf> getAll() {
         final List<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = fetchAllUserShelves()) {
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL_ORDER_BY_NAME, null)) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData));
@@ -234,10 +234,10 @@ public class BookshelfDaoImpl
         return list;
     }
 
-    @Override
     @NonNull
-    public Cursor fetchAllUserShelves() {
-        return db.rawQuery(Sql.SELECT_ALL_USER_SHELVES, null);
+    @Override
+    public Cursor fetchAll() {
+        return db.rawQuery(Sql.SELECT_ALL, null);
     }
 
     @NonNull
@@ -646,10 +646,12 @@ public class BookshelfDaoImpl
         private static final String SELECT_BY_ID =
                 SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + "=?";
 
-        /** User defined {@link Bookshelf}, all columns; linked with the styles table. */
-        private static final String SELECT_ALL_USER_SHELVES =
-                SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + ">0"
-                + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
+        /**
+         * All {@link Bookshelf}, all columns; linked with the styles table.
+         * Ordered by name.
+         */
+        private static final String SELECT_ALL_ORDER_BY_NAME =
+                SELECT_ALL + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
 
         /** All Bookshelves for a Book; ordered by name. */
         private static final String BOOKSHELVES_BY_BOOK_ID =
