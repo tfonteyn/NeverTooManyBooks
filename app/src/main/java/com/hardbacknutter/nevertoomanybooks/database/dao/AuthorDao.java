@@ -40,7 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface AuthorDao
-        extends EntityOwningBooksDao<Author>, MoveBooksDao<Author> {
+        extends EntityDao<Author>,
+                EntityOwningBooksDao<Author>,
+                MoveBooksDao<Author> {
 
     /**
      * Get a unique list of {@link Author} names in the specified format.

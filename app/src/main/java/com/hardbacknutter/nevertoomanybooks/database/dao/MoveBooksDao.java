@@ -22,10 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -40,17 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  *
  * @param <T> Entity managed by the DAO (e.g. Author, Publisher,..)
  */
+@FunctionalInterface
 public interface MoveBooksDao<T extends Entity> {
-
-    /**
-     * Get the {@link T} based on the given id.
-     *
-     * @param id of {@link T} to find
-     *
-     * @return the {@link T}
-     */
-    @NonNull
-    Optional<T> getById(@IntRange(from = 1) long id);
 
     /**
      * Moves all books from the 'source' {@link T}, to the 'target' {@link T}.

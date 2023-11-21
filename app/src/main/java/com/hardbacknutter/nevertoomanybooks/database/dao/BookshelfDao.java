@@ -37,7 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface BookshelfDao
-        extends MoveBooksDao<Bookshelf> {
+        extends EntityDao<Bookshelf>,
+                MoveBooksDao<Bookshelf> {
 
     /**
      * Set the given {@link Bookshelf} as the current/preferred.
