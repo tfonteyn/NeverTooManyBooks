@@ -342,7 +342,7 @@ public class TocEntryDaoImpl
                        @NonNull final TocEntry item,
                        @NonNull final Locale bookLocale)
             throws DaoWriteException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("use insertOrUpdate instead");
     }
 
     @Override
@@ -350,7 +350,7 @@ public class TocEntryDaoImpl
                        @NonNull final TocEntry item,
                        @NonNull final Locale bookLocale)
             throws DaoWriteException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("use insertOrUpdate instead");
     }
 
     @Override
