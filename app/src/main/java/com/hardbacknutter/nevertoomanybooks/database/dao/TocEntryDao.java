@@ -88,6 +88,19 @@ public interface TocEntryDao
     List<TocEntry> getByBookId(@IntRange(from = 1) long bookId);
 
     /**
+     * Count the {@link TocEntry}'s for the given {@link Author}.
+     *
+     * @param context    Current context
+     * @param author     to count the TocEntries of
+     * @param bookLocale Locale to use if the item has none set
+     *
+     * @return the number of {@link TocEntry} this {@link Author} has
+     */
+    long count(@NonNull Context context,
+               @NonNull Author author,
+               @NonNull Locale bookLocale);
+
+    /**
      * Saves a list of {@link TocEntry} items.
      * <ol>
      *     <li>The list is pruned first.</li>

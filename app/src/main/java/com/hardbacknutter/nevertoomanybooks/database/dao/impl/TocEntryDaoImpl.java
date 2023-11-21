@@ -215,6 +215,24 @@ public class TocEntryDaoImpl
     }
 
     @Override
+    public long count(@NonNull final Context context,
+                      @NonNull final Author author,
+                      @NonNull final Locale bookLocale) {
+        if (author.getId() == 0) {
+            authorDaoSupplier.get().fixId(context, author,
+                                          author.getLocale(context).orElse(bookLocale));
+            if (author.getId() == 0) {
+                return 0;
+            }
+        }
+
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_TOC_ENTRIES)) {
+            stmt.bindLong(1, author.getId());
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    @Override
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<TocEntry> list,
@@ -467,6 +485,12 @@ public class TocEntryDaoImpl
          */
         static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
                 DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
+
+        /** Count the number of {@link TocEntry}'s by an {@link Author}. */
+        private static final String COUNT_TOC_ENTRIES =
+                SELECT_ + "COUNT(" + DBKey.PK_ID + ")"
+                + _FROM_ + TBL_TOC_ENTRIES.getName()
+                + _WHERE_ + DBKey.FK_AUTHOR + "=?";
 
         /** All Book id's for a given {@link TocEntry}. */
         private static final String SELECT_BOOK_IDS_BY_TOC_ENTRY_ID =

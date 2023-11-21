@@ -357,23 +357,6 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public long countTocEntries(@NonNull final Context context,
-                                @NonNull final Author author,
-                                @NonNull final Locale bookLocale) {
-        if (author.getId() == 0) {
-            fixId(context, author, author.getLocale(context).orElse(bookLocale));
-            if (author.getId() == 0) {
-                return 0;
-            }
-        }
-
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_TOC_ENTRIES)) {
-            stmt.bindLong(1, author.getId());
-            return stmt.simpleQueryForLongOrZero();
-        }
-    }
-
-    @Override
     public boolean setComplete(@NonNull final Author author,
                                final boolean complete) {
         final ContentValues cv = new ContentValues();
@@ -958,11 +941,7 @@ public class AuthorDaoImpl
                 SELECT_ + "COUNT(" + DBKey.FK_BOOK + ")"
                 + _FROM_ + TBL_BOOK_AUTHOR.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
-        /** Count the number of {@link TocEntry}'s by an {@link Author}. */
-        private static final String COUNT_TOC_ENTRIES =
-                SELECT_ + "COUNT(" + DBKey.PK_ID + ")"
-                + _FROM_ + TBL_TOC_ENTRIES.getName()
-                + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+
         private static final String INSERT =
                 INSERT_INTO_ + TBL_AUTHORS.getName()
                 + '(' + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_FAMILY_NAME_OB

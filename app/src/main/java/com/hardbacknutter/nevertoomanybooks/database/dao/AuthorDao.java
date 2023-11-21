@@ -35,7 +35,6 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface AuthorDao
@@ -88,19 +87,6 @@ public interface AuthorDao
                                     boolean withTocEntries,
                                     boolean withBooks,
                                     @WorksOrderBy @Nullable String orderBy);
-
-    /**
-     * Count the {@link TocEntry}'s for the given {@link Author}.
-     *
-     * @param context    Current context
-     * @param author     to count the TocEntries of
-     * @param bookLocale Locale to use if the item has none set
-     *
-     * @return the number of {@link TocEntry} this {@link Author} has
-     */
-    long countTocEntries(@NonNull Context context,
-                         @NonNull Author author,
-                         @NonNull Locale bookLocale);
 
     /**
      * Update the 'complete' status for the given {@link Author}.
