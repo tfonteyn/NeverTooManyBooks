@@ -395,7 +395,7 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf)
             throws DaoInsertException {

@@ -65,13 +65,13 @@ public interface BookDao {
      * @throws StorageException  The covers directory is not available
      * @throws DaoWriteException on failure
      */
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    @IntRange(from = 1)
     long insert(@NonNull Context context,
                 @NonNull Book book,
                 @NonNull Set<BookFlag> flags)
             throws StorageException, DaoWriteException;
 
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    @IntRange(from = 1)
     default long insert(@NonNull final Context context,
                         @NonNull final Book /* in/out */ book)
             throws StorageException, DaoWriteException {

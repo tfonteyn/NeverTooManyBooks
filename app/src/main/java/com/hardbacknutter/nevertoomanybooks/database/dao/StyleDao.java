@@ -76,7 +76,7 @@ public interface StyleDao {
      *
      * @throws DaoWriteException on failure
      */
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    @IntRange(from = 1)
     long insert(@NonNull Context context,
                 @NonNull Style style)
             throws DaoWriteException;

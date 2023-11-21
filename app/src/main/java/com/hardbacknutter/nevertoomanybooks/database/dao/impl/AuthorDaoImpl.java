@@ -523,7 +523,7 @@ public class AuthorDaoImpl
     }
 
     @Override
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Author author,
                        @NonNull final Locale bookLocale)

@@ -106,7 +106,7 @@ public interface CalibreLibraryDao {
      *
      * @throws DaoWriteException on failure
      */
-    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    @IntRange(from = 1)
     long insert(@NonNull CalibreLibrary library)
             throws DaoWriteException;
 
