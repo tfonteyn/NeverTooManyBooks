@@ -41,7 +41,7 @@ public final class Prefs {
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
     public static final String pk_normalize_series_title = "normalize.series.title";
-    public static final String pk_normalize_toc_entry_title = "normalize.tocentry.title";
+    public static final String pk_normalize_toc_title = "normalize.toc.title";
     public static final String pk_normalize_publisher_name = "normalize.publisher.name";
     public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
     public static final String pk_search_show_shopping_menu = "search.shopping.menu";
@@ -95,6 +95,6 @@ public final class Prefs {
 
     public static boolean normalizeTocEntryName(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(pk_normalize_toc_entry_title, false);
+                                .getBoolean(pk_normalize_toc_title, false);
     }
 }
