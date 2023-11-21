@@ -60,6 +60,16 @@ public interface PublisherDao
         return pruneList(context, list, Prefs.normalizePublisherName(context), localeSupplier);
     }
 
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param normalize      flag, whether to normalize the name
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Publisher> list,
                       boolean normalize,

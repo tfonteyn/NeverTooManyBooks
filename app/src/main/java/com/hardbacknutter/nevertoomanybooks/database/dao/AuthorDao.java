@@ -57,19 +57,6 @@ public interface AuthorDao
     List<String> getNames(@NonNull String key);
 
     /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<Author> list,
-                      @NonNull Function<Author, Locale> localeSupplier);
-
-    /**
      * Return all the {@link AuthorWork} for the given {@link Author}.
      *
      * @param author         to retrieve
@@ -100,6 +87,19 @@ public interface AuthorDao
      */
     boolean setComplete(@NonNull Author author,
                         boolean complete);
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<Author> list,
+                      @NonNull Function<Author, Locale> localeSupplier);
 
     @StringDef({
             DBKey.TITLE_OB,

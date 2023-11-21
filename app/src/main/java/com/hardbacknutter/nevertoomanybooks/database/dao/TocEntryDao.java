@@ -145,6 +145,16 @@ public interface TocEntryDao
         return pruneList(context, list, Prefs.normalizeTocEntryName(context), localeSupplier);
     }
 
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param normalize      flag, whether to normalize the title
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<TocEntry> list,
                       boolean normalize,

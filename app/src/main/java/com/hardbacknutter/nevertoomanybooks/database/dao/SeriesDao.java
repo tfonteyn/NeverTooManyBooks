@@ -47,26 +47,6 @@ public interface SeriesDao
     List<String> getNames();
 
     /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    default boolean pruneList(@NonNull final Context context,
-                              @NonNull final Collection<Series> list,
-                              @NonNull final Function<Series, Locale> localeSupplier) {
-        return pruneList(context, list, Prefs.normalizeSeriesTitle(context), localeSupplier);
-    }
-
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<Series> list,
-                      boolean normalize,
-                      @NonNull Function<Series, Locale> localeSupplier);
-
-    /**
      * Get the language (ISO3) code for a {@link Series}.
      * This is defined as the language code for the first book in the {@link Series}.
      *
@@ -89,4 +69,34 @@ public interface SeriesDao
      */
     boolean setComplete(@NonNull Series series,
                         boolean complete);
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
+    default boolean pruneList(@NonNull final Context context,
+                              @NonNull final Collection<Series> list,
+                              @NonNull final Function<Series, Locale> localeSupplier) {
+        return pruneList(context, list, Prefs.normalizeSeriesTitle(context), localeSupplier);
+    }
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param normalize      flag, whether to normalize the title
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<Series> list,
+                      boolean normalize,
+                      @NonNull Function<Series, Locale> localeSupplier);
 }
