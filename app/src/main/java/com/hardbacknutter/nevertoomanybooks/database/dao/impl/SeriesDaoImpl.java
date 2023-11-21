@@ -101,9 +101,8 @@ public class SeriesDaoImpl
     @NonNull
     public Optional<Series> findByName(@NonNull final Context context,
                                        @NonNull final Series series,
-                                       @NonNull final Supplier<Locale> localeSupplier) {
+                                       @NonNull final Locale locale) {
 
-        final Locale locale = localeSupplier.get();
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = series.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
@@ -196,7 +195,7 @@ public class SeriesDaoImpl
                            @NonNull final Series series,
                            @NonNull final Locale bookLocale) {
         if (series.getId() == 0) {
-            fixId(context, series, () -> series.getLocale(context).orElse(bookLocale));
+            fixId(context, series, series.getLocale(context).orElse(bookLocale));
             if (series.getId() == 0) {
                 return 0;
             }
@@ -266,14 +265,14 @@ public class SeriesDaoImpl
         final SeriesMergeHelper mergeHelper = new SeriesMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, () -> locale));
+                                 (current, locale) -> fixId(context, current, locale));
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Series series,
-                      @NonNull final Supplier<Locale> localeSupplier) {
-        final long found = findByName(context, series, localeSupplier)
+                      @NonNull final Locale locale) {
+        final long found = findByName(context, series, locale)
                 .map(Series::getId).orElse(0L);
         series.setId(found);
     }
@@ -281,11 +280,11 @@ public class SeriesDaoImpl
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Series series,
-                        @NonNull final Supplier<Locale> localeSupplier) {
+                        @NonNull final Locale locale) {
 
         // If needed, check if we already have it in the database.
         if (series.getId() == 0) {
-            fixId(context, series, localeSupplier);
+            fixId(context, series, locale);
         }
 
         // If we do already have it, update the object
@@ -342,7 +341,7 @@ public class SeriesDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Series series : list) {
-                fixId(context, series, () -> localeSupplier.apply(series));
+                fixId(context, series, localeSupplier.apply(series));
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (series.getId() == 0) {

@@ -100,26 +100,25 @@ public class TocEntryDaoImpl
         final TocEntryMergeHelper mergeHelper = new TocEntryMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, () -> locale));
+                                 (current, locale) -> fixId(context, current, locale));
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final TocEntry tocEntry,
-                      @NonNull final Supplier<Locale> localeSupplier) {
+                      @NonNull final Locale locale) {
 
         final Author primaryAuthor = tocEntry.getPrimaryAuthor();
-        authorDaoSupplier.get().fixId(context, primaryAuthor, localeSupplier);
+        authorDaoSupplier.get().fixId(context, primaryAuthor, locale);
 
-        final long id = findByName(context, tocEntry, localeSupplier);
+        final long id = findByName(context, tocEntry, locale);
         tocEntry.setId(id);
     }
 
     private long findByName(@NonNull final Context context,
                             @NonNull final TocEntry tocEntry,
-                            @NonNull final Supplier<Locale> localeSupplier) {
+                            @NonNull final Locale locale) {
 
-        final Locale locale = localeSupplier.get();
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = tocEntry.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
@@ -226,13 +225,13 @@ public class TocEntryDaoImpl
             for (final TocEntry tocEntry : list) {
                 // Author must be handled separately;
                 final Author author = tocEntry.getPrimaryAuthor();
-                authorDao.fixId(context, author, () -> {
-                    if (lookupLocale) {
-                        return author.getLocale(context).orElse(bookLocale);
-                    } else {
-                        return bookLocale;
-                    }
-                });
+                final Locale authorLocale;
+                if (lookupLocale) {
+                    authorLocale = author.getLocale(context).orElse(bookLocale);
+                } else {
+                    authorLocale = bookLocale;
+                }
+                authorDao.fixId(context, author, authorLocale);
                 // Create if needed - NEVER do updates here
                 if (author.getId() == 0) {
                     authorDao.insert(context, author, bookLocale);

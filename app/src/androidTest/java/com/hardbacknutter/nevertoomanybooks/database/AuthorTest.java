@@ -115,7 +115,7 @@ public class AuthorTest
 
         authorDao.update(context, author[0], bookLocale);
         assertEquals(author[0].getId(), authorId[0]);
-        authorDao.fixId(context, author[0], () -> bookLocale);
+        authorDao.fixId(context, author[0], bookLocale);
         assertEquals(author[0].getId(), authorId[0]);
 
         // rename an Author to another EXISTING name
@@ -126,7 +126,7 @@ public class AuthorTest
         // No changes to anything else
         author[1].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
-        authorDao.fixId(context, author[1], () -> bookLocale);
+        authorDao.fixId(context, author[1], bookLocale);
         // should have become author[0]
         assertEquals(author[0].getId(), author[1].getId());
         // original should still be there with original name
@@ -165,13 +165,13 @@ public class AuthorTest
 
         author[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
+        existingAuthor = authorDao.findByName(context, author[2], bookLocale).orElseThrow();
 
         authorDao.moveBooks(context, author[2], existingAuthor);
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
+        existingAuthor = authorDao.findByName(context, author[2], bookLocale).orElseThrow();
         // should be recognized as author[0]
         assertEquals(author[0].getId(), existingAuthor.getId());
 
@@ -202,7 +202,7 @@ public class AuthorTest
 
         authorDao.update(context, author[1], bookLocale);
         assertEquals(author[1].getId(), authorId[1]);
-        authorDao.fixId(context, author[1], () -> bookLocale);
+        authorDao.fixId(context, author[1], bookLocale);
         assertEquals(author[1].getId(), authorId[1]);
 
         // rename an Author to another EXISTING name and MERGE books
@@ -237,12 +237,12 @@ public class AuthorTest
 
         author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
+        existingAuthor = authorDao.findByName(context, author[2], bookLocale).orElseThrow();
         authorDao.moveBooks(context, author[2], existingAuthor);
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
+        existingAuthor = authorDao.findByName(context, author[2], bookLocale).orElseThrow();
         // should be recognized as author[1]
         assertEquals(author[1].getId(), existingAuthor.getId());
 
@@ -402,7 +402,7 @@ public class AuthorTest
     private void reload() {
         for (int i = 0; i <= 4; i++) {
             author[i] = Author.from(TestConstants.AuthorFullName(i));
-            author[i] = authorDao.findByName(context, author[i], () -> bookLocale).orElseThrow();
+            author[i] = authorDao.findByName(context, author[i], bookLocale).orElseThrow();
             assertEquals(authorId[i], author[i].getId());
         }
     }

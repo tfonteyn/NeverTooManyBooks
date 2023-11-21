@@ -72,7 +72,7 @@ public class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id0 = publisher.getId();
         if (id0 == 0) {
             id0 = publisherDao.insert(context, publisher, bookLocale);
@@ -82,7 +82,7 @@ public class PublisherTest
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id1 = publisher.getId();
         if (id1 == 0) {
             id1 = publisherDao.insert(context, publisher, bookLocale);
@@ -123,7 +123,7 @@ public class PublisherTest
 
         // Keep; list will not be modified
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id0 = publisher.getId();
         if (id0 == 0) {
             id0 = publisherDao.insert(context, publisher, bookLocale);
@@ -133,7 +133,7 @@ public class PublisherTest
 
         // Keep; list will not be modified
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id1 = publisher.getId();
         if (id1 == 0) {
             id1 = publisherDao.insert(context, publisher, bookLocale);
@@ -143,7 +143,7 @@ public class PublisherTest
 
         // Discard; reordered but same as position 1
         publisher = new Publisher(PUBLISHER_THE);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id2 = publisher.getId();
         if (id2 == 0) {
             id2 = publisherDao.insert(context, publisher, bookLocale);
@@ -180,7 +180,7 @@ public class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id0 = publisher.getId();
         if (id0 == 0) {
             id0 = publisherDao.insert(context, publisher, bookLocale);
@@ -190,7 +190,7 @@ public class PublisherTest
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id1 = publisher.getId();
         if (id1 == 0) {
             id1 = publisherDao.insert(context, publisher, bookLocale);
@@ -200,7 +200,7 @@ public class PublisherTest
 
         // Discard; reordered but same as position 1
         publisher = new Publisher(PUBLISHER_THE);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id2 = publisher.getId();
         if (id2 == 0) {
             id2 = publisherDao.insert(context, publisher, bookLocale);
@@ -215,7 +215,7 @@ public class PublisherTest
 
         // Keep, but merge with the next entry and copy the id=1003
         publisher = new Publisher(JOSE_PUBLISHER);
-        publisherDao.fixId(context, publisher, () -> bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
         long id3 = publisher.getId();
         if (id3 == 0) {
             id3 = publisherDao.insert(context, publisher, bookLocale);

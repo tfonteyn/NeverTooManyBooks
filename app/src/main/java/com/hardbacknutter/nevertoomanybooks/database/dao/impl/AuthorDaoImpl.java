@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -151,9 +150,9 @@ public class AuthorDaoImpl
      * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
      * We only return the <strong>first entity found</strong>.
      *
-     * @param context        Current context
-     * @param author         to find the id of
-     * @param localeSupplier deferred supplier for a {@link Locale}.
+     * @param context Current context
+     * @param author  to find the id of
+     * @param locale  to use
      *
      * @return the Author
      */
@@ -161,9 +160,7 @@ public class AuthorDaoImpl
     @NonNull
     public Optional<Author> findByName(@NonNull final Context context,
                                        @NonNull final Author author,
-                                       @NonNull final Supplier<Locale> localeSupplier) {
-
-        final Locale locale = localeSupplier.get();
+                                       @NonNull final Locale locale) {
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
                 SqlEncode.orderByColumn(author.getFamilyName(), locale),
@@ -347,7 +344,7 @@ public class AuthorDaoImpl
                            @NonNull final Author author,
                            @NonNull final Locale bookLocale) {
         if (author.getId() == 0) {
-            fixId(context, author, () -> author.getLocale(context).orElse(bookLocale));
+            fixId(context, author, author.getLocale(context).orElse(bookLocale));
             if (author.getId() == 0) {
                 return 0;
             }
@@ -364,7 +361,7 @@ public class AuthorDaoImpl
                                 @NonNull final Author author,
                                 @NonNull final Locale bookLocale) {
         if (author.getId() == 0) {
-            fixId(context, author, () -> author.getLocale(context).orElse(bookLocale));
+            fixId(context, author, author.getLocale(context).orElse(bookLocale));
             if (author.getId() == 0) {
                 return 0;
             }
@@ -410,31 +407,31 @@ public class AuthorDaoImpl
         final EntityMergeHelper<Author> mergeHelper = new AuthorMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, () -> locale));
+                                 (current, locale) -> fixId(context, current, locale));
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Author author,
-                      @NonNull final Supplier<Locale> localeSupplier) {
-        final long found = findByName(context, author, localeSupplier)
+                      @NonNull final Locale locale) {
+        final long found = findByName(context, author, locale)
                 .map(Author::getId).orElse(0L);
         author.setId(found);
 
         final Author realAuthor = author.getRealAuthor();
         if (realAuthor != null) {
-            fixId(context, realAuthor, localeSupplier);
+            fixId(context, realAuthor, locale);
         }
     }
 
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Author author,
-                        @NonNull final Supplier<Locale> localeSupplier) {
+                        @NonNull final Locale locale) {
 
         // If needed, check if we already have it in the database.
         if (author.getId() == 0) {
-            fixId(context, author, localeSupplier);
+            fixId(context, author, locale);
         }
 
         // If we do already have it, update the object
@@ -490,7 +487,7 @@ public class AuthorDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Author author : list) {
-                fixId(context, author, () -> localeSupplier.apply(author));
+                fixId(context, author, localeSupplier.apply(author));
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (author.getId() == 0) {
@@ -646,7 +643,7 @@ public class AuthorDaoImpl
             return;
         }
 
-        fixId(context, realAuthor, () -> bookLocale);
+        fixId(context, realAuthor, bookLocale);
         if (realAuthor.getId() == 0) {
             insert(context, realAuthor, bookLocale);
         } else {

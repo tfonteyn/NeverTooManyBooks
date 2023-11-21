@@ -100,9 +100,8 @@ public class PublisherDaoImpl
     @NonNull
     public Optional<Publisher> findByName(@NonNull final Context context,
                                           @NonNull final Publisher publisher,
-                                          @NonNull final Supplier<Locale> localeSupplier) {
+                                          @NonNull final Locale locale) {
 
-        final Locale locale = localeSupplier.get();
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = publisher.getName();
         final String obName = reorderHelper.reorderForSorting(context, text, locale);
@@ -185,7 +184,7 @@ public class PublisherDaoImpl
                            @NonNull final Publisher publisher,
                            @NonNull final Locale bookLocale) {
         if (publisher.getId() == 0) {
-            fixId(context, publisher, () -> publisher.getLocale(context).orElse(bookLocale));
+            fixId(context, publisher, publisher.getLocale(context).orElse(bookLocale));
             if (publisher.getId() == 0) {
                 return 0;
             }
@@ -221,14 +220,14 @@ public class PublisherDaoImpl
         final PublisherMergeHelper mergeHelper = new PublisherMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, () -> locale));
+                                 (current, locale) -> fixId(context, current, locale));
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Publisher publisher,
-                      @NonNull final Supplier<Locale> localeSupplier) {
-        final long found = findByName(context, publisher, localeSupplier)
+                      @NonNull final Locale locale) {
+        final long found = findByName(context, publisher, locale)
                 .map(Publisher::getId).orElse(0L);
         publisher.setId(found);
     }
@@ -236,11 +235,11 @@ public class PublisherDaoImpl
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Publisher publisher,
-                        @NonNull final Supplier<Locale> localeSupplier) {
+                        @NonNull final Locale locale) {
 
         // If needed, check if we already have it in the database.
         if (publisher.getId() == 0) {
-            fixId(context, publisher, localeSupplier);
+            fixId(context, publisher, locale);
         }
 
         // If we do already have it, update the object
@@ -297,7 +296,7 @@ public class PublisherDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Publisher publisher : list) {
-                fixId(context, publisher, () -> localeSupplier.apply(publisher));
+                fixId(context, publisher, localeSupplier.apply(publisher));
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (publisher.getId() == 0) {

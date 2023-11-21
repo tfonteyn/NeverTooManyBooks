@@ -825,28 +825,29 @@ public class EditBookViewModel
     void fixId(@NonNull final Context context,
                @NonNull final Author author) {
         ServiceLocator.getInstance().getAuthorDao()
-                      .fixId(context, author, () -> author.getLocale(context).orElseGet(
+                      .fixId(context, author, author.getLocale(context).orElseGet(
                               () -> book.getLocaleOrUserLocale(context)));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Series series) {
         ServiceLocator.getInstance().getSeriesDao()
-                      .fixId(context, series, () -> series.getLocale(context).orElseGet(
+                      .fixId(context, series, series.getLocale(context).orElseGet(
                               () -> book.getLocaleOrUserLocale(context)));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Publisher publisher) {
         ServiceLocator.getInstance().getPublisherDao()
-                      .fixId(context, publisher, () -> publisher.getLocale(context).orElseGet(
+                      .fixId(context, publisher, publisher.getLocale(context).orElseGet(
                               () -> book.getLocaleOrUserLocale(context)));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final TocEntry tocEntry) {
-        ServiceLocator.getInstance().getTocEntryDao().fixId(context, tocEntry, () ->
-                tocEntry.getLocale(context).orElseGet(() -> book.getLocaleOrUserLocale(context)));
+        ServiceLocator.getInstance().getTocEntryDao()
+                      .fixId(context, tocEntry, tocEntry.getLocale(context).orElseGet(
+                              () -> book.getLocaleOrUserLocale(context)));
     }
 
     /**

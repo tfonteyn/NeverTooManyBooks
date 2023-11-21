@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
@@ -48,16 +47,16 @@ public interface EntityOwningBooksDao<T extends Entity> {
      * Find a {@link T} by using the <strong>name</strong> fields
      * of the passed {@link T}. The incoming object is not modified.
      *
-     * @param context        Current context
-     * @param item           to find the id of
-     * @param localeSupplier deferred supplier for a {@link Locale}.
+     * @param context Current context
+     * @param item    to find the id of
+     * @param locale  to use
      *
      * @return the {@link T}
      */
     @NonNull
     Optional<T> findByName(@NonNull Context context,
                            @NonNull T item,
-                           @NonNull Supplier<Locale> localeSupplier);
+                           @NonNull Locale locale);
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields.
@@ -65,13 +64,13 @@ public interface EntityOwningBooksDao<T extends Entity> {
      * <p>
      * If the item has 'sub' items, then implementations must propagate the call.
      *
-     * @param context        Current context
-     * @param item           to update
-     * @param localeSupplier deferred supplier for a {@link Locale}.
+     * @param context Current context
+     * @param item    to update
+     * @param locale  to use
      */
     void fixId(@NonNull Context context,
                @NonNull T item,
-               @NonNull Supplier<Locale> localeSupplier);
+               @NonNull Locale locale);
 
     /**
      * Check for books which do not have a {@link T} at position 1.
@@ -218,13 +217,13 @@ public interface EntityOwningBooksDao<T extends Entity> {
      * Will <strong>NOT</strong> insert a new {@link T} if not found;
      * instead the id of the item will be set to {@code 0}, i.e. 'new'.
      *
-     * @param context        Current context
-     * @param item           to refresh
-     * @param localeSupplier deferred supplier for a {@link Locale}.
+     * @param context Current context
+     * @param item    to refresh
+     * @param locale  to use
      */
     void refresh(@NonNull Context context,
                  @NonNull T item,
-                 @NonNull Supplier<Locale> localeSupplier);
+                 @NonNull Locale locale);
 
     /**
      * Delete orphaned records.

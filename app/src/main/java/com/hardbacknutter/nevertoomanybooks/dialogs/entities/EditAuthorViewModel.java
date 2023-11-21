@@ -154,7 +154,7 @@ public class EditAuthorViewModel
         final Author tmpRealAuthor = Author.from(currentRealAuthorName);
 
         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-        final Optional<Author> existing = dao.findByName(context, tmpRealAuthor, () -> bookLocale);
+        final Optional<Author> existing = dao.findByName(context, tmpRealAuthor, bookLocale);
 
         if (existing.isPresent()) {
             currentEdit.setRealAuthor(existing.get());

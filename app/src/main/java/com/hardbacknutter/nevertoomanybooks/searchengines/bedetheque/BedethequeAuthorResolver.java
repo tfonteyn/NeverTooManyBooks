@@ -114,7 +114,7 @@ public class BedethequeAuthorResolver
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
         // We SHOULD pass in the book-locale here...
-        authorDao.refresh(context, author, () -> locale);
+        authorDao.refresh(context, author, locale);
 
         // If we already have a real-author set, we're done.
         if (author.getRealAuthor() != null) {
@@ -165,7 +165,7 @@ public class BedethequeAuthorResolver
         // The name was a pen-name and we have resolved it to their real name
         // Add it accordingly to the original Author object
         final Author realAuthor = Author.from(resolvedName);
-        authorDao.refresh(context, realAuthor, () -> locale);
+        authorDao.refresh(context, realAuthor, locale);
         author.setRealAuthor(realAuthor);
 
         // While resolving, the name of the bdtAuthor CAN be overwritten.

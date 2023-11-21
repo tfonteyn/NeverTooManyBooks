@@ -74,7 +74,7 @@ final class SaveChangesHelper {
         // It's either a new one, or an existing one of which the name was changed.
         // Check if there is an another one with the same new name.
         final Optional<T> existingEntity = dao
-                .findByName(context, item, () -> item.getLocale(context).orElse(bookLocale));
+                .findByName(context, item, item.getLocale(context).orElse(bookLocale));
 
         if (existingEntity.isPresent()) {
             askToMerge(fragment, dao, item, onSuccess, mergeMessageResId, existingEntity.get());

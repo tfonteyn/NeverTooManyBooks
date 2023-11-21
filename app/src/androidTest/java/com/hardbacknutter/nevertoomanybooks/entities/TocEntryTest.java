@@ -50,7 +50,7 @@ public class TocEntryTest
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, () -> bookLocale);
+        authorDao.fixId(context, author0, bookLocale);
         long authorId0 = author0.getId();
         if (authorId0 == 0) {
             authorId0 = authorDao.insert(context, author0, bookLocale);
@@ -103,7 +103,7 @@ public class TocEntryTest
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, () -> bookLocale);
+        authorDao.fixId(context, author0, bookLocale);
         long authorId0 = author0.getId();
         if (authorId0 == 0) {
             authorId0 = authorDao.insert(context, author0, bookLocale);
@@ -154,7 +154,7 @@ public class TocEntryTest
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, () -> bookLocale);
+        authorDao.fixId(context, author0, bookLocale);
         long authorId0 = author0.getId();
         if (authorId0 == 0) {
             authorId0 = authorDao.insert(context, author0, bookLocale);

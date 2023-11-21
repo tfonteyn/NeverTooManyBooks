@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
@@ -47,13 +46,13 @@ public interface TocEntryDao {
      * <p>
      * If the item has 'sub' items, then implementations must propagate the call.
      *
-     * @param context        Current context
-     * @param tocEntry       to update
-     * @param localeSupplier deferred supplier for a {@link Locale}
+     * @param context  Current context
+     * @param tocEntry to update
+     * @param locale   dto use
      */
     void fixId(@NonNull Context context,
                @NonNull TocEntry tocEntry,
-               @NonNull Supplier<Locale> localeSupplier);
+               @NonNull Locale locale);
 
     /**
      * Check for books which do not have a {@link TocEntry} at position 1.
