@@ -51,14 +51,20 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 public class SynchronizedDb
         implements AutoCloseable {
 
-    public static final int DEFAULT_STMT_CACHE_SIZE = 25;
+    private static final int DEFAULT_STMT_CACHE_SIZE = 25;
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
     private static final String ERROR_TX_LOCK_WAS_NULL = "Lock passed in was NULL";
+    /** beginTransaction failed for an unknown reason. */
+    private static final String ERROR_TX_COULD_NOT_START = "TX could not be started";
+    /** Trying to start a transaction (lock) which is already started. */
     private static final String ERROR_TX_ALREADY_STARTED = "TX already started";
-    private static final String ERROR_TX_NOT_STARTED = "No TX started";
+    /** endTransaction without beginTransaction. */
+    private static final String ERROR_TX_NEVER_STARTED = "No TX started";
     private static final String ERROR_TX_INSIDE_SHARED = "Inside shared TX";
+    /** endTransaction called with an unexpected/wrong lock. */
     private static final String ERROR_TX_WRONG_LOCK = "Wrong lock";
+    private static final String DROP_TABLE_IF_EXISTS_ = "DROP TABLE IF EXISTS ";
     @NonNull
     private final SQLiteOpenHelper sqLiteOpenHelper;
     private final boolean collationCaseSensitive;
@@ -196,6 +202,8 @@ public class SynchronizedDb
      *
      * @param table                 to recreate
      * @param withDomainConstraints Indicates if fields should have constraints applied
+     *
+     * @throws TransactionException if paranoia was justified
      */
     public void recreate(@NonNull final TableDefinition table,
                          final boolean withDomainConstraints) {
@@ -219,7 +227,7 @@ public class SynchronizedDb
         try {
             // Drop the table in case there is an orphaned instance with the same name.
             if (table.exists(sqLiteDatabase)) {
-                sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + table.getName());
+                sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS_ + table.getName());
             }
             table.create(sqLiteDatabase, withDomainConstraints);
             table.createIndices(sqLiteDatabase, collationCaseSensitive);
@@ -517,7 +525,7 @@ public class SynchronizedDb
      * @param tableName to drop
      */
     public void drop(@NonNull final String tableName) {
-        execSQL("DROP TABLE IF EXISTS " + tableName);
+        execSQL(DROP_TABLE_IF_EXISTS_ + tableName);
     }
 
     /**
@@ -583,7 +591,7 @@ public class SynchronizedDb
             }
         } catch (@NonNull final RuntimeException e) {
             txLock.unlock();
-            throw new TransactionException("beginTransaction failed: " + e.getMessage(), e);
+            throw new TransactionException(ERROR_TX_COULD_NOT_START, e);
         }
         currentTxLock = txLock;
         return txLock;
@@ -609,7 +617,7 @@ public class SynchronizedDb
             throw new TransactionException(ERROR_TX_LOCK_WAS_NULL);
         }
         if (currentTxLock == null) {
-            throw new TransactionException(ERROR_TX_NOT_STARTED);
+            throw new TransactionException(ERROR_TX_NEVER_STARTED);
         }
         if (!currentTxLock.equals(txLock)) {
             throw new TransactionException(ERROR_TX_WRONG_LOCK);
@@ -635,8 +643,13 @@ public class SynchronizedDb
         return sqLiteDatabase;
     }
 
+    /**
+     * Gets the path to the database file.
+     *
+     * @return The path to the database file.
+     */
     @NonNull
-    public String getDatabasePath() {
+    public String getPath() {
         return sqLiteDatabase.getPath();
     }
 

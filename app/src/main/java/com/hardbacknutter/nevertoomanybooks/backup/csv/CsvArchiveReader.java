@@ -104,7 +104,7 @@ public class CsvArchiveReader
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        final File source = new File(serviceLocator.getDb().getDatabasePath());
+        final File source = new File(serviceLocator.getDb().getPath());
         final File destination = new File(serviceLocator.getUpgradesDir(), DB_BACKUP_NAME);
 
         // Move/rename the previous/original file
