@@ -384,6 +384,7 @@ public class SeriesDaoImpl
             throws DaoInsertException {
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
+
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String title = series.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, title, locale);

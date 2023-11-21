@@ -385,7 +385,7 @@ public class JsonRecordReader
                             switch (getUpdateOption()) {
                                 case Overwrite: {
                                     try {
-                                        bookshelfDao.update(context, bookshelf);
+                                        bookshelfDao.update(context, bookshelf, locale);
                                     } catch (@NonNull final DaoWriteException e) {
                                         throw new UncheckedDaoWriteException(e);
                                     }
@@ -397,7 +397,7 @@ public class JsonRecordReader
                             }
                         } else {
                             try {
-                                bookshelfDao.insert(context, bookshelf);
+                                bookshelfDao.insert(context, bookshelf, locale);
                                 results.bookshelves++;
                             } catch (@NonNull final DaoWriteException e) {
                                 throw new UncheckedDaoWriteException(e);

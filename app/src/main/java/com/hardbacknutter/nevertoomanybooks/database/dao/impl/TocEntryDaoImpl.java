@@ -338,6 +338,22 @@ public class TocEntryDaoImpl
     }
 
     @Override
+    public long insert(@NonNull final Context context,
+                       @NonNull final TocEntry item,
+                       @NonNull final Locale bookLocale)
+            throws DaoWriteException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void update(@NonNull final Context context,
+                       @NonNull final TocEntry item,
+                       @NonNull final Locale bookLocale)
+            throws DaoWriteException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final TocEntry tocEntry) {
         Synchronizer.SyncLock txLock = null;

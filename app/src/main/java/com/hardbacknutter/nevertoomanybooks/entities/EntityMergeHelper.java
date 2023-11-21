@@ -70,22 +70,22 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
      *
      * @param context        Current context
      * @param list           to process
-     * @param localeProvider Locale to use if the item has none set
+     * @param localeSupplier a supplier to get the Locale; called for each item in the list
      * @param idFixer        a consumer which should attempt to fix the id of
-     *                       the object passed in
+     *                       the item passed in
      *
      * @return {@code true} if the list was modified.
      */
     public final boolean merge(@NonNull final Context context,
                                @NonNull final Collection<T> list,
-                               @NonNull final Function<T, Locale> localeProvider,
+                               @NonNull final Function<T, Locale> localeSupplier,
                                @NonNull final BiConsumer<T, Locale> idFixer) {
 
         boolean listModified = false;
         final Iterator<T> iterator = list.iterator();
         while (iterator.hasNext()) {
             final T current = iterator.next();
-            final Locale currentLocale = localeProvider.apply(current);
+            final Locale currentLocale = localeSupplier.apply(current);
 
             idFixer.accept(current, currentLocale);
 
@@ -115,7 +115,7 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
             } else {
                 // There is a previous one with the same "name" as the current one.
                 // Try merging the "non-name" attributes from the current into the previous.
-                final Locale previousLocale = localeProvider.apply(previous);
+                final Locale previousLocale = localeSupplier.apply(previous);
 
                 if (merge(context, previous, previousLocale, current, currentLocale)) {
                     // merged successfully, remove the current, we're keeping the previous one.

@@ -28,6 +28,7 @@ import androidx.core.util.Pair;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -112,7 +113,8 @@ public class BookshelfFiltersViewModel
         if (modified) {
             bookshelf.setFilters(filterList);
             try {
-                ServiceLocator.getInstance().getBookshelfDao().update(context, bookshelf);
+                final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+                ServiceLocator.getInstance().getBookshelfDao().update(context, bookshelf, locale);
             } catch (@NonNull final DaoWriteException e) {
                 // log, but ignore - should never happen unless disk full
                 LoggerFactory.getLogger().e(TAG, e);

@@ -26,6 +26,8 @@ import android.os.Parcelable;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -141,8 +143,9 @@ abstract class LibraryBase
                                                             Bookshelf.HARD_DEFAULT)
                                               .orElseThrow();
 
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         final Bookshelf bookshelf = new Bookshelf(name, current.getStyle());
-        bookshelfDao.insert(context, bookshelf);
+        bookshelfDao.insert(context, bookshelf, locale);
 
         mappedBookshelfId = bookshelf.getId();
         return bookshelf;

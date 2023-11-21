@@ -338,6 +338,7 @@ public class PublisherDaoImpl
             throws DaoInsertException {
 
         final Locale locale = publisher.getLocale(context).orElse(bookLocale);
+
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String name = publisher.getName();
         final String obName = reorderHelper.reorderForSorting(context, name, locale);

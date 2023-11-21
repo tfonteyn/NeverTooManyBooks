@@ -138,38 +138,6 @@ public interface EntityOwningBooksDao<T extends Entity> {
             throws DaoWriteException;
 
     /**
-     * Insert a new {@link T}.
-     *
-     * @param context    Current context
-     * @param item       to insert. Will be updated with the id
-     * @param bookLocale Locale to use if the item has none set
-     *
-     * @return the row id of the newly inserted item
-     *
-     * @throws DaoWriteException on failure
-     */
-    @IntRange(from = 1)
-    long insert(@NonNull Context context,
-                @NonNull T item,
-                @NonNull Locale bookLocale)
-            throws DaoWriteException;
-
-    /**
-     * Update the given {@link T}.
-     *
-     * @param context    Current context
-     * @param item       to update
-     * @param bookLocale Locale to use if the item has none set
-     *
-     * @throws DaoWriteException on failure
-     */
-    void update(@NonNull Context context,
-                @NonNull T item,
-                @NonNull Locale bookLocale)
-            throws DaoWriteException;
-
-
-    /**
      * Refresh the passed {@link T} from the database, if present.
      * Used to ensure that the current record matches the content of the database
      * should some other task have changed the {@link T}.

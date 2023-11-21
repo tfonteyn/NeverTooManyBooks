@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -333,7 +334,8 @@ public class Bookshelf
      */
     private void doUpdate(@NonNull final Context context) {
         try {
-            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+            ServiceLocator.getInstance().getBookshelfDao().update(context, this, locale);
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
             LoggerFactory.getLogger().e(TAG, e, this);

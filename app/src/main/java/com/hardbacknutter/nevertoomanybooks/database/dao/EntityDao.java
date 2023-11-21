@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 public interface EntityDao<T extends Entity> {
@@ -70,6 +71,38 @@ public interface EntityDao<T extends Entity> {
     void fixId(@NonNull Context context,
                @NonNull T item,
                @NonNull Locale locale);
+
+
+    /**
+     * Insert a new {@link T}.
+     *
+     * @param context    Current context
+     * @param item       to insert. Will be updated with the id
+     * @param bookLocale Locale to use if the item has none set
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
+     */
+    @IntRange(from = 1)
+    long insert(@NonNull Context context,
+                @NonNull T item,
+                @NonNull Locale bookLocale)
+            throws DaoWriteException;
+
+    /**
+     * Update the given {@link T}.
+     *
+     * @param context    Current context
+     * @param item       to update
+     * @param bookLocale Locale to use if the item has none set
+     *
+     * @throws DaoWriteException on failure
+     */
+    void update(@NonNull Context context,
+                @NonNull T item,
+                @NonNull Locale bookLocale)
+            throws DaoWriteException;
 
     /**
      * Delete the given {@link T}.

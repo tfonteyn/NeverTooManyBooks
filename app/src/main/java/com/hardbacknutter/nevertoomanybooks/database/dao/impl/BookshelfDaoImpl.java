@@ -375,12 +375,12 @@ public class BookshelfDaoImpl
             return;
         }
 
-
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Bookshelf bookshelf : list) {
                 // create if needed - do NOT do updates here
                 if (bookshelf.getId() == 0) {
-                    insert(context, bookshelf);
+                    insert(context, bookshelf, locale);
                 }
                 //2023-06-11: If we ever do updates here, then we need to check the triggers!
                 // also: look at AuthorDaoImpl/PublisherDaoImpl how we avoid unneeded updates
@@ -397,7 +397,8 @@ public class BookshelfDaoImpl
     @Override
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
-                       @NonNull final Bookshelf bookshelf)
+                       @NonNull final Bookshelf bookshelf,
+                       @NonNull final Locale locale)
             throws DaoInsertException {
 
         // validate the style first
@@ -442,7 +443,8 @@ public class BookshelfDaoImpl
 
     @Override
     public void update(@NonNull final Context context,
-                       @NonNull final Bookshelf bookshelf)
+                       @NonNull final Bookshelf bookshelf,
+                       @NonNull final Locale locale)
             throws DaoUpdateException {
 
         // validate the style first

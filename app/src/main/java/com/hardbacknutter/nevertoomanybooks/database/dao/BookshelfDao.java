@@ -148,33 +148,6 @@ public interface BookshelfDao
             throws DaoWriteException;
 
     /**
-     * Creates a new bookshelf in the database.
-     *
-     * @param context   Current context
-     * @param bookshelf object to insert. Will be updated with the id.
-     *
-     * @return the row id of the newly inserted item
-     *
-     * @throws DaoWriteException on failure
-     */
-    @IntRange(from = 1)
-    long insert(@NonNull Context context,
-                @NonNull Bookshelf bookshelf)
-            throws DaoWriteException;
-
-    /**
-     * Update the given {@link Bookshelf}.
-     *
-     * @param context   Current context
-     * @param bookshelf to update
-     *
-     * @throws DaoWriteException on failure
-     */
-    void update(@NonNull Context context,
-                @NonNull Bookshelf bookshelf)
-            throws DaoWriteException;
-
-    /**
      * Purge book list node state data for the given {@link Bookshelf}.
      * <p>
      * Called when a {@link Bookshelf} is deleted or manually from the

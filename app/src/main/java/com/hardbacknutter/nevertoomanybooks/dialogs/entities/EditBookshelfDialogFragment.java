@@ -26,6 +26,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -130,13 +131,15 @@ public class EditBookshelfDialogFragment
         bookshelf.setName(currentEdit);
 
         final Context context = getContext();
+        //noinspection DataFlowIssue
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
 
         // The logic flow here is different from the default one as used for e.g. an Author.
         // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
 
         // Check if there is an existing one with the same name
-        final Optional<Bookshelf> existingBookshelf = dao.findByName(bookshelf.getName());
+        final Optional<Bookshelf> existingBookshelf = dao.findByName(context, bookshelf, locale);
 
         // Are we adding a new one but trying to use an existing name? -> REJECT
         if (bookshelf.getId() == 0 && existingBookshelf.isPresent()) {
@@ -157,11 +160,9 @@ public class EditBookshelfDialogFragment
             try {
                 // We have a unique/new name; either add or update and we're done
                 if (bookshelf.getId() == 0) {
-                    //noinspection DataFlowIssue
-                    dao.insert(context, bookshelf);
+                    dao.insert(context, bookshelf, locale);
                 } else {
-                    //noinspection DataFlowIssue
-                    dao.update(context, bookshelf);
+                    dao.update(context, bookshelf, locale);
                 }
                 EditInPlaceParcelableLauncher.setResult(this, requestKey, bookshelf);
                 return true;

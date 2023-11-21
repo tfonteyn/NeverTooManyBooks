@@ -177,16 +177,16 @@ public class CalibreLibraryCoder
     public CalibreLibrary decode(@NonNull final JSONObject data)
             throws JSONException {
 
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
         final Object tmpBS = data.opt(DBKey.FK_BOOKSHELF);
         if (tmpBS == null || tmpBS instanceof Number) {
             try {
-                return v3decode(data);
+                return v3decode(data, locale);
             } catch (@NonNull final DaoWriteException e) {
                 throw new JSONException(e);
             }
         }
-
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         final Bookshelf libraryBookshelf = bookshelfCoder
                 .decode(data.getJSONObject(DBKey.FK_BOOKSHELF));
@@ -233,12 +233,13 @@ public class CalibreLibraryCoder
     // installation.
     // There is no real (simple) recovery solution to that. So....
     @NonNull
-    private CalibreLibrary v3decode(@NonNull final JSONObject data)
+    private CalibreLibrary v3decode(@NonNull final JSONObject data,
+                                    @NonNull final Locale locale)
             throws DaoWriteException {
 
         final String libName = data.getString(DBKey.CALIBRE_LIBRARY_NAME);
 
-        final long libBookshelfId = v3resolveBookshelf(data, libName);
+        final long libBookshelfId = v3resolveBookshelf(data, libName, locale);
 
         final CalibreLibrary library = new CalibreLibrary(
                 data.getString(DBKey.CALIBRE_LIBRARY_UUID),
@@ -255,7 +256,7 @@ public class CalibreLibraryCoder
             for (int i = 0; i < vlArray.length(); i++) {
                 final JSONObject vlData = vlArray.getJSONObject(i);
                 final String vLibName = vlData.getString(DBKey.CALIBRE_LIBRARY_NAME);
-                final long vLibBookshelfId = v3resolveBookshelf(vlData, "v-" + libName);
+                final long vLibBookshelfId = v3resolveBookshelf(vlData, "v-" + libName, locale);
 
                 final CalibreVirtualLibrary vLib = new CalibreVirtualLibrary(
                         library.getId(),
@@ -273,7 +274,8 @@ public class CalibreLibraryCoder
     }
 
     private long v3resolveBookshelf(@NonNull final JSONObject data,
-                                    @NonNull final String libName)
+                                    @NonNull final String libName,
+                                    @NonNull final Locale locale)
             throws DaoWriteException {
 
         // try original
@@ -286,7 +288,7 @@ public class CalibreLibraryCoder
             if (bookshelf == null) {
                 // make a new one
                 bookshelf = new Bookshelf(name, BuiltinStyle.HARD_DEFAULT_UUID);
-                bookshelfDao.insert(context, bookshelf);
+                bookshelfDao.insert(context, bookshelf, locale);
             }
         }
         return bookshelf.getId();
