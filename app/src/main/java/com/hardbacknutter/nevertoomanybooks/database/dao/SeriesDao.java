@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
@@ -83,7 +84,7 @@ public interface SeriesDao
      * @return the ISO3 code, or the empty String when none found.
      */
     @NonNull
-    String getLanguage(long id);
+    String getLanguage(@IntRange(from = 1) long id);
 
     /**
      * Update the 'complete' status for the given {@link Series}.

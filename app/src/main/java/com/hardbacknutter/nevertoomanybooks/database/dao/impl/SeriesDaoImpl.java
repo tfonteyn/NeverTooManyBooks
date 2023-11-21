@@ -141,7 +141,7 @@ public class SeriesDaoImpl
 
     @Override
     @NonNull
-    public String getLanguage(final long id) {
+    public String getLanguage(@IntRange(from = 1) final long id) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.GET_LANGUAGE)) {
             stmt.bindLong(1, id);
             final String code = stmt.simpleQueryForStringOrNull();
