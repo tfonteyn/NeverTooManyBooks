@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -334,22 +333,7 @@ public class BookshelfDaoImpl
         bookshelf.setId(found);
     }
 
-    /**
-     * Create the link between {@link Book} and {@link Bookshelf}.
-     * {@link DBDefinitions#TBL_BOOK_BOOKSHELF}
-     * <p>
-     * The list is pruned before storage.
-     * New shelves are added, existing ones are NOT updated.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context Current context
-     * @param bookId  of the book
-     * @param list    the list of bookshelves
-     *
-     * @throws DaoInsertException   on failure
-     * @throws TransactionException a transaction must be started before calling this method
-     */
+    @Override
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Bookshelf> list)
