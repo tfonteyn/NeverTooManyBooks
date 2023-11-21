@@ -83,6 +83,21 @@ public interface EntityDao<T extends Entity> {
                @NonNull T item,
                @NonNull Locale locale);
 
+    /**
+     * Refresh the passed {@link T} from the database, if present.
+     * Used to ensure that the current record matches the content of the database
+     * should some other task have changed the {@link T}.
+     * <p>
+     * Will <strong>NOT</strong> insert a new {@link T} if not found;
+     * instead the id of the item will be set to {@code 0}, i.e. 'new'.
+     *
+     * @param context Current context
+     * @param item    to refresh
+     * @param locale  to use
+     */
+    void refresh(@NonNull Context context,
+                 @NonNull T item,
+                 @NonNull Locale locale);
 
     /**
      * Insert a new {@link T}.

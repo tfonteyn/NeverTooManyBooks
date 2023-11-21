@@ -143,6 +143,29 @@ public class TocEntryDaoImpl
     }
 
     @Override
+    public void refresh(@NonNull final Context context,
+                        @NonNull final TocEntry tocEntry,
+                        @NonNull final Locale locale) {
+        // If needed, check if we already have it in the database.
+        if (tocEntry.getId() == 0) {
+            fixId(context, tocEntry, locale);
+        }
+
+        // If we do already have it, update the object
+        if (tocEntry.getId() > 0) {
+            final Optional<TocEntry> dbTocEntry = findById(tocEntry.getId());
+            // Sanity check
+            if (dbTocEntry.isPresent()) {
+                // copy any updated fields
+                tocEntry.copyFrom(dbTocEntry.get());
+            } else {
+                // we shouldn't get here... but if we do, set it to 'new'
+                tocEntry.setId(0);
+            }
+        }
+    }
+
+    @Override
     @NonNull
     public Optional<TocEntry> findByName(@NonNull final Context context,
                                          @NonNull final TocEntry tocEntry,

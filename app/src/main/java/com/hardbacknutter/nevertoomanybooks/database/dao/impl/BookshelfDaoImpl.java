@@ -334,6 +334,29 @@ public class BookshelfDaoImpl
     }
 
     @Override
+    public void refresh(@NonNull final Context context,
+                        @NonNull final Bookshelf bookshelf,
+                        @NonNull final Locale locale) {
+        // If needed, check if we already have it in the database.
+        if (bookshelf.getId() == 0) {
+            fixId(context, bookshelf, locale);
+        }
+
+        // If we do already have it, update the object
+        if (bookshelf.getId() > 0) {
+            final Optional<Bookshelf> dbBookshelf = findById(bookshelf.getId());
+            // Sanity check
+            if (dbBookshelf.isPresent()) {
+                // copy any updated fields
+                bookshelf.copyFrom(dbBookshelf.get());
+            } else {
+                // we shouldn't get here... but if we do, set it to 'new'
+                bookshelf.setId(0);
+            }
+        }
+    }
+
+    @Override
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Bookshelf> list)

@@ -648,7 +648,21 @@ public class Book
     }
 
     /**
-     * Update author details from DB.
+     * Update all {@link Bookshelf} details from DB.
+     *
+     * @param context Current context
+     */
+    public void refreshBookshelves(@NonNull final Context context) {
+        if (contains(BKEY_BOOKSHELF_LIST)) {
+            final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+            final Locale bookLocale = getLocaleOrUserLocale(context);
+            getBookshelves().forEach(bookshelf -> bookshelfDao
+                    .refresh(context, bookshelf, bookshelf.getLocale(context).orElse(bookLocale)));
+        }
+    }
+
+    /**
+     * Update all {@link Author} details from DB.
      *
      * @param context Current context
      */
@@ -750,7 +764,7 @@ public class Book
     }
 
     /**
-     * Update Series details from DB.
+     * Update all {@link Series} details from DB.
      *
      * @param context Current context
      */
@@ -832,7 +846,7 @@ public class Book
     }
 
     /**
-     * Update Publisher details from DB.
+     * Update all {@link Publisher} details from DB.
      *
      * @param context Current context
      */
