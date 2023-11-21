@@ -74,4 +74,9 @@ public interface PublisherDao
                       @NonNull Collection<Publisher> list,
                       boolean normalize,
                       @NonNull Function<Publisher, Locale> localeSupplier);
+
+    /**
+     * Delete orphaned records.
+     */
+    void purge();
 }

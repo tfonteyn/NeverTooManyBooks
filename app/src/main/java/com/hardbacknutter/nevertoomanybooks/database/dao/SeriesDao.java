@@ -99,4 +99,9 @@ public interface SeriesDao
                       @NonNull Collection<Series> list,
                       boolean normalize,
                       @NonNull Function<Series, Locale> localeSupplier);
+
+    /**
+     * Delete orphaned records.
+     */
+    void purge();
 }

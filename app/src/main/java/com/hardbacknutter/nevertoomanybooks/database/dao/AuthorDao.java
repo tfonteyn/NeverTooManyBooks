@@ -101,6 +101,11 @@ public interface AuthorDao
                       @NonNull Collection<Author> list,
                       @NonNull Function<Author, Locale> localeSupplier);
 
+    /**
+     * Delete orphaned records.
+     */
+    void purge();
+
     @StringDef({
             DBKey.TITLE_OB,
             DBKey.FIRST_PUBLICATION__DATE

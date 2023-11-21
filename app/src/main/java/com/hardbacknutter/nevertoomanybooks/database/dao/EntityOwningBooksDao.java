@@ -136,9 +136,4 @@ public interface EntityOwningBooksDao<T extends Entity> {
                         boolean lookupLocale,
                         @NonNull Locale bookLocale)
             throws DaoWriteException;
-
-    /**
-     * Delete orphaned records.
-     */
-    void purge();
 }
