@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
@@ -34,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface BookshelfDao
@@ -75,6 +77,8 @@ public interface BookshelfDao
 
     /**
      * Find a {@link Bookshelf} with the given name.
+     * <p>
+     * Convenience method for {@link EntityDao#findByName(Context, Entity, Locale)}.
      *
      * @param name of bookshelf to find
      *
