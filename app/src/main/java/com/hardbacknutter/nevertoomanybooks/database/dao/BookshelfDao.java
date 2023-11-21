@@ -74,17 +74,6 @@ public interface BookshelfDao
                                      @NonNull long... ids);
 
     /**
-     * Find a {@link Bookshelf} by using the <strong>name</strong> fields
-     * of the passed {@link Bookshelf}. The incoming object is not modified.
-     *
-     * @param bookshelf to find the id of
-     *
-     * @return the Bookshelf
-     */
-    @NonNull
-    Optional<Bookshelf> findByName(@NonNull Bookshelf bookshelf);
-
-    /**
      * Find a {@link Bookshelf} with the given name.
      *
      * @param name of bookshelf to find
@@ -133,14 +122,6 @@ public interface BookshelfDao
      */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Bookshelf> list);
-
-    /**
-     * Tries to find the item in the database using all or some of its fields (except the id).
-     * If found, sets the item's id with the id found in the database.
-     *
-     * @param bookshelf to update
-     */
-    void fixId(@NonNull Bookshelf bookshelf);
 
     /**
      * Insert or update a list of {@link Bookshelf}'s linked to a single {@link Book}.

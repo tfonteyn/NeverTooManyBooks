@@ -38,21 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-public interface TocEntryDao {
-
-    /**
-     * Find a {@link TocEntry} by using the <strong>name</strong> fields.
-     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
-     * <p>
-     * If the item has 'sub' items, then implementations must propagate the call.
-     *
-     * @param context  Current context
-     * @param tocEntry to update
-     * @param locale   dto use
-     */
-    void fixId(@NonNull Context context,
-               @NonNull TocEntry tocEntry,
-               @NonNull Locale locale);
+public interface TocEntryDao
+        extends EntityDao<TocEntry> {
 
     /**
      * Check for books which do not have a {@link TocEntry} at position 1.

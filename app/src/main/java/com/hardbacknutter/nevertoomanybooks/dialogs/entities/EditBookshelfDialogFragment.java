@@ -136,7 +136,7 @@ public class EditBookshelfDialogFragment
         // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
 
         // Check if there is an existing one with the same name
-        final Optional<Bookshelf> existingBookshelf = dao.findByName(bookshelf);
+        final Optional<Bookshelf> existingBookshelf = dao.findByName(bookshelf.getName());
 
         // Are we adding a new one but trying to use an existing name? -> REJECT
         if (bookshelf.getId() == 0 && existingBookshelf.isPresent()) {

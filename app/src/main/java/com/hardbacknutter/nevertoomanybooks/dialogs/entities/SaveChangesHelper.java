@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.EntityDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.EntityOwningBooksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MoveBooksDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -47,7 +48,8 @@ final class SaveChangesHelper {
     private SaveChangesHelper() {
     }
 
-    static <T extends Entity, DAO extends EntityOwningBooksDao<T> & MoveBooksDao<T>>
+    static <T extends Entity,
+            DAO extends EntityOwningBooksDao<T> & MoveBooksDao<T> & EntityDao<T>>
     boolean save(@NonNull final DialogFragment fragment,
                  @NonNull final DAO dao,
                  @NonNull final T item,

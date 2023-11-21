@@ -216,7 +216,9 @@ public class BookshelfDaoImpl
 
     @Override
     @NonNull
-    public Optional<Bookshelf> findByName(@NonNull final Bookshelf bookshelf) {
+    public Optional<Bookshelf> findByName(@NonNull final Context context,
+                                          @NonNull final Bookshelf bookshelf,
+                                          @NonNull final Locale locale) {
         return findByName(bookshelf.getName());
     }
 
@@ -320,12 +322,15 @@ public class BookshelfDaoImpl
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final BookshelfMergeHelper mergeHelper = new BookshelfMergeHelper();
         return mergeHelper.merge(context, list, current -> userLocale,
-                                 (current, locale) -> fixId(current));
+                                 (current, locale) -> fixId(context, current, locale));
     }
 
     @Override
-    public void fixId(@NonNull final Bookshelf bookshelf) {
-        final long found = findByName(bookshelf).map(Bookshelf::getId).orElse(0L);
+    public void fixId(@NonNull final Context context,
+                      @NonNull final Bookshelf bookshelf,
+                      @NonNull final Locale locale) {
+        final long found = findByName(context, bookshelf, locale)
+                .map(Bookshelf::getId).orElse(0L);
         bookshelf.setId(found);
     }
 

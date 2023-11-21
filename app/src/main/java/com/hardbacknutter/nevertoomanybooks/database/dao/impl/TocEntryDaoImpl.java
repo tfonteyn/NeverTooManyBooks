@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -88,6 +89,18 @@ public class TocEntryDaoImpl
         this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
+    @NonNull
+    @Override
+    public Optional<TocEntry> getById(@IntRange(from = 1) final long id) {
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+            if (cursor.moveToFirst()) {
+                return Optional.of(new TocEntry(id, new CursorRow(cursor)));
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<TocEntry> list,
@@ -111,23 +124,31 @@ public class TocEntryDaoImpl
         final Author primaryAuthor = tocEntry.getPrimaryAuthor();
         authorDaoSupplier.get().fixId(context, primaryAuthor, locale);
 
-        final long id = findByName(context, tocEntry, locale);
-        tocEntry.setId(id);
+        final long found = findByName(context, tocEntry, locale)
+                .map(TocEntry::getId).orElse(0L);
+        tocEntry.setId(found);
     }
 
-    private long findByName(@NonNull final Context context,
-                            @NonNull final TocEntry tocEntry,
-                            @NonNull final Locale locale) {
+    @Override
+    @NonNull
+    public Optional<TocEntry> findByName(@NonNull final Context context,
+                                         @NonNull final TocEntry tocEntry,
+                                         @NonNull final Locale locale) {
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = tocEntry.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
-            stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
-            stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), locale));
-            stmt.bindString(3, SqlEncode.orderByColumn(obTitle, locale));
-            return stmt.simpleQueryForLongOrZero();
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
+                String.valueOf(tocEntry.getPrimaryAuthor().getId()),
+                SqlEncode.orderByColumn(tocEntry.getTitle(), locale),
+                SqlEncode.orderByColumn(obTitle, locale)})) {
+            if (cursor.moveToFirst()) {
+                final CursorRow rowData = new CursorRow(cursor);
+                return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
+            } else {
+                return Optional.empty();
+            }
         }
     }
 
@@ -380,6 +401,10 @@ public class TocEntryDaoImpl
 
     static final class Sql {
 
+        /** Get a {@link TocEntry} by the TocEntry id. */
+        static final String SELECT_BY_ID =
+                SELECT_ + '*' + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + "=?";
+
         static final String INSERT =
                 INSERT_INTO_ + TBL_TOC_ENTRIES.getName()
                 + '(' + DBKey.FK_AUTHOR
@@ -460,12 +485,12 @@ public class TocEntryDaoImpl
                 + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.BOOK_TOC_ENTRY_POSITION);
 
         /**
-         * Get the id of a {@link TocEntry} by Title.
+         * Find a {@link TocEntry} by name for a specific Author
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Search TITLE_OB on both "The Title" and "Title, The"
+         * Searches TITLE_OB on both original and (potentially) reordered title.
          */
-        private static final String FIND_ID =
-                SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
+        private static final String FIND_BY_NAME =
+                SELECT_ + '*' + _FROM_ + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?"
                 + _AND_ + '(' + DBKey.TITLE_OB + "=? " + _COLLATION
                 + _OR_ + DBKey.TITLE_OB + "=?" + _COLLATION + ')';

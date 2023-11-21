@@ -373,12 +373,13 @@ public class JsonRecordReader
                    UncheckedDaoWriteException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Bookshelves.getName());
         if (jsonRoot != null) {
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
             new BookshelfCoder(context, defaultStyle)
                     .decode(jsonRoot)
                     .forEach(bookshelf -> {
-                        bookshelfDao.fixId(bookshelf);
+                        bookshelfDao.fixId(context, bookshelf, locale);
                         if (bookshelf.getId() > 0) {
                             // The shelf already exists
                             switch (getUpdateOption()) {

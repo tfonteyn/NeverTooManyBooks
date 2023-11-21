@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -185,9 +186,11 @@ public class CalibreLibraryCoder
             }
         }
 
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
         final Bookshelf libraryBookshelf = bookshelfCoder
                 .decode(data.getJSONObject(DBKey.FK_BOOKSHELF));
-        bookshelfDao.fixId(libraryBookshelf);
+        bookshelfDao.fixId(context, libraryBookshelf, locale);
 
         final CalibreLibrary library = new CalibreLibrary(
                 data.getString(DBKey.CALIBRE_LIBRARY_UUID),
@@ -206,7 +209,7 @@ public class CalibreLibraryCoder
 
                 final Bookshelf vlibBookshelf = bookshelfCoder
                         .decode(vlData.getJSONObject(DBKey.FK_BOOKSHELF));
-                bookshelfDao.fixId(vlibBookshelf);
+                bookshelfDao.fixId(context, vlibBookshelf, locale);
 
                 final CalibreVirtualLibrary vLib = new CalibreVirtualLibrary(
                         library.getId(),

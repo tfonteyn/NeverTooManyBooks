@@ -20,9 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
+import android.content.Context;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -38,4 +41,33 @@ public interface EntityDao<T extends Entity> {
      */
     @NonNull
     Optional<T> getById(@IntRange(from = 1) long id);
+
+    /**
+     * Find a {@link T} by using the <strong>name</strong> fields
+     * of the passed {@link T}. The incoming object is not modified.
+     *
+     * @param context Current context
+     * @param item    to find the id of
+     * @param locale  to use
+     *
+     * @return the {@link T}
+     */
+    @NonNull
+    Optional<T> findByName(@NonNull Context context,
+                           @NonNull T item,
+                           @NonNull Locale locale);
+
+    /**
+     * Find a {@link T} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has 'sub' items, then implementations must propagate the call.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  to use
+     */
+    void fixId(@NonNull Context context,
+               @NonNull T item,
+               @NonNull Locale locale);
 }
