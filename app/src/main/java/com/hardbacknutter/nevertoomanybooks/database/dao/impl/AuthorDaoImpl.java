@@ -529,9 +529,7 @@ public class AuthorDaoImpl
                        @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
-        // bookLocale is not used.
-        final Locale locale = author.getLocale(context).orElseGet(
-                () -> context.getResources().getConfiguration().getLocales().get(0));
+        final Locale locale = author.getLocale(context).orElse(bookLocale);
 
         Synchronizer.SyncLock txLock = null;
         try {
