@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public interface TocEntryDao
         extends EntityDao<TocEntry> {
@@ -126,8 +127,15 @@ public interface TocEntryDao
      *
      * @return {@code true} if the list was modified.
      */
+    default boolean pruneList(@NonNull final Context context,
+                              @NonNull final Collection<TocEntry> list,
+                              @NonNull final Function<TocEntry, Locale> localeSupplier) {
+        return pruneList(context, list, Prefs.normalizeTocEntryName(context), localeSupplier);
+    }
+
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<TocEntry> list,
+                      boolean normalize,
                       @NonNull Function<TocEntry, Locale> localeSupplier);
 
     /**

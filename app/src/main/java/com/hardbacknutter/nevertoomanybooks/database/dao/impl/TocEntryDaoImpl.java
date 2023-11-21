@@ -36,6 +36,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
@@ -45,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -104,10 +106,21 @@ public class TocEntryDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<TocEntry> list,
+                             final boolean normalize,
                              @NonNull final Function<TocEntry, Locale> localeSupplier) {
         // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
+        }
+
+        if (normalize) {
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final List<Locale> locales = LocaleListUtils.asList(context);
+            list.forEach(tocEntry -> {
+                final String title = reorderHelper.reverse(context, tocEntry.getTitle(),
+                                                           localeSupplier.apply(tocEntry), locales);
+                tocEntry.setTitle(title);
+            });
         }
 
         final TocEntryMergeHelper mergeHelper = new TocEntryMergeHelper();
@@ -260,8 +273,8 @@ public class TocEntryDaoImpl
 
                 final Locale locale = listLocaleSupplier.apply(tocEntry);
                 final ReorderHelper reorderHelper = reorderHelperSupplier.get();
-                final String text = tocEntry.getTitle();
-                final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
+                final String title = tocEntry.getTitle();
+                final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, author.getId());
