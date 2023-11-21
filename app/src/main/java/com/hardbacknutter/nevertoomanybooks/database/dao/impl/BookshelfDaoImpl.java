@@ -190,7 +190,7 @@ public class BookshelfDaoImpl
 
     @NonNull
     @Override
-    public Optional<Bookshelf> getById(final long id) {
+    public Optional<Bookshelf> getById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Bookshelf(id, new CursorRow(cursor)));

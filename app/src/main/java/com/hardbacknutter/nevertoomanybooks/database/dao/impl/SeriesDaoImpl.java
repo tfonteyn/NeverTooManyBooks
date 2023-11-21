@@ -87,7 +87,7 @@ public class SeriesDaoImpl
 
     @NonNull
     @Override
-    public Optional<Series> getById(final long id) {
+    public Optional<Series> getById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.GET_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Series(id, new CursorRow(cursor)));

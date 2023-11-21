@@ -86,7 +86,7 @@ public class PublisherDaoImpl
 
     @NonNull
     @Override
-    public Optional<Publisher> getById(final long id) {
+    public Optional<Publisher> getById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Publisher(id, new CursorRow(cursor)));
