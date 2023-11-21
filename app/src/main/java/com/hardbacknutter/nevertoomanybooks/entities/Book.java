@@ -571,7 +571,7 @@ public class Book
     @NonNull
     public Locale getLocaleOrUserLocale(@NonNull final Context context) {
         return getAndUpdateLocale(context, false)
-                .orElse(context.getResources().getConfiguration().getLocales().get(0));
+                .orElseGet(() -> context.getResources().getConfiguration().getLocales().get(0));
     }
 
     /**
