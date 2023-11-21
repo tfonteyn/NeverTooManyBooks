@@ -321,6 +321,7 @@ public class BookshelfDaoImpl
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final BookshelfMergeHelper mergeHelper = new BookshelfMergeHelper();
         return mergeHelper.merge(context, list, current -> userLocale,
+                                 // Don't lookup the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));
     }
 
