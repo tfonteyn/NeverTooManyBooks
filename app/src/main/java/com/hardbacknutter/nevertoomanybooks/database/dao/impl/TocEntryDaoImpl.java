@@ -228,7 +228,7 @@ public class TocEntryDaoImpl
             }
         }
 
-        final Function<TocEntry, Locale> listLocaleSupplier = item -> {
+        final Function<TocEntry, Locale> localeSupplier = item -> {
             if (lookupLocale) {
                 return item.getLocale(context).orElse(bookLocale);
             } else {
@@ -236,7 +236,7 @@ public class TocEntryDaoImpl
             }
         };
 
-        pruneList(context, list, listLocaleSupplier);
+        pruneList(context, list, localeSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
@@ -271,7 +271,7 @@ public class TocEntryDaoImpl
                     authorDao.insert(context, author, bookLocale);
                 }
 
-                final Locale locale = listLocaleSupplier.apply(tocEntry);
+                final Locale locale = localeSupplier.apply(tocEntry);
                 final ReorderHelper reorderHelper = reorderHelperSupplier.get();
                 final String title = tocEntry.getTitle();
                 final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
