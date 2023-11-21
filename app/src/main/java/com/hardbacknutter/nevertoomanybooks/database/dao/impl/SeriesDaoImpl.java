@@ -385,11 +385,11 @@ public class SeriesDaoImpl
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
-        final String text = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
+        final String title = series.getTitle();
+        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            stmt.bindString(1, series.getTitle());
+            stmt.bindString(1, title);
             stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();

@@ -339,11 +339,11 @@ public class PublisherDaoImpl
 
         final Locale locale = publisher.getLocale(context).orElse(bookLocale);
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
-        final String text = publisher.getName();
-        final String obName = reorderHelper.reorderForSorting(context, text, locale);
+        final String name = publisher.getName();
+        final String obName = reorderHelper.reorderForSorting(context, name, locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            stmt.bindString(1, publisher.getName());
+            stmt.bindString(1, name);
             stmt.bindString(2, SqlEncode.orderByColumn(obName, locale));
             final long iId = stmt.executeInsert();
             if (iId > 0) {
