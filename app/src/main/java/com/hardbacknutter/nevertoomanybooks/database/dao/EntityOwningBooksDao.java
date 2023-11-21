@@ -32,7 +32,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
@@ -74,19 +73,6 @@ public interface EntityOwningBooksDao<T extends Entity> {
      */
     @NonNull
     List<Long> getBookIds(long itemId);
-
-    /**
-     * Get a list of book ID's for the given {@link T} and {@link Bookshelf}.
-     *
-     * @param itemId      id of the {@link T}
-     * @param bookshelfId id of the {@link Bookshelf}
-     *
-     * @return list with book ID's linked to this item
-     *         which are present on the given {@link Bookshelf}
-     */
-    @NonNull
-    List<Long> getBookIds(long itemId,
-                          long bookshelfId);
 
     /**
      * Get a list of the {@link T} for a book.

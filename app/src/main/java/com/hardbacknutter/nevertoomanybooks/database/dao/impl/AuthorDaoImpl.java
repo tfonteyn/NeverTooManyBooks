@@ -224,21 +224,6 @@ public class AuthorDaoImpl
 
     @Override
     @NonNull
-    public List<Long> getBookIds(final long authorId,
-                                 final long bookshelfId) {
-        final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
-                                         new String[]{String.valueOf(authorId),
-                                                 String.valueOf(bookshelfId)})) {
-            while (cursor.moveToNext()) {
-                list.add(cursor.getLong(0));
-            }
-        }
-        return list;
-    }
-
-    @Override
-    @NonNull
     public List<AuthorWork> getAuthorWorks(@NonNull final Author author,
                                            final long bookshelfId,
                                            final boolean withTocEntries,
@@ -875,12 +860,7 @@ public class AuthorDaoImpl
                 SELECT_ + TBL_BOOK_AUTHOR.dotAs(DBKey.FK_BOOK)
                 + _FROM_ + TBL_BOOK_AUTHOR.ref()
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
-        /** All Books (id only!) for a given Author and Bookshelf. */
-        private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID =
-                SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
-                + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS, TBL_BOOK_BOOKSHELF)
-                + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?"
-                + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
+
         /**
          * All Book titles and their first pub. date, for an Author,
          * returned as an {@link AuthorWork}.

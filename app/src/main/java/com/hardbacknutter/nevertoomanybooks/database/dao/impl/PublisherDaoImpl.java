@@ -55,8 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.PublisherMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 
@@ -144,21 +142,6 @@ public class PublisherDaoImpl
         final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_PUBLISHER_ID,
                                          new String[]{String.valueOf(publisherId)})) {
-            while (cursor.moveToNext()) {
-                list.add(cursor.getLong(0));
-            }
-        }
-        return list;
-    }
-
-    @Override
-    @NonNull
-    public List<Long> getBookIds(final long publisherId,
-                                 final long bookshelfId) {
-        final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(
-                Sql.SELECT_BOOK_IDS_BY_PUBLISHER_ID_AND_BOOKSHELF_ID,
-                new String[]{String.valueOf(publisherId), String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -533,13 +516,6 @@ public class PublisherDaoImpl
                 SELECT_ + TBL_BOOK_PUBLISHER.dotAs(DBKey.FK_BOOK)
                 + _FROM_ + TBL_BOOK_PUBLISHER.ref()
                 + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_PUBLISHER) + "=?";
-
-        /** All Books (id only!) for a given Publisher and Bookshelf. */
-        private static final String SELECT_BOOK_IDS_BY_PUBLISHER_ID_AND_BOOKSHELF_ID =
-                SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
-                + _FROM_ + TBL_BOOK_PUBLISHER.startJoin(TBL_BOOKS, TBL_BOOK_BOOKSHELF)
-                + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_PUBLISHER) + "=?"
-                + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
 
         /** name only. */
         private static final String SELECT_ALL_NAMES =
