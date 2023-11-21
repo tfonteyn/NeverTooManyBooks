@@ -56,8 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -669,11 +667,11 @@ public class EditBookViewModel
                           @NonNull final Author author) {
         final Locale bookLocale = book.getLocaleOrUserLocale(context);
 
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        final long books = authorDao.countBooks(context, author, bookLocale);
+        final long books = ServiceLocator.getInstance().getAuthorDao()
+                                         .countBooks(context, author, bookLocale);
 
-        final TocEntryDao tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
-        final long tocEntries = tocEntryDao.count(context, author, bookLocale);
+        final long tocEntries = ServiceLocator.getInstance().getTocEntryDao()
+                                              .count(context, author, bookLocale);
 
         // If the book is new, then there should be no other references.
         // If the book exists in the database, then obv. there should be 1 reference.
