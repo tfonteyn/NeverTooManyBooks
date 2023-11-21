@@ -1140,10 +1140,12 @@ public class BooksOnBookshelfViewModel
     /**
      * Delete the given {@link Bookshelf}.
      *
+     * @param context   Current context
      * @param bookshelf to delete
      */
-    void delete(@NonNull final Bookshelf bookshelf) {
-        if (bookshelfDao.delete(bookshelf)) {
+    void delete(@NonNull final Context context,
+                @NonNull final Bookshelf bookshelf) {
+        if (bookshelfDao.delete(context, bookshelf)) {
             triggerRebuildList.setValue(false);
         }
     }

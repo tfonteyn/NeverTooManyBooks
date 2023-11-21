@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -139,10 +140,12 @@ public class EditBookshelvesViewModel
     /**
      * Delete the given Bookshelf.
      *
+     * @param context   Current context
      * @param bookshelf to delete
      */
-    void deleteBookshelf(@NonNull final Bookshelf bookshelf) {
-        bookshelfDao.delete(bookshelf);
+    void deleteBookshelf(@NonNull final Context context,
+                         @NonNull final Bookshelf bookshelf) {
+        bookshelfDao.delete(context, bookshelf);
         list.remove(bookshelf);
         selectedPosition = RecyclerView.NO_POSITION;
     }

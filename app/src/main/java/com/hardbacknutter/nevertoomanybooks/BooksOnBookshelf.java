@@ -1607,7 +1607,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-            StandardDialogs.deleteBookshelf(this, bookshelf, () -> vm.delete(bookshelf));
+            StandardDialogs.deleteBookshelf(this, bookshelf, () -> vm.delete(this, bookshelf));
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {

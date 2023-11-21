@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public interface EntityDao<T extends Entity> {
 
     /**
-     * Get the {@link T} based on the given id.
+     * Find a {@link T} based on the given id.
      *
      * @param id of {@link T} to find
      *
@@ -43,8 +43,8 @@ public interface EntityDao<T extends Entity> {
     Optional<T> getById(@IntRange(from = 1) long id);
 
     /**
-     * Find a {@link T} by using the <strong>name</strong> fields
-     * of the passed {@link T}. The incoming object is not modified.
+     * Find a {@link T} by using the <strong>name</strong> fields of the given {@link T}.
+     * The given {@link T} is <strong>not</strong> modified.
      *
      * @param context Current context
      * @param item    to find the id of
@@ -61,7 +61,7 @@ public interface EntityDao<T extends Entity> {
      * Find a {@link T} by using the <strong>name</strong> fields.
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
      * <p>
-     * If the item has 'sub' items, then implementations must propagate the call.
+     * If the item has child items, then implementations must propagate the call.
      *
      * @param context Current context
      * @param item    to update
@@ -70,4 +70,15 @@ public interface EntityDao<T extends Entity> {
     void fixId(@NonNull Context context,
                @NonNull T item,
                @NonNull Locale locale);
+
+    /**
+     * Delete the given {@link T}.
+     *
+     * @param context Current context
+     * @param item    to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
+    boolean delete(@NonNull Context context,
+                   @NonNull T item);
 }

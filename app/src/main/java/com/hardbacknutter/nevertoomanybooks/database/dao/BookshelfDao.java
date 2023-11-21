@@ -170,16 +170,6 @@ public interface BookshelfDao
                 @NonNull Bookshelf bookshelf)
             throws DaoWriteException;
 
-
-    /**
-     * Delete the given {@link Bookshelf}.
-     *
-     * @param bookshelf to delete
-     *
-     * @return {@code true} if a row was deleted
-     */
-    boolean delete(@NonNull Bookshelf bookshelf);
-
     /**
      * Purge book list node state data for the given {@link Bookshelf}.
      * <p>

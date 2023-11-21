@@ -118,18 +118,6 @@ public interface TocEntryDao
             throws DaoWriteException;
 
     /**
-     * Delete the given {@link TocEntry}.
-     *
-     * @param context  Current context
-     * @param tocEntry to delete.
-     *
-     * @return {@code true} if a row was deleted
-     */
-    boolean delete(@NonNull Context context,
-                   @NonNull TocEntry tocEntry);
-
-
-    /**
      * Passed a list of Objects, remove duplicates.
      *
      * @param context        Current context

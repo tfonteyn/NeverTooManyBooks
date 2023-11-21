@@ -168,16 +168,6 @@ public interface EntityOwningBooksDao<T extends Entity> {
                 @NonNull Locale bookLocale)
             throws DaoWriteException;
 
-    /**
-     * Delete the given {@link T}.
-     *
-     * @param context Current context
-     * @param item    to delete
-     *
-     * @return {@code true} if a row was deleted
-     */
-    boolean delete(@NonNull Context context,
-                   @NonNull T item);
 
     /**
      * Refresh the passed {@link T} from the database, if present.

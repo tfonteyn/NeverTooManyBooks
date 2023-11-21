@@ -226,7 +226,7 @@ public class EditBookshelvesFragment
             if (bookshelf.getId() > Bookshelf.HARD_DEFAULT) {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
-                    vm.deleteBookshelf(bookshelf);
+                    vm.deleteBookshelf(getContext(), bookshelf);
                     // due to transposing row and columns, we MUST refresh the whole set.
                     adapter.notifyDataSetChanged();
                 });
