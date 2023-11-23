@@ -18,21 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.annotation.SuppressLint;
@@ -74,13 +59,18 @@ public class CropImageView
     private static final String TAG = "CropImageView";
 
     /** 400% zoom regardless of screen or image orientation. */
-    private static final int MAX_ZOOM_FACTOR = 4;
+    private static final int ZOOM_FACTOR = 4;
+    private static final int ZOOM_DURATION_IN_MILLIS = 300;
 
     /**
      * Factor by which a change in the cropping rectangle's size is
      * considered significantly enough to rescale it.
      */
-    private static final double TEN_PERCENT = 0.1;
+    private static final float TEN_PERCENT = 0.1f;
+    private static final float SIXTY_PERCENT = 0.6f;
+
+    /** Tolerance +- for determining a 'hit' of one or more of the edges. */
+    private static final float HYSTERESIS = 40f;
 
     /** This is the base transformation which is used to show the image initially. */
     private final Matrix baseMatrix = new Matrix();
@@ -100,26 +90,33 @@ public class CropImageView
     /** Temporary buffer used for getting the values out of a matrix. */
     private final float[] matrixValues = new float[9];
 
+    /**
+     * Coordinates from {@link #onLayout}.
+     * Stored to use for {@link #ensureVisible(HighlightView)}.
+     */
+    private final Rect currentLayoutRect = new Rect();
+
     /** The bitmap currently being displayed. */
     @Nullable
     private Bitmap bitmap;
 
-    private int left;
-    private int right;
-    private int top;
-    private int bottom;
-    private int width = -1;
-    private int height = -1;
-
+    /** The highlighted view overlay representing the cropped image. */
     @Nullable
     private HighlightView highlightView;
+    /** Tracks the view during a motion in progress. */
     @Nullable
     private HighlightView motionHighlightView;
-    /** Bitmask value: grow/move the edges of the image. */
-    @HighlightView.MotionEdgeHit
-    private int motionEdge;
 
+    /**
+     * Tracks the {@code x} coordinate of the current MotionEvent. Set on {@code ACTION_DOWN}
+     * and updated during {@code ACTION_MOVE}.
+     */
     private float lastX;
+
+    /**
+     * Tracks the {@code y} coordinate of the current MotionEvent. Set on {@code ACTION_DOWN}
+     * and updated during {@code ACTION_MOVE}.
+     */
     private float lastY;
 
     /** The maximum zoom scale as computed when setting the Bitmap. */
@@ -148,26 +145,70 @@ public class CropImageView
     }
 
     /**
+     * Determines whether the given event is a resize initiated from
+     * one or more edges, or if it was a move.
+     *
+     * @param event to analyse
+     * @param rect  The rectangle around the highlighted area, i.e. the current cropped selection
+     *
+     * @return the {@link HighlightView.MotionAction} code
+     */
+    @HighlightView.MotionAction
+    private static int getMotionAction(@NonNull final MotionEvent event,
+                                       @NonNull final Rect rect) {
+
+        final float x = event.getX();
+        final float y = event.getY();
+
+        // vertical: check if the position is between the top and the bottom edge,
+        // (with some tolerance). Similar for horizontal.
+        final boolean vertical = y >= rect.top - HYSTERESIS && y < rect.bottom + HYSTERESIS;
+        final boolean horizontal = x >= rect.left - HYSTERESIS && x < rect.right + HYSTERESIS;
+
+        @HighlightView.MotionAction
+        int action = HighlightView.NO_ACTION;
+
+        // Check whether the position is near one or more of the rectangle edges.
+        if (Math.abs(rect.left - x) < HYSTERESIS && vertical) {
+            action |= HighlightView.RESIZE_LEFT_EDGE;
+        }
+        if (Math.abs(rect.right - x) < HYSTERESIS && vertical) {
+            action |= HighlightView.RESIZE_RIGHT_EDGE;
+        }
+        if (Math.abs(rect.top - y) < HYSTERESIS && horizontal) {
+            action |= HighlightView.RESIZE_TOP_EDGE;
+        }
+        if (Math.abs(rect.bottom - y) < HYSTERESIS && horizontal) {
+            action |= HighlightView.RESIZE_BOTTOM_EDGE;
+        }
+        if (action != HighlightView.NO_ACTION) {
+            // It's a resize
+            return action;
+        }
+
+        // Otherwise check if it was inside the rectangle
+        if (rect.contains((int) x, (int) y)) {
+            // then it's a move
+            return HighlightView.MOVE;
+        }
+
+        // Outside of the highlighted rectangle
+        return HighlightView.NO_ACTION;
+    }
+
+    /**
      * Setup the view with the given bitmap.
      *
      * @param bitmap to edit
      */
     @UiThread
     void setInitialBitmap(@NonNull final Bitmap bitmap) {
-
         setBitmapMatrix(bitmap);
-        //noinspection FloatingPointEquality
-        if (getScale() == 1.0f) {
-            center();
+        if (isFullSize()) {
+            centerBitmap();
         }
 
-        final int bitmapWidth = bitmap.getWidth();
-        final int bitmapHeight = bitmap.getHeight();
-
-        final Rect imageRect = new Rect(0, 0, bitmapWidth, bitmapHeight);
-        final RectF cropRect = new RectF(0, 0, bitmapWidth, bitmapHeight);
-
-        highlightView = new HighlightView(this, imageRect, cropRect);
+        highlightView = new HighlightView(this, bitmap.getWidth(), bitmap.getHeight());
         invalidate();
     }
 
@@ -182,8 +223,8 @@ public class CropImageView
     }
 
     /**
-     * Get the finished cropped bitmap. After this call, the Activity should quit (even if the
-     * result is invalid).
+     * Get the finished cropped bitmap. After this call, the Activity should quit
+     * (even if the result is invalid).
      *
      * @return cropped bitmap, or {@code null} on any failure.
      */
@@ -220,12 +261,8 @@ public class CropImageView
                             final int right,
                             final int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        this.left = left;
-        this.right = right;
-        this.top = top;
-        this.bottom = bottom;
-        width = right - left;
-        height = bottom - top;
+
+        currentLayoutRect.set(left, top, right, bottom);
 
         final Runnable r = onLayoutRunnable;
         if (r != null) {
@@ -235,12 +272,13 @@ public class CropImageView
 
         if (bitmap != null) {
             setBaseMatrix(bitmap);
-            setImageMatrix(getImageViewMatrix());
-        }
-        if (bitmap != null && highlightView != null) {
-            highlightView.matrix.set(getImageMatrix());
-            highlightView.invalidate();
-            centerOn(highlightView);
+            setImageMatrix(computeImageMatrix());
+
+            if (highlightView != null) {
+                highlightView.setMatrix(getImageMatrix());
+                recenterAndScale(highlightView);
+                ensureVisible(highlightView);
+            }
         }
     }
 
@@ -254,49 +292,42 @@ public class CropImageView
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 if (highlightView != null) {
-                    @HighlightView.MotionEdgeHit
-                    final int edge = highlightView.getMotionEdgeHit(event.getX(), event.getY());
-                    if (edge != HighlightView.GROW_NONE) {
-                        motionEdge = edge;
+                    // determine the intention of the user
+                    final int motionAction = getMotionAction(event, highlightView.computeLayout());
+                    if (motionAction != HighlightView.NO_ACTION) {
                         motionHighlightView = highlightView;
+                        motionHighlightView.setInMotion(motionAction);
                         lastX = event.getX();
                         lastY = event.getY();
-                        if (edge == HighlightView.MOVE) {
-                            motionHighlightView.setMode(HighlightView.ModifyMode.Move);
-                        } else {
-                            motionHighlightView.setMode(HighlightView.ModifyMode.Grow);
-                        }
-                        break;
                     }
                 }
                 break;
             }
-            case MotionEvent.ACTION_UP: {
-                if (motionHighlightView != null) {
-                    centerOn(motionHighlightView);
-                    motionHighlightView.setMode(HighlightView.ModifyMode.None);
-                }
-                motionHighlightView = null;
-                center();
-                break;
-            }
             case MotionEvent.ACTION_MOVE: {
                 if (motionHighlightView != null) {
-                    motionHighlightView.handleMotion(motionEdge,
-                                                     event.getX() - lastX,
+                    motionHighlightView.handleMotion(event.getX() - lastX,
                                                      event.getY() - lastY);
+                    // update for next pass
                     lastX = event.getX();
                     lastY = event.getY();
                     ensureVisible(motionHighlightView);
                 }
 
-                // if we're not zoomed then there's no point in even allowing
+                // if we're not zoomed in, then there's no point in even allowing
                 // the user to move the image around.
-                //noinspection FloatingPointEquality
-                if (getScale() == 1.0f) {
-                    // put it back to the normalized location.
-                    center();
+                if (isFullSize()) {
+                    centerBitmap();
                 }
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                if (motionHighlightView != null) {
+                    recenterAndScale(motionHighlightView);
+                    ensureVisible(motionHighlightView);
+                    motionHighlightView.setInMotion(HighlightView.NO_ACTION);
+                }
+                motionHighlightView = null;
+                centerBitmap();
                 break;
             }
             default:
@@ -320,7 +351,6 @@ public class CropImageView
         }
     }
 
-
     /**
      * Get the {@link Matrix#MSCALE_X} factor out of the matrix.
      *
@@ -329,6 +359,15 @@ public class CropImageView
     private float getScale() {
         suppMatrix.getValues(matrixValues);
         return matrixValues[Matrix.MSCALE_X];
+    }
+
+    /**
+     * Check if the image is full-size.
+     *
+     * @return {@code true} if it is
+     */
+    private boolean isFullSize() {
+        return Math.abs(getScale() - 1.0f) < 0.01f;
     }
 
     /**
@@ -347,11 +386,13 @@ public class CropImageView
         setBaseMatrix(bitmap);
         setImageBitmap(bitmap);
         suppMatrix.reset();
-        setImageMatrix(getImageViewMatrix());
+        setImageMatrix(computeImageMatrix());
 
         // Set the maximum zoom, which is relative to the base matrix.
-        maxZoom = MAX_ZOOM_FACTOR * Math.max((float) bitmap.getWidth() / (float) width,
-                                             (float) bitmap.getHeight() / (float) height);
+        maxZoom = ZOOM_FACTOR * Math.max((float) bitmap.getWidth()
+                                         / (float) currentLayoutRect.width(),
+                                         (float) bitmap.getHeight()
+                                         / (float) currentLayoutRect.height());
     }
 
     /**
@@ -363,14 +404,15 @@ public class CropImageView
 
         baseMatrix.reset();
 
+        // scaling
         final float widthScale = Math.min((float) getWidth() / (float) bitmap.getWidth(),
                                           Float.MAX_VALUE);
         final float heightScale = Math.min((float) getHeight() / (float) bitmap.getHeight(),
                                            Float.MAX_VALUE);
         final float scaleFactor = Math.min(widthScale, heightScale);
-
         baseMatrix.postScale(scaleFactor, scaleFactor);
 
+        // centering
         final float bitmapWidth = (float) bitmap.getWidth() * scaleFactor;
         final float bitmapHeight = (float) bitmap.getHeight() * scaleFactor;
         baseMatrix.postTranslate(((float) getWidth() - bitmapWidth) / 2.0f,
@@ -378,16 +420,26 @@ public class CropImageView
     }
 
     /**
-     * Combine the base matrix and the supp matrix to make the final matrix.
+     * Combine the {@link #baseMatrix} and the {@link #suppMatrix}
+     * to make the final {@link #displayMatrix}.
      *
-     * @return the matrix to display
+     * @return the {@link #displayMatrix} to display
      */
     @NonNull
-    private Matrix getImageViewMatrix() {
+    private Matrix computeImageMatrix() {
         displayMatrix.set(baseMatrix);
         displayMatrix.postConcat(suppMatrix);
         return displayMatrix;
     }
+
+    private void postTranslate(final float dx,
+                               final float dy) {
+        suppMatrix.postTranslate(dx, dy);
+        if (highlightView != null) {
+            highlightView.postTranslate(dx, dy);
+        }
+    }
+
 
     /**
      * Center as much as possible in one or both axis. Centering is defined as follows:
@@ -398,137 +450,149 @@ public class CropImageView
      *         translate it back into view (i.e. eliminate black bars).</li>
      * </ul>
      */
-    private void center() {
+    private void centerBitmap() {
         if (bitmap == null) {
             return;
         }
 
-        final RectF rect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF bitmapRect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
 
-        getImageViewMatrix().mapRect(rect);
+        computeImageMatrix().mapRect(bitmapRect);
 
-        final float deltaX;
+        final float dx;
         final int viewWidth = getWidth();
-        final float rectWidth = rect.width();
-        if (rectWidth < viewWidth) {
-            deltaX = (viewWidth - rectWidth) / 2 - rect.left;
-        } else if (rect.left > 0) {
-            deltaX = -rect.left;
-        } else if (rect.right < viewWidth) {
-            deltaX = viewWidth - rect.right;
+        final float bitmapWidth = bitmapRect.width();
+        if (bitmapWidth < viewWidth) {
+            dx = (viewWidth - bitmapWidth) / 2 - bitmapRect.left;
+        } else if (bitmapRect.left > 0) {
+            dx = -bitmapRect.left;
+        } else if (bitmapRect.right < viewWidth) {
+            dx = viewWidth - bitmapRect.right;
         } else {
-            deltaX = 0;
+            dx = 0;
         }
 
-        final float deltaY;
+        final float dy;
         final int viewHeight = getHeight();
-        final float rectHeight = rect.height();
-        if (rectHeight < viewHeight) {
-            deltaY = (viewHeight - rectHeight) / 2 - rect.top;
-        } else if (rect.top > 0) {
-            deltaY = -rect.top;
-        } else if (rect.bottom < viewHeight) {
-            deltaY = getHeight() - rect.bottom;
+        final float bitmapHeight = bitmapRect.height();
+        if (bitmapHeight < viewHeight) {
+            dy = (viewHeight - bitmapHeight) / 2 - bitmapRect.top;
+        } else if (bitmapRect.top > 0) {
+            dy = -bitmapRect.top;
+        } else if (bitmapRect.bottom < viewHeight) {
+            dy = viewHeight - bitmapRect.bottom;
         } else {
-            deltaY = 0;
+            dy = 0;
         }
 
-        postTranslate(deltaX, deltaY);
-        setImageMatrix(getImageViewMatrix());
+        postTranslate(dx, dy);
+        setImageMatrix(computeImageMatrix());
     }
 
     /**
      * If the cropping rectangle's size changed significantly, change the
      * view's center and scale according to the cropping rectangle.
+     *
+     * @param highlightView to process
      */
-    private void centerOn(@NonNull final HighlightView hv) {
+    private void recenterAndScale(@NonNull final HighlightView highlightView) {
 
-        float zoom = Math.min((float) getWidth() / (float) hv.drawRect.width() * 0.6f,
-                              (float) getHeight() / (float) hv.drawRect.height() * 0.6f)
-                     * getScale();
-        zoom = Math.max(1f, zoom);
+        final float scaleFactor =
+                Math.max(1f,
+                         Math.min((float) getWidth() / (float) highlightView.drawRect.width(),
+                                  (float) getHeight() / (float) highlightView.drawRect.height())
+                         * SIXTY_PERCENT
+                         * getScale());
 
-        if (Math.abs(zoom - getScale()) / zoom > TEN_PERCENT) {
-            final float[] coordinates = {hv.cropRect.centerX(), hv.cropRect.centerY()};
+        // If more than 10% difference then recenter/scale.
+        if (Math.abs(scaleFactor - getScale()) / scaleFactor > TEN_PERCENT) {
+            final float[] coordinates = {
+                    highlightView.cropRect.centerX(),
+                    highlightView.cropRect.centerY()};
             getImageMatrix().mapPoints(coordinates);
-            final float duration = 300f;
-            final float incrementPerMs = (zoom - getScale()) / duration;
-            final float oldScale = getScale();
+
+            // Scale increment per millisecond.
+            final float incrementPerMs = (scaleFactor - getScale()) / ZOOM_DURATION_IN_MILLIS;
             final long startTime = System.currentTimeMillis();
 
             getHandler().post(new Runnable() {
                 public void run() {
                     final long now = System.currentTimeMillis();
-                    final float currentMs = Math.min(duration, now - startTime);
-                    final float target = oldScale + incrementPerMs * currentMs;
-                    zoomTo(target, coordinates[0], coordinates[1]);
+                    final float currentMs = Math.min(ZOOM_DURATION_IN_MILLIS, now - startTime);
+                    final float targetScale = getScale() + incrementPerMs * currentMs;
+                    zoom(targetScale, coordinates[0], coordinates[1]);
 
-                    if (currentMs < duration) {
+                    if (currentMs < ZOOM_DURATION_IN_MILLIS) {
                         getHandler().post(this);
                     }
                 }
+
+                /**
+                 * Zoom to the given scale, centering on the given x/y coordinates.
+                 *
+                 * @param scale   for the zoom
+                 * @param centerX coordinate
+                 * @param centerY coordinate
+                 */
+                private void zoom(final float scale,
+                                  final float centerX,
+                                  final float centerY) {
+                    final float scaleFactor = Math.max(scale, maxZoom) / getScale();
+                    suppMatrix.postScale(scaleFactor, scaleFactor, centerX, centerY);
+                    setImageMatrix(computeImageMatrix());
+                    centerBitmap();
+                    highlightView.setMatrix(getImageMatrix());
+                }
             });
-        }
-
-        ensureVisible(hv);
-    }
-
-    /** Pan the displayed image to make sure the cropping rectangle is visible. */
-    private void ensureVisible(@NonNull final HighlightView hv) {
-        final Rect r = hv.drawRect;
-
-        final int panDeltaX1 = Math.max(0, left - r.left);
-        final int panDeltaX2 = Math.min(0, right - r.right);
-        final int panDeltaX = panDeltaX1 != 0 ? panDeltaX1 : panDeltaX2;
-
-        final int panDeltaY1 = Math.max(0, top - r.top);
-        final int panDeltaY2 = Math.min(0, bottom - r.bottom);
-        final int panDeltaY = panDeltaY1 != 0 ? panDeltaY1 : panDeltaY2;
-
-        if (panDeltaX != 0 || panDeltaY != 0) {
-            postTranslate((float) panDeltaX, (float) panDeltaY);
-            setImageMatrix(getImageViewMatrix());
-        }
-    }
-
-    private void zoomTo(final float scale,
-                        final float centerX,
-                        final float centerY) {
-        final float deltaScale = Math.max(scale, maxZoom) / getScale();
-        suppMatrix.postScale(deltaScale, deltaScale, centerX, centerY);
-        setImageMatrix(getImageViewMatrix());
-        center();
-        if (highlightView != null) {
-            highlightView.matrix.set(getImageMatrix());
-            highlightView.invalidate();
-        }
-    }
-
-    private void postTranslate(final float dx,
-                               final float dy) {
-        suppMatrix.postTranslate(dx, dy);
-        if (highlightView != null) {
-            highlightView.matrix.postTranslate(dx, dy);
-            highlightView.invalidate();
         }
     }
 
     /**
-     * Display a highlighted cropping rectangle overlaid on the image.
+     * Pan the displayed image to make sure the given {@link HighlightView} is visible.
+     *
+     * @param highlightView to be forced visible
+     */
+    private void ensureVisible(@NonNull final HighlightView highlightView) {
+        final Rect rect = highlightView.drawRect;
+
+        final int panDxLeft = Math.max(0, currentLayoutRect.left - rect.left);
+        final int panDxRight = Math.min(0, currentLayoutRect.right - rect.right);
+        final int panDeltaX = panDxLeft != 0 ? panDxLeft : panDxRight;
+
+        final int panDxTop = Math.max(0, currentLayoutRect.top - rect.top);
+        final int panDxBottom = Math.min(0, currentLayoutRect.bottom - rect.bottom);
+        final int panDeltaY = panDxTop != 0 ? panDxTop : panDxBottom;
+
+        if (panDeltaX != 0 || panDeltaY != 0) {
+            postTranslate((float) panDeltaX, (float) panDeltaY);
+            setImageMatrix(computeImageMatrix());
+        }
+    }
+
+
+    /**
+     * Displays a highlighted cropping rectangle overlaid on the image.
      * There are two coordinate spaces: image and screen.
      * {@link #computeLayout()} uses a Matrix to map from image to screen space.
      */
     private static class HighlightView {
 
-        private static final int GROW_NONE = 1;
-        private static final int GROW_LEFT_EDGE = 1 << 1;
-        private static final int GROW_RIGHT_EDGE = 1 << 2;
-        private static final int GROW_TOP_EDGE = 1 << 3;
-        private static final int GROW_BOTTOM_EDGE = 1 << 4;
-        private static final int MOVE = 1 << 5;
+        private static final int NO_ACTION = 0;
+        private static final int RESIZE_LEFT_EDGE = 1;
+        private static final int RESIZE_RIGHT_EDGE = 1 << 1;
+        private static final int RESIZE_TOP_EDGE = 1 << 2;
+        private static final int RESIZE_BOTTOM_EDGE = 1 << 3;
+        private static final int MOVE = 1 << 4;
 
-        /** Tolerance +- for determining a 'hit' of one or more of the edges. */
-        private static final float HYSTERESIS = 40f;
+        private static final int RESIZE_HORIZONTAL = RESIZE_LEFT_EDGE | RESIZE_RIGHT_EDGE;
+        private static final int RESIZE_VERTICAL = RESIZE_TOP_EDGE | RESIZE_BOTTOM_EDGE;
+        private static final int RESIZE = RESIZE_HORIZONTAL | RESIZE_VERTICAL;
+
+        /**
+         * Resize at most half of the difference between
+         * the image rectangle and the cropping rectangle.
+         */
+        private static final float MAX_RESIZE_FACTOR = 0.5f;
 
         /**
          * The minimum width an height of the cropping rectangle.
@@ -541,8 +605,11 @@ public class CropImageView
         /** in image space. */
         @NonNull
         final RectF cropRect;
+        /** in screen space. */
         @NonNull
-        final Matrix matrix;
+        final Rect drawRect;
+        @NonNull
+        private final Matrix matrix;
         private final Rect imageViewDrawingRect = new Rect();
         private final Path path = new Path();
         /** The View displaying the image. */
@@ -558,29 +625,33 @@ public class CropImageView
         private final Paint focusPaint = new Paint();
         private final Paint outlinePaint = new Paint();
         private final RectF drawRectF = new RectF();
-        /** in screen space. */
-        @NonNull
-        Rect drawRect;
-        @NonNull
-        private ModifyMode modifyMode = ModifyMode.None;
+
+        /**
+         * Bitmask value.
+         * Bits 0..3 indicate a combination of resizing by touch/moving close to one or more edges.
+         * Bit 4 indicates it's a move by touch/moving the inside of the rectangle.
+         */
+        @MotionAction
+        private int motionAction = NO_ACTION;
 
         /**
          * Constructor.
          *
          * @param imageView The View displaying the image.
-         * @param imageRect The Rect of that View
-         * @param cropRect  The initial crop Rect
+         * @param width     of the image displayed
+         * @param height    of the image displayed
          */
         @SuppressLint("UseCompatLoadingForDrawables")
         HighlightView(@NonNull final CropImageView imageView,
-                      @NonNull final Rect imageRect,
-                      @NonNull final RectF cropRect) {
-            this.imageView = imageView;
-            matrix = new Matrix(this.imageView.getImageMatrix());
-            this.imageRect = new RectF(imageRect);
-            this.cropRect = cropRect;
+                      final int width,
+                      final int height) {
 
-            drawRect = computeLayout();
+            this.imageView = imageView;
+            this.imageRect = new RectF(0, 0, width, height);
+            this.cropRect = new RectF(0, 0, width, height);
+
+            this.matrix = new Matrix(this.imageView.getImageMatrix());
+            this.drawRect = computeLayout();
 
             final Context context = this.imageView.getContext();
             final Resources res = context.getResources();
@@ -601,6 +672,17 @@ public class CropImageView
             outlinePaint.setColor(outlineColor);
         }
 
+        void setMatrix(@NonNull final Matrix src) {
+            matrix.set(src);
+            drawRect.set(computeLayout());
+        }
+
+        void postTranslate(final float dx,
+                           final float dy) {
+            matrix.postTranslate(dx, dy);
+            drawRect.set(computeLayout());
+        }
+
         void onDraw(@NonNull final Canvas canvas) {
             canvas.save();
 
@@ -615,7 +697,8 @@ public class CropImageView
             canvas.restore();
             canvas.drawPath(path, outlinePaint);
 
-            if (modifyMode == ModifyMode.Grow) {
+            // If we're currently resizing, also draw the edge-grabber icon/areas.
+            if (motionAction != NO_ACTION && motionAction != MOVE) {
                 int width;
                 int height;
                 int middle;
@@ -648,80 +731,64 @@ public class CropImageView
             }
         }
 
-        public void setMode(@NonNull final ModifyMode mode) {
-            if (mode != modifyMode) {
-                modifyMode = mode;
+        /**
+         * Called from a {@code MotionEvent.ACTION_DOWN} to set the required/current action.
+         * Called from a {@code MotionEvent.ACTION_UP} to reset to {@link HighlightView#NO_ACTION}.
+         * <p>
+         * This is the action to be acted upon when a {@code MotionEvent.ACTION_MOVE} happens
+         * and {@link #handleMotion(float, float)} is called.
+         *
+         * @param motionAction to set
+         */
+        void setInMotion(@MotionAction final int motionAction) {
+            // only invalidate the view if the mode is actually changing.
+            if (this.motionAction != motionAction) {
+                this.motionAction = motionAction;
                 imageView.invalidate();
             }
-        }
-
-        /** Determines which edges are hit by touching at (x, y). */
-        @MotionEdgeHit
-        int getMotionEdgeHit(final float x,
-                             final float y) {
-
-            final Rect r = computeLayout();
-
-            // vertical: check if the position is between the top and the bottom edge,
-            // (with some tolerance). Similar for horizontal.
-            final boolean vertical = y >= r.top - HYSTERESIS && y < r.bottom + HYSTERESIS;
-            final boolean horizontal = x >= r.left - HYSTERESIS && x < r.right + HYSTERESIS;
-
-            int hitValue = GROW_NONE;
-
-            // Check whether the position is near some edge(s).
-            if (Math.abs(r.left - x) < HYSTERESIS && vertical) {
-                hitValue |= GROW_LEFT_EDGE;
-            }
-            if (Math.abs(r.right - x) < HYSTERESIS && vertical) {
-                hitValue |= GROW_RIGHT_EDGE;
-            }
-            if (Math.abs(r.top - y) < HYSTERESIS && horizontal) {
-                hitValue |= GROW_TOP_EDGE;
-            }
-            if (Math.abs(r.bottom - y) < HYSTERESIS && horizontal) {
-                hitValue |= GROW_BOTTOM_EDGE;
-            }
-
-            // Not near any edge but inside the rectangle: move.
-            if (hitValue == GROW_NONE && r.contains((int) x, (int) y)) {
-                hitValue = MOVE;
-            }
-            return hitValue;
         }
 
         /**
          * Handles motion (dx, dy) in screen space.
          *
-         * @param edge specifies which edges the user is dragging.
+         * @param dx the delta in the x direction
+         * @param dy the delta in the y direction
          */
-        void handleMotion(@MotionEdgeHit final int edge,
-                          float dx,
-                          float dy) {
+        void handleMotion(final float dx,
+                          final float dy) {
 
-            if (edge == GROW_NONE) {
+            if (motionAction == NO_ACTION) {
                 return;
             }
 
-            final Rect r = computeLayout();
-            if (edge == MOVE) {
-                // Convert to image space before sending to moveBy().
-                moveBy(dx * (cropRect.width() / r.width()),
-                       dy * (cropRect.height() / r.height()));
+            final Rect rect = computeLayout();
+            if (motionAction == MOVE) {
+                // Convert to image space before doing the actual move
+                final float dxImage = dx * (cropRect.width() / rect.width());
+                final float dyImage = dy * (cropRect.height() / rect.height());
+
+                moveBy(dxImage, dyImage);
+
             } else {
-                if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
-                    dx = 0;
+                // Convert to image space before doing the actual resizing
+                final float dxImage;
+                final float dyImage;
+
+                if ((RESIZE_HORIZONTAL & motionAction) != 0) {
+                    dxImage = dx * (cropRect.width() / rect.width())
+                              * ((motionAction & RESIZE_LEFT_EDGE) != 0 ? -1 : 1);
+                } else {
+                    dxImage = 0f;
                 }
 
-                if (((GROW_TOP_EDGE | GROW_BOTTOM_EDGE) & edge) == 0) {
-                    dy = 0;
+                if ((RESIZE_VERTICAL & motionAction) != 0) {
+                    dyImage = dy * (cropRect.height() / rect.height())
+                              * ((motionAction & RESIZE_TOP_EDGE) != 0 ? -1 : 1);
+                } else {
+                    dyImage = 0f;
                 }
 
-                // Convert to image space before sending to growBy().
-                final float xDelta = dx * (cropRect.width() / r.width());
-                final float yDelta = dy * (cropRect.height() / r.height());
-                growBy(((edge & GROW_LEFT_EDGE) != 0 ? -1 : 1) * xDelta,
-                       ((edge & GROW_TOP_EDGE) != 0 ? -1 : 1) * yDelta);
+                resizeBy(dxImage, dyImage);
             }
         }
 
@@ -745,48 +812,61 @@ public class CropImageView
             cropRect.offset(Math.min(0, imageRect.right - cropRect.right),
                             Math.min(0, imageRect.bottom - cropRect.bottom));
 
-            drawRect = computeLayout();
+            drawRect.set(computeLayout());
             rect.union(drawRect);
             rect.inset(-10, -10);
 
             imageView.invalidate();
         }
 
-        /** Grows the cropping rectangle by (dx, dy) in image space. */
-        private void growBy(float dx,
-                            float dy) {
+        /**
+         * Resize the cropping rectangle by (dx, dy) in image space.
+         *
+         * @param dx the delta in the x direction
+         * @param dy the delta in the y direction
+         */
+        private void resizeBy(final float dx,
+                              final float dy) {
 
-            // Don't let the cropping rectangle grow too fast.
-            // Grow at most half of the difference between the image rectangle and
-            // the cropping rectangle.
+            // Use a temp copy to do all calculations
             final RectF rect = new RectF(cropRect);
-            if (dx > 0.0f && rect.width() + 2 * dx > imageRect.width()) {
-                // adjustment
-                dx = (imageRect.width() - rect.width()) / 2.0f;
+
+            // Don't let the cropping rectangle resize too fast.
+
+            // Limit the deltas to a percentage of the difference between
+            // the image rectangle and the cropping rectangle.
+            final float maxDx = (imageRect.width() - rect.width()) * MAX_RESIZE_FACTOR;
+            final float maxDy = (imageRect.height() - rect.height()) * MAX_RESIZE_FACTOR;
+
+            final float actualDx;
+            if (dx > 0.0f && dx > maxDx) {
+                actualDx = maxDx;
+            } else {
+                actualDx = dx;
             }
-            if (dy > 0.0f && rect.height() + 2 * dy > imageRect.height()) {
-                // adjustment
-                dy = (imageRect.height() - rect.height()) / 2.0f;
+            final float actualDy;
+            if (dy > 0.0f && dy > maxDy) {
+                actualDy = maxDy;
+            } else {
+                actualDy = dy;
             }
 
-            rect.inset(-dx, -dy);
+            rect.inset(-actualDx, -actualDy);
 
-            // Don't let the cropping rectangle shrink too fast.
-            final float widthCap = 25.0f;
-            if (rect.width() < widthCap) {
-                rect.inset(-(widthCap - rect.width()) / 2.0f, 0.0f);
+            // Don't let the cropping rectangle get too small.
+            if (rect.width() < CROP_RECT_MIN_SIZE) {
+                rect.inset(-(CROP_RECT_MIN_SIZE - rect.width()) / 2.0f, 0.0f);
             }
-            if (rect.height() < widthCap) {
-                rect.inset(0.0f, -(widthCap - rect.height()) / 2.0f);
+            if (rect.height() < CROP_RECT_MIN_SIZE) {
+                rect.inset(0.0f, -(CROP_RECT_MIN_SIZE - rect.height()) / 2.0f);
             }
 
-            // Put the cropping rectangle inside the image rectangle.
+            // Finally make sure the cropping rectangle sits inside the image rectangle.
             if (rect.left < imageRect.left) {
                 rect.offset(imageRect.left - rect.left, 0.0f);
             } else if (rect.right > imageRect.right) {
                 rect.offset(-(rect.right - imageRect.right), 0.0f);
             }
-
             if (rect.top < imageRect.top) {
                 rect.offset(0.0f, imageRect.top - rect.top);
             } else if (rect.bottom > imageRect.bottom) {
@@ -795,7 +875,7 @@ public class CropImageView
 
             // all done; set the final outcome and request a redraw.
             cropRect.set(rect);
-            drawRect = computeLayout();
+            drawRect.set(computeLayout());
             imageView.invalidate();
         }
 
@@ -806,30 +886,19 @@ public class CropImageView
          */
         @NonNull
         private Rect computeLayout() {
-            final RectF r = new RectF(cropRect.left, cropRect.top,
-                                      cropRect.right, cropRect.bottom);
-            matrix.mapRect(r);
-            return new Rect(Math.round(r.left), Math.round(r.top),
-                            Math.round(r.right), Math.round(r.bottom));
-        }
-
-        void invalidate() {
-            drawRect = computeLayout();
-        }
-
-        enum ModifyMode {
-            None,
-            Move,
-            Grow
+            final RectF rectF = new RectF(cropRect);
+            matrix.mapRect(rectF);
+            return new Rect(Math.round(rectF.left), Math.round(rectF.top),
+                            Math.round(rectF.right), Math.round(rectF.bottom));
         }
 
         @IntDef(flag = true, value = {
-                GROW_NONE,
-                GROW_LEFT_EDGE, GROW_RIGHT_EDGE,
-                GROW_TOP_EDGE, GROW_BOTTOM_EDGE,
+                NO_ACTION,
+                RESIZE_LEFT_EDGE, RESIZE_RIGHT_EDGE,
+                RESIZE_TOP_EDGE, RESIZE_BOTTOM_EDGE,
                 MOVE})
         @Retention(RetentionPolicy.SOURCE)
-        @interface MotionEdgeHit {
+        @interface MotionAction {
 
         }
     }
