@@ -47,7 +47,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.CallSuper;
@@ -320,17 +320,6 @@ public class CropImageView
         }
     }
 
-    @Override
-    @CallSuper
-    public boolean onKeyDown(final int keyCode,
-                             @NonNull final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
-            // If we're zoomed in, pressing BACK shows the entire image.
-            zoomTo(1.0f, getWidth() / 2.0f, getHeight() / 2.0f);
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
     /**
      * Get the {@link Matrix#MSCALE_X} factor out of the matrix.
