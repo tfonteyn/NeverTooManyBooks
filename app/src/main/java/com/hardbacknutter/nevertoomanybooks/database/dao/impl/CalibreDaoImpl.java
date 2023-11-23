@@ -160,6 +160,7 @@ public class CalibreDaoImpl
                                  DBKey.FK_BOOK + "=?",
                                  new String[]{String.valueOf(book.getId())});
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }

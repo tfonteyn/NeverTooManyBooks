@@ -23,7 +23,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -31,6 +30,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -111,7 +111,8 @@ public class CalibreCustomFieldDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField, e);
         }
     }
@@ -135,7 +136,8 @@ public class CalibreCustomFieldDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField, e);
         }
     }
@@ -147,6 +149,7 @@ public class CalibreCustomFieldDaoImpl
             stmt.bindLong(1, calibreCustomField.getId());
             rowsAffected = stmt.executeUpdateDelete();
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
         if (rowsAffected > 0) {

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Process;
@@ -155,6 +154,7 @@ public class CoverCacheDaoImpl
                                  new String[]{uuid + '%'});
 
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }
@@ -163,7 +163,7 @@ public class CoverCacheDaoImpl
     public void deleteAll() {
         try {
             db.execSQL("DELETE FROM " + CacheDbHelper.TBL_IMAGE.getName());
-        } catch (@NonNull final SQLiteException e) {
+        } catch (@NonNull final SQLException e) {
             LoggerFactory.getLogger().e(TAG, e);
         }
     }

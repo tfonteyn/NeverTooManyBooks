@@ -21,7 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
+import android.database.SQLException;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -119,7 +120,8 @@ public class BedethequeCacheDaoImpl
             }
             return id > 0;
 
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
@@ -184,7 +186,8 @@ public class BedethequeCacheDaoImpl
             }
             return id > 0;
 
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
@@ -229,7 +232,8 @@ public class BedethequeCacheDaoImpl
                 return;
             }
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {

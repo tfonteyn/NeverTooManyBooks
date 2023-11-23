@@ -429,6 +429,7 @@ public class TocEntryDaoImpl
             }
             return false;
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
 
         } finally {

@@ -23,7 +23,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteException;
 import android.text.TextUtils;
 
 import androidx.annotation.IntRange;
@@ -302,6 +301,7 @@ public class BookDaoImpl
             return newBookId;
 
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book, e);
 
         } finally {
@@ -374,7 +374,8 @@ public class BookDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book, e);
 
         } finally {

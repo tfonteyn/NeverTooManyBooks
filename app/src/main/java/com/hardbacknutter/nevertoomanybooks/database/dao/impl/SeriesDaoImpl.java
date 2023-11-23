@@ -23,7 +23,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -384,7 +383,8 @@ public class SeriesDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + series);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + series, e);
         }
     }
@@ -412,7 +412,8 @@ public class SeriesDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + series, e);
         }
     }
@@ -442,6 +443,7 @@ public class SeriesDaoImpl
             }
             return false;
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
 
         } finally {

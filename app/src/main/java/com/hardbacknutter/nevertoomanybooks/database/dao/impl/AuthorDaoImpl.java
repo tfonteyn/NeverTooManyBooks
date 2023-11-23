@@ -528,6 +528,7 @@ public class AuthorDaoImpl
             author.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + author);
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             // Reset the id before throwing!
             author.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + author, e);
@@ -578,6 +579,7 @@ public class AuthorDaoImpl
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + author);
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + author, e);
         } finally {
             if (txLock != null) {
@@ -665,6 +667,7 @@ public class AuthorDaoImpl
             }
             return false;
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
         } finally {
             if (txLock != null) {

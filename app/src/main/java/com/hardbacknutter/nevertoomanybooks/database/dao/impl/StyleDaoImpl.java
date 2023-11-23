@@ -24,7 +24,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.IntRange;
@@ -248,7 +247,8 @@ public class StyleDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + style);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + style, e);
         }
     }
@@ -303,7 +303,8 @@ public class StyleDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style);
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
         }
     }
@@ -351,6 +352,7 @@ public class StyleDaoImpl
             stmt.executeUpdateDelete();
 
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
         }
     }
