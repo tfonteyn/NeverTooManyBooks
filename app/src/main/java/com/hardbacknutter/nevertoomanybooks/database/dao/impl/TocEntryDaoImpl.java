@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
@@ -94,7 +95,7 @@ public class TocEntryDaoImpl
     @NonNull
     @Override
     public Optional<TocEntry> findById(@IntRange(from = 1) final long id) {
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new TocEntry(id, new CursorRow(cursor)));
             } else {
@@ -175,10 +176,10 @@ public class TocEntryDaoImpl
         final String text = tocEntry.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                String.valueOf(tocEntry.getPrimaryAuthor().getId()),
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME_AND_AUTHOR, new String[]{
                 SqlEncode.orderByColumn(tocEntry.getTitle(), locale),
-                SqlEncode.orderByColumn(obTitle, locale)})) {
+                SqlEncode.orderByColumn(obTitle, locale),
+                String.valueOf(tocEntry.getPrimaryAuthor().getId())})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
@@ -206,7 +207,7 @@ public class TocEntryDaoImpl
     public List<BookLight> getBookTitles(@IntRange(from = 1) final long id,
                                          @NonNull final Author author) {
         final List<BookLight> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_TITLES_BY_TOC_ENTRY_ID,
                                          new String[]{String.valueOf(id)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -221,7 +222,7 @@ public class TocEntryDaoImpl
     @NonNull
     public List<TocEntry> getByBookId(@IntRange(from = 1) final long bookId) {
         final List<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_TOC_ENTRIES_BY_BOOK_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -235,7 +236,7 @@ public class TocEntryDaoImpl
     @NonNull
     public List<Long> getBookIds(final long tocId) {
         final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_TOC_ENTRY_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_IDS_BY_TOC_ENTRY_ID,
                                          new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -480,10 +481,7 @@ public class TocEntryDaoImpl
 
     static final class Sql {
 
-        /** Get a {@link TocEntry} by the TocEntry id. */
-        static final String SELECT_BY_ID =
-                SELECT_ + '*' + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + "=?";
-
+        /** Insert a {@link TocEntry}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_TOC_ENTRIES.getName()
                 + '(' + DBKey.FK_AUTHOR
@@ -492,7 +490,7 @@ public class TocEntryDaoImpl
                 + ',' + DBKey.FIRST_PUBLICATION__DATE
                 + ") VALUES (?,?,?,?)";
 
-        /** Update a single {@link TocEntry}. */
+        /** Update a {@link TocEntry}. */
         static final String UPDATE =
                 UPDATE_ + TBL_TOC_ENTRIES.getName()
                 + _SET_ + DBKey.TITLE + "=?"
@@ -500,9 +498,7 @@ public class TocEntryDaoImpl
                 + ',' + DBKey.FIRST_PUBLICATION__DATE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
-        /**
-         * Insert the link between a {@link Book} and a {@link TocEntry}.
-         */
+        /** Insert the link between a {@link Book} and a {@link TocEntry}. */
         static final String INSERT_BOOK_LINK =
                 INSERT_INTO_ + TBL_BOOK_TOC_ENTRIES.getName()
                 + '(' + DBKey.FK_TOC_ENTRY
@@ -516,25 +512,98 @@ public class TocEntryDaoImpl
          * This is done when a TOC is updated; first delete all links, then re-create them.
          */
         static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
-                DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
+                DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
-        private static final String COUNT_ALL =
+        /** Delete a {@link TocEntry}. */
+        static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Get a count of the {@link TocEntry}s. */
+        static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.getName();
 
-        /** Count the number of {@link TocEntry}'s by an {@link Author}. */
-        private static final String COUNT_TOC_ENTRIES =
+        /**
+         * Count the number of {@link TocEntry}'s
+         * <strong>for a specific {@link Author}</strong>.
+         */
+        static final String COUNT_TOC_ENTRIES =
                 SELECT_ + "COUNT(" + DBKey.PK_ID + ")"
                 + _FROM_ + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
 
+
+        /**
+         * The full set of columns needed to create a {@link TocEntry}.
+         * Includes the {@link Author} columns + the book-count.
+         * <p>
+         * <strong>a JOIN with the {@link DBDefinitions#TBL_AUTHORS} must be made</strong>
+         */
+        static final String TOC_FULL_SET_OF_COLUMNS =
+                TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
+                                      DBKey.FK_AUTHOR,
+                                      DBKey.TITLE,
+                                      DBKey.FIRST_PUBLICATION__DATE)
+                + ',' + TBL_AUTHORS.dotAs(DBKey.AUTHOR_FAMILY_NAME,
+                                          DBKey.AUTHOR_GIVEN_NAMES,
+                                          DBKey.AUTHOR_IS_COMPLETE)
+                // count the number of books this TOC entry is present in.
+                + ", ("
+                + SELECT_COUNT_FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
+                // use the full table name on the left as we need a full table scan
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.getName() + '.' + DBKey.FK_TOC_ENTRY
+                // but filtered on the results from the main query (i.e. alias on the right).
+                + "=" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID)
+                + ')' + _AS_ + DBKey.BOOK_COUNT;
+
+        /** {@link TocEntry}, all columns. */
+        static final String SELECT_ALL =
+                SELECT_ + TOC_FULL_SET_OF_COLUMNS
+                + _FROM_
+                + TBL_TOC_ENTRIES.startJoin(TBL_AUTHORS);
+
+        /** Find a {@link TocEntry} by the TocEntry id. */
+        static final String FIND_BY_ID =
+                SELECT_ + TOC_FULL_SET_OF_COLUMNS
+                + _FROM_
+                + TBL_TOC_ENTRIES.startJoin(TBL_AUTHORS)
+                + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + "=?";
+
+        /**
+         * Find a {@link TocEntry} by name <strong>for a specific {@link Author}</strong>
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Searches TITLE_OB on both original and (potentially) reordered title.
+         */
+        static final String FIND_BY_NAME_AND_AUTHOR =
+                SELECT_ + TOC_FULL_SET_OF_COLUMNS
+                + _FROM_
+                + TBL_TOC_ENTRIES.startJoin(TBL_AUTHORS)
+                + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_AUTHOR) + "=?"
+                + _AND_ + '(' + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=? " + _COLLATION
+                + _OR_ + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=?" + _COLLATION + ')';
+
+        /**
+         * All {@link TocEntry}'s for a {@link Book}
+         * Ordered by position in the book.
+         */
+        static final String FIND_BY_BOOK_ID =
+                SELECT_ + TOC_FULL_SET_OF_COLUMNS
+                + _FROM_
+                // start the join with the books!
+                + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES)
+                + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK) + "=?"
+                + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.BOOK_TOC_ENTRY_POSITION);
+
+
         /** All Book id's for a given {@link TocEntry}. */
-        private static final String SELECT_BOOK_IDS_BY_TOC_ENTRY_ID =
+        static final String FIND_BOOK_IDS_BY_TOC_ENTRY_ID =
                 SELECT_ + TBL_BOOK_TOC_ENTRIES.dotAs(DBKey.FK_BOOK)
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref()
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
 
         /** All Books as {@link BookLight} for a given {@link TocEntry}. */
-        private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =
+        static final String FIND_BOOK_TITLES_BY_TOC_ENTRY_ID =
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                           DBKey.TITLE,
                                           DBKey.LANGUAGE,
@@ -543,58 +612,14 @@ public class TocEntryDaoImpl
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
                 + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.TITLE_OB);
 
-        /** {@link TocEntry}, all columns. */
-        private static final String SELECT_ALL = "SELECT * FROM " + TBL_TOC_ENTRIES.getName();
-
-        /** All {@link TocEntry}'s for a Book; ordered by position in the book. */
-        private static final String SELECT_TOC_ENTRIES_BY_BOOK_ID =
-                SELECT_ + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
-                                                DBKey.FK_AUTHOR,
-                                                DBKey.TITLE,
-                                                DBKey.FIRST_PUBLICATION__DATE)
-                // for convenience, we fetch the Author here
-                + ',' + TBL_AUTHORS.dotAs(DBKey.AUTHOR_FAMILY_NAME,
-                                          DBKey.AUTHOR_GIVEN_NAMES,
-                                          DBKey.AUTHOR_IS_COMPLETE)
-
-                // count the number of books this TOC entry is present in.
-                + ", ("
-                + SELECT_COUNT_FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
-                // use the full table name on the left as we need a full table scan
-                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.getName() + '.' + DBKey.FK_TOC_ENTRY
-                // but filtered on the results from the main query (i.e. alias on the right).
-                + "=" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID)
-                + ')' + _AS_ + DBKey.BOOK_COUNT
-
-                + _FROM_
-                + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES)
-                + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
-                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.BOOK_TOC_ENTRY_POSITION);
-
-        /**
-         * Find a {@link TocEntry} by name for a specific Author
-         * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches TITLE_OB on both original and (potentially) reordered title.
-         */
-        private static final String FIND_BY_NAME =
-                SELECT_ + '*' + _FROM_ + TBL_TOC_ENTRIES.getName()
-                + _WHERE_ + DBKey.FK_AUTHOR + "=?"
-                + _AND_ + '(' + DBKey.TITLE_OB + "=? " + _COLLATION
-                + _OR_ + DBKey.TITLE_OB + "=?" + _COLLATION + ')';
-
-        /** Delete a {@link TocEntry}. */
-        private static final String DELETE_BY_ID =
-                DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + DBKey.PK_ID + "=?";
-
         /** Purge a {@link TocEntry} if no longer in use. */
-        private static final String PURGE =
+        static final String PURGE =
                 DELETE_FROM_ + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.PK_ID + _NOT_IN_
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_TOC_ENTRY
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + ')';
 
-        private static final String REPOSITION =
+        static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
                 + '(' + SELECT_ + DBKey.FK_BOOK
