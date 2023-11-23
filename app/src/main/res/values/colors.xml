@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,9 +20,5 @@
   -->
 
 <resources>
-
-    <!-- ########## custom colors, same color is used in day and night. ########## -->
-    <color name="cropper_focus">@color/m3grey_40</color>
-    <color name="cropper_outline_rectangle">@color/m3red_70</color>
 
 </resources>

@@ -61,6 +61,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * Custom view to be used in the layout.
@@ -540,6 +541,14 @@ public class CropImageView
         /** Tolerance +- for determining a 'hit' of one or more of the edges. */
         private static final float HYSTERESIS = 40f;
 
+        /**
+         * The minimum width an height of the cropping rectangle.
+         * Using 26 means the two handle-icons will just not touch.
+         */
+        private static final float CROP_RECT_MIN_SIZE = 26.0f;
+
+        /** The cropping rectangle border thickness. */
+        private static final float STROKE_WIDTH = 3.0f;
         /** in image space. */
         @NonNull
         final RectF cropRect;
@@ -591,12 +600,16 @@ public class CropImageView
             resizeHorizontal = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
             resizeVertical = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
 
-            focusPaint.setColor(res.getColor(R.color.cropper_focus, theme));
+            final int focusColor = AttrUtils.getColorInt(
+                    context, com.google.android.material.R.attr.colorSurface);
+            final int outlineColor = AttrUtils.getColorInt(
+                    context, com.google.android.material.R.attr.colorOnSurface);
+            focusPaint.setColor(focusColor);
 
-            outlinePaint.setStrokeWidth(3.0f);
+            outlinePaint.setStrokeWidth(STROKE_WIDTH);
             outlinePaint.setStyle(Paint.Style.STROKE);
             outlinePaint.setAntiAlias(true);
-            outlinePaint.setColor(res.getColor(R.color.cropper_outline_rectangle, theme));
+            outlinePaint.setColor(outlineColor);
         }
 
         void onDraw(@NonNull final Canvas canvas) {
