@@ -41,31 +41,6 @@ public class LoaneeDaoImpl
     /** Log tag. */
     private static final String TAG = "LoaneeDaoImpl";
 
-    /** Get the name of the loanee of a {@link Book} by the Book id. */
-    private static final String SELECT_BY_BOOK_ID =
-            SELECT_ + DBKey.LOANEE_NAME
-            + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + _WHERE_ + DBKey.FK_BOOK + "=?";
-
-    /** name only. */
-    private static final String SELECT_ALL =
-            SELECT_DISTINCT_ + DBKey.LOANEE_NAME
-            + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + _WHERE_ + DBKey.LOANEE_NAME + "<> ''"
-            + _ORDER_BY_ + DBKey.LOANEE_NAME + _COLLATION;
-
-    /** Lend a book. */
-    private static final String INSERT =
-            INSERT_INTO_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + '(' + DBKey.FK_BOOK
-            + ',' + DBKey.LOANEE_NAME
-            + ") VALUES(?,?)";
-
-    /** Delete the loan of a {@link Book}; i.e. 'return the book'. */
-    private static final String DELETE_BY_BOOK_ID =
-            DELETE_FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + _WHERE_ + DBKey.FK_BOOK + "=?";
-
     /**
      * Constructor.
      *
@@ -100,7 +75,7 @@ public class LoaneeDaoImpl
                                       @Nullable final String loanee) {
 
         if (loanee == null || loanee.isEmpty()) {
-            try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_BOOK_ID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
                 stmt.bindLong(1, bookId);
                 return stmt.executeUpdateDelete() == 1;
             }
@@ -108,7 +83,7 @@ public class LoaneeDaoImpl
 
             final String current = getLoaneeByBookId(bookId);
             if (current == null || current.isEmpty()) {
-                try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+                try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                     stmt.bindLong(1, bookId);
                     stmt.bindString(2, loanee);
                     return stmt.executeInsert() > 0;
@@ -131,7 +106,7 @@ public class LoaneeDaoImpl
     @Nullable
     public String getLoaneeByBookId(@IntRange(from = 1) final long bookId) {
 
-        try (SynchronizedStatement stmt = db.compileStatement(SELECT_BY_BOOK_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
         }
@@ -140,6 +115,34 @@ public class LoaneeDaoImpl
     @Override
     @NonNull
     public List<String> getList() {
-        return getColumnAsStringArrayList(SELECT_ALL);
+        return getColumnAsStringArrayList(Sql.SELECT_ALL);
+    }
+
+    private static final class Sql {
+
+        /** Lend a book. */
+        static final String INSERT =
+                INSERT_INTO_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
+                + '(' + DBKey.FK_BOOK
+                + ',' + DBKey.LOANEE_NAME
+                + ") VALUES(?,?)";
+
+        /** Delete the loan of a {@link Book}; i.e. 'return the book'. */
+        static final String DELETE_BY_BOOK_ID =
+                DELETE_FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
+
+        /** Get the name of the loanee of a {@link Book} by its id. */
+        static final String FIND_BY_BOOK_ID =
+                SELECT_ + DBKey.LOANEE_NAME
+                + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
+
+        /** A list of the names of all people who have books lend out to. Ordered by name. */
+        static final String SELECT_ALL =
+                SELECT_DISTINCT_ + DBKey.LOANEE_NAME
+                + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
+                + _WHERE_ + DBKey.LOANEE_NAME + "<> ''"
+                + _ORDER_BY_ + DBKey.LOANEE_NAME + _COLLATION;
     }
 }

@@ -87,7 +87,7 @@ public class SeriesDaoImpl
     @NonNull
     @Override
     public Optional<Series> findById(@IntRange(from = 1) final long id) {
-        try (Cursor cursor = db.rawQuery(Sql.GET_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Series(id, new CursorRow(cursor)));
             } else {
@@ -128,7 +128,7 @@ public class SeriesDaoImpl
     @NonNull
     public List<Series> getByBookId(@IntRange(from = 1) final long bookId) {
         final List<Series> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SERIES_BY_BOOK_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -152,7 +152,7 @@ public class SeriesDaoImpl
     @NonNull
     public List<Long> getBookIds(final long seriesId) {
         final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_SERIES_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_IDS_BY_SERIES_ID,
                                          new String[]{String.valueOf(seriesId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -542,6 +542,42 @@ public class SeriesDaoImpl
 
     private static final class Sql {
 
+        /** Insert a {@link Series}. */
+        static final String INSERT =
+                INSERT_INTO_ + TBL_SERIES.getName()
+                + '(' + DBKey.SERIES_TITLE
+                + ',' + DBKey.SERIES_TITLE_OB
+                + ',' + DBKey.SERIES_IS_COMPLETE
+                + ") VALUES (?,?,?)";
+
+        /** Update a {@link Series}. */
+        static final String UPDATE =
+                UPDATE_ + TBL_SERIES.getName()
+                + _SET_ + DBKey.SERIES_TITLE + "=?"
+                + ',' + DBKey.SERIES_TITLE_OB + "=?"
+                + ',' + DBKey.SERIES_IS_COMPLETE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Delete a {@link Series}. */
+        static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_SERIES.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Purge all {@link Series}s which are no longer in use. */
+        static final String PURGE =
+                DELETE_FROM_ + TBL_SERIES.getName()
+                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_SERIES
+                + _FROM_ + TBL_BOOK_SERIES.getName() + ')';
+
+        /** Insert the link between a {@link Book} and a {@link Series}. */
+        static final String INSERT_BOOK_LINK =
+                INSERT_INTO_ + TBL_BOOK_SERIES.getName()
+                + '(' + DBKey.FK_BOOK
+                + ',' + DBKey.FK_SERIES
+                + ',' + DBKey.SERIES_BOOK_NUMBER
+                + ',' + DBKey.BOOK_SERIES_POSITION
+                + ") VALUES(?,?,?,?)";
         /**
          * Delete the link between a {@link Book} and a {@link Series}.
          * <p>
@@ -550,38 +586,37 @@ public class SeriesDaoImpl
         static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
                 DELETE_FROM_ + TBL_BOOK_SERIES.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
 
+        /** Get a count of the {@link Series}s. */
+        static final String COUNT_ALL =
+                SELECT_COUNT_FROM_ + TBL_SERIES.getName();
+
+        /** Count the number of {@link Book}'s in a {@link Series}. */
+        static final String COUNT_BOOKS =
+                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
+                + _FROM_ + TBL_BOOK_SERIES.getName()
+                + _WHERE_ + DBKey.FK_SERIES + "=?";
+
+        /** A list of all {@link Series}s, unordered. */
+        static final String SELECT_ALL = "SELECT * FROM " + TBL_SERIES.getName();
+
+        /** Find a {@link Series} by its id. */
+        static final String FIND_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
+
         /**
-         * Insert the link between a {@link Book} and a {@link Series}.
+         * Find a {@link Series} by Title.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Searches SERIES_TITLE_OB on both original and (potentially) reordered title.
          */
-        static final String INSERT_BOOK_LINK =
-                INSERT_INTO_ + TBL_BOOK_SERIES.getName()
-                + '(' + DBKey.FK_BOOK
-                + ',' + DBKey.FK_SERIES
-                + ',' + DBKey.SERIES_BOOK_NUMBER
-                + ',' + DBKey.BOOK_SERIES_POSITION
-                + ") VALUES(?,?,?,?)";
+        static final String FIND_BY_NAME =
+                SELECT_ALL
+                + _WHERE_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION
+                + _OR_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION;
 
-        /** All Books (id only) for a given Series. */
-        private static final String SELECT_BOOK_IDS_BY_SERIES_ID =
-                SELECT_ + TBL_BOOK_SERIES.dotAs(DBKey.FK_BOOK)
-                + _FROM_ + TBL_BOOK_SERIES.ref()
-                + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_SERIES) + "=?";
-
-        /** name only. */
-        private static final String SELECT_ALL_NAMES =
-                SELECT_DISTINCT_ + DBKey.SERIES_TITLE
-                + ',' + DBKey.SERIES_TITLE_OB
-                + _FROM_ + TBL_SERIES.getName()
-                + _ORDER_BY_ + DBKey.SERIES_TITLE_OB + _COLLATION;
-
-        /** {@link Series}, all columns. */
-        private static final String SELECT_ALL = "SELECT * FROM " + TBL_SERIES.getName();
-
-        /** Get a {@link Series} by the Series id. */
-        private static final String GET_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
-
-        /** All Series for a Book; ordered by position, name. */
-        private static final String SERIES_BY_BOOK_ID =
+        /**
+         * All {@link Series}s for a {@link Book}.
+         * Ordered by position in the book.
+         */
+        static final String FIND_BY_BOOK_ID =
                 SELECT_DISTINCT_ + TBL_SERIES.dotAs(DBKey.PK_ID,
                                                     DBKey.SERIES_TITLE,
                                                     DBKey.SERIES_TITLE_OB,
@@ -591,66 +626,34 @@ public class SeriesDaoImpl
 
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION)
-                + ',' + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + _COLLATION;
+                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION);
 
-        /**
-         * Find a {@link Series} by Title.
-         * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches SERIES_TITLE_OB on both original and (potentially) reordered title.
-         */
-        private static final String FIND_BY_NAME =
-                SELECT_ALL
-                + _WHERE_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION
-                + _OR_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION;
+
+        /** All {@link Book}s (id only) for a given {@link Series}. */
+        static final String FIND_BOOK_IDS_BY_SERIES_ID =
+                SELECT_ + TBL_BOOK_SERIES.dotAs(DBKey.FK_BOOK)
+                + _FROM_ + TBL_BOOK_SERIES.ref()
+                + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_SERIES) + "=?";
+
+        /** Get a list of {@link Series} names for use in a dropdown selection. */
+        static final String SELECT_ALL_NAMES =
+                SELECT_DISTINCT_ + DBKey.SERIES_TITLE
+                + ',' + DBKey.SERIES_TITLE_OB
+                + _FROM_ + TBL_SERIES.getName()
+                + _ORDER_BY_ + DBKey.SERIES_TITLE_OB + _COLLATION;
 
         /**
          * Get the language (ISO3) code for a Series.
          * This is defined as the language code for the first book in the Series.
          */
-        private static final String GET_LANGUAGE =
+        static final String GET_LANGUAGE =
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_SERIES) + "=?"
                 + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
                 + " LIMIT 1";
 
-        private static final String COUNT_ALL =
-                SELECT_COUNT_FROM_ + TBL_SERIES.getName();
-
-        /** Count the number of {@link Book}'s in a {@link Series}. */
-        private static final String COUNT_BOOKS =
-                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
-                + _FROM_ + TBL_BOOK_SERIES.getName()
-                + _WHERE_ + DBKey.FK_SERIES + "=?";
-
-        private static final String INSERT =
-                INSERT_INTO_ + TBL_SERIES.getName()
-                + '(' + DBKey.SERIES_TITLE
-                + ',' + DBKey.SERIES_TITLE_OB
-                + ',' + DBKey.SERIES_IS_COMPLETE
-                + ") VALUES (?,?,?)";
-
-        private static final String UPDATE =
-                UPDATE_ + TBL_SERIES.getName()
-                + _SET_ + DBKey.SERIES_TITLE + "=?"
-                + ',' + DBKey.SERIES_TITLE_OB + "=?"
-                + ',' + DBKey.SERIES_IS_COMPLETE + "=?"
-                + _WHERE_ + DBKey.PK_ID + "=?";
-
-        /** Delete a {@link Series}. */
-        private static final String DELETE_BY_ID =
-                DELETE_FROM_ + TBL_SERIES.getName()
-                + _WHERE_ + DBKey.PK_ID + "=?";
-
-        /** Purge a {@link Series} if no longer in use. */
-        private static final String PURGE =
-                DELETE_FROM_ + TBL_SERIES.getName()
-                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
-                + '(' + SELECT_DISTINCT_ + DBKey.FK_SERIES
-                + _FROM_ + TBL_BOOK_SERIES.getName() + ')';
-
-        private static final String REPOSITION =
+        static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
                 + '(' + SELECT_ + DBKey.FK_BOOK

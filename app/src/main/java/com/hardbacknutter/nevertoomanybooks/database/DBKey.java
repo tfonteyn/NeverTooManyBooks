@@ -229,6 +229,7 @@ public final class DBKey {
     public static final String BOOK_CONDITION = "cond_bk";
     public static final String BOOK_CONDITION_COVER = "cond_cvr";
 
+    /** Flag: the user can 'lock' (i.e. set 'false') a book from being automatically updated. */
     public static final String AUTO_UPDATE = "auto_update";
 
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */

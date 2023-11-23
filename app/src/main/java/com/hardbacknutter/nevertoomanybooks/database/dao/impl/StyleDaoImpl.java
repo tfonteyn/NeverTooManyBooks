@@ -63,87 +63,8 @@ public class StyleDaoImpl
 
     private static final String TAG = "StyleDaoImpl";
 
-    /** {@link Style} all columns. */
-    private static final String SELECT_STYLES =
-            "SELECT * FROM " + DBDefinitions.TBL_BOOKLIST_STYLES.getName();
-
-    /**
-     * We order by the id, i.e. in the order the styles were created.
-     * This is only done to get a reproducible and consistent order.
-     */
-    private static final String SELECT_STYLES_BY_TYPE =
-            SELECT_STYLES
-            + _WHERE_ + DBKey.STYLE_TYPE + "=?"
-            + _ORDER_BY_ + DBKey.PK_ID;
-
-    private static final String DELETE_BOOK_LIST_NODE_STATE_BY_STYLE =
-            DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE.getName()
-            + _WHERE_ + DBKey.FK_STYLE + "=?";
-
-    private static final String INSERT_BUILTIN_STYLE =
-            INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
-            + '(' + DBKey.PK_ID
-            + ',' + DBKey.STYLE_UUID
-            + ',' + DBKey.STYLE_TYPE
-            + ',' + DBKey.STYLE_IS_PREFERRED
-            + ',' + DBKey.STYLE_MENU_POSITION
-            + ") VALUES(?,?,?,?,?)";
-
-    /** Delete a {@link Style}. */
-    private static final String DELETE_STYLE_BY_ID =
-            DELETE_FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
-            + _WHERE_ + DBKey.PK_ID + "=?";
-
-    /** Get the id of a {@link Style} by UUID. */
-    private static final String SELECT_STYLE_ID_BY_UUID =
-            SELECT_ + DBKey.PK_ID + _FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
-            + _WHERE_ + DBKey.STYLE_UUID + "=?";
-
-    private static final String INSERT_STYLE;
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
-
-    static {
-        final StringBuilder tmp = new StringBuilder(
-                INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
-                + '(' + DBKey.STYLE_UUID
-                + ',' + DBKey.STYLE_TYPE
-                + ',' + DBKey.STYLE_IS_PREFERRED
-                + ',' + DBKey.STYLE_MENU_POSITION
-                + ',' + DBKey.STYLE_NAME
-
-                + ',' + DBKey.STYLE_LAYOUT
-                + ',' + DBKey.STYLE_COVER_CLICK_ACTION
-                + ',' + DBKey.STYLE_COVER_SCALE
-                + ',' + DBKey.STYLE_TEXT_SCALE
-                + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
-
-                + ',' + DBKey.STYLE_LIST_HEADER
-                + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY
-                + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY
-                + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
-
-                + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
-                + ',' + DBKey.STYLE_TITLE_SHOW_REORDERED
-
-                + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
-
-                + ',' + DBKey.STYLE_EXP_LEVEL
-                + ',' + DBKey.STYLE_GROUPS
-                + ',' + DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE);
-
-        for (final Style.UnderEach item : Style.UnderEach.values()) {
-            tmp.append(',').append(item.getDbKey());
-        }
-
-        tmp.append(") VALUES (");
-
-        final int count = (int) (tmp.chars().filter(ch -> ch == ',').count() + 1);
-
-        tmp.append(String.join(",", Collections.nCopies(count, "?"))).append(")");
-
-        INSERT_STYLE = tmp.toString();
-    }
 
     /**
      * Constructor.
@@ -165,7 +86,7 @@ public class StyleDaoImpl
         // insert the builtin styles so foreign key rules are possible.
         // Other than the id/uuid/type and the menu options, the settings are never
         // read/written from/to the database.
-        try (SQLiteStatement stmt = db.compileStatement(INSERT_BUILTIN_STYLE)) {
+        try (SQLiteStatement stmt = db.compileStatement(Sql.INSERT_BUILTIN_STYLE)) {
             int menuPos = 1;
             for (final BuiltinStyle.Definition styleDef : BuiltinStyle.getAll()) {
                 stmt.bindLong(1, styleDef.getId());
@@ -197,7 +118,8 @@ public class StyleDaoImpl
      */
     public static void insertGlobalDefaults(@NonNull final SQLiteDatabase db,
                                             @NonNull final Style style) {
-        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(INSERT_STYLE))) {
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(
+                db.compileStatement(Sql.INSERT_STYLE))) {
             doInsert(style, null, stmt);
         }
     }
@@ -258,7 +180,7 @@ public class StyleDaoImpl
 
     @Override
     public long getStyleIdByUuid(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = db.compileStatement(SELECT_STYLE_ID_BY_UUID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_STYLE_ID_BY_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }
@@ -269,7 +191,7 @@ public class StyleDaoImpl
     public Map<String, Style> getUserStyles() {
         final Map<String, Style> map = new LinkedHashMap<>();
 
-        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_TYPE, new String[]{
                 String.valueOf(StyleType.User.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -286,7 +208,7 @@ public class StyleDaoImpl
     public Map<String, Style> getBuiltinStyles() {
         final Map<String, Style> map = new LinkedHashMap<>();
 
-        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_TYPE, new String[]{
                 String.valueOf(StyleType.Builtin.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -301,7 +223,7 @@ public class StyleDaoImpl
     @Override
     @NonNull
     public Style getGlobalStyle() {
-        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_TYPE, new String[]{
                 String.valueOf(StyleType.Global.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
@@ -318,7 +240,7 @@ public class StyleDaoImpl
                        @NonNull final Style style)
             throws DaoInsertException {
 
-        try (SynchronizedStatement stmt = db.compileStatement(INSERT_STYLE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_STYLE)) {
             final long iId = doInsert(style, style.getLabel(context), stmt);
             if (iId > 0) {
                 style.setId(iId);
@@ -397,7 +319,7 @@ public class StyleDaoImpl
             purgeNodeStates(style);
 
             final int rowsAffected;
-            try (SynchronizedStatement stmt = db.compileStatement(DELETE_STYLE_BY_ID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
@@ -424,12 +346,95 @@ public class StyleDaoImpl
     public void purgeNodeStates(@NonNull final Style style)
             throws DaoUpdateException {
         try (SynchronizedStatement stmt = db
-                .compileStatement(DELETE_BOOK_LIST_NODE_STATE_BY_STYLE)) {
+                .compileStatement(Sql.DELETE_BOOK_LIST_NODE_STATE_BY_STYLE)) {
             stmt.bindLong(1, style.getId());
             stmt.executeUpdateDelete();
 
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
+        }
+    }
+
+    private static final class Sql {
+
+        /** Insert a {@link BuiltinStyle}. */
+        static final String INSERT_BUILTIN_STYLE =
+                INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
+                + '(' + DBKey.PK_ID
+                + ',' + DBKey.STYLE_UUID
+                + ',' + DBKey.STYLE_TYPE
+                + ',' + DBKey.STYLE_IS_PREFERRED
+                + ',' + DBKey.STYLE_MENU_POSITION
+                + ") VALUES(?,?,?,?,?)";
+
+        /** Insert a {@link Style}. */
+        static final String INSERT_STYLE;
+
+        /** Delete a {@link Style}. */
+        static final String DELETE_STYLE_BY_ID =
+                DELETE_FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * Find a {@link Style} by its {@link StyleType}.
+         * <p>
+         * We order by the id, i.e. in the order the styles were created.
+         * This is only done to get a reproducible and consistent order.
+         */
+        static final String FIND_BY_TYPE =
+                SELECT_ + "*" + _FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
+                + _WHERE_ + DBKey.STYLE_TYPE + "=?"
+                + _ORDER_BY_ + DBKey.PK_ID;
+
+        /** Find the id of a {@link Style} by its UUID. */
+        static final String FIND_STYLE_ID_BY_UUID =
+                SELECT_ + DBKey.PK_ID + _FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
+                + _WHERE_ + DBKey.STYLE_UUID + "=?";
+
+        static final String DELETE_BOOK_LIST_NODE_STATE_BY_STYLE =
+                DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE.getName()
+                + _WHERE_ + DBKey.FK_STYLE + "=?";
+
+        static {
+            final StringBuilder tmp = new StringBuilder(
+                    INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
+                    + '(' + DBKey.STYLE_UUID
+                    + ',' + DBKey.STYLE_TYPE
+                    + ',' + DBKey.STYLE_IS_PREFERRED
+                    + ',' + DBKey.STYLE_MENU_POSITION
+                    + ',' + DBKey.STYLE_NAME
+
+                    + ',' + DBKey.STYLE_LAYOUT
+                    + ',' + DBKey.STYLE_COVER_CLICK_ACTION
+                    + ',' + DBKey.STYLE_COVER_SCALE
+                    + ',' + DBKey.STYLE_TEXT_SCALE
+                    + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
+
+                    + ',' + DBKey.STYLE_LIST_HEADER
+                    + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY
+                    + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY
+                    + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
+
+                    + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
+                    + ',' + DBKey.STYLE_TITLE_SHOW_REORDERED
+
+                    + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
+
+                    + ',' + DBKey.STYLE_EXP_LEVEL
+                    + ',' + DBKey.STYLE_GROUPS
+                    + ',' + DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE);
+
+            for (final Style.UnderEach item : Style.UnderEach.values()) {
+                tmp.append(',').append(item.getDbKey());
+            }
+
+            tmp.append(") VALUES (");
+
+            final int count = (int) (tmp.chars().filter(ch -> ch == ',').count() + 1);
+
+            tmp.append(String.join(",", Collections.nCopies(count, "?"))).append(")");
+
+            INSERT_STYLE = tmp.toString();
         }
     }
 }

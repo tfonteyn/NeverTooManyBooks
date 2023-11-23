@@ -257,7 +257,7 @@ public class TocEntryDaoImpl
             }
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_TOC_ENTRIES)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -479,7 +479,7 @@ public class TocEntryDaoImpl
         }
     }
 
-    static final class Sql {
+    private static final class Sql {
 
         /** Insert a {@link TocEntry}. */
         static final String INSERT =
@@ -498,6 +498,17 @@ public class TocEntryDaoImpl
                 + ',' + DBKey.FIRST_PUBLICATION__DATE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
+        /** Delete a {@link TocEntry}. */
+        static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Purge all {@link TocEntry}s which are no longer in use. */
+        static final String PURGE =
+                DELETE_FROM_ + TBL_TOC_ENTRIES.getName()
+                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_TOC_ENTRY
+                + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + ')';
+
         /** Insert the link between a {@link Book} and a {@link TocEntry}. */
         static final String INSERT_BOOK_LINK =
                 INSERT_INTO_ + TBL_BOOK_TOC_ENTRIES.getName()
@@ -515,9 +526,6 @@ public class TocEntryDaoImpl
                 DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_BOOK + "=?";
 
-        /** Delete a {@link TocEntry}. */
-        static final String DELETE_BY_ID =
-                DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Get a count of the {@link TocEntry}s. */
         static final String COUNT_ALL =
@@ -527,7 +535,7 @@ public class TocEntryDaoImpl
          * Count the number of {@link TocEntry}'s
          * <strong>for a specific {@link Author}</strong>.
          */
-        static final String COUNT_TOC_ENTRIES =
+        static final String COUNT_BY_AUTHOR =
                 SELECT_ + "COUNT(" + DBKey.PK_ID + ")"
                 + _FROM_ + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
@@ -556,13 +564,13 @@ public class TocEntryDaoImpl
                 + "=" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID)
                 + ')' + _AS_ + DBKey.BOOK_COUNT;
 
-        /** {@link TocEntry}, all columns. */
+        /** A list of all {@link TocEntry}s, unordered. */
         static final String SELECT_ALL =
                 SELECT_ + TOC_FULL_SET_OF_COLUMNS
                 + _FROM_
                 + TBL_TOC_ENTRIES.startJoin(TBL_AUTHORS);
 
-        /** Find a {@link TocEntry} by the TocEntry id. */
+        /** Find a {@link TocEntry} by its id. */
         static final String FIND_BY_ID =
                 SELECT_ + TOC_FULL_SET_OF_COLUMNS
                 + _FROM_
@@ -583,7 +591,7 @@ public class TocEntryDaoImpl
                 + _OR_ + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=?" + _COLLATION + ')';
 
         /**
-         * All {@link TocEntry}'s for a {@link Book}
+         * All {@link TocEntry}s for a {@link Book}.
          * Ordered by position in the book.
          */
         static final String FIND_BY_BOOK_ID =
@@ -612,13 +620,6 @@ public class TocEntryDaoImpl
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
                 + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.TITLE_OB);
 
-        /** Purge a {@link TocEntry} if no longer in use. */
-        static final String PURGE =
-                DELETE_FROM_ + TBL_TOC_ENTRIES.getName()
-                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
-                + '(' + SELECT_DISTINCT_ + DBKey.FK_TOC_ENTRY
-                + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + ')';
-
         static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
@@ -629,7 +630,5 @@ public class TocEntryDaoImpl
                 + ')'
                 + _WHERE_ + "mp>1";
 
-        private Sql() {
-        }
     }
 }

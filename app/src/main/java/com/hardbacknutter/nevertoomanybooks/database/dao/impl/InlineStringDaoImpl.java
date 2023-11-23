@@ -30,11 +30,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
 
-public abstract class InlineStringDaoImpl
+public class InlineStringDaoImpl
         extends BaseDaoImpl
         implements InlineStringDao {
 
-    /** name only. */
+    /** A list of all entries ordered by name. */
     @NonNull
     private final String sqlSelectAll;
 

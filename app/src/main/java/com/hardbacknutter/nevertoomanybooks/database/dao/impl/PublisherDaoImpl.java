@@ -85,7 +85,7 @@ public class PublisherDaoImpl
     @NonNull
     @Override
     public Optional<Publisher> findById(@IntRange(from = 1) final long id) {
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Publisher(id, new CursorRow(cursor)));
             } else {
@@ -126,7 +126,7 @@ public class PublisherDaoImpl
     @NonNull
     public List<Publisher> getByBookId(@IntRange(from = 1) final long bookId) {
         final List<Publisher> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.PUBLISHER_BY_BOOK_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -140,7 +140,7 @@ public class PublisherDaoImpl
     @NonNull
     public List<Long> getBookIds(final long publisherId) {
         final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_PUBLISHER_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_IDS_BY_PUBLISHER_ID,
                                          new String[]{String.valueOf(publisherId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -494,15 +494,39 @@ public class PublisherDaoImpl
 
     private static final class Sql {
 
-        /**
-         * Insert the link between a {@link Book} and a {@link Publisher}.
-         */
+        /** Insert a {@link Publisher}. */
+        static final String INSERT =
+                INSERT_INTO_ + TBL_PUBLISHERS.getName()
+                + '(' + DBKey.PUBLISHER_NAME
+                + ',' + DBKey.PUBLISHER_NAME_OB
+                + ") VALUES (?,?)";
+
+        /** Update a {@link Publisher}. */
+        static final String UPDATE =
+                UPDATE_ + TBL_PUBLISHERS.getName()
+                + _SET_ + DBKey.PUBLISHER_NAME + "=?"
+                + ',' + DBKey.PUBLISHER_NAME_OB + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Delete a {@link Publisher}. */
+        static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_PUBLISHERS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Purge all {@link Publisher}s which are no longer in use. */
+        static final String PURGE =
+                DELETE_FROM_ + TBL_PUBLISHERS.getName()
+                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_PUBLISHER
+                + _FROM_ + TBL_BOOK_PUBLISHER.getName() + ')';
+
+        /** Insert the link between a {@link Book} and a {@link Publisher}. */
         static final String INSERT_BOOK_LINK =
                 INSERT_INTO_ + TBL_BOOK_PUBLISHER.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_PUBLISHER
                 + ',' + DBKey.BOOK_PUBLISHER_POSITION
                 + ") VALUES(?,?,?)";
+
         /**
          * Delete the link between a {@link Book} and a {@link Publisher}.
          * <p>
@@ -511,27 +535,39 @@ public class PublisherDaoImpl
         static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
                 DELETE_FROM_ + TBL_BOOK_PUBLISHER.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
 
-        /** All Books (id only!) for a given Publisher. */
-        private static final String SELECT_BOOK_IDS_BY_PUBLISHER_ID =
-                SELECT_ + TBL_BOOK_PUBLISHER.dotAs(DBKey.FK_BOOK)
-                + _FROM_ + TBL_BOOK_PUBLISHER.ref()
-                + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_PUBLISHER) + "=?";
+        /** Get a count of the {@link Publisher}s. */
+        static final String COUNT_ALL =
+                SELECT_COUNT_FROM_ + TBL_PUBLISHERS.getName();
 
-        /** name only. */
-        private static final String SELECT_ALL_NAMES =
-                SELECT_DISTINCT_ + DBKey.PUBLISHER_NAME
-                + ',' + DBKey.PUBLISHER_NAME_OB
-                + _FROM_ + TBL_PUBLISHERS.getName()
-                + _ORDER_BY_ + DBKey.PUBLISHER_NAME_OB + _COLLATION;
+        /** Count the number of {@link Book}'s by an {@link Publisher}. */
+        static final String COUNT_BOOKS =
+                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
+                + _FROM_ + TBL_BOOK_PUBLISHER.getName()
+                + _WHERE_ + DBKey.FK_PUBLISHER + "=?";
 
-        /** {@link Publisher}, all columns. */
-        private static final String SELECT_ALL = "SELECT * FROM " + TBL_PUBLISHERS.getName();
 
-        /** Get a {@link Publisher} by the Publisher id. */
-        private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
+        /** A list of all {@link Publisher}s, unordered. */
+        static final String SELECT_ALL = "SELECT * FROM " + TBL_PUBLISHERS.getName();
 
-        /** All Publishers for a Book; ordered by position, name. */
-        private static final String PUBLISHER_BY_BOOK_ID =
+        /** Find a {@link Publisher} by its id. */
+        static final String FIND_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * Find a {@link Publisher} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Searches PUBLISHER_NAME_OB on both original and (potentially) reordered name.
+         */
+        static final String FIND_BY_NAME =
+                SELECT_ALL
+                + _WHERE_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION
+                + _OR_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION;
+
+
+        /**
+         * All {@link Publisher}s for a {@link Book}.
+         * Ordered by position in the book.
+         */
+        static final String FIND_BY_BOOK_ID =
                 SELECT_DISTINCT_ + TBL_PUBLISHERS.dotAs(DBKey.PK_ID,
                                                         DBKey.PUBLISHER_NAME,
                                                         DBKey.PUBLISHER_NAME_OB)
@@ -539,52 +575,22 @@ public class PublisherDaoImpl
 
                 + _FROM_ + TBL_BOOK_PUBLISHER.startJoin(TBL_PUBLISHERS)
                 + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION)
-                + ',' + TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB) + _COLLATION;
+                + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION);
 
-        /**
-         * Find a {@link Publisher} by name.
-         * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches PUBLISHER_NAME_OB on both original and (potentially) reordered name.
-         */
-        private static final String FIND_BY_NAME =
-                SELECT_ALL
-                + _WHERE_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION
-                + _OR_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION;
+        /** All {@link Book}s (id only!) for a given {@link Publisher}. */
+        static final String FIND_BOOK_IDS_BY_PUBLISHER_ID =
+                SELECT_ + TBL_BOOK_PUBLISHER.dotAs(DBKey.FK_BOOK)
+                + _FROM_ + TBL_BOOK_PUBLISHER.ref()
+                + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_PUBLISHER) + "=?";
 
-        private static final String COUNT_ALL =
-                SELECT_COUNT_FROM_ + TBL_PUBLISHERS.getName();
-
-        /** Count the number of {@link Book}'s by an {@link Publisher}. */
-        private static final String COUNT_BOOKS =
-                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
-                + _FROM_ + TBL_BOOK_PUBLISHER.getName()
-                + _WHERE_ + DBKey.FK_PUBLISHER + "=?";
-
-        private static final String INSERT =
-                INSERT_INTO_ + TBL_PUBLISHERS.getName()
-                + '(' + DBKey.PUBLISHER_NAME
+        /** Get a list of {@link Publisher} names for use in a dropdown selection. */
+        static final String SELECT_ALL_NAMES =
+                SELECT_DISTINCT_ + DBKey.PUBLISHER_NAME
                 + ',' + DBKey.PUBLISHER_NAME_OB
-                + ") VALUES (?,?)";
+                + _FROM_ + TBL_PUBLISHERS.getName()
+                + _ORDER_BY_ + DBKey.PUBLISHER_NAME_OB + _COLLATION;
 
-        private static final String UPDATE =
-                UPDATE_ + TBL_PUBLISHERS.getName()
-                + _SET_ + DBKey.PUBLISHER_NAME + "=?"
-                + ',' + DBKey.PUBLISHER_NAME_OB + "=?"
-                + _WHERE_ + DBKey.PK_ID + "=?";
-
-        /** Delete a {@link Publisher}. */
-        private static final String DELETE_BY_ID =
-                DELETE_FROM_ + TBL_PUBLISHERS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
-
-        /** Purge a {@link Publisher} if no longer in use. */
-        private static final String PURGE =
-                DELETE_FROM_ + TBL_PUBLISHERS.getName()
-                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
-                + '(' + SELECT_DISTINCT_ + DBKey.FK_PUBLISHER
-                + _FROM_ + TBL_BOOK_PUBLISHER.getName() + ')';
-
-        private static final String REPOSITION =
+        static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
                 + '(' + SELECT_ + DBKey.FK_BOOK
@@ -593,5 +599,6 @@ public class PublisherDaoImpl
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'
                 + _WHERE_ + "mp>1";
+
     }
 }

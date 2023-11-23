@@ -71,7 +71,7 @@ public class BookshelfDaoImpl
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
      */
-    public static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    private static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     /** Log tag. */
     private static final String TAG = "BookshelfDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
@@ -190,7 +190,7 @@ public class BookshelfDaoImpl
     @NonNull
     @Override
     public Optional<Bookshelf> findById(@IntRange(from = 1) final long id) {
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Bookshelf(id, new CursorRow(cursor)));
             } else {
@@ -225,7 +225,7 @@ public class BookshelfDaoImpl
     @NonNull
     public List<Bookshelf> getAll() {
         final List<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL_ORDER_BY_NAME, null)) {
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL_ORDERED_BY_NAME, null)) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData));
@@ -251,7 +251,7 @@ public class BookshelfDaoImpl
     @Override
     public List<PFilter<?>> getFilters(final long bookshelfId) {
         final List<PFilter<?>> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_FILTERS,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_FILTERS_BY_BOOKSHELF_ID,
                                          new String[]{String.valueOf(bookshelfId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -289,7 +289,8 @@ public class BookshelfDaoImpl
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_FILTERS)) {
+            try (SynchronizedStatement stmt = db.compileStatement(
+                    Sql.DELETE_FILTERS_BY_BOOKSHELF_ID)) {
                 stmt.bindLong(1, bookshelfId);
                 stmt.executeUpdateDelete();
             }
@@ -574,7 +575,7 @@ public class BookshelfDaoImpl
     public void purgeNodeStates(@NonNull final Bookshelf bookshelf)
             throws DaoUpdateException {
         try (SynchronizedStatement stmt = db
-                .compileStatement(Sql.BOOK_LIST_NODE_STATE_BY_BOOKSHELF)) {
+                .compileStatement(Sql.FIND_BOOK_LIST_NODE_STATE_BY_BOOKSHELF_ID)) {
             stmt.bindLong(1, bookshelf.getId());
             stmt.executeUpdateDelete();
 
@@ -587,7 +588,7 @@ public class BookshelfDaoImpl
     @Override
     public List<Long> getBookIds(final long bookshelfId) {
         final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_BOOKSHELF_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_IDS_BY_BOOKSHELF_ID,
                                          new String[]{String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -600,7 +601,7 @@ public class BookshelfDaoImpl
     @NonNull
     public List<Bookshelf> getByBookId(@IntRange(from = 1) final long bookId) {
         final List<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.BOOKSHELVES_BY_BOOK_ID,
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -611,23 +612,8 @@ public class BookshelfDaoImpl
     }
 
     private static final class Sql {
-
-        /**
-         * Insert the link between a {@link Book} and a {@link Bookshelf}.
-         */
-        static final String INSERT_BOOK_LINK =
-                INSERT_INTO_ + TBL_BOOK_BOOKSHELF.getName()
-                + '(' + DBKey.FK_BOOK
-                + ',' + DBKey.FK_BOOKSHELF
-                + ") VALUES (?,?)";
-        /**
-         * Delete the link between a {@link Book} and a {@link Bookshelf}.
-         * <p>
-         * This is done when a book is updated; first delete all links, then re-create them.
-         */
-        static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
-                DELETE_FROM_ + TBL_BOOK_BOOKSHELF.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
-        private static final String INSERT =
+        /** Insert a {@link Bookshelf}. */
+        static final String INSERT =
                 INSERT_INTO_ + TBL_BOOKSHELF.getName()
                 + '(' + DBKey.BOOKSHELF_NAME
                 + ',' + DBKey.FK_STYLE
@@ -635,7 +621,8 @@ public class BookshelfDaoImpl
                 + ',' + DBKey.BOOKSHELF_BL_TOP_OFFSET
                 + ") VALUES (?,?,?,?)";
 
-        private static final String UPDATE =
+        /** Update a {@link Bookshelf}. */
+        static final String UPDATE =
                 UPDATE_ + TBL_BOOKSHELF.getName()
                 + _SET_ + DBKey.BOOKSHELF_NAME + "=?"
                 + ',' + DBKey.FK_STYLE + "=?"
@@ -643,20 +630,32 @@ public class BookshelfDaoImpl
                 + ',' + DBKey.BOOKSHELF_BL_TOP_OFFSET + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
-        private static final String BOOK_LIST_NODE_STATE_BY_BOOKSHELF =
-                DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
-                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
-
         /** Delete a {@link Bookshelf}. */
-        private static final String DELETE_BY_ID =
+        static final String DELETE_BY_ID =
                 DELETE_FROM_ + TBL_BOOKSHELF.getName()
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
-        private static final String COUNT_ALL =
+        /** Insert the link between a {@link Book} and a {@link Bookshelf}. */
+        static final String INSERT_BOOK_LINK =
+                INSERT_INTO_ + TBL_BOOK_BOOKSHELF.getName()
+                + '(' + DBKey.FK_BOOK
+                + ',' + DBKey.FK_BOOKSHELF
+                + ") VALUES (?,?)";
+
+        /**
+         * Delete the link between a {@link Book} and a {@link Bookshelf}.
+         * <p>
+         * This is done when a book is updated; first delete all links, then re-create them.
+         */
+        static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
+                DELETE_FROM_ + TBL_BOOK_BOOKSHELF.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
+
+        /** Get a count of the {@link Bookshelf}s. */
+        static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_BOOKSHELF.getName();
 
-        /** All {@link Bookshelf}, all columns; linked with the styles table. */
-        private static final String SELECT_ALL =
+        /** A list of all {@link Bookshelf}s, unordered. Joined with the styles table. */
+        static final String SELECT_ALL =
                 SELECT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
                                               DBKey.BOOKSHELF_NAME,
                                               DBKey.BOOKSHELF_BL_TOP_POS,
@@ -665,27 +664,27 @@ public class BookshelfDaoImpl
                 + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
                 + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
 
-        /**
-         * Find a {@link Bookshelf} by name; linked with the styles table.
-         * The lookup is by EQUALITY and CASE-SENSITIVE.
-         */
-        private static final String FIND_BY_NAME =
-                SELECT_ALL
-                + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + "=?" + _COLLATION;
+        /** Get a list of all {@link Bookshelf} ordered by name. */
+        static final String SELECT_ALL_ORDERED_BY_NAME =
+                SELECT_ALL + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
 
-        /** Get a {@link Bookshelf} by the Bookshelf id; linked with the styles table. */
-        private static final String SELECT_BY_ID =
+        /** Find a {@link Bookshelf} by its id. Joined with the styles table. */
+        static final String FIND_BY_ID =
                 SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + "=?";
 
         /**
-         * All {@link Bookshelf}, all columns; linked with the styles table.
+         * Find a {@link Bookshelf} by name; Joined with the styles table.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         */
+        static final String FIND_BY_NAME =
+                SELECT_ALL
+                + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + "=?" + _COLLATION;
+
+        /**
+         * All {@link Bookshelf}s for a {@link Book}.
          * Ordered by name.
          */
-        private static final String SELECT_ALL_ORDER_BY_NAME =
-                SELECT_ALL + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
-
-        /** All Bookshelves for a Book; ordered by name. */
-        private static final String BOOKSHELVES_BY_BOOK_ID =
+        static final String FIND_BY_BOOK_ID =
                 SELECT_DISTINCT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
                                                        DBKey.BOOKSHELF_NAME,
                                                        DBKey.BOOKSHELF_BL_TOP_POS,
@@ -697,26 +696,31 @@ public class BookshelfDaoImpl
                 + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + "=?"
                 + _ORDER_BY_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + _COLLATION;
 
-        /** All Books (id only!) for a given Bookshelf. */
-        private static final String SELECT_BOOK_IDS_BY_BOOKSHELF_ID =
+
+        /** All {@link Book}s (id only!) for a given {@link Bookshelf}. */
+        static final String FIND_BOOK_IDS_BY_BOOKSHELF_ID =
                 SELECT_ + TBL_BOOK_BOOKSHELF.dotAs(DBKey.FK_BOOK)
                 + _FROM_ + TBL_BOOK_BOOKSHELF.ref()
                 + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
 
-        private static final String SELECT_FILTERS =
-                SELECT_ + DBKey.FILTER_DBKEY + ',' + DBKey.FILTER_VALUE
-                + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+        static final String FIND_BOOK_LIST_NODE_STATE_BY_BOOKSHELF_ID =
+                DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
                 + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
 
-        private static final String DELETE_FILTERS =
-                DELETE_FROM_ + TBL_BOOKSHELF_FILTERS.getName()
-                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
-
-        private static final String INSERT_FILTER =
+        static final String INSERT_FILTER =
                 INSERT_INTO_ + TBL_BOOKSHELF_FILTERS.getName()
                 + '(' + DBKey.FK_BOOKSHELF
                 + ',' + DBKey.FILTER_DBKEY
                 + ',' + DBKey.FILTER_VALUE
                 + ") VALUES (?,?,?)";
+
+        static final String DELETE_FILTERS_BY_BOOKSHELF_ID =
+                DELETE_FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
+
+        static final String FIND_FILTERS_BY_BOOKSHELF_ID =
+                SELECT_ + DBKey.FILTER_DBKEY + ',' + DBKey.FILTER_VALUE
+                + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
     }
 }

@@ -66,7 +66,7 @@ public class RebuildFtsTask
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
         try {
-            ServiceLocator.getInstance().getFtsDao().rebuild(context);
+            ServiceLocator.getInstance().getFtsDao().rebuild();
             return true;
 
         } finally {

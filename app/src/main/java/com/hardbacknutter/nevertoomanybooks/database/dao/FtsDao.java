@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -56,23 +55,19 @@ public interface FtsDao {
 
     /**
      * Rebuild the entire FTS database.
-     *
-     * @param context Current context
      */
-    void rebuild(@NonNull Context context);
+    void rebuild();
 
     /**
      * Insert an FTS record for the given {@link Book}.
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context Current context
-     * @param bookId  the book id
+     * @param bookId the book id
      *
      * @throws TransactionException a transaction must be started before calling this method
      */
-    void insert(@NonNull Context context,
-                @IntRange(from = 1) long bookId)
+    void insert(@IntRange(from = 1) long bookId)
             throws TransactionException;
 
     /**
@@ -80,12 +75,10 @@ public interface FtsDao {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context Current context
      * @param bookId  the book id
      *
      * @throws TransactionException a transaction must be started before calling this method
      */
-    void update(@NonNull Context context,
-                @IntRange(from = 1) long bookId)
+    void update(@IntRange(from = 1) long bookId)
             throws TransactionException;
 }

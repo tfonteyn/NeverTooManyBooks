@@ -66,6 +66,11 @@ abstract class BaseDaoImpl {
     static final String _IN_ = " IN ";
     static final String _NOT_IN_ = " NOT IN ";
 
+    static final String CASE_WHEN_ = "CASE WHEN ";
+    static final String _THEN_ = " THEN ";
+    static final String _ELSE_ = " ELSE ";
+    static final String _END = " END";
+
     /** Log tag. */
     private static final String TAG = "BaseDaoImpl";
 

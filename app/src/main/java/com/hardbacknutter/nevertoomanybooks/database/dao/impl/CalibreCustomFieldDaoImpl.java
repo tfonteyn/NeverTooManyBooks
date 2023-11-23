@@ -51,33 +51,6 @@ public class CalibreCustomFieldDaoImpl
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
 
-    private static final String BASE_SELECT =
-            SELECT_ + DBKey.PK_ID
-            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
-            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
-            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
-            + _FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName();
-
-    private static final String SELECT_BY_ID =
-            BASE_SELECT + _WHERE_ + DBKey.PK_ID + "=?";
-
-    private static final String SELECT_BY_NAME =
-            BASE_SELECT + _WHERE_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + "=?";
-
-    private static final String SELECT_ALL =
-            BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + _COLLATION;
-
-
-    private static final String INSERT =
-            INSERT_INTO_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
-            + '(' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
-            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
-            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
-            + ") VALUES(?,?,?)";
-
-    private static final String DELETE_BY_ID =
-            DELETE_FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
-            + _WHERE_ + DBKey.PK_ID + "=?";
 
     /**
      * Constructor.
@@ -127,7 +100,7 @@ public class CalibreCustomFieldDaoImpl
     public long insert(@NonNull final CalibreCustomField calibreCustomField)
             throws DaoInsertException {
 
-        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             stmt.bindString(2, calibreCustomField.getType());
             stmt.bindString(3, calibreCustomField.getDbKey());
@@ -170,7 +143,7 @@ public class CalibreCustomFieldDaoImpl
     @Override
     public boolean delete(@NonNull final CalibreCustomField calibreCustomField) {
         final int rowsAffected;
-        try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, calibreCustomField.getId());
             rowsAffected = stmt.executeUpdateDelete();
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
@@ -187,7 +160,7 @@ public class CalibreCustomFieldDaoImpl
     @Override
     public List<CalibreCustomField> getCustomFields() {
         final List<CalibreCustomField> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(SELECT_ALL, null)) {
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL, null)) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final CalibreCustomField field = new CalibreCustomField(
@@ -200,9 +173,44 @@ public class CalibreCustomFieldDaoImpl
     }
 
     private long find(@NonNull final CalibreCustomField calibreCustomField) {
-        try (SynchronizedStatement stmt = db.compileStatement(SELECT_BY_NAME)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_BY_NAME)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             return stmt.simpleQueryForLongOrZero();
         }
+    }
+
+    private static final class Sql {
+
+        /** Insert a {@link CalibreCustomField}. */
+        static final String INSERT =
+                INSERT_INTO_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
+                + '(' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
+                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
+                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
+                + ") VALUES(?,?,?)";
+
+        /** Delete a {@link CalibreCustomField}. */
+        static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+
+        static final String BASE_SELECT =
+                SELECT_ + DBKey.PK_ID
+                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
+                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
+                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
+                + _FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName();
+
+        /** A list of all {@link CalibreCustomField}s, ordered by name. */
+        static final String SELECT_ALL =
+                BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + _COLLATION;
+
+        /**
+         * Find a {@link CalibreCustomField} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         */
+        static final String FIND_BY_NAME =
+                BASE_SELECT + _WHERE_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + "=?";
     }
 }

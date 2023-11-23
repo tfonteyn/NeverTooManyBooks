@@ -193,7 +193,7 @@ public class BookDaoImpl
     public boolean touch(@NonNull final Book book) {
         final boolean result;
         final long bookId = book.getId();
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.TOUCH)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.TOUCH)) {
             stmt.bindLong(1, bookId);
             result = 0 < stmt.executeUpdateDelete();
         }
@@ -279,7 +279,7 @@ public class BookDaoImpl
             insertBookLinks(context, book, flags);
 
             // and populate the search suggestions table
-            ftsDaoSupplier.get().insert(context, newBookId);
+            ftsDaoSupplier.get().insert(newBookId);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
             try {
@@ -359,7 +359,7 @@ public class BookDaoImpl
 
                 insertBookLinks(context, book, flags);
 
-                ftsDaoSupplier.get().update(context, book.getId());
+                ftsDaoSupplier.get().update(book.getId());
 
                 try {
                     bookDaoHelper.persistCovers();
@@ -432,7 +432,7 @@ public class BookDaoImpl
             }
 
             // Delete the book, and remember which ones were really deleted.
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.Delete.BOOK_BY_UUID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_UUID)) {
                 for (final String uuid : uuids) {
                     stmt.bindString(1, uuid);
                     if (stmt.executeUpdateDelete() > 0) {
@@ -557,7 +557,7 @@ public class BookDaoImpl
 
         final boolean success;
         // don't call standalone method, we want to use the same 'now' to update the book
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.READ)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_FIELD_READ)) {
             stmt.bindBoolean(1, read);
             stmt.bindString(2, now);
             stmt.bindLong(3, book.getId());
@@ -575,7 +575,7 @@ public class BookDaoImpl
 
     @Override
     public int count() {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOKS)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
             return (int) stmt.simpleQueryForLongOrZero();
         }
     }
@@ -596,7 +596,7 @@ public class BookDaoImpl
                                       @Nullable final String[] selectionArgs,
                                       @Nullable final CharSequence orderByClause) {
 
-        final String sql = Sql.Select.SQL_BOOK
+        final String sql = Sql.SELECT_BOOK_FROM
                            + (whereClause != null && whereClause.length() > 0
                               ? _WHERE_ + whereClause : "")
                            + (orderByClause != null && orderByClause.length() > 0
@@ -661,12 +661,12 @@ public class BookDaoImpl
     @Override
     public int countBooksForExport(@Nullable final LocalDateTime sinceDateTime) {
         if (sinceDateTime == null) {
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOKS)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } else {
             try (SynchronizedStatement stmt = db.compileStatement(
-                    Sql.Count.BOOKS + _WHERE_ + DBKey.DATE_LAST_UPDATED__UTC + ">=?")) {
+                    Sql.COUNT_ALL + _WHERE_ + DBKey.DATE_LAST_UPDATED__UTC + ">=?")) {
                 stmt.bindString(1, SqlEncode.date(sinceDateTime));
                 return (int) stmt.simpleQueryForLongOrZero();
             }
@@ -741,7 +741,7 @@ public class BookDaoImpl
     @Override
     @NonNull
     public List<String> getBookUuidList() {
-        return getColumnAsStringArrayList(Sql.Select.ALL_BOOK_UUID);
+        return getColumnAsStringArrayList(Sql.SELECT_ALL_UUID);
     }
 
     /**
@@ -753,7 +753,7 @@ public class BookDaoImpl
      */
     @Nullable
     private String getBookUuid(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Get.BOOK_UUID_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_UUID_BY_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
         }
@@ -762,7 +762,7 @@ public class BookDaoImpl
     @Override
     @IntRange(from = 0)
     public long getBookIdByUuid(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Get.BOOK_ID_BY_UUID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID_BY_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }
@@ -776,7 +776,7 @@ public class BookDaoImpl
         // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range,
         // we search on both formats
         if (isbn.isIsbn10Compat()) {
-            try (Cursor cursor = db.rawQuery(Sql.Select.BY_VALID_ISBN,
+            try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ISBN_10_OR_13,
                                              new String[]{isbn.asText(ISBN.Type.Isbn10),
                                                      isbn.asText(ISBN.Type.Isbn13)})) {
                 while (cursor.moveToNext()) {
@@ -787,7 +787,7 @@ public class BookDaoImpl
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
-            try (Cursor cursor = db.rawQuery(Sql.Select.BY_ISBN, new String[]{isbn.asText()})) {
+            try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ISBN, new String[]{isbn.asText()})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
@@ -801,7 +801,7 @@ public class BookDaoImpl
     @Override
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean bookExistsById(@IntRange(from = 1) final long id) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOK_EXISTS)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.CHECK_IF_BOOK_EXISTS)) {
             stmt.bindLong(1, id);
             return stmt.simpleQueryForLongOrZero() == 1;
         }
@@ -830,7 +830,7 @@ public class BookDaoImpl
     @NonNull
     public Optional<LocalDateTime> getLastUpdateDate(@IntRange(from = 1) final long id) {
         try (SynchronizedStatement stmt =
-                     db.compileStatement(Sql.Get.LAST_UPDATE_DATE_BY_BOOK_ID)) {
+                     db.compileStatement(Sql.FIND_LAST_UPDATE_DATE_BY_BOOK_ID)) {
             stmt.bindLong(1, id);
             return dateParser.parse(stmt.simpleQueryForStringOrNull());
         }
@@ -838,189 +838,127 @@ public class BookDaoImpl
 
     private static final class Sql {
 
-        /**
-         * Count/exist statements.
-         */
-        static final class Count {
+        /** Delete a {@link Book}. */
+        static final String DELETE_BY_UUID =
+                DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.BOOK_UUID + "=?";
 
-            /** Count all {@link Book}'s. */
-            static final String BOOKS =
-                    SELECT_COUNT_FROM_ + TBL_BOOKS.getName();
+        /** Update a single Book's read status and read_end date. */
+        static final String UPDATE_FIELD_READ =
+                UPDATE_ + TBL_BOOKS.getName()
+                + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                + ',' + DBKey.READ__BOOL + "=?"
+                + ',' + DBKey.READ_END__DATE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
-            /** Check if a {@link Book} exists. */
-            static final String BOOK_EXISTS =
-                    SELECT_COUNT_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
+        /** Update a {@link Book} {@link DBKey#DATE_LAST_UPDATED__UTC} to 'now'. */
+        static final String TOUCH =
+                UPDATE_ + TBL_BOOKS.getName()
+                + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
-            private Count() {
-            }
-        }
+        /** Get a count of the {@link Book}s. */
+        static final String COUNT_ALL =
+                SELECT_COUNT_FROM_ + TBL_BOOKS.getName();
 
-        /**
-         * Sql SELECT to lookup a single item.
-         */
-        static final class Get {
+        /** Check if a {@link Book} exists. The result should be {@code 0} or {@code 1}. */
+        static final String CHECK_IF_BOOK_EXISTS =
+                SELECT_COUNT_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
-            /** Get the UUID of a {@link Book} by the Book id. */
-            static final String BOOK_UUID_BY_ID =
-                    SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + DBKey.PK_ID + "=?";
-
-            /** Get the last-update-date for a {@link Book} by its id. */
-            static final String LAST_UPDATE_DATE_BY_BOOK_ID =
-                    SELECT_ + DBKey.DATE_LAST_UPDATED__UTC + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + DBKey.PK_ID + "=?";
-
-            /** Get the id of a {@link Book} by UUID. */
-            static final String BOOK_ID_BY_UUID =
-                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + DBKey.BOOK_UUID + "=?";
-
-            private Get() {
-            }
-        }
+        /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
+        static final String FIND_BY_ISBN_10_OR_13 =
+                SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + DBKey.BOOK_ISBN + " LIKE ? OR " + DBKey.BOOK_ISBN + " LIKE ?";
 
         /**
-         * Sql SELECT returning a list, with a WHERE clause.
+         * Find the {@link Book} id+title based on a search for the ISBN.
+         * The isbn need not be valid and can in fact be any code whatsoever.
          */
-        static final class Select {
+        static final String FIND_BY_ISBN =
+                SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + DBKey.BOOK_ISBN + " LIKE ?";
 
-            /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
-            static final String BY_VALID_ISBN =
-                    SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + DBKey.BOOK_ISBN + " LIKE ? OR " + DBKey.BOOK_ISBN + " LIKE ?";
+        /** Find the UUID of a {@link Book} by its id. */
+        static final String FIND_UUID_BY_ID =
+                SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
-            /**
-             * Find the {@link Book} id+title based on a search for the ISBN.
-             * The isbn need not be valid and can in fact be any code whatsoever.
-             */
-            static final String BY_ISBN =
-                    SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + DBKey.BOOK_ISBN + " LIKE ?";
+        /** Find the id of a {@link Book} by its UUID. */
+        static final String FIND_ID_BY_UUID =
+                SELECT_ + DBKey.PK_ID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + DBKey.BOOK_UUID + "=?";
 
-            /** Book UUID only, for accessing all cover image files. */
-            static final String ALL_BOOK_UUID =
-                    SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
+        /** Find the {@link DBKey#DATE_LAST_UPDATED__UTC} for a {@link Book} by its id. */
+        static final String FIND_LAST_UPDATE_DATE_BY_BOOK_ID =
+                SELECT_ + DBKey.DATE_LAST_UPDATED__UTC + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
+        /** Book UUID only, for accessing all cover image files. */
+        static final String SELECT_ALL_UUID =
+                SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
 
-            /** The SELECT and FROM clause for getting a book (list). */
-            static final String SQL_BOOK;
 
-            static {
-                //NEWTHINGS: adding fields ? Now is a good time to update {@link Book#duplicate}
+        /** The SELECT and FROM clause for getting a book (list). */
+        static final String SELECT_BOOK_FROM;
 
-                // Note we could use TBL_BOOKS.dot("*")
-                // We'd fetch the unneeded TITLE_OB field, but that would be ok.
-                // Nevertheless, listing the fields here gives a better understanding
+        static {
+            //NEWTHINGS: adding fields ? Now is a good time to update {@link Book#duplicate}
 
-                SQL_BOOK = SELECT_ + TBL_BOOKS.dotAs(
-                        DBKey.PK_ID, DBKey.BOOK_UUID,
-                        DBKey.TITLE, DBKey.TITLE_ORIGINAL_LANG,
-                        DBKey.BOOK_ISBN, DBKey.BOOK_CONTENT_TYPE,
-                        DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
-                        DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,
-                        DBKey.FIRST_PUBLICATION__DATE,
-                        DBKey.FORMAT, DBKey.COLOR, DBKey.GENRE, DBKey.LANGUAGE, DBKey.PAGE_COUNT,
-                        // Main/public description about the content/publication
-                        DBKey.DESCRIPTION,
-                        // partially edition info, partially user-owned info.
-                        DBKey.EDITION__BITMASK,
-                        // user notes
-                        DBKey.PERSONAL_NOTES,
-                        DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION_COVER,
-                        DBKey.LOCATION, DBKey.SIGNED__BOOL, DBKey.RATING,
-                        DBKey.READ__BOOL, DBKey.READ_START__DATE, DBKey.READ_END__DATE,
-                        DBKey.DATE_ACQUIRED,
-                        DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY,
-                        // added/updated
-                        DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
-                        DBKey.AUTO_UPDATE
-                        //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-                )
+            // Note we could use TBL_BOOKS.dot("*")
+            // We'd fetch the unneeded TITLE_OB field, but that would be ok.
+            // Nevertheless, listing the fields here gives a better understanding
 
-                           + ',' + TBL_BOOKS.dotAs(SearchEngineConfig.getExternalIdDomains())
+            SELECT_BOOK_FROM = SELECT_ + TBL_BOOKS.dotAs(
+                    DBKey.PK_ID, DBKey.BOOK_UUID,
+                    DBKey.TITLE, DBKey.TITLE_ORIGINAL_LANG,
+                    DBKey.BOOK_ISBN, DBKey.BOOK_CONTENT_TYPE,
+                    DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
+                    DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,
+                    DBKey.FIRST_PUBLICATION__DATE,
+                    DBKey.FORMAT, DBKey.COLOR, DBKey.GENRE, DBKey.LANGUAGE, DBKey.PAGE_COUNT,
+                    // Main/public description about the content/publication
+                    DBKey.DESCRIPTION,
+                    // partially edition info, partially user-owned info.
+                    DBKey.EDITION__BITMASK,
+                    // user notes
+                    DBKey.PERSONAL_NOTES,
+                    DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION_COVER,
+                    DBKey.LOCATION, DBKey.SIGNED__BOOL, DBKey.RATING,
+                    DBKey.READ__BOOL, DBKey.READ_START__DATE, DBKey.READ_END__DATE,
+                    DBKey.DATE_ACQUIRED,
+                    DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY,
+                    // added/updated
+                    DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
+                    DBKey.AUTO_UPDATE
+                    //NEWTHINGS: adding a new search engine: optional: add engine specific keys
+            )
 
-                           // COALESCE nulls to "" for the LEFT OUTER JOINed LOANEE name
-                           + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
-                           + _AS_ + DBKey.LOANEE_NAME
+                               + ',' + TBL_BOOKS.dotAs(SearchEngineConfig.getExternalIdDomains())
 
-                           //FIXME: we should not join with all tables we MIGHT need
+                               // LEFT OUTER JOIN, COALESCE nulls to ""
+                               + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
+                               + _AS_ + DBKey.LOANEE_NAME
 
-                           // LEFT OUTER JOIN, columns default to NULL
-                           + ','
-                           + TBL_CALIBRE_BOOKS
-                                   .dotAs(DBKey.CALIBRE_BOOK_ID,
-                                          DBKey.CALIBRE_BOOK_UUID,
-                                          DBKey.CALIBRE_BOOK_MAIN_FORMAT,
-                                          DBKey.FK_CALIBRE_LIBRARY)
+                               // LEFT OUTER JOIN, columns default to NULL
+                               + ','
+                               + TBL_CALIBRE_BOOKS
+                                       .dotAs(DBKey.CALIBRE_BOOK_ID,
+                                              DBKey.CALIBRE_BOOK_UUID,
+                                              DBKey.CALIBRE_BOOK_MAIN_FORMAT,
+                                              DBKey.FK_CALIBRE_LIBRARY)
 
-                           // LEFT OUTER JOIN, columns default to NULL
-                           + ','
-                           + TBL_STRIPINFO_COLLECTION
-                                   .dotAs(DBKey.STRIP_INFO_COLL_ID,
-                                          DBKey.STRIP_INFO_OWNED,
-                                          DBKey.STRIP_INFO_DIGITAL,
-                                          DBKey.STRIP_INFO_WANTED,
-                                          DBKey.STRIP_INFO_AMOUNT,
-                                          DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC)
+                               // LEFT OUTER JOIN, columns default to NULL
+                               + ','
+                               + TBL_STRIPINFO_COLLECTION
+                                       .dotAs(DBKey.STRIP_INFO_COLL_ID,
+                                              DBKey.STRIP_INFO_OWNED,
+                                              DBKey.STRIP_INFO_DIGITAL,
+                                              DBKey.STRIP_INFO_WANTED,
+                                              DBKey.STRIP_INFO_AMOUNT,
+                                              DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC)
 
-                           + _FROM_ + TBL_BOOKS.ref()
-                           + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
-                           + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
-                           + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION);
-            }
-
-            private Select() {
-            }
-        }
-
-        /**
-         * Sql UPDATE.
-         */
-        static final class Update {
-
-            /** Update a single Book's read status and read_end date. */
-            static final String READ =
-                    UPDATE_ + TBL_BOOKS.getName()
-                    + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-                    + ',' + DBKey.READ__BOOL + "=?"
-                    + ',' + DBKey.READ_END__DATE + "=?"
-                    + _WHERE_ + DBKey.PK_ID + "=?";
-            /**
-             * Update a single Book's DATE_LAST_UPDATED__UTC to 'now'.
-             */
-            static final String TOUCH =
-                    UPDATE_ + TBL_BOOKS.getName()
-                    + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-                    + _WHERE_ + DBKey.PK_ID + "=?";
-
-            private Update() {
-            }
-        }
-
-        /**
-         * Sql DELETE.
-         */
-        static final class Delete {
-
-            /**
-             * Delete a {@link Book}.
-             * <p>
-             * All 'link' tables will be updated due to their FOREIGN KEY constraints.
-             * The 'other-side' of a link table is cleaned by triggers.
-             */
-            static final String BOOK_BY_ID =
-                    DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
-
-            /**
-             * Delete a {@link Book}.
-             * <p>
-             * All 'link' tables will be updated due to their FOREIGN KEY constraints.
-             * The 'other-side' of a link table is cleaned by triggers.
-             */
-            static final String BOOK_BY_UUID =
-                    DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.BOOK_UUID + "=?";
-
-            private Delete() {
-            }
+                               + _FROM_ + TBL_BOOKS.ref()
+                               + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
+                               + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
+                               + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION);
         }
     }
 }
