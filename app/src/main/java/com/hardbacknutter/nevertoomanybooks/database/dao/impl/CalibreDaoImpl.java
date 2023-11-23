@@ -145,8 +145,7 @@ public class CalibreDaoImpl
             stmt.bindString(3, book.getString(DBKey.CALIBRE_BOOK_UUID));
             stmt.bindString(4, book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT));
             stmt.bindLong(5, library.getId());
-            final long rowId = stmt.executeInsert();
-            if (rowId == -1) {
+            if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException("Calibre data insert failed");
             }
         }

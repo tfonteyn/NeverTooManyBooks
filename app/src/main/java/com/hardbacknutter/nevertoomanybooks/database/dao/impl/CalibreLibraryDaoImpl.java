@@ -273,17 +273,21 @@ public class CalibreLibraryDaoImpl
                 iId = stmt.executeInsert();
             }
             if (iId > 0) {
+                library.setId(iId);
                 insertVirtualLibraries(library);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-
-                library.setId(iId);
                 return iId;
             }
+
+            // Reset the id before throwing!
+            library.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + library);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            // Reset the id before throwing!
+            library.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + library, e);
         } finally {
             if (txLock != null) {
@@ -436,12 +440,15 @@ public class CalibreLibraryDaoImpl
                         vLib.setId(iId);
 
                     } else {
-                        // Reset all id's which might have been successful.
-                        // The db will be reset by the transaction
+                        // Reset all id's before throwing!
                         vLibs.forEach(v -> v.setId(0));
                         throw new DaoInsertException(ERROR_INSERT_FROM + library);
                     }
                 }
+            } catch (@NonNull final SQLException | IllegalArgumentException e) {
+                // Reset all id's before throwing!
+                vLibs.forEach(v -> v.setId(0));
+                throw new DaoInsertException(ERROR_INSERT_FROM + library, e);
             }
         }
     }

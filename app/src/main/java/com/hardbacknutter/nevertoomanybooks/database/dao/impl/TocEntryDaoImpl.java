@@ -265,7 +265,7 @@ public class TocEntryDaoImpl
     @Override
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
-                               @NonNull final Collection<TocEntry> list,
+                               @NonNull final Collection<TocEntry> tocEntries,
                                final boolean lookupLocale,
                                @NonNull final Locale bookLocale)
             throws DaoWriteException {
@@ -284,7 +284,7 @@ public class TocEntryDaoImpl
             }
         };
 
-        pruneList(context, list, localeSupplier);
+        pruneList(context, tocEntries, localeSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
@@ -293,7 +293,7 @@ public class TocEntryDaoImpl
         }
 
         // is there anything to insert ?
-        if (list.isEmpty()) {
+        if (tocEntries.isEmpty()) {
             return;
         }
 
@@ -304,7 +304,7 @@ public class TocEntryDaoImpl
              SynchronizedStatement stmtUpdToc = db.compileStatement(Sql.UPDATE)) {
 
             long position = 0;
-            for (final TocEntry tocEntry : list) {
+            for (final TocEntry tocEntry : tocEntries) {
                 // Author must be handled separately;
                 final Author author = tocEntry.getPrimaryAuthor();
                 final Locale authorLocale;
@@ -335,6 +335,7 @@ public class TocEntryDaoImpl
                     if (iId > 0) {
                         tocEntry.setId(iId);
                     } else {
+                        //FIXME: reset the id of *previously* inserted entries
                         throw new DaoInsertException(ERROR_INSERT_FROM + tocEntry);
                     }
 
@@ -368,6 +369,7 @@ public class TocEntryDaoImpl
                     stmt.bindLong(2, bookId);
                     stmt.bindLong(3, position);
                     if (stmt.executeInsert() == -1) {
+                        //FIXME: reset the id of *previously* inserted entries
                         throw new DaoInsertException("insert Book-TocEntry");
                     }
                 } catch (@NonNull final SQLiteConstraintException ignore) {

@@ -98,12 +98,11 @@ public class LoaneeDaoImpl
      */
     private boolean setLoaneeInternal(@IntRange(from = 1) final long bookId,
                                       @Nullable final String loanee) {
-        boolean success = false;
 
         if (loanee == null || loanee.isEmpty()) {
             try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_BOOK_ID)) {
                 stmt.bindLong(1, bookId);
-                success = stmt.executeUpdateDelete() == 1;
+                return stmt.executeUpdateDelete() == 1;
             }
         } else {
 
@@ -112,7 +111,7 @@ public class LoaneeDaoImpl
                 try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
                     stmt.bindLong(1, bookId);
                     stmt.bindString(2, loanee);
-                    success = stmt.executeInsert() > 0;
+                    return stmt.executeInsert() > 0;
                 }
 
             } else if (!loanee.equals(current)) {
@@ -120,12 +119,12 @@ public class LoaneeDaoImpl
                 // but leaving this in place for the future.
                 final ContentValues cv = new ContentValues();
                 cv.put(DBKey.LOANEE_NAME, loanee);
-                success = 0 < db.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
-                                        DBKey.FK_BOOK + "=?",
-                                        new String[]{String.valueOf(bookId)});
+                return 0 < db.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
+                                     DBKey.FK_BOOK + "=?",
+                                     new String[]{String.valueOf(bookId)});
             }
         }
-        return success;
+        return false;
     }
 
     @Override

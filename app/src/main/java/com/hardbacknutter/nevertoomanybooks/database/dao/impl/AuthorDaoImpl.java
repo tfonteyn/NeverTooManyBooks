@@ -516,18 +516,20 @@ public class AuthorDaoImpl
             }
 
             if (iId > 0) {
+                author.setId(iId);
                 insertOrUpdateRealAuthor(context, bookLocale, author, iId);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-
-                author.setId(iId);
                 return iId;
             }
-
+            // Reset the id before throwing!
+            author.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + author);
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            // Reset the id before throwing!
+            author.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + author, e);
 
         } finally {
@@ -678,8 +680,7 @@ public class AuthorDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
             stmt.bindLong(1, authorId);
             stmt.bindLong(2, realAuthorId);
-            final long id = stmt.executeInsert();
-            if (id < 0) {
+            if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException("Failed to insert PseudonymLink author=" + authorId
                                              + ", real=" + realAuthorId);
             }

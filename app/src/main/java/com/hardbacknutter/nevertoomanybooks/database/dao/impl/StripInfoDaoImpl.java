@@ -77,7 +77,7 @@ public class StripInfoDaoImpl
 
     @Override
     public void insert(@NonNull final Book book)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!book.contains(DBKey.SID_STRIP_INFO)) {
@@ -96,8 +96,7 @@ public class StripInfoDaoImpl
             stmt.bindLong(++i, book.getInt(DBKey.STRIP_INFO_AMOUNT));
             stmt.bindString(++i, book.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC));
 
-            final long rowId = stmt.executeInsert();
-            if (rowId == -1) {
+            if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException("StripInfo data insert failed");
             }
         }

@@ -436,18 +436,21 @@ public class BookshelfDaoImpl
             }
 
             if (iId > 0) {
+                bookshelf.setId(iId);
                 storeFilters(context, iId, bookshelf);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-
-                bookshelf.setId(iId);
                 return iId;
             }
 
+            // Reset the id before throwing!
+            bookshelf.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            // Reset the id before throwing!
+            bookshelf.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
