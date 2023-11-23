@@ -35,10 +35,19 @@
         android:layout_height="match_parent"
         />
 
-    <com.hardbacknutter.nevertoomanybooks.core.widgets.MovableFloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         style="@style/Widget.App.FloatingActionButton"
         android:src="@drawable/ic_baseline_crop_24"
+        android:contentDescription="@string/action_crop"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_cancel"
+        style="@style/Widget.App.FloatingActionButton"
+        android:src="@drawable/ic_baseline_undo_24"
+        android:contentDescription="@string/action_undo"
+        android:layout_gravity="bottom|start"
         />
 
 </FrameLayout>

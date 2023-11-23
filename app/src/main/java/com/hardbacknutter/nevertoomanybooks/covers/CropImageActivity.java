@@ -107,6 +107,7 @@ public class CropImageActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // uses full-screen theme, see manifest
         super.onCreate(savedInstanceState);
+
         vb = ActivityCropimageBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
@@ -134,18 +135,18 @@ public class CropImageActivity
         final Bundle args = Objects.requireNonNull(getIntent().getExtras(),
                                                    "getIntent().getExtras()");
 
-        final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE),
-                                                      BKEY_SOURCE);
+        final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE), BKEY_SOURCE);
         final Bitmap bitmap = getBitmap(srcPath);
         if (bitmap != null) {
             destinationPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION),
                                                      BKEY_DESTINATION);
 
-            vb.coverImage0.initCropView(bitmap);
+            vb.coverImage0.setInitialBitmap(bitmap);
 
             // the FAB button saves the image, use 'back' to cancel.
             vb.fab.setOnClickListener(v -> onSave());
-
+            // Reset/undo but stay here editing
+            vb.btnCancel.setOnClickListener(v -> vb.coverImage0.resetBitmap());
         } else {
             finish();
         }

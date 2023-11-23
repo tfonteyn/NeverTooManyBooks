@@ -70,22 +70,26 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class CropImageView
         extends AppCompatImageView {
 
+    private static final String TAG = "CropImageView";
+
     /** 400% zoom regardless of screen or image orientation. */
     private static final int MAX_ZOOM_FACTOR = 4;
 
     /**
-     * Factor by which a change in the cropping rectangle's size is considered significantly
-     * enough to rescale it.
+     * Factor by which a change in the cropping rectangle's size is
+     * considered significantly enough to rescale it.
      */
     private static final double TEN_PERCENT = 0.1;
 
     /** This is the base transformation which is used to show the image initially. */
     private final Matrix baseMatrix = new Matrix();
+
     /**
      * This is the supplementary transformation which reflects what
      * the user has done in terms of zooming and panning.
      */
     private final Matrix suppMatrix = new Matrix();
+
     /**
      * This is the final matrix which is computed as the concatenation
      * of the base matrix and the supplementary matrix.
@@ -116,6 +120,8 @@ public class CropImageView
 
     private float lastX;
     private float lastY;
+
+    /** The maximum zoom scale as computed when setting the Bitmap. */
     private float maxZoom;
 
     /**
@@ -141,12 +147,12 @@ public class CropImageView
     }
 
     /**
-     * After activity startup, call this method to setup the view with the original bitmap.
+     * Setup the view with the given bitmap.
      *
-     * @param bitmap to crop
+     * @param bitmap to edit
      */
     @UiThread
-    void initCropView(@NonNull final Bitmap bitmap) {
+    void setInitialBitmap(@NonNull final Bitmap bitmap) {
 
         setBitmapMatrix(bitmap);
         //noinspection FloatingPointEquality
@@ -162,6 +168,16 @@ public class CropImageView
 
         highlightView = new HighlightView(this, imageRect, cropRect);
         invalidate();
+    }
+
+    /**
+     * Revert the view to the initial bitmap.
+     */
+    @UiThread
+    void resetBitmap() {
+        if (bitmap != null) {
+            setInitialBitmap(bitmap);
+        }
     }
 
     /**
@@ -209,11 +225,13 @@ public class CropImageView
         this.bottom = bottom;
         width = right - left;
         height = bottom - top;
+
         final Runnable r = onLayoutRunnable;
         if (r != null) {
             onLayoutRunnable = null;
             r.run();
         }
+
         if (bitmap != null) {
             setBaseMatrix(bitmap);
             setImageMatrix(getImageViewMatrix());
@@ -383,9 +401,12 @@ public class CropImageView
 
     /**
      * Center as much as possible in one or both axis. Centering is defined as follows:
-     * If the image is scaled down below the view's dimensions then center it (literally).
-     * If the image is scaled larger than the view and is translated out of view then
-     * translate it back into view (i.e. eliminate black bars).
+     * <ul>
+     *     <li>If the image is scaled down below the view's dimensions then center it (literally).
+     *     </li>
+     *     <li>If the image is scaled larger than the view and is translated out of view then
+     *         translate it back into view (i.e. eliminate black bars).</li>
+     * </ul>
      */
     private void center() {
         if (bitmap == null) {
@@ -702,7 +723,12 @@ public class CropImageView
             }
         }
 
-        /** Grows the cropping rectangle by (dx, dy) in image space. */
+        /**
+         * Move the cropping rectangle by (dx, dy) in image space.
+         *
+         * @param dx the delta in the x direction
+         * @param dy the delta in the y direction
+         */
         private void moveBy(final float dx,
                             final float dy) {
 
@@ -720,6 +746,7 @@ public class CropImageView
             drawRect = computeLayout();
             rect.union(drawRect);
             rect.inset(-10, -10);
+
             imageView.invalidate();
         }
 
@@ -764,6 +791,7 @@ public class CropImageView
                 rect.offset(0.0f, -(rect.bottom - imageRect.bottom));
             }
 
+            // all done; set the final outcome and request a redraw.
             cropRect.set(rect);
             drawRect = computeLayout();
             imageView.invalidate();
