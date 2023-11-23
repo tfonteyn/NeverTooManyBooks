@@ -569,7 +569,7 @@ public class CoverHandler {
             ErrorDialog.show(context, TAG, e);
         } catch (@NonNull final IOException e) {
             // Don't call generic IOException; we *know* what went wrong
-            ErrorDialog.show(context, e,
+            ErrorDialog.show(context, TAG, e,
                              context.getString(R.string.error_storage_not_writable),
                              context.getString(R.string.warning_image_copy_failed));
         }

@@ -189,7 +189,7 @@ public class CalibreLibraryMappingFragment
         message.process(e -> {
             final Context context = getContext();
             //noinspection DataFlowIssue
-            ErrorDialog.show(context, e,
+            ErrorDialog.show(context, TAG, e,
                              getString(R.string.lbl_calibre_content_server),
                              getString(R.string.error_network_site_access_failed,
                                        CalibreContentServer.getHostUrl(context)),

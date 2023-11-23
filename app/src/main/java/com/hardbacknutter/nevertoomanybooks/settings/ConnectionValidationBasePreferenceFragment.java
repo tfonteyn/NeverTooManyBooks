@@ -47,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 public abstract class ConnectionValidationBasePreferenceFragment
         extends BasePreferenceFragment {
 
+    private static final String TAG = "ConnectionValidationFrg";
+
     private ConnectionValidatorViewModel vm;
 
     @Nullable
@@ -197,7 +199,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
 
         message.process(e -> {
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), e,
+            ErrorDialog.show(getContext(), TAG, e,
                              getString(R.string.httpError),
                              getString(R.string.error_network_failed_try_again));
         });

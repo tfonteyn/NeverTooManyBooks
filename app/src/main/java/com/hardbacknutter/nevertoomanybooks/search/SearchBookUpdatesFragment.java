@@ -272,7 +272,7 @@ public class SearchBookUpdatesFragment
 
         message.process(e -> {
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), e, getString(R.string.error_updates_aborted),
+            ErrorDialog.show(getContext(), TAG, e, getString(R.string.error_updates_aborted),
                              (d, w) -> {
                                  d.dismiss();
                                  //noinspection DataFlowIssue

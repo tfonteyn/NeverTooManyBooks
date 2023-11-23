@@ -199,7 +199,7 @@ public class SyncWriterFragment
 
         message.process(e -> {
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), e, getString(R.string.error_export_failed),
+            ErrorDialog.show(getContext(), TAG, e, getString(R.string.error_export_failed),
                              (d, w) -> getActivity().finish());
         });
     }

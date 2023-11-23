@@ -274,9 +274,9 @@ public class ExportFragment
 
         message.process(e -> {
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), e, getString(vm.isBackup()
-                                                        ? R.string.error_backup_failed
-                                                        : R.string.error_export_failed),
+            ErrorDialog.show(getContext(), TAG, e, getString(vm.isBackup()
+                                                             ? R.string.error_backup_failed
+                                                             : R.string.error_export_failed),
                              (d, w) -> getActivity().finish());
         });
     }

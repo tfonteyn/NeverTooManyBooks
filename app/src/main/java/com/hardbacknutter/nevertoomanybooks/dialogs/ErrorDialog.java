@@ -109,14 +109,17 @@ public final class ErrorDialog {
      * Show an error message after a generic Exception was thrown.
      *
      * @param context       Current context
+     * @param tag           log tag
      * @param e             The error
      * @param title         Dialog title
      * @param closingAction to use for the positive button
      */
     public static void show(@NonNull final Context context,
+                            @NonNull final String tag,
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final DialogInterface.OnClickListener closingAction) {
+        LoggerFactory.getLogger().e(tag, e);
         showDialog(context, e, title, null, closingAction);
     }
 
@@ -124,14 +127,17 @@ public final class ErrorDialog {
      * Show an error message after a generic Exception was thrown.
      *
      * @param context Current context
+     * @param tag     log tag
      * @param e       The error
      * @param title   Dialog title
      * @param message The message to show
      */
     public static void show(@NonNull final Context context,
+                            @NonNull final String tag,
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final CharSequence message) {
+        LoggerFactory.getLogger().e(tag, e);
         showDialog(context, e, title, message, (d, w) -> d.dismiss());
     }
 
@@ -139,16 +145,19 @@ public final class ErrorDialog {
      * Show an error message after a generic Exception was thrown.
      *
      * @param context       Current context
+     * @param tag     log tag
      * @param e             The error
      * @param title         Dialog title
      * @param message       The message to show
      * @param closingAction to use for the positive button
      */
     public static void show(@NonNull final Context context,
+                            @NonNull final String tag,
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final CharSequence message,
                             @NonNull final DialogInterface.OnClickListener closingAction) {
+        LoggerFactory.getLogger().e(tag, e);
         showDialog(context, e, title, message, closingAction);
     }
 

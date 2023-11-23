@@ -489,7 +489,7 @@ public class SettingsFragment
 
         message.process(e -> {
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), e,
+            ErrorDialog.show(getContext(), TAG, e,
                              getString(R.string.lbl_moving_data),
                              getString(R.string.error_storage_not_accessible));
         });

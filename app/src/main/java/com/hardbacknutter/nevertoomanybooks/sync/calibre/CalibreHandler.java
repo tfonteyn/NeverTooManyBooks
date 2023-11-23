@@ -62,6 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
  */
 public class CalibreHandler {
 
+    private static final String TAG = "CalibreHandler";
+
     /** Whether to show any sync menus at all. */
     public static final String PK_ENABLED = CalibreContentServer.PREF_KEY + ".enabled";
 
@@ -307,7 +309,7 @@ public class CalibreHandler {
 
         message.process(e -> {
             final Context context = hostView.getContext();
-            ErrorDialog.show(context, e,
+            ErrorDialog.show(context, TAG, e,
                              context.getString(R.string.lbl_calibre_content_server),
                              context.getString(R.string.error_network_site_access_failed,
                                                CalibreContentServer.getHostUrl(context)));

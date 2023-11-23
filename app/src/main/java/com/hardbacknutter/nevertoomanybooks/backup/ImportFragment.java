@@ -437,7 +437,7 @@ public class ImportFragment
 
         message.process(e -> {
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
+            ErrorDialog.show(getContext(), TAG, e, getString(R.string.error_import_failed),
                              (d, w) -> getActivity().finish());
         });
     }
