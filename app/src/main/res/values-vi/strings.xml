@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <plurals name="n_stars">
@@ -102,7 +99,7 @@
     <string name="action_done">Xong</string>
     <string name="action_edit">Chỉnh sửa</string>
     <string name="action_edit_ellipsis">Chỉnh sửa…</string>
-    <string name="error_backup_failed">Lưu trữ thất bại.</string>
+    <string name="error_backup_failed">Sao lưu không thành công.</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="whichEditApplication">Chỉnh sửa bằng</string>
     <string name="X_action_execute">Thực hiện</string>
@@ -158,7 +155,7 @@
     <string name="action_search">Tìm kiếm</string>
     <string name="X_action_send">Gửi</string>
     <string name="X_whichSendToApplication">Gửi bằng</string>
-    <string name="lbl_settings">Cài đặt</string>
+    <string name="lbl_settings">Thiết đặt</string>
     <string name="whichSendApplication">Chia sẻ</string>
     <string name="action_skip">Bỏ qua</string>
     <string name="lbl_storage_settings">Bộ nhớ</string>
@@ -221,11 +218,61 @@
     <string name="action_discard">Yok say</string>
     <string name="lbl_certificate_validity_period">Tính hợp lệ: %1$s - %2$s</string>
     <string name="lbl_reading">Đang đọc</string>
-    <string name="action_edit_defaults">Chỉnh sửa cài đặt mặc định</string>
+    <string name="action_edit_defaults">Chỉnh sửa thiết đặt mặc định</string>
     <string name="ps_show_author_name_given_first">Hiển thị với tên đã cho trước,\nví dụ. “Nhat Hanh, Thich”</string>
     <string name="ps_show_author_name_family_first">Hiển thị với tên gia đình đầu tiên,\nví dụ. \“Thich Nhat Hanh”</string>
     <string name="ps_sort_author_name_given_first">Sắp xếp theo tên đã cho trước.ví dụ,\n “Nhat Hanh, Thich”</string>
     <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\nví dụ. “Thich Nhat Hanh”</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Gán giá sách</string>
+    <string name="pt_bob_list_rebuild_state">Trạng thái khởi động danh mục sách</string>
+    <string name="option_storage_edit_settings">Chỉnh sửa thiết đặt</string>
+    <string name="lbl_series">Bộ</string>
+    <string name="lbl_bookshelves">Giá sách</string>
+    <string name="option_level_expand">Mở rộng tất cả</string>
+    <string name="error_export_failed">Xuất không thành công.</string>
+    <string name="option_shop_books_in_series">Sách trong bộ này</string>
+    <string name="info_backup_successful">Sao lưu thành công</string>
+    <string name="confirm_merge_bookshelves">Giá sách bạn đang sửa đổi đã tồn tại. Bạn có muốn hợp nhất chúng?</string>
+    <string name="option_import_books_option_all">Tất cả sách</string>
+    <string name="option_storage_quit_and_reinsert_sdcard">Thoát và lắp lại thẻ SD chính xác</string>
+    <string name="bookshelf_all_books">Tất cả sách</string>
+    <string name="lbl_series_multiple">Bộ</string>
+    <string name="btn_all_books">Tất cả sách</string>
+    <string name="X_pt_sort_author_name_given_first">Sắp xếp tên tác giả</string>
+    <string name="X_style_type_defaults">Thiết đặt phong cách mặc định</string>
+    <string name="option_shop_books_by_author_in_series">Sách theo tác giả/bộ</string>
+    <string name="option_info_import_books_option_all">Nhập sách mới và ghi đè sách hiện có. Sử dụng điều này để khôi phục bản sao lưu.</string>
+    <string name="lbl_styles_long">Kiểu danh mục sách</string>
+    <string name="warning_backup_request">Bạn có muốn sao lưu cơ sở dữ liệu vào thẻ sd của mình không?</string>
+    <string name="style_builtin_author_series">Tác giả, Bộ sách</string>
+    <string name="tip_authors_works_book">Sách.</string>
+    <string name="ps_bob_books_under_multiple_primary_series_only">chỉ trong bộ chính của chúng</string>
+    <string name="tip_authors_works">Biểu tượng đã dùng</string>
+    <string name="lbl_local_search">Tìm kiếm nội bộ</string>
+    <string name="pt_bob_books_under_multiple_series">Hiển thị sách theo nhiều bộ</string>
+    <string name="option_apply_to_all_related_books">Tất cả sách liên quan</string>
+    <string name="pt_bob_list_state_expansion_level">Mở rộng danh mục sách mặc định</string>
+    <string name="confirm_rebuild_orderby_columns">Điều này sẽ xây dựng lại dữ liệu sắp xếp khi ứng dụng được khởi động lại. Bạn có chắc chắn muốn tiếp tục không?</string>
+    <string name="lbl_local_search_long">Tìm kiếm nội bộ nâng cao</string>
+    <string name="pt_allow_metered_network_data">Cho phép sử dụng dữ liệu di động</string>
+    <string name="option_author_details">Tất cả tác phẩm của tác giả này</string>
+    <string name="tip_view_only_help">Bạn có thể vuốt sang trái hoặc phải để điều hướng đến các sách khác.</string>
+    <string name="pe_thumbnails_cache_resized_stored">Hình ảnh đã được thay đổi kích thước trong bộ nhớ đệm (cuộn sẽ nhanh hơn, sử dụng nhiều bộ nhớ hơn)</string>
+    <string name="option_sort_and_style_ellipsis">Sắp xếp &amp; Phong cách…</string>
+    <string name="option_info_lbl_archive_type_backup">Sao lưu / Khôi phục kho lưu trữ đầy đủ</string>
+    <string name="option_storage_select">Dùng “%1$s”</string>
+    <string name="X_option_bob_filter_anthology_no">Tất cả ngoại trừ tuyển tập</string>
+    <string name="lbl_export_books_option_all">Tất cả sách</string>
+    <string name="info_export_books_option_since_last_full_backup">Sách được thêm hoặc cập nhật kể từ lần sao lưu đầy đủ cuối cùng.</string>
+    <string name="pt_collect_series_info_from_toc">Thu thập thông tin Bộ sách từ bảng nội dung</string>
+    <string name="option_info_archive_format_json">Tất cả dữ liệu ở định dạng JSON.</string>
+    <string name="option_level_collapse">Thu gọn tất cả</string>
+    <string name="lbl_sorting">Sắp xếp</string>
+    <string name="pt_allow_editing_external_id">Cho phép chỉnh sửa id sách trang web</string>
+    <string name="bob_empty_series">(Không có bộ sách)</string>
+    <string name="lbl_about_contact">Liên hệ:</string>
+    <string name="lbl_all_bookshelves">Tất cả giá sách</string>
+    <string name="title_backup_and_export">Sao lưu &amp; Xuất</string>
+    <string name="lbl_export_books_option_since_last_full_backup">Sách mới và đã cập nhật</string>
 </resources>
