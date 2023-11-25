@@ -39,7 +39,7 @@ on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate
 
 - Everyone welcome; log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) if
   you want to be credited with your help.
-- Volunteers have started on Chinese (49%), Vietnamese (31%) and Faroese (16%). These will be added
+- Volunteers have started on Chinese (49%), Vietnamese (38%) and Faroese (16%). These will be added
   if/when completed.
 
 ## Data sources
