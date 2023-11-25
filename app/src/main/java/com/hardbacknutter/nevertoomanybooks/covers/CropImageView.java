@@ -32,8 +32,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
@@ -44,6 +44,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -69,9 +70,6 @@ public class CropImageView
     private static final float TEN_PERCENT = 0.1f;
     private static final float SIXTY_PERCENT = 0.6f;
 
-    /** Tolerance +- for determining a 'hit' of one or more of the edges. */
-    private static final float HYSTERESIS = 40f;
-
     /** This is the base transformation which is used to show the image initially. */
     private final Matrix baseMatrix = new Matrix();
 
@@ -96,6 +94,9 @@ public class CropImageView
      */
     private final Rect currentLayoutRect = new Rect();
 
+    @NonNull
+    private final ScaleGestureDetector scaleGestureDetector;
+
     /** The bitmap currently being displayed. */
     @Nullable
     private Bitmap bitmap;
@@ -107,6 +108,44 @@ public class CropImageView
     @Nullable
     private HighlightView motionHighlightView;
 
+    private enum InScaleGestureStep {
+        NotActive,
+        Begin,
+        InProgress,
+        Ended
+    }
+
+    @NonNull
+    private InScaleGestureStep inScaleGestureStep = InScaleGestureStep.NotActive;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private final ScaleGestureDetector.SimpleOnScaleGestureListener onScaleGestureListener =
+            new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+                @Override
+                public boolean onScaleBegin(@NonNull final ScaleGestureDetector detector) {
+                    inScaleGestureStep = InScaleGestureStep.Begin;
+                    motionHighlightView = highlightView;
+                    motionHighlightView.setInMotion(InMotion.RESIZE);
+                    return true;
+                }
+
+                @Override
+                public boolean onScale(@NonNull final ScaleGestureDetector detector) {
+                    inScaleGestureStep = InScaleGestureStep.InProgress;
+                    final float dx = detector.getCurrentSpanX() - detector.getPreviousSpanX();
+                    final float dy = detector.getCurrentSpanY() - detector.getPreviousSpanY();
+                    motionHighlightView.resizeBy(dx, dy);
+                    return true;
+                }
+
+                @Override
+                public void onScaleEnd(@NonNull final ScaleGestureDetector detector) {
+                    inScaleGestureStep = InScaleGestureStep.Ended;
+                    motionHighlightView.setInMotion(InMotion.NO);
+                    motionHighlightView = null;
+                }
+            };
     /**
      * Tracks the {@code x} coordinate of the current MotionEvent. Set on {@code ACTION_DOWN}
      * and updated during {@code ACTION_MOVE}.
@@ -142,58 +181,8 @@ public class CropImageView
                          @Nullable final AttributeSet attrs) {
         super(context, attrs);
         setScaleType(ScaleType.MATRIX);
-    }
 
-    /**
-     * Determines whether the given event is a resize initiated from
-     * one or more edges, or if it was a move.
-     *
-     * @param event to analyse
-     * @param rect  The rectangle around the highlighted area, i.e. the current cropped selection
-     *
-     * @return the {@link HighlightView.MotionAction} code
-     */
-    @HighlightView.MotionAction
-    private static int getMotionAction(@NonNull final MotionEvent event,
-                                       @NonNull final Rect rect) {
-
-        final float x = event.getX();
-        final float y = event.getY();
-
-        // vertical: check if the position is between the top and the bottom edge,
-        // (with some tolerance). Similar for horizontal.
-        final boolean vertical = y >= rect.top - HYSTERESIS && y < rect.bottom + HYSTERESIS;
-        final boolean horizontal = x >= rect.left - HYSTERESIS && x < rect.right + HYSTERESIS;
-
-        @HighlightView.MotionAction
-        int action = HighlightView.NO_ACTION;
-
-        // Check whether the position is near one or more of the rectangle edges.
-        if (Math.abs(rect.left - x) < HYSTERESIS && vertical) {
-            action |= HighlightView.RESIZE_LEFT_EDGE;
-        }
-        if (Math.abs(rect.right - x) < HYSTERESIS && vertical) {
-            action |= HighlightView.RESIZE_RIGHT_EDGE;
-        }
-        if (Math.abs(rect.top - y) < HYSTERESIS && horizontal) {
-            action |= HighlightView.RESIZE_TOP_EDGE;
-        }
-        if (Math.abs(rect.bottom - y) < HYSTERESIS && horizontal) {
-            action |= HighlightView.RESIZE_BOTTOM_EDGE;
-        }
-        if (action != HighlightView.NO_ACTION) {
-            // It's a resize
-            return action;
-        }
-
-        // Otherwise check if it was inside the rectangle
-        if (rect.contains((int) x, (int) y)) {
-            // then it's a move
-            return HighlightView.MOVE;
-        }
-
-        // Outside of the highlighted rectangle
-        return HighlightView.NO_ACTION;
+        scaleGestureDetector = new ScaleGestureDetector(context, onScaleGestureListener);
     }
 
     /**
@@ -289,12 +278,26 @@ public class CropImageView
             return false;
         }
 
+        // ALWAYS give it ALL events! This seems to be crucial to the detector working properly.
+        scaleGestureDetector.onTouchEvent(event);
+
+        // If the detector has just gone through "onScaleEnd", reset it and we're done here.
+        if (inScaleGestureStep == InScaleGestureStep.Ended) {
+            inScaleGestureStep = InScaleGestureStep.NotActive;
+            return true;
+        }
+
+        // If the detector is handling the events, we're done here.
+        if (inScaleGestureStep != InScaleGestureStep.NotActive) {
+            return true;
+        }
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 if (highlightView != null) {
-                    // determine the intention of the user
-                    final int motionAction = getMotionAction(event, highlightView.computeLayout());
-                    if (motionAction != HighlightView.NO_ACTION) {
+                    final int motionAction = InMotion
+                            .determineInMotion(event, highlightView.computeLayout());
+                    if (motionAction != InMotion.NO) {
                         motionHighlightView = highlightView;
                         motionHighlightView.setInMotion(motionAction);
                         lastX = event.getX();
@@ -324,7 +327,7 @@ public class CropImageView
                 if (motionHighlightView != null) {
                     recenterAndScale(motionHighlightView);
                     ensureVisible(motionHighlightView);
-                    motionHighlightView.setInMotion(HighlightView.NO_ACTION);
+                    motionHighlightView.setInMotion(InMotion.NO);
                 }
                 motionHighlightView = null;
                 centerBitmap();
@@ -570,23 +573,119 @@ public class CropImageView
     }
 
 
+    @IntDef(flag = true, value = {
+            InMotion.NO,
+            InMotion.MOVE,
+            InMotion.RESIZE_LEFT_EDGE, InMotion.RESIZE_RIGHT_EDGE,
+            InMotion.RESIZE_TOP_EDGE, InMotion.RESIZE_BOTTOM_EDGE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MotionAction {
+
+    }
+
+    private static final class InMotion {
+
+        static final int NO = 0;
+
+        /** Mutually exclusive with ALL other flags. */
+        static final int MOVE = 1;
+
+        static final int RESIZE_LEFT_EDGE = 1 << 1;
+        static final int RESIZE_RIGHT_EDGE = 1 << 2;
+        static final int RESIZE_HORIZONTAL = RESIZE_LEFT_EDGE | RESIZE_RIGHT_EDGE;
+        static final int RESIZE_TOP_EDGE = 1 << 3;
+        static final int RESIZE_BOTTOM_EDGE = 1 << 4;
+        static final int RESIZE_VERTICAL = RESIZE_TOP_EDGE | RESIZE_BOTTOM_EDGE;
+        static final int RESIZE = RESIZE_HORIZONTAL | RESIZE_VERTICAL;
+
+
+        /** Tolerance +- for determining a 'hit' of one or more of the edges. */
+        private static final float HYSTERESIS = 40f;
+
+        // DEBUG
+        @NonNull
+        static String toString(@MotionAction final int action) {
+            final StringJoiner sj = new StringJoiner("|");
+
+            if ((action & RESIZE_LEFT_EDGE) != 0) {
+                sj.add("RESIZE_LEFT_EDGE");
+            }
+            if ((action & RESIZE_RIGHT_EDGE) != 0) {
+                sj.add("RESIZE_RIGHT_EDGE");
+            }
+            if ((action & RESIZE_TOP_EDGE) != 0) {
+                sj.add("RESIZE_TOP_EDGE");
+            }
+            if ((action & RESIZE_BOTTOM_EDGE) != 0) {
+                sj.add("RESIZE_BOTTOM_EDGE");
+            }
+            if ((action & MOVE) != 0) {
+                sj.add("MOVE");
+            }
+            return sj.toString();
+        }
+
+        /**
+         * Determines whether the given event is a resize initiated from
+         * one or more edges, or if it was a move.
+         *
+         * @param event to analyse
+         * @param rect  The rectangle around the highlighted area,
+         *              i.e. the current cropped selection
+         *
+         * @return the {@link MotionAction} code
+         */
+        @MotionAction
+        private static int determineInMotion(@NonNull final MotionEvent event,
+                                             @NonNull final Rect rect) {
+
+            final float x = event.getX();
+            final float y = event.getY();
+
+            // vertical: check if the position is between the top and the bottom edge,
+            // (with some tolerance). Similar for horizontal.
+            final boolean vertical = y >= rect.top - HYSTERESIS && y < rect.bottom + HYSTERESIS;
+            final boolean horizontal = x >= rect.left - HYSTERESIS && x < rect.right + HYSTERESIS;
+
+            @MotionAction
+            int action = NO;
+
+            // Check whether the position is near one or more of the rectangle edges.
+            if (Math.abs(rect.left - x) < HYSTERESIS && vertical) {
+                action |= RESIZE_LEFT_EDGE;
+            }
+            if (Math.abs(rect.right - x) < HYSTERESIS && vertical) {
+                action |= RESIZE_RIGHT_EDGE;
+            }
+            if (Math.abs(rect.top - y) < HYSTERESIS && horizontal) {
+                action |= RESIZE_TOP_EDGE;
+            }
+            if (Math.abs(rect.bottom - y) < HYSTERESIS && horizontal) {
+                action |= RESIZE_BOTTOM_EDGE;
+            }
+            if (action != NO) {
+                // It's a resize
+                return action;
+            }
+
+            // Otherwise check if it was inside the rectangle
+            if (rect.contains((int) x, (int) y)) {
+                // then it's a move
+                return MOVE;
+            }
+
+            // Outside of the highlighted rectangle
+            return NO;
+        }
+    }
+
     /**
      * Displays a highlighted cropping rectangle overlaid on the image.
      * There are two coordinate spaces: image and screen.
      * {@link #computeLayout()} uses a Matrix to map from image to screen space.
      */
     private static class HighlightView {
-
-        private static final int NO_ACTION = 0;
-        private static final int RESIZE_LEFT_EDGE = 1;
-        private static final int RESIZE_RIGHT_EDGE = 1 << 1;
-        private static final int RESIZE_TOP_EDGE = 1 << 2;
-        private static final int RESIZE_BOTTOM_EDGE = 1 << 3;
-        private static final int MOVE = 1 << 4;
-
-        private static final int RESIZE_HORIZONTAL = RESIZE_LEFT_EDGE | RESIZE_RIGHT_EDGE;
-        private static final int RESIZE_VERTICAL = RESIZE_TOP_EDGE | RESIZE_BOTTOM_EDGE;
-        private static final int RESIZE = RESIZE_HORIZONTAL | RESIZE_VERTICAL;
 
         /**
          * Resize at most half of the difference between
@@ -632,7 +731,7 @@ public class CropImageView
          * Bit 4 indicates it's a move by touch/moving the inside of the rectangle.
          */
         @MotionAction
-        private int motionAction = NO_ACTION;
+        private int inMotion = InMotion.NO;
 
         /**
          * Constructor.
@@ -698,7 +797,7 @@ public class CropImageView
             canvas.drawPath(path, outlinePaint);
 
             // If we're currently resizing, also draw the edge-grabber icon/areas.
-            if (motionAction != NO_ACTION && motionAction != MOVE) {
+            if (inMotion != InMotion.NO && inMotion != InMotion.MOVE) {
                 int width;
                 int height;
                 int middle;
@@ -733,17 +832,17 @@ public class CropImageView
 
         /**
          * Called from a {@code MotionEvent.ACTION_DOWN} to set the required/current action.
-         * Called from a {@code MotionEvent.ACTION_UP} to reset to {@link HighlightView#NO_ACTION}.
+         * Called from a {@code MotionEvent.ACTION_UP} to reset to {@link InMotion#NO}.
          * <p>
          * This is the action to be acted upon when a {@code MotionEvent.ACTION_MOVE} happens
          * and {@link #handleMotion(float, float)} is called.
          *
-         * @param motionAction to set
+         * @param inMotion to set
          */
-        void setInMotion(@MotionAction final int motionAction) {
+        void setInMotion(@MotionAction final int inMotion) {
             // only invalidate the view if the mode is actually changing.
-            if (this.motionAction != motionAction) {
-                this.motionAction = motionAction;
+            if (this.inMotion != inMotion) {
+                this.inMotion = inMotion;
                 imageView.invalidate();
             }
         }
@@ -757,12 +856,12 @@ public class CropImageView
         void handleMotion(final float dx,
                           final float dy) {
 
-            if (motionAction == NO_ACTION) {
+            if (inMotion == InMotion.NO) {
                 return;
             }
 
             final Rect rect = computeLayout();
-            if (motionAction == MOVE) {
+            if (inMotion == InMotion.MOVE) {
                 // Convert to image space before doing the actual move
                 final float dxImage = dx * (cropRect.width() / rect.width());
                 final float dyImage = dy * (cropRect.height() / rect.height());
@@ -774,16 +873,16 @@ public class CropImageView
                 final float dxImage;
                 final float dyImage;
 
-                if ((RESIZE_HORIZONTAL & motionAction) != 0) {
+                if ((InMotion.RESIZE_HORIZONTAL & inMotion) != 0) {
                     dxImage = dx * (cropRect.width() / rect.width())
-                              * ((motionAction & RESIZE_LEFT_EDGE) != 0 ? -1 : 1);
+                              * ((inMotion & InMotion.RESIZE_LEFT_EDGE) != 0 ? -1 : 1);
                 } else {
                     dxImage = 0f;
                 }
 
-                if ((RESIZE_VERTICAL & motionAction) != 0) {
+                if ((InMotion.RESIZE_VERTICAL & inMotion) != 0) {
                     dyImage = dy * (cropRect.height() / rect.height())
-                              * ((motionAction & RESIZE_TOP_EDGE) != 0 ? -1 : 1);
+                              * ((inMotion & InMotion.RESIZE_TOP_EDGE) != 0 ? -1 : 1);
                 } else {
                     dyImage = 0f;
                 }
@@ -890,16 +989,6 @@ public class CropImageView
             matrix.mapRect(rectF);
             return new Rect(Math.round(rectF.left), Math.round(rectF.top),
                             Math.round(rectF.right), Math.round(rectF.bottom));
-        }
-
-        @IntDef(flag = true, value = {
-                NO_ACTION,
-                RESIZE_LEFT_EDGE, RESIZE_RIGHT_EDGE,
-                RESIZE_TOP_EDGE, RESIZE_BOTTOM_EDGE,
-                MOVE})
-        @Retention(RetentionPolicy.SOURCE)
-        @interface MotionAction {
-
         }
     }
 }
