@@ -20,9 +20,9 @@
 
 /**
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportViewModel}
- *  * serves as the glue between the UI and the
+ * serves as the glue between the UI and the
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportHelper}
- * iThe helper inspects the Uri and determines the
+ * The helper inspects the Uri and determines the
  * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding}
  * of the given archive. Other options are carried forward as well.
  * <p>
@@ -74,14 +74,10 @@
  * <p>
  * Archives written:
  * <ul>
- * <li>csv: books only</li>
  * <li>db: a copy of the internal database</li>
  * <li>json: all data except covers</li>
- * <li>xml: books only</li>
  * <li>zip: all data in json format + covers == full backup</li>
  * </ul>
- * zip can be forced (by changing the version number in the code + recompiling)
- * to contain csv encoded books
  * <p>
  * Archives read:
  * <ul>
@@ -91,7 +87,7 @@
  * <li>zip: all data in json,xml,csv formats + covers</li>
  * </ul>
  * <p>
- * An entry in an archive will have a Type (books, styles,...) and an Encoding (csv, xml, ...)
+ * An entry in an archive will have a Type (books, styles,...) and an Encoding (json, csv, ...)
  * <p>
  * Not all combinations are implemented (which would be rather pointless) but there are more
  * implementations than really needed.
