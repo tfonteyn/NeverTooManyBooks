@@ -414,7 +414,7 @@ public class BookshelfDaoImpl
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf,
-                       @NonNull final Locale locale)
+                       @NonNull final Locale bookLocale)
             throws DaoInsertException {
 
         // validate the style first
@@ -464,7 +464,7 @@ public class BookshelfDaoImpl
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf,
-                       @NonNull final Locale locale)
+                       @NonNull final Locale bookLocale)
             throws DaoUpdateException {
 
         // validate the style first
