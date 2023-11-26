@@ -762,17 +762,12 @@ public class AuthorDaoImpl
         }
     }
 
-    // Note that in normal usage we could first get the book id's
-    // that needs updating, and then update only those.
-    // However, that means two statements to execute and overall a longer execution time
-    // as compared to the single stmt approach here.
     @Override
     public int fixPositions(@NonNull final Context context) {
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
-            //noinspection CheckStyle
             try {
                 if (!db.inTransaction()) {
                     txLock = db.beginTransaction(true);
