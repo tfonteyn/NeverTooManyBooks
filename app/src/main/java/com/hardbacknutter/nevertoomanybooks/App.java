@@ -90,6 +90,17 @@ public class App
                                            .detectActivityLeaks()
                                            .penaltyLog()
                                            .build());
+
+            // Android 13 (maybe earlier versions as well) will show a
+            // StrictMode policy violation: android.os.strictmode.LeakedClosableViolation:
+            // A resource was acquired at attached stack trace but never released.
+            // See java.io.Closeable for information on avoiding resource leaks. Callsite: close
+            //
+            // Reproduce: start the app, click on a book to open details.
+            //
+            // This is a bug in
+            // android.app.ActivityThread#handleAttachStartupAgents
+            // fixed in Android 14 (and maybe in later 13 releases)
         }
     }
 
