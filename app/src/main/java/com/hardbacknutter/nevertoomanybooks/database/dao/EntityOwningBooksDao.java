@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
@@ -89,17 +90,13 @@ public interface EntityOwningBooksDao<T extends Entity> {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context      Current context
-     * @param bookId       of the book
-     * @param doUpdates    set to {@code true} to force each {@link T} to be updated.
-     *                     <strong>ONLY</strong> set this when actually needed.
-     *                     Do not set this during for example an import.
-     * @param list         the list of {@link T}'s
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
+     * @param context        Current context
+     * @param bookId         of the book
+     * @param doUpdates      set to {@code true} to force each {@link T} to be updated.
+     *                       <strong>ONLY</strong> set this when actually needed.
+     *                       Do not set this during for example an import.
+     * @param list           the list of {@link T}'s
+     * @param localeSupplier a supplier to get the Locale; called for each item in the list
      *
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
@@ -108,7 +105,6 @@ public interface EntityOwningBooksDao<T extends Entity> {
                         @IntRange(from = 1) long bookId,
                         boolean doUpdates,
                         @NonNull Collection<T> list,
-                        boolean lookupLocale,
-                        @NonNull Locale bookLocale)
+                        @NonNull Function<T, Locale> localeSupplier)
             throws DaoWriteException;
 }

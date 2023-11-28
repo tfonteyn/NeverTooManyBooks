@@ -107,14 +107,10 @@ public interface TocEntryDao
      * </ol>
      * <strong>Transaction:</strong> required
      *
-     * @param context      Current context
-     * @param bookId       of the book
-     * @param list         the list of {@link TocEntry}
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
+     * @param context        Current context
+     * @param bookId         of the book
+     * @param list           the list of {@link TocEntry}
+     * @param localeSupplier a supplier to get the Locale; called for each item in the list
      *
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
@@ -122,8 +118,7 @@ public interface TocEntryDao
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
                         @NonNull Collection<TocEntry> list,
-                        boolean lookupLocale,
-                        @NonNull Locale bookLocale)
+                        @NonNull Function<TocEntry, Locale> localeSupplier)
             throws DaoWriteException;
 
     /**

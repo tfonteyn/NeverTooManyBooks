@@ -280,8 +280,7 @@ public class SeriesDaoImpl
                                @IntRange(from = 1) final long bookId,
                                final boolean doUpdates,
                                @NonNull final Collection<Series> list,
-                               final boolean lookupLocale,
-                               @NonNull final Locale bookLocale)
+                               @NonNull final Function<Series, Locale> localeSupplier)
             throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -289,15 +288,6 @@ public class SeriesDaoImpl
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
-
-
-        final Function<Series, Locale> localeSupplier = item -> {
-            if (lookupLocale) {
-                return item.getLocale(context).orElse(bookLocale);
-            } else {
-                return bookLocale;
-            }
-        };
 
         pruneList(context, list, localeSupplier);
 
@@ -315,11 +305,12 @@ public class SeriesDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Series series : list) {
-                fixId(context, series, localeSupplier.apply(series));
+                final Locale locale = localeSupplier.apply(series);
+                fixId(context, series, locale);
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (series.getId() == 0) {
-                    insert(context, series, bookLocale);
+                    insert(context, series, locale);
                 } else if (doUpdates) {
                     // https://stackoverflow.com/questions/6677517/update-if-different-changed
                     // ONLY update if there are actual changes.
@@ -329,7 +320,7 @@ public class SeriesDaoImpl
                     findById(series.getId()).ifPresent(current -> {
                         if (!current.equals(series)) {
                             try {
-                                update(context, series, bookLocale);
+                                update(context, series, locale);
                             } catch (@NonNull final DaoUpdateException e) {
                                 throw new UncheckedDaoWriteException(e);
                             }
@@ -478,8 +469,9 @@ public class SeriesDaoImpl
 
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
+                final Locale bookLocale = book.getLocaleOrUserLocale(context);
                 insertOrUpdate(context, bookId, false, destList,
-                               true, book.getLocaleOrUserLocale(context));
+                               series -> series.getLocale(context).orElse(bookLocale));
             }
 
             // delete the obsolete source.
@@ -517,8 +509,8 @@ public class SeriesDaoImpl
                     final Book book = Book.from(bookId);
                     final List<Series> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId, false, list, false,
-                                   book.getLocaleOrUserLocale(context));
+                    final Locale bookLocale = book.getLocaleOrUserLocale(context);
+                    insertOrUpdate(context, bookId, false, list, series -> bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();

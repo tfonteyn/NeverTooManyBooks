@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -508,24 +509,28 @@ public class BookDaoImpl
             final List<Author> list = book.getAuthors();
             // Authors will be inserted if new, but only updated if allowed
             authorDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
-                                                   list,
-                                                   lookupLocale, bookLocale);
+                                                   list, author -> bookLocale);
         }
 
         if (book.contains(Book.BKEY_SERIES_LIST)) {
             final List<Series> list = book.getSeries();
+            final Function<Series, Locale> localeSupplier = item -> {
+                if (lookupLocale) {
+                    return item.getLocale(context).orElse(bookLocale);
+                } else {
+                    return bookLocale;
+                }
+            };
             // Series will be inserted if new, but only updated if allowed
             seriesDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
-                                                   list,
-                                                   lookupLocale, bookLocale);
+                                                   list, localeSupplier);
         }
 
         if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
             final List<Publisher> list = book.getPublishers();
             // Publishers will be inserted if new, but only updated if allowed
             publisherDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
-                                                      list,
-                                                      lookupLocale, bookLocale);
+                                                      list, publisher -> bookLocale);
         }
 
         if (book.contains(Book.BKEY_TOC_LIST)) {
@@ -533,8 +538,7 @@ public class BookDaoImpl
             // Hence we will both insert new entries
             // AND update existing ones as needed.
             tocEntryDaoSupplier.get().insertOrUpdate(context, book.getId(),
-                                                     book.getToc(),
-                                                     lookupLocale, bookLocale);
+                                                     book.getToc(), tocEntry -> bookLocale);
         }
 
         if (book.contains(DBKey.LOANEE_NAME)) {

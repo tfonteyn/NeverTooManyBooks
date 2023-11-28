@@ -257,8 +257,7 @@ public class TocEntryDaoImpl
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<TocEntry> tocEntries,
-                               final boolean lookupLocale,
-                               @NonNull final Locale bookLocale)
+                               @NonNull final Function<TocEntry, Locale> localeSupplier)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -266,14 +265,6 @@ public class TocEntryDaoImpl
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
-
-        final Function<TocEntry, Locale> localeSupplier = item -> {
-            if (lookupLocale) {
-                return item.getLocale(context).orElse(bookLocale);
-            } else {
-                return bookLocale;
-            }
-        };
 
         pruneList(context, tocEntries, localeSupplier);
 
@@ -296,21 +287,16 @@ public class TocEntryDaoImpl
 
             long position = 0;
             for (final TocEntry tocEntry : tocEntries) {
+                final Locale locale = localeSupplier.apply(tocEntry);
+
                 // Author must be handled separately;
                 final Author author = tocEntry.getPrimaryAuthor();
-                final Locale authorLocale;
-                if (lookupLocale) {
-                    authorLocale = author.getLocale(context).orElse(bookLocale);
-                } else {
-                    authorLocale = bookLocale;
-                }
-                authorDao.fixId(context, author, authorLocale);
+                authorDao.fixId(context, author, locale);
                 // Create if needed - NEVER do updates here
                 if (author.getId() == 0) {
-                    authorDao.insert(context, author, bookLocale);
+                    authorDao.insert(context, author, locale);
                 }
 
-                final Locale locale = localeSupplier.apply(tocEntry);
                 final ReorderHelper reorderHelper = reorderHelperSupplier.get();
                 final String title = tocEntry.getTitle();
                 final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
@@ -435,7 +421,6 @@ public class TocEntryDaoImpl
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
-            //noinspection CheckStyle
             try {
                 if (!db.inTransaction()) {
                     txLock = db.beginTransaction(true);
@@ -445,8 +430,8 @@ public class TocEntryDaoImpl
                     final Book book = Book.from(bookId);
                     final List<TocEntry> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId, list, false,
-                                   book.getLocaleOrUserLocale(context));
+                    final Locale bookLocale = book.getLocaleOrUserLocale(context);
+                    insertOrUpdate(context, bookId, list, tocEntry -> bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();
