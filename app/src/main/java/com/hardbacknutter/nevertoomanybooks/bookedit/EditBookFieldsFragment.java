@@ -200,8 +200,8 @@ public class EditBookFieldsFragment
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection DataFlowIssue
-        vm.getBook().pruneAuthors(getContext(), true);
-        vm.getBook().pruneSeries(getContext(), true);
+        vm.getBook().pruneAuthors(getContext());
+        vm.getBook().pruneSeries(getContext());
 
         super.onPopulateViews(fields, book);
 

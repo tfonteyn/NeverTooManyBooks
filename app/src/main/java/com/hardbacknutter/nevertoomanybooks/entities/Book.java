@@ -678,25 +678,15 @@ public class Book
     /**
      * Remove duplicates. We keep the first occurrence.
      *
-     * @param context      Current context
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
+     * @param context Current context
      */
-    public void pruneAuthors(@NonNull final Context context,
-                             final boolean lookupLocale) {
+    public void pruneAuthors(@NonNull final Context context) {
         final List<Author> authors = getAuthors();
         if (!authors.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
-            if (authorDao.pruneList(context, authors, item -> {
-                if (lookupLocale) {
-                    return item.getLocale(context)
-                               .orElseGet(() -> getLocaleOrUserLocale(context));
-                } else {
-                    return getLocaleOrUserLocale(context);
-                }
-            })) {
+            if (authorDao.pruneList(context, authors, author -> locale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -780,26 +770,18 @@ public class Book
     /**
      * Remove duplicates. We keep the first occurrence.
      *
-     * @param context      Current context
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
+     * @param context Current context
      */
-    public void pruneSeries(@NonNull final Context context,
-                            final boolean lookupLocale) {
+    public void pruneSeries(@NonNull final Context context) {
         if (contains(BKEY_SERIES_LIST)) {
-            final List<Series> series = getSeries();
-            if (!series.isEmpty()) {
+            final List<Series> seriesList = getSeries();
+            if (!seriesList.isEmpty()) {
                 final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+                final Locale bookLocale = getLocaleOrUserLocale(context);
 
-                if (seriesDao.pruneList(context, series, item -> {
-                    if (lookupLocale) {
-                        return item.getLocale(context)
-                                   .orElseGet(() -> getLocaleOrUserLocale(context));
-                    } else {
-                        return getLocaleOrUserLocale(context);
-                    }
-                })) {
+                if (seriesDao.pruneList(context, seriesList,
+                                        series -> series.getLocale(context)
+                                                        .orElseGet(() -> bookLocale))) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
             }
@@ -862,26 +844,16 @@ public class Book
     /**
      * Remove duplicates. We keep the first occurrence.
      *
-     * @param context      Current context
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
+     * @param context Current context
      */
-    public void prunePublishers(@NonNull final Context context,
-                                final boolean lookupLocale) {
+    public void prunePublishers(@NonNull final Context context) {
         if (contains(BKEY_PUBLISHER_LIST)) {
             final List<Publisher> publishers = getPublishers();
             if (!publishers.isEmpty()) {
                 final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+                final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
-                if (publisherDao.pruneList(context, publishers, item -> {
-                    if (lookupLocale) {
-                        return item.getLocale(context)
-                                   .orElseGet(() -> getLocaleOrUserLocale(context));
-                    } else {
-                        return getLocaleOrUserLocale(context);
-                    }
-                })) {
+                if (publisherDao.pruneList(context, publishers, publisher -> locale)) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
             }

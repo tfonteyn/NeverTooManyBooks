@@ -773,7 +773,7 @@ public class EditBookViewModel
         list.remove(original);
         list.add(modified);
         book.setAuthors(list);
-        book.pruneAuthors(context, true);
+        book.pruneAuthors(context);
     }
 
     void changeForAllBooks(@NonNull final Context context,
@@ -785,7 +785,7 @@ public class EditBookViewModel
 
         ServiceLocator.getInstance().getAuthorDao()
                       .update(context, original, book.getLocaleOrUserLocale(context));
-        book.pruneAuthors(context, true);
+        book.pruneAuthors(context);
         book.refreshAuthors(context);
     }
 
@@ -803,7 +803,7 @@ public class EditBookViewModel
         list.remove(original);
         list.add(modified);
         book.setSeries(list);
-        book.pruneSeries(context, true);
+        book.pruneSeries(context);
     }
 
     void changeForAllBooks(@NonNull final Context context,
@@ -815,7 +815,7 @@ public class EditBookViewModel
 
         ServiceLocator.getInstance().getSeriesDao()
                       .update(context, original, book.getLocaleOrUserLocale(context));
-        book.pruneSeries(context, true);
+        book.pruneSeries(context);
         book.refreshSeries(context);
     }
 
@@ -833,7 +833,7 @@ public class EditBookViewModel
         list.remove(original);
         list.add(modified);
         book.setPublishers(list);
-        book.prunePublishers(context, true);
+        book.prunePublishers(context);
     }
 
     void changeForAllBooks(@NonNull final Context context,
@@ -845,7 +845,7 @@ public class EditBookViewModel
 
         ServiceLocator.getInstance().getPublisherDao()
                       .update(context, original, book.getLocaleOrUserLocale(context));
-        book.prunePublishers(context, true);
+        book.prunePublishers(context);
         book.refreshPublishers(context);
     }
 
