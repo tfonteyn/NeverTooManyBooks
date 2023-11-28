@@ -306,10 +306,8 @@ public class PublisherDaoImpl
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Publisher publisher,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoInsertException {
-
-        final Locale locale = publisher.getLocale(context).orElse(bookLocale);
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String name = publisher.getName();
@@ -334,10 +332,9 @@ public class PublisherDaoImpl
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Publisher publisher,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoUpdateException {
 
-        final Locale locale = publisher.getLocale(context).orElse(bookLocale);
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = publisher.getName();
         final String obName = reorderHelper.reorderForSorting(context, text, locale);

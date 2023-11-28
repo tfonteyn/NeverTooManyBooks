@@ -485,10 +485,8 @@ public class AuthorDaoImpl
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Author author,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoWriteException {
-
-        final Locale locale = author.getLocale(context).orElse(bookLocale);
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -508,7 +506,7 @@ public class AuthorDaoImpl
 
             if (iId > 0) {
                 author.setId(iId);
-                insertOrUpdateRealAuthor(context, bookLocale, author, iId);
+                insertOrUpdateRealAuthor(context, author, locale, iId);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -534,12 +532,8 @@ public class AuthorDaoImpl
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Author author,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoWriteException {
-
-        // bookLocale is not used.
-        final Locale locale = author.getLocale(context).orElseGet(
-                () -> context.getResources().getConfiguration().getLocales().get(0));
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -560,7 +554,7 @@ public class AuthorDaoImpl
             }
 
             if (rowsAffected > 0) {
-                insertOrUpdateRealAuthor(context, bookLocale, author, author.getId());
+                insertOrUpdateRealAuthor(context, author, locale, author.getId());
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -582,17 +576,17 @@ public class AuthorDaoImpl
     /**
      * Handle the real-author storage.
      *
-     * @param context    Current context
-     * @param bookLocale Locale to use if the item has none set
-     * @param author     the 'original' author; it's internal id will be ignored
-     *                   (in case of an insert it's 0, in case of an update its the actual id)
-     * @param authorId   the 'original' author id
+     * @param context  Current context
+     * @param author   the 'original' author; it's internal id will be ignored
+     *                 (in case of an insert it's 0, in case of an update its the actual id)
+     * @param locale   Locale to use if the item has none set
+     * @param authorId the 'original' author id
      *
      * @throws DaoWriteException on failure
      */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
-                                          @NonNull final Locale bookLocale,
                                           @NonNull final Author author,
+                                          @NonNull final Locale locale,
                                           final long authorId)
             throws DaoWriteException {
         // always delete any previous link
@@ -604,11 +598,11 @@ public class AuthorDaoImpl
             return;
         }
 
-        fixId(context, realAuthor, bookLocale);
+        fixId(context, realAuthor, locale);
         if (realAuthor.getId() == 0) {
-            insert(context, realAuthor, bookLocale);
+            insert(context, realAuthor, locale);
         } else {
-            update(context, realAuthor, bookLocale);
+            update(context, realAuthor, locale);
         }
         insertPseudonymLink(authorId, realAuthor.getId());
     }

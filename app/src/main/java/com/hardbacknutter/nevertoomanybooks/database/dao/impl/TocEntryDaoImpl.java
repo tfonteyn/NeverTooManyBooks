@@ -381,7 +381,7 @@ public class TocEntryDaoImpl
     @Override
     public long insert(@NonNull final Context context,
                        @NonNull final TocEntry item,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoWriteException {
         throw new UnsupportedOperationException("use insertOrUpdate instead");
     }
@@ -389,7 +389,7 @@ public class TocEntryDaoImpl
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final TocEntry item,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoWriteException {
         throw new UnsupportedOperationException("use insertOrUpdate instead");
     }

@@ -354,18 +354,18 @@ public class SeriesDaoImpl
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoInsertException {
 
-        final Locale locale = series.getLocale(context).orElse(bookLocale);
+        final Locale resolvedLocale = series.getLocale(context).orElse(locale);
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String title = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
+        final String obTitle = reorderHelper.reorderForSorting(context, title, resolvedLocale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, title);
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, resolvedLocale));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -383,17 +383,18 @@ public class SeriesDaoImpl
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Series series,
-                       @NonNull final Locale bookLocale)
+                       @NonNull final Locale locale)
             throws DaoUpdateException {
 
-        final Locale locale = series.getLocale(context).orElse(bookLocale);
+        final Locale resolvedLocale = series.getLocale(context).orElse(locale);
+
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
+        final String obTitle = reorderHelper.reorderForSorting(context, text, resolvedLocale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, resolvedLocale));
             stmt.bindBoolean(3, series.isComplete());
             stmt.bindLong(4, series.getId());
 

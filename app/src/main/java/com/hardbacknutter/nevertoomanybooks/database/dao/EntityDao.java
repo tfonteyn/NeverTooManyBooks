@@ -109,9 +109,9 @@ public interface EntityDao<T extends Entity> {
     /**
      * Insert a new {@link T}.
      *
-     * @param context    Current context
-     * @param item       to insert. Will be updated with the id
-     * @param bookLocale Locale to use if the item has none set
+     * @param context Current context
+     * @param item    to insert. Will be updated with the id
+     * @param locale  The Locale of the item
      *
      * @return the row id of the newly inserted item
      *
@@ -120,21 +120,21 @@ public interface EntityDao<T extends Entity> {
     @IntRange(from = 1)
     long insert(@NonNull Context context,
                 @NonNull T item,
-                @NonNull Locale bookLocale)
+                @NonNull Locale locale)
             throws DaoWriteException;
 
     /**
      * Update the given {@link T}.
      *
-     * @param context    Current context
-     * @param item       to update
-     * @param bookLocale Locale to use if the item has none set
+     * @param context Current context
+     * @param item    to update
+     * @param locale  The Locale of the item
      *
      * @throws DaoWriteException on failure
      */
     void update(@NonNull Context context,
                 @NonNull T item,
-                @NonNull Locale bookLocale)
+                @NonNull Locale locale)
             throws DaoWriteException;
 
     /**
