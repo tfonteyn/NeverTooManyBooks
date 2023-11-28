@@ -174,16 +174,7 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public long countBooks(@NonNull final Context context,
-                           @NonNull final Series series,
-                           @NonNull final Locale bookLocale) {
-        if (series.getId() == 0) {
-            fixId(context, series, series.getLocale(context).orElse(bookLocale));
-            if (series.getId() == 0) {
-                return 0;
-            }
-        }
-
+    public long countBooks(@NonNull final Series series) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
             stmt.bindLong(1, series.getId());
             return stmt.simpleQueryForLongOrZero();

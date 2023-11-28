@@ -325,16 +325,7 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public long countBooks(@NonNull final Context context,
-                           @NonNull final Author author,
-                           @NonNull final Locale bookLocale) {
-        if (author.getId() == 0) {
-            fixId(context, author, author.getLocale(context).orElse(bookLocale));
-            if (author.getId() == 0) {
-                return 0;
-            }
-        }
-
+    public long countBooks(@NonNull final Author author) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();

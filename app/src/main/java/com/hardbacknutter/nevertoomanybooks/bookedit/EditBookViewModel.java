@@ -56,6 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -665,13 +668,20 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Author author) {
-        final Locale bookLocale = book.getLocaleOrUserLocale(context);
 
-        final long books = ServiceLocator.getInstance().getAuthorDao()
-                                         .countBooks(context, author, bookLocale);
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
-        final long tocEntries = ServiceLocator.getInstance().getTocEntryDao()
-                                              .count(context, author, bookLocale);
+        if (author.getId() == 0) {
+            final Locale bookLocale = book.getLocaleOrUserLocale(context);
+            authorDao.fixId(context, author, bookLocale);
+            if (author.getId() == 0) {
+                return true;
+            }
+        }
+
+        final long books = authorDao.countBooks(author);
+
+        final long tocEntries = ServiceLocator.getInstance().getTocEntryDao().count(author);
 
         // If the book is new, then there should be no other references.
         // If the book exists in the database, then obv. there should be 1 reference.
@@ -696,9 +706,17 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Series series) {
-        final Locale bookLocale = book.getLocaleOrUserLocale(context);
-        final long nrOfReferences = ServiceLocator.getInstance().getSeriesDao()
-                                                  .countBooks(context, series, bookLocale);
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+
+        if (series.getId() == 0) {
+            final Locale bookLocale = book.getLocaleOrUserLocale(context);
+            seriesDao.fixId(context, series, series.getLocale(context).orElse(bookLocale));
+            if (series.getId() == 0) {
+                return true;
+            }
+        }
+
+        final long nrOfReferences = seriesDao.countBooks(series);
         return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 
@@ -712,9 +730,17 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
-        final Locale bookLocale = book.getLocaleOrUserLocale(context);
-        final long nrOfReferences = ServiceLocator.getInstance().getPublisherDao()
-                                                  .countBooks(context, publisher, bookLocale);
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+
+        if (publisher.getId() == 0) {
+            final Locale bookLocale = book.getLocaleOrUserLocale(context);
+            publisherDao.fixId(context, publisher, bookLocale);
+            if (publisher.getId() == 0) {
+                return true;
+            }
+        }
+
+        final long nrOfReferences = publisherDao.countBooks(publisher);
         return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 

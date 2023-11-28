@@ -54,15 +54,11 @@ public interface EntityOwningBooksDao<T extends Entity> {
     /**
      * Count the books for the given {@link T}.
      *
-     * @param context    Current context
-     * @param item       to count the books of
-     * @param bookLocale Locale to use if the item has none set
+     * @param item to count the books of
      *
      * @return the number of books
      */
-    long countBooks(@NonNull Context context,
-                    @NonNull T item,
-                    @NonNull Locale bookLocale);
+    long countBooks(@NonNull T item);
 
     /**
      * Get a list of book ID's for the given {@link T}.

@@ -90,15 +90,11 @@ public interface TocEntryDao
     /**
      * Count the {@link TocEntry}'s for the given {@link Author}.
      *
-     * @param context    Current context
-     * @param author     to count the TocEntries of
-     * @param bookLocale Locale to use if the item has none set
+     * @param author to count the TocEntries of
      *
      * @return the number of {@link TocEntry} this {@link Author} has
      */
-    long count(@NonNull Context context,
-               @NonNull Author author,
-               @NonNull Locale bookLocale);
+    long count(@NonNull Author author);
 
     /**
      * Saves a list of {@link TocEntry} items.

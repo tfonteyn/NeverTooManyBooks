@@ -246,17 +246,7 @@ public class TocEntryDaoImpl
     }
 
     @Override
-    public long count(@NonNull final Context context,
-                      @NonNull final Author author,
-                      @NonNull final Locale bookLocale) {
-        if (author.getId() == 0) {
-            authorDaoSupplier.get().fixId(context, author,
-                                          author.getLocale(context).orElse(bookLocale));
-            if (author.getId() == 0) {
-                return 0;
-            }
-        }
-
+    public long count(@NonNull final Author author) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();

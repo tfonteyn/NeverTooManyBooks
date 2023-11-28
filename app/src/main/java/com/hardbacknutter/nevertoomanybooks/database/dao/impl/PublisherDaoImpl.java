@@ -162,18 +162,8 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public long countBooks(@NonNull final Context context,
-                           @NonNull final Publisher publisher,
-                           @NonNull final Locale bookLocale) {
-        if (publisher.getId() == 0) {
-            fixId(context, publisher, publisher.getLocale(context).orElse(bookLocale));
-            if (publisher.getId() == 0) {
-                return 0;
-            }
-        }
-
-        try (SynchronizedStatement stmt = db
-                .compileStatement(Sql.COUNT_BOOKS)) {
+    public long countBooks(@NonNull final Publisher publisher) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
             stmt.bindLong(1, publisher.getId());
             return stmt.simpleQueryForLongOrZero();
         }
