@@ -139,9 +139,12 @@ public class EditSeriesDialogFragment
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
+        //noinspection DataFlowIssue
+        final Locale seriesLocale = series.getLocale(getContext()).orElse(bookLocale);
+
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getSeriesDao(),
-                      series, nameChanged, bookLocale,
+                      series, seriesLocale, nameChanged, bookLocale,
                       savedSeries -> EditInPlaceParcelableLauncher.setResult(
                               this, requestKey, savedSeries),
                       R.string.confirm_merge_series);

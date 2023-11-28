@@ -53,6 +53,7 @@ final class SaveChangesHelper {
     boolean save(@NonNull final DialogFragment fragment,
                  @NonNull final DAO dao,
                  @NonNull final T item,
+                 @NonNull final Locale itemLocale,
                  final boolean nameChanged,
                  @NonNull final Locale bookLocale,
                  @NonNull final Consumer<T> onSuccess,
@@ -75,8 +76,7 @@ final class SaveChangesHelper {
 
         // It's either a new one, or an existing one of which the name was changed.
         // Check if there is an another one with the same new name.
-        final Optional<T> existingEntity = dao
-                .findByName(context, item, item.getLocale(context).orElse(bookLocale));
+        final Optional<T> existingEntity = dao.findByName(context, item, itemLocale);
 
         if (existingEntity.isPresent()) {
             askToMerge(fragment, dao, item, onSuccess, mergeMessageResId, existingEntity.get());

@@ -202,7 +202,7 @@ public class EditAuthorDialogFragment
 
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getAuthorDao(),
-                      originalAuthor, nameChanged, bookLocale,
+                      originalAuthor, bookLocale, nameChanged, bookLocale,
                       savedAuthor -> EditInPlaceParcelableLauncher.setResult(
                               this, authorVm.getRequestKey(), savedAuthor),
                       R.string.confirm_merge_authors);

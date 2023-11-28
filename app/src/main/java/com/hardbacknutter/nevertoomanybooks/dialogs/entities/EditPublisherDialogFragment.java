@@ -139,7 +139,7 @@ public class EditPublisherDialogFragment
 
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getPublisherDao(),
-                      publisher, nameChanged, bookLocale,
+                      publisher, bookLocale, nameChanged, bookLocale,
                       savedPublisher -> EditInPlaceParcelableLauncher.setResult(
                               this, requestKey, savedPublisher),
                       R.string.confirm_merge_publishers);
