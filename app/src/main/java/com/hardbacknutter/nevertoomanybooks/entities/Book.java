@@ -671,7 +671,7 @@ public class Book
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
             getAuthors().forEach(author -> authorDao
-                    .refresh(context, author, author.getLocale(context).orElse(bookLocale)));
+                    .refresh(context, author, bookLocale));
         }
     }
 
@@ -837,7 +837,7 @@ public class Book
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
             getPublishers().forEach(publisher -> publisherDao
-                    .refresh(context, publisher, publisher.getLocale(context).orElse(bookLocale)));
+                    .refresh(context, publisher, bookLocale));
         }
     }
 
