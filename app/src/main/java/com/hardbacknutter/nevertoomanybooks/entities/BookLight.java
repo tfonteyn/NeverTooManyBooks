@@ -122,13 +122,11 @@ public class BookLight
     }
 
     @NonNull
-    @Override
     public Optional<Locale> getLocale(@NonNull final Context context) {
         if (language.isEmpty()) {
             return Optional.empty();
         } else {
-            return ServiceLocator.getInstance().getAppLocale()
-                                 .getLocale(context, language);
+            return ServiceLocator.getInstance().getAppLocale().getLocale(context, language);
         }
     }
 

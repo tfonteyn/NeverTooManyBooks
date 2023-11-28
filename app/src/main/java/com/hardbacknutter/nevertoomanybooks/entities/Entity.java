@@ -24,15 +24,11 @@ import android.content.Context;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
-import java.util.Optional;
-
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
 /**
- * An Entity always has an id and some user-friendly label (aka 'displayName')
- * and optionally it's own Locale.
+ * An Entity always has an id and some user-friendly label (aka 'displayName').
  */
 public interface Entity {
 
@@ -76,17 +72,4 @@ public interface Entity {
     String getLabel(@NonNull Context context,
                     @NonNull Details details,
                     @NonNull Style style);
-
-
-    /**
-     * Get the Locale of the Entity.
-     *
-     * @param context Current context
-     *
-     * @return the Entity Locale
-     */
-    @NonNull
-    default Optional<Locale> getLocale(@NonNull final Context context) {
-        return Optional.empty();
-    }
 }
