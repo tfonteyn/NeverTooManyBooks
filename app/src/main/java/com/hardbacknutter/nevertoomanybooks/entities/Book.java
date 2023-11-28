@@ -655,9 +655,9 @@ public class Book
     public void refreshBookshelves(@NonNull final Context context) {
         if (contains(BKEY_BOOKSHELF_LIST)) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-            final Locale bookLocale = getLocaleOrUserLocale(context);
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
             getBookshelves().forEach(bookshelf -> bookshelfDao
-                    .refresh(context, bookshelf, bookshelf.getLocale(context).orElse(bookLocale)));
+                    .refresh(context, bookshelf, locale));
         }
     }
 
