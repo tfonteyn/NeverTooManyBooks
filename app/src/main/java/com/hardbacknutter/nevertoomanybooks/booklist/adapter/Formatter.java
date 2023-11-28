@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
@@ -141,7 +142,9 @@ class Formatter
                 }
             }
             case BooklistGroup.READ_STATUS: {
-                return ReadStatus.getById(rowData.getInt(key)).getLabel(context);
+                return ReadStatus.getById(rowData.getInt(key)).getLabel(context,
+                                                                        Details.AutoSelect,
+                                                                        style);
             }
             case BooklistGroup.LANGUAGE: {
                 final String text = rowData.getString(key);
