@@ -509,12 +509,10 @@ public class Series
     @NonNull
     public Optional<Locale> getLocale(@NonNull final Context context) {
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
-        // See also {@link #pruneList} were we use batch mode.
         if (id > 0) {
             final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
             if (!lang.isEmpty()) {
-                return ServiceLocator.getInstance().getAppLocale()
-                                     .getLocale(context, lang);
+                return ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
             }
         }
 

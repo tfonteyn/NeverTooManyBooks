@@ -348,15 +348,16 @@ public class SeriesDaoImpl
                        @NonNull final Locale locale)
             throws DaoInsertException {
 
-        final Locale resolvedLocale = series.getLocale(context).orElse(locale);
+        // REMINDER: do NOT resolve the locale using series.getLocale!
+        // It's explicitly set as a parameter!
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String title = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, title, resolvedLocale);
+        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, title);
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, resolvedLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -377,15 +378,16 @@ public class SeriesDaoImpl
                        @NonNull final Locale locale)
             throws DaoUpdateException {
 
-        final Locale resolvedLocale = series.getLocale(context).orElse(locale);
+        // REMINDER: do NOT resolve the locale using series.getLocale!
+        // It's explicitly set as a parameter!
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, text, resolvedLocale);
+        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, resolvedLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             stmt.bindLong(4, series.getId());
 
