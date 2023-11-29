@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -38,14 +39,13 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Bookshelf}.
  */
 public class EditBookshelfDialogFragment
-        extends FFBaseDialogFragment {
+        extends EditMergeableDialogFragment<Bookshelf> {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
@@ -130,50 +130,47 @@ public class EditBookshelfDialogFragment
         // store changes
         bookshelf.setName(currentEdit);
 
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        final Context context = requireContext();
         final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // The logic flow here is different from the default one as used for e.g. an Author.
         // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
 
         // Check if there is an existing one with the same name
-        final Optional<Bookshelf> existingBookshelf = dao.findByName(context, bookshelf, locale);
+        final Optional<Bookshelf> existingEntity = dao.findByName(context, bookshelf, locale);
 
         // Are we adding a new one but trying to use an existing name? -> REJECT
-        if (bookshelf.getId() == 0 && existingBookshelf.isPresent()) {
+        if (bookshelf.getId() == 0 && existingEntity.isPresent()) {
             vb.lblBookshelf.setError(getString(R.string.warning_x_already_exists,
                                                getString(R.string.lbl_bookshelf)));
             return false;
         }
 
-        if (existingBookshelf.isPresent()) {
-            // There is one with the same name; ask whether to merge the 2
-            SaveChangesHelper.askToMerge(
-                    this, dao, bookshelf,
-                    savedBookshelf -> EditInPlaceParcelableLauncher.setResult(
-                            this, requestKey, savedBookshelf),
-                    R.string.confirm_merge_bookshelves,
-                    existingBookshelf.get());
-        } else {
-            try {
-                // We have a unique/new name; either add or update and we're done
+        final Consumer<Bookshelf> onSuccess = savedBookshelf -> EditInPlaceParcelableLauncher
+                .setResult(this, requestKey, savedBookshelf);
+
+        try {
+            if (existingEntity.isPresent()) {
+                // There is one with the same name; ask whether to merge the 2
+                askToMerge(dao, R.string.confirm_merge_bookshelves,
+                           bookshelf, existingEntity.get(), onSuccess);
+                return false;
+            } else {
+                // Just insert or update as needed
                 if (bookshelf.getId() == 0) {
                     dao.insert(context, bookshelf, locale);
                 } else {
                     dao.update(context, bookshelf, locale);
                 }
-                EditInPlaceParcelableLauncher.setResult(this, requestKey, bookshelf);
+                onSuccess.accept(bookshelf);
                 return true;
-
-            } catch (@NonNull final DaoWriteException e) {
-                // log, but ignore - should never happen unless disk full
-                LoggerFactory.getLogger().e(TAG, e, bookshelf);
-                return false;
             }
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, bookshelf);
+            return false;
         }
-        return false;
     }
 
     private void viewToModel() {

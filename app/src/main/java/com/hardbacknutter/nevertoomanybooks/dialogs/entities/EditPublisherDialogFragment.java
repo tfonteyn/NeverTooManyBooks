@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -27,21 +28,25 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Publisher}.
  */
 public class EditPublisherDialogFragment
-        extends FFBaseDialogFragment {
+        extends EditMergeableDialogFragment<Publisher> {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditPublisherDialogFrag";
@@ -134,15 +139,46 @@ public class EditPublisherDialogFragment
         // store changes
         publisher.copyFrom(currentEdit);
 
-        // There is no book involved here, so use the users Locale instead
-        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
+        final Context context = requireContext();
+        final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
+        final Locale locale = getResources().getConfiguration().getLocales().get(0);
 
-        return SaveChangesHelper
-                .save(this, ServiceLocator.getInstance().getPublisherDao(),
-                      publisher, bookLocale, nameChanged, bookLocale,
-                      savedPublisher -> EditInPlaceParcelableLauncher.setResult(
-                              this, requestKey, savedPublisher),
-                      R.string.confirm_merge_publishers);
+        final Consumer<Publisher> onSuccess = savedPublisher -> EditInPlaceParcelableLauncher
+                .setResult(this, requestKey, savedPublisher);
+
+        try {
+            if (publisher.getId() == 0) {
+                // Check if there is an another one with the same new name.
+                final Optional<Publisher> existingEntity =
+                        dao.findByName(context, publisher, locale);
+
+                if (existingEntity.isPresent()) {
+                    // There is one with the same name; ask whether to merge the 2
+                    askToMerge(dao, R.string.confirm_merge_publishers,
+                               publisher, existingEntity.get(), onSuccess);
+                    return false;
+                } else {
+                    // Just insert or update as needed
+                    if (publisher.getId() == 0) {
+                        dao.insert(context, publisher, locale);
+                    } else {
+                        dao.update(context, publisher, locale);
+                    }
+                    onSuccess.accept(publisher);
+                    return true;
+                }
+            } else {
+                // It's an existing one and the name was not changed;
+                // just update the other attributes
+                dao.update(context, publisher, locale);
+                onSuccess.accept(publisher);
+                return true;
+            }
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, publisher);
+            return false;
+        }
     }
 
     private void viewToModel() {

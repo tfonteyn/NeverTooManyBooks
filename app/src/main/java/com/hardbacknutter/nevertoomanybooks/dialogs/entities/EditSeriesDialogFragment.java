@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -27,21 +28,25 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 /**
  * Dialog to edit an <strong>EXISTING</strong> {@link Series}.
  */
 public class EditSeriesDialogFragment
-        extends FFBaseDialogFragment {
+        extends EditMergeableDialogFragment<Series> {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
@@ -136,18 +141,47 @@ public class EditSeriesDialogFragment
         // store changes
         series.copyFrom(currentEdit, false);
 
-        // There is no book involved here, so use the users Locale instead
-        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
+        final Context context = requireContext();
+        final SeriesDao dao = ServiceLocator.getInstance().getSeriesDao();
+        final Locale locale = series.getLocale(context).orElseGet(
+                () -> getResources().getConfiguration().getLocales().get(0));
 
-        //noinspection DataFlowIssue
-        final Locale seriesLocale = series.getLocale(getContext()).orElse(bookLocale);
+        final Consumer<Series> onSuccess = savedSeries -> EditInPlaceParcelableLauncher
+                .setResult(this, requestKey, savedSeries);
 
-        return SaveChangesHelper
-                .save(this, ServiceLocator.getInstance().getSeriesDao(),
-                      series, seriesLocale, nameChanged, bookLocale,
-                      savedSeries -> EditInPlaceParcelableLauncher.setResult(
-                              this, requestKey, savedSeries),
-                      R.string.confirm_merge_series);
+        try {
+            if (series.getId() == 0 || nameChanged) {
+                // Check if there is an another one with the same new name.
+                final Optional<Series> existingEntity =
+                        dao.findByName(context, series, locale);
+
+                if (existingEntity.isPresent()) {
+                    // There is one with the same name; ask whether to merge the 2
+                    askToMerge(dao, R.string.confirm_merge_series,
+                               series, existingEntity.get(), onSuccess);
+                    return false;
+                } else {
+                    // Just insert or update as needed
+                    if (series.getId() == 0) {
+                        dao.insert(context, series, locale);
+                    } else {
+                        dao.update(context, series, locale);
+                    }
+                    onSuccess.accept(series);
+                    return true;
+                }
+            } else {
+                // It's an existing one and the name was not changed;
+                // just update the other attributes
+                dao.update(context, series, locale);
+                onSuccess.accept(series);
+                return true;
+            }
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, series);
+            return false;
+        }
     }
 
     private void viewToModel() {

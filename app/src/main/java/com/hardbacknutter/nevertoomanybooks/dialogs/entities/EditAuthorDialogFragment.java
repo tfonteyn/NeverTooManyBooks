@@ -31,15 +31,18 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
@@ -53,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * @see EditPublisherDialogFragment
  */
 public class EditAuthorDialogFragment
-        extends FFBaseDialogFragment {
+        extends EditMergeableDialogFragment<Author> {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
@@ -159,53 +162,89 @@ public class EditAuthorDialogFragment
         }
 
         final Context context = getContext();
-        // There is no book involved here, so use the users Locale instead
-        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
+        final Locale locale = getResources().getConfiguration().getLocales().get(0);
 
-        final Author originalAuthor = authorVm.getAuthor();
-        final Author originalRealAuthor = originalAuthor.getRealAuthor();
+        final Author author = authorVm.getAuthor();
+        final Author realAuthor = author.getRealAuthor();
 
         // We let this call go ahead even if real-author is switched off by the user
         // so we can clean up as needed.
         //noinspection DataFlowIssue
-        if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.vldt_real_author_must_be_valid)
-                    .setMessage(context.getString(R.string.confirm_create_real_author,
-                                                  authorVm.getCurrentRealAuthorName()))
-                    .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
-                            getString(R.string.vldt_real_author_must_be_valid)))
-                    .setPositiveButton(R.string.action_create, (d, w) -> {
-                        if (saveChanges(true)) {
-                            // finish the DialogFragment
-                            dismiss();
-                        }
-                    })
-                    .create()
-                    .show();
+        if (!authorVm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
+            warnThatRealAuthorMustBeValid();
             return false;
         }
 
         // Case-sensitive! We must allow the user to correct case.
-        final boolean nameChanged = !originalAuthor.isSameName(currentEdit);
+        final boolean nameChanged = !author.isSameName(currentEdit);
 
         // anything actually changed ? If not, we're done.
         if (!nameChanged
-            && originalAuthor.isComplete() == currentEdit.isComplete()
-            && Objects.equals(originalRealAuthor, currentEdit.getRealAuthor())) {
+            && author.isComplete() == currentEdit.isComplete()
+            && Objects.equals(realAuthor, currentEdit.getRealAuthor())) {
             return true;
         }
 
         // store changes
-        originalAuthor.copyFrom(currentEdit, false);
+        author.copyFrom(currentEdit, false);
 
-        return SaveChangesHelper
-                .save(this, ServiceLocator.getInstance().getAuthorDao(),
-                      originalAuthor, bookLocale, nameChanged, bookLocale,
-                      savedAuthor -> EditInPlaceParcelableLauncher.setResult(
-                              this, authorVm.getRequestKey(), savedAuthor),
-                      R.string.confirm_merge_authors);
+        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
+
+        final Consumer<Author> onSuccess = savedAuthor -> EditInPlaceParcelableLauncher
+                .setResult(this, authorVm.getRequestKey(), savedAuthor);
+
+        try {
+            if (author.getId() == 0 || nameChanged) {
+                // Check if there is an another one with the same new name.
+                final Optional<Author> existingEntity =
+                        dao.findByName(context, author, locale);
+
+                if (existingEntity.isPresent()) {
+                    // There is one with the same name; ask whether to merge the 2
+                    askToMerge(dao, R.string.confirm_merge_authors,
+                               author, existingEntity.get(), onSuccess);
+                    return false;
+                } else {
+                    // Just insert or update as needed
+                    if (author.getId() == 0) {
+                        dao.insert(context, author, locale);
+                    } else {
+                        dao.update(context, author, locale);
+                    }
+                    onSuccess.accept(author);
+                    return true;
+                }
+            } else {
+                // It's an existing one and the name was not changed;
+                // just update the other attributes
+                dao.update(context, author, locale);
+                onSuccess.accept(author);
+                return true;
+            }
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, author);
+            return false;
+        }
+    }
+
+    private void warnThatRealAuthorMustBeValid() {
+        final Context context = requireContext();
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.vldt_real_author_must_be_valid)
+                .setMessage(context.getString(R.string.confirm_create_real_author,
+                                              authorVm.getCurrentRealAuthorName()))
+                .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
+                        getString(R.string.vldt_real_author_must_be_valid)))
+                .setPositiveButton(R.string.action_create, (d, w) -> {
+                    if (saveChanges(true)) {
+                        // finish the DialogFragment
+                        dismiss();
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void viewToModel() {

@@ -133,16 +133,16 @@ public class EditAuthorViewModel
     /**
      * Check if there is a real-author set, and whether it is an existing one.
      *
-     * @param context    Current context
-     * @param bookLocale Locale to use if the item has none set
-     * @param create     {@code true} if a non-existent Author should be created
+     * @param context Current context
+     * @param locale  Locale to use if the item has none set
+     * @param create  {@code true} if a non-existent Author should be created
      *
      * @return {@code true} if the 'real' Author was validated and set.
      *         {@code false} if the real author did not exist and we were not allowed to create them
      *         (or if creating threw an error)
      */
     public boolean validateAndSetRealAuthor(@NonNull final Context context,
-                                            @NonNull final Locale bookLocale,
+                                            @NonNull final Locale locale,
                                             final boolean create) {
         // no pseudonym?
         if (currentRealAuthorName == null || currentRealAuthorName.isBlank()) {
@@ -154,7 +154,7 @@ public class EditAuthorViewModel
         final Author tmpRealAuthor = Author.from(currentRealAuthorName);
 
         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-        final Optional<Author> existing = dao.findByName(context, tmpRealAuthor, bookLocale);
+        final Optional<Author> existing = dao.findByName(context, tmpRealAuthor, locale);
 
         if (existing.isPresent()) {
             currentEdit.setRealAuthor(existing.get());
@@ -175,7 +175,7 @@ public class EditAuthorViewModel
         }
 
         try {
-            dao.insert(context, tmpRealAuthor, bookLocale);
+            dao.insert(context, tmpRealAuthor, locale);
             currentEdit.setRealAuthor(tmpRealAuthor);
             return true;
 
