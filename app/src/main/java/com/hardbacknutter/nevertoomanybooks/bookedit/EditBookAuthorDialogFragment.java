@@ -237,28 +237,14 @@ public class EditBookAuthorDialogFragment
 
         final Context context = getContext();
         //noinspection DataFlowIssue
-        final Locale bookLocale = ServiceLocator
+        final Locale locale = ServiceLocator
                 .getInstance().getLanguages()
                 .toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
 
         // We let this call go ahead even if real-author is switched off by the user
         // so we can clean up as needed.
-        if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.vldt_real_author_must_be_valid)
-                    .setMessage(context.getString(R.string.confirm_create_real_author,
-                                                  authorVm.getCurrentRealAuthorName()))
-                    .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
-                            getString(R.string.vldt_real_author_must_be_valid)))
-                    .setPositiveButton(R.string.action_create, (d, w) -> {
-                        if (saveChanges(true)) {
-                            // finish the DialogFragment
-                            dismiss();
-                        }
-                    })
-                    .create()
-                    .show();
+        if (!authorVm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
+            warnThatRealAuthorMustBeValid();
             return false;
         }
 
@@ -270,6 +256,25 @@ public class EditBookAuthorDialogFragment
                                              authorVm.getAuthor(), currentEdit);
         }
         return true;
+    }
+
+    private void warnThatRealAuthorMustBeValid() {
+        final Context context = requireContext();
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.vldt_real_author_must_be_valid)
+                .setMessage(context.getString(R.string.confirm_create_real_author,
+                                              authorVm.getCurrentRealAuthorName()))
+                .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
+                        getString(R.string.vldt_real_author_must_be_valid)))
+                .setPositiveButton(R.string.action_create, (d, w) -> {
+                    if (saveChanges(true)) {
+                        // finish the DialogFragment
+                        dismiss();
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void viewToModel() {
