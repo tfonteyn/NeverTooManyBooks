@@ -220,9 +220,8 @@ public final class DBDefinitions {
      * {@link #TBL_PSEUDONYM_AUTHOR}.
      * <p>
      * This is the Author of a book; i.e. the author name as printed on the book cover.
-     * It's a pseudonym and points to an entry in the {@link #TBL_PSEUDONYM_AUTHOR}.
-     * That entry, has a column {@link #DOM_AUTHOR_REAL_AUTHOR} which is the id
-     * for the real name of author.
+     * If it's a pseudonym, it will have a matching entry in {@link #TBL_PSEUDONYM_AUTHOR}.
+     * That entry, has the id for the real name of author {@link #DOM_AUTHOR_REAL_AUTHOR}.
      * <p>
      * e.g.
      * "Paul French" is an author with id==123;
@@ -232,6 +231,11 @@ public final class DBDefinitions {
      * where 456 is "Isaac Asimov"
      */
     public static final Domain DOM_AUTHOR_PSEUDONYM;
+    /**
+     * {@link #TBL_PSEUDONYM_AUTHOR}.
+     * <p>
+     * Link column back to the {@link #TBL_AUTHORS}.
+     */
     public static final Domain DOM_AUTHOR_REAL_AUTHOR;
 
     /** Virtual: "FamilyName, GivenName". */
@@ -373,11 +377,11 @@ public final class DBDefinitions {
     /** {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. Expression or {@code null} for the physical lib. */
     public static final Domain DOM_CALIBRE_VIRT_LIB_EXPR;
 
-    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS} */
+    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS}. */
     public static final Domain DOM_CALIBRE_CUSTOM_FIELD_NAME;
-    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS} */
+    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS}. */
     public static final Domain DOM_CALIBRE_CUSTOM_FIELD_TYPE;
-    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS} */
+    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS}. */
     public static final Domain DOM_CALIBRE_CUSTOM_FIELD_MAPPING;
 
     /** {@link #TBL_CALIBRE_BOOKS}. */
@@ -503,7 +507,7 @@ public final class DBDefinitions {
      * ====================================================================================== */
 
     /**
-     * reminder: no need for a type nor constraints:
+     * reminder: no need for a type nor constraints.
      * <a href="https://sqlite.org/fts3.html">SqLite FTS3</a>
      */
     public static final TableDefinition TBL_FTS_BOOKS;
@@ -517,6 +521,8 @@ public final class DBDefinitions {
      */
     static final Domain DOM_FTS_AUTHOR_NAME;
     static final Domain DOM_FTS_TOC_ENTRY_TITLE;
+    private static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
 
     static {
         /* ======================================================================================
@@ -1660,10 +1666,6 @@ public final class DBDefinitions {
                        TBL_STRIPINFO_COLLECTION);
 
     }
-
-    private static final String _FROM_ = " FROM ";
-
-    private static final String _WHERE_ = " WHERE ";
 
     static {
 
