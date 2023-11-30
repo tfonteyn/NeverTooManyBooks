@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.1.1 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.1.1/NeverTooManyBooks-5.1.1.apk)
+## Download the latest release: [5.2.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.0/NeverTooManyBooks-5.2.0.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -68,7 +68,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 ## Device support:
 
-Requires minimal Android 8.0 (API 26)
+Requires minimal Android 8.0 (API 26) and supported/tested up to Android 14 (API 34).
 
 ## Screen size support:
 
@@ -76,16 +76,28 @@ Requires minimal Android 8.0 (API 26)
 - 5" is the default aimed for.
 - 7" and 10" tablets fully supported with dedicated screen layouts.
 
-## Thanks
-
-In August 2018, this project was forked from:
-Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
-Without their original creation, this project would not exist in its
-current form. It was however largely rewritten/refactored and any
-comments on this fork should be directed at myself and not
-at the original creators.
-
 ## History
+
+### 5.2.0
+
+NEW:
+
+- The default style settings is now available from the menu in the styles list
+- The global setting whether to reorder titles/names is now moved to the Style level.
+  It can now be set globally, and overridden on individual styles.
+- Cropping a cover image can now also be done by 'pinching' with two fingers.
+  Also provides a revamped action bar with a new option to undo changes
+  without the need to quit and restart the cropping action.
+
+FIXES:
+
+- issue #29 Crop cover left/right usable with Android 12+ gesture navigation; see above.
+
+REMOVED:
+
+- predefined style "Compact" has been removed. It's easy to recreate as a user-style if needed.
+
+---
 
 ### 5.1.1
 
@@ -390,3 +402,14 @@ REMOVED:
   Use JSON instead. A simplified CSV export is planned in a future version.
 - TAR import is removed. This allowed the removal of the Apache library for tar.
   Repack any tar archive as a zip and import the zip.
+
+---
+
+## Thanks
+
+In August 2018, this project was forked from:
+Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
+Without their original creation, this project would not exist in its
+current form. It was however largely rewritten/refactored and any
+comments on this fork should be directed at myself and not
+at the original creators.

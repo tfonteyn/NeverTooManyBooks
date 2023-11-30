@@ -51,20 +51,10 @@ Booklist style sorting by date-read or date-added etc...:
 ### 5.2.0
 
 NEW:
-- the default style settings is now available from the menu in the styles list
-- the global setting whether to reorder titles/names is now moved to the Style level.
-  It can now be set globally, and overridden on individual styles.
-- Cropping a cover image can now also be done by 'pinching' with two fingers.
-  Also provides a revamped action bar with a new option to undo changes
-  without the need to quit and restart the cropping action.
 
 FIXES:
-- issue #29 Crop cover left/right usable with Android 12+ gesture navigation; see above.
 
 REMOVED:
-- predefined style "Compact" has been removed. It's easy to recreate as a user-style if needed.
-
-----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
 Pseudonyms:
