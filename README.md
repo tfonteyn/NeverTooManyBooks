@@ -100,7 +100,7 @@ REMOVED:
 
 ---
 
-### 5.2.0 was broken...
+#### 5.2.0 was broken...
 
 ---
 
