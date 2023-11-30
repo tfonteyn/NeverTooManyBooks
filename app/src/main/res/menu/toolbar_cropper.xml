@@ -19,25 +19,12 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <dimen name="til_margin">4dp</dimen>
-
-    <dimen name="container_margin">8dp</dimen>
-    <dimen name="container_above_bottom_appbar_margin_bottom">88dp</dimen>
-
-    <dimen name="camera_preview_width">480dp</dimen>
-    <dimen name="camera_preview_height">240dp</dimen>
-    <dimen name="camera_preview_button_margin">8dp</dimen>
-
-    <dimen name="column_margin_end">64dp</dimen>
-
-    <dimen name="toolbar_button_start_margin">8dp</dimen>
-    <dimen name="toolbar_button_start_margin_last_button">16dp</dimen>
-
-    <item name="btn_context_menu_scale"
-          format="float"
-          type="dimen">0.85
-    </item>
-
-    <bool name="combine_book_edit_tabs">true</bool>
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/MENU_UNDO"
+        android:icon="@drawable/ic_baseline_undo_24"
+        android:title="@string/action_undo"
+        android:contentDescription="@string/action_undo"
+        app:showAsAction="always" />
+</menu>

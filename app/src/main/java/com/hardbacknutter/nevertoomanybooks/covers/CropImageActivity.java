@@ -143,10 +143,18 @@ public class CropImageActivity
 
             vb.coverImage0.setInitialBitmap(bitmap);
 
-            // the FAB button saves the image, use 'back' to cancel.
+            // the FAB button saves the image
             vb.fab.setOnClickListener(v -> onSave());
+            // Back is cancel
+            vb.bottomAppBar.setNavigationOnClickListener(v -> finish());
             // Reset/undo but stay here editing
-            vb.btnCancel.setOnClickListener(v -> vb.coverImage0.resetBitmap());
+            vb.bottomAppBar.setOnMenuItemClickListener(menuItem -> {
+                if (menuItem.getItemId() == R.id.MENU_UNDO) {
+                    vb.coverImage0.resetBitmap();
+                    return true;
+                }
+                return false;
+            });
         } else {
             finish();
         }

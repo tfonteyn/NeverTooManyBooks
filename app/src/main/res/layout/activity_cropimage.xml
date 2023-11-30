@@ -19,35 +19,42 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- A frame will let the FAB show on top of the image -->
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/container_margin"
     tools:context=".covers.CropImageActivity"
     >
 
+    <!-- Note there is NO margin set on the above CoordinatorLayout. -->
     <com.hardbacknutter.nevertoomanybooks.covers.CropImageView
         android:id="@id/cover_image_0"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/container_above_bottom_appbar_margin_bottom"
+        tools:background="?attr/colorSurfaceVariant"
+        />
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        style="@style/Widget.Material3.BottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/toolbar_cropper"
+        app:navigationContentDescription="@android:string/cancel"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
-        style="@style/Widget.App.FloatingActionButton"
-        android:src="@drawable/ic_baseline_crop_24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/action_crop"
+        android:src="@drawable/ic_baseline_crop_24"
+        app:layout_anchor="@id/bottomAppBar"
         />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_cancel"
-        style="@style/Widget.App.FloatingActionButton"
-        android:src="@drawable/ic_baseline_undo_24"
-        android:contentDescription="@string/action_undo"
-        android:layout_gravity="bottom|start"
-        />
-
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

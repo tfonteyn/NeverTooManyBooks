@@ -49,8 +49,14 @@
     <!-- use a double redirect;
          e.g.  <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
     -->
-    <item name="match_parent" format="integer" type="dimen">-1</item>
-    <item name="wrap_content" format="integer" type="dimen">-2</item>
+    <item name="match_parent"
+          format="integer"
+          type="dimen">-1
+    </item>
+    <item name="wrap_content"
+          format="integer"
+          type="dimen">-2
+    </item>
 
     <!-- Navigation panel header. -->
     <dimen name="nav_header_horizontal_padding">16dp</dimen>
@@ -95,6 +101,11 @@
 
     <!-- layout_margin for top level layouts. -->
     <dimen name="container_margin">4dp</dimen>
+    <!-- layout_marginBottom for top level layouts when used above a BottomAppBar.
+         The "Widget.Material3.BottomAppBar" minHeight is fixed at 80dp.
+         Hence this value should be 80dp + 'container_margin' to have a consistent look.
+         See "activity_cropimage.xml" on how to set. -->
+    <dimen name="container_above_bottom_appbar_margin_bottom">84dp</dimen>
 
     <!-- inline barcode scanner preview -->
     <dimen name="camera_preview_width">300dp</dimen>
@@ -158,7 +169,10 @@
 
 
     <!-- The relative size for the 'real-author' name of a pseudonym. -->
-    <item name="bob_author_pseudonym_size" format="float" type="dimen">0.6f</item>
+    <item name="bob_author_pseudonym_size"
+          format="float"
+          type="dimen">0.6f
+    </item>
 
     <!-- The text size (in sp units, but in float notation) for all text in a book list row. -->
     <array name="bob_text_size_in_sp">
