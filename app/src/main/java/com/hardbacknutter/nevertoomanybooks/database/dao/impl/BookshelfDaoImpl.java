@@ -667,9 +667,14 @@ public class BookshelfDaoImpl
                 + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
                 + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
 
-        /** Get a list of all {@link Bookshelf} ordered by name. */
+        /**
+         * Get a list of all {@link Bookshelf} ordered by name.
+         * Do NOT include the 'All Books' (with id=-1).
+         */
         static final String SELECT_ALL_ORDERED_BY_NAME =
-                SELECT_ALL + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
+                SELECT_ALL
+                + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + ">0"
+                + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
 
         /** Find a {@link Bookshelf} by its id. Joined with the styles table. */
         static final String FIND_BY_ID =

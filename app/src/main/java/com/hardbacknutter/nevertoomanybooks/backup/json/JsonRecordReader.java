@@ -379,6 +379,11 @@ public class JsonRecordReader
             new BookshelfCoder(context, defaultStyle)
                     .decode(jsonRoot)
                     .forEach(bookshelf -> {
+                        // If we ever make the mistake of backing up the 'All Books' again
+                        // (or any other special negative-id shelf, ... prevent crashing
+                        if (bookshelf.getId() < 0) {
+                            return;
+                        }
                         bookshelfDao.fixId(context, bookshelf, locale);
                         if (bookshelf.getId() > 0) {
                             // The shelf already exists
