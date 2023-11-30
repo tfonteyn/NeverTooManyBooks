@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -35,6 +36,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MoneyParserTest {
 
@@ -105,8 +107,9 @@ class MoneyParserTest {
                 @NonNull final String code) {
         final RealNumberParser realNumberParser = new RealNumberParser(testLocales);
         final MoneyParser moneyParser = new MoneyParser(testLocales.get(0), realNumberParser);
-        final Money money = moneyParser.parse(source);
-        assertNotNull(money);
+        final Optional<Money> oMoney = moneyParser.parse(source);
+        assertTrue(oMoney.isPresent());
+        final Money money = oMoney.get();
         assertEquals(value, money.getValue());
         final Currency currency = money.getCurrency();
         assertNotNull(currency);
