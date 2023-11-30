@@ -94,9 +94,9 @@ class ISODateParserTest {
         assertEquals(Optional.of(LocalDateTime.of(1987, 11, 25, 11, 57)),
                      parser.parse("1987-11-25 11:57"));
 
-        assertTrue(parser.parse("1987-25-11 11:57:41").isPresent());
-        assertTrue(parser.parse("1987-11-11 4:57:41").isPresent());
-        assertTrue(parser.parse("1987-11-32 04:57:41").isPresent());
+        assertTrue(parser.parse("1987-25-11 11:57:41").isEmpty());
+        assertTrue(parser.parse("1987-11-11 4:57:41").isEmpty());
+        assertTrue(parser.parse("1987-11-32 04:57:41").isEmpty());
     }
 
     /** JDK 'T' variations */
