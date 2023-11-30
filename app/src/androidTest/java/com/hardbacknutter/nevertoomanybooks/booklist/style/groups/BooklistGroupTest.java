@@ -26,20 +26,22 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 
 /**
  * Sanity check for duplicate prefix names and any missing keys.
  */
-class BooklistGroupTest {
+@SuppressWarnings("MissingJavadoc")
+public class BooklistGroupTest {
 
     @Test
-    void duplicates() {
+    public void duplicates() {
         // loop starting at 1 must exclude BOOK
         assertEquals(0, BooklistGroup.BOOK);
 
@@ -56,7 +58,7 @@ class BooklistGroupTest {
         final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
             final BooklistGroup group = BooklistGroup.newInstance(id, style);
-            assertNotNull(group, "Missing id: " + id);
+            assertNotNull("Missing id: " + id, group);
 
             final String prefix = group.getGroupKey().getKeyPrefix();
             if (!prefixes.add(prefix)) {
