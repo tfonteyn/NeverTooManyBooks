@@ -68,7 +68,8 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 ## Device support:
 
-Requires minimal Android 8.0 (API 26) and supported/tested up to Android 14 (API 34).
+- Requires minimal Android 8.0 (API 26)
+- Supported/tested up to Android 14 (API 34).
 
 ## Screen size support:
 
