@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
@@ -41,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BookTest
         extends Base {
@@ -146,9 +148,9 @@ class BookTest
         final MoneyParser moneyParser = new MoneyParser(locales.get(0), realNumberParser);
 
         book.putString(DBKey.LANGUAGE, "eng");
-        final Money money = moneyParser.parse("EUR 45");
-        assertNotNull(money);
-        book.putMoney(DBKey.PRICE_LISTED, money);
+        final Optional<Money> money = moneyParser.parse("EUR 45");
+        assertTrue(money.isPresent());
+        book.putMoney(DBKey.PRICE_LISTED, money.get());
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
                                                     () -> serviceLocatorMock.getCoverStorage(),
