@@ -31,7 +31,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -61,8 +63,15 @@ import static org.junit.Assert.assertTrue;
  * Con: cannot test id's (but in a sense this is a 'pro' imho as id's should be unpredictable).
  */
 @MediumTest
+@SuppressWarnings("MissingJavadoc")
 public class BookInsertTest
         extends BaseSetup {
+
+    @Before
+    public void setup()
+            throws DaoWriteException, StorageException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    }
 
     /**
      * Create a set of books with authors... and insert the whole lot.

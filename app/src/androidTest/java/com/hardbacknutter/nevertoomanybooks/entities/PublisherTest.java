@@ -29,14 +29,18 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @MediumTest
+@SuppressWarnings("MissingJavadoc")
 public class PublisherTest
         extends BaseDBTest {
 
@@ -45,6 +49,12 @@ public class PublisherTest
     private static final String PUBLISHER_THE = "publisher, The";
     private static final String JOSE_PUBLISHER = "José publisher";
     private static final String JOSE_PUBLISHER_VARIANT = "Jose publisher";
+
+    @Before
+    public void setup()
+            throws DaoWriteException, StorageException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+    }
 
     @Test
     public void parcelling() {
