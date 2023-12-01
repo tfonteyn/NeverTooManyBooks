@@ -93,7 +93,17 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
 public class DBHelper
         extends SQLiteOpenHelper {
 
-    /** Current version. */
+    /**
+     * Previous versions.
+     * v5.0.0: 26
+     * v5.1.0: 27
+     * v5.1.1: 27
+     * v5.2.0: 29
+     * v5.2.1: 29
+     * v5.2.2: 30
+     * <p>
+     * Current version.
+     */
     public static final int DATABASE_VERSION = 30;
 
     /** NEVER change this name. */
