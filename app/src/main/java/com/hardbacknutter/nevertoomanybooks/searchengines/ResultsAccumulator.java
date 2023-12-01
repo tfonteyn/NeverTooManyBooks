@@ -267,7 +267,13 @@ class ResultsAccumulator {
      * Accumulate ParcelableArrayList data.
      * <p>
      * Data is always appended to any previous data.
-     * There are <strong>NO CHECKS FOR DUPLICATION</strong>.
+     * There are <strong>NO CHECKS FOR DUPLICATION</strong>:
+     * After a search, the final resulting Book (data) is send to the child
+     * classes of {@code EditBookBaseFragment},
+     * where in the {@code onPopulateViews} method the lists are pruned.
+     * We do it there because each list might/does not some specific
+     * handling.
+     * TODO: maybe we *should* add a simple (no db lookups) check on duplicates?
      *
      * @param <T>      type of items in the ArrayList
      * @param key      Key of data
