@@ -108,17 +108,17 @@ public class SearchCoordinator
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
 
     /** Accumulates the results from <strong>individual</strong> search tasks. */
-    private final Map<EngineId, SearchResult> resultsBySite =
-            new EnumMap<>(EngineId.class);
+    private final Map<EngineId, SearchResult> resultsByEngineId = new EnumMap<>(EngineId.class);
 
-    /** Accumulates the last message from <strong>individual</strong> search tasks. */
-    private final Map<EngineId, Throwable> searchErrorsBySite =
-            new EnumMap<>(EngineId.class);
+    /** Accumulates any errors from <strong>individual</strong> search tasks. */
+    private final Map<EngineId, Throwable> errorsByEngineId = new EnumMap<>(EngineId.class);
 
     /** Accumulates the results from <strong>individual</strong> search tasks. */
-    private final Map<EngineId, TaskProgress> searchProgressBySite =
-            new EnumMap<>(EngineId.class);
+    private final Map<EngineId, TaskProgress> progressByEngineId = new EnumMap<>(EngineId.class);
+
+    /** Caches all created engines for reuse. */
     private final Map<EngineId, SearchEngine> engineCache = new EnumMap<>(EngineId.class);
+
     /**
      * Sites to search on. If this list is empty, all searches will return {@code false}.
      * This list includes both active and disabled sites.
@@ -197,14 +197,14 @@ public class SearchCoordinator
 
         // ALWAYS store, even when null!
         // Presence of the site/task id in the map is an indication that the site was processed
-        synchronized (resultsBySite) {
-            resultsBySite.put(engineId, new SearchResult(
-                    engineId, searchTask.getSearchBy(), result));
+        synchronized (resultsByEngineId) {
+            resultsByEngineId.put(engineId, new SearchResult(engineId, searchTask.getSearchBy(),
+                                                             result));
         }
 
         // clear obsolete progress status
-        synchronized (searchProgressBySite) {
-            searchProgressBySite.remove(engineId);
+        synchronized (progressByEngineId) {
+            progressByEngineId.remove(engineId);
         }
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -345,7 +345,8 @@ public class SearchCoordinator
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
-            resultsAccumulator = new ResultsAccumulator(context, engineCache, systemLocale);
+            resultsAccumulator = new ResultsAccumulator(context, systemLocale,
+                                                        serviceLocator::getLanguages);
 
             listElementPrefixString = context.getString(R.string.list_element);
 
@@ -390,10 +391,12 @@ public class SearchCoordinator
         // We need to do this when the user was for example
         // searching by native-web-id on a site which was NOT on the active list.
         // We use this somewhat convoluted method to make sure the priority order is kept.
-        // Keep in mind that the results are NOT ordered by priority, but by first-ready.
-        activeEngines.addAll(resultsBySite.keySet());
+        // Keep in mind that the results are NOT ordered by priority, but, at this point,
+        // by order in which the engines completed the searches.
+        activeEngines.addAll(resultsByEngineId.keySet());
 
-        final Map<EngineId, Book> results = determineOrder(activeEngines, book);
+        // Now convert the 'completed' order to the 'best' order
+        final Map<Locale, Book> results = determineOrder(context, activeEngines, book);
 
         // Merge the data we have in the order as decided upon above.
         // no synchronized needed, at this point all other threads have finished.
@@ -419,14 +422,16 @@ public class SearchCoordinator
      * <p>
      * The order will be based on the site order as set by the user AND the actual results.
      *
+     * @param context       Current context
      * @param activeEngines all engines we searched
      * @param book          to access/set the ISBN of.
      *
-     * @return an ordered Map of engineId's and the Book we found for that engine
+     * @return an ordered Map of Locale/Book's we found in the 'best' order for further processing
      */
     @NonNull
-    private Map<EngineId, Book> determineOrder(@NonNull final Set<EngineId> activeEngines,
-                                               @NonNull final Book book) {
+    private Map<Locale, Book> determineOrder(@NonNull final Context context,
+                                             @NonNull final Set<EngineId> activeEngines,
+                                             @NonNull final Book book) {
 
         final List<EngineId> sitesInOrder = new ArrayList<>();
 
@@ -435,7 +440,7 @@ public class SearchCoordinator
 
             activeEngines.forEach(engineId -> {
                 // no synchronized needed, at this point all other threads have finished.
-                final SearchResult siteData = resultsBySite.get(engineId);
+                final SearchResult siteData = resultsByEngineId.get(engineId);
                 if (siteData != null) {
                     siteData.getResult().ifPresent(result -> {
 
@@ -484,15 +489,17 @@ public class SearchCoordinator
         //noinspection DataFlowIssue
         return sitesInOrder
                 .stream()
-                .map(resultsBySite::get)
+                .map(resultsByEngineId::get)
                 .filter(Objects::nonNull)
                 .filter(result -> result.getResult().isPresent())
                 // We now have non-null and 'present' results,
-                // create the ORDERED map with engineId's and the Book we found for that engine
-                .collect(Collectors.toMap(SearchResult::getEngineId,
-                                          searchResult -> searchResult.getResult().get(),
-                                          (existingKey, replacement) -> existingKey,
-                                          LinkedHashMap::new));
+                // create the ORDERED map with Locale/Book we found for that each engine
+                .collect(Collectors.toMap(
+                        searchResult -> engineCache.get(searchResult.getEngineId())
+                                                   .getLocale(context),
+                        searchResult -> searchResult.getResult().get(),
+                        (existingKey, replacement) -> existingKey,
+                        LinkedHashMap::new));
     }
 
     @Override
@@ -542,17 +549,17 @@ public class SearchCoordinator
             sb.add(baseMessage);
         }
 
-        synchronized (searchProgressBySite) {
-            if (!searchProgressBySite.isEmpty()) {
+        synchronized (progressByEngineId) {
+            if (!progressByEngineId.isEmpty()) {
                 // Append each task message
-                searchProgressBySite
+                progressByEngineId
                         .values()
                         .stream()
                         .map(msg -> String.format(listElementPrefixString, msg.text))
                         .forEach(sb::add);
 
                 // Accumulate the current & max values for each active task.
-                for (final TaskProgress taskProgress : searchProgressBySite.values()) {
+                for (final TaskProgress taskProgress : progressByEngineId.values()) {
                     progressMax += taskProgress.maxPosition;
                     progressCount += taskProgress.position;
                 }
@@ -596,8 +603,8 @@ public class SearchCoordinator
         cancelRequested.set(false);
 
         // no synchronized needed, at this point there are no other threads
-        resultsBySite.clear();
-        searchErrorsBySite.clear();
+        resultsByEngineId.clear();
+        errorsByEngineId.clear();
 
         isbn = new ISBN(isbnSearchText, strictIsbn);
 
@@ -786,8 +793,8 @@ public class SearchCoordinator
                                                      .collect(Collectors.toList());
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
-            synchronized (resultsBySite) {
-                if (!resultsBySite.containsKey(engineId)) {
+            synchronized (resultsByEngineId) {
+                if (!resultsByEngineId.containsKey(engineId)) {
                     if (startSearch(context, engineId)) {
                         atLeastOneStarted = true;
                     }
@@ -816,8 +823,8 @@ public class SearchCoordinator
                                                      .collect(Collectors.toList());
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
-            synchronized (resultsBySite) {
-                if (!resultsBySite.containsKey(engineId)) {
+            synchronized (resultsByEngineId) {
+                if (!resultsByEngineId.containsKey(engineId)) {
                     final boolean started = startSearch(context, engineId);
                     if (started) {
                         return true;
@@ -966,8 +973,8 @@ public class SearchCoordinator
     @Nullable
     private String accumulateErrors(@NonNull final Context context) {
         // no synchronized needed, at this point all other threads have finished.
-        if (!searchErrorsBySite.isEmpty()) {
-            final String msg = searchErrorsBySite
+        if (!errorsByEngineId.isEmpty()) {
+            final String msg = errorsByEngineId
                     .values()
                     .stream()
                     .map(exception -> ExMsg
@@ -982,7 +989,7 @@ public class SearchCoordinator
                             }))
                     .collect(Collectors.joining("\n"));
 
-            searchErrorsBySite.clear();
+            errorsByEngineId.clear();
             return msg;
         }
         return null;
@@ -1084,14 +1091,14 @@ public class SearchCoordinator
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
-            synchronized (searchProgressBySite) {
+            synchronized (progressByEngineId) {
                 final EngineId engineId;
                 synchronized (activeTasks) {
                     engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
                                                       () -> ERROR_UNKNOWN_TASK + message.taskId)
                                       .getSearchEngine().getEngineId();
                 }
-                searchProgressBySite.put(engineId, message);
+                progressByEngineId.put(engineId, message);
             }
             // forward the accumulated progress
             searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
@@ -1115,7 +1122,7 @@ public class SearchCoordinator
         @Override
         public void onFailure(final int taskId,
                               @Nullable final Throwable e) {
-            synchronized (searchErrorsBySite) {
+            synchronized (errorsByEngineId) {
                 final EngineId engineId;
                 synchronized (activeTasks) {
                     engineId = Objects.requireNonNull(activeTasks.get(taskId),
@@ -1123,7 +1130,7 @@ public class SearchCoordinator
                                       .getSearchEngine().getEngineId();
                 }
                 // Always store, even if the Exception is null
-                searchErrorsBySite.put(engineId, e);
+                errorsByEngineId.put(engineId, e);
             }
             onSearchTaskFinished(taskId, null);
         }

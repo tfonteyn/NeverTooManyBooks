@@ -32,12 +32,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -47,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
@@ -63,19 +63,26 @@ class ResultsAccumulator {
                                                         CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0],
                                                         CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
 
-    @NonNull
-    private final Map<EngineId, SearchEngine> engineCache;
     /** Mappers to apply. */
     private final Collection<Mapper> mappers = new ArrayList<>();
     @NonNull
     private final Locale systemLocale;
+    @NonNull
+    private final Supplier<Languages> languagesSupplier;
 
+    /**
+     * Constructor.
+     *
+     * @param context           Current context
+     * @param systemLocale      for date parsing
+     * @param languagesSupplier deferred supplier for the {@link Languages}
+     */
     ResultsAccumulator(@NonNull final Context context,
-                       @NonNull final Map<EngineId, SearchEngine> engineCache,
-                       @NonNull final Locale systemLocale) {
+                       @NonNull final Locale systemLocale,
+                       @NonNull final Supplier<Languages> languagesSupplier) {
 
-        this.engineCache = engineCache;
         this.systemLocale = systemLocale;
+        this.languagesSupplier = languagesSupplier;
 
         ColorMapper.create(context).ifPresent(mappers::add);
         FormatMapper.create(context).ifPresent(mappers::add);
@@ -113,34 +120,30 @@ class ResultsAccumulator {
      *  also handle that here.
      *
      * @param context Current context
-     * @param results ordered Map of engineId's and the Book we found for that engine
+     * @param results ordered Map of Locale/Book to process
      * @param book    to update; this is the Book which will be returned as
      *                the final result for this search.
      */
     void process(@NonNull final Context context,
-                 @NonNull final Map<EngineId, Book> results,
+                 @NonNull final Map<Locale, Book> results,
                  @NonNull final Book book) {
-        results.forEach((engineId, result) -> {
-            final SearchEngine searchEngine = engineCache.get(engineId);
-            // Sanity check, should never be null... flw
-            Objects.requireNonNull(searchEngine);
-            final Locale siteLocale = searchEngine.getLocale(context);
-
-            final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+        results.forEach((locale, result) -> {
+            final List<Locale> locales = LocaleListUtils.asList(context, locale);
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
             final DateParser dateParser = new FullDateParser(systemLocale, locales);
+
             result.keySet().forEach(key -> {
                 if (DBKey.DATE_KEYS.contains(key)) {
                     processDate(key, result, book, dateParser);
 
                 } else if (DBKey.MONEY_KEYS.contains(key)) {
-                    processMoney(key, result, book, siteLocale, realNumberParser);
+                    processMoney(key, result, book, locale, realNumberParser);
 
                 } else if (LIST_KEYS.contains(key)) {
                     processList(key, result, book);
 
                 } else if (DBKey.LANGUAGE.equals(key)) {
-                    processLanguage(context, key, result, book, siteLocale);
+                    processLanguage(context, key, result, book, locale);
 
                 } else if (DBKey.RATING.equals(key)) {
                     processDouble(key, result, book, realNumberParser);
@@ -166,17 +169,17 @@ class ResultsAccumulator {
      * <p>
      * The data is always expected to be a {@code String}.
      *
-     * @param context    Current context
-     * @param key        Key of data
-     * @param siteData   Source Bundle
-     * @param book       Destination bundle
-     * @param siteLocale for parsing
+     * @param context  Current context
+     * @param key      Key of data
+     * @param siteData Source Bundle
+     * @param book     Destination bundle
+     * @param locale   for parsing
      */
     private void processLanguage(@NonNull final Context context,
                                  @NonNull final String key,
                                  @NonNull final Book siteData,
                                  @NonNull final Book book,
-                                 @NonNull final Locale siteLocale) {
+                                 @NonNull final Locale locale) {
         // No new data ? we're done.
         String dataToAdd = siteData.getString(key, null);
         if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
@@ -194,9 +197,8 @@ class ResultsAccumulator {
 
         // If more than 3 characters, it's likely a 'display' name of a language.
         if (dataToAdd.length() > 3) {
-            dataToAdd = ServiceLocator
-                    .getInstance().getLanguages()
-                    .getISO3FromDisplayName(context, siteLocale, dataToAdd);
+            dataToAdd = languagesSupplier
+                    .get().getISO3FromDisplayName(context, locale, dataToAdd);
         }
 
         // copy the new data
@@ -300,13 +302,13 @@ class ResultsAccumulator {
      * @param key              Key of data
      * @param siteData         Source Bundle
      * @param book             Destination bundle
-     * @param siteLocale       for parsing
+     * @param locale           for parsing
      * @param realNumberParser shared for the current site
      */
     private void processMoney(@NonNull final String key,
                               @NonNull final Book siteData,
                               @NonNull final Book book,
-                              @NonNull final Locale siteLocale,
+                              @NonNull final Locale locale,
                               @NonNull final RealNumberParser realNumberParser) {
         // Fetch as Object, as engines MAY store typed data
         final Object dataToAdd = siteData.get(key, realNumberParser);
@@ -342,7 +344,7 @@ class ResultsAccumulator {
         }
 
         // this is a fallback in case the SearchEngine has not already parsed the data!
-        new MoneyParser(siteLocale, realNumberParser)
+        new MoneyParser(locale, realNumberParser)
                 .parse(dataToAdd.toString())
                 .ifPresent(money -> book.putMoney(key, money));
     }
