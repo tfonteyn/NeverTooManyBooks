@@ -94,7 +94,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 29;
+    public static final int DATABASE_VERSION = 30;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -724,17 +724,13 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_COVER_CLICK_ACTION,
                     DBDefinitions.DOM_STYLE_LAYOUT);
         }
-        if (oldVersion < 27) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-            final GlobalStyle style = new GlobalStyle();
-            style.setSortAuthorByGivenName(
-                    prefs.getBoolean(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST, false));
-            style.setShowAuthorByGivenName(
-                    prefs.getBoolean(LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
-
-            StyleDaoImpl.insertGlobalDefaults(db, style);
-        }
+        // if (oldVersion < 27) {
+        //      Inserting the global style, now moved to db30 due to github issue #30.
+        //      We were doing StyleDaoImpl.insertGlobalDefaults(db, style)
+        //      which in db28 got a new column...
+        //      As we have at least one user who is now on db29... fixing this by
+        //      conditionally insertGlobalDefaults in db30
+        // }
         if (oldVersion < 28) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
@@ -759,6 +755,9 @@ public class DBHelper
                     db,
                     DBDefinitions.DOM_STRIP_INFO_BE_DIGITAL);
         }
+        if (oldVersion < 30) {
+            insertGlobalStyleIfNotYetDone(context, db);
+        }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN
         // SqLite 3.25.0 from 2018-09-15 added ALTER TABLE RENAME COLUMN
@@ -779,6 +778,28 @@ public class DBHelper
 
         // Rebuild all triggers
         Triggers.create(db);
+    }
+
+    private static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
+                                                      @NonNull final SQLiteDatabase db) {
+
+        final boolean install;
+        try (SQLiteStatement stmt = db.compileStatement(
+                "SELECT COUNT(" + DBKey.STYLE_TYPE + ") FROM " + TBL_BOOKLIST_STYLES
+                + " WHERE " + DBKey.STYLE_TYPE + "=2")) {
+            install = 0 == stmt.simpleQueryForLong();
+        }
+
+        if (install) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final GlobalStyle style = new GlobalStyle();
+            style.setSortAuthorByGivenName(
+                    prefs.getBoolean(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST, false));
+            style.setShowAuthorByGivenName(
+                    prefs.getBoolean(LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
+
+            StyleDaoImpl.insertGlobalDefaults(db, style);
+        }
     }
 
     @Override
