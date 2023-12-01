@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.2.2 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.2/NeverTooManyBooks-5.2.2.apk)
+## Download the latest release: [5.2.3 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.3/NeverTooManyBooks-5.2.3.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -79,7 +79,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 ## History
 
-### 5.2.2
+### 5.2.3
 
 NEW:
 
