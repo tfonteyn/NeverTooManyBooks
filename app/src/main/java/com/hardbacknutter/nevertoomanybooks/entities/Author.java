@@ -647,9 +647,12 @@ public class Author
      * Set the type(s).
      *
      * @param type to set
+     *
+     * @return {@code this} for chaining
      */
-    public void setType(@Type final int type) {
+    public Author setType(@Type final int type) {
         this.type = type & TYPE_BITMASK_ALL;
+        return this;
     }
 
     /**
