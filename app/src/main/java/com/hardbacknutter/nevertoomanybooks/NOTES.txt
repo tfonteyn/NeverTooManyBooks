@@ -48,7 +48,7 @@ Booklist style sorting by date-read or date-added etc...:
 
 ----------------------------------------------------------------------------------------------------
 
-### 5.2.2
+### 5.2.3
 
 NEW:
 
@@ -74,3 +74,7 @@ Google books
 
 openlibrary
 // no structured data
+
+----------------------------------------------------------------------------------------------------
+Seems we're mirrored/listed on:
+https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks
