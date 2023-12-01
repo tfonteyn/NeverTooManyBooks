@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.2.1 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.1/NeverTooManyBooks-5.2.1.apk)
+## Download the latest release: [5.2.2 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.2/NeverTooManyBooks-5.2.2.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -79,7 +79,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 ## History
 
-### 5.2.1
+### 5.2.2
 
 NEW:
 
@@ -92,15 +92,13 @@ NEW:
 
 FIXES:
 
-- issue #29 Crop cover left/right usable with Android 12+ gesture navigation; see above.
+- Issue #29 Crop cover left/right usable with Android 12+ gesture navigation; see above.
+- Issue #30 which was introduced in 5.1.2 and causes an upgrade from 5.1.2 straight to 5.2.1 to
+  fail.
 
 REMOVED:
 
 - predefined style "Compact" has been removed. It's easy to recreate as a user-style if needed.
-
----
-
-#### 5.2.0 was broken...
 
 ---
 
