@@ -64,17 +64,17 @@ class ResultsAccumulator {
                                                         CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
 
     @NonNull
-    private final Map<EngineId, Locale> engineLocales;
+    private final Map<EngineId, SearchEngine> engineCache;
     /** Mappers to apply. */
     private final Collection<Mapper> mappers = new ArrayList<>();
     @NonNull
     private final Locale systemLocale;
 
     ResultsAccumulator(@NonNull final Context context,
-                       @NonNull final Map<EngineId, Locale> engineLocales,
+                       @NonNull final Map<EngineId, SearchEngine> engineCache,
                        @NonNull final Locale systemLocale) {
 
-        this.engineLocales = engineLocales;
+        this.engineCache = engineCache;
         this.systemLocale = systemLocale;
 
         ColorMapper.create(context).ifPresent(mappers::add);
@@ -121,9 +121,10 @@ class ResultsAccumulator {
                  @NonNull final Map<EngineId, Book> results,
                  @NonNull final Book book) {
         results.forEach((engineId, result) -> {
-            final Locale siteLocale = engineLocales.get(engineId);
+            final SearchEngine searchEngine = engineCache.get(engineId);
             // Sanity check, should never be null... flw
-            Objects.requireNonNull(siteLocale);
+            Objects.requireNonNull(searchEngine);
+            final Locale siteLocale = searchEngine.getLocale(context);
 
             final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
             final RealNumberParser realNumberParser = new RealNumberParser(locales);

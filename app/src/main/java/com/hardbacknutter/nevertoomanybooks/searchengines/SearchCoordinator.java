@@ -345,14 +345,7 @@ public class SearchCoordinator
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
-            final Map<EngineId, Locale> engineLocales = engineCache
-                    .entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            entry -> entry.getValue().getLocale(context)));
-
-            resultsAccumulator = new ResultsAccumulator(context, engineLocales, systemLocale);
+            resultsAccumulator = new ResultsAccumulator(context, engineCache, systemLocale);
 
             listElementPrefixString = context.getString(R.string.list_element);
 
