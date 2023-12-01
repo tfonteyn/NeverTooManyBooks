@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.2.3 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.3/NeverTooManyBooks-5.2.3.apk)
+## Download the latest release: [5.2.4 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.4/NeverTooManyBooks-5.2.4.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -78,6 +78,10 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - 7" and 10" tablets fully supported with dedicated screen layouts.
 
 ## History
+
+### 5.2.4
+
+Optimized build of 5.2.3 with better responsiveness during book searches.
 
 ### 5.2.3
 
