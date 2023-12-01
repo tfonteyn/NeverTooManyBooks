@@ -475,7 +475,9 @@ public class SearchBookUpdatesViewModel
             final TaskProgress taskProgress = new TaskProgress(
                     R.id.TASK_ID_UPDATE_FIELDS, null,
                     currentProgressCounter, currentCursorCount, null);
-            searchCoordinatorProgress.setValue(LiveDataEvent.of(taskProgress));
+            synchronized (searchCoordinatorProgress) {
+                searchCoordinatorProgress.setValue(LiveDataEvent.of(taskProgress));
+            }
 
             // On to the next book in the list.
             return nextBook(context);

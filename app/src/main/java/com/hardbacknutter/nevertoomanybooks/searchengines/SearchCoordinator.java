@@ -118,7 +118,8 @@ public class SearchCoordinator
 
     /** Caches all created engines for reuse. */
     private final Map<EngineId, SearchEngine> engineCache = new EnumMap<>(EngineId.class);
-
+    // There is a SINGLE/shared listener for ALL tasks!
+    private final TaskListener<Book> searchTaskListener = new SearchTaskListener();
     /**
      * Sites to search on. If this list is empty, all searches will return {@code false}.
      * This list includes both active and disabled sites.
@@ -127,7 +128,6 @@ public class SearchCoordinator
     /** Base message for progress updates. */
     @Nullable
     private String baseMessage;
-
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
     private boolean waitingForIsbnOrCode;
     /** Original ISBN text for search. */
@@ -156,14 +156,12 @@ public class SearchCoordinator
     @Nullable
     private boolean[] fetchCover;
 
-
     /** DEBUG timer. */
     private long searchStartTime;
     /** DEBUG timer. */
     private Map<EngineId, Long> searchTasksStartTime;
     /** DEBUG timer. */
     private Map<EngineId, Long> searchTasksEndTime;
-
 
     /** Cached string resource. */
     private String listElementPrefixString;
@@ -174,7 +172,10 @@ public class SearchCoordinator
      * Process the message and start another task if required.
      *
      * @param taskId of task; this is the engine id.
-     * @param result of a search (can be null for failed/cancelled searches)
+     * @param result of a search;
+     *               Will never be {@code null} for successful searches.
+     *               MAY be {@code null} for cancelled searches.
+     *               WILL be {@code null} for failed searches.
      */
     private synchronized void onSearchTaskFinished(final int taskId,
                                                    @Nullable final Book result) {
@@ -213,7 +214,9 @@ public class SearchCoordinator
         boolean searchStarted = false;
         if (!cancelRequested.get()) {
             //  update our listener with the current progress status
-            searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
+            synchronized (searchCoordinatorProgress) {
+                searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
+            }
 
             if (waitingForIsbnOrCode) {
                 if (result != null && result.hasIsbn()) {
@@ -269,6 +272,37 @@ public class SearchCoordinator
                                       || DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS)) {
                 debugExitOnSearchTaskFinished(context, processTime, searchErrors);
             }
+        }
+    }
+
+    private synchronized void onSearchTaskFailed(final int taskId,
+                                                 @Nullable final Throwable e) {
+        synchronized (errorsByEngineId) {
+            final EngineId engineId;
+            synchronized (activeTasks) {
+                engineId = Objects.requireNonNull(activeTasks.get(taskId),
+                                                  () -> ERROR_UNKNOWN_TASK + taskId)
+                                  .getSearchEngine().getEngineId();
+            }
+            // Always store, even if the Exception is null
+            errorsByEngineId.put(engineId, e);
+        }
+        onSearchTaskFinished(taskId, null);
+    }
+
+    private synchronized void onSearchProgress(@NonNull final TaskProgress message) {
+        synchronized (progressByEngineId) {
+            final EngineId engineId;
+            synchronized (activeTasks) {
+                engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
+                                                  () -> ERROR_UNKNOWN_TASK + message.taskId)
+                                  .getSearchEngine().getEngineId();
+            }
+            progressByEngineId.put(engineId, message);
+        }
+        // forward the accumulated progress
+        synchronized (searchCoordinatorProgress) {
+            searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
         }
     }
 
@@ -685,7 +719,7 @@ public class SearchCoordinator
         }
 
         final SearchTask task = new SearchTask(context, TASK_ID.getAndIncrement(),
-                                               searchEngine, new SearchTaskListener());
+                                               searchEngine, searchTaskListener);
         task.setExecutor(ASyncExecutor.MAIN);
 
         task.setFetchCovers(fetchCover);
@@ -1085,23 +1119,21 @@ public class SearchCoordinator
         }
     }
 
-    /** Listener for <strong>individual</strong> search tasks. */
+    /**
+     * Listener for <strong>individual</strong> search tasks.
+     * There MUST only be ONE instance of this listener, shared between all tasks!
+     * It serves as a translation layer between the standard TaskListener
+     * and what the SearchCoordinator needs.
+     * <p>
+     * Dev. Note: and it's an inner class because if we simply create it as an anonymous class
+     * as we normally would/should, then Android Studio source formatting will go silly...
+     */
     private class SearchTaskListener
             implements TaskListener<Book> {
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
-            synchronized (progressByEngineId) {
-                final EngineId engineId;
-                synchronized (activeTasks) {
-                    engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
-                                                      () -> ERROR_UNKNOWN_TASK + message.taskId)
-                                      .getSearchEngine().getEngineId();
-                }
-                progressByEngineId.put(engineId, message);
-            }
-            // forward the accumulated progress
-            searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
+            onSearchProgress(message);
         }
 
         @Override
@@ -1114,25 +1146,13 @@ public class SearchCoordinator
         @Override
         public void onCancelled(final int taskId,
                                 @Nullable final Book result) {
-            // we'll deliver what we have found up to now (includes previous searches)
-            // The result MAY be null
             onSearchTaskFinished(taskId, result);
         }
 
         @Override
         public void onFailure(final int taskId,
                               @Nullable final Throwable e) {
-            synchronized (errorsByEngineId) {
-                final EngineId engineId;
-                synchronized (activeTasks) {
-                    engineId = Objects.requireNonNull(activeTasks.get(taskId),
-                                                      () -> ERROR_UNKNOWN_TASK + taskId)
-                                      .getSearchEngine().getEngineId();
-                }
-                // Always store, even if the Exception is null
-                errorsByEngineId.put(engineId, e);
-            }
-            onSearchTaskFinished(taskId, null);
+            onSearchTaskFailed(taskId, e);
         }
     }
 }
