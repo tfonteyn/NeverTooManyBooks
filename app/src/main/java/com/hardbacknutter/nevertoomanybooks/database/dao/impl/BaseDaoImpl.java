@@ -87,7 +87,7 @@ abstract class BaseDaoImpl {
     BaseDaoImpl(@NonNull final SynchronizedDb db,
                 @NonNull final String logTag) {
         if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(TAG, "Constructor", logTag);
+            LoggerFactory.getLogger().d(logTag, "Constructor");
         }
 
         this.db = db;
