@@ -127,9 +127,12 @@ public class CoverCacheDaoImpl
         try {
             // Remove files where the name starts with the uuid,
             // which will remove all sizes and indexes
-            return 0 < db.delete(CacheDbHelper.TBL_IMAGE.getName(),
-                                 CacheDbHelper.IMAGE_ID + " LIKE ?",
-                                 new String[]{uuid + '%'});
+            final int rowsAffected;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_IMAGE_ID)) {
+                stmt.bindString(1, uuid + '%');
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+            return rowsAffected > 0;
 
         } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
@@ -264,7 +267,13 @@ public class CoverCacheDaoImpl
 
         static final String INSERT =
                 "INSERT INTO " + CacheDbHelper.TBL_IMAGE.getName()
-                + '(' + CacheDbHelper.IMAGE_ID + ',' + CacheDbHelper.IMAGE_BLOB + ") VALUES (?,?)";
+                + '(' + CacheDbHelper.IMAGE_ID
+                + ',' + CacheDbHelper.IMAGE_BLOB
+                + ") VALUES (?,?)";
+
+        static final String DELETE_BY_IMAGE_ID =
+                "DELETE FROM " + CacheDbHelper.TBL_IMAGE.getName()
+                + " WHERE " + CacheDbHelper.IMAGE_ID + " LIKE ?";
 
         static final String FIND_BY_ID =
                 "SELECT " + CacheDbHelper.IMAGE_BLOB

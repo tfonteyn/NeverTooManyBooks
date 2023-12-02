@@ -29,6 +29,7 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
@@ -334,6 +335,9 @@ public class SynchronizedDb
      * <strong>native code</strong> based on sql string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
+     * <p>
+     * 2023-12-03: all regular use of this method was phased out in favour of
+     * {@link #compileStatement(String)}.
      *
      * @param table       the table to delete from
      * @param whereClause the optional WHERE clause to apply when deleting.
@@ -347,6 +351,7 @@ public class SynchronizedDb
      * @throws TransactionException when currently inside a shared lock
      */
     @SuppressWarnings("UnusedReturnValue")
+    @VisibleForTesting
     public int delete(@NonNull final String table,
                       @Nullable final String whereClause,
                       @Nullable final String[] whereArgs) {

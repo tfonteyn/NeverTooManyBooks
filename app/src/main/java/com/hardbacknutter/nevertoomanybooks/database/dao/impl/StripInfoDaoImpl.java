@@ -93,10 +93,12 @@ public class StripInfoDaoImpl
     @Override
     public boolean delete(@NonNull final Book book) {
         try {
-            return 0 < db.delete(DBDefinitions.TBL_STRIPINFO_COLLECTION.getName(),
-                                 DBKey.FK_BOOK + "=?",
-                                 new String[]{String.valueOf(book.getId())});
-
+            final int rowsAffected;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
+                stmt.bindLong(1, book.getId());
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+            return rowsAffected > 0;
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
@@ -116,5 +118,9 @@ public class StripInfoDaoImpl
                 + ',' + DBKey.STRIP_INFO_AMOUNT
                 + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
                 + ") VALUES (?,?,?,?,?,?,?,?)";
+
+        static final String DELETE_BY_LOCAL_BOOK_ID =
+                DELETE_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
     }
 }

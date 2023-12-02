@@ -148,9 +148,13 @@ public class CalibreDaoImpl
     @Override
     public boolean delete(@NonNull final Book book) {
         try {
-            return 0 < db.delete(DBDefinitions.TBL_CALIBRE_BOOKS.getName(),
-                                 DBKey.FK_BOOK + "=?",
-                                 new String[]{String.valueOf(book.getId())});
+            final int rowsAffected;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
+                stmt.bindLong(1, book.getId());
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+            return rowsAffected > 0;
+
         } catch (@NonNull final SQLException | IllegalArgumentException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
@@ -167,5 +171,9 @@ public class CalibreDaoImpl
                 + ',' + DBKey.CALIBRE_BOOK_MAIN_FORMAT
                 + ',' + DBKey.FK_CALIBRE_LIBRARY
                 + ") VALUES (?,?,?,?,?)";
+
+        static final String DELETE_BY_LOCAL_BOOK_ID =
+                DELETE_FROM_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
     }
 }
