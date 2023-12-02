@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,5 +79,6 @@ public interface PublisherDao
     /**
      * Delete orphaned records.
      */
+    @WorkerThread
     void purge();
 }

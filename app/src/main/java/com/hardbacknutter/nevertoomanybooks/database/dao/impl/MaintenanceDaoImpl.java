@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.List;
 import java.util.Locale;
@@ -128,12 +129,14 @@ public class MaintenanceDaoImpl
     }
 
     @Override
+    @WorkerThread
     public void purge() {
 
         // Note: purging TocEntry's is automatic due to foreign key cascading.
         // i.e. a TocEntry is linked directly with authors;
         // and linked with books via a link table.
 
+        //noinspection CheckStyle
         try {
             seriesDaoSupplier.get().purge();
             authorDaoSupplier.get().purge();
@@ -142,12 +145,13 @@ public class MaintenanceDaoImpl
             db.analyze();
 
         } catch (@NonNull final RuntimeException e) {
-            // log to file, this is bad.
+            // log to file, this is bad but NOT fatal.
             LoggerFactory.getLogger().e(TAG, e);
         }
     }
 
     @Override
+    @WorkerThread
     public void rebuildOrderByTitleColumns(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
@@ -173,10 +177,8 @@ public class MaintenanceDaoImpl
                 }
             }
 
-            // Series and TOC Entries use the user Locale.
-
             // We should use the locale from the 1st book in the series...
-            // but that is a huge overhead.
+            // but that is a huge overhead so we use the user-locale directly.
             try (Cursor cursor = db.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, locales,
@@ -184,6 +186,7 @@ public class MaintenanceDaoImpl
                 }
             }
 
+            // A publisher is not linked to a Locale, so we use the user-locale directly.
             try (Cursor cursor = db.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, locales,
@@ -191,7 +194,8 @@ public class MaintenanceDaoImpl
                 }
             }
 
-            // We should use primary book or Author Locale... but that is a huge overhead.
+            // We should use primary book or Author Locale...
+            // but that is a huge overhead, so we use the user-locale directly.
             try (Cursor cursor = db.rawQuery(TOC_ENTRY_TITLES, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, locales,
@@ -218,19 +222,18 @@ public class MaintenanceDaoImpl
      * @param cursor     positioned on the row to handle
      * @param table      to update
      * @param domainName to update
-     *
-     * @return {@code true} on success
      */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean rebuildOrderByTitleColumns(@NonNull final Context context,
-                                               @NonNull final Locale locale,
-                                               @NonNull final List<Locale> locales,
-                                               @NonNull final Cursor cursor,
-                                               @NonNull final TableDefinition table,
-                                               @NonNull final String domainName) {
+    @WorkerThread
+    private void rebuildOrderByTitleColumns(@NonNull final Context context,
+                                            @NonNull final Locale locale,
+                                            @NonNull final List<Locale> locales,
+                                            @NonNull final Cursor cursor,
+                                            @NonNull final TableDefinition table,
+                                            @NonNull final String domainName) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
+                //noinspection CheckStyle
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -246,10 +249,8 @@ public class MaintenanceDaoImpl
         if (!currentObTitle.equals(rebuildObTitle)) {
             final ContentValues cv = new ContentValues();
             cv.put(domainName, SqlEncode.orderByColumn(rebuildObTitle, locale));
-            return 0 < db.update(table.getName(), cv, DBKey.PK_ID + "=?",
-                                 new String[]{String.valueOf(id)});
+            db.update(table.getName(), cv, DBKey.PK_ID + "=?",
+                      new String[]{String.valueOf(id)});
         }
-
-        return true;
     }
 }

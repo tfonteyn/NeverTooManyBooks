@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 public interface MaintenanceDao {
 
@@ -36,7 +37,10 @@ public interface MaintenanceDao {
      * </ul>
      * So orphaned data will stay around a little longer which in fact may be beneficial
      * while entering/correcting a book collection.
+     * <p>
+     * <strong>All Exceptions are ignored.</strong>
      */
+    @WorkerThread
     void purge();
 
     /**
@@ -46,6 +50,6 @@ public interface MaintenanceDao {
      *
      * @param context Current context
      */
+    @WorkerThread
     void rebuildOrderByTitleColumns(@NonNull Context context);
-
 }

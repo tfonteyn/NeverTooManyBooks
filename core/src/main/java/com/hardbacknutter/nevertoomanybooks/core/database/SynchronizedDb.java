@@ -29,6 +29,7 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -542,6 +543,7 @@ public class SynchronizedDb
     /**
      * Run '<a href="https://www.sqlite.org/lang_analyze.html">analyse</a>' on the whole database.
      */
+    @WorkerThread
     public void analyze() {
         execSQL("analyze");
     }

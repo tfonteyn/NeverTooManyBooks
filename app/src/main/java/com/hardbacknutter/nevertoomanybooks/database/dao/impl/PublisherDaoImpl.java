@@ -25,6 +25,7 @@ import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -434,6 +435,7 @@ public class PublisherDaoImpl
     }
 
     @Override
+    @WorkerThread
     public void purge() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
             stmt.executeUpdateDelete();

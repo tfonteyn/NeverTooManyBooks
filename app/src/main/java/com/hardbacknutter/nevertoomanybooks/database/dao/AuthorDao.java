@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
+import androidx.annotation.WorkerThread;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -104,6 +105,7 @@ public interface AuthorDao
     /**
      * Delete orphaned records.
      */
+    @WorkerThread
     void purge();
 
     @StringDef({
