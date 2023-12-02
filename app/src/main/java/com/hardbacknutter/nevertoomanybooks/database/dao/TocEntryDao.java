@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.Collection;
 import java.util.List;
@@ -154,5 +155,6 @@ public interface TocEntryDao
     /**
      * Delete orphaned records.
      */
+    @WorkerThread
     void purge();
 }
