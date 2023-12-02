@@ -346,8 +346,7 @@ public class StyleDaoImpl
     @Override
     public void purgeNodeStates(@NonNull final Style style)
             throws DaoUpdateException {
-        try (SynchronizedStatement stmt = db
-                .compileStatement(Sql.DELETE_BOOK_LIST_NODE_STATE_BY_STYLE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_NODE_STATE_BY_STYLE)) {
             stmt.bindLong(1, style.getId());
             stmt.executeUpdateDelete();
 
@@ -393,7 +392,7 @@ public class StyleDaoImpl
                 SELECT_ + DBKey.PK_ID + _FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
                 + _WHERE_ + DBKey.STYLE_UUID + "=?";
 
-        static final String DELETE_BOOK_LIST_NODE_STATE_BY_STYLE =
+        static final String DELETE_NODE_STATE_BY_STYLE =
                 DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE.getName()
                 + _WHERE_ + DBKey.FK_STYLE + "=?";
 
