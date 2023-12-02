@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +78,7 @@ public class LanguageDaoImpl
     }
 
     @Override
+    @WorkerThread
     public void bulkUpdate(@NonNull final Context context) {
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 

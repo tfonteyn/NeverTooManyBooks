@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 public interface LanguageDao
         extends InlineStringDao {
@@ -33,5 +34,6 @@ public interface LanguageDao
      *
      * @param context Current context
      */
+    @WorkerThread
     void bulkUpdate(@NonNull Context context);
 }

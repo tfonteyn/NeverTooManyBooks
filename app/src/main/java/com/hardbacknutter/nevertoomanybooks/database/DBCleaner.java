@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
@@ -74,6 +75,12 @@ public class DBCleaner {
         this.db = ServiceLocator.getInstance().getDb();
     }
 
+    /**
+     * Start the cleaning.
+     *
+     * @param context Current context
+     */
+    @WorkerThread
     public void clean(@NonNull final Context context) {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
@@ -152,7 +159,7 @@ public class DBCleaner {
      *
      * @param context Current context
      */
-    public void bookshelves(@NonNull final Context context) {
+    private void bookshelves(@NonNull final Context context) {
         ServiceLocator.getInstance().getBookshelfDao().getAll().forEach(
                 bookshelf -> bookshelf.validateStyle(context));
     }
@@ -249,9 +256,9 @@ public class DBCleaner {
      * @param dryRun {@code true} to run the update.
      */
     @SuppressWarnings("unused")
-    public void nullString2empty(@NonNull final String table,
-                                 @NonNull final String column,
-                                 final boolean dryRun) {
+    private void nullString2empty(@NonNull final String table,
+                                  @NonNull final String column,
+                                  final boolean dryRun) {
         final String select =
                 SELECT_DISTINCT_ + column + _FROM_ + table + _WHERE_ + column + _IS_NULL;
         toLog("nullString2empty|ENTER", select);
