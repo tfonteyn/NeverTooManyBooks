@@ -24,6 +24,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
@@ -89,6 +90,7 @@ public class DeletedBooksDaoImpl
     }
 
     @Override
+    @WorkerThread
     public int importRecords(@NonNull final List<Pair<String, String>> list) {
         int count = 0;
 

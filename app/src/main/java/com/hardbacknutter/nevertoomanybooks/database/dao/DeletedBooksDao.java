@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
@@ -57,6 +58,7 @@ public interface DeletedBooksDao {
      * @see #getAll(LocalDateTime)
      * @see #sync()
      */
+    @WorkerThread
     int importRecords(@NonNull List<Pair<String, String>> list);
 
     /**
