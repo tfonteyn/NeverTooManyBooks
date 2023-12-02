@@ -36,6 +36,11 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 /**
  * Database wrapper class that performs thread synchronization on all operations.
  * <p>
+ * <strong>IMPORTANT:</strong> all {@link RuntimeException}s coming from the wrapped
+ * database are allowed to be thrown!
+ * If the class logic deems it needed, a {@link TransactionException} can be thrown as well.
+ *
+ * <p>
  * After getting a question "why?": See {@link Synchronizer} for details.
  * <p>
  * About the SQLite version:
@@ -55,8 +60,6 @@ public class SynchronizedDb
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
     private static final String ERROR_TX_LOCK_WAS_NULL = "Lock passed in was NULL";
-    /** beginTransaction failed for an unknown reason. */
-    private static final String ERROR_TX_COULD_NOT_START = "TX could not be started";
     /** Trying to start a transaction (lock) which is already started. */
     private static final String ERROR_TX_ALREADY_STARTED = "TX already started";
     /** endTransaction without beginTransaction. */
@@ -567,32 +570,37 @@ public class SynchronizedDb
      * @param isUpdate Indicates if updates will be done in TX
      *
      * @return the lock
+     *
+     * @throws TransactionException when there is already an active transaction
      */
     @NonNull
-    public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
+    public Synchronizer.SyncLock beginTransaction(final boolean isUpdate)
+            throws TransactionException {
         final Synchronizer.SyncLock txLock;
         if (isUpdate) {
             txLock = synchronizer.getExclusiveLock();
         } else {
             txLock = synchronizer.getSharedLock();
         }
-        // We have the lock, but if the real beginTransaction() throws an exception,
-        // we need to release the lock.
-        //noinspection CheckStyle,OverlyBroadCatchBlock
-        try {
+
+        if (currentTxLock == null) {
+            // We have the lock, but if the real beginTransaction() throws an exception,
+            // we need to release the lock.
+            //noinspection CheckStyle
+            try {
+                sqLiteDatabase.beginTransaction();
+            } catch (@NonNull final RuntimeException e) {
+                txLock.unlock();
+                throw e;
+            }
+        } else {
             // If we have a lock, and there is currently a TX active...die
             // Note: because we get a lock, two 'isUpdate' transactions will
             // block, this is only likely to happen with two TXs on the current thread
             // or two non-update TXs on different thread.
-            if (currentTxLock == null) {
-                sqLiteDatabase.beginTransaction();
-            } else {
-                throw new TransactionException(ERROR_TX_ALREADY_STARTED);
-            }
-        } catch (@NonNull final RuntimeException e) {
-            txLock.unlock();
-            throw new TransactionException(ERROR_TX_COULD_NOT_START, e);
+            throw new TransactionException(ERROR_TX_ALREADY_STARTED);
         }
+
         currentTxLock = txLock;
         return txLock;
     }
@@ -611,8 +619,11 @@ public class SynchronizedDb
      * <strong>MUST</strong> be called from a 'finally' block.
      *
      * @param txLock Lock returned from {@link #beginTransaction(boolean)}.
+     *
+     * @throws TransactionException on any failure
      */
-    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
+    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock)
+            throws TransactionException {
         if (txLock == null) {
             throw new TransactionException(ERROR_TX_LOCK_WAS_NULL);
         }
