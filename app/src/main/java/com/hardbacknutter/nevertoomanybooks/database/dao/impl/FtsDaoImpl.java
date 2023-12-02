@@ -63,6 +63,7 @@ public class FtsDaoImpl
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
+
     /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
     @NonNull
@@ -199,8 +200,7 @@ public class FtsDaoImpl
     }
 
     @Override
-    public void insert(@IntRange(from = 1) final long bookId)
-            throws TransactionException {
+    public void insert(@IntRange(from = 1) final long bookId) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -219,8 +219,7 @@ public class FtsDaoImpl
     }
 
     @Override
-    public void update(@IntRange(from = 1) final long bookId)
-            throws TransactionException {
+    public void update(@IntRange(from = 1) final long bookId) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -248,16 +247,13 @@ public class FtsDaoImpl
      *
      * @param cursor Cursor of books to update
      * @param sql    Statement to execute (insert or update)
-     *
-     * @throws TransactionException a transaction must be started before calling this method
      */
-    @SuppressLint("Range")
     private void processBooks(@NonNull final Cursor cursor,
-                              @NonNull final String sql)
-            throws TransactionException {
+                              @NonNull final String sql) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
+                //noinspection CheckStyle
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
