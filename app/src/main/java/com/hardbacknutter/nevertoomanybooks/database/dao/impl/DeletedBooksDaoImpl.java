@@ -93,7 +93,7 @@ public class DeletedBooksDaoImpl
         int count = 0;
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection CheckStyle
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
