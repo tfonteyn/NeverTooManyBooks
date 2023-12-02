@@ -558,11 +558,7 @@ public class CoverStorage {
                                   @IntRange(from = 0, to = 1) final int cIdx,
                                   final int width,
                                   final int height) {
-        final CoverCacheDao coverCacheDao = coverCacheDaoSupplier.get();
-        if (!coverCacheDao.isBusy()) {
-            return coverCacheDao.getCover(uuid, cIdx, width, height);
-        }
-        return null;
+        return coverCacheDaoSupplier.get().getCover(uuid, cIdx, width, height);
     }
 
     /**

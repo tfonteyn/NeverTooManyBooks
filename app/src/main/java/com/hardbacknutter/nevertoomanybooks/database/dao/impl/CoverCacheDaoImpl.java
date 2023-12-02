@@ -175,6 +175,11 @@ public class CoverCacheDaoImpl
                            @IntRange(from = 0, to = 1) final int cIdx,
                            final int maxWidth,
                            final int maxHeight) {
+        if (isBusy()) {
+            return null;
+
+        }
+        //noinspection CheckStyle
         try {
             final long lm = coverStorageSupplier.get().getPersistedFile(uuid, cIdx)
                                                 .map(File::lastModified)
@@ -209,8 +214,7 @@ public class CoverCacheDaoImpl
      * @return {@code true} if there is
      */
     @AnyThread
-    @Override
-    public boolean isBusy() {
+    private boolean isBusy() {
         return RUNNING_TASKS.get() != 0;
     }
 

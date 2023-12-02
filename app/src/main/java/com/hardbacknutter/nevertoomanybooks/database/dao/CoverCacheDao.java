@@ -87,6 +87,4 @@ public interface CoverCacheDao {
                    @NonNull Bitmap bitmap,
                    int width,
                    int height);
-
-    boolean isBusy();
 }
