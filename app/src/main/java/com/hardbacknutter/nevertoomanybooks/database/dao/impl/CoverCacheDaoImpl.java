@@ -54,12 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
  * <p>
  * Images are stored as JPEG, at 80% quality. This does not affect the file itself.
  * <p>
- * In the initial pass, the covers database has a single table whose members are accessed
- * via unique 'file names'.
+ * The covers database has a single table whose members are accessed via unique 'file names'.
  * <p>
- * 2018-11-26: database location back to internal storage.
- * The bulk of space is used by the actual image file, not by the database.
- * To be reviewed when/if the location of the images can be user-configured.
  * TODO: performance tests: cache enabled/disabled; do we actually need this db ?
  */
 public class CoverCacheDaoImpl
@@ -134,6 +130,7 @@ public class CoverCacheDaoImpl
 
     @Override
     public int count() {
+        //noinspection CheckStyle
         try {
             try (SynchronizedStatement stmt = db.compileStatement(SQL_COUNT)) {
                 return (int) stmt.simpleQueryForLongOrZero();
@@ -146,6 +143,7 @@ public class CoverCacheDaoImpl
 
     @Override
     public boolean delete(@NonNull final String uuid) {
+        //noinspection CheckStyle
         try {
             // Remove files where the name starts with the uuid,
             // which will remove all sizes and indexes
@@ -153,7 +151,7 @@ public class CoverCacheDaoImpl
                                  CacheDbHelper.IMAGE_ID + " LIKE ?",
                                  new String[]{uuid + '%'});
 
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
@@ -227,11 +225,11 @@ public class CoverCacheDaoImpl
                           final int height) {
         // Start a task to send it to the cache.
         // Use the default serial executor as we only want a single write thread at a time.
-        // Failures are ignored as it is just writing to a cache used solely for optimization.
         ASyncExecutor.SERIAL.execute(() -> {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
             RUNNING_TASKS.incrementAndGet();
+            //noinspection CheckStyle
             try {
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();
                 // Rapid scrolling of view could already have recycled the bitmap.

@@ -33,6 +33,8 @@ public interface CoverCacheDao {
 
     /**
      * Count the total amount of covers in the cache.
+     * <p>
+     * <strong>All Exceptions are ignored, and {@code 0} is returned instead.</strong>
      *
      * @return number of covers
      */
@@ -40,6 +42,8 @@ public interface CoverCacheDao {
 
     /**
      * Delete the cached covers associated with the passed {@link Book} uuid.
+     * <p>
+     * <strong>All Exceptions are ignored, and {@code false} is returned instead.</strong>
      *
      * @param uuid of the book to delete
      *
@@ -49,16 +53,20 @@ public interface CoverCacheDao {
 
     /**
      * delete all rows.
+     * <p>
+     * <strong>All Exceptions are ignored.</strong>
      **/
     void deleteAll();
 
     /**
      * Get a cached image.
+     * <p>
+     * <strong>All Exceptions are ignored, and {@code null} is returned instead.</strong>
      *
-     * @param uuid    UUID of the book
-     * @param cIdx    0..n image index
-     * @param width   desired/maximum width
-     * @param height  desired/maximum height
+     * @param uuid   UUID of the book
+     * @param cIdx   0..n image index
+     * @param width  desired/maximum width
+     * @param height desired/maximum height
      *
      * @return Bitmap (if cached) or {@code null} (if not cached)
      */
@@ -72,8 +80,7 @@ public interface CoverCacheDao {
     /**
      * Save the passed bitmap to the cache.
      * <p>
-     * This will either insert or update a row in the database.
-     * Failures are ignored; this is just a cache.
+     * <strong>All Exceptions are ignored.</strong>
      *
      * @param uuid   UUID of the book
      * @param cIdx   0..n image index
