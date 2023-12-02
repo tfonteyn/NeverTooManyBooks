@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,10 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
+import android.database.SQLException;
+
 import androidx.annotation.Nullable;
 
+@SuppressWarnings("MissingJavadoc")
 public class TransactionException
-        extends RuntimeException {
+        extends SQLException {
 
     public static final String REQUIRED = "TX required";
 
@@ -32,8 +35,8 @@ public class TransactionException
         super(message);
     }
 
-    TransactionException(@Nullable final String message,
-                         @Nullable final Exception cause) {
+    public TransactionException(@Nullable final String message,
+                                @Nullable final Exception cause) {
         super(message, cause);
     }
 }
