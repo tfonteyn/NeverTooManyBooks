@@ -24,6 +24,7 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.util.List;
 
@@ -55,6 +56,7 @@ public interface FtsDao {
     /**
      * Rebuild the entire FTS database.
      */
+    @WorkerThread
     void rebuild();
 
     /**

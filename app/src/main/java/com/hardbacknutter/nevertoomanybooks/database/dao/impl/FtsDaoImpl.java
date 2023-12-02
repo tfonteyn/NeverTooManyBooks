@@ -19,12 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.annotation.SuppressLint;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +66,10 @@ public class FtsDaoImpl
 
     /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
+
+    /** Name of the temporary table used during {@link #rebuild()}. */
+    private static final String TMP_TABLE_FOR_REBUILDING = "books_fts_rebuilding";
+
     @NonNull
     private final Supplier<StylesHelper> stylesHelperSupplier;
 
@@ -141,16 +145,16 @@ public class FtsDaoImpl
     }
 
     @Override
+    @WorkerThread
     public void rebuild() {
         // This can take several seconds with many books or a slow device.
         long t0 = 0;
         if (BuildConfig.DEBUG /* always */) {
             t0 = System.nanoTime();
         }
-        boolean gotError = false;
 
-        final String tmpTableName = "books_fts_rebuilding";
-        final TableDefinition ftsTemp = DBDefinitions.createFtsTableDefinition(tmpTableName);
+        final TableDefinition ftsTemp = DBDefinitions
+                .createFtsTableDefinition(TMP_TABLE_FOR_REBUILDING);
 
         Synchronizer.SyncLock txLock = null;
         //noinspection CheckStyle,OverlyBroadCatchBlock
@@ -163,34 +167,29 @@ public class FtsDaoImpl
             db.recreate(ftsTemp, false);
 
             try (Cursor cursor = db.rawQuery(Sql.ALL_BOOKS, null)) {
-                processBooks(cursor, INSERT_INTO_ + tmpTableName + Sql.INSERT_BODY);
+                processBooks(cursor, INSERT_INTO_ + TMP_TABLE_FOR_REBUILDING + Sql.INSERT_BODY);
             }
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
-            // updating FTS should not be fatal.
+            // we're running as a task thread, just cleanup, and let the task handle the exception
             LoggerFactory.getLogger().e(TAG, e);
-            gotError = true;
-            db.drop(tmpTableName);
+            db.drop(TMP_TABLE_FOR_REBUILDING);
+            throw e;
 
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
-
-            /*
-            http://sqlite.1065341.n5.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td11430.html
-            FTS tables should only be renamed outside of transactions.
-            */
-            //  Delete old table and rename the new table
-            if (!gotError) {
-                // Drop old table, ready for rename
-                db.drop(TBL_FTS_BOOKS.getName());
-                db.execSQL("ALTER TABLE " + tmpTableName
-                           + " RENAME TO " + TBL_FTS_BOOKS.getName());
-            }
         }
+
+        // FTS tables should only be renamed outside of transactions.
+        // http://sqlite.1065341.n5.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td11430.html
+        // Delete old table and rename the new table
+        db.drop(TBL_FTS_BOOKS.getName());
+        db.execSQL("ALTER TABLE " + TMP_TABLE_FOR_REBUILDING
+                   + " RENAME TO " + TBL_FTS_BOOKS.getName());
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger().d(TAG, "rebuild",
