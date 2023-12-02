@@ -577,7 +577,7 @@ public class BookshelfDaoImpl
     public void purgeNodeStates(@NonNull final Bookshelf bookshelf)
             throws DaoUpdateException {
         try (SynchronizedStatement stmt = db
-                .compileStatement(Sql.FIND_BOOK_LIST_NODE_STATE_BY_BOOKSHELF_ID)) {
+                .compileStatement(Sql.DELETE_NODE_STATE_BY_BOOKSHELF_ID)) {
             stmt.bindLong(1, bookshelf.getId());
             stmt.executeUpdateDelete();
 
@@ -711,7 +711,7 @@ public class BookshelfDaoImpl
                 + _FROM_ + TBL_BOOK_BOOKSHELF.ref()
                 + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
 
-        static final String FIND_BOOK_LIST_NODE_STATE_BY_BOOKSHELF_ID =
+        static final String DELETE_NODE_STATE_BY_BOOKSHELF_ID =
                 DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
                 + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
 
