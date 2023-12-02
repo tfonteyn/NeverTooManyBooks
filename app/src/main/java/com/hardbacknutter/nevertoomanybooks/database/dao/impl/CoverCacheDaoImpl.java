@@ -64,26 +64,6 @@ public class CoverCacheDaoImpl
     /** Log tag. */
     private static final String TAG = "CoverCacheDaoImpl";
 
-    private static final String INSERT =
-            "INSERT INTO " + CacheDbHelper.TBL_IMAGE.getName()
-            + '(' + CacheDbHelper.IMAGE_ID + ',' + CacheDbHelper.IMAGE_BLOB + ") VALUES (?,?)";
-
-    /** Get a cached image. */
-    private static final String SQL_GET_IMAGE =
-            "SELECT " + CacheDbHelper.IMAGE_BLOB
-            + " FROM " + CacheDbHelper.TBL_IMAGE.getName()
-            + " WHERE " + CacheDbHelper.IMAGE_ID + "=?"
-            + " AND " + CacheDbHelper.IMAGE_LAST_UPDATED__UTC + ">?";
-
-    /** Run a count for the desired file. 1 == exists, 0 == not there. */
-    private static final String SQL_COUNT_ID =
-            "SELECT COUNT(" + CacheDbHelper.PK_ID + ")"
-            + " FROM " + CacheDbHelper.TBL_IMAGE.getName()
-            + " WHERE " + CacheDbHelper.IMAGE_ID + "=?";
-
-    private static final String SQL_COUNT =
-            "SELECT COUNT(*) FROM " + CacheDbHelper.TBL_IMAGE.getName();
-
     /** Compresses images to 80% to store in the cache. */
     private static final int QUALITY = 80;
     /** Used to prevent trying to read from the cache while we're writing to it. */
@@ -132,7 +112,7 @@ public class CoverCacheDaoImpl
     public int count() {
         //noinspection CheckStyle
         try {
-            try (SynchronizedStatement stmt = db.compileStatement(SQL_COUNT)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } catch (@NonNull final RuntimeException e) {
@@ -191,7 +171,7 @@ public class CoverCacheDaoImpl
                 final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
                 try (Cursor cursor = db.rawQuery(
-                        SQL_GET_IMAGE, new String[]{cacheId, fileLastModified})) {
+                        Sql.FIND_BY_ID, new String[]{cacheId, fileLastModified})) {
                     if (cursor.moveToFirst()) {
                         final byte[] bytes = cursor.getBlob(0);
                         if (bytes != null) {
@@ -239,13 +219,13 @@ public class CoverCacheDaoImpl
                     final String cacheId = constructCacheId(uuid, cIdx, width, height);
 
                     final boolean exists;
-                    try (SynchronizedStatement stmt = db.compileStatement(SQL_COUNT_ID)) {
+                    try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BY_IMAGE_ID)) {
                         stmt.bindString(1, cacheId);
                         exists = stmt.simpleQueryForLongOrZero() == 0;
                     }
 
                     if (exists) {
-                        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+                        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
                             stmt.executeInsert();
@@ -278,5 +258,27 @@ public class CoverCacheDaoImpl
 
             RUNNING_TASKS.decrementAndGet();
         });
+    }
+
+    private static final class Sql {
+
+        static final String INSERT =
+                "INSERT INTO " + CacheDbHelper.TBL_IMAGE.getName()
+                + '(' + CacheDbHelper.IMAGE_ID + ',' + CacheDbHelper.IMAGE_BLOB + ") VALUES (?,?)";
+
+        static final String FIND_BY_ID =
+                "SELECT " + CacheDbHelper.IMAGE_BLOB
+                + " FROM " + CacheDbHelper.TBL_IMAGE.getName()
+                + " WHERE " + CacheDbHelper.IMAGE_ID + "=?"
+                + " AND " + CacheDbHelper.IMAGE_LAST_UPDATED__UTC + ">?";
+
+        /** Run a count for the desired file. 1 == exists, 0 == not there. */
+        static final String COUNT_BY_IMAGE_ID =
+                "SELECT COUNT(" + CacheDbHelper.PK_ID + ")"
+                + " FROM " + CacheDbHelper.TBL_IMAGE.getName()
+                + " WHERE " + CacheDbHelper.IMAGE_ID + "=?";
+
+        static final String COUNT =
+                "SELECT COUNT(*) FROM " + CacheDbHelper.TBL_IMAGE.getName();
     }
 }
