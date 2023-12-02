@@ -47,14 +47,6 @@ public class CalibreDaoImpl
 
     private static final String TAG = "CalibreDaoImpl";
 
-    private static final String INSERT =
-            INSERT_INTO_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
-            + '(' + DBKey.FK_BOOK
-            + ',' + DBKey.CALIBRE_BOOK_ID
-            + ',' + DBKey.CALIBRE_BOOK_UUID
-            + ',' + DBKey.CALIBRE_BOOK_MAIN_FORMAT
-            + ',' + DBKey.FK_CALIBRE_LIBRARY
-            + ") VALUES (?,?,?,?,?)";
     @NonNull
     private final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier;
 
@@ -139,7 +131,7 @@ public class CalibreDaoImpl
             return false;
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindLong(1, book.getId());
             stmt.bindLong(2, book.getInt(DBKey.CALIBRE_BOOK_ID));
             stmt.bindString(3, book.getString(DBKey.CALIBRE_BOOK_UUID));
@@ -163,5 +155,17 @@ public class CalibreDaoImpl
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
+    }
+
+    private static final class Sql {
+
+        static final String INSERT =
+                INSERT_INTO_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
+                + '(' + DBKey.FK_BOOK
+                + ',' + DBKey.CALIBRE_BOOK_ID
+                + ',' + DBKey.CALIBRE_BOOK_UUID
+                + ',' + DBKey.CALIBRE_BOOK_MAIN_FORMAT
+                + ',' + DBKey.FK_CALIBRE_LIBRARY
+                + ") VALUES (?,?,?,?,?)";
     }
 }

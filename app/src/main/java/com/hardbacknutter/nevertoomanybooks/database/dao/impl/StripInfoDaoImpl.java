@@ -40,18 +40,6 @@ public class StripInfoDaoImpl
 
     private static final String TAG = "StripInfoDaoImpl";
 
-    private static final String INSERT =
-            INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
-            + '(' + DBKey.FK_BOOK
-            + ',' + DBKey.SID_STRIP_INFO
-            + ',' + DBKey.STRIP_INFO_COLL_ID
-            + ',' + DBKey.STRIP_INFO_OWNED
-            + ',' + DBKey.STRIP_INFO_DIGITAL
-            + ',' + DBKey.STRIP_INFO_WANTED
-            + ',' + DBKey.STRIP_INFO_AMOUNT
-            + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
-            + ") VALUES (?,?,?,?,?,?,?,?)";
-
     /**
      * Constructor.
      *
@@ -85,7 +73,7 @@ public class StripInfoDaoImpl
             }
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             int i = 0;
             stmt.bindLong(++i, book.getId());
             stmt.bindLong(++i, book.getInt(DBKey.SID_STRIP_INFO));
@@ -113,5 +101,20 @@ public class StripInfoDaoImpl
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
+    }
+
+    private static final class Sql {
+
+        static final String INSERT =
+                INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
+                + '(' + DBKey.FK_BOOK
+                + ',' + DBKey.SID_STRIP_INFO
+                + ',' + DBKey.STRIP_INFO_COLL_ID
+                + ',' + DBKey.STRIP_INFO_OWNED
+                + ',' + DBKey.STRIP_INFO_DIGITAL
+                + ',' + DBKey.STRIP_INFO_WANTED
+                + ',' + DBKey.STRIP_INFO_AMOUNT
+                + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
+                + ") VALUES (?,?,?,?,?,?,?,?)";
     }
 }
