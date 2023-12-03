@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
-import android.database.SQLException;
 
 import androidx.annotation.NonNull;
 
@@ -155,7 +154,7 @@ public class CalibreDaoImpl
             }
             return rowsAffected > 0;
 
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }

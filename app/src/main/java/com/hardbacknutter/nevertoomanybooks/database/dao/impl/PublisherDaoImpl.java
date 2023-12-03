@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -311,7 +310,7 @@ public class PublisherDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + publisher);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + publisher, e);
         }
@@ -338,7 +337,7 @@ public class PublisherDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + publisher);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + publisher, e);
         }
@@ -368,7 +367,7 @@ public class PublisherDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
 

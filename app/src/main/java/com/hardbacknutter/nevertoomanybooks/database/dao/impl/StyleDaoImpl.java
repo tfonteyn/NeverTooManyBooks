@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
@@ -247,7 +246,7 @@ public class StyleDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + style);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + style, e);
         }
@@ -303,7 +302,7 @@ public class StyleDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
         }
@@ -333,7 +332,7 @@ public class StyleDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoUpdateException | SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final DaoUpdateException | RuntimeException e) {
             return false;
 
         } finally {
@@ -350,7 +349,7 @@ public class StyleDaoImpl
             stmt.bindLong(1, style.getId());
             stmt.executeUpdateDelete();
 
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
         }

@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.database.SQLException;
-
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -99,7 +97,7 @@ public class StripInfoDaoImpl
                 rowsAffected = stmt.executeUpdateDelete();
             }
             return rowsAffected > 0;
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }

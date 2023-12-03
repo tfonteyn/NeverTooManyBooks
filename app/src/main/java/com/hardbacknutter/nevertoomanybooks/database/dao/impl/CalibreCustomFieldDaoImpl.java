@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.IntRange;
@@ -111,7 +110,7 @@ public class CalibreCustomFieldDaoImpl
             }
 
             throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField, e);
         }
@@ -136,7 +135,7 @@ public class CalibreCustomFieldDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField, e);
         }
@@ -148,7 +147,7 @@ public class CalibreCustomFieldDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, calibreCustomField.getId());
             rowsAffected = stmt.executeUpdateDelete();
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }

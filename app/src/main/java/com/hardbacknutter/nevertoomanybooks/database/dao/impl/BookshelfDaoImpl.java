@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.IntRange;
@@ -449,7 +448,7 @@ public class BookshelfDaoImpl
             // Reset the id before throwing!
             bookshelf.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             // Reset the id before throwing!
             bookshelf.setId(0);
@@ -497,7 +496,7 @@ public class BookshelfDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf, e);
         } finally {
@@ -532,7 +531,7 @@ public class BookshelfDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoUpdateException | SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final DaoUpdateException | RuntimeException e) {
             return false;
 
         } finally {
@@ -581,7 +580,7 @@ public class BookshelfDaoImpl
             stmt.bindLong(1, bookshelf.getId());
             stmt.executeUpdateDelete();
 
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf, e);
         }

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -196,7 +195,7 @@ public class CalibreLibraryDaoImpl
             // Reset the id before throwing!
             library.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + library);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             // Reset the id before throwing!
             library.setId(0);
@@ -241,7 +240,7 @@ public class CalibreLibraryDaoImpl
                 return;
             }
             throw new DaoUpdateException(ERROR_UPDATE_FROM + library);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + library, e);
         } finally {
@@ -257,7 +256,7 @@ public class CalibreLibraryDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
             rowsAffected = stmt.executeUpdateDelete();
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
@@ -324,7 +323,7 @@ public class CalibreLibraryDaoImpl
                 return;
             }
             throw new DaoUpdateException(ERROR_UPDATE_FROM + library);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + library, e);
         }
@@ -362,7 +361,7 @@ public class CalibreLibraryDaoImpl
                         throw new DaoInsertException(ERROR_INSERT_FROM + library);
                     }
                 }
-            } catch (@NonNull final SQLException | IllegalArgumentException e) {
+            } catch (@NonNull final RuntimeException e) {
                 LoggerFactory.getLogger().e(TAG, e);
                 // Reset all id's before throwing!
                 vLibs.forEach(v -> v.setId(0));

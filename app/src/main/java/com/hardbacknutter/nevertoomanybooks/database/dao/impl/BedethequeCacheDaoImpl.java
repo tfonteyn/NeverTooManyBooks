@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
-import android.database.SQLException;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -120,7 +119,7 @@ public class BedethequeCacheDaoImpl
             }
             return id > 0;
 
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
@@ -186,7 +185,7 @@ public class BedethequeCacheDaoImpl
             }
             return id > 0;
 
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
@@ -232,7 +231,7 @@ public class BedethequeCacheDaoImpl
                 return;
             }
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
-        } catch (@NonNull final SQLException | IllegalArgumentException e) {
+        } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor, e);
         } finally {
