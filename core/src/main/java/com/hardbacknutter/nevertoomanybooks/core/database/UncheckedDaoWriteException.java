@@ -19,8 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -29,7 +31,10 @@ import java.util.Objects;
 
 /**
  * Wraps a {@link DaoWriteException} with an unchecked exception.
+ *
+ * <strong>For use from WorkerThreads ONLY</strong>
  */
+@WorkerThread
 public class UncheckedDaoWriteException
         extends RuntimeException {
 
@@ -43,6 +48,7 @@ public class UncheckedDaoWriteException
      *
      * @throws NullPointerException if the cause is {@code null}
      */
+    @WorkerThread
     public UncheckedDaoWriteException(@Nullable final String message,
                                       @NonNull final DaoWriteException cause) {
         super(message, Objects.requireNonNull(cause));
@@ -55,6 +61,7 @@ public class UncheckedDaoWriteException
      *
      * @throws NullPointerException if the cause is {@code null}
      */
+    @WorkerThread
     public UncheckedDaoWriteException(@NonNull final DaoWriteException cause) {
         super(Objects.requireNonNull(cause));
     }
@@ -64,6 +71,7 @@ public class UncheckedDaoWriteException
      *
      * @return the {@code DaoWriteException} which is the cause of this exception.
      */
+    @AnyThread
     @Override
     @Nullable
     public DaoWriteException getCause() {

@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -447,18 +446,13 @@ public class AuthorDaoImpl
                 } else if (doUpdates) {
                     // https://stackoverflow.com/questions/6677517/update-if-different-changed
                     // ONLY update if there are actual changes.
-                    // Otherwise the trigger after_update_on" + TBL_AUTHORS
-                    // thereby setting DATE_LAST_UPDATED__UTC for
-                    // ALL books by that author
-                    findById(author.getId()).ifPresent(current -> {
-                        if (!current.equals(author)) {
-                            try {
-                                update(context, author, locale);
-                            } catch (@NonNull final DaoWriteException e) {
-                                throw new UncheckedDaoWriteException(e);
-                            }
-                        }
-                    });
+                    // Otherwise the trigger "after_update_on" + TBL_AUTHORS
+                    // would set DATE_LAST_UPDATED__UTC for ALL books by that author
+                    // while not needed.
+                    final Optional<Author> found = findById(author.getId());
+                    if (found.isPresent() && !found.get().equals(author)) {
+                        update(context, author, locale);
+                    }
                 }
 
                 position++;

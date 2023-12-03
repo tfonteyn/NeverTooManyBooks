@@ -40,12 +40,12 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -236,7 +236,7 @@ public class PublisherDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Publisher> list,
                                @NonNull final Function<Publisher, Locale> localeSupplier)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -269,18 +269,13 @@ public class PublisherDaoImpl
                 } else if (doUpdates) {
                     // https://stackoverflow.com/questions/6677517/update-if-different-changed
                     // ONLY update if there are actual changes.
-                    // Otherwise the trigger after_update_on" + TBL_PUBLISHER
-                    // thereby setting DATE_LAST_UPDATED__UTC for
-                    // ALL books by that publisher
-                    findById(publisher.getId()).ifPresent(current -> {
-                        if (!current.equals(publisher)) {
-                            try {
-                                update(context, publisher, locale);
-                            } catch (@NonNull final DaoUpdateException e) {
-                                throw new UncheckedDaoWriteException(e);
-                            }
-                        }
-                    });
+                    // Otherwise the trigger "after_update_on" + TBL_PUBLISHER
+                    // would set DATE_LAST_UPDATED__UTC for ALL books by that publisher
+                    // while not needed.
+                    final Optional<Publisher> found = findById(publisher.getId());
+                    if (found.isPresent() && !found.get().equals(publisher)) {
+                        update(context, publisher, locale);
+                    }
                 }
 
                 position++;
@@ -388,7 +383,7 @@ public class PublisherDaoImpl
     public void moveBooks(@NonNull final Context context,
                           @NonNull final Publisher source,
                           @NonNull final Publisher target)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -463,7 +458,7 @@ public class PublisherDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } catch (@NonNull final RuntimeException | DaoInsertException e) {
+            } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 LoggerFactory.getLogger().e(TAG, e);
 
             } finally {
