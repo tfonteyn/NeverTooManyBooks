@@ -350,15 +350,15 @@ public class TocEntryDaoImpl
                         //FIXME: reset the id of *previously* inserted entries
                         throw new DaoInsertException("insert Book-TocEntry");
                     }
-                } catch (@NonNull final SQLiteConstraintException ignore) {
+                } catch (@NonNull final SQLiteConstraintException e) {
                     // ignore and reset the position counter.
                     position--;
 
                     if (BuildConfig.DEBUG /* always */) {
                         LoggerFactory.getLogger().d(TAG, "insertOrUpdate",
-                                                    "SQLiteConstraintException",
                                                     "tocEntry=" + tocEntry.getId(),
-                                                    "bookId=" + bookId);
+                                                    "bookId=" + bookId,
+                                                    e);
                     }
                 }
             }
