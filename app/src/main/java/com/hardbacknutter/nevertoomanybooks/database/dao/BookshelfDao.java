@@ -31,7 +31,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -130,8 +129,8 @@ public interface BookshelfDao
      * @param bookId  of the book
      * @param list    the list of bookshelves
      *
-     * @throws DaoWriteException    on failure
-     * @throws TransactionException a transaction must be started before calling this method
+     * @throws DaoWriteException on failure
+     * @throws RuntimeException  the caller <strong>MUST</strong> handle these
      */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,

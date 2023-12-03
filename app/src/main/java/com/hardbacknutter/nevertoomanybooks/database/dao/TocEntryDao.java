@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -113,8 +112,8 @@ public interface TocEntryDao
      * @param list           the list of {@link TocEntry}
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
      *
-     * @throws DaoWriteException    on failure
-     * @throws TransactionException a transaction must be started before calling this method
+     * @throws DaoWriteException on failure
+     * @throws RuntimeException  the caller <strong>MUST</strong> handle these
      */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
