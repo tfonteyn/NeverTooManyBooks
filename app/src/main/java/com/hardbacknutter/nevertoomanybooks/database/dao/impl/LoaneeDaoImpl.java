@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -73,31 +74,35 @@ public class LoaneeDaoImpl
      */
     private boolean setLoaneeInternal(@IntRange(from = 1) final long bookId,
                                       @Nullable final String loanee) {
-
-        if (loanee == null || loanee.isEmpty()) {
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
-                stmt.bindLong(1, bookId);
-                return stmt.executeUpdateDelete() == 1;
-            }
-        } else {
-
-            final String current = getLoaneeByBookId(bookId);
-            if (current == null || current.isEmpty()) {
-                try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
+        try {
+            if (loanee == null || loanee.isEmpty()) {
+                try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
                     stmt.bindLong(1, bookId);
-                    stmt.bindString(2, loanee);
-                    return stmt.executeInsert() > 0;
+                    return stmt.executeUpdateDelete() == 1;
                 }
+            } else {
 
-            } else if (!loanee.equals(current)) {
-                // This is currently not reachable from the user-menu's
-                // but leaving this in place for the future.
-                final ContentValues cv = new ContentValues();
-                cv.put(DBKey.LOANEE_NAME, loanee);
-                return 0 < db.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
-                                     DBKey.FK_BOOK + "=?",
-                                     new String[]{String.valueOf(bookId)});
+                final String current = getLoaneeByBookId(bookId);
+                if (current == null || current.isEmpty()) {
+                    try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
+                        stmt.bindLong(1, bookId);
+                        stmt.bindString(2, loanee);
+                        return stmt.executeInsert() > 0;
+                    }
+
+                } else if (!loanee.equals(current)) {
+                    // This is currently not reachable from the user-menu's
+                    // but leaving this in place for the future.
+                    final ContentValues cv = new ContentValues();
+                    cv.put(DBKey.LOANEE_NAME, loanee);
+                    return 0 < db.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
+                                         DBKey.FK_BOOK + "=?",
+                                         new String[]{String.valueOf(bookId)});
+                }
             }
+        } catch (@NonNull final RuntimeException e) {
+            LoggerFactory.getLogger().e(TAG, e, "bookId=" + bookId,
+                                        "loanee=" + loanee);
         }
         return false;
     }

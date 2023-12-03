@@ -46,6 +46,9 @@ public class CalibreDaoImpl
 
     private static final String TAG = "CalibreDaoImpl";
 
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
+
     @NonNull
     private final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier;
 
@@ -139,6 +142,9 @@ public class CalibreDaoImpl
             if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException("Calibre data insert failed");
             }
+        } catch (@NonNull final RuntimeException e) {
+            LoggerFactory.getLogger().e(TAG, e);
+            throw new DaoInsertException(ERROR_INSERT_FROM + book, e);
         }
 
         return true;

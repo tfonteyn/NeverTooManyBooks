@@ -212,7 +212,6 @@ public class CoverCacheDaoImpl
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
             RUNNING_TASKS.incrementAndGet();
-            //noinspection CheckStyle
             try {
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();
                 // Rapid scrolling of view could already have recycled the bitmap.
@@ -256,7 +255,6 @@ public class CoverCacheDaoImpl
                 //FIXME: we should let the user know,
                 // and cancel any pending tasks...
                 coverStorageSupplier.get().setImageCachingEnabled(false);
-
             }
 
             RUNNING_TASKS.decrementAndGet();

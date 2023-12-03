@@ -38,6 +38,9 @@ public class StripInfoDaoImpl
 
     private static final String TAG = "StripInfoDaoImpl";
 
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
+
     /**
      * Constructor.
      *
@@ -85,6 +88,9 @@ public class StripInfoDaoImpl
             if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException("StripInfo data insert failed");
             }
+        } catch (@NonNull final RuntimeException e) {
+            LoggerFactory.getLogger().e(TAG, e);
+            throw new DaoInsertException(ERROR_INSERT_FROM + book, e);
         }
     }
 

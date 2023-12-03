@@ -229,7 +229,7 @@ public class StyleDaoImpl
             }
         }
 
-        throw new IllegalStateException();
+        throw new IllegalStateException("No Global style!");
     }
 
     @Override
