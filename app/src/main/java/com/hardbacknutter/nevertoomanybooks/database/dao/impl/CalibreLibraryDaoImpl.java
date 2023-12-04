@@ -196,7 +196,6 @@ public class CalibreLibraryDaoImpl
             library.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + library);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             // Reset the id before throwing!
             library.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + library, e);
@@ -257,7 +256,6 @@ public class CalibreLibraryDaoImpl
             stmt.bindLong(1, library.getId());
             rowsAffected = stmt.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
         if (rowsAffected > 0) {
@@ -362,7 +360,6 @@ public class CalibreLibraryDaoImpl
                     }
                 }
             } catch (@NonNull final RuntimeException e) {
-                LoggerFactory.getLogger().e(TAG, e);
                 // Reset all id's before throwing!
                 vLibs.forEach(v -> v.setId(0));
                 throw new DaoInsertException(ERROR_INSERT_FROM + library, e);

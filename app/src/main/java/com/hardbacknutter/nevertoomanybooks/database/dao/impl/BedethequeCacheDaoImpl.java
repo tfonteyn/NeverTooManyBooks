@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -120,7 +119,6 @@ public class BedethequeCacheDaoImpl
             return id > 0;
 
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
@@ -186,7 +184,6 @@ public class BedethequeCacheDaoImpl
             return id > 0;
 
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
@@ -232,7 +229,6 @@ public class BedethequeCacheDaoImpl
             }
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {

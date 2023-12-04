@@ -350,7 +350,6 @@ public class StyleDaoImpl
             stmt.executeUpdateDelete();
 
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
         }
     }

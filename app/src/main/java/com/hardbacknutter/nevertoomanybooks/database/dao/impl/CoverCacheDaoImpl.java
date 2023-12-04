@@ -135,7 +135,6 @@ public class CoverCacheDaoImpl
             return rowsAffected > 0;
 
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }

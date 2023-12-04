@@ -111,7 +111,6 @@ public class CalibreCustomFieldDaoImpl
 
             throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField, e);
         }
     }
@@ -148,7 +147,6 @@ public class CalibreCustomFieldDaoImpl
             stmt.bindLong(1, calibreCustomField.getId());
             rowsAffected = stmt.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
         if (rowsAffected > 0) {

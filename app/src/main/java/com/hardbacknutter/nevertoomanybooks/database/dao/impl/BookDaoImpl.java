@@ -459,9 +459,8 @@ public class BookDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-
+        } catch (@NonNull final RuntimeException ignore) {
+            // ignore
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

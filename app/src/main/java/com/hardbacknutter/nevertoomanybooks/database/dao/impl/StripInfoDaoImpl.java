@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -89,7 +88,6 @@ public class StripInfoDaoImpl
                 throw new DaoInsertException("StripInfo data insert failed");
             }
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + book, e);
         }
     }
@@ -104,7 +102,6 @@ public class StripInfoDaoImpl
             }
             return rowsAffected > 0;
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }

@@ -362,7 +362,6 @@ public class SeriesDaoImpl
 
             throw new DaoInsertException(ERROR_INSERT_FROM + series);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + series, e);
         }
     }
@@ -393,7 +392,6 @@ public class SeriesDaoImpl
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + series, e);
         }
     }
@@ -423,7 +421,6 @@ public class SeriesDaoImpl
             }
             return false;
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             return false;
 
         } finally {
@@ -513,7 +510,9 @@ public class SeriesDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } catch (@NonNull final RuntimeException | DaoWriteException e) {
+            } catch (@NonNull final RuntimeException ignore) {
+                // ignore
+            } catch (@NonNull final DaoWriteException e) {
                 LoggerFactory.getLogger().e(TAG, e);
             } finally {
                 if (txLock != null) {

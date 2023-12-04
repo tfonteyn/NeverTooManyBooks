@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -116,10 +115,8 @@ public class DeletedBooksDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final RuntimeException e) {
+        } catch (@NonNull final RuntimeException ignore) {
             // Just quit importing
-            LoggerFactory.getLogger().e(TAG, e);
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

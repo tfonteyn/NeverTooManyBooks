@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -100,9 +99,8 @@ public class LoaneeDaoImpl
                                          new String[]{String.valueOf(bookId)});
                 }
             }
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e, "bookId=" + bookId,
-                                        "loanee=" + loanee);
+        } catch (@NonNull final RuntimeException ignore) {
+            // ignore
         }
         return false;
     }

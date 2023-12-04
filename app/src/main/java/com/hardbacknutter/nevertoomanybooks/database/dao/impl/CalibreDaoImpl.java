@@ -143,7 +143,6 @@ public class CalibreDaoImpl
                 throw new DaoInsertException("Calibre data insert failed");
             }
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + book, e);
         }
 
@@ -161,7 +160,6 @@ public class CalibreDaoImpl
             return rowsAffected > 0;
 
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }

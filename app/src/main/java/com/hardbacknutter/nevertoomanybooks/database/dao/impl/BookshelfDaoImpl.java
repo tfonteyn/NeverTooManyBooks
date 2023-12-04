@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -449,7 +448,6 @@ public class BookshelfDaoImpl
             bookshelf.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             // Reset the id before throwing!
             bookshelf.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf, e);
@@ -497,7 +495,6 @@ public class BookshelfDaoImpl
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
@@ -581,7 +578,6 @@ public class BookshelfDaoImpl
             stmt.executeUpdateDelete();
 
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf, e);
         }
     }
