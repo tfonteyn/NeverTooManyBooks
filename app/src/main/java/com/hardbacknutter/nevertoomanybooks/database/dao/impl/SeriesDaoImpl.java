@@ -281,7 +281,7 @@ public class SeriesDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Series> list,
                                @NonNull final Function<Series, Locale> localeSupplier)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
