@@ -292,12 +292,10 @@ public abstract class BaseField<T, V extends View>
      *
      * @return view, or {@code null} if the reference is dead
      *
-     * @throws NoViewException if the View-reference is not set.
      * @see #requireView()
      */
     @Nullable
-    V getView()
-            throws NoViewException {
+    V getView() {
         if (viewReference != null) {
             return viewReference.get();
         }
