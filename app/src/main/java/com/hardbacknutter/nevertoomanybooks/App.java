@@ -194,9 +194,9 @@ public class App
                 } catch (@NonNull final IOException e) {
                     logger.e(TAG, e);
                 }
-            } else {
-                ACRA.getErrorReporter().handleException(throwable, true);
             }
+
+            ACRA.getErrorReporter().handleException(throwable, true);
         });
     }
 }
