@@ -58,11 +58,11 @@ public class App
     /** Flag to indicate the startup can skip a full init. */
     private boolean hotStart;
 
-    public boolean isHotStart() {
+    boolean isHotStart() {
         return hotStart;
     }
 
-    public void setHotStart() {
+    void setHotStart() {
         hotStart = true;
     }
 
