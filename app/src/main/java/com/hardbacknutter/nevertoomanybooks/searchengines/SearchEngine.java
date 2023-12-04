@@ -350,7 +350,8 @@ public interface SearchEngine
          * Get a single cover image of the specified size.
          * <p>
          * <strong>Important</strong> this method should never throw any {@link RuntimeException}.
-         * For the latter, simply return {@code null} when an error occurs (but log the error).
+         * For the latter, simply return {@code Optional.empty()} when an error occurs
+         * after logging the error.
          * <p>
          * See {@link #searchBestCoverByIsbn} for sites with support for multiple cover sizes.
          *
@@ -359,7 +360,7 @@ public interface SearchEngine
          * @param cIdx      0..n image index
          * @param size      of image to get.
          *
-         * @return fileSpec, or {@code null} when none found (or any other failure)
+         * @return fileSpec
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
