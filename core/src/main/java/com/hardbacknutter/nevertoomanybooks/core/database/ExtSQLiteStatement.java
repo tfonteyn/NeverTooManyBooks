@@ -238,7 +238,13 @@ public class ExtSQLiteStatement
             LoggerFactory.getLogger()
                          .d(TAG, "execute", statement);
         }
-        statement.execute();
+        //noinspection CheckStyle
+        try {
+            statement.execute();
+        } catch (@NonNull final RuntimeException e) {
+            LoggerFactory.getLogger().e(TAG, e, statement);
+            throw e;
+        }
     }
 
     /**
@@ -248,7 +254,15 @@ public class ExtSQLiteStatement
      * @return the number of rows affected by this SQL statement execution.
      */
     public int executeUpdateDelete() {
-        final int rowsAffected = statement.executeUpdateDelete();
+        final int rowsAffected;
+        //noinspection CheckStyle
+        try {
+            rowsAffected = statement.executeUpdateDelete();
+        } catch (@NonNull final RuntimeException e) {
+            LoggerFactory.getLogger().e(TAG, e, statement);
+            throw e;
+        }
+
         if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger()
                          .d(TAG, "executeUpdateDelete",
@@ -264,7 +278,15 @@ public class ExtSQLiteStatement
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long executeInsert() {
-        final long id = statement.executeInsert();
+        final long id;
+        //noinspection CheckStyle
+        try {
+            id = statement.executeInsert();
+        } catch (@NonNull final RuntimeException e) {
+            LoggerFactory.getLogger().e(TAG, e, statement);
+            throw e;
+        }
+
         if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
             final Logger logger = LoggerFactory.getLogger();
             logger.d(TAG, "executeInsert", statement + "|id=" + id);
