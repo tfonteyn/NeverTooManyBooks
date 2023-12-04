@@ -73,7 +73,7 @@ public class DbPrep {
     }
 
     public long maybeInstallTestData(@NonNull final Context context)
-            throws StorageException {
+            throws StorageException, IOException, DataReaderException {
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
         final int count = bookDao.count();
@@ -81,11 +81,7 @@ public class DbPrep {
             return count;
         }
 
-        try {
-            installTestData(context);
-        } catch (IOException | DataReaderException e) {
-            throw new RuntimeException(e);
-        }
+        installTestData(context);
 
         return bookDao.count();
     }

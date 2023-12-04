@@ -69,7 +69,7 @@ public class ZipArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException, StorageException {
+            throws DaoWriteException, StorageException, IOException, DataReaderException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
