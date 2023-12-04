@@ -99,6 +99,7 @@ public class SearchEditionsTask
                 .map(site -> site.getEngineId().createSearchEngine(context))
                 .forEach(searchEngine -> {
                     searchEngine.setCaller(this);
+                    //noinspection CheckStyle
                     try {
                         // can we reach the site ?
                         searchEngine.ping(context);
@@ -112,11 +113,8 @@ public class SearchEditionsTask
                                             | RuntimeException e) {
                         // Silently ignore individual failures,
                         // we'll return what we get from the sites that worked.
-                        if (BuildConfig.DEBUG /* always */) {
-                            LoggerFactory.getLogger()
-                                         .e(TAG, e, "searchEngine="
-                                                    + searchEngine.getName(context));
-                        }
+                        LoggerFactory.getLogger().e(TAG, e, "searchEngine="
+                                                            + searchEngine.getName(context));
                     }
                 });
         return isbnList;
