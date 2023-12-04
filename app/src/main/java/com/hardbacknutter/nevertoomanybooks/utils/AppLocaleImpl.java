@@ -225,6 +225,7 @@ public final class AppLocaleImpl
         if (locale == null) {
             return false;
         }
+        //noinspection CheckStyle
         try {
             // Running with system/default Locale set to Locale.ENGLISH:
             //
@@ -259,6 +260,7 @@ public final class AppLocaleImpl
 
         } catch (@NonNull final RuntimeException ignore) {
             // NullPointerException can be thrown  when ISO3Language() fails.
+            // MissingResourceException is declared to be thrown by ISO3Language()
             return false;
         }
     }
