@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,16 +19,23 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
+import android.database.SQLException;
+
 import androidx.annotation.NonNull;
 
 /**
  * Debug exception to make it clear when we've got SQL issues...
  */
 public class ColumnNotPresentException
-        extends RuntimeException {
+        extends SQLException {
 
     private static final long serialVersionUID = -5065796313450875326L;
 
+    /**
+     * Constructor.
+     *
+     * @param columnName the name
+     */
     public ColumnNotPresentException(@NonNull final String columnName) {
         super("Column `" + columnName + "` not present in cursor");
     }
