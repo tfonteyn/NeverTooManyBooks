@@ -130,7 +130,6 @@ public interface BookshelfDao
      * @param list    the list of bookshelves
      *
      * @throws DaoWriteException on failure
-     * @throws RuntimeException  the caller <strong>MUST</strong> handle these
      */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,

@@ -113,7 +113,6 @@ public interface TocEntryDao
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
      *
      * @throws DaoWriteException on failure
-     * @throws RuntimeException  the caller <strong>MUST</strong> handle these
      */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
