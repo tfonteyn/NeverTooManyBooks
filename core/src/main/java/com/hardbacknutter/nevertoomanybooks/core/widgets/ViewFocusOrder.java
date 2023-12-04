@@ -59,6 +59,7 @@ public final class ViewFocusOrder {
      * @param rootView to fix
      */
     public static void fix(@NonNull final View rootView) {
+        //noinspection CheckStyle
         try {
             final INextView getDown = new INextView() {
                 @Override
@@ -141,8 +142,6 @@ public final class ViewFocusOrder {
                 LoggerFactory.getLogger().d(TAG, "rootView=" + rootView, e);
             }
         }
-
-        //debugDumpViewTree(rootView, 0, true);
     }
 
     /**
