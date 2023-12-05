@@ -118,6 +118,7 @@ public class StyleDaoImpl
                                             @NonNull final Style style) {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(
                 db.compileStatement(Sql.INSERT_STYLE))) {
+            // ignore insert errors... if that happens at this time, we're in a real mess anyhow
             doInsert(style, null, stmt);
         }
     }
@@ -238,18 +239,18 @@ public class StyleDaoImpl
                        @NonNull final Style style)
             throws DaoInsertException {
 
+        //noinspection CheckStyle
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_STYLE)) {
             final long iId = doInsert(style, style.getLabel(context), stmt);
-            if (iId > 0) {
+            if (iId != -1) {
                 style.setId(iId);
                 return iId;
             }
-
-            throw new DaoInsertException(ERROR_INSERT_FROM + style);
         } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_INSERT_FROM + style, e);
         }
+        // The id was -1
+        throw new DaoInsertException(ERROR_INSERT_FROM + style);
     }
 
     @Override
