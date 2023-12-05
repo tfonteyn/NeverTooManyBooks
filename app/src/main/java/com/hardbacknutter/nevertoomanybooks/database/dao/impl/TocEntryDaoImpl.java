@@ -72,6 +72,7 @@ public class TocEntryDaoImpl
     private static final String TAG = "TocEntryDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
+    private static final String ERROR_USE_INSERT_OR_UPDATE_INSTEAD = "use insertOrUpdate instead";
     @NonNull
     private final Supplier<AuthorDao> authorDaoSupplier;
     @NonNull
@@ -369,7 +370,7 @@ public class TocEntryDaoImpl
                        @NonNull final TocEntry item,
                        @NonNull final Locale locale)
             throws DaoWriteException {
-        throw new UnsupportedOperationException("use insertOrUpdate instead");
+        throw new UnsupportedOperationException(ERROR_USE_INSERT_OR_UPDATE_INSTEAD);
     }
 
     @Override
@@ -377,7 +378,7 @@ public class TocEntryDaoImpl
                        @NonNull final TocEntry item,
                        @NonNull final Locale locale)
             throws DaoWriteException {
-        throw new UnsupportedOperationException("use insertOrUpdate instead");
+        throw new UnsupportedOperationException(ERROR_USE_INSERT_OR_UPDATE_INSTEAD);
     }
 
     @Override
