@@ -217,7 +217,7 @@ public interface BookDao {
      *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      */
     @NonNull
-    TypedCursor fetchForAutoUpdateFromIdOnwards(long id);
+    TypedCursor fetchForAutoUpdateFromIdOnwards(@IntRange(from = 1) long id);
 
 
     /**
@@ -252,7 +252,7 @@ public interface BookDao {
      * @return A Book Cursor with 0..n rows; ordered by book id
      */
     @NonNull
-    TypedCursor fetchBooksForExportToCalibre(long libraryId,
+    TypedCursor fetchBooksForExportToCalibre(@IntRange(from = 1) long libraryId,
                                              @Nullable LocalDateTime sinceDateTime);
 
     /**
