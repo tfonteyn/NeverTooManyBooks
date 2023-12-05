@@ -286,6 +286,8 @@ public class TocEntryDaoImpl
              SynchronizedStatement stmtInsToc = db.compileStatement(Sql.INSERT);
              SynchronizedStatement stmtUpdToc = db.compileStatement(Sql.UPDATE)) {
 
+            // track inserted entries for reversing in case of error
+            final List<TocEntry> actualInserts = new ArrayList<>();
             long position = 0;
             for (final TocEntry tocEntry : tocEntries) {
                 final Locale locale = localeSupplier.apply(tocEntry);
@@ -310,10 +312,11 @@ public class TocEntryDaoImpl
                             .getFirstPublicationDate().getIsoString());
 
                     final long iId = stmtInsToc.executeInsert();
-                    if (iId > 0) {
+                    if (iId != -1) {
                         tocEntry.setId(iId);
+                        actualInserts.add(tocEntry);
                     } else {
-                        //FIXME: reset the id of *previously* inserted entries
+                        actualInserts.forEach(entry -> entry.setId(0));
                         throw new DaoInsertException(ERROR_INSERT_FROM + tocEntry);
                     }
 
@@ -347,7 +350,7 @@ public class TocEntryDaoImpl
                     stmt.bindLong(2, bookId);
                     stmt.bindLong(3, position);
                     if (stmt.executeInsert() == -1) {
-                        //FIXME: reset the id of *previously* inserted entries
+                        actualInserts.forEach(entry -> entry.setId(0));
                         throw new DaoInsertException("insert Book-TocEntry");
                     }
                 } catch (@NonNull final SQLiteConstraintException e) {
