@@ -945,7 +945,7 @@ public class Book
             // but if not, go explicitly fetch it.
             final Optional<CalibreLibrary> library = ServiceLocator
                     .getInstance().getCalibreLibraryDao()
-                    .getLibraryById(getLong(DBKey.FK_CALIBRE_LIBRARY));
+                    .findById(getLong(DBKey.FK_CALIBRE_LIBRARY));
             // store for reuse
             library.ifPresent(
                     calibreLibrary -> putParcelable(BKEY_CALIBRE_LIBRARY, calibreLibrary));

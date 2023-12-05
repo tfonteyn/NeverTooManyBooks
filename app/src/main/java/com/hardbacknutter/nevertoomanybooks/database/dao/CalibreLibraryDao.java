@@ -42,7 +42,7 @@ public interface CalibreLibraryDao {
      * @return physical library
      */
     @NonNull
-    Optional<CalibreLibrary> getLibraryById(@IntRange(from = 1) long id);
+    Optional<CalibreLibrary> findById(@IntRange(from = 1) long id);
 
     /**
      * Get the <strong>physical</strong> {@link CalibreLibrary} for the given uuid.
@@ -82,8 +82,8 @@ public interface CalibreLibraryDao {
      * @return virtual library
      */
     @NonNull
-    Optional<CalibreVirtualLibrary> getVirtualLibrary(@IntRange(from = 1) long libraryId,
-                                                      @NonNull String name);
+    Optional<CalibreVirtualLibrary> findVirtualLibrary(@IntRange(from = 1) long libraryId,
+                                                       @NonNull String name);
 
     /**
      * Find a {@link CalibreLibrary} by using the <strong>name</strong> fields.

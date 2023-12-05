@@ -598,7 +598,7 @@ public final class CalibreContentServer
             final String name = it.next();
             final String expr = virtualLibraries.getString(name);
 
-            dao.getVirtualLibrary(library.getId(), name).ifPresentOrElse(vLib -> {
+            dao.findVirtualLibrary(library.getId(), name).ifPresentOrElse(vLib -> {
                 // Update existing
                 vLib.setName(name);
                 vLib.setExpr(expr);

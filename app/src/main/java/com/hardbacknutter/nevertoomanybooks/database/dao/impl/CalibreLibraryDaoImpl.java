@@ -73,7 +73,7 @@ public class CalibreLibraryDaoImpl
 
     @Override
     @NonNull
-    public Optional<CalibreLibrary> getLibraryById(final long id) {
+    public Optional<CalibreLibrary> findById(final long id) {
         try (Cursor cursor = db.rawQuery(Sql.FIND_LIBRARY_BY_ID,
                                          new String[]{String.valueOf(id)})) {
             return loadLibrary(cursor);
@@ -291,8 +291,8 @@ public class CalibreLibraryDaoImpl
 
     @Override
     @NonNull
-    public Optional<CalibreVirtualLibrary> getVirtualLibrary(final long libraryId,
-                                                             @NonNull final String name) {
+    public Optional<CalibreVirtualLibrary> findVirtualLibrary(final long libraryId,
+                                                              @NonNull final String name) {
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_VIRTUAL_LIBRARY_BY_LIBRARY_ID_AND_NAME,
                                          new String[]{String.valueOf(libraryId), name})) {
