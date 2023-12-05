@@ -475,6 +475,7 @@ public class AuthorDaoImpl
             throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -490,28 +491,29 @@ public class AuthorDaoImpl
                 iId = stmt.executeInsert();
             }
 
-            if (iId > 0) {
+            if (iId != -1) {
                 author.setId(iId);
-                insertOrUpdateRealAuthor(context, author, locale, iId);
+                insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
                 return iId;
             }
-            // Reset the id before throwing!
+        } catch (@NonNull final DaoWriteException e) {
             author.setId(0);
-            throw new DaoInsertException(ERROR_INSERT_FROM + author);
+            throw e;
         } catch (@NonNull final RuntimeException e) {
-            // Reset the id before throwing!
             author.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + author, e);
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
+        // The id was -1
+        author.setId(0);
+        throw new DaoInsertException(ERROR_INSERT_FROM + author);
     }
 
     @Override
@@ -539,7 +541,7 @@ public class AuthorDaoImpl
             }
 
             if (rowsAffected > 0) {
-                insertOrUpdateRealAuthor(context, author, locale, author.getId());
+                insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -560,21 +562,18 @@ public class AuthorDaoImpl
     /**
      * Handle the real-author storage.
      *
-     * @param context  Current context
-     * @param author   the 'original' author; it's internal id will be ignored
-     *                 (in case of an insert it's 0, in case of an update its the actual id)
-     * @param locale   Locale to use if the item has none set
-     * @param authorId the 'original' author id
+     * @param context Current context
+     * @param author  the 'original' author
+     * @param locale  Locale to use if the item has none set
      *
      * @throws DaoWriteException on failure
      */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Author author,
-                                          @NonNull final Locale locale,
-                                          final long authorId)
-            throws DaoWriteException {
+                                          @NonNull final Locale locale)
+    throws DaoWriteException {
         // always delete any previous link
-        deletePseudonymLink(authorId);
+        deletePseudonymLink(author.getId());
 
         final Author realAuthor = author.getRealAuthor();
         if (realAuthor == null) {
@@ -588,7 +587,7 @@ public class AuthorDaoImpl
         } else {
             update(context, realAuthor, locale);
         }
-        insertPseudonymLink(authorId, realAuthor.getId());
+        insertPseudonymLink(author.getId(), realAuthor.getId());
     }
 
     // ENHANCE: allow delete of author if all books have another author
