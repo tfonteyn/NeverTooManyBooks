@@ -235,7 +235,7 @@ public class PublisherDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Publisher> list,
                                @NonNull final Function<Publisher, Locale> localeSupplier)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
