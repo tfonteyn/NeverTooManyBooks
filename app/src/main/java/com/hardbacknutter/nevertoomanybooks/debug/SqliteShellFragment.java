@@ -162,12 +162,13 @@ public class SqliteShellFragment
                 getToolbar().setTitle("");
 
                 if (allowUpdates) {
+                    final int rowsAffected;
                     try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-                        final int rowsAffected = stmt.executeUpdateDelete();
-                        final String result = STR_ROWS_AFFECTED + rowsAffected;
-                        vb.output.loadDataWithBaseURL(null, result,
-                                                      TEXT_HTML, UTF_8, null);
+                        rowsAffected = stmt.executeUpdateDelete();
                     }
+                    final String result = STR_ROWS_AFFECTED + rowsAffected;
+                    vb.output.loadDataWithBaseURL(null, result,
+                                                  TEXT_HTML, UTF_8, null);
                 } else {
                     vb.output.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
                                                   TEXT_HTML, UTF_8, null);
