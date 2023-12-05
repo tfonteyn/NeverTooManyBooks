@@ -350,20 +350,21 @@ public class SeriesDaoImpl
         final String title = series.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
+        //noinspection CheckStyle
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, title);
             stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
-            if (iId > 0) {
+            if (iId != -1) {
                 series.setId(iId);
                 return iId;
             }
-
-            throw new DaoInsertException(ERROR_INSERT_FROM + series);
         } catch (@NonNull final RuntimeException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + series, e);
         }
+        // The id was -1
+        throw new DaoInsertException(ERROR_INSERT_FROM + series);
     }
 
     @Override
