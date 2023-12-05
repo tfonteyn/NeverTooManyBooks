@@ -73,6 +73,7 @@ public class LoaneeDaoImpl
      */
     private boolean setLoaneeInternal(@IntRange(from = 1) final long bookId,
                                       @Nullable final String loanee) {
+        //noinspection CheckStyle
         try {
             if (loanee == null || loanee.isEmpty()) {
                 try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
@@ -100,7 +101,7 @@ public class LoaneeDaoImpl
                 }
             }
         } catch (@NonNull final RuntimeException ignore) {
-            // ignore
+            // ignore, just return failure
         }
         return false;
     }
