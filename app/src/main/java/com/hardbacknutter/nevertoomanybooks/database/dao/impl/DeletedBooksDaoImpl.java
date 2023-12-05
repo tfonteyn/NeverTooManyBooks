@@ -94,6 +94,7 @@ public class DeletedBooksDaoImpl
         int count = 0;
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -105,8 +106,9 @@ public class DeletedBooksDaoImpl
                 for (final Pair<String, String> record : list) {
                     stmt.bindString(1, record.first);
                     stmt.bindString(2, record.second);
-                    final long id = stmt.executeInsert();
-                    if (id > 0) {
+                    final long iId = stmt.executeInsert();
+                    // simply ignore failure, see SQL statement.
+                    if (iId != -1) {
                         count++;
                     }
                 }
