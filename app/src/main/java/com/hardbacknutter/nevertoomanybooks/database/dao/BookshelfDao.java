@@ -118,25 +118,6 @@ public interface BookshelfDao
                       @NonNull Collection<Bookshelf> list);
 
     /**
-     * Insert or update a list of {@link Bookshelf}'s linked to a single {@link Book}.
-     * <p>
-     * The list is pruned before storage.
-     * New shelves are added, existing ones are NOT updated.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context Current context
-     * @param bookId  of the book
-     * @param list    the list of bookshelves
-     *
-     * @throws DaoWriteException on failure
-     */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        @NonNull Collection<Bookshelf> list)
-            throws DaoWriteException;
-
-    /**
      * Purge book list node state data for the given {@link Bookshelf}.
      * <p>
      * Called when a {@link Bookshelf} is deleted or manually from the
@@ -168,4 +149,23 @@ public interface BookshelfDao
      */
     @NonNull
     List<Bookshelf> getByBookId(@IntRange(from = 1) long bookId);
+
+    /**
+     * Insert or update a list of {@link Bookshelf}'s linked to a single {@link Book}.
+     * <p>
+     * The list is pruned before storage.
+     * New shelves are added, existing ones are NOT updated.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context Current context
+     * @param bookId  of the book
+     * @param list    the list of bookshelves
+     *
+     * @throws DaoWriteException on failure
+     */
+    void insertOrUpdate(@NonNull Context context,
+                        @IntRange(from = 1) long bookId,
+                        @NonNull Collection<Bookshelf> list)
+            throws DaoWriteException;
 }
