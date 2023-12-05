@@ -271,13 +271,14 @@ public class BookshelfDaoImpl
     /**
      * Store the <strong>active filter</strong>.
      *
-     * @param context     Current context
-     * @param bookshelfId the Bookshelf id; passed separately to allow clean inserts
-     * @param bookshelf   to store
+     * @param context   Current context
+     * @param bookshelf to store the filters of
+     *
+     * @throws DaoInsertException on failure
      */
     private void storeFilters(@NonNull final Context context,
-                              final long bookshelfId,
-                              @NonNull final Bookshelf bookshelf) {
+                              @NonNull final Bookshelf bookshelf)
+            throws DaoInsertException {
 
         // prune the filters so we only keep the active ones
         final List<PFilter<?>> list = bookshelf.pruneFilters(context);
@@ -289,7 +290,7 @@ public class BookshelfDaoImpl
             }
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.DELETE_FILTERS_BY_BOOKSHELF_ID)) {
-                stmt.bindLong(1, bookshelfId);
+                stmt.bindLong(1, bookshelf.getId());
                 stmt.executeUpdateDelete();
             }
 
@@ -298,12 +299,14 @@ public class BookshelfDaoImpl
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_FILTER)) {
-                list.forEach(filter -> {
-                    stmt.bindLong(1, bookshelfId);
+                for (final PFilter<?> filter : list) {
+                    stmt.bindLong(1, bookshelf.getId());
                     stmt.bindString(2, filter.getDBKey());
                     stmt.bindString(3, filter.getPersistedValue());
-                    stmt.executeInsert();
-                });
+                    if (stmt.executeInsert() == -1) {
+                        throw new DaoInsertException(ERROR_INSERT_FROM + filter);
+                    }
+                }
             }
 
             if (txLock != null) {
@@ -419,6 +422,7 @@ public class BookshelfDaoImpl
         final long styleId = bookshelf.getStyle().getId();
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -434,21 +438,19 @@ public class BookshelfDaoImpl
                 iId = stmt.executeInsert();
             }
 
-            if (iId > 0) {
+            if (iId != -1) {
                 bookshelf.setId(iId);
-                storeFilters(context, iId, bookshelf);
+                storeFilters(context, bookshelf);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
                 return iId;
             }
-
-            // Reset the id before throwing!
+        } catch (@NonNull final DaoInsertException e) {
             bookshelf.setId(0);
-            throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
+            throw e;
         } catch (@NonNull final RuntimeException e) {
-            // Reset the id before throwing!
             bookshelf.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf, e);
         } finally {
@@ -456,13 +458,16 @@ public class BookshelfDaoImpl
                 db.endTransaction(txLock);
             }
         }
+        // The id was -1
+        bookshelf.setId(0);
+        throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
     }
 
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf,
                        @NonNull final Locale locale)
-            throws DaoUpdateException {
+            throws DaoUpdateException, DaoInsertException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
@@ -485,7 +490,7 @@ public class BookshelfDaoImpl
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (rowsAffected > 0) {
-                storeFilters(context, bookshelf.getId(), bookshelf);
+                storeFilters(context, bookshelf);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
