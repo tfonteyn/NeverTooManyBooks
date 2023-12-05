@@ -281,6 +281,9 @@ public class ExtSQLiteStatement
         final long id;
         //noinspection CheckStyle
         try {
+            // Reminder, the native code of SqLite:
+            //     return err == SQLITE_DONE && sqlite3_changes(connection->db) > 0
+            //            ? sqlite3_last_insert_rowid(connection->db) : -1;
             id = statement.executeInsert();
         } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e, statement);
