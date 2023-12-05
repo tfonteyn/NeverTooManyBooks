@@ -26,6 +26,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public interface StripInfoDao {
 
+    /**
+     * Update existing, or insert the StripInfo data for the given {@link Book}.
+     *
+     * @param book to process
+     *
+     * @return {@code true} if an <strong>insert</strong> was done.
+     *         {@code false} if no insert was <strong>attempted</strong>
+     *
+     * @throws DaoWriteException on failure
+     */
     void updateOrInsert(@NonNull Book book)
             throws DaoWriteException;
 
