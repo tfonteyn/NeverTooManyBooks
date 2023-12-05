@@ -166,6 +166,7 @@ public class CalibreLibraryDaoImpl
             throws DaoInsertException {
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -182,7 +183,8 @@ public class CalibreLibraryDaoImpl
                 stmt.bindLong(5, library.getMappedBookshelfId());
                 iId = stmt.executeInsert();
             }
-            if (iId > 0) {
+
+            if (iId != -1) {
                 library.setId(iId);
                 insertVirtualLibraries(library);
 
@@ -191,12 +193,10 @@ public class CalibreLibraryDaoImpl
                 }
                 return iId;
             }
-
-            // Reset the id before throwing!
+        } catch (@NonNull final DaoInsertException e) {
             library.setId(0);
-            throw new DaoInsertException(ERROR_INSERT_FROM + library);
+            throw e;
         } catch (@NonNull final RuntimeException e) {
-            // Reset the id before throwing!
             library.setId(0);
             throw new DaoInsertException(ERROR_INSERT_FROM + library, e);
         } finally {
@@ -204,6 +204,9 @@ public class CalibreLibraryDaoImpl
                 db.endTransaction(txLock);
             }
         }
+        // The id was -1
+        library.setId(0);
+        throw new DaoInsertException(ERROR_INSERT_FROM + library);
     }
 
     @Override
@@ -338,6 +341,7 @@ public class CalibreLibraryDaoImpl
 
         final List<CalibreVirtualLibrary> vLibs = library.getVirtualLibraries();
         if (!vLibs.isEmpty()) {
+            //noinspection CheckStyle
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_VIRTUAL_LIBRARY)) {
                 for (final CalibreVirtualLibrary vLib : vLibs) {
                     // always update the foreign key
@@ -350,9 +354,8 @@ public class CalibreLibraryDaoImpl
                     // verified/'fixId' against the BookshelfDao!
                     stmt.bindLong(4, vLib.getMappedBookshelfId());
                     final long iId = stmt.executeInsert();
-                    if (iId > 0) {
+                    if (iId != -1) {
                         vLib.setId(iId);
-
                     } else {
                         // Reset all id's before throwing!
                         vLibs.forEach(v -> v.setId(0));
