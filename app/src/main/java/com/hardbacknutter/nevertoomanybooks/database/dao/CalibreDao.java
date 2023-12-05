@@ -35,14 +35,10 @@ public interface CalibreDao {
      * @param context Current context
      * @param book    to process
      *
-     * @return {@code true} if an <strong>insert</strong> was done.
-     *         {@code false} if no insert was <strong>attempted</strong>
-     *
      * @throws DaoWriteException on failure
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean updateOrInsert(@NonNull Context context,
-                           @NonNull Book book)
+    void updateOrInsert(@NonNull Context context,
+                        @NonNull Book book)
             throws DaoWriteException;
 
     /**

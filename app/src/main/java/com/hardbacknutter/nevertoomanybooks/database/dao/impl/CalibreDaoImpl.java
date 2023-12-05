@@ -65,8 +65,8 @@ public class CalibreDaoImpl
     }
 
     @Override
-    public boolean updateOrInsert(@NonNull final Context context,
-                                  @NonNull final Book book)
+    public void updateOrInsert(@NonNull final Context context,
+                               @NonNull final Book book)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -77,7 +77,7 @@ public class CalibreDaoImpl
 
         // Just delete all current data and insert from scratch.
         delete(book);
-        return insert(context, book);
+        insert(context, book);
     }
 
     @Override
