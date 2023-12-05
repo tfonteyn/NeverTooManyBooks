@@ -300,19 +300,20 @@ public class PublisherDaoImpl
         final String name = publisher.getName();
         final String obName = reorderHelper.reorderForSorting(context, name, locale);
 
+        //noinspection CheckStyle
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, name);
             stmt.bindString(2, SqlEncode.orderByColumn(obName, locale));
             final long iId = stmt.executeInsert();
-            if (iId > 0) {
+            if (iId != -1) {
                 publisher.setId(iId);
                 return iId;
             }
-
-            throw new DaoInsertException(ERROR_INSERT_FROM + publisher);
         } catch (@NonNull final RuntimeException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + publisher, e);
         }
+        // The id was -1
+        throw new DaoInsertException(ERROR_INSERT_FROM + publisher);
     }
 
     @Override
