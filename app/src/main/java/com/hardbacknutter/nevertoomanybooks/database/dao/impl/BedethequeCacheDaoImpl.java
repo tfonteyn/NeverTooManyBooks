@@ -83,32 +83,35 @@ public class BedethequeCacheDaoImpl
     }
 
     @Override
-    public boolean insert(@NonNull final Locale locale,
-                          @NonNull final Supplier<BdtAuthor> recordSupplier)
+    public void insert(@NonNull final Locale locale,
+                       @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoInsertException, DaoUpdateException {
 
         if (Build.VERSION.SDK_INT < 30) {
-            return insertApiPre30(locale, recordSupplier);
+            insertApiPre30(locale, recordSupplier);
+            return;
         }
 
         BdtAuthor bdtAuthor = null;
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
 
-            long id = 0;
+            long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     stmt.bindString(1, bdtAuthor.getName());
                     stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
                     stmt.bindString(3, bdtAuthor.getUrl());
-                    id = stmt.executeInsert();
-                    if (id > 0) {
-                        bdtAuthor.setId(id);
+                    iId = stmt.executeInsert();
+                    if (iId != -1) {
+                        bdtAuthor.setId(iId);
                     } else {
+                        // Can't reset previous id's
                         throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor);
                     }
                 }
@@ -116,8 +119,6 @@ public class BedethequeCacheDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-            return id > 0;
-
         } catch (@NonNull final RuntimeException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
@@ -127,13 +128,14 @@ public class BedethequeCacheDaoImpl
         }
     }
 
-    private boolean insertApiPre30(@NonNull final Locale locale,
-                                   @NonNull final Supplier<BdtAuthor> recordSupplier)
+    private void insertApiPre30(@NonNull final Locale locale,
+                                @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoInsertException, DaoUpdateException {
 
         BdtAuthor bdtAuthor = null;
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -149,7 +151,7 @@ public class BedethequeCacheDaoImpl
                                      + _SET_ + CacheDbHelper.BDT_AUTHOR_URL + "=?"
                                      + _WHERE_ + DBKey.PK_ID + "=?";
 
-            long id = 0;
+            long iId;
             try (SynchronizedStatement stmtInsert = db.compileStatement(sqlInsert);
                  SynchronizedStatement stmtUpdate = db.compileStatement(sqlUpdate)) {
                 while ((bdtAuthor = recordSupplier.get()) != null) {
@@ -161,18 +163,17 @@ public class BedethequeCacheDaoImpl
                         stmtInsert.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(),
                                                                          locale));
                         stmtInsert.bindString(3, bdtAuthor.getUrl());
-                        id = stmtInsert.executeInsert();
-                        if (id > 0) {
-                            bdtAuthor.setId(id);
+                        iId = stmtInsert.executeInsert();
+                        if (iId != -1) {
+                            bdtAuthor.setId(iId);
                         } else {
+                            // Can't reset previous id's
                             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor);
                         }
                     } else {
                         stmtUpdate.bindString(1, bdtAuthor.getUrl());
                         stmtUpdate.bindLong(2, bdtAuthor.getId());
-                        if (stmtUpdate.executeUpdateDelete() > 0) {
-                            id = bdtAuthor.getId();
-                        } else {
+                        if (stmtUpdate.executeUpdateDelete() <= 0) {
                             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
                         }
                     }
@@ -181,7 +182,6 @@ public class BedethequeCacheDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-            return id > 0;
 
         } catch (@NonNull final RuntimeException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);

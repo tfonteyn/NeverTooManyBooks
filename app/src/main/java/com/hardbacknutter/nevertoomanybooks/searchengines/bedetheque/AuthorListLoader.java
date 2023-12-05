@@ -96,19 +96,20 @@ class AuthorListLoader {
                                                    .iterator();
 
         try {
-            return ServiceLocator.getInstance().getBedethequeCacheDao().insert(locale, () -> {
+            ServiceLocator.getInstance().getBedethequeCacheDao().insert(locale, () -> {
                 if (iterator.hasNext()) {
                     final Element a = iterator.next();
                     final String url = a.attr("href");
                     final Element span = a.selectFirst("span.libelle");
                     if (span != null) {
                         final String name = span.text();
-                        //Log.d(TAG, name );
                         return new BdtAuthor(name, url);
                     }
                 }
+                // End-of-list indication
                 return null;
             });
+            return true;
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
             LoggerFactory.getLogger().e(TAG, e);

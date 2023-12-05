@@ -67,12 +67,10 @@ public interface BedethequeCacheDao {
      * @param recordSupplier a supplier which delivers a {@link BdtAuthor} to insert,
      *                       or {@code null} when done.
      *
-     * @return {@code true} if at least one row was inserted
-     *
      * @throws DaoWriteException on failure
      */
-    boolean insert(@NonNull Locale locale,
-                   @NonNull Supplier<BdtAuthor> recordSupplier)
+    void insert(@NonNull Locale locale,
+                @NonNull Supplier<BdtAuthor> recordSupplier)
             throws DaoWriteException;
 
     /**
