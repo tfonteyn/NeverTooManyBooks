@@ -251,6 +251,9 @@ public class SynchronizedDb
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
      *
+     * <strong>Dev.Note</strong>: SQLExceptions are swallowed and {@code -1} returned!
+     * Other (unlikely) RuntimeExceptions can still be thrown.
+     *
      * @param table  the table to insert the row into
      * @param values this map contains the initial column values for the
      *               row. The keys should be the column names and the values the
