@@ -73,6 +73,7 @@ public class StripInfoDaoImpl
             }
         }
 
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             int i = 0;
             stmt.bindLong(++i, book.getId());
@@ -85,7 +86,7 @@ public class StripInfoDaoImpl
             stmt.bindString(++i, book.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC));
 
             if (stmt.executeInsert() == -1) {
-                throw new DaoInsertException("StripInfo data insert failed");
+                throw new DaoInsertException(ERROR_INSERT_FROM + book);
             }
         } catch (@NonNull final RuntimeException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + book, e);
