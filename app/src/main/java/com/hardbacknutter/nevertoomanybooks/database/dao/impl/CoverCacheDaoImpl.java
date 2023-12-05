@@ -42,6 +42,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
@@ -229,7 +231,9 @@ public class CoverCacheDaoImpl
                         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
-                            stmt.executeInsert();
+                            if (stmt.executeInsert() == -1) {
+                                logAndDisableCache(new DaoInsertException(cacheId));
+                            }
                         }
                     } else {
                         final ContentValues cv = new ContentValues();
@@ -238,8 +242,10 @@ public class CoverCacheDaoImpl
                         cv.put(CacheDbHelper.IMAGE_LAST_UPDATED__UTC, LocalDateTime
                                 .now(ZoneOffset.UTC)
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                        db.update(CacheDbHelper.TBL_IMAGE.getName(), cv,
-                                  CacheDbHelper.IMAGE_ID + "=?", new String[]{cacheId});
+                        if (0 >= db.update(CacheDbHelper.TBL_IMAGE.getName(), cv,
+                                           CacheDbHelper.IMAGE_ID + "=?", new String[]{cacheId})) {
+                            logAndDisableCache(new DaoUpdateException(cacheId));
+                        }
                     }
                 }
             } catch (@NonNull final IllegalStateException ignore) {
@@ -248,16 +254,17 @@ public class CoverCacheDaoImpl
                 // don't care at this point; this is just a cache; don't even log.
 
             } catch (@NonNull final RuntimeException e) {
-                // do not crash... ever! This is just a cache!
-                LoggerFactory.getLogger().e(TAG, e);
-                // and disable the cache
-                //FIXME: we should let the user know,
-                // and cancel any pending tasks...
-                coverStorageSupplier.get().setImageCachingEnabled(false);
+                logAndDisableCache(e);
             }
 
             RUNNING_TASKS.decrementAndGet();
         });
+    }
+
+    private void logAndDisableCache(@NonNull final Throwable e) {
+        LoggerFactory.getLogger().e(TAG, e);
+        //FIXME: we should let the user know, and cancel any pending tasks...
+        coverStorageSupplier.get().setImageCachingEnabled(false);
     }
 
     private static final class Sql {
