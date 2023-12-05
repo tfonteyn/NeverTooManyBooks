@@ -99,20 +99,21 @@ public class CalibreCustomFieldDaoImpl
     public long insert(@NonNull final CalibreCustomField calibreCustomField)
             throws DaoInsertException {
 
+        //noinspection CheckStyle
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             stmt.bindString(2, calibreCustomField.getType());
             stmt.bindString(3, calibreCustomField.getDbKey());
             final long iId = stmt.executeInsert();
-            if (iId > 0) {
+            if (iId != -1) {
                 calibreCustomField.setId(iId);
                 return iId;
             }
-
-            throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
         } catch (@NonNull final RuntimeException e) {
             throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField, e);
         }
+        // The id was -1
+        throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
     }
 
     @Override
