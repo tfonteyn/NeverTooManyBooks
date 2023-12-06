@@ -422,7 +422,6 @@ public class BookshelfDaoImpl
         final long styleId = bookshelf.getStyle().getId();
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -450,15 +449,12 @@ public class BookshelfDaoImpl
         } catch (@NonNull final DaoInsertException e) {
             bookshelf.setId(0);
             throw e;
-        } catch (@NonNull final RuntimeException e) {
-            bookshelf.setId(0);
-            throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        // The id was -1
+        // The insert failed with -1
         bookshelf.setId(0);
         throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
     }
@@ -485,10 +481,11 @@ public class BookshelfDaoImpl
                 stmt.bindLong(2, styleId);
                 stmt.bindLong(3, topRowListPosition.getAdapterPosition());
                 stmt.bindLong(4, topRowListPosition.getViewOffset());
-                stmt.bindLong(5, bookshelf.getId());
 
+                stmt.bindLong(5, bookshelf.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
+
             if (rowsAffected > 0) {
                 storeFilters(context, bookshelf);
 
@@ -499,8 +496,6 @@ public class BookshelfDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf);
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -533,9 +528,8 @@ public class BookshelfDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoUpdateException | RuntimeException e) {
+        } catch (@NonNull final DaoUpdateException e) {
             return false;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -581,9 +575,6 @@ public class BookshelfDaoImpl
                 .compileStatement(Sql.DELETE_NODE_STATE_BY_BOOKSHELF_ID)) {
             stmt.bindLong(1, bookshelf.getId());
             stmt.executeUpdateDelete();
-
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf, e);
         }
     }
 
