@@ -214,6 +214,7 @@ public class BookDaoImpl
                    DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -301,6 +302,7 @@ public class BookDaoImpl
             return newBookId;
 
         } catch (@NonNull final RuntimeException e) {
+            // Theoretically there is no need to catch RTE here, but paranoia...
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book, e);
 
@@ -319,6 +321,7 @@ public class BookDaoImpl
                    DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -375,6 +378,7 @@ public class BookDaoImpl
 
             throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
         } catch (@NonNull final RuntimeException e) {
+            // Theoretically there is no need to catch RTE here, but paranoia...
             LoggerFactory.getLogger().e(TAG, e);
             throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book, e);
 
@@ -459,8 +463,6 @@ public class BookDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final RuntimeException ignore) {
-            // ignore
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
