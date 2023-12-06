@@ -154,7 +154,8 @@ public class CalibreLibraryDaoImpl
             vLib.setMappedBookshelf(vLibBookshelf.getId());
         });
 
-        // finally, fix the library id itself - note that the vlib id's never need fixing as such
+        // Finally, fix the library id itself.
+        // Note that the virtual library id's never need fixing as such.
         final long id = find(library);
         library.setId(id);
     }
