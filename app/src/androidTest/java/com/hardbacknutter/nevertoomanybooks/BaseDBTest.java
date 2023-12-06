@@ -53,7 +53,7 @@ public abstract class BaseDBTest {
 
     @CallSuper
     public void setup(@NonNull final String localeCode)
-            throws DaoWriteException, StorageException {
+            throws StorageException, DaoWriteException {
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                                        .detectLeakedSqlLiteObjects()
                                        .detectLeakedClosableObjects()

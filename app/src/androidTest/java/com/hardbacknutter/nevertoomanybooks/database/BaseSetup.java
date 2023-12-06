@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+
+import org.junit.Before;
 
 
 /**
@@ -45,125 +49,127 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public abstract class BaseSetup
         extends BaseDBTest {
 
-    protected final String[] lang = {"eng", "ger", "eng", "nld", "eng",};
+    final Book[] bookArray = new Book[5];
+    final long[] bookIdArray = new long[5];
+    Author[] authorArray;
+    long[] authorIdArray;
+    Bookshelf[] bookshelfArray;
+    Publisher[] publisherArray;
+    long[] publisherIdArray;
+    TocEntry[] tocEntryArray;
 
-    protected final Bookshelf[] bookshelf = new Bookshelf[5];
-    protected final long[] bookshelfId = new long[5];
-
-    protected final Author[] author = new Author[5];
-    protected final long[] authorId = new long[5];
-    protected final Publisher[] publisher = new Publisher[5];
-    protected final long[] publisherId = new long[5];
-
-    protected final TocEntry[] tocEntry = new TocEntry[5];
-    protected final long[] tocEntryId = new long[5];
-
-    protected final Book[] book = new Book[5];
-    protected final long[] bookId = new long[5];
-
+    @Before
     @CallSuper
-    public void setup(@NonNull final String localeCode)
-            throws DaoWriteException, StorageException {
-        super.setup(localeCode);
+    public void setup()
+            throws IOException, StorageException, DaoWriteException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        clearDatabase();
-
-        initBookshelves();
-        initAuthors();
-        initPublishers();
-        // tocs are using hardcoded author id's
-        initToc();
+        clearDatabaseAndInitArrays();
     }
 
-    private void clearDatabase() {
+    private void clearDatabaseAndInitArrays() {
         final SynchronizedDb db = serviceLocator.getDb();
         TestConstants.deleteTocs(db);
         TestConstants.deleteBooks(db);
         TestConstants.deleteAuthors(db);
         TestConstants.deletePublishers(db);
         TestConstants.deleteBookshelves(db);
-    }
 
-    protected void initBook(final int bookIdx) {
-        book[bookIdx] = new Book();
-        book[bookIdx].setStage(EntityStage.Stage.WriteAble);
-        book[bookIdx].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + bookIdx);
-        book[bookIdx].setStage(EntityStage.Stage.Dirty);
-        book[bookIdx].putString(DBKey.LANGUAGE, lang[bookIdx]);
-    }
-
-    protected void initBookBookshelves(final int bookIdx,
-                                       @NonNull final int... bookshelfIdx) {
-        final List<Bookshelf> bookshelfList = new ArrayList<>();
-        for (final int idx : bookshelfIdx) {
-            bookshelfList.add(bookshelf[idx]);
-        }
-        book[bookIdx].setBookshelves(bookshelfList);
-    }
-
-    protected void initBookPublishers(final int bookIdx,
-                                      @NonNull final int... publisherIdx) {
-        final List<Publisher> publisherList = new ArrayList<>();
-        for (final int idx : publisherIdx) {
-            publisherList.add(publisher[idx]);
-        }
-        book[bookIdx].setPublishers(publisherList);
-    }
-
-    protected void initBookAuthors(final int bookIdx,
-                                   @NonNull final int... authorIdx) {
-        final List<Author> authorList = new ArrayList<>();
-        for (final int idx : authorIdx) {
-            authorList.add(author[idx]);
-        }
-        book[bookIdx].setAuthors(authorList);
-    }
-
-    protected void initBookToc(final int bookIdx,
-                               @NonNull final int... tocIdx) {
-        final List<TocEntry> tocList = new ArrayList<>();
-        for (final int idx : tocIdx) {
-            tocList.add(tocEntry[idx]);
-        }
-        book[bookIdx].setToc(tocList);
+        initBookshelves();
+        initAuthors();
+        initPublishers();
+        initToc();
     }
 
     private void initBookshelves() {
-        final Style defStyle = serviceLocator.getStyles().getDefault();
-        bookshelf[0] = serviceLocator.getBookshelfDao()
-                                     .getBookshelf(context, Bookshelf.HARD_DEFAULT)
-                                     .orElseThrow();
-        bookshelf[1] = new Bookshelf(TestConstants.BOOKSHELF + "1", defStyle);
-        bookshelf[2] = new Bookshelf(TestConstants.BOOKSHELF + "2", defStyle);
-        bookshelf[3] = new Bookshelf(TestConstants.BOOKSHELF + "3", defStyle);
-        bookshelf[4] = new Bookshelf(TestConstants.BOOKSHELF + "4", defStyle);
-    }
+        bookshelfArray = new Bookshelf[TestConstants.BOOKSHELF.length];
 
-    private void initPublishers() {
-        publisher[0] = Publisher.from(TestConstants.PUBLISHER + "0");
-        publisher[1] = Publisher.from(TestConstants.PUBLISHER + "1");
-        publisher[2] = Publisher.from(TestConstants.PUBLISHER + "2");
-        publisher[3] = Publisher.from(TestConstants.PUBLISHER + "3");
-        publisher[4] = Publisher.from(TestConstants.PUBLISHER + "4");
+        final Style defStyle = serviceLocator.getStyles().getDefault();
+        bookshelfArray[0] = serviceLocator.getBookshelfDao()
+                                          .getBookshelf(context, Bookshelf.HARD_DEFAULT)
+                                          .orElseThrow();
+        for (int i = 1; i < TestConstants.BOOKSHELF.length; i++) {
+            bookshelfArray[i] = new Bookshelf(TestConstants.PUBLISHER[i], defStyle);
+        }
     }
 
     private void initAuthors() {
-        author[0] = Author.from(TestConstants.AuthorFullName(0));
-        author[1] = Author.from(TestConstants.AuthorFullName(1));
-        author[1].setType(Author.TYPE_ARTIST);
-        author[2] = Author.from(TestConstants.AuthorFullName(2));
-        author[2].setType(Author.TYPE_EDITOR);
-        author[3] = Author.from(TestConstants.AuthorFullName(3));
-        author[2].setType(Author.TYPE_COVER_ARTIST | Author.TYPE_COVER_INKING);
-        author[4] = Author.from(TestConstants.AuthorFullName(4));
+        authorArray = new Author[TestConstants.AUTHOR_FULL_NAME.length];
+        authorIdArray = new long[authorArray.length];
+
+        authorArray[0] = Author.from(TestConstants.AUTHOR_FULL_NAME[0]);
+
+        authorArray[1] = Author.from(TestConstants.AUTHOR_FULL_NAME[1])
+                               .setType(Author.TYPE_ARTIST);
+
+        authorArray[2] = Author.from(TestConstants.AUTHOR_FULL_NAME[2])
+                               .setType(Author.TYPE_EDITOR);
+
+        authorArray[3] = Author.from(TestConstants.AUTHOR_FULL_NAME[3])
+                               .setType(Author.TYPE_COVER_ARTIST | Author.TYPE_COVER_INKING);
+
+        authorArray[4] = Author.from(TestConstants.AUTHOR_FULL_NAME[4]);
+    }
+
+    private void initPublishers() {
+        publisherArray = new Publisher[TestConstants.PUBLISHER.length];
+        publisherIdArray = new long[publisherArray.length];
+        for (int i = 0; i < TestConstants.PUBLISHER.length; i++) {
+            publisherArray[i] = Publisher.from(TestConstants.PUBLISHER[i]);
+        }
     }
 
     private void initToc() {
-        // tocs are using hardcoded author id's
-        tocEntry[0] = new TocEntry(author[1], TestConstants.TOC_TITLE + "0");
-        tocEntry[1] = new TocEntry(author[1], TestConstants.TOC_TITLE + "1");
-        tocEntry[2] = new TocEntry(author[2], TestConstants.TOC_TITLE + "2");
-        tocEntry[3] = new TocEntry(author[2], TestConstants.TOC_TITLE + "3");
-        tocEntry[4] = new TocEntry(author[4], TestConstants.TOC_TITLE + "4");
+        tocEntryArray = new TocEntry[TestConstants.TOC_TITLE.length];
+        // tocs are using random hardcoded author id's
+        tocEntryArray[0] = new TocEntry(authorArray[1], TestConstants.TOC_TITLE[0]);
+        tocEntryArray[1] = new TocEntry(authorArray[1], TestConstants.TOC_TITLE[1]);
+        tocEntryArray[2] = new TocEntry(authorArray[2], TestConstants.TOC_TITLE[2]);
+        tocEntryArray[3] = new TocEntry(authorArray[2], TestConstants.TOC_TITLE[3]);
+        tocEntryArray[4] = new TocEntry(authorArray[4], TestConstants.TOC_TITLE[4]);
+    }
+
+    void initBook(final int bookIdx) {
+        bookArray[bookIdx] = new Book();
+        bookArray[bookIdx].setStage(EntityStage.Stage.WriteAble);
+        bookArray[bookIdx].putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx]);
+        bookArray[bookIdx].setStage(EntityStage.Stage.Dirty);
+        bookArray[bookIdx].putString(DBKey.LANGUAGE, TestConstants.lang[bookIdx]);
+    }
+
+    void setBookBookshelves(final int bookIdx,
+                            @NonNull final int... bookshelfIdx) {
+        final List<Bookshelf> bookshelfList = new ArrayList<>();
+        for (final int idx : bookshelfIdx) {
+            bookshelfList.add(bookshelfArray[idx]);
+        }
+        bookArray[bookIdx].setBookshelves(bookshelfList);
+    }
+
+    void setBookPublishers(final int bookIdx,
+                           @NonNull final int... publisherIdx) {
+        final List<Publisher> publisherList = new ArrayList<>();
+        for (final int idx : publisherIdx) {
+            publisherList.add(publisherArray[idx]);
+        }
+        bookArray[bookIdx].setPublishers(publisherList);
+    }
+
+    void settBookAuthors(final int bookIdx,
+                         @NonNull final int... authorIdx) {
+        final List<Author> authorList = new ArrayList<>();
+        for (final int idx : authorIdx) {
+            authorList.add(authorArray[idx]);
+        }
+        bookArray[bookIdx].setAuthors(authorList);
+    }
+
+    void setBookTocEntries(final int bookIdx,
+                           @NonNull final int... tocIdx) {
+        final List<TocEntry> tocList = new ArrayList<>();
+        for (final int idx : tocIdx) {
+            tocList.add(tocEntryArray[idx]);
+        }
+        bookArray[bookIdx].setToc(tocList);
     }
 }

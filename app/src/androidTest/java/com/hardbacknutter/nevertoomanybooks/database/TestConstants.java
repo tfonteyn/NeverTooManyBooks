@@ -21,6 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -29,56 +32,116 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
-public final class TestConstants {
+final class TestConstants {
+
+    static final String[] lang = {"eng", "ger", "eng", "nld", "eng",};
+
+    // sample external id values
+    static final int[] BOOK_ISFDB = {101, 102, 103, 104, 105};
 
     private static final String PREFIX = "Test";
 
-    static final String BOOKSHELF = PREFIX + "BookshelfName";
-    static final String AUTHOR_FAMILY_NAME = PREFIX + "AuthorFamilyName";
-    static final String AUTHOR_GIVEN_NAME = PREFIX + "AuthorGivenName";
-    static final String PUBLISHER = PREFIX + "PublisherName";
-    static final String BOOK_TITLE = PREFIX + "Title";
-    static final String TOC_TITLE = PREFIX + "TocTitle";
-    // sample external id values
-    static final int BOOK_ISFDB_123 = 123;
-    static final String BOOK_LCCN_0 = "unused0";
+    static final String[] AUTHOR_FAMILY_NAME = {
+            PREFIX + "AuthorFamilyName0",
+            PREFIX + "AuthorFamilyName1",
+            PREFIX + "AuthorFamilyName2",
+            PREFIX + "AuthorFamilyName3",
+            PREFIX + "AuthorFamilyName4",
+    };
+    static final String[] AUTHOR_GIVEN_NAME = {
+            PREFIX + "AuthorGivenName0",
+            PREFIX + "AuthorGivenName1",
+            PREFIX + "AuthorGivenName2",
+            PREFIX + "AuthorGivenName3",
+            PREFIX + "AuthorGivenName4",
+    };
+
+    static final String[] AUTHOR_FULL_NAME = {
+            AUTHOR_GIVEN_NAME[0] + " " + AUTHOR_FAMILY_NAME[0],
+            AUTHOR_GIVEN_NAME[1] + " " + AUTHOR_FAMILY_NAME[1],
+            AUTHOR_GIVEN_NAME[2] + " " + AUTHOR_FAMILY_NAME[2],
+            AUTHOR_GIVEN_NAME[3] + " " + AUTHOR_FAMILY_NAME[3],
+            AUTHOR_GIVEN_NAME[4] + " " + AUTHOR_FAMILY_NAME[4],
+    };
+
+    static final String[] BOOKSHELF = {
+            PREFIX + "BookshelfName0",
+            PREFIX + "BookshelfName1",
+            PREFIX + "BookshelfName2",
+            PREFIX + "BookshelfName3",
+            PREFIX + "BookshelfName4"
+    };
+
+    static final String[] PUBLISHER = {
+            PREFIX + "PublisherName0",
+            PREFIX + "PublisherName1",
+            PREFIX + "PublisherName2",
+            PREFIX + "PublisherName3",
+            PREFIX + "PublisherName4"
+    };
+    static final String[] TOC_TITLE = {
+            PREFIX + "TocTitle0",
+            PREFIX + "TocTitle1",
+            PREFIX + "TocTitle2",
+            PREFIX + "TocTitle3",
+            PREFIX + "TocTitle4"
+    };
+
+    static final String[] BOOK_TITLE = {
+            PREFIX + "Title0",
+            PREFIX + "Title1",
+            PREFIX + "Title2",
+            PREFIX + "Title3",
+            PREFIX + "Title4"};
+
+    static final String[] BOOK_LCCN = {
+            PREFIX + "Unused0",
+            PREFIX + "Unused1",
+            PREFIX + "Unused2",
+            PREFIX + "Unused3",
+            PREFIX + "Unused4"
+    };
 
     private TestConstants() {
     }
 
-    static String AuthorFullName(final int index) {
-        return AUTHOR_GIVEN_NAME + index
-               + " "
-               + AUTHOR_FAMILY_NAME + index;
-    }
-
-    public static void deleteBookshelves(@NonNull final SynchronizedDb db) {
-        db.delete(TBL_BOOKSHELF.getName(),
-                  DBKey.BOOKSHELF_NAME
-                  + " LIKE '" + BOOKSHELF + "%'", null);
+    static void deleteBookshelves(@NonNull final SynchronizedDb db) {
+        final String list = Arrays.stream(BOOKSHELF)
+                                  .map(n -> "'" + n + "'")
+                                  .collect(Collectors.joining(","));
+        db.delete(TBL_BOOKSHELF.getName(), DBKey.BOOKSHELF_NAME
+                                           + " IN (" + list + ")", null);
     }
 
     static void deleteAuthors(@NonNull final SynchronizedDb db) {
-        db.delete(TBL_AUTHORS.getName(),
-                  DBKey.AUTHOR_FAMILY_NAME
-                  + " LIKE '" + AUTHOR_FAMILY_NAME + "%'", null);
+        final String list = Arrays.stream(AUTHOR_FAMILY_NAME)
+                                  .map(n -> "'" + n + "'")
+                                  .collect(Collectors.joining(","));
+        db.delete(TBL_AUTHORS.getName(), DBKey.AUTHOR_FAMILY_NAME
+                                         + " IN (" + list + ")", null);
     }
 
     static void deletePublishers(@NonNull final SynchronizedDb db) {
-        db.delete(TBL_PUBLISHERS.getName(),
-                  DBKey.PUBLISHER_NAME
-                  + " LIKE '" + PUBLISHER + "%'", null);
+        final String list = Arrays.stream(PUBLISHER)
+                                  .map(n -> "'" + n + "'")
+                                  .collect(Collectors.joining(","));
+        db.delete(TBL_PUBLISHERS.getName(), DBKey.PUBLISHER_NAME
+                                            + " IN (" + list + ")", null);
     }
 
     static void deleteTocs(@NonNull final SynchronizedDb db) {
-        db.delete(TBL_TOC_ENTRIES.getName(),
-                  DBKey.TITLE
-                  + " LIKE '" + TOC_TITLE + "%'", null);
+        final String list = Arrays.stream(TOC_TITLE)
+                                  .map(n -> "'" + n + "'")
+                                  .collect(Collectors.joining(","));
+        db.delete(TBL_TOC_ENTRIES.getName(), DBKey.TITLE
+                                             + " IN (" + list + ")", null);
     }
 
     static void deleteBooks(@NonNull final SynchronizedDb db) {
-        db.delete(TBL_BOOKS.getName(),
-                  DBKey.TITLE
-                  + " LIKE '" + BOOK_TITLE + "%'", null);
+        final String list = Arrays.stream(BOOK_TITLE)
+                                  .map(n -> "'" + n + "'")
+                                  .collect(Collectors.joining(","));
+        db.delete(TBL_BOOKS.getName(), DBKey.TITLE
+                                       + " IN (" + list + ")", null);
     }
 }

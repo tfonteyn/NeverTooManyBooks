@@ -37,12 +37,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -67,31 +65,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-/** Do NOT extend BaseSetup ! */
 @SuppressWarnings({"TypeMayBeWeakened",
         "MismatchedQueryAndUpdateOfCollection",
         "MismatchedReadAndWriteOfArray",
         "OverlyBroadThrowsClause",
         "MissingJavadoc"})
 @MediumTest
-public class BookTest {
+public class BookTest
+        extends BaseSetup {
 
-    private static final String NEED_A_PICTURES_DIRECTORY = "Need a pictures directory";
-    private static final String NEED_A_TEMP_DIRECTORY = "Need a temp directory";
     private static final String EXT_JPG = ".jpg";
-    private final Bookshelf[] bookshelf = new Bookshelf[5];
-    private final long[] bookshelfId = new long[5];
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
-    private final Author[] author = new Author[5];
-    private final long[] authorId = new long[5];
     private final List<Author> authorList = new ArrayList<>();
-    private final Publisher[] publisher = new Publisher[5];
-    private final long[] publisherId = new long[5];
     private final List<Publisher> publisherList = new ArrayList<>();
     private final List<TocEntry> tocEntryList = new ArrayList<>();
     private final String[] originalImageFileName = new String[2];
     private final long[] originalImageSize = new long[2];
     private final FileFilter jpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
+
     /**
      * LiveData requirement.
      */
@@ -99,7 +90,6 @@ public class BookTest {
     public TestRule rule = new InstantTaskExecutorRule();
 
     private CoverStorage coverStorage;
-
 
     /**
      * Clean the database.
@@ -109,58 +99,43 @@ public class BookTest {
     @Before
     public void setup()
             throws IOException, StorageException, DaoWriteException {
+        super.setup();
 
-        bookshelfList.clear();
-        authorList.clear();
-        publisherList.clear();
-        tocEntryList.clear();
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final SynchronizedDb db = serviceLocator.getDb();
         coverStorage = serviceLocator.getCoverStorage();
-
-        TestConstants.deleteTocs(db);
-        TestConstants.deleteBooks(db);
-        TestConstants.deleteAuthors(db);
-        TestConstants.deletePublishers(db);
-
-        final Context context = serviceLocator.getLocalizedAppContext();
-        final Locale bookLocale = Locale.getDefault();
 
         final int actualVolume = CoverVolume.initVolume(context, 0);
         assertEquals(0, actualVolume);
 
         final File coverDir = coverStorage.getDir();
-        assertNotNull(NEED_A_PICTURES_DIRECTORY, coverDir);
+        assertNotNull("Need a cover directory", coverDir);
 
         final File tempDir = coverStorage.getTempDir();
-        assertNotNull(NEED_A_TEMP_DIRECTORY, tempDir);
+        assertNotNull("Need a temp directory", tempDir);
 
         // empty the temp dir
         //noinspection ResultOfMethodCallIgnored
         FileUtils.collectFiles(tempDir, jpgFilter).forEach(File::delete);
 
-        bookshelf[0] = serviceLocator.getBookshelfDao()
-                                     .getBookshelf(context, Bookshelf.HARD_DEFAULT)
-                                     .orElseThrow();
+        final Locale bookLocale = Locale.getDefault();
+
+        // bookshelf[0] is the hard default
         bookshelfList.clear();
-        bookshelfList.add(bookshelf[0]);
+        bookshelfList.add(bookshelfArray[0]);
 
-        author[0] = Author.from(TestConstants.AuthorFullName(0));
-        author[1] = Author.from(TestConstants.AuthorFullName(1));
-
-        // insert author[0] but do NOT insert author[1]
-        authorId[0] = serviceLocator.getAuthorDao().insert(context, author[0], bookLocale);
+        // insert ONLY author[0]
+        authorIdArray[0] = serviceLocator.getAuthorDao().insert(context, authorArray[0],
+                                                                bookLocale);
         authorList.clear();
-        authorList.add(author[0]);
+        authorList.add(authorArray[0]);
 
-        publisher[0] = Publisher.from(TestConstants.PUBLISHER + "0");
-        publisher[1] = Publisher.from(TestConstants.PUBLISHER + "1");
-
-        // insert publisher[0] but do NOT insert publisher[1]
-        publisherId[0] = serviceLocator.getPublisherDao().insert(context, publisher[0], bookLocale);
+        // insert ONLY publisher[0]
+        publisherIdArray[0] = serviceLocator.getPublisherDao().insert(context, publisherArray[0],
+                                                                      bookLocale);
         publisherList.clear();
-        publisherList.add(publisher[0]);
+        publisherList.add(publisherArray[0]);
+
+        // No tocs
+        tocEntryList.clear();
 
         final DbPrep dbPrep = new DbPrep();
         for (int i = 0; i < 2; i++) {
@@ -169,10 +144,9 @@ public class BookTest {
             originalImageSize[i] = coverFile.length();
         }
 
-
-        assertTrue(bookshelf[0].getId() > 0);
-        assertTrue(author[0].getId() > 0);
-        assertTrue(publisher[0].getId() > 0);
+        assertTrue(bookshelfArray[0].getId() > 0);
+        assertTrue(authorArray[0].getId() > 0);
+        assertTrue(publisherArray[0].getId() > 0);
     }
 
     /**
@@ -180,52 +154,34 @@ public class BookTest {
      *     <li>Insert a book on the default bookshelf, with 1 author,
      *          1 publisher, 1 front cover image.</li>
      *     <li>Retrieve it by id and test.</li>
-     *     <li>update the retrieved book, change title, add author, add back cover</li>
+     *     <li>update the retrieved book, change title, add author</li>
      *     <li>Retrieve it by id and test.</li>
-     *     <li>Delete the back cover while the book is {@link EntityStage.Stage#Clean}</li>
-     *
      * </ol>
      */
     @Test
     public void book()
             throws DaoWriteException, IOException, StorageException {
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final Context context = serviceLocator.getLocalizedAppContext();
+        final int bookIdx = 0;
+
         final BookDao bookDao = serviceLocator.getBookDao();
 
-        final File coverDir = coverStorage.getDir();
-        assertNotNull(NEED_A_PICTURES_DIRECTORY, coverDir);
-
-        final File tempDir = coverStorage.getTempDir();
-        assertNotNull(NEED_A_TEMP_DIRECTORY, tempDir);
-
         // Do the initial insert and test it
-        final long bookId = prepareAndInsertBook(context, bookDao);
+        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
         Book book = Book.from(bookId);
         assertEquals(bookId, book.getId());
-        checkBookAfterInitialInsert(context, book);
+        assertBookMatchesInitialInsert(book, bookIdx);
 
         List<Author> authors;
-        String uuid;
-        final List<Bookshelf> bookshelves;
-        final List<Publisher> publishers;
-        final File[] tempFiles;
-
         /*
-         * update the stored book
+         * update the stored book; change the title and add an Author.
          */
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "0_upd");
+        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx] + "_upd");
         book.setStage(EntityStage.Stage.Dirty);
 
         authors = book.getAuthors();
-        authors.add(author[1]);
-
-        // the book already has a front cover, now add a back cover
-        book.setCover(1, new File(tempDir, DbPrep.COVER[1]));
-        // we're in 'Dirty' mode, so must be a temp file
-        mustHaveTempCover(context, book, 1);
+        authors.add(this.authorArray[1]);
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
         bookDao.update(context, book, Set.of());
@@ -237,75 +193,199 @@ public class BookTest {
         book = Book.from(bookId);
         assertEquals(bookId, book.getId());
 
-        uuid = book.getString(DBKey.BOOK_UUID, null);
+        final String uuid = book.getString(DBKey.BOOK_UUID, null);
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
 
-        assertEquals(TestConstants.BOOK_TITLE + "0_upd", book.getTitle());
-        bookshelves = book.getBookshelves();
+        assertEquals(TestConstants.BOOK_TITLE[bookIdx] + "_upd", book.getTitle());
+
+        final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
-        assertEquals(bookshelf[0], bookshelves.get(0));
+        assertEquals(this.bookshelfArray[0], bookshelves.get(0));
+
         authors = book.getAuthors();
         assertEquals(2, authors.size());
-        assertEquals(author[0], authors.get(0));
-        assertEquals(author[1], authors.get(1));
-        publishers = book.getPublishers();
-        assertEquals(1, publishers.size());
-        assertEquals(publisher[0], publishers.get(0));
+        assertEquals(this.authorArray[0], authors.get(0));
+        assertEquals(this.authorArray[1], authors.get(1));
 
-        mustHavePersistedCover(book, 0);
-        mustHavePersistedCover(book, 1);
+        final List<Publisher> publishers = book.getPublishers();
+        assertEquals(1, publishers.size());
+        assertEquals(this.publisherArray[0], publishers.get(0));
+    }
+
+    @Test
+    public void covers()
+            throws DaoWriteException, IOException, StorageException {
+
+        final int bookIdx = 0;
+
+        final BookDao bookDao = serviceLocator.getBookDao();
+
+        final File coverDir = coverStorage.getDir();
+        final File tempDir = coverStorage.getTempDir();
+
+        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
+        Book book = Book.from(bookId);
+
+        // Test Dirty mode
+        book.setStage(EntityStage.Stage.Dirty);
+        // the book already has a front cover, add a back cover
+        book.setCover(1, new File(tempDir, DbPrep.COVER[1]));
+        // we're in 'Dirty' mode, so must be a temp file
+        assertBookHasTempCover(book, 1);
+
+        bookDao.update(context, book, Set.of());
+        book.setStage(EntityStage.Stage.Clean);
+
+        // reload
+        book = Book.from(bookId);
+        final String uuid = book.getString(DBKey.BOOK_UUID, null);
+
+        assertBookHasPersistedCover(book, 0);
+        assertBookHasPersistedCover(book, 1);
 
         // We've used both temp files, so both files should be gone now
+        final File[] tempFiles;
         tempFiles = tempDir.listFiles(jpgFilter);
         assertNotNull(tempFiles);
         assertEquals(0, tempFiles.length);
 
-
-        /*
-         * Delete the second cover of the read-only book
-         */
-        book = Book.from(bookId);
-        assertEquals(bookId, book.getId());
-
-        uuid = book.getString(DBKey.BOOK_UUID, null);
-        assertNotNull(uuid);
-        assertFalse(uuid.isEmpty());
-
+        // sanity check there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
         // sanity check the cover is really there
-        mustHavePersistedCover(book, 1);
-
+        assertBookHasPersistedCover(book, 1);
+        // remove it
         book.removeCover(1);
-
+        // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
-
+        // the front cover should still be there
+        assertBookHasPersistedCover(book, 0);
         //the back cover must be gone
         assertFalse(new File(coverDir, uuid + "_1" + EXT_JPG).exists());
 
-        // the front cover should still be there
-        mustHavePersistedCover(book, 0);
-
-        // Add a new second cover of the read-only book
+        // Add a new back cover to the read-only book
         final File coverFile = new DbPrep().getFile(1);
         originalImageFileName[1] = coverFile.getAbsolutePath();
         originalImageSize[1] = coverFile.length();
 
-        // will/must store the cover immediately
+        assertEquals(EntityStage.Stage.Clean, book.getStage());
+        // We're in Clean mode; This call will/must store the cover immediately
         book.setCover(1, new File(tempDir, DbPrep.COVER[1]));
+        assertEquals(EntityStage.Stage.Clean, book.getStage());
 
+        // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
-
-        mustHavePersistedCover(book, 1);
+        // We once again must have front and back cover
+        assertBookHasPersistedCover(book, 0);
+        assertBookHasPersistedCover(book, 1);
     }
 
-    private void mustHaveTempCover(@NonNull final Context context,
-                                   @NonNull final Book book,
-                                   @IntRange(from = 0, to = 1) final int cIdx)
+    @Test
+    public void showBookVM()
+            throws DaoWriteException, StorageException, IOException {
+
+        final int bookIdx = 0;
+
+        final StylesHelper helper = serviceLocator.getStyles();
+        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID);
+        assertTrue(s1.isPresent());
+
+        final BookDao bookDao = serviceLocator.getBookDao();
+        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
+        final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
+        final Bundle args = serviceLocator.newBundle();
+        args.putLong(DBKey.FK_BOOK, bookId);
+
+        vm.init(context, args, s1.get());
+        final Book retrieved = vm.getBook();
+        assertEquals(bookId, retrieved.getId());
+        assertBookMatchesInitialInsert(retrieved, bookIdx);
+    }
+
+    /**
+     * Create and insert a book. It will have a front cover, but no back cover.
+     *
+     * @return book id
+     */
+    private long prepareAndInsertBook(@NonNull final Context context,
+                                      @NonNull final BookDao bookDao,
+                                      final int bookIdx)
+            throws DaoWriteException, StorageException, IOException {
+
+        final Book book = new Book();
+        book.setStage(EntityStage.Stage.WriteAble);
+        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx]);
+        book.setStage(EntityStage.Stage.Dirty);
+
+        book.putLong(DBKey.SID_ISFDB, TestConstants.BOOK_ISFDB[bookIdx]);
+        book.putString(DBKey.SID_LCCN, TestConstants.BOOK_LCCN[bookIdx]);
+
+        book.setBookshelves(bookshelfList);
+        book.setAuthors(authorList);
+        book.setPublishers(publisherList);
+
+        // Add a front cover but no back cover
+        final File tempDir = coverStorage.getTempDir();
+        book.setCover(0, new File(tempDir, DbPrep.COVER[0]));
+        // we're in 'Dirty' mode, so must be a temp file
+        assertBookHasTempCover(book, 0);
+
+        // Inserting the data should change the stage from Dirty to Clean
+        assertEquals(EntityStage.Stage.Dirty, book.getStage());
+        final long bookId = bookDao.insert(context, book, Set.of());
+        book.setStage(EntityStage.Stage.Clean);
+
+        assertTrue(bookId > 0);
+        assertEquals(book.getId(), bookId);
+
+        return bookId;
+    }
+
+    private void assertBookMatchesInitialInsert(@NonNull final Book book,
+                                                final int bookIdx)
+            throws StorageException {
+
+        assertEquals(EntityStage.Stage.Clean, book.getStage());
+
+        final String uuid = book.getString(DBKey.BOOK_UUID, null);
+        assertNotNull(uuid);
+        assertFalse(uuid.isEmpty());
+        assertEquals(TestConstants.BOOK_TITLE[bookIdx], book.getTitle());
+
+        assertEquals(TestConstants.BOOK_ISFDB[bookIdx], book.getLong(DBKey.SID_ISFDB));
+
+        // not saved, hence null
+        assertNull(book.getString(DBKey.SID_LCCN, null));
+
+
+        final List<Bookshelf> bookshelves = book.getBookshelves();
+        assertEquals(1, bookshelves.size());
+        assertEquals(this.bookshelfArray[0], bookshelves.get(0));
+
+        final List<Author> authors = book.getAuthors();
+        assertEquals(1, authors.size());
+        assertEquals(this.authorArray[0], authors.get(0));
+
+        final List<Publisher> publishers = book.getPublishers();
+        assertEquals(1, publishers.size());
+        assertEquals(this.publisherArray[0], publishers.get(0));
+
+        assertBookHasPersistedCover(book, 0);
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+
+        final File tempDir = coverStorage.getTempDir();
+        final List<File> tempFiles = FileUtils.collectFiles(tempDir, jpgFilter, 10);
+        // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
+        assertEquals(1, tempFiles.size());
+        assertEquals(DbPrep.COVER[1], tempFiles.get(0).getName());
+    }
+
+    private void assertBookHasTempCover(@NonNull final Book book,
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
@@ -322,9 +402,9 @@ public class BookTest {
      * @param book to check
      * @param cIdx 0..n image index
      */
-    private void mustHavePersistedCover(@NonNull final Book book,
-                                        @IntRange(from = 0, to = 1) final int cIdx) {
-        // we're testing a permanent file, the temp string must not exist
+    private void assertBookHasPersistedCover(@NonNull final Book book,
+                                             @IntRange(from = 0, to = 1) final int cIdx) {
+        // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 
         final Optional<File> oCover = book.getCover(cIdx);
@@ -340,101 +420,5 @@ public class BookTest {
         assertFalse(uuid.isEmpty());
         final String expectedFilename = uuid + (cIdx == 0 ? "" : "_" + cIdx) + EXT_JPG;
         assertEquals(expectedFilename, cover.getName());
-    }
-
-    @Test
-    public void showBookVM()
-            throws DaoWriteException, StorageException, IOException {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final Context context = serviceLocator.getLocalizedAppContext();
-
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID);
-        assertTrue(s1.isPresent());
-
-        final BookDao bookDao = serviceLocator.getBookDao();
-        final long bookId = prepareAndInsertBook(context, bookDao);
-        final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
-        final Bundle args = serviceLocator.newBundle();
-        args.putLong(DBKey.FK_BOOK, bookId);
-        // FIXME: FAILS with Cannot invoke setValue on a background thread
-        //  but the code does work in normal usage
-        vm.init(context, args, s1.get());
-        final Book retrieved = vm.getBook();
-        assertEquals(bookId, retrieved.getId());
-        checkBookAfterInitialInsert(context, retrieved);
-    }
-
-    /*
-     * Create and insert a book.
-     */
-    private long prepareAndInsertBook(@NonNull final Context context,
-                                      @NonNull final BookDao bookDao)
-            throws DaoWriteException, StorageException, IOException {
-
-        final Book book = new Book();
-        book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "0");
-        book.setStage(EntityStage.Stage.Dirty);
-
-        book.putLong(DBKey.SID_ISFDB, TestConstants.BOOK_ISFDB_123);
-        book.putString(DBKey.SID_LCCN, TestConstants.BOOK_LCCN_0);
-
-        book.setBookshelves(bookshelfList);
-        book.setAuthors(authorList);
-        book.setPublishers(publisherList);
-
-        final File tempDir = coverStorage.getTempDir();
-        book.setCover(0, new File(tempDir, DbPrep.COVER[0]));
-        // we're in 'Dirty' mode, so must be a temp file
-        mustHaveTempCover(context, book, 0);
-
-        assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        final long bookId = bookDao.insert(context, book, Set.of());
-        book.setStage(EntityStage.Stage.Clean);
-
-        assertTrue(bookId > 0);
-        assertEquals(book.getId(), bookId);
-
-        return bookId;
-    }
-
-    private void checkBookAfterInitialInsert(@NonNull final Context context,
-                                             @NonNull final Book book)
-            throws StorageException {
-
-        assertEquals(EntityStage.Stage.Clean, book.getStage());
-
-        final String uuid = book.getString(DBKey.BOOK_UUID, null);
-        assertNotNull(uuid);
-        assertFalse(uuid.isEmpty());
-        assertEquals(TestConstants.BOOK_TITLE + "0", book.getTitle());
-
-        assertEquals(TestConstants.BOOK_ISFDB_123, book.getLong(DBKey.SID_ISFDB));
-
-        // not saved, hence null
-        assertNull(book.getString(DBKey.SID_LCCN, null));
-
-
-        final List<Bookshelf> bookshelves = book.getBookshelves();
-        assertEquals(1, bookshelves.size());
-        assertEquals(bookshelf[0], bookshelves.get(0));
-
-        final List<Author> authors = book.getAuthors();
-        assertEquals(1, authors.size());
-        assertEquals(author[0], authors.get(0));
-
-        final List<Publisher> publishers = book.getPublishers();
-        assertEquals(1, publishers.size());
-        assertEquals(publisher[0], publishers.get(0));
-
-        mustHavePersistedCover(book, 0);
-        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
-
-        final File tempDir = coverStorage.getTempDir();
-        final List<File> tempFiles = FileUtils.collectFiles(tempDir, jpgFilter, 10);
-        // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
-        assertEquals(1, tempFiles.size());
-        assertEquals(DbPrep.COVER[1], tempFiles.get(0).getName());
     }
 }

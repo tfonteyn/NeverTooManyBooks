@@ -31,9 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -67,12 +65,6 @@ import static org.junit.Assert.assertTrue;
 public class BookInsertTest
         extends BaseSetup {
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-    }
-
     /**
      * Create a set of books with authors... and insert the whole lot.
      */
@@ -90,126 +82,132 @@ public class BookInsertTest
 
         bookIdx = 0;
         initBook(bookIdx);
-        initBookBookshelves(bookIdx, 0);
-        initBookPublishers(bookIdx, 0);
-        initBookAuthors(bookIdx, 0, 1);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
-        book[bookIdx].setStage(EntityStage.Stage.Clean);
+        setBookBookshelves(bookIdx, 0);
+        setBookPublishers(bookIdx, 0);
+        settBookAuthors(bookIdx, 0, 1);
+        bookIdArray[bookIdx] = bookDao.insert(context, bookArray[bookIdx], Set.of());
+        bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 1;
         initBook(bookIdx);
-        initBookBookshelves(bookIdx, 0);
-        initBookPublishers(bookIdx, 1);
-        initBookAuthors(bookIdx, 1);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
-        book[bookIdx].setStage(EntityStage.Stage.Clean);
+        setBookBookshelves(bookIdx, 0);
+        setBookPublishers(bookIdx, 1);
+        settBookAuthors(bookIdx, 1);
+        bookIdArray[bookIdx] = bookDao.insert(context, bookArray[bookIdx], Set.of());
+        bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 2;
         initBook(bookIdx);
-        initBookBookshelves(bookIdx, 0);
-        initBookPublishers(bookIdx, 2);
-        initBookAuthors(bookIdx, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
-        book[bookIdx].setStage(EntityStage.Stage.Clean);
+        setBookBookshelves(bookIdx, 0);
+        setBookPublishers(bookIdx, 2);
+        settBookAuthors(bookIdx, 2);
+        bookIdArray[bookIdx] = bookDao.insert(context, bookArray[bookIdx], Set.of());
+        bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 3;
         initBook(bookIdx);
-        initBookBookshelves(bookIdx, 0);
-        initBookPublishers(bookIdx, 1, 3);
-        initBookAuthors(bookIdx, 0, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
-        book[bookIdx].setStage(EntityStage.Stage.Clean);
+        setBookBookshelves(bookIdx, 0);
+        setBookPublishers(bookIdx, 1, 3);
+        settBookAuthors(bookIdx, 0, 2);
+        bookIdArray[bookIdx] = bookDao.insert(context, bookArray[bookIdx], Set.of());
+        bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 4;
         initBook(bookIdx);
-        initBookBookshelves(bookIdx, 0);
-        initBookPublishers(bookIdx, 1, 2);
-        initBookAuthors(bookIdx, 1, 2);
-        initBookToc(bookIdx, 2, 1, 0, 3);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
-        book[bookIdx].setStage(EntityStage.Stage.Clean);
+        setBookBookshelves(bookIdx, 0);
+        setBookPublishers(bookIdx, 1, 2);
+        settBookAuthors(bookIdx, 1, 2);
+        setBookTocEntries(bookIdx, 2, 1, 0, 3);
+        bookIdArray[bookIdx] = bookDao.insert(context, bookArray[bookIdx], Set.of());
+        bookArray[bookIdx].setStage(EntityStage.Stage.Clean);
 
 
         // The objects should have been updated with their id
-        assertTrue(author[0].getId() > 0);
-        assertTrue(author[1].getId() > 0);
-        assertTrue(author[2].getId() > 0);
-        assertEquals(0, author[3].getId());
-        assertEquals(0, author[4].getId());
+        assertTrue(authorArray[0].getId() > 0);
+        assertTrue(authorArray[1].getId() > 0);
+        assertTrue(authorArray[2].getId() > 0);
+        assertEquals(0, authorArray[3].getId());
+        assertEquals(0, authorArray[4].getId());
 
-        assertTrue(publisher[0].getId() > 0);
-        assertTrue(publisher[1].getId() > 0);
-        assertTrue(publisher[2].getId() > 0);
-        assertTrue(publisher[3].getId() > 0);
-        assertEquals(0, publisher[4].getId());
+        assertTrue(publisherArray[0].getId() > 0);
+        assertTrue(publisherArray[1].getId() > 0);
+        assertTrue(publisherArray[2].getId() > 0);
+        assertTrue(publisherArray[3].getId() > 0);
+        assertEquals(0, publisherArray[4].getId());
 
-        assertEquals(book[0].getId(), bookId[0]);
-        assertEquals(book[1].getId(), bookId[1]);
-        assertEquals(book[2].getId(), bookId[2]);
-        assertEquals(book[3].getId(), bookId[3]);
-        assertEquals(book[4].getId(), bookId[4]);
+        assertEquals(bookArray[0].getId(), bookIdArray[0]);
+        assertEquals(bookArray[1].getId(), bookIdArray[1]);
+        assertEquals(bookArray[2].getId(), bookIdArray[2]);
+        assertEquals(bookArray[3].getId(), bookIdArray[3]);
+        assertEquals(bookArray[4].getId(), bookIdArray[4]);
 
-        assertTrue(tocEntry[0].getId() > 0);
-        assertTrue(tocEntry[1].getId() > 0);
-        assertTrue(tocEntry[2].getId() > 0);
-        assertTrue(tocEntry[3].getId() > 0);
-        assertEquals(0, tocEntry[4].getId());
+        assertTrue(tocEntryArray[0].getId() > 0);
+        assertTrue(tocEntryArray[1].getId() > 0);
+        assertTrue(tocEntryArray[2].getId() > 0);
+        assertTrue(tocEntryArray[3].getId() > 0);
+        assertEquals(0, tocEntryArray[4].getId());
 
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         // a0 is present in b0, b3
-        bookIdList = authorDao.getBookIds(author[0].getId());
+        bookIdList = authorDao.getBookIds(authorArray[0].getId());
         assertEquals(2, bookIdList.size());
-        assertEquals(bookId[0], (long) bookIdList.get(0));
-        assertEquals(bookId[3], (long) bookIdList.get(1));
+        assertEquals(bookIdArray[0], (long) bookIdList.get(0));
+        assertEquals(bookIdArray[3], (long) bookIdList.get(1));
 
         // a1 is present in b0, b1, b4
-        bookIdList = authorDao.getBookIds(author[1].getId());
+        bookIdList = authorDao.getBookIds(authorArray[1].getId());
         assertEquals(3, bookIdList.size());
-        assertEquals(bookId[0], (long) bookIdList.get(0));
-        assertEquals(bookId[1], (long) bookIdList.get(1));
-        assertEquals(bookId[4], (long) bookIdList.get(2));
+        assertEquals(bookIdArray[0], (long) bookIdList.get(0));
+        assertEquals(bookIdArray[1], (long) bookIdList.get(1));
+        assertEquals(bookIdArray[4], (long) bookIdList.get(2));
 
         // a2 is present in b2, b3, b4
-        bookIdList = authorDao.getBookIds(author[2].getId());
+        bookIdList = authorDao.getBookIds(authorArray[2].getId());
         assertEquals(3, bookIdList.size());
-        assertEquals(bookId[2], (long) bookIdList.get(0));
-        assertEquals(bookId[3], (long) bookIdList.get(1));
-        assertEquals(bookId[4], (long) bookIdList.get(2));
+        assertEquals(bookIdArray[2], (long) bookIdList.get(0));
+        assertEquals(bookIdArray[3], (long) bookIdList.get(1));
+        assertEquals(bookIdArray[4], (long) bookIdList.get(2));
 
         // p0 is present in b0
-        bookIdList = publisherDao.getBookIds(publisher[0].getId());
+        bookIdList = publisherDao.getBookIds(publisherArray[0].getId());
         assertEquals(1, bookIdList.size());
-        assertEquals(bookId[0], (long) bookIdList.get(0));
+        assertEquals(bookIdArray[0], (long) bookIdList.get(0));
 
         // p1 is present in b1, b3, b4
-        bookIdList = publisherDao.getBookIds(publisher[1].getId());
+        bookIdList = publisherDao.getBookIds(publisherArray[1].getId());
         assertEquals(3, bookIdList.size());
-        assertEquals(bookId[1], (long) bookIdList.get(0));
-        assertEquals(bookId[3], (long) bookIdList.get(1));
-        assertEquals(bookId[4], (long) bookIdList.get(2));
+        assertEquals(bookIdArray[1], (long) bookIdList.get(0));
+        assertEquals(bookIdArray[3], (long) bookIdList.get(1));
+        assertEquals(bookIdArray[4], (long) bookIdList.get(2));
 
         // p2 is present in b2, b4
-        bookIdList = publisherDao.getBookIds(publisher[2].getId());
+        bookIdList = publisherDao.getBookIds(publisherArray[2].getId());
         assertEquals(2, bookIdList.size());
-        assertEquals(bookId[2], (long) bookIdList.get(0));
-        assertEquals(bookId[4], (long) bookIdList.get(1));
+        assertEquals(bookIdArray[2], (long) bookIdList.get(0));
+        assertEquals(bookIdArray[4], (long) bookIdList.get(1));
 
 
-        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false, null);
+        works = authorDao.getAuthorWorks(authorArray[1], bookshelfArray[0].getId(),
+                                         true, false, null);
         assertEquals(2, works.size());
-        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, false, null);
+        works = authorDao.getAuthorWorks(authorArray[2], bookshelfArray[0].getId(),
+                                         true, false, null);
         assertEquals(2, works.size());
 
-        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, true, null);
+        works = authorDao.getAuthorWorks(authorArray[1], bookshelfArray[0].getId(),
+                                         true, true, null);
         assertEquals(5, works.size());
-        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, true, null);
+        works = authorDao.getAuthorWorks(authorArray[2], bookshelfArray[0].getId(),
+                                         true, true, null);
         assertEquals(5, works.size());
 
-        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), false, true, null);
+        works = authorDao.getAuthorWorks(authorArray[1], bookshelfArray[0].getId(),
+                                         false, true, null);
         assertEquals(3, works.size());
-        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), false, true, null);
+        works = authorDao.getAuthorWorks(authorArray[2], bookshelfArray[0].getId(),
+                                         false, true, null);
         assertEquals(3, works.size());
     }
 }
