@@ -333,11 +333,13 @@ public class AuthorDaoImpl
     @Override
     public boolean setComplete(@NonNull final Author author,
                                final boolean complete) {
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.AUTHOR_IS_COMPLETE, complete);
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.SET_COMPLETE)) {
+            stmt.bindBoolean(1, complete);
 
-        final int rowsAffected = db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
-                                           new String[]{String.valueOf(author.getId())});
+            stmt.bindLong(2, author.getId());
+            rowsAffected = stmt.executeUpdateDelete();
+        }
 
         if (rowsAffected > 0) {
             author.setComplete(complete);
@@ -770,6 +772,11 @@ public class AuthorDaoImpl
                 + _SET_ + DBKey.AUTHOR_FAMILY_NAME + "=?," + DBKey.AUTHOR_FAMILY_NAME_OB + "=?"
                 + ',' + DBKey.AUTHOR_GIVEN_NAMES + "=?," + DBKey.AUTHOR_GIVEN_NAMES_OB + "=?"
                 + ',' + DBKey.AUTHOR_IS_COMPLETE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        static final String SET_COMPLETE =
+                UPDATE + TBL_AUTHORS.getName()
+                + _SET_ + DBKey.AUTHOR_IS_COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete an {@link Author}. */
