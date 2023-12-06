@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -99,20 +98,20 @@ public class CalibreCustomFieldDaoImpl
     public long insert(@NonNull final CalibreCustomField calibreCustomField)
             throws DaoInsertException {
 
-        //noinspection CheckStyle
+        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             stmt.bindString(2, calibreCustomField.getType());
             stmt.bindString(3, calibreCustomField.getDbKey());
-            final long iId = stmt.executeInsert();
-            if (iId != -1) {
-                calibreCustomField.setId(iId);
-                return iId;
-            }
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField, e);
+            iId = stmt.executeInsert();
         }
-        // The id was -1
+
+        if (iId != -1) {
+            calibreCustomField.setId(iId);
+            return iId;
+        }
+
+        // The insert failed with -1
         throw new DaoInsertException(ERROR_INSERT_FROM + calibreCustomField);
     }
 
@@ -125,20 +124,15 @@ public class CalibreCustomFieldDaoImpl
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, calibreCustomField.getType());
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.getDbKey());
 
-        try {
-            final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(
-                                                       calibreCustomField.getId())});
-            if (rowsAffected > 0) {
-                return;
-            }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField);
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField, e);
+        final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
+                                           DBKey.PK_ID + "=?",
+                                           new String[]{String.valueOf(
+                                                   calibreCustomField.getId())});
+        if (rowsAffected > 0) {
+            return;
         }
+
+        throw new DaoUpdateException(ERROR_UPDATE_FROM + calibreCustomField);
     }
 
     @Override
@@ -147,8 +141,6 @@ public class CalibreCustomFieldDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, calibreCustomField.getId());
             rowsAffected = stmt.executeUpdateDelete();
-        } catch (@NonNull final RuntimeException e) {
-            return false;
         }
         if (rowsAffected > 0) {
             calibreCustomField.setId(0);
