@@ -48,8 +48,11 @@ public interface EntityOwningBooksDao<T extends Entity> {
      * @param context Current context
      *
      * @return the number of books processed
+     *
+     * @throws DaoWriteException on failure
      */
-    int fixPositions(@NonNull Context context);
+    int fixPositions(@NonNull Context context)
+            throws DaoWriteException;
 
     /**
      * Count the books for the given {@link T}.

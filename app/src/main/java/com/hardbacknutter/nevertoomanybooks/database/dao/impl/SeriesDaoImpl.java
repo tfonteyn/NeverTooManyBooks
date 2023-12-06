@@ -491,7 +491,8 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public int fixPositions(@NonNull final Context context) {
+    public int fixPositions(@NonNull final Context context)
+            throws DaoWriteException {
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -504,17 +505,13 @@ public class SeriesDaoImpl
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
                     final List<Series> list = getByBookId(bookId);
-                    // We KNOW there are no updates needed.
                     final Locale bookLocale = book.getLocaleOrUserLocale(context);
+                    // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false, list, series -> bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } catch (@NonNull final RuntimeException ignore) {
-                // ignore
-            } catch (@NonNull final DaoWriteException e) {
-                LoggerFactory.getLogger().e(TAG, e);
             } finally {
                 if (txLock != null) {
                     db.endTransaction(txLock);

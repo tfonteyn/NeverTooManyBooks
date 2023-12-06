@@ -48,8 +48,11 @@ public interface TocEntryDao
      * @param context Current context
      *
      * @return the number of books processed
+     *
+     * @throws DaoWriteException on failure
      */
-    int fixPositions(@NonNull Context context);
+    int fixPositions(@NonNull Context context)
+            throws DaoWriteException;
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}

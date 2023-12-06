@@ -419,7 +419,8 @@ public class TocEntryDaoImpl
     }
 
     @Override
-    public int fixPositions(@NonNull final Context context) {
+    public int fixPositions(@NonNull final Context context)
+            throws DaoWriteException {
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -439,10 +440,6 @@ public class TocEntryDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } catch (@NonNull final RuntimeException ignore) {
-                // ignore
-            } catch (@NonNull final DaoWriteException e) {
-                LoggerFactory.getLogger().e(TAG, e);
             } finally {
                 if (txLock != null) {
                     db.endTransaction(txLock);

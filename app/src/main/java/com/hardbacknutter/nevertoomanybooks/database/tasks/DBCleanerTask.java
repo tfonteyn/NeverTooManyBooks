@@ -28,6 +28,7 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -61,7 +62,8 @@ public class DBCleanerTask
     @WorkerThread
     @Override
     @NonNull
-    protected Boolean doWork() {
+    protected Boolean doWork()
+            throws DaoWriteException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));

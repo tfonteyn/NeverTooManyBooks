@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -79,9 +80,12 @@ public class DBCleaner {
      * Start the cleaning.
      *
      * @param context Current context
+     *
+     * @throws DaoWriteException on failure
      */
     @WorkerThread
-    public void clean(@NonNull final Context context) {
+    public void clean(@NonNull final Context context)
+            throws DaoWriteException {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
