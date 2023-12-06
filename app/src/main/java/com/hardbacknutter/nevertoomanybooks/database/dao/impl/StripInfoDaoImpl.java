@@ -52,6 +52,7 @@ public class StripInfoDaoImpl
     @Override
     public void updateOrInsert(@NonNull final Book book)
             throws DaoInsertException {
+
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
@@ -73,7 +74,6 @@ public class StripInfoDaoImpl
             }
         }
 
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             int i = 0;
             stmt.bindLong(++i, book.getId());
@@ -88,23 +88,17 @@ public class StripInfoDaoImpl
             if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException(ERROR_INSERT_FROM + book);
             }
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + book, e);
         }
     }
 
     @Override
     public boolean delete(@NonNull final Book book) {
-        try {
-            final int rowsAffected;
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
-                stmt.bindLong(1, book.getId());
-                rowsAffected = stmt.executeUpdateDelete();
-            }
-            return rowsAffected > 0;
-        } catch (@NonNull final RuntimeException e) {
-            return false;
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
+            stmt.bindLong(1, book.getId());
+            rowsAffected = stmt.executeUpdateDelete();
         }
+        return rowsAffected > 0;
     }
 
     private static final class Sql {
