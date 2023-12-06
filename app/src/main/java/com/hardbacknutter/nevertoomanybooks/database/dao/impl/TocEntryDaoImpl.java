@@ -136,8 +136,7 @@ public class TocEntryDaoImpl
                       @NonNull final TocEntry tocEntry,
                       @NonNull final Locale locale) {
 
-        final Author primaryAuthor = tocEntry.getPrimaryAuthor();
-        authorDaoSupplier.get().fixId(context, primaryAuthor, locale);
+        authorDaoSupplier.get().fixId(context, tocEntry.getPrimaryAuthor(), locale);
 
         final long found = findByName(context, tocEntry, locale)
                 .map(TocEntry::getId).orElse(0L);
@@ -148,6 +147,7 @@ public class TocEntryDaoImpl
     public void refresh(@NonNull final Context context,
                         @NonNull final TocEntry tocEntry,
                         @NonNull final Locale locale) {
+
         // If needed, check if we already have it in the database.
         if (tocEntry.getId() == 0) {
             fixId(context, tocEntry, locale);
@@ -408,9 +408,8 @@ public class TocEntryDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final RuntimeException e) {
+        } catch (@NonNull final DaoWriteException e) {
             return false;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
