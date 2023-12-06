@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -211,6 +212,35 @@ public class BookTest
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());
         assertEquals(this.publisherArray[0], publishers.get(0));
+    }
+
+    @Test
+    public void Lending()
+            throws DaoWriteException, IOException, StorageException {
+
+        final int bookIdx = 0;
+
+        final BookDao bookDao = serviceLocator.getBookDao();
+        final LoaneeDao loaneeDao = serviceLocator.getLoaneeDao();
+
+        final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
+
+        loaneeDao.setLoanee(bookId, "TheAdversary");
+
+        final Book book = Book.from(bookId);
+        assertEquals("TheAdversary", book.getString(DBKey.LOANEE_NAME));
+
+        book.putString(DBKey.LOANEE_NAME, "TheAdversary2");
+        loaneeDao.setLoanee(book);
+
+        assertEquals("TheAdversary2", loaneeDao.findLoaneeByBookId(bookId));
+
+        final List<String> people = loaneeDao.getList();
+        assertEquals(1, people.size());
+        assertEquals("TheAdversary2", people.get(0));
+
+        loaneeDao.delete(book);
+        assertFalse(book.contains(DBKey.LOANEE_NAME));
     }
 
     @Test
