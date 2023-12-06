@@ -125,20 +125,14 @@ public class CoverCacheDaoImpl
 
     @Override
     public boolean delete(@NonNull final String uuid) {
-        //noinspection CheckStyle
-        try {
-            // Remove files where the name starts with the uuid,
-            // which will remove all sizes and indexes
-            final int rowsAffected;
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_IMAGE_ID)) {
-                stmt.bindString(1, uuid + '%');
-                rowsAffected = stmt.executeUpdateDelete();
-            }
-            return rowsAffected > 0;
-
-        } catch (@NonNull final RuntimeException e) {
-            return false;
+        // Remove files where the name starts with the uuid,
+        // which will remove all sizes and indexes
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_IMAGE_ID)) {
+            stmt.bindString(1, uuid + '%');
+            rowsAffected = stmt.executeUpdateDelete();
         }
+        return rowsAffected > 0;
     }
 
     @Override
