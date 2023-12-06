@@ -288,12 +288,15 @@ public class BookshelfDaoImpl
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
+
+            // Delete all existing ones.
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.DELETE_FILTERS_BY_BOOKSHELF_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
                 stmt.executeUpdateDelete();
             }
 
+            // is there anything to insert ?
             if (list.isEmpty()) {
                 return;
             }
@@ -347,6 +350,7 @@ public class BookshelfDaoImpl
     public void refresh(@NonNull final Context context,
                         @NonNull final Bookshelf bookshelf,
                         @NonNull final Locale locale) {
+
         // If needed, check if we already have it in the database.
         if (bookshelf.getId() == 0) {
             fixId(context, bookshelf, locale);
