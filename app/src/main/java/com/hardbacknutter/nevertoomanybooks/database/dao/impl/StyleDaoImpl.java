@@ -239,17 +239,17 @@ public class StyleDaoImpl
                        @NonNull final Style style)
             throws DaoInsertException {
 
-        //noinspection CheckStyle
+        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_STYLE)) {
-            final long iId = doInsert(style, style.getLabel(context), stmt);
-            if (iId != -1) {
-                style.setId(iId);
-                return iId;
-            }
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + style, e);
+            iId = doInsert(style, style.getLabel(context), stmt);
         }
-        // The id was -1
+
+        if (iId != -1) {
+            style.setId(iId);
+            return iId;
+        }
+
+        // The insert failed with -1
         throw new DaoInsertException(ERROR_INSERT_FROM + style);
     }
 
@@ -294,19 +294,14 @@ public class StyleDaoImpl
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
         }
 
-        try {
-            final int rowsAffected = db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(style.getId())});
-            if (rowsAffected > 0) {
-                return;
-            }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + style);
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
+        final int rowsAffected = db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
+                                           DBKey.PK_ID + "=?",
+                                           new String[]{String.valueOf(style.getId())});
+        if (rowsAffected > 0) {
+            return;
         }
+
+        throw new DaoUpdateException(ERROR_UPDATE_FROM + style);
     }
 
     @Override
@@ -333,9 +328,8 @@ public class StyleDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final DaoUpdateException | RuntimeException e) {
+        } catch (@NonNull final DaoUpdateException e) {
             return false;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -346,12 +340,9 @@ public class StyleDaoImpl
     @Override
     public void purgeNodeStates(@NonNull final Style style)
             throws DaoUpdateException {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_NODE_STATE_BY_STYLE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_NODE_STATE_BY_STYLE_ID)) {
             stmt.bindLong(1, style.getId());
             stmt.executeUpdateDelete();
-
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + style, e);
         }
     }
 
@@ -391,7 +382,7 @@ public class StyleDaoImpl
                 SELECT_ + DBKey.PK_ID + _FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
                 + _WHERE_ + DBKey.STYLE_UUID + "=?";
 
-        static final String DELETE_NODE_STATE_BY_STYLE =
+        static final String DELETE_NODE_STATE_BY_STYLE_ID =
                 DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE.getName()
                 + _WHERE_ + DBKey.FK_STYLE + "=?";
 
