@@ -89,7 +89,7 @@ public class CalibreCustomFieldDaoImpl
 
     @Override
     public void fixId(@NonNull final CalibreCustomField calibreCustomField) {
-        final long id = find(calibreCustomField);
+        final long id = findByName(calibreCustomField);
         calibreCustomField.setId(id);
     }
 
@@ -165,7 +165,7 @@ public class CalibreCustomFieldDaoImpl
         return list;
     }
 
-    private long find(@NonNull final CalibreCustomField calibreCustomField) {
+    private long findByName(@NonNull final CalibreCustomField calibreCustomField) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_BY_NAME)) {
             stmt.bindString(1, calibreCustomField.getCalibreKey());
             return stmt.simpleQueryForLongOrZero();
