@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -475,7 +474,6 @@ public class AuthorDaoImpl
             throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -503,15 +501,12 @@ public class AuthorDaoImpl
         } catch (@NonNull final DaoWriteException e) {
             author.setId(0);
             throw e;
-        } catch (@NonNull final RuntimeException e) {
-            author.setId(0);
-            throw new DaoInsertException(ERROR_INSERT_FROM + author, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        // The id was -1
+        // The insert failed with -1
         author.setId(0);
         throw new DaoInsertException(ERROR_INSERT_FROM + author);
     }
@@ -550,8 +545,6 @@ public class AuthorDaoImpl
             }
 
             throw new DaoUpdateException(ERROR_UPDATE_FROM + author);
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + author, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -634,7 +627,7 @@ public class AuthorDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final RuntimeException e) {
+        } catch (@NonNull final DaoWriteException e) {
             return false;
         } finally {
             if (txLock != null) {
