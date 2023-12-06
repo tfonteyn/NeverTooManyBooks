@@ -250,17 +250,27 @@ public class ExtSQLiteStatement
     /**
      * Execute this SQL statement, if the number of rows affected by execution of this SQL
      * statement is of any importance to the caller - for example, UPDATE / DELETE SQL statements.
+     * <p>
+     * <strong>IMPORTANT: 2023-12-05: ALL SQLException AND RuntimeException's
+     * are swallowed (but written to the logfile) and a {@code -1} is returned.
+     * This means that callers no longer need to take any RuntimeException into account.
+     * Just check for {@code -1} which finally simplifies their logic!</strong>
      *
-     * @return the number of rows affected by this SQL statement execution.
+     * @return the number of rows affected by this SQL statement execution,
+     *         or {@code -1} if an error occurred
      */
     public int executeUpdateDelete() {
-        final int rowsAffected;
+        int rowsAffected;
         //noinspection CheckStyle
         try {
+            // Reminder, the native code of SqLite:
+            //     return err == SQLITE_DONE ? sqlite3_changes(connection->db) : -1;
+            // the Java docs do NOT MENTION THE RETURN OF -1 !
+            // In addition, the SqLite/Android Java code can still throw RuntimeExceptions.
             rowsAffected = statement.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e, statement);
-            throw e;
+            rowsAffected = -1;
         }
 
         if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
@@ -274,20 +284,27 @@ public class ExtSQLiteStatement
     /**
      * Execute this SQL statement and return the id of the row inserted due to this call.
      * The SQL statement should be an INSERT for this to be a useful call.
+     * <p>
+     * <strong>IMPORTANT: 2023-12-05: ALL SQLException AND RuntimeException's
+     * are swallowed (but written to the logfile) and a {@code -1} is returned.
+     * This means that callers no longer need to take any RuntimeException into account.
+     * Just check for {@code -1} which finally simplifies their logic!</strong>
      *
-     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     * @return the row id of the newly inserted row,
+     *         or {@code -1} if an error occurred
      */
     public long executeInsert() {
-        final long id;
+        long id;
         //noinspection CheckStyle
         try {
             // Reminder, the native code of SqLite:
             //     return err == SQLITE_DONE && sqlite3_changes(connection->db) > 0
             //            ? sqlite3_last_insert_rowid(connection->db) : -1;
+            // In addition, the SqLite/Android Java code can still throw RuntimeExceptions.
             id = statement.executeInsert();
         } catch (@NonNull final RuntimeException e) {
             LoggerFactory.getLogger().e(TAG, e, statement);
-            throw e;
+            id = -1;
         }
 
         if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
