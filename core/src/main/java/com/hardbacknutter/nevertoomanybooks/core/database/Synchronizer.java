@@ -36,11 +36,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * Because SQLite throws exception on locking conflicts, this class can be used to serialize
  * WRITE access while allowing concurrent read access.
  * <p>
- * Each logical database should have its own {@link Synchronizer}
- * Before any read, or group of reads, a call to getSharedLock() should be made.
- * A call to getExclusiveLock() should be made before any update.
- * Multiple calls can be made as necessary so long as an unlock() is called for all get*()
- * calls by using the SyncLock object returned from the get*() call.
+ * Each logical database should have its own {@link Synchronizer}.
+ * Before any read, or group of reads, a call to {@link #getSharedLock()} should be made.
+ * A call to {@link #getExclusiveLock()} should be made before any update.
+ * <p>
+ * Multiple calls can be made as necessary so long as an {@link SyncLock#unlock()}
+ * is called for all get*() calls by using the {@link SyncLock} object returned from
+ * the get*() call.
  * <p>
  * These can be called in any order and locks in the current thread never block requests.
  * <p>
@@ -68,6 +70,8 @@ public class Synchronizer {
     /**
      * Routine to purge shared locks held by dead threads.
      * Can only be called while {@link #mainLock} is held.
+     *
+     * @throws LockException on any failure
      */
     private void purgeOldLocks() {
         if (!mainLock.isHeldByCurrentThread()) {
@@ -107,6 +111,8 @@ public class Synchronizer {
 
     /**
      * Release a {@link SharedLock}. If no more locks in thread, remove from list.
+     *
+     * @throws LockException on any failure
      */
     private void releaseSharedLock() {
         final Thread thread = Thread.currentThread();
@@ -142,6 +148,8 @@ public class Synchronizer {
      * </ol>
      *
      * @return lock
+     *
+     * @throws LockException on any failure
      */
     @NonNull
     SyncLock getExclusiveLock() {
@@ -151,6 +159,7 @@ public class Synchronizer {
         while (true) {
             // Cleanup any old threads that are dead.
             purgeOldLocks();
+            //noinspection CheckStyle
             try {
                 // Simple case -- no locks held, just return and keep the lock
                 if (sharedLockOwners.isEmpty()) {
@@ -175,6 +184,8 @@ public class Synchronizer {
 
     /**
      * Release the {@link ExclusiveLock} previously taken.
+     *
+     * @throws LockException on any failure
      */
     private void releaseExclusiveLock() {
         if (!mainLock.isHeldByCurrentThread()) {
@@ -184,7 +195,8 @@ public class Synchronizer {
     }
 
     enum LockType {
-        Shared, Exclusive
+        Shared,
+        Exclusive
     }
 
     /**
