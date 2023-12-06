@@ -556,6 +556,8 @@ public class AuthorDaoImpl
 
     /**
      * Handle the real-author storage.
+     * <p>
+     * <strong>Transaction:</strong> required
      *
      * @param context Current context
      * @param author  the 'original' author
@@ -566,7 +568,14 @@ public class AuthorDaoImpl
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Author author,
                                           @NonNull final Locale locale)
-    throws DaoWriteException {
+            throws DaoWriteException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
         // always delete any previous link
         deletePseudonymLink(author.getId());
 
