@@ -71,9 +71,6 @@ abstract class BaseDaoImpl {
     static final String _ELSE_ = " ELSE ";
     static final String _END = " END";
 
-    /** Log tag. */
-    private static final String TAG = "BaseDaoImpl";
-
     /** Reference to the <strong>singleton</strong> which makes it safe to store/share here. */
     @NonNull
     final SynchronizedDb db;
