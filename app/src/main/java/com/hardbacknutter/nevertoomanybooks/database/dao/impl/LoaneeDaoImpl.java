@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
-
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,65 +49,81 @@ public class LoaneeDaoImpl
     }
 
     @Override
-    public boolean setLoanee(@IntRange(from = 1) final long bookId,
-                             @Nullable final String loanee) {
-        return setLoaneeInternal(bookId, loanee);
+    public boolean setLoanee(@NonNull final Book book) {
+        final String loanee = book.getString(DBKey.LOANEE_NAME);
+        if (loanee.isEmpty()) {
+            return delete(book);
+        } else {
+            return insertOrUpdate(book.getId(), loanee);
+        }
     }
 
     @Override
-    public boolean setLoanee(@NonNull final Book book,
+    public boolean setLoanee(@IntRange(from = 1) final long bookId,
                              @Nullable final String loanee) {
-        return setLoaneeInternal(book.getId(), loanee);
+        if (loanee == null || loanee.isEmpty()) {
+            return delete(bookId);
+        } else {
+            return insertOrUpdate(bookId, loanee);
+        }
     }
 
-    /**
-     * Lend out a book / return a book.
-     * The book's {@link DBKey#DATE_LAST_UPDATED__UTC} <strong>will NOT</strong> be updated.
-     *
-     * @param bookId book to lend
-     * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
-     *
-     * @return {@code true} for success.
-     */
-    private boolean setLoaneeInternal(@IntRange(from = 1) final long bookId,
-                                      @Nullable final String loanee) {
-        //noinspection CheckStyle
-        try {
-            if (loanee == null || loanee.isEmpty()) {
-                try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
-                    stmt.bindLong(1, bookId);
-                    return stmt.executeUpdateDelete() == 1;
-                }
-            } else {
 
-                final String current = getLoaneeByBookId(bookId);
-                if (current == null || current.isEmpty()) {
-                    try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-                        stmt.bindLong(1, bookId);
-                        stmt.bindString(2, loanee);
-                        return stmt.executeInsert() > 0;
-                    }
+    private boolean insertOrUpdate(@IntRange(from = 1) final long bookId,
+                                   @NonNull final String loanee) {
+        final String current = findLoaneeByBookId(bookId);
+        if (current == null || current.isEmpty()) {
+            return insert(bookId, loanee);
 
-                } else if (!loanee.equals(current)) {
-                    // This is currently not reachable from the user-menu's
-                    // but leaving this in place for the future.
-                    final ContentValues cv = new ContentValues();
-                    cv.put(DBKey.LOANEE_NAME, loanee);
-                    return 0 < db.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
-                                         DBKey.FK_BOOK + "=?",
-                                         new String[]{String.valueOf(bookId)});
-                }
-            }
-        } catch (@NonNull final RuntimeException ignore) {
-            // ignore, just return failure
+        } else if (!loanee.equals(current)) {
+            // This is currently not reachable from the user-menu's
+            // but leaving this in place for the future.
+            return update(bookId, loanee);
+        }
+        return false;
+    }
+
+    private boolean insert(@IntRange(from = 1) final long bookId,
+                           @NonNull final String loanee) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
+            stmt.bindLong(1, bookId);
+            stmt.bindString(2, loanee);
+            return stmt.executeInsert() > 0;
+        }
+    }
+
+    private boolean update(@IntRange(from = 1) final long bookId,
+                           @NonNull final String loanee) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+            stmt.bindString(1, loanee);
+
+            stmt.bindLong(2, bookId);
+            return stmt.executeUpdateDelete() > 0;
+        }
+    }
+
+    @Override
+    public boolean delete(@NonNull final Book book) {
+        if (delete(book.getId())) {
+            book.remove(DBKey.LOANEE_NAME);
+            return true;
         }
         return false;
     }
 
     @Override
-    @Nullable
-    public String getLoaneeByBookId(@IntRange(from = 1) final long bookId) {
+    public boolean delete(@IntRange(from = 1) final long bookId) {
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+        return rowsAffected > 0;
+    }
 
+    @Override
+    @Nullable
+    public String findLoaneeByBookId(@IntRange(from = 1) final long bookId) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
@@ -130,6 +144,11 @@ public class LoaneeDaoImpl
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.LOANEE_NAME
                 + ") VALUES(?,?)";
+
+        static final String UPDATE =
+                UPDATE_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
+                + _SET_ + DBKey.LOANEE_NAME + "=?"
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         /** Delete the loan of a {@link Book}; i.e. 'return the book'. */
         static final String DELETE_BY_BOOK_ID =

@@ -1035,7 +1035,7 @@ public class Book
 
         } else {
             // but if not, go explicitly fetch it.
-            loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(getId());
+            loanee = ServiceLocator.getInstance().getLoaneeDao().findLoaneeByBookId(getId());
             if (loanee != null) {
                 // store for reuse - note we store "" as well, to prevent calling the db repeatedly
                 putString(DBKey.LOANEE_NAME, loanee);

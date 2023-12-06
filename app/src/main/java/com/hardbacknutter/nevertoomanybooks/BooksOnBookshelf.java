@@ -1374,7 +1374,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            vm.setBookLoanee(bookId, null);
+            vm.deleteLoan(bookId);
             return true;
 
         } else if (menuItemId == R.id.MENU_SHARE) {

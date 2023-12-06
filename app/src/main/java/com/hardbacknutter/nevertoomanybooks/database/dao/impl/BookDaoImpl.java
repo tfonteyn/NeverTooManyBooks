@@ -542,7 +542,7 @@ public class BookDaoImpl
         }
 
         if (book.contains(DBKey.LOANEE_NAME)) {
-            loaneeDaoDaoSupplier.get().setLoanee(book, book.getString(DBKey.LOANEE_NAME));
+            loaneeDaoDaoSupplier.get().setLoanee(book);
         }
 
         if (book.contains(DBKey.CALIBRE_BOOK_UUID)) {

@@ -684,7 +684,7 @@ public class BooksOnBookshelfViewModel
         if (rowData.contains(DBKey.LOANEE_NAME)) {
             loanee = rowData.getString(DBKey.LOANEE_NAME);
         } else {
-            loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(
+            loanee = ServiceLocator.getInstance().getLoaneeDao().findLoaneeByBookId(
                     rowData.getLong(DBKey.FK_BOOK));
         }
         return loanee == null || loanee.isEmpty();
@@ -972,27 +972,25 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Update the 'loanee' for the given book.
+     * Delete the 'loanee' for the given book.
      *
-     * @param id     Book to update
-     * @param loanee new loanee or {@code null} for a returned book
+     * @param bookId Book to return
      */
-    void setBookLoanee(@IntRange(from = 1) final long id,
-                       @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
-        if (ServiceLocator.getInstance().getLoaneeDao().setLoanee(id, loanee)) {
-            onBookLoaneeChanged(id, loanee);
+    void deleteLoan(@IntRange(from = 1) final long bookId) {
+        if (ServiceLocator.getInstance().getLoaneeDao().delete(bookId)) {
+            onBookLoaneeChanged(bookId, null);
         }
     }
 
     /**
      * Should be called when a loanee of a book was changed.
      *
-     * @param id     Book to update
+     * @param bookId Book to update
      * @param loanee new loanee or {@code null} for a returned book
      *
      * @return {@code true} if a full rebuild of the list was triggered
      */
-    boolean onBookLoaneeChanged(@IntRange(from = 1) final long id,
+    boolean onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
                                 @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
         if (getStyle().hasGroup(BooklistGroup.LENDING)) {
             // The book might move to another group - no choice, we must rebuild
@@ -1002,7 +1000,7 @@ public class BooksOnBookshelfViewModel
             // The change will not affect the group the book is in,
             // update the <strong>book-list</strong> 'loanee' of the given book.
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            final int[] positions = booklist.updateBookLoanee(id, loanee)
+            final int[] positions = booklist.updateBookLoanee(bookId, loanee)
                                             .stream()
                                             .mapToInt(BooklistNode::getAdapterPosition)
                                             .toArray();

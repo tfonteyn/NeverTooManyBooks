@@ -134,7 +134,7 @@ public class EditLenderDialogFragment
         bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
 
         if (savedInstanceState == null) {
-            loanee = loaneeDao.getLoaneeByBookId(bookId);
+            loanee = loaneeDao.findLoaneeByBookId(bookId);
             currentEdit = loanee;
         } else {
             loanee = savedInstanceState.getString(DBKey.LOANEE_NAME);
@@ -216,16 +216,7 @@ public class EditLenderDialogFragment
             return true;
         }
 
-        final boolean success;
-        if (currentEdit.isEmpty()) {
-            // return the book
-            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, null);
-        } else {
-            // lend book, reluctantly...
-            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, currentEdit);
-        }
-
-        if (success) {
+        if (ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, currentEdit)) {
             Launcher.setResult(this, requestKey, bookId, currentEdit);
             return true;
         }

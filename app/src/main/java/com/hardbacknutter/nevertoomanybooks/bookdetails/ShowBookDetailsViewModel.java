@@ -199,9 +199,7 @@ public class ShowBookDetailsViewModel
     @SuppressWarnings("UnusedReturnValue")
     boolean deleteLoan() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-
-        book.remove(DBKey.LOANEE_NAME);
-        return ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, null);
+        return ServiceLocator.getInstance().getLoaneeDao().delete(book);
     }
 
     /**

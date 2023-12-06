@@ -30,10 +30,19 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public interface LoaneeDao {
 
     /**
+     * Lend out or return a book.
+     *
+     * @param book to process
+     *
+     * @return {@code true} for success.
+     */
+    boolean setLoanee(@NonNull Book book);
+
+    /**
      * Lend out a book / return a book.
      * <p>
      * This method should only be called from places where only the book id is available.
-     * If the full Book is available, use {@link #setLoanee(Book, String)} instead.
+     * If the full Book is available, use {@link #setLoanee(Book)} instead.
      *
      * @param bookId book to lend
      * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
@@ -44,15 +53,25 @@ public interface LoaneeDao {
                       @Nullable String loanee);
 
     /**
-     * Lend out a book / return a book.
+     * Delete a loan.
      *
-     * @param book   to lend
-     * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
+     * @param book to process
      *
      * @return {@code true} for success.
      */
-    boolean setLoanee(@NonNull Book book,
-                      @Nullable String loanee);
+    boolean delete(@NonNull Book book);
+
+    /**
+     * Delete a loan.
+     * <p>
+     * This method should only be called from places where only the book id is available.
+     * If the full Book is available, use {@link #delete(Book)} instead.
+     *
+     * @param bookId to process
+     *
+     * @return {@code true} for success.
+     */
+    boolean delete(@IntRange(from = 1) long bookId);
 
     /**
      * Get the name of the loanee for a given book, if any.
@@ -62,7 +81,7 @@ public interface LoaneeDao {
      * @return Who the book is lend to, or {@code null} when not lend out
      */
     @Nullable
-    String getLoaneeByBookId(@IntRange(from = 1) long bookId);
+    String findLoaneeByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Returns a unique list of all loanee in the database.
@@ -71,5 +90,4 @@ public interface LoaneeDao {
      */
     @NonNull
     List<String> getList();
-
 }
