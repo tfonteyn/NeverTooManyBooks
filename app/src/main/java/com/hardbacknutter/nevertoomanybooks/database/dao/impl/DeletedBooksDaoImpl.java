@@ -94,7 +94,6 @@ public class DeletedBooksDaoImpl
         int count = 0;
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -117,8 +116,6 @@ public class DeletedBooksDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final RuntimeException ignore) {
-            // Just quit importing
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
