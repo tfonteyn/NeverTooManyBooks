@@ -37,7 +37,6 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -281,7 +280,7 @@ public class SeriesDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Series> list,
                                @NonNull final Function<Series, Locale> localeSupplier)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -350,20 +349,20 @@ public class SeriesDaoImpl
         final String title = series.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
-        //noinspection CheckStyle
+        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, title);
             stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
-            final long iId = stmt.executeInsert();
-            if (iId != -1) {
-                series.setId(iId);
-                return iId;
-            }
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + series, e);
+            iId = stmt.executeInsert();
         }
-        // The id was -1
+
+        if (iId != -1) {
+            series.setId(iId);
+            return iId;
+        }
+
+        // The insert failed with -1
         throw new DaoInsertException(ERROR_INSERT_FROM + series);
     }
 
@@ -380,21 +379,21 @@ public class SeriesDaoImpl
         final String text = series.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
 
+        final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
             stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
+
             stmt.bindLong(4, series.getId());
-
-            final int rowsAffected = stmt.executeUpdateDelete();
-            if (rowsAffected > 0) {
-                return;
-            }
-
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + series, e);
+            rowsAffected = stmt.executeUpdateDelete();
         }
+
+        if (rowsAffected > 0) {
+            return;
+        }
+
+        throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
     }
 
     @Override
@@ -421,9 +420,8 @@ public class SeriesDaoImpl
                 return true;
             }
             return false;
-        } catch (@NonNull final RuntimeException e) {
+        } catch (@NonNull final DaoWriteException e) {
             return false;
-
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -448,8 +446,8 @@ public class SeriesDaoImpl
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
 
-                final Collection<Series> fromBook = book.getSeries();
-                final Collection<Series> destList = new ArrayList<>();
+                final List<Series> fromBook = book.getSeries();
+                final List<Series> destList = new ArrayList<>();
 
                 for (final Series item : fromBook) {
                     if (source.getId() == item.getId()) {
