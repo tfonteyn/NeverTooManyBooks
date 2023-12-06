@@ -32,7 +32,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -166,7 +165,6 @@ public class CalibreLibraryDaoImpl
             throws DaoInsertException {
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -196,15 +194,12 @@ public class CalibreLibraryDaoImpl
         } catch (@NonNull final DaoInsertException e) {
             library.setId(0);
             throw e;
-        } catch (@NonNull final RuntimeException e) {
-            library.setId(0);
-            throw new DaoInsertException(ERROR_INSERT_FROM + library, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        // The id was -1
+        // The insert failed with -1
         library.setId(0);
         throw new DaoInsertException(ERROR_INSERT_FROM + library);
     }
@@ -241,10 +236,8 @@ public class CalibreLibraryDaoImpl
                 }
                 return;
             }
+
             throw new DaoUpdateException(ERROR_UPDATE_FROM + library);
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + library, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -258,8 +251,6 @@ public class CalibreLibraryDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
             rowsAffected = stmt.executeUpdateDelete();
-        } catch (@NonNull final RuntimeException e) {
-            return false;
         }
         if (rowsAffected > 0) {
             library.setId(0);
@@ -316,18 +307,14 @@ public class CalibreLibraryDaoImpl
         cv.put(DBKey.CALIBRE_VIRT_LIB_EXPR, library.getExpr());
         cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
 
-        try {
-            final int rowsAffected = db.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(library.getId())});
-            if (rowsAffected > 0) {
-                return;
-            }
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + library);
-        } catch (@NonNull final RuntimeException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + library, e);
+        final int rowsAffected = db.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
+                                           DBKey.PK_ID + "=?",
+                                           new String[]{String.valueOf(library.getId())});
+        if (rowsAffected > 0) {
+            return;
         }
+
+        throw new DaoUpdateException(ERROR_UPDATE_FROM + library);
     }
 
     private void insertVirtualLibraries(@NonNull final CalibreLibrary library)
@@ -341,7 +328,6 @@ public class CalibreLibraryDaoImpl
 
         final List<CalibreVirtualLibrary> vLibs = library.getVirtualLibraries();
         if (!vLibs.isEmpty()) {
-            //noinspection CheckStyle
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_VIRTUAL_LIBRARY)) {
                 for (final CalibreVirtualLibrary vLib : vLibs) {
                     // always update the foreign key
@@ -362,10 +348,6 @@ public class CalibreLibraryDaoImpl
                         throw new DaoInsertException(ERROR_INSERT_FROM + library);
                     }
                 }
-            } catch (@NonNull final RuntimeException e) {
-                // Reset all id's before throwing!
-                vLibs.forEach(v -> v.setId(0));
-                throw new DaoInsertException(ERROR_INSERT_FROM + library, e);
             }
         }
     }
