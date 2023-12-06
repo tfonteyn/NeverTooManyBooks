@@ -142,8 +142,6 @@ public class CalibreDaoImpl
             if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException(ERROR_INSERT_FROM + book);
             }
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + book, e);
         }
 
         return true;
@@ -151,17 +149,12 @@ public class CalibreDaoImpl
 
     @Override
     public boolean delete(@NonNull final Book book) {
-        try {
-            final int rowsAffected;
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
-                stmt.bindLong(1, book.getId());
-                rowsAffected = stmt.executeUpdateDelete();
-            }
-            return rowsAffected > 0;
-
-        } catch (@NonNull final RuntimeException e) {
-            return false;
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
+            stmt.bindLong(1, book.getId());
+            rowsAffected = stmt.executeUpdateDelete();
         }
+        return rowsAffected > 0;
     }
 
     private static final class Sql {
