@@ -656,7 +656,7 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchForAutoUpdateFromIdOnwards(final long id) {
+    public TypedCursor fetchForAutoUpdateFromIdOnwards(@IntRange(from = 1) final long id) {
         return getBookCursor(TBL_BOOKS.dot(DBKey.AUTO_UPDATE) + "=1"
                              + _AND_ + TBL_BOOKS.dot(DBKey.PK_ID) + ">=?",
                              new String[]{String.valueOf(id)},
@@ -692,7 +692,7 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchBooksForExportToCalibre(final long libraryId,
+    public TypedCursor fetchBooksForExportToCalibre(@IntRange(from = 1) final long libraryId,
                                                     @Nullable final LocalDateTime sinceDateTime) {
         if (sinceDateTime == null) {
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY) + "=?",
