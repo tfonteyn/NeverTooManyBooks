@@ -138,7 +138,7 @@ public class CoverCacheDaoImpl
     @Override
     public void deleteAll() {
         try {
-            db.execSQL("DELETE FROM " + CacheDbHelper.TBL_IMAGE.getName());
+            db.execSQL(Sql.DELETE_ALL);
         } catch (@NonNull final SQLException e) {
             LoggerFactory.getLogger().e(TAG, e);
         }
@@ -207,21 +207,22 @@ public class CoverCacheDaoImpl
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
             RUNNING_TASKS.incrementAndGet();
+            //noinspection CheckStyle
             try {
-                final ByteArrayOutputStream out = new ByteArrayOutputStream();
                 // Rapid scrolling of view could already have recycled the bitmap.
                 if (!bitmap.isRecycled()) {
+                    final ByteArrayOutputStream out = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, out);
 
                     final String cacheId = constructCacheId(uuid, cIdx, width, height);
 
-                    final boolean exists;
+                    final boolean isNew;
                     try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BY_IMAGE_ID)) {
                         stmt.bindString(1, cacheId);
-                        exists = stmt.simpleQueryForLongOrZero() == 0;
+                        isNew = stmt.simpleQueryForLongOrZero() == 0;
                     }
 
-                    if (exists) {
+                    if (isNew) {
                         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
@@ -237,7 +238,8 @@ public class CoverCacheDaoImpl
                                 .now(ZoneOffset.UTC)
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                         if (0 >= db.update(CacheDbHelper.TBL_IMAGE.getName(), cv,
-                                           CacheDbHelper.IMAGE_ID + "=?", new String[]{cacheId})) {
+                                           CacheDbHelper.IMAGE_ID + "=?",
+                                           new String[]{cacheId})) {
                             logAndDisableCache(new DaoUpdateException(cacheId));
                         }
                     }
@@ -262,30 +264,34 @@ public class CoverCacheDaoImpl
     }
 
     private static final class Sql {
+        static final String _FROM_ = " FROM ";
+        static final String _WHERE_ = " WHERE ";
+        static final String DELETE_FROM_ = "DELETE FROM ";
 
         static final String INSERT =
                 "INSERT INTO " + CacheDbHelper.TBL_IMAGE.getName()
                 + '(' + CacheDbHelper.IMAGE_ID
                 + ',' + CacheDbHelper.IMAGE_BLOB
                 + ") VALUES (?,?)";
-
-        static final String DELETE_BY_IMAGE_ID =
-                "DELETE FROM " + CacheDbHelper.TBL_IMAGE.getName()
-                + " WHERE " + CacheDbHelper.IMAGE_ID + " LIKE ?";
+        static final String COUNT =
+                "SELECT COUNT(*) FROM " + CacheDbHelper.TBL_IMAGE.getName();
 
         static final String FIND_BY_ID =
                 "SELECT " + CacheDbHelper.IMAGE_BLOB
-                + " FROM " + CacheDbHelper.TBL_IMAGE.getName()
-                + " WHERE " + CacheDbHelper.IMAGE_ID + "=?"
+                + _FROM_ + CacheDbHelper.TBL_IMAGE.getName()
+                + _WHERE_ + CacheDbHelper.IMAGE_ID + "=?"
                 + " AND " + CacheDbHelper.IMAGE_LAST_UPDATED__UTC + ">?";
 
         /** Run a count for the desired file. 1 == exists, 0 == not there. */
         static final String COUNT_BY_IMAGE_ID =
                 "SELECT COUNT(" + CacheDbHelper.PK_ID + ")"
-                + " FROM " + CacheDbHelper.TBL_IMAGE.getName()
-                + " WHERE " + CacheDbHelper.IMAGE_ID + "=?";
+                + _FROM_ + CacheDbHelper.TBL_IMAGE.getName()
+                + _WHERE_ + CacheDbHelper.IMAGE_ID + "=?";
 
-        static final String COUNT =
-                "SELECT COUNT(*) FROM " + CacheDbHelper.TBL_IMAGE.getName();
+        static final String DELETE_BY_IMAGE_ID =
+                DELETE_FROM_ + CacheDbHelper.TBL_IMAGE.getName()
+                + _WHERE_ + CacheDbHelper.IMAGE_ID + " LIKE ?";
+        static final String DELETE_ALL =
+                DELETE_FROM_ + CacheDbHelper.TBL_IMAGE.getName();
     }
 }
