@@ -92,10 +92,9 @@ public class BedethequeCacheDaoImpl
             return;
         }
 
-        BdtAuthor bdtAuthor = null;
+        BdtAuthor bdtAuthor;
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -119,8 +118,6 @@ public class BedethequeCacheDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -132,10 +129,9 @@ public class BedethequeCacheDaoImpl
                                 @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoInsertException, DaoUpdateException {
 
-        BdtAuthor bdtAuthor = null;
+        BdtAuthor bdtAuthor;
 
         Synchronizer.SyncLock txLock = null;
-        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -182,9 +178,6 @@ public class BedethequeCacheDaoImpl
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
-
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -218,18 +211,19 @@ public class BedethequeCacheDaoImpl
                     stmt.bindString(5, resolvedName);
                     stmt.bindString(6, SqlEncode.orderByColumn(resolvedName, locale));
                 }
+
                 stmt.bindLong(7, bdtAuthor.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
+
             if (rowsAffected > 0) {
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
                 return;
             }
+
             throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
-        } catch (@NonNull final RuntimeException e) {
-            throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
