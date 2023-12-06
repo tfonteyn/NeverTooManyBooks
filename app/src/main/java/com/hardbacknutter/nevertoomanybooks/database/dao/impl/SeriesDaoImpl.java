@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -183,16 +182,19 @@ public class SeriesDaoImpl
     @Override
     public boolean setComplete(@NonNull final Series series,
                                final boolean complete) {
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.SERIES_IS_COMPLETE, complete);
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.SET_COMPLETE)) {
+            stmt.bindBoolean(1, complete);
 
-        final boolean success =
-                0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(series.getId())});
-        if (success) {
-            series.setComplete(complete);
+            stmt.bindLong(2, series.getId());
+            rowsAffected = stmt.executeUpdateDelete();
         }
-        return success;
+
+        if (rowsAffected > 0) {
+            series.setComplete(complete);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -535,6 +537,11 @@ public class SeriesDaoImpl
                 + _SET_ + DBKey.SERIES_TITLE + "=?"
                 + ',' + DBKey.SERIES_TITLE_OB + "=?"
                 + ',' + DBKey.SERIES_IS_COMPLETE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        static final String SET_COMPLETE =
+                UPDATE + TBL_SERIES.getName()
+                + _SET_ + DBKey.SERIES_IS_COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Series}. */
