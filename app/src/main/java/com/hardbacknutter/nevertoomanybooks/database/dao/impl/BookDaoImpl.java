@@ -777,9 +777,8 @@ public class BookDaoImpl
     @NonNull
     public List<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull final ISBN isbn) {
         final List<Pair<Long, String>> list = new ArrayList<>();
-        // if the string is ISBN-10 compatible,
-        // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range,
-        // we search on both formats
+        // If the string is ISBN-10 compatible, we search on both formats;
+        // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range.
         if (isbn.isIsbn10Compat()) {
             try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ISBN_10_OR_13,
                                              new String[]{isbn.asText(ISBN.Type.Isbn10),
@@ -806,7 +805,7 @@ public class BookDaoImpl
     @Override
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean bookExistsById(@IntRange(from = 1) final long id) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.CHECK_IF_BOOK_EXISTS)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ID_EXISTS)) {
             stmt.bindLong(1, id);
             return stmt.simpleQueryForLongOrZero() == 1;
         }
@@ -815,7 +814,22 @@ public class BookDaoImpl
     @Override
     public boolean bookExistsByIsbn(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, false);
-        return !getBookIdAndTitleByIsbn(isbn).isEmpty();
+        // If the string is ISBN-10 compatible, we search on both formats;
+        // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range.
+        if (isbn.isIsbn10Compat()) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ISBN_10_OR_13_EXISTS)) {
+                stmt.bindString(1, isbn.asText(ISBN.Type.Isbn10));
+                stmt.bindString(2, isbn.asText(ISBN.Type.Isbn13));
+                return stmt.simpleQueryForLongOrZero() == 1;
+            }
+        } else {
+            // otherwise just search on the string as-is; regardless of validity
+            // (this would actually include valid ISBN-13 in the 979 range).
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ISBN_EXISTS)) {
+                stmt.bindString(1, isbn.asText());
+                return stmt.simpleQueryForLongOrZero() == 1;
+            }
+        }
     }
 
     @Override
@@ -865,12 +879,6 @@ public class BookDaoImpl
         static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_BOOKS.getName();
 
-        /** Check if a {@link Book} exists. The result will be {@code 0} or {@code 1}. */
-        static final String CHECK_IF_BOOK_EXISTS =
-                SELECT_ + "EXISTS ("
-                + SELECT_ + "null" + _FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?"
-                + ")";
-
         /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
         static final String FIND_BY_ISBN_10_OR_13 =
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
@@ -898,10 +906,34 @@ public class BookDaoImpl
         static final String FIND_LAST_UPDATE_DATE_BY_BOOK_ID =
                 SELECT_ + DBKey.DATE_LAST_UPDATED__UTC + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * Check if a {@link Book} exists with a specified {@link DBKey#PK_ID}.
+         * The result will be {@code 0} or {@code 1}.
+         */
+        static final String BOOK_ID_EXISTS =
+                SELECT_EXISTS_ + '('
+                + SELECT_ + "null" + _FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?"
+                + ')';
+
+        /**
+         * Check if a {@link Book} exists with a single specified {@link DBKey#BOOK_ISBN}.
+         * The result will be {@code 0} or {@code 1}.
+         */
+        static final String BOOK_ISBN_EXISTS =
+                SELECT_EXISTS_ + '(' + Sql.FIND_BY_ISBN + ')';
+
+        /**
+         * Check if a {@link Book} exists with a either a {@link DBKey#BOOK_ISBN}
+         * ISBN-10, or an ISBN-13 in the 978 range.
+         * The result will be {@code 0} or {@code 1}.
+         */
+        static final String BOOK_ISBN_10_OR_13_EXISTS =
+                SELECT_EXISTS_ + '(' + Sql.FIND_BY_ISBN_10_OR_13 + ')';
+
         /** Book UUID only, for accessing all cover image files. */
         static final String SELECT_ALL_UUID =
                 SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
-
 
         /** The SELECT and FROM clause for getting a book (list). */
         static final String SELECT_BOOK_FROM;

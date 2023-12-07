@@ -51,6 +51,7 @@ abstract class BaseDaoImpl {
 
     static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
+    static final String SELECT_EXISTS_ = "SELECT EXISTS ";
     static final String SELECT_ = "SELECT ";
     static final String _AS_ = " AS ";
     static final String _FROM_ = " FROM ";
