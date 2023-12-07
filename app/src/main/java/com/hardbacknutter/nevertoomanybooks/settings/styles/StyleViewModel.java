@@ -192,10 +192,10 @@ public class StyleViewModel
      *
      * @return {@code true} if the style was modified
      */
-    boolean updateOrInsertStyle(@NonNull final Context context) {
+    boolean insertOrUpdateStyle(@NonNull final Context context) {
         //noinspection DataFlowIssue
         if (styleDataStore.isModified()) {
-            return stylesHelper.updateOrInsert(context, style);
+            return stylesHelper.insertOrUpdate(context, style);
         }
         return false;
     }

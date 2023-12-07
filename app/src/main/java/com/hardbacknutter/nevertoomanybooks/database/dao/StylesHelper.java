@@ -264,7 +264,7 @@ public class StylesHelper {
      *
      * @throws IllegalStateException if the UUID is missing
      */
-    public boolean updateOrInsert(@NonNull final Context context,
+    public boolean insertOrUpdate(@NonNull final Context context,
                                   @NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
             if (style.getUuid().isEmpty()) {

@@ -52,7 +52,7 @@ public class StyleFragment
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
-                    final boolean modified = vm.updateOrInsertStyle(getContext());
+                    final boolean modified = vm.insertOrUpdateStyle(getContext());
 
                     final Intent resultIntent = EditStyleContract
                             .createResult(vm.getTemplateUuid(),

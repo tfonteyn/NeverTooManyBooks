@@ -326,7 +326,7 @@ public class JsonRecordReader
         if (jsonRoot != null) {
             new StyleCoder()
                     .decode(jsonRoot)
-                    .forEach(style -> stylesHelper.updateOrInsert(context, style));
+                    .forEach(style -> stylesHelper.insertOrUpdate(context, style));
             results.styles = jsonRoot.length();
         }
     }
