@@ -108,6 +108,7 @@ public class CsvArchiveReaderTest
 
         // Delete 1 book; then re-import using "Overwrite"
         bookDao.delete(666000002);
+        assertFalse(bookDao.bookExistsById(666000002));
 
         importHelper = createImportHelper();
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
@@ -124,6 +125,10 @@ public class CsvArchiveReaderTest
         bookDao.delete(666000001);
         bookDao.delete(666000003);
         bookDao.delete(666000004);
+        assertFalse(bookDao.bookExistsById(666000001));
+        assertFalse(bookDao.bookExistsById(666000003));
+        assertFalse(bookDao.bookExistsById(666000004));
+
         bookCursor = bookDao.fetchById(666000002);
         assertTrue(bookCursor.moveToFirst());
         book = Book.from(bookCursor);

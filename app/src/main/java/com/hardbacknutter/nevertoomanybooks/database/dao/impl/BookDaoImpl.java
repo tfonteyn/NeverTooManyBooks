@@ -865,9 +865,11 @@ public class BookDaoImpl
         static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_BOOKS.getName();
 
-        /** Check if a {@link Book} exists. The result should be {@code 0} or {@code 1}. */
+        /** Check if a {@link Book} exists. The result will be {@code 0} or {@code 1}. */
         static final String CHECK_IF_BOOK_EXISTS =
-                SELECT_COUNT_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
+                SELECT_ + "EXISTS ("
+                + SELECT_ + "null" + _FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?"
+                + ")";
 
         /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
         static final String FIND_BY_ISBN_10_OR_13 =
