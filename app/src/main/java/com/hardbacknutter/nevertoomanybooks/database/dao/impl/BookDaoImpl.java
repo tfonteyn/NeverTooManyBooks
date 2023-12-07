@@ -547,7 +547,7 @@ public class BookDaoImpl
 
         if (book.contains(DBKey.CALIBRE_BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
-            calibreDaoSupplier.get().updateOrInsert(context, book);
+            calibreDaoSupplier.get().insertOrUpdate(context, book);
         }
 
         if (book.contains(DBKey.SID_STRIP_INFO)) {

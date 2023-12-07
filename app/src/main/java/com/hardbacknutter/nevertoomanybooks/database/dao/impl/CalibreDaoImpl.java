@@ -65,7 +65,7 @@ public class CalibreDaoImpl
     }
 
     @Override
-    public void updateOrInsert(@NonNull final Context context,
+    public void insertOrUpdate(@NonNull final Context context,
                                @NonNull final Book book)
             throws DaoWriteException {
 

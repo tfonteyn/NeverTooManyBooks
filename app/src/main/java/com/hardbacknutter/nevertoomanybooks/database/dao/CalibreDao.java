@@ -37,7 +37,7 @@ public interface CalibreDao {
      *
      * @throws DaoWriteException on failure
      */
-    void updateOrInsert(@NonNull Context context,
+    void insertOrUpdate(@NonNull Context context,
                         @NonNull Book book)
             throws DaoWriteException;
 
