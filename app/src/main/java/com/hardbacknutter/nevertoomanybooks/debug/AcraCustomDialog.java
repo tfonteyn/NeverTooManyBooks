@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 
 import org.acra.dialog.CrashReportDialogHelper;
 

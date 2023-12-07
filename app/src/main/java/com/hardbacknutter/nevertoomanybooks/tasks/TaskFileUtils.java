@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 /**
  * File utilities with support for a {@link ProgressListener}; for use from tasks.

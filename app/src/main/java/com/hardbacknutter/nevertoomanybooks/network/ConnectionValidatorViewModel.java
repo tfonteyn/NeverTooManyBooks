@@ -25,8 +25,8 @@ import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
 public class ConnectionValidatorViewModel
         extends ViewModel {

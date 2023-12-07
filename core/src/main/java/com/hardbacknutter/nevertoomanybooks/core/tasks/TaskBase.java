@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.tasks;
+package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
 import android.os.Process;
 
@@ -35,15 +35,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.
  *
  * @param <Result> the type of the result of the background computation.
  */
-abstract class TaskBase<Result>
+public abstract class TaskBase<Result>
         implements ProgressListener {
 
     /** Identifies the task. Passed back in all messages. */

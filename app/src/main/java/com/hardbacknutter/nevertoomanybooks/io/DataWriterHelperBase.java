@@ -33,7 +33,7 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 /**
  * For better or worse... this class and it's children implementations

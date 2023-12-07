@@ -24,8 +24,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 public class TestProgressListener
         implements ProgressListener {

@@ -17,13 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.tasks;
+package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 /**
  * Listener interface for progress messages.
@@ -46,7 +44,7 @@ public interface ProgressListener
      * on the current progress counters and the passed data and call
      * {@link #publishProgress(TaskProgress)}.
      * <p>
-     * See {@link TaskBase} for the default implementation.
+     * See {@code TaskBase} for the default implementation.
      *
      * @param delta the relative step in the overall progress count.
      * @param text  (optional) text message

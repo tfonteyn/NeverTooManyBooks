@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.tasks;
+package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -29,10 +29,8 @@ import androidx.annotation.WorkerThread;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 /**
  * The base for a task which uses a {@link TaskListener} for the results.

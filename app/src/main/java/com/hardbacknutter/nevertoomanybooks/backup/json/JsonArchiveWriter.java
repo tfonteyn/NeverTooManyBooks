@@ -38,12 +38,12 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * <strong>WARNING - EXPERIMENTAL:</strong> format can/will change, splitting of authors etc...

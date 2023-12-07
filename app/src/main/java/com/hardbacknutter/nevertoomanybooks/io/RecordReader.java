@@ -30,7 +30,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 @FunctionalInterface
 public interface RecordReader

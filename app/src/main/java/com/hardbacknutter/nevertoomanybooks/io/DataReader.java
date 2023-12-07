@@ -30,7 +30,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 /**
  * The interface for classes that read from file-based archives and/or

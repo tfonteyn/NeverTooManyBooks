@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
@@ -56,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
  * Logic flow is as follows.

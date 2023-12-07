@@ -28,8 +28,8 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 
 /**
  * Rebuild FTS. Can take several seconds.

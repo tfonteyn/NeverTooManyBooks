@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 
 @SuppressWarnings("WeakerAccess")
 public class CoverHandlerViewModel

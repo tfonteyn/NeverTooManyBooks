@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.tasks;
+package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,8 +25,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 /**
  * The base for a task which uses {@link MutableLiveData} for the results.

@@ -30,7 +30,7 @@ import java.io.Writer;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 @FunctionalInterface
 public interface RecordWriter

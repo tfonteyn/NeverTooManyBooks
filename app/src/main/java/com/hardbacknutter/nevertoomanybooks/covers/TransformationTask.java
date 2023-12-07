@@ -32,7 +32,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 
 /**
  * Note that by default this task <strong>only</strong> decodes the file to a Bitmap.

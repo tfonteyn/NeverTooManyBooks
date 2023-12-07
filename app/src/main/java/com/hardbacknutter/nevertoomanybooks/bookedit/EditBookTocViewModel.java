@@ -25,12 +25,12 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetEditionsTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
 @SuppressWarnings("WeakerAccess")
 public class EditBookTocViewModel

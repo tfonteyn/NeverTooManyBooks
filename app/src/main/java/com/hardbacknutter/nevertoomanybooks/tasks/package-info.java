@@ -21,12 +21,12 @@
 /**
  * March 2021: restructured tasks once again, dropping all android.os.ASyncTask usage:
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.tasks.LTask}
+ * {@link com.hardbacknutter.nevertoomanybooks.core.tasks.LTask}
  * They use a {@link com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener}.
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.tasks.MTask}
+ * {@link com.hardbacknutter.nevertoomanybooks.core.tasks.MTask}
  * They use {@link androidx.lifecycle.MutableLiveData} and
- * {@link com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent}.
+ * {@link com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent}.
  * <p>
  * In some other places, we use {@link java.util.concurrent.Executor} and
  * {@link android.os.Handler} directly and the above is overkill.

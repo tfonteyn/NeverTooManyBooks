@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
@@ -49,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildTitleOrderByColumnTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.

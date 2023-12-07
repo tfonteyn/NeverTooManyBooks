@@ -34,9 +34,9 @@ import java.security.cert.CertificateException;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
 public class CalibreHandlerViewModel
         extends ViewModel {

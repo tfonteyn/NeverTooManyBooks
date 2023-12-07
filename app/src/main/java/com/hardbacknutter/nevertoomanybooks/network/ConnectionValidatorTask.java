@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 
 public class ConnectionValidatorTask
         extends MTask<Boolean> {
