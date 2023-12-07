@@ -551,7 +551,7 @@ public class BookDaoImpl
         }
 
         if (book.contains(DBKey.SID_STRIP_INFO)) {
-            stripInfoDaoSupplier.get().updateOrInsert(book);
+            stripInfoDaoSupplier.get().insertOrUpdate(book);
         }
     }
 

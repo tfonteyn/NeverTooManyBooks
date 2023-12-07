@@ -50,7 +50,7 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    public void updateOrInsert(@NonNull final Book book)
+    public void insertOrUpdate(@NonNull final Book book)
             throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
