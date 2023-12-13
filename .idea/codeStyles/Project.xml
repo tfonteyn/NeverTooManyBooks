@@ -6,9 +6,13 @@
           <option name="INSERT_LINE_BREAK_BEFORE_NAMESPACE_DECLARATION" value="true" />
         </value>
       </option>
+      <option name="VALUE_RESOURCE_FILE_SETTINGS">
+        <value>
+          <option name="WRAP_ATTRIBUTES" value="2" />
+        </value>
+      </option>
       <option name="OTHER_SETTINGS">
         <value>
-          <option name="WRAP_ATTRIBUTES" value="0" />
           <option name="INSERT_LINE_BREAK_BEFORE_FIRST_ATTRIBUTE" value="false" />
           <option name="INSERT_LINE_BREAK_BEFORE_NAMESPACE_DECLARATION" value="true" />
         </value>
@@ -18,6 +22,9 @@
       <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
       <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
     </GroovyCodeStyleSettings>
+    <JSON>
+      <option name="OBJECT_WRAPPING" value="1" />
+    </JSON>
     <JavaCodeStyleSettings>
       <option name="GENERATE_FINAL_LOCALS" value="true" />
       <option name="GENERATE_FINAL_PARAMETERS" value="true" />
@@ -56,6 +63,7 @@
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </JetCodeStyleSettings>
     <XML>
+      <option name="XML_ATTRIBUTE_WRAP" value="2" />
       <option name="XML_KEEP_LINE_BREAKS" value="true" />
       <option name="XML_ALIGN_ATTRIBUTES" value="true" />
     </XML>
