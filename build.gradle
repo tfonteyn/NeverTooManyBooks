@@ -56,10 +56,10 @@ ext {
 
     // https://developer.android.com/jetpack/androidx/versions
 
-    androidxActivityVersion = '1.8.1'
-    androidxAnnotationVersion = '1.7.0'
+    androidxActivityVersion = '1.8.2'
+    androidxAnnotationVersion = '1.7.1'
     androidxAppcompatVersion = "1.6.1"
-    androidxCameraxVersion = '1.3.0'
+    androidxCameraxVersion = '1.3.1'
     androidxCardviewVersion = "1.0.0"
     androidxCollectionVersion = '1.3.0'
     androidxConstraintlayoutCoreVersion = "1.0.4"
@@ -69,7 +69,7 @@ ext {
     androidxCustomviewVersion = "1.2.0-alpha02"
     androidxDocumentfileVersion = "1.1.0-alpha01"
     androidxDrawerlayoutVersion = "1.2.0"
-    androidxExifinterfaceVersion = "1.3.6"
+    androidxExifinterfaceVersion = '1.3.7'
     androidxFragmentVersion = '1.6.2'
     androidxInterpolatorVersion = "1.0.0"
     androidxLifecycleVersion = '2.6.2'
@@ -80,7 +80,7 @@ ext {
     androidxWindowVersion = '1.2.0'
 
     // https://github.com/material-components/material-components-android/releases
-    googleMaterialVersion = '1.10.0'
+    googleMaterialVersion = '1.11.0'
 
 //    googleAutoServiceVersion = "1.1.1"
 
