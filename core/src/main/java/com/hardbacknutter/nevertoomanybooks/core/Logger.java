@@ -37,7 +37,9 @@ public interface Logger {
     /**
      * Cycle the log each time the app is started; preserve previous if non-empty.
      */
-    void cycleLogs();
+    default void cycleLogs() {
+
+    }
 
     /**
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).

@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
-public class LoggerImpl
+public class FileLogger
         implements Logger {
 
     /**
@@ -80,7 +80,7 @@ public class LoggerImpl
      *
      * @param logDir the directory where logs will be written
      */
-    public LoggerImpl(@NonNull final File logDir) {
+    public FileLogger(@NonNull final File logDir) {
         this.logDir = logDir;
     }
 

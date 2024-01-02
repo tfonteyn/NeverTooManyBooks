@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
+import com.hardbacknutter.nevertoomanybooks.debug.FileLogger;
 
 public class TestLogger
         implements Logger {
@@ -35,7 +35,7 @@ public class TestLogger
     private final File logDir;
 
     TestLogger(@NonNull final File tmpDir) {
-        logDir = new File(tmpDir, LoggerImpl.DIR_LOG);
+        logDir = new File(tmpDir, FileLogger.DIR_LOG);
         if (!logDir.exists()) {
             //noinspection ResultOfMethodCallIgnored
             logDir.mkdirs();
@@ -63,21 +63,21 @@ public class TestLogger
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|ERROR|" + tag + "|" + LoggerImpl.concat(params)
+        System.out.println("JUnit|ERROR|" + tag + "|" + FileLogger.concat(params)
                            + "|" + (e == null ? null : e.getMessage())
-                           + "\n" + LoggerImpl.getStackTraceString(e));
+                           + "\n" + FileLogger.getStackTraceString(e));
     }
 
     @Override
     public void w(@NonNull final String tag,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|WARN|" + tag + "|" + LoggerImpl.concat(params));
+        System.out.println("JUnit|WARN|" + tag + "|" + FileLogger.concat(params));
     }
 
     @Override
     public void d(@NonNull final String tag,
                   @NonNull final String method,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|DEBUG|" + tag + "|" + method + "|" + LoggerImpl.concat(params));
+        System.out.println("JUnit|DEBUG|" + tag + "|" + method + "|" + FileLogger.concat(params));
     }
 }

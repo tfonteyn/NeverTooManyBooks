@@ -33,7 +33,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.debug.AcraCustomDialog;
-import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
+import com.hardbacknutter.nevertoomanybooks.debug.FileLogger;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
@@ -53,7 +53,7 @@ public class App
 
     private static final int ACRA_LOGFILE_LINES = 1_000;
     private static final String APPLICATION_LOG_FILE =
-            LoggerImpl.DIR_LOG + File.separatorChar + LoggerImpl.ERROR_LOG_FILE;
+            FileLogger.DIR_LOG + File.separatorChar + FileLogger.ERROR_LOG_FILE;
 
     /** Flag to indicate the startup can skip a full init. */
     private boolean hotStart;
@@ -108,12 +108,12 @@ public class App
     public void onCreate() {
         super.onCreate();
 
-        final File logDir = new File(getFilesDir(), LoggerImpl.DIR_LOG);
+        final File logDir = new File(getFilesDir(), FileLogger.DIR_LOG);
         if (!logDir.exists()) {
             //noinspection ResultOfMethodCallIgnored
             logDir.mkdirs();
         }
-        LoggerFactory.setLogger(new LoggerImpl(logDir));
+        LoggerFactory.setLogger(new FileLogger(logDir));
 
         ServiceLocator.create(getApplicationContext());
 
