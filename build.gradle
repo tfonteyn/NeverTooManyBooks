@@ -85,7 +85,7 @@ ext {
 //    googleAutoServiceVersion = "1.1.1"
 
     // https://jsoup.org/
-    jsoupVersion = '1.17.1'
+    jsoupVersion = '1.17.2'
 
     // https://github.com/tfonteyn/TinyZXingWrapper
     tinyZxingWrapperVersion = "1.0.0"
