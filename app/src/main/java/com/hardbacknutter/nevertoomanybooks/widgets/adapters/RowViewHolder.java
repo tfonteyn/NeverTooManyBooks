@@ -94,7 +94,7 @@ public abstract class RowViewHolder
     }
 
     /**
-     * Set the {@link OnRowClickListener} for a click on a row.
+     * Set the {@link OnRowClickListener} for a click on the background/row.
      *
      * @param listener to set
      */
@@ -108,7 +108,7 @@ public abstract class RowViewHolder
     }
 
     /**
-     * Setup the onClick listener for showing the context menu on a row.
+     * Setup the onClick listener for showing the context menu on the background/row.
      * <p>
      * Provides long-click on a row, and optionally a dedicated button for the same.
      *
@@ -118,11 +118,13 @@ public abstract class RowViewHolder
     public void setOnRowLongClickListener(@Nullable final ShowContextMenu contextMenuMode,
                                           @Nullable final OnRowClickListener listener) {
         if (listener != null && contextMenuMode != null) {
+            // long-click on the background
             onClickTargetView.setOnLongClickListener(v -> {
                 listener.onClick(v, getBindingAdapterPosition());
                 return true;
             });
 
+            // Add a dedicated button as per user-preference.
             if (btnRowMenu != null) {
                 btnRowMenu.setOnClickListener(
                         v -> listener.onClick(v, getBindingAdapterPosition()));
