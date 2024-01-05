@@ -60,6 +60,8 @@ public abstract class StyleBaseFragment
     SeekBarPreference pExpansionLevel;
     Preference pGroups;
 
+    private Preference pCoverLongClick;
+
     private SeekBarPreference pCoverScale;
     private SeekBarPreference pTextScale;
     private Preference pListBookLevelSorting;
@@ -105,10 +107,23 @@ public abstract class StyleBaseFragment
             }
             return false;
         });
+
+        // Used for both list and grid-mode
+        // For simplicity, we always show this option even if the user hides all covers
+        // with the "pShowCovers" option.
         //noinspection DataFlowIssue
         findPreference(StyleDataStore.PK_COVER_CLICK_ACTION)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        // Used only in grid-mode, hidden in list-mode
+        pCoverLongClick = findPreference(StyleDataStore.PK_COVER_LONG_CLICK_ACTION);
+        //noinspection DataFlowIssue
+        pCoverLongClick.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        // For simplicity, we always show this option even if the user hides all covers
+        // with the "pShowCovers" option.
         pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
+
         pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
 
         //noinspection DataFlowIssue
@@ -222,12 +237,16 @@ public abstract class StyleBaseFragment
         switch (vm.getStyle().getLayout()) {
             case List: {
                 pShowCovers.setVisible(true);
+                // N/A in list-mode
+                pCoverLongClick.setVisible(false);
                 break;
             }
             case Grid: {
                 // The point of Grid is to show covers
                 pShowCovers.setVisible(false);
                 pShowCovers.setChecked(true);
+
+                pCoverLongClick.setVisible(true);
                 break;
             }
             default:

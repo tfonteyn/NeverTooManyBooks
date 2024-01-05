@@ -60,8 +60,10 @@ public class StyleDataStore
     /** List(0) or Grid(1) layout for BoB. */
     public static final String PK_LAYOUT = "style.booklist.layout";
 
-    /** Action to take when the user taps a cover image in the BoB list. */
+    /** Action to take when the user taps a cover image in the BoB list-mode/grid-mode. */
     public static final String PK_COVER_CLICK_ACTION = "style.booklist.cover.click";
+    /** Action to take when the user long-click a cover image in the BoB list-grid-mode. */
+    public static final String PK_COVER_LONG_CLICK_ACTION = "style.booklist.cover.click.long";
 
     /** The default expansion level for the groups. */
     public static final String PK_EXPANSION_LEVEL = "style.booklist.levels.default";
@@ -361,7 +363,7 @@ public class StyleDataStore
     public void putString(@NonNull final String key,
                           @Nullable final String value) {
         switch (key) {
-            case PK_NAME:
+            case PK_NAME: {
                 // The DataStores lives inside a ViewModel, so we can't get a Context
                 // and use the type independent #getLabel(Context).
                 // But we only allow name editing for a UserStyle anyhow.
@@ -371,17 +373,24 @@ public class StyleDataStore
                 }
                 // else: We can't stop the framework calling us... just ignore
                 break;
-
-            case PK_LAYOUT:
+            }
+            case PK_LAYOUT: {
                 //noinspection DataFlowIssue
                 style.setLayout(Style.Layout.byId(Integer.parseInt(value)));
                 break;
-
-            case PK_COVER_CLICK_ACTION:
+            }
+            case PK_COVER_CLICK_ACTION: {
                 //noinspection DataFlowIssue
-                style.setCoverClickAction(Style.CoverClickAction.byId(Integer.parseInt(value)));
+                style.setCoverClickAction(Style.CoverClickAction
+                                                  .byId(Integer.parseInt(value)));
                 break;
-
+            }
+            case PK_COVER_LONG_CLICK_ACTION: {
+                //noinspection DataFlowIssue
+                style.setCoverLongClickAction(Style.CoverLongClickAction
+                                                      .byId(Integer.parseInt(value)));
+                break;
+            }
             default:
                 throw new IllegalArgumentException(key);
         }
@@ -393,7 +402,7 @@ public class StyleDataStore
     public String getString(@NonNull final String key,
                             @Nullable final String defValue) {
         switch (key) {
-            case PK_NAME:
+            case PK_NAME: {
                 // See remarks in #putString
                 if (style.getType() == StyleType.User) {
                     return ((UserStyle) style).getName();
@@ -401,14 +410,19 @@ public class StyleDataStore
                     // We can't stop the framework calling us... just return bogus
                     return "";
                 }
-
-            case PK_LAYOUT:
+            }
+            case PK_LAYOUT: {
                 return String.valueOf(style.getLayout().getId());
-
-            case PK_COVER_CLICK_ACTION:
+            }
+            case PK_COVER_CLICK_ACTION: {
                 return String.valueOf(style.getCoverClickAction().getId());
+            }
+            case PK_COVER_LONG_CLICK_ACTION: {
+                return String.valueOf(style.getCoverLongClickAction().getId());
+            }
+            default:
+                throw new IllegalArgumentException(key);
         }
-        throw new IllegalArgumentException(key);
     }
 
     @Override

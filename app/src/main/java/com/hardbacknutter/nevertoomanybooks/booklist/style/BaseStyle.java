@@ -127,8 +127,17 @@ public abstract class BaseStyle
     @NonNull
     private Layout layout = Layout.List;
 
+    /**
+     * Tapping a cover image in the BoB list-mode/grid-mode.
+     */
     @NonNull
     private CoverClickAction coverClickAction = CoverClickAction.Zoom;
+    /**
+     * Long-click a cover image in the BoB grid-mode.
+     * Not used for the BoB list-mode.
+     */
+    @NonNull
+    private CoverLongClickAction coverLongClickAction = CoverLongClickAction.Ignore;
 
     /**
      * The menu position of this style as sorted by the user.
@@ -209,7 +218,10 @@ public abstract class BaseStyle
 
         // 'simple' options
         layout = Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT));
-        coverClickAction = CoverClickAction.byId(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION));
+        coverClickAction = CoverClickAction
+                .byId(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION));
+        coverLongClickAction = CoverLongClickAction
+                .byId(rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION));
         coverScale = rowData.getInt(DBKey.STYLE_COVER_SCALE);
         textScale = rowData.getInt(DBKey.STYLE_TEXT_SCALE);
         groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
@@ -263,6 +275,7 @@ public abstract class BaseStyle
         // 'simple' options
         layout = from.getLayout();
         coverClickAction = from.getCoverClickAction();
+        coverLongClickAction = from.getCoverLongClickAction();
         coverScale = from.getCoverScale();
         textScale = from.getTextScale();
         groupRowUsesPreferredHeight = from.isGroupRowUsesPreferredHeight();
@@ -385,6 +398,17 @@ public abstract class BaseStyle
 
     public void setCoverClickAction(@NonNull final CoverClickAction coverClickAction) {
         this.coverClickAction = coverClickAction;
+    }
+
+    @Override
+    @NonNull
+    public CoverLongClickAction getCoverLongClickAction() {
+        return coverLongClickAction;
+    }
+
+
+    public void setCoverLongClickAction(@NonNull final CoverLongClickAction coverLongClickAction) {
+        this.coverLongClickAction = coverLongClickAction;
     }
 
     @Override
@@ -671,6 +695,7 @@ public abstract class BaseStyle
 
                && layout == style.layout
                && coverClickAction == style.coverClickAction
+               && coverLongClickAction == style.coverLongClickAction
                && expansionLevel == style.expansionLevel
                && headerFieldVisibility == style.headerFieldVisibility
                && groupRowUsesPreferredHeight == style.groupRowUsesPreferredHeight
@@ -692,6 +717,7 @@ public abstract class BaseStyle
 
                             layout,
                             coverClickAction,
+                            coverLongClickAction,
                             expansionLevel,
                             headerFieldVisibility,
                             groupRowUsesPreferredHeight,
@@ -719,6 +745,7 @@ public abstract class BaseStyle
 
                + ", layout=" + layout
                + ", coverClickAction=" + coverClickAction
+               + ", coverLongClickAction=" + coverLongClickAction
                + ", expansionLevel=" + expansionLevel
                + ", headerFieldVisibility=" + headerFieldVisibility
                + ", groupRowUsesPreferredHeight=" + groupRowUsesPreferredHeight

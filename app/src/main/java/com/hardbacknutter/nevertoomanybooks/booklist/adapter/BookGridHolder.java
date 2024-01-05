@@ -125,9 +125,29 @@ public class BookGridHolder
     @Override
     public void setOnRowLongClickListener(@Nullable final ShowContextMenu contextMenuMode,
                                           @Nullable final OnRowClickListener listener) {
-        // Override the user! Always show the button,
-        // as tapping on the background is not obvious when using the grid.
-        super.setOnRowLongClickListener(ShowContextMenu.Button, listener);
+        if (listener != null) {
+            switch (style.getCoverLongClickAction()) {
+                case PopupMenu: {
+                    // Explicitly set the listener on the cover
+                    // in addition to the background as handled by the super method
+                    vb.coverImage0.setOnLongClickListener(v -> {
+                        listener.onClick(v, getBindingAdapterPosition());
+                        return true;
+                    });
+                    // Force-hide the the context menu button.
+                    super.setOnRowLongClickListener(ShowContextMenu.NoButton, listener);
+                    break;
+                }
+                case Ignore:
+                    // Force-show the context menu button,
+                    // as long-clicking the background is not easy/possible in grid=mode.
+                    super.setOnRowLongClickListener(ShowContextMenu.Button, listener);
+                    break;
+            }
+        } else {
+            vb.coverImage0.setOnLongClickListener(null);
+            super.setOnRowLongClickListener(contextMenuMode, null);
+        }
     }
 
     @Override

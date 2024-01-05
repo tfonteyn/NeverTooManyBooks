@@ -101,10 +101,11 @@ public class DBHelper
      * v5.2.0: 29
      * v5.2.1: 29
      * v5.2.2: 30
+     * v5.3.0: 31
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 30;
+    public static final int DATABASE_VERSION = 31;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -762,11 +763,14 @@ public class DBHelper
         }
         if (oldVersion < 29) {
             TBL_STRIPINFO_COLLECTION.alterTableAddColumns(
-                    db,
-                    DBDefinitions.DOM_STRIP_INFO_BE_DIGITAL);
+                    db, DBDefinitions.DOM_STRIP_INFO_BE_DIGITAL);
         }
         if (oldVersion < 30) {
             insertGlobalStyleIfNotYetDone(context, db);
+        }
+        if (oldVersion < 31) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db, DBDefinitions.DOM_STYLE_COVER_LONG_CLICK_ACTION);
         }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN

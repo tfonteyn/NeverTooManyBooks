@@ -423,6 +423,7 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_MENU_POSITION;
     public static final Domain DOM_STYLE_LAYOUT;
     public static final Domain DOM_STYLE_COVER_CLICK_ACTION;
+    public static final Domain DOM_STYLE_COVER_LONG_CLICK_ACTION;
 
     public static final Domain DOM_STYLE_EXP_LEVEL;
     public static final Domain DOM_STYLE_ROW_USES_PREF_HEIGHT;
@@ -1220,6 +1221,12 @@ public final class DBDefinitions {
                         .withDefault(Style.CoverClickAction.Zoom.getId())
                         .build();
 
+        DOM_STYLE_COVER_LONG_CLICK_ACTION =
+                new Domain.Builder(DBKey.STYLE_COVER_LONG_CLICK_ACTION, SqLiteDataType.Integer)
+                        .notNull()
+                        .withDefault(Style.CoverLongClickAction.Ignore.getId())
+                        .build();
+
         DOM_STYLE_EXP_LEVEL =
                 new Domain.Builder(DBKey.STYLE_EXP_LEVEL, SqLiteDataType.Integer)
                         .notNull()
@@ -1309,6 +1316,7 @@ public final class DBDefinitions {
 
                             DOM_STYLE_LAYOUT,
                             DOM_STYLE_COVER_CLICK_ACTION,
+                            DOM_STYLE_COVER_LONG_CLICK_ACTION,
 
                             DOM_STYLE_EXP_LEVEL,
                             DOM_STYLE_ROW_USES_PREF_HEIGHT,

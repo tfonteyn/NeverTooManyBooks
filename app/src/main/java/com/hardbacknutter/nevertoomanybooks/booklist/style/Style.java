@@ -221,6 +221,14 @@ public interface Style {
     CoverClickAction getCoverClickAction();
 
     /**
+     * Get the action to take when the user long-clicks a cover image in the BoB list.
+     *
+     * @return action
+     */
+    @NonNull
+    CoverLongClickAction getCoverLongClickAction();
+
+    /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
      *
      * @return {@code true} if the Given name should be displayed before the Family name
@@ -498,6 +506,30 @@ public interface Style {
         }
     }
 
+    enum CoverLongClickAction {
+        /** Ignore long-click on a cover. */
+        Ignore(0),
+        /** Open the book menu as a popup. */
+        PopupMenu(1);
+
+        private final int id;
+
+        CoverLongClickAction(final int id) {
+            this.id = id;
+        }
+
+        @NonNull
+        public static CoverLongClickAction byId(final int id) {
+            if (id == 0) {
+                return Ignore;
+            }
+            return PopupMenu;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
     /**
      * See {@link #isShowBooksUnderEachGroup(int)}.
      */

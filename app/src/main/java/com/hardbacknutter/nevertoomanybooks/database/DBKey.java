@@ -260,6 +260,10 @@ public final class DBKey {
      * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverClickAction
      */
     public static final String STYLE_COVER_CLICK_ACTION = "cover_click_action";
+    /**
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverLongClickAction
+     */
+    public static final String STYLE_COVER_LONG_CLICK_ACTION = "cover_long_click_action";
     public static final String STYLE_EXP_LEVEL = "exp_level";
     public static final String STYLE_ROW_USES_PREF_HEIGHT = "row_pref_height";
     public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";

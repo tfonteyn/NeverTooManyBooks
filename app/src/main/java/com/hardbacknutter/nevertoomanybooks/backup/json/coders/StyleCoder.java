@@ -129,14 +129,23 @@ public class StyleCoder
 
         encodeGroups(style, settings);
 
-        settings.put(StyleDataStore.PK_LAYOUT, style.getLayout().getId());
-        settings.put(StyleDataStore.PK_COVER_CLICK_ACTION, style.getCoverClickAction().getId());
-        settings.put(StyleDataStore.PK_COVER_SCALE, style.getCoverScale());
-        settings.put(StyleDataStore.PK_TEXT_SCALE, style.getTextScale());
-        settings.put(StyleDataStore.PK_GROUP_ROW_HEIGHT, style.isGroupRowUsesPreferredHeight());
+        settings.put(StyleDataStore.PK_LAYOUT,
+                     style.getLayout().getId());
+        settings.put(StyleDataStore.PK_COVER_CLICK_ACTION,
+                     style.getCoverClickAction().getId());
+        settings.put(StyleDataStore.PK_COVER_LONG_CLICK_ACTION,
+                     style.getCoverLongClickAction().getId());
+        settings.put(StyleDataStore.PK_COVER_SCALE,
+                     style.getCoverScale());
+        settings.put(StyleDataStore.PK_TEXT_SCALE,
+                     style.getTextScale());
+        settings.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
+                     style.isGroupRowUsesPreferredHeight());
 
-        settings.put(StyleDataStore.PK_LIST_HEADER, style.getHeaderFieldVisibilityValue());
-        settings.put(PK_LIST_FIELD_ORDER_BY, encodeBookLevelFieldsOrderBy(style));
+        settings.put(StyleDataStore.PK_LIST_HEADER,
+                     style.getHeaderFieldVisibilityValue());
+        settings.put(PK_LIST_FIELD_ORDER_BY,
+                     encodeBookLevelFieldsOrderBy(style));
         settings.put(PK_LIST_FIELD_VISIBILITY,
                      style.getFieldVisibilityValue(FieldVisibility.Screen.List));
 
@@ -263,6 +272,10 @@ public class StyleCoder
         if (source.has(StyleDataStore.PK_COVER_CLICK_ACTION)) {
             style.setCoverClickAction(Style.CoverClickAction.byId(
                     source.getInt(StyleDataStore.PK_COVER_CLICK_ACTION)));
+        }
+        if (source.has(StyleDataStore.PK_COVER_LONG_CLICK_ACTION)) {
+            style.setCoverLongClickAction(Style.CoverLongClickAction.byId(
+                    source.getInt(StyleDataStore.PK_COVER_LONG_CLICK_ACTION)));
         }
         if (source.has(StyleDataStore.PK_COVER_SCALE)) {
             style.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));

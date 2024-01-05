@@ -153,6 +153,7 @@ public class StyleDaoImpl
 
         stmt.bindLong(++c, style.getLayout().getId());
         stmt.bindLong(++c, style.getCoverClickAction().getId());
+        stmt.bindLong(++c, style.getCoverLongClickAction().getId());
         stmt.bindLong(++c, style.getCoverScale());
         stmt.bindLong(++c, style.getTextScale());
         stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
@@ -275,6 +276,7 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE_LAYOUT, style.getLayout().getId());
             cv.put(DBKey.STYLE_COVER_CLICK_ACTION, style.getCoverClickAction().getId());
+            cv.put(DBKey.STYLE_COVER_LONG_CLICK_ACTION, style.getCoverLongClickAction().getId());
             cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
             cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
             cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT, style.isGroupRowUsesPreferredHeight());
@@ -397,6 +399,7 @@ public class StyleDaoImpl
 
                     + ',' + DBKey.STYLE_LAYOUT
                     + ',' + DBKey.STYLE_COVER_CLICK_ACTION
+                    + ',' + DBKey.STYLE_COVER_LONG_CLICK_ACTION
                     + ',' + DBKey.STYLE_COVER_SCALE
                     + ',' + DBKey.STYLE_TEXT_SCALE
                     + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT

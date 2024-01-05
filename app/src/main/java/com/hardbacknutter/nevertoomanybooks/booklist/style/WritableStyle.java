@@ -43,6 +43,8 @@ public interface WritableStyle
 
     void setCoverClickAction(@NonNull Style.CoverClickAction coverClickAction);
 
+    void setCoverLongClickAction(@NonNull Style.CoverLongClickAction coverLongClickAction);
+
     /**
      * Set the preference whether to <strong>show</strong> the Author full name
      * with their given-name first, or their family name first.

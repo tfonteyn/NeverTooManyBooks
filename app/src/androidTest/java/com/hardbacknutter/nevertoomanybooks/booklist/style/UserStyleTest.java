@@ -84,6 +84,7 @@ public class UserStyleTest
 
         assertEquals(s1.getLayout(), s2.getLayout());
         assertEquals(s1.getCoverClickAction(), s2.getCoverClickAction());
+        assertEquals(s1.getCoverLongClickAction(), s2.getCoverLongClickAction());
         assertEquals(s1.getCoverScale(), s2.getCoverScale());
         assertEquals(s1.getTextScale(), s2.getTextScale());
         assertEquals(s1.isGroupRowUsesPreferredHeight(), s2.isGroupRowUsesPreferredHeight());
