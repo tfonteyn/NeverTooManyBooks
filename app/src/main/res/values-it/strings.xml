@@ -538,6 +538,9 @@
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
     <string name="pt_bob_books_under_multiple_publisher">Mostra libri con più editori</string>
     <string name="pt_bob_books_under_multiple_series">Libri in serie multiple</string>
+    <string name="pt_bob_cover_long_click">Aprire il menu contestuale del libro.</string>
+    <string name="pe_bob_cover_long_click_ignore">Con un pulsante.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Con un clic prolungato sull\'immagine di copertina.</string>
     <string name="pt_bob_cover_scale">Dimensione miniature in elenchi</string>
     <string name="pt_bob_cover_show">Mostra miniature</string>
     <string name="pt_bob_font_size">Dimensioni carattere</string>

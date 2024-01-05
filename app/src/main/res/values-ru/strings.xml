@@ -551,6 +551,9 @@
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_publisher">Показать книги с несколькими издателями</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
+    <string name="pt_bob_cover_long_click">Открыть контекстное меню книги.</string>
+    <string name="pe_bob_cover_long_click_ignore">С помощью кнопки.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Долгим щелчком по изображению обложки.</string>
     <string name="pt_bob_cover_scale">Размер изображения в списках</string>
     <string name="pt_bob_cover_show">Показывать миниатюры</string>
     <string name="pt_bob_font_size">Размер шрифта</string>

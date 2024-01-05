@@ -577,6 +577,9 @@
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
     <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers</string>
     <string name="pt_bob_books_under_multiple_series">Boeken in meerdere reeksen</string>
+    <string name="pt_bob_cover_long_click">Open het contextmenu van het boek.</string>
+    <string name="pe_bob_cover_long_click_ignore">Met een knop.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Met een lange klik op de omslagafbeelding.</string>
     <string name="pt_bob_cover_scale">Afbeelding grootte in lijsten</string>
     <string name="pt_bob_cover_show">Toon afbeeldingen</string>
     <string name="pt_bob_font_size">Lettergrootte</string>

@@ -426,6 +426,9 @@
     <string name="pt_bob_list_rebuild_state">Estado de inicialização da lista de livros</string>
     <string name="pe_fast_scroller_overlay_static">Estático</string>
     <string name="pt_bob_books_under_multiple_publisher">Mostrar livros com várias editoras</string>
+    <string name="pt_bob_cover_long_click">Abrir o menu de contexto do livro.</string>
+    <string name="pe_bob_cover_long_click_ignore">Com um botão.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Com um clique longo na imagem da capa.</string>
     <string name="pt_bob_cover_scale">Tamanho da capa em listas</string>
     <string name="error_import_csv_column_count_mismatch">Incompatibilidade de contagem de colunas na linha %1$d</string>
     <string name="info_calibre_content_server_extension">A extensão do servidor de conteúdo do Calibre não está instalada. As bibliotecas virtuais não estarão disponíveis.</string>

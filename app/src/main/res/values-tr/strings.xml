@@ -541,6 +541,9 @@
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
     <string name="pt_bob_books_under_multiple_publisher">Birden çok yayıncının bulunduğu kitapları gösterin</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
+    <string name="pt_bob_cover_long_click">Kitabın içerik menüsünü açın.</string>
+    <string name="pe_bob_cover_long_click_ignore">Bir düğme ile.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Kapak resmine uzun bir tıklama ile.</string>
     <string name="pt_bob_cover_scale">Listelerdeki görüntü boyutu</string>
     <string name="pt_bob_cover_show">Ufak resimleri göster</string>
     <string name="pt_bob_font_size">Yazı tipi boyutu</string>

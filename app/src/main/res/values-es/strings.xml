@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -546,6 +549,9 @@
     <string name="pt_bob_books_under_multiple_authors">Libros con varios autores</string>
     <string name="pt_bob_books_under_multiple_publisher">Mostrar libros con varias editoriales</string>
     <string name="pt_bob_books_under_multiple_series">Libros en varias series</string>
+    <string name="pt_bob_cover_long_click">Abre el menú contextual del libro.</string>
+    <string name="pe_bob_cover_long_click_ignore">Con un botón.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Con una pulsación larga sobre la imagen de portada.</string>
     <string name="pt_bob_cover_scale">Tamaño de la imagen en listas</string>
     <string name="pt_bob_cover_show">Mostrar miniaturas</string>
     <string name="pt_bob_font_size">Tamaño de la fuente</string>

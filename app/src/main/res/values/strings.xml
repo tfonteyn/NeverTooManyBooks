@@ -1429,8 +1429,18 @@
     <!-- ListPreference - When a user taps on the thumbnail/cover-image...
          Will have the option(s) listed underneath. -->
     <string name="pt_bob_cover_click">Tapping on a cover image.</string>
+    <!-- Option text for "pt_bob_cover_click" -->
     <string name="pe_bob_cover_click_zoom">Will zoom in on the cover image.</string>
+    <!-- Option text for "pt_bob_cover_click" -->
     <string name="pe_bob_cover_click_details">Will open the book details page.</string>
+
+    <!-- ListPreference - How to open the book menu for a book in BoB grid-mode.
+         Will have the option(s) listed underneath. -->
+    <string name="pt_bob_cover_long_click">Open the book menu.</string>
+    <!-- Option text for "pt_bob_cover_long_click" -->
+    <string name="pe_bob_cover_long_click_ignore">By tapping a button.</string>
+    <!-- Option text for "pt_bob_cover_long_click" -->
+    <string name="pe_bob_cover_long_click_popupmenu">By doing a long-click on a cover image</string>
 
     <!-- SeekBarPreference - Scale thumbnails in the list view. -->
     <string name="pt_bob_cover_scale">Cover size in lists</string>

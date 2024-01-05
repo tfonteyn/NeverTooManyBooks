@@ -550,6 +550,9 @@
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
     <string name="pt_bob_books_under_multiple_publisher">Zobrazit knihy s více vydavateli</string>
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
+    <string name="pt_bob_cover_long_click">Otevřete kontextovou nabídku knihy.</string>
+    <string name="pe_bob_cover_long_click_ignore">Pomocí tlačítka.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Dlouhým kliknutím na obrázek obálky.</string>
     <string name="pt_bob_cover_scale">Velikost miniatur v seznamech</string>
     <string name="pt_bob_cover_show">Zobrazit náhledy</string>
     <string name="pt_bob_font_size">Velikost písma</string>
