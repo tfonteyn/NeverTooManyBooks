@@ -127,13 +127,6 @@ public class BookHolder
             coverHelper = new CoverHelper(coverLongestSide,
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.MaxSize.Enforce);
-
-            if (style.getCoverClickAction() == Style.CoverClickAction.Zoom) {
-                // Do not go overkill here by adding a full-blown CoverHandler.
-                // We only provide zooming by clicking on the image.
-                vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
-            }
-
         } else {
             coverHelper = null;
             // hide it if not in use.
@@ -176,10 +169,12 @@ public class BookHolder
                 if (style.getCoverClickAction() == Style.CoverClickAction.OpenBookDetails) {
                     vb.coverImage0.setOnClickListener(v -> listener
                             .onClick(v, getBindingAdapterPosition()));
+                } else {
+                    // Tapping the cover image will zoom the image
+                    // Do not go overkill here by adding a full CoverHandler.
+                    //noinspection DataFlowIssue
+                    vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
                 }
-                // else {
-                // Tapping the cover image will zoom the image (as setup in the class constructor).
-                // }
             }
         }
     }

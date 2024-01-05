@@ -79,12 +79,6 @@ public class BookGridHolder
                                       ImageViewLoader.MaxSize.Constrained);
 
         vb.gridCell.setMaxWidth(coverLongestSide);
-
-        if (style.getCoverClickAction() == Style.CoverClickAction.Zoom) {
-            // Do not go overkill here by adding a full-blown CoverHandler.
-            // We only provide zooming by clicking on the image.
-            vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
-        }
     }
 
     @Override
@@ -107,8 +101,12 @@ public class BookGridHolder
                 // No need for the extra button to do the same
                 vb.viewBookDetails.setVisibility(View.GONE);
                 vb.viewBookDetails.setOnClickListener(null);
+
             } else {
-                // Tapping the cover image will zoom the image (as setup in the class constructor).
+                // Tapping the cover image will zoom the image
+                // Do not go overkill here by adding a full CoverHandler.
+                vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
+
                 // Add an explicit 'view' button
                 // as tapping on the background is not obvious when using the grid.
                 vb.viewBookDetails.setVisibility(View.VISIBLE);
