@@ -270,11 +270,11 @@ public final class DBKey {
     public static final String STYLE_AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
     public static final String STYLE_TITLE_SHOW_REORDERED = "show_reorder_title";
     /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.TextScale
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale
      */
     public static final String STYLE_TEXT_SCALE = "text_scale";
     /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverScale
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale
      */
     public static final String STYLE_COVER_SCALE = "cover_scale";
     /**

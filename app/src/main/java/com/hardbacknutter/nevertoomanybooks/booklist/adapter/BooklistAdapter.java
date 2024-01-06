@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.util.TypedValue;
@@ -49,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -300,8 +300,8 @@ public class BooklistAdapter
         }
 
         // Scale text/padding (recursively) if required
-        final int textScale = style.getTextScale();
-        if (textScale != Style.DEFAULT_TEXT_SCALE) {
+        final TextScale textScale = style.getTextScale();
+        if (textScale != TextScale.DEFAULT) {
             scaleTextViews(itemView, textScale);
         }
 
@@ -367,33 +367,11 @@ public class BooklistAdapter
     }
 
     private void scaleTextViews(@NonNull final View view,
-                                @Style.TextScale final int textScale) {
-        final Resources res = view.getContext().getResources();
-        TypedArray ta;
-        final float fontSizeInSpUnits;
-        ta = res.obtainTypedArray(R.array.bob_text_size_in_sp);
-        try {
-            fontSizeInSpUnits = ta.getFloat(textScale, 0);
-        } finally {
-            ta.recycle();
-        }
+                                @NonNull final TextScale textScale) {
 
-        final float paddingFactor;
-        ta = res.obtainTypedArray(R.array.bob_text_padding_in_percent);
-        try {
-            paddingFactor = ta.getFloat(textScale, 0);
-        } finally {
-            ta.recycle();
-        }
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (fontSizeInSpUnits <= 0) {
-                throw new IllegalArgumentException("fontSizeInSpUnits");
-            }
-            if (paddingFactor <= 0) {
-                throw new IllegalArgumentException("paddingFactor");
-            }
-        }
+        final Context context = view.getContext();
+        final float fontSizeInSpUnits = textScale.getFontSizeInSp(context);
+        final float paddingFactor = textScale.getPaddingFactor(context);
 
         scaleTextViews(view, fontSizeInSpUnits, paddingFactor);
     }

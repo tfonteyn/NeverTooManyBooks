@@ -30,9 +30,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -1263,12 +1265,12 @@ public final class DBDefinitions {
         DOM_STYLE_TEXT_SCALE =
                 new Domain.Builder(DBKey.STYLE_TEXT_SCALE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(Style.DEFAULT_TEXT_SCALE)
+                        .withDefault(TextScale.DEFAULT.getScale())
                         .build();
         DOM_STYLE_COVER_SCALE =
                 new Domain.Builder(DBKey.STYLE_COVER_SCALE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(Style.DEFAULT_COVER_SCALE)
+                        .withDefault(CoverScale.DEFAULT.getScale())
                         .build();
 
         DOM_STYLE_LIST_HEADER =

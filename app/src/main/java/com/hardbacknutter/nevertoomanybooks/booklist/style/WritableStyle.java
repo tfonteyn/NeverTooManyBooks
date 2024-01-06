@@ -39,11 +39,11 @@ public interface WritableStyle
 
     void setExpansionLevel(@IntRange(from = 1) int value);
 
-    void setLayout(@NonNull Style.Layout layout);
+    void setLayout(int layout);
 
-    void setCoverClickAction(@NonNull Style.CoverClickAction coverClickAction);
+    void setCoverClickAction(int coverClickAction);
 
-    void setCoverLongClickAction(@NonNull Style.CoverLongClickAction coverLongClickAction);
+    void setCoverLongClickAction(int coverLongClickAction);
 
     /**
      * Set the preference whether to <strong>show</strong> the Author full name
@@ -65,9 +65,19 @@ public interface WritableStyle
      */
     void setSortAuthorByGivenName(boolean value);
 
-    void setTextScale(@Style.TextScale int scale);
+    /**
+     * Set the text/font scale.
+     *
+     * @param scale the id of the {@link TextScale}.
+     */
+    void setTextScale(int scale);
 
-    void setCoverScale(@Style.CoverScale int coverScale);
+    /**
+     * Set the cover scale.
+     *
+     * @param scale the id of the {@link CoverScale}.
+     */
+    void setCoverScale(int scale);
 
     /**
      * Set the bitmap value with the list header fields to show.

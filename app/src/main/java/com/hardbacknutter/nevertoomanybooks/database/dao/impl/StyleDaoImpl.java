@@ -154,8 +154,8 @@ public class StyleDaoImpl
         stmt.bindLong(++c, style.getLayout().getId());
         stmt.bindLong(++c, style.getCoverClickAction().getId());
         stmt.bindLong(++c, style.getCoverLongClickAction().getId());
-        stmt.bindLong(++c, style.getCoverScale());
-        stmt.bindLong(++c, style.getTextScale());
+        stmt.bindLong(++c, style.getCoverScale().getScale());
+        stmt.bindLong(++c, style.getTextScale().getScale());
         stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
 
         stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
@@ -277,8 +277,8 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_LAYOUT, style.getLayout().getId());
             cv.put(DBKey.STYLE_COVER_CLICK_ACTION, style.getCoverClickAction().getId());
             cv.put(DBKey.STYLE_COVER_LONG_CLICK_ACTION, style.getCoverLongClickAction().getId());
-            cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
-            cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
+            cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale().getScale());
+            cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale().getScale());
             cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT, style.isGroupRowUsesPreferredHeight());
 
             cv.put(DBKey.STYLE_LIST_HEADER, style.getHeaderFieldVisibilityValue());

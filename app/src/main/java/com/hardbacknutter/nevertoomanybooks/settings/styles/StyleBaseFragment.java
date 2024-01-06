@@ -101,7 +101,6 @@ public abstract class StyleBaseFragment
         pLayout.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pLayout.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof String) {
-                final Style.Layout layout = Style.Layout.byId(Integer.parseInt((String) newValue));
                 updateLayoutPrefs();
                 return true;
             }
@@ -207,9 +206,9 @@ public abstract class StyleBaseFragment
         pListBookLevelFields.setSummary(
                 createVisibilitySummary(context, style, FieldVisibility.Screen.List));
         pCoverScale.setSummary(context.getResources().getStringArray(
-                R.array.pe_bob_thumbnail_scale)[style.getCoverScale()]);
+                R.array.pe_bob_thumbnail_scale)[style.getCoverScale().getScale()]);
         pTextScale.setSummary(context.getResources().getStringArray(
-                R.array.pe_bob_text_scale)[style.getTextScale()]);
+                R.array.pe_bob_text_scale)[style.getTextScale().getScale()]);
     }
 
     @NonNull

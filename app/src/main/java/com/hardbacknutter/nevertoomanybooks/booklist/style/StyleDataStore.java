@@ -262,10 +262,10 @@ public class StyleDataStore
                 return style.getExpansionLevel();
 
             case PK_COVER_SCALE:
-                return style.getCoverScale();
+                return style.getCoverScale().getScale();
 
             case PK_TEXT_SCALE:
-                return style.getTextScale();
+                return style.getTextScale().getScale();
 
             default:
                 throw new IllegalArgumentException(key);
@@ -376,19 +376,17 @@ public class StyleDataStore
             }
             case PK_LAYOUT: {
                 //noinspection DataFlowIssue
-                style.setLayout(Style.Layout.byId(Integer.parseInt(value)));
+                style.setLayout(Integer.parseInt(value));
                 break;
             }
             case PK_COVER_CLICK_ACTION: {
                 //noinspection DataFlowIssue
-                style.setCoverClickAction(Style.CoverClickAction
-                                                  .byId(Integer.parseInt(value)));
+                style.setCoverClickAction(Integer.parseInt(value));
                 break;
             }
             case PK_COVER_LONG_CLICK_ACTION: {
                 //noinspection DataFlowIssue
-                style.setCoverLongClickAction(Style.CoverLongClickAction
-                                                      .byId(Integer.parseInt(value)));
+                style.setCoverLongClickAction(Integer.parseInt(value));
                 break;
             }
             default:

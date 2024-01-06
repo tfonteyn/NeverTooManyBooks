@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 
-import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
@@ -50,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public abstract class BaseStyle
         implements Style {
@@ -149,11 +145,11 @@ public abstract class BaseStyle
      */
     private boolean preferred;
     /** Relative scaling factor for text on the list screen. */
-    @Style.TextScale
-    private int textScale = DEFAULT_TEXT_SCALE;
+    @NonNull
+    private TextScale textScale = TextScale.DEFAULT;
     /** Relative scaling factor for covers on the list screen. */
-    @Style.CoverScale
-    private int coverScale = DEFAULT_COVER_SCALE;
+    @NonNull
+    private CoverScale coverScale = CoverScale.DEFAULT;
     /** Local override. */
     private boolean sortAuthorByGivenName;
     /** Local override. */
@@ -217,13 +213,11 @@ public abstract class BaseStyle
         menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
         // 'simple' options
-        layout = Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT));
-        coverClickAction = CoverClickAction
-                .byId(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION));
-        coverLongClickAction = CoverLongClickAction
-                .byId(rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION));
-        coverScale = rowData.getInt(DBKey.STYLE_COVER_SCALE);
-        textScale = rowData.getInt(DBKey.STYLE_TEXT_SCALE);
+        setLayout(rowData.getInt(DBKey.STYLE_LAYOUT));
+        setCoverClickAction(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION));
+        setCoverLongClickAction(rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION));
+        setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
+        setTextScale(rowData.getInt(DBKey.STYLE_TEXT_SCALE));
         groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
 
         setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
@@ -386,8 +380,8 @@ public abstract class BaseStyle
         return layout;
     }
 
-    public void setLayout(@NonNull final Layout layout) {
-        this.layout = layout;
+    public void setLayout(final int layout) {
+        this.layout = Style.Layout.byId(layout);
     }
 
     @Override
@@ -396,8 +390,8 @@ public abstract class BaseStyle
         return coverClickAction;
     }
 
-    public void setCoverClickAction(@NonNull final CoverClickAction coverClickAction) {
-        this.coverClickAction = coverClickAction;
+    public void setCoverClickAction(final int coverClickAction) {
+        this.coverClickAction = CoverClickAction.byId(coverClickAction);
     }
 
     @Override
@@ -407,8 +401,8 @@ public abstract class BaseStyle
     }
 
 
-    public void setCoverLongClickAction(@NonNull final CoverLongClickAction coverLongClickAction) {
-        this.coverLongClickAction = coverLongClickAction;
+    public void setCoverLongClickAction(final int coverLongClickAction) {
+        this.coverLongClickAction = CoverLongClickAction.byId(coverLongClickAction);
     }
 
     @Override
@@ -438,62 +432,23 @@ public abstract class BaseStyle
         sortAuthorByGivenName = value;
     }
 
-    @Style.TextScale
+    @NonNull
     @Override
-    public int getTextScale() {
+    public TextScale getTextScale() {
         return textScale;
     }
 
-    public void setTextScale(@Style.TextScale final int scale) {
-        textScale = scale;
+    public void setTextScale(final int scale) {
+        textScale = TextScale.byId(scale);
     }
 
-    @Style.CoverScale
     @Override
-    public int getCoverScale() {
+    public @NonNull CoverScale getCoverScale() {
         return coverScale;
     }
 
-    public void setCoverScale(@Style.CoverScale final int coverScale) {
-        this.coverScale = coverScale;
-    }
-
-    @Dimension
-    public int getCoverMaxSizeInPixels(@NonNull final Context context) {
-        return getCoverMaxSizeInPixels(context, layout);
-    }
-
-    @Dimension
-    public int getCoverMaxSizeInPixels(@NonNull final Context context,
-                                       @NonNull final Layout layout) {
-        final int scale;
-        if (layout == Layout.Grid) {
-            switch (WindowSizeClass.getWidthVariant(context)) {
-                case Compact:
-                    scale = COVER_SCALE_SMALL;
-                    break;
-                case Expanded:
-                    scale = COVER_SCALE_LARGE;
-                    break;
-                case Medium:
-                default:
-                    scale = COVER_SCALE_MEDIUM;
-                    break;
-            }
-        } else {
-            // default: List: use the value as set by the user preferences.
-            scale = coverScale;
-        }
-
-        // The scale is used to retrieve the cover dimensions.
-        // We use a square space for the image so both portrait/landscape images work out.
-        final TypedArray coverSizes = context
-                .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
-        try {
-            return coverSizes.getDimensionPixelSize(scale, 0);
-        } finally {
-            coverSizes.recycle();
-        }
+    public void setCoverScale(final int coverScale) {
+        this.coverScale = CoverScale.byId(coverScale);
     }
 
     @Override

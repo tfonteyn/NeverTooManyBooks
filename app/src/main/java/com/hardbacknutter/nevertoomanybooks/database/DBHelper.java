@@ -51,11 +51,13 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
@@ -600,9 +602,9 @@ public class DBHelper
 
 
                     stmt.bindLong(++c, stylePrefs.getInt(
-                            "style.booklist.scale.font", Style.DEFAULT_TEXT_SCALE));
+                            "style.booklist.scale.font", TextScale.DEFAULT.getScale()));
                     stmt.bindLong(++c, stylePrefs.getInt(
-                            "style.booklist.scale.thumbnails", Style.DEFAULT_COVER_SCALE));
+                            "style.booklist.scale.thumbnails", CoverScale.DEFAULT.getScale()));
 
                     stmt.bindLong(++c, StyleDataStore.convert(
                             stylePrefs.getStringSet("style.booklist.header", null),

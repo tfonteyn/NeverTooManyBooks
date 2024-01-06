@@ -21,14 +21,10 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
 
-import androidx.annotation.Dimension;
-import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -59,41 +55,6 @@ public interface Style {
      * <br>type: {@code String}
      */
     String BKEY_UUID = "Style:uuid";
-
-    /**
-     * Text Scaling.
-     * <strong>Never change these values</strong>, they get stored in the db.
-     * The book title in the list is by default 'medium' (see styles.xml)
-     * Other elements are always 1 size 'less' than the title.
-     * <p>
-     * These values are used as the index into a resource array.
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.R.array#bob_text_size_in_sp
-     * @see com.hardbacknutter.nevertoomanybooks.R.array#bob_text_padding_in_percent
-     */
-    int TEXT_SCALE_0_VERY_SMALL = 0;
-    int TEXT_SCALE_1_SMALL = 1;
-    int TEXT_SCALE_2_MEDIUM = 2;
-    int TEXT_SCALE_3_LARGE = 3;
-    int TEXT_SCALE_4_XL = 4;
-
-    int DEFAULT_TEXT_SCALE = TEXT_SCALE_2_MEDIUM;
-
-    /**
-     * Cover Scaling.
-     * <strong>Never change these values</strong>, they get stored in the db.
-     * <p>
-     * These values are used as the index into a resource array.
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.R.array#cover_book_list_longest_side
-     * @see com.hardbacknutter.nevertoomanybooks.R.array#pe_bob_thumbnail_scale
-     */
-    int COVER_SCALE_HIDDEN = 0;
-    int COVER_SCALE_SMALL = 1;
-    int COVER_SCALE_MEDIUM = 2;
-    int COVER_SCALE_LARGE = 3;
-    int COVER_SCALE_XL = 4;
-    int DEFAULT_COVER_SCALE = COVER_SCALE_MEDIUM;
 
     @SuppressWarnings("ClassReferencesSubclass")
     @NonNull
@@ -257,8 +218,8 @@ public interface Style {
      *
      * @return scale
      */
-    @Style.TextScale
-    int getTextScale();
+    @NonNull
+    TextScale getTextScale();
 
     /**
      * Get the cover scale <strong>identifier</strong> used by the style.
@@ -267,40 +228,8 @@ public interface Style {
      *
      * @return scale
      */
-    @Style.CoverScale
-    int getCoverScale();
-
-    /**
-     * Calculate the scaled cover maximum size in pixels.
-     * <p>
-     * Uses the {@link #getCoverScale()} identifier to lookup an a
-     * resource value in {code dp} and returns that as an amount of pixels.
-     *
-     * @param context Current context
-     *
-     * @return max size in pixels
-     *
-     * @see #getCoverMaxSizeInPixels(Context, Layout)
-     */
-    @Dimension
-    int getCoverMaxSizeInPixels(@NonNull Context context);
-
-    /**
-     * Calculate the scaled cover maximum size in pixels.
-     * <p>
-     * Uses the {@link #getCoverScale()} identifier to lookup an a
-     * resource value in {code dp} and returns that as an amount of pixels.
-     *
-     * @param context Current context
-     * @param layout  overrule the layout-setting of the style
-     *
-     * @return max size in pixels
-     *
-     * @see #getCoverMaxSizeInPixels(Context)
-     */
-    @Dimension
-    int getCoverMaxSizeInPixels(@NonNull Context context,
-                                @NonNull Layout layout);
+    @NonNull
+    CoverScale getCoverScale();
 
     /**
      * Check if the style wants the specified header to be displayed.
@@ -619,25 +548,5 @@ public interface Style {
         public int getGroupId() {
             return groupId;
         }
-    }
-
-    @IntDef({TEXT_SCALE_0_VERY_SMALL,
-            TEXT_SCALE_1_SMALL,
-            TEXT_SCALE_2_MEDIUM,
-            TEXT_SCALE_3_LARGE,
-            TEXT_SCALE_4_XL})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface TextScale {
-
-    }
-
-    @IntDef({COVER_SCALE_HIDDEN,
-            COVER_SCALE_SMALL,
-            COVER_SCALE_MEDIUM,
-            COVER_SCALE_LARGE,
-            COVER_SCALE_XL})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface CoverScale {
-
     }
 }

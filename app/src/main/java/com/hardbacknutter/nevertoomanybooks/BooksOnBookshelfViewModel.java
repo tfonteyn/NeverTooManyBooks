@@ -567,9 +567,10 @@ public class BooksOnBookshelfViewModel
                                     final boolean hasEmbeddedDetailsFrame) {
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             if (hasEmbeddedDetailsFrame) {
-                return style.getCoverMaxSizeInPixels(context, Style.Layout.List);
+                // use a scale one smaller than on the non-embedded view.
+                return style.getCoverScale().smaller().getMaxWidthInPixels(context);
             } else {
-                return style.getCoverMaxSizeInPixels(context);
+                return style.getCoverScale().getMaxWidthInPixels(context);
             }
         } else {
             return 0;
