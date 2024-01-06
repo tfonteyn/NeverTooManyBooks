@@ -1442,8 +1442,8 @@
     <!-- Option text for "pt_bob_cover_long_click" -->
     <string name="pe_bob_cover_long_click_popupmenu">By doing a long-click on a cover image</string>
 
-    <!-- SeekBarPreference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_scale">Cover size in lists</string>
+    <!-- SeekBarPreference - Scale cover/thumbnail images. -->
+    <string name="pt_bob_cover_scale">Cover size</string>
     <!-- [VERIFIED] SeekBarPreference - Scale text. -->
     <string name="pt_bob_font_size">Font size</string>
     <!-- SwitchPreference - the height of the rows in the booklist (Small/Large) -->

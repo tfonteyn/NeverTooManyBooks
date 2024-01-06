@@ -538,7 +538,7 @@
     <string name="pt_bob_cover_long_click">Öffnen Sie das Kontextmenü des Buches.</string>
     <string name="pe_bob_cover_long_click_ignore">Mit einer Schaltfläche.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Mit einem langen Klick auf das Titelbild.</string>
-    <string name="pt_bob_cover_scale">Buchumschläge Größe in listen</string>
+    <string name="pt_bob_cover_scale">Größe der Buchumschläge</string>
     <string name="pt_bob_cover_show">Buchumschläge anzeigen</string>
     <string name="pt_bob_font_size">Schriftgröße</string>
     <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>

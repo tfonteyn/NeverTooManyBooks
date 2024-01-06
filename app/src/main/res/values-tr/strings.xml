@@ -544,7 +544,7 @@
     <string name="pt_bob_cover_long_click">Kitabın içerik menüsünü açın.</string>
     <string name="pe_bob_cover_long_click_ignore">Bir düğme ile.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Kapak resmine uzun bir tıklama ile.</string>
-    <string name="pt_bob_cover_scale">Listelerdeki görüntü boyutu</string>
+    <string name="pt_bob_cover_scale">Kapak resmi boyutu</string>
     <string name="pt_bob_cover_show">Ufak resimleri göster</string>
     <string name="pt_bob_font_size">Yazı tipi boyutu</string>
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>

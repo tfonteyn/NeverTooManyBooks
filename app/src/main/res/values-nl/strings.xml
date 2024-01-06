@@ -580,8 +580,8 @@
     <string name="pt_bob_cover_long_click">Open het contextmenu van het boek.</string>
     <string name="pe_bob_cover_long_click_ignore">Met een knop.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Met een lange klik op de omslagafbeelding.</string>
-    <string name="pt_bob_cover_scale">Afbeelding grootte in lijsten</string>
-    <string name="pt_bob_cover_show">Toon afbeeldingen</string>
+    <string name="pt_bob_cover_scale">Grootte van de omslagafbeelding</string>
+    <string name="pt_bob_cover_show">Toon omslagafbeeldingen</string>
     <string name="pt_bob_font_size">Lettergrootte</string>
     <string name="pt_bob_groups">Groeperingen</string>
     <string name="pt_bob_header">Details in de koptekst</string>

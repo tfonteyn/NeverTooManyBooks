@@ -557,7 +557,7 @@
     <string name="pt_bob_cover_long_click">Otwórz menu kontekstowe książki.</string>
     <string name="pe_bob_cover_long_click_ignore">Za pomocą przycisku.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Długim kliknięciem obrazu okładki.</string>
-    <string name="pt_bob_cover_scale">Rozmiar obrazu na listach</string>
+    <string name="pt_bob_cover_scale">Rozmiar obrazu okładki</string>
     <string name="pt_bob_cover_show">Pokaż miniaturki</string>
     <string name="pt_bob_font_size">Rozmiar czcionki</string>
     <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>

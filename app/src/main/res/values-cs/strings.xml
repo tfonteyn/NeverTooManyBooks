@@ -553,7 +553,7 @@
     <string name="pt_bob_cover_long_click">Otevřete kontextovou nabídku knihy.</string>
     <string name="pe_bob_cover_long_click_ignore">Pomocí tlačítka.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Dlouhým kliknutím na obrázek obálky.</string>
-    <string name="pt_bob_cover_scale">Velikost miniatur v seznamech</string>
+    <string name="pt_bob_cover_scale">Velikost obrázku na obálce</string>
     <string name="pt_bob_cover_show">Zobrazit náhledy</string>
     <string name="pt_bob_font_size">Velikost písma</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>

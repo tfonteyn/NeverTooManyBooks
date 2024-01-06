@@ -542,7 +542,7 @@
     <string name="pt_bob_cover_long_click">Ouvrir le menu contextuel du livre.</string>
     <string name="pe_bob_cover_long_click_ignore">Avec un bouton.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Par un clic long sur l\'image de couverture.</string>
-    <string name="pt_bob_cover_scale">Taille de couverture dans les listes</string>
+    <string name="pt_bob_cover_scale">Taille de couverture</string>
     <string name="pt_bob_cover_show">Montrer les couvertures</string>
     <string name="pt_bob_font_size">Taille de la police</string>
     <string name="pt_bob_header">Détails du résumé dans l’en-tête</string>

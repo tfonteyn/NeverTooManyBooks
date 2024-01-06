@@ -296,6 +296,7 @@
     <string name="pt_bob_cover_long_click">打开图书的上下文菜单。</string>
     <string name="pe_bob_cover_long_click_ignore">用按钮</string>
     <string name="pe_bob_cover_long_click_popupmenu">长按封面图片</string>
+    <string name="pt_bob_cover_scale">封面图像大小</string>
     <string name="pt_bob_font_size">字体大小</string>
     <string name="pt_ui_language">语言</string>
     <string name="unknown">未知</string>

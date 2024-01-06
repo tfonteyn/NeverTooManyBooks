@@ -119,6 +119,7 @@
     <string name="pt_bob_cover_long_click">Mở menu ngữ cảnh của cuốn sách.</string>
     <string name="pe_bob_cover_long_click_ignore">Với một nút.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Với một cú nhấp chuột dài vào ảnh bìa.</string>
+    <string name="pt_bob_cover_scale">Kích thước ảnh bìa</string>
     <string name="pt_bob_font_size">Cỡ chữ</string>
     <string name="X_lbl_general">Chung</string>
     <string name="X_action_go">Đến</string>

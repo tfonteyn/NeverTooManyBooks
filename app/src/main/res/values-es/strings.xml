@@ -552,7 +552,7 @@
     <string name="pt_bob_cover_long_click">Abre el menú contextual del libro.</string>
     <string name="pe_bob_cover_long_click_ignore">Con un botón.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Con una pulsación larga sobre la imagen de portada.</string>
-    <string name="pt_bob_cover_scale">Tamaño de la imagen en listas</string>
+    <string name="pt_bob_cover_scale">Tamaño de la imagen de portada</string>
     <string name="pt_bob_cover_show">Mostrar miniaturas</string>
     <string name="pt_bob_font_size">Tamaño de la fuente</string>
     <string name="pt_bob_header">Resumen en la cabecera</string>

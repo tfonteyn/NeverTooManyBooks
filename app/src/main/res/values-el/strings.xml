@@ -539,7 +539,7 @@
     <string name="pt_bob_cover_long_click">Ανοίξτε το μενού περιβάλλοντος του βιβλίου.</string>
     <string name="pe_bob_cover_long_click_ignore">Με ένα κουμπί.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Με παρατεταμένο κλικ στην εικόνα του εξωφύλλου.</string>
-    <string name="pt_bob_cover_scale">Μικρογραφεί μέγεθος σε λίστες</string>
+    <string name="pt_bob_cover_scale">Μέγεθος εικόνας εξωφύλλου</string>
     <string name="pt_bob_cover_show">Εμφάνιση μικρογραφιών</string>
     <string name="pt_bob_font_size">Μέγεθος γραμματοσειράς</string>
     <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>

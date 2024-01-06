@@ -554,7 +554,7 @@
     <string name="pt_bob_cover_long_click">Открыть контекстное меню книги.</string>
     <string name="pe_bob_cover_long_click_ignore">С помощью кнопки.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Долгим щелчком по изображению обложки.</string>
-    <string name="pt_bob_cover_scale">Размер изображения в списках</string>
+    <string name="pt_bob_cover_scale">Размер изображения на обложке</string>
     <string name="pt_bob_cover_show">Показывать миниатюры</string>
     <string name="pt_bob_font_size">Размер шрифта</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
