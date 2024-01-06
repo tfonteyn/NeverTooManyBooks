@@ -364,6 +364,7 @@
         <item>@string/size_small</item>
         <item>@string/size_medium</item>
         <item>@string/size_large</item>
+        <item>@string/size_x_large</item>
     </string-array>
 
     <!-- MultiSelectListPreference - Determines which author type is considered the primary author of a book -->

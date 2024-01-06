@@ -75,7 +75,7 @@ public interface Style {
     int TEXT_SCALE_1_SMALL = 1;
     int TEXT_SCALE_2_MEDIUM = 2;
     int TEXT_SCALE_3_LARGE = 3;
-    int TEXT_SCALE_4_VERY_LARGE = 4;
+    int TEXT_SCALE_4_XL = 4;
 
     int DEFAULT_TEXT_SCALE = TEXT_SCALE_2_MEDIUM;
 
@@ -86,11 +86,13 @@ public interface Style {
      * These values are used as the index into a resource array.
      *
      * @see com.hardbacknutter.nevertoomanybooks.R.array#cover_book_list_longest_side
+     * @see com.hardbacknutter.nevertoomanybooks.R.array#pe_bob_thumbnail_scale
      */
     int COVER_SCALE_HIDDEN = 0;
     int COVER_SCALE_SMALL = 1;
     int COVER_SCALE_MEDIUM = 2;
     int COVER_SCALE_LARGE = 3;
+    int COVER_SCALE_XL = 4;
     int DEFAULT_COVER_SCALE = COVER_SCALE_MEDIUM;
 
     @SuppressWarnings("ClassReferencesSubclass")
@@ -235,6 +237,12 @@ public interface Style {
      */
     boolean isShowAuthorByGivenName();
 
+    /**
+     * Whether the user prefers titles of books, series,... to be displayed
+     * as "Title, The" or as the original "The Title". Not applicable to all languages though.
+     *
+     * @return {@code true} if the Given name should be displayed before the Family name
+     */
     boolean isShowReorderedTitle();
 
     /**
@@ -243,7 +251,6 @@ public interface Style {
      * @return {@code true} if the Given name should be sorted before then the Family name
      */
     boolean isSortAuthorByGivenName();
-
 
     /**
      * Get the text scale <strong>identifier</strong> used by the style.
@@ -530,6 +537,7 @@ public interface Style {
             return id;
         }
     }
+
     /**
      * See {@link #isShowBooksUnderEachGroup(int)}.
      */
@@ -617,7 +625,7 @@ public interface Style {
             TEXT_SCALE_1_SMALL,
             TEXT_SCALE_2_MEDIUM,
             TEXT_SCALE_3_LARGE,
-            TEXT_SCALE_4_VERY_LARGE})
+            TEXT_SCALE_4_XL})
     @Retention(RetentionPolicy.SOURCE)
     @interface TextScale {
 
@@ -626,7 +634,8 @@ public interface Style {
     @IntDef({COVER_SCALE_HIDDEN,
             COVER_SCALE_SMALL,
             COVER_SCALE_MEDIUM,
-            COVER_SCALE_LARGE})
+            COVER_SCALE_LARGE,
+            COVER_SCALE_XL})
     @Retention(RetentionPolicy.SOURCE)
     @interface CoverScale {
 

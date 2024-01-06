@@ -104,10 +104,16 @@
     <dimen name="cover_browser_preview_height">150dp</dimen>
     <dimen name="cover_browser_preview_width">96dp</dimen>
 
-    <!-- BoB layout. We use a square space for the image so both
+    <!-- BoB layout. The length of the longest side of a cover.
+         We use a square space for the image so both
          portrait/landscape cover images work out.
-         The sizes are calculated at {0, 2, 3, 5} * 40dp
+
+         The user-preference (cover-scale) is an int (0..4)
+         which is used as the index to this array.
+
+         The sizes are calculated at {0, 2, 3, 5, 7} * 40dp
          Width is set at a ratio 0.60 (common for paperbacks)
+         (see CoverHelper.java for the latter)
     -->
     <array name="cover_book_list_longest_side">
         <!-- hidden -->
@@ -118,6 +124,8 @@
         <item>120dp</item>
         <!-- large -->
         <item>200dp</item>
+        <!-- X-Large -->
+        <item>280dp</item>
     </array>
 
     <!-- used as tools defaults in the BoB layout.

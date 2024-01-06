@@ -130,7 +130,7 @@
             android:dependency="style.booklist.show.thumbnails"
             android:icon="@drawable/ic_baseline_photo_size_select_large_24"
             android:key="style.booklist.scale.thumbnails"
-            android:max="3"
+            android:max="4"
             android:title="@string/pt_bob_cover_scale"
             app:min="1"
             />
