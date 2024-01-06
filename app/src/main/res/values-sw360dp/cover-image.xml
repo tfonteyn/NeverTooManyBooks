@@ -59,4 +59,39 @@
     <dimen name="cover_browser_gallery_text_size">11sp</dimen>
     <integer name="cover_browser_gallery_span_count">2</integer>
 
+    <array name="cover_book_list_longest_side">
+        <!-- hidden -->
+        <item>0dp</item>
+        <!-- small: 2 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 4 images.
+            Grid-mode Landscape: 8 images.
+        -->
+        <item>80dp</item>
+        <!-- medium: 3 * 40dp - the default.
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 3 images.
+            Grid-mode Landscape: 5 images.
+        -->
+        <item>120dp</item>
+        <!-- large: 5 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 images.
+            Grid-mode Landscape: 3 images.
+        -->
+        <item>200dp</item>
+        <!-- X-Large: 8 * 40dp
+            This size is meant for grid-mode ONLY.
+
+            List-mode Portrait: NOT suited, text will be severely wrapped.
+                                Oblong images will be cropped on the right.
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; minimal white band on the right.
+            Grid-mode Landscape: 2 image; fills the entire width.
+        -->
+        <item>320dp</item>
+    </array>
 </resources>

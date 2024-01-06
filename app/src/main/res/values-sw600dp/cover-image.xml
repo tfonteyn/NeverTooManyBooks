@@ -52,4 +52,73 @@
     <integer name="cover_browser_gallery_span_count">2</integer>
 
 
+    <array name="cover_book_list_longest_side">
+        <!-- hidden -->
+        <item>0dp</item>
+        <!-- small: 2 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 7 images.
+            Grid-mode Landscape: 12 images.
+        -->
+        <item>80dp</item>
+        <!-- medium: 3 * 40dp - the default.
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 5 images.
+            Grid-mode Landscape: 8 images.
+        -->
+        <item>120dp</item>
+        <!-- large: 5 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 3 images.
+            Grid-mode Landscape: 4 images.
+        -->
+        <item>200dp</item>
+        <!-- X-Large
+            8 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; large white band on the right.
+            Grid-mode Landscape: 3 image; fills the entire width.
+
+            9 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; large white band on the right.
+            Grid-mode Landscape: 2 image; white bands
+
+            10 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; large white band on the right.
+            Grid-mode Landscape: 2 image; small white bands
+
+            12 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; large white band on the right.
+            Grid-mode Landscape: 2 image; nearly full width
+
+            13 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; small white band on the right.
+            Grid-mode Landscape: 1 image; large white band
+
+            14 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; small white band on the right.
+            Grid-mode Landscape: 1 image; large white band
+
+            15 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; fills the entire width.
+            Grid-mode Landscape: 1 image; large white band
+        -->
+        <item>600dp</item>
+    </array>
 </resources>

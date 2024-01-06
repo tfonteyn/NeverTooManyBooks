@@ -107,28 +107,55 @@
     <!-- BoB layout. The length of the longest side of a cover.
          We use a square space for the image so both
          portrait/landscape cover images work out.
+         TODO 2024-01: this needs a rethink... it should really be the WIDTH
+          and we should not care about the height other than being proportional.
+          Schedule this for a 6.0 release.
 
          The user-preference (cover-scale) is an int (0..4)
          which is used as the index to this array.
 
-         The sizes are calculated at {0, 2, 3, 5, 7} * 40dp
+         The sizes are calculated at {0, 2, 3, 5, 8} * 40dp
          Width is set at a ratio 0.60 (common for paperbacks)
-         (see CoverHelper.java for the latter)
+         (see com/hardbacknutter/nevertoomanybooks/booklist/adapter/CoverHelper.java
+          for the latter)
     -->
     <array name="cover_book_list_longest_side">
         <!-- hidden -->
         <item>0dp</item>
-        <!-- small -->
+        <!-- small: 2 * 40dp
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 4 images.
+            Grid-mode Landscape: 6 images.
+        -->
         <item>80dp</item>
-        <!-- medium - the default. -->
+        <!-- medium: 3 * 40dp - the default.
+            List-mode Portrait : ok
+            List-mode Landscape: ok
+            Grid-mode Portrait : 2 images.
+            Grid-mode Landscape: 4 images.
+        -->
         <item>120dp</item>
-        <!-- large -->
+        <!-- large: 5 * 40dp
+            List-mode Portrait : the text aside the image will be severely wrapped.
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 images.
+            Grid-mode Landscape: 2 images.
+        -->
         <item>200dp</item>
-        <!-- X-Large -->
-        <item>280dp</item>
+        <!-- X-Large: 8 * 40dp
+            This size is meant for grid-mode ONLY.
+
+            List-mode Portrait: NOT suited, all text will be hidden.
+                                Oblong images will be cropped on the right.
+            List-mode Landscape: ok
+            Grid-mode Portrait : 1 image; fills the entire width.
+            Grid-mode Landscape: 1 image; minimal white band on the right.
+        -->
+        <item>320dp</item>
     </array>
 
-    <!-- used as tools defaults in the BoB layout.
+    <!-- used as "tools:" defaults in the BoB layout.
          Actual values are set according to user preferences. -->
     <dimen name="tools_cover_height">120dp</dimen>
     <dimen name="tools_cover_width">72dp</dimen>
