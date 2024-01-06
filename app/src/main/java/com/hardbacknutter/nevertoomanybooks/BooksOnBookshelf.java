@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -51,6 +50,7 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
@@ -646,7 +646,12 @@ public class BooksOnBookshelf
                 break;
             }
             case Grid: {
-                final int spanCount = getGridSpanCount(this);
+                // Calculate how many grid columns we should display depending on the screen size.
+                final float widthPx = WindowMetricsCalculator
+                        .getOrCreate().computeCurrentWindowMetrics(this).getBounds().width();
+                final int coverMaxSizeInPixels = vm.getStyle().getCoverScale().getMaxWidthInPixels(
+                        this);
+                final int spanCount = (int) Math.floor(widthPx / coverMaxSizeInPixels);
                 final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
                 layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                     @Override
@@ -669,28 +674,6 @@ public class BooksOnBookshelf
                 vb.content.list.setLayoutManager(layoutManager);
                 break;
             }
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
-    /**
-     * Calculate how many grid columns we should display depending on the screen size.
-     *
-     * @param context Current context
-     *
-     * @return span count
-     *
-     * @throws IllegalArgumentException when there is a bug with the enums
-     */
-    private int getGridSpanCount(@NonNull final Context context) {
-        switch (WindowSizeClass.getWidthVariant(context)) {
-            case Compact:
-                return 4;
-            case Medium:
-                return 5;
-            case Expanded:
-                return 6;
             default:
                 throw new IllegalArgumentException();
         }
