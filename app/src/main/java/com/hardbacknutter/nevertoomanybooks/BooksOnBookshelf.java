@@ -635,6 +635,8 @@ public class BooksOnBookshelf
      * @throws IllegalArgumentException when there is a bug with the enums
      */
     private void createLayoutManager() {
+        //TODO: show a 'tip' when running in grid-mode + embedded-frame
+        // and explain that embedded mode forces list-mode
         final Style.Layout layout = vm.getStyle().getLayout(hasEmbeddedDetailsFrame());
         // and remember it. See #onResume where we need to check/compare it again
         vm.setCurrentLayout(layout);
