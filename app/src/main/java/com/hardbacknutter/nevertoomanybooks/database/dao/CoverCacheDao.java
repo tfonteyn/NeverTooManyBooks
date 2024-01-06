@@ -66,7 +66,6 @@ public interface CoverCacheDao {
      * @param uuid   UUID of the book
      * @param cIdx   0..n image index
      * @param width  desired/maximum width
-     * @param height desired/maximum height
      *
      * @return Bitmap (if cached) or {@code null} (if not cached)
      */
@@ -74,8 +73,7 @@ public interface CoverCacheDao {
     @AnyThread
     Bitmap getCover(@NonNull String uuid,
                     @IntRange(from = 0, to = 1) int cIdx,
-                    int width,
-                    int height);
+                    int width);
 
     /**
      * Save the passed bitmap to the cache.
@@ -86,12 +84,10 @@ public interface CoverCacheDao {
      * @param cIdx   0..n image index
      * @param bitmap to save
      * @param width  desired/maximum width
-     * @param height desired/maximum height
      */
     @UiThread
     void saveCover(@NonNull String uuid,
                    @IntRange(from = 0, to = 1) int cIdx,
                    @NonNull Bitmap bitmap,
-                   int width,
-                   int height);
+                   int width);
 }

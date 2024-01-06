@@ -63,7 +63,7 @@ public class CacheDbHelper
     public static final TableDefinition TBL_BDT_AUTHORS;
     /** DB name. */
     private static final String DATABASE_NAME = "cache.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final Domain DOM_PK_ID;
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_IMAGE_ID;

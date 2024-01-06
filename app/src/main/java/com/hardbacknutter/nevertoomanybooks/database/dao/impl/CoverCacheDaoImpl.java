@@ -98,16 +98,13 @@ public class CoverCacheDaoImpl
      * @param uuid      UUID of the book
      * @param cIdx      0..n image index
      * @param maxWidth  used to construct the cacheId
-     * @param maxHeight used to construct the cacheId
-     *
      * @return cache id string
      */
     @NonNull
     private static String constructCacheId(@NonNull final String uuid,
                                            @IntRange(from = 0, to = 1) final int cIdx,
-                                           final int maxWidth,
-                                           final int maxHeight) {
-        return uuid + '.' + cIdx + '.' + maxWidth + 'x' + maxHeight;
+                                           final int maxWidth) {
+        return uuid + '.' + cIdx + '.' + maxWidth;
     }
 
     @Override
@@ -149,8 +146,7 @@ public class CoverCacheDaoImpl
     @AnyThread
     public Bitmap getCover(@NonNull final String uuid,
                            @IntRange(from = 0, to = 1) final int cIdx,
-                           final int maxWidth,
-                           final int maxHeight) {
+                           final int maxWidth) {
         if (isBusy()) {
             return null;
 
@@ -166,7 +162,7 @@ public class CoverCacheDaoImpl
                                .atZone(ZoneOffset.UTC)
                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-                final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
+                final String cacheId = constructCacheId(uuid, cIdx, maxWidth);
 
                 try (Cursor cursor = db.rawQuery(
                         Sql.FIND_BY_ID, new String[]{cacheId, fileLastModified})) {
@@ -199,8 +195,7 @@ public class CoverCacheDaoImpl
     public void saveCover(@NonNull final String uuid,
                           @IntRange(from = 0, to = 1) final int cIdx,
                           @NonNull final Bitmap bitmap,
-                          final int width,
-                          final int height) {
+                          final int width) {
         // Start a task to send it to the cache.
         // Use the default serial executor as we only want a single write thread at a time.
         ASyncExecutor.SERIAL.execute(() -> {
@@ -214,7 +209,7 @@ public class CoverCacheDaoImpl
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, out);
 
-                    final String cacheId = constructCacheId(uuid, cIdx, width, height);
+                    final String cacheId = constructCacheId(uuid, cIdx, width);
 
                     final boolean isNew;
                     try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BY_IMAGE_ID)) {
