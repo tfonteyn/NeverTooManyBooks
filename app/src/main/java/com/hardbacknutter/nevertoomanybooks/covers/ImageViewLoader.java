@@ -110,7 +110,7 @@ public class ImageViewLoader {
      * {@link CoverHandler} i.e. book detail and edit screens
      * This class, BUT ONLY when the file we want to display is present AND corrupt
      * <p>
-     * It is not used in BoB-mode!
+     * It is not used in BoB-mode (unless we have a corrupt image-file).
      *
      * @param imageView View to populate
      * @param drawable  drawable to use
@@ -147,6 +147,9 @@ public class ImageViewLoader {
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
 
+        // TODO: 2024-01-07: this switch can be simplified, due to removal
+        // of the setMaxWidth/setMaxHeight in commit 3bec5d0aeb58364a433db19f2165669a6bf41d39
+        // but leaving this for a while until more tests have been done.
         switch (maxSize) {
             case Enforce: {
                 // List-mode
