@@ -23,7 +23,6 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -89,8 +88,6 @@ public class ImageViewLoader {
                            @NonNull final MaxSize maxSize,
                            @Px final int width,
                            @Px final int height) {
-
-        Log.d(TAG, "width=" + width + ", height=" + height);
 
         handler = new Handler(Looper.getMainLooper());
 
