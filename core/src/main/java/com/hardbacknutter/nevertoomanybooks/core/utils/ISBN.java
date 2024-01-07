@@ -967,7 +967,7 @@ public class ISBN {
 
         private void clean(@Nullable final Editable editable) {
             if (isbnValidityCheck != Validity.None && editable != null && editable.length() > 0) {
-                final String text = editable.toString().trim();
+                final String text = editable.toString().strip();
                 if (text.isEmpty()) {
                     return;
                 }
@@ -1072,7 +1072,7 @@ public class ISBN {
          */
         private void validate(@Nullable final Editable editable) {
             if (editable != null && editable.length() > 0) {
-                final String str = editable.toString().trim();
+                final String str = editable.toString().strip();
                 switch (str.length()) {
                     case 13: {
                         final ISBN isbn = new ISBN(str, isbnValidityCheck == Validity.Strict);
