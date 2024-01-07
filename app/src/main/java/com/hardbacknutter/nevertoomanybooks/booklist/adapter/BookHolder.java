@@ -116,7 +116,7 @@ public class BookHolder
         final Context context = itemView.getContext();
 
         this.style = style;
-        this.maxWidthInPixels = coverScale.getMaxWidthInPixels(context);
+        this.maxWidthInPixels = coverScale.getMaxWidthInPixels(context, Style.Layout.List);
         this.realNumberParser = realNumberParser;
 
         final Resources res = context.getResources();

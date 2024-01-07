@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -44,6 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Load a Bitmap from a file, and populate the view.
  */
 public class ImageViewLoader {
+
+    /**
+     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
+     * -> width = 0.6 * maxHeight.
+     */
+    private static final float HW_RATIO = 0.6f;
 
     /** Log tag. */
     private static final String TAG = "ImageViewLoader";
@@ -82,6 +89,8 @@ public class ImageViewLoader {
                            @NonNull final MaxSize maxSize,
                            @Px final int width,
                            @Px final int height) {
+
+        Log.d(TAG, "width=" + width + ", height=" + height);
 
         handler = new Handler(Looper.getMainLooper());
 
@@ -141,23 +150,32 @@ public class ImageViewLoader {
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
 
-        // The maximum ALLOWABLE size
-        final int maxWidth = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
-        final int maxHeight = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
-
         switch (maxSize) {
-            case Enforce:
+            case Enforce: {
+                // List-mode
+                // Calculate the maximum ALLOWABLE size
+                final int maxWidth = width
+                                     + imageView.getPaddingLeft()
+                                     + imageView.getPaddingRight();
+                final int maxHeight = height
+                                      + imageView.getPaddingTop()
+                                      + imageView.getPaddingBottom();
                 adjustLayoutParameters(imageView, bitmap, maxWidth, maxHeight);
-                imageView.setMaxWidth(maxWidth);
-                imageView.setMaxHeight(maxHeight);
                 break;
-
-            case Unlimited:
+            }
+            case Unlimited: {
+                // Allow the image to use ALL available space.
+                // Calculate the maximum ALLOWABLE size
+                final int maxWidth = width
+                                     + imageView.getPaddingLeft()
+                                     + imageView.getPaddingRight();
+                final int maxHeight = height
+                                      + imageView.getPaddingTop()
+                                      + imageView.getPaddingBottom();
+                // and adjust for portrait/landscape images.
                 adjustLayoutParameters(imageView, bitmap, maxWidth, maxHeight);
-                imageView.setMaxWidth(Integer.MAX_VALUE);
-                imageView.setMaxHeight(Integer.MAX_VALUE);
                 break;
-
+            }
             case Constrained:
             default:
                 // Grid-mode
@@ -175,8 +193,6 @@ public class ImageViewLoader {
                                         @NonNull final Bitmap bitmap,
                                         final int maxWidth,
                                         final int maxHeight) {
-        // Modifying the layout parameters is mainly for zooming,
-        // but is sometimes (why?) needed elsewhere.
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         if (bitmap.getWidth() < bitmap.getHeight()) {
             // image is portrait; limit the height

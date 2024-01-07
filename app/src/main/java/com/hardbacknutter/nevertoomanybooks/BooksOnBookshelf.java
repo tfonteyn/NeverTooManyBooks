@@ -50,7 +50,6 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.window.layout.WindowMetricsCalculator;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
@@ -648,12 +647,7 @@ public class BooksOnBookshelf
                 break;
             }
             case Grid: {
-                // Calculate how many grid columns we should display depending on the screen size.
-                final float widthPx = WindowMetricsCalculator
-                        .getOrCreate().computeCurrentWindowMetrics(this).getBounds().width();
-                final int coverMaxSizeInPixels = vm.getStyle().getCoverScale().getMaxWidthInPixels(
-                        this);
-                final int spanCount = (int) Math.floor(widthPx / coverMaxSizeInPixels);
+                final int spanCount = vm.getStyle().getCoverScale().getGridSpanCount(this);
                 final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
                 layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                     @Override

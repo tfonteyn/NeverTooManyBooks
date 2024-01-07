@@ -81,7 +81,8 @@ public class BookGridHolder
 
         this.style = style;
 
-        final int maxWidthInPixels = coverScale.getMaxWidthInPixels(itemView.getContext());
+        final int maxWidthInPixels = coverScale.getMaxWidthInPixels(itemView.getContext(),
+                                                                    Style.Layout.Grid);
 
         // We're using MaxSize.Constrained, so the maxWidthInPixels will in fact be IGNORED
         // except when displaying a placeholder
@@ -89,8 +90,12 @@ public class BookGridHolder
                                       ImageView.ScaleType.FIT_CENTER,
                                       ImageViewLoader.MaxSize.Constrained);
 
-        // This likely not needed, but paranoia....
-        vb.gridCell.setMaxWidth(maxWidthInPixels);
+        // This is needed to allow taking up the entire width of the screen
+        // when the cover-scale maxWidthInPixels exceeds the actual image width.
+        // i.e. when scaling UP images.
+        // Note that Integer.MAX_VALUE is in fact the default for this View.
+        // but Android "logic" works in mysterious ways...
+        vb.gridCell.setMaxWidth(Integer.MAX_VALUE);
     }
 
     @Override
