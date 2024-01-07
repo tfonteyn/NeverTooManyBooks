@@ -80,15 +80,17 @@ class CoverHelper {
                 @NonNull final ImageView.ScaleType scaleType,
                 @NonNull final ImageViewLoader.MaxSize maxSizeType) {
 
+        // In THIS class only used for the image-caching "filename"
         this.maxWidthInPixels = maxWidthInPixels;
 
         coverStorage = ServiceLocator.getInstance().getCoverStorage();
 
         imageCachingEnabled = coverStorage.isImageCachingEnabled();
 
+        //URGENT: deal with  this.maxWidthInPixels, this.maxWidthInPixels
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           scaleType, maxSizeType,
-                                          maxWidthInPixels, maxWidthInPixels);
+                                          this.maxWidthInPixels, this.maxWidthInPixels);
     }
 
 
@@ -137,11 +139,11 @@ class CoverHelper {
         // Check on the file system for the original image file.
         final Optional<File> file = coverStorage.getPersistedFile(uuid, 0);
         if (file.isEmpty()) {
-            // let the caller deal with a non-existing image
+            // let the caller deal with a non-existing image-file
             return false;
         }
 
-        // 3. We know the file is valid
+        // 3. We have a file.
         if (imageCachingEnabled) {
             // 1. Gets the image from the file system and display it.
             // 2. Start a subsequent task to send it to the cache.

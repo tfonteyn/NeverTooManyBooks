@@ -84,10 +84,12 @@ public class BookGridHolder
         final int maxWidthInPixels = coverScale.getMaxWidthInPixels(itemView.getContext());
 
         // We're using MaxSize.Constrained, so the maxWidthInPixels will in fact be IGNORED
+        // except when displaying a placeholder
         coverHelper = new CoverHelper(maxWidthInPixels,
                                       ImageView.ScaleType.FIT_CENTER,
                                       ImageViewLoader.MaxSize.Constrained);
 
+        // This likely not needed, but paranoia....
         vb.gridCell.setMaxWidth(maxWidthInPixels);
     }
 

@@ -50,4 +50,16 @@
     <dimen name="cover_browser_gallery_text_size">18sp</dimen>
     <integer name="cover_browser_gallery_span_count">3</integer>
 
+    <array name="cover_max_width">
+        <!-- hidden -->
+        <item>0dp</item>
+        <!-- small: 4 * 40dp -->
+        <item>160dp</item>
+        <!-- medium: 5 * 40dp - the default. -->
+        <item>200dp</item>
+        <!-- large: 6 * 40dp -->
+        <item>240dp</item>
+        <!-- X-Large: 7 * 40dp -->
+        <item>280dp</item>
+    </array>
 </resources>
