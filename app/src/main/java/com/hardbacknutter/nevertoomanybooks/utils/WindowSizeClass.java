@@ -78,32 +78,6 @@ public enum WindowSizeClass {
         }
     }
 
-    /**
-     * getWidthVariant is used for the grid-layout where we found 800 to
-     * //  be a better boundary to distinguish between 7" and 10" devices.
-     * <p>
-     * FIXME: unify getWidthVariant and getWidth
-     *
-     * @param activity to use
-     *
-     * @return WindowSizeClass
-     */
-    @NonNull
-    public static WindowSizeClass getWidthVariant(@NonNull final Activity activity) {
-        final WindowMetrics metrics = WindowMetricsCalculator
-                .getOrCreate().computeCurrentWindowMetrics(activity);
-
-        final float widthDp = metrics.getBounds().width()
-                              / activity.getResources().getDisplayMetrics().density;
-        if (widthDp < 600f) {
-            return Compact;
-        } else if (widthDp < 800f) {
-            return Medium;
-        } else {
-            return Expanded;
-        }
-    }
-
     @NonNull
     public static WindowSizeClass getHeight(@NonNull final Activity activity) {
         final WindowMetrics metrics = WindowMetricsCalculator
@@ -123,11 +97,6 @@ public enum WindowSizeClass {
     @NonNull
     public static WindowSizeClass getWidth(@NonNull final Context context) {
         return getWidth(getActivity(context));
-    }
-
-    @NonNull
-    public static WindowSizeClass getWidthVariant(@NonNull final Context context) {
-        return getWidthVariant(getActivity(context));
     }
 
     @NonNull
