@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -80,9 +81,6 @@ public class BooklistAdapter
     private final Style style;
     @Dimension
     private final int groupRowHeight;
-    /** Maximum width for a cover in pixels. */
-    @Dimension
-    private final int maxWidthInPixels;
     @NonNull
     private final Formatter formatter;
 
@@ -90,6 +88,8 @@ public class BooklistAdapter
     private final RealNumberParser realNumberParser;
     @NonNull
     private final Style.Layout layout;
+    @NonNull
+    private final CoverScale coverScale;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor cursor;
@@ -108,19 +108,19 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param context          Current context
-     * @param style            to use
-     * @param layout           to use
-     * @param maxWidthInPixels Maximum width for a cover in pixels
+     * @param context    Current context
+     * @param style      to use
+     * @param layout     to use
+     * @param coverScale to use
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final Style style,
                            @NonNull final Style.Layout layout,
-                           @Dimension final int maxWidthInPixels) {
+                           @NonNull final CoverScale coverScale) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.layout = layout;
-        this.maxWidthInPixels = maxWidthInPixels;
+        this.coverScale = coverScale;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
@@ -313,11 +313,11 @@ public class BooklistAdapter
             case BooklistGroup.BOOK:
                 switch (layout) {
                     case List:
-                        holder = new BookHolder(itemView, style, maxWidthInPixels,
+                        holder = new BookHolder(itemView, style, coverScale,
                                                 realNumberParser);
                         break;
                     case Grid:
-                        holder = new BookGridHolder(itemView, style, maxWidthInPixels);
+                        holder = new BookGridHolder(itemView, style, coverScale);
                         break;
                     default:
                         throw new IllegalArgumentException();

@@ -25,11 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -70,16 +70,18 @@ public class BookGridHolder
      *
      * @param itemView         the view specific for this holder
      * @param style            to use
-     * @param maxWidthInPixels Maximum width for a cover in pixels
+     * @param coverScale to use
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     BookGridHolder(@NonNull final View itemView,
                    @NonNull final Style style,
-                   @Dimension final int maxWidthInPixels) {
+                   @NonNull final CoverScale coverScale) {
         super(itemView);
+        vb = BooksonbookshelfGridBookBinding.bind(itemView);
+
         this.style = style;
 
-        vb = BooksonbookshelfGridBookBinding.bind(itemView);
+        final int maxWidthInPixels = coverScale.getMaxWidthInPixels(itemView.getContext());
 
         // We're using MaxSize.Constrained, so the maxWidthInPixels will in fact be IGNORED
         coverHelper = new CoverHelper(maxWidthInPixels,

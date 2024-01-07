@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -42,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -104,24 +104,25 @@ public class BookHolder
      *
      * @param itemView         the view specific for this holder
      * @param style            to use
-     * @param maxWidthInPixels Maximum width for a cover in pixels
+     * @param coverScale       to use
      * @param realNumberParser the shared parser
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
-               @Dimension final int maxWidthInPixels,
+               @NonNull final CoverScale coverScale,
                @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
-        this.style = style;
-        this.maxWidthInPixels = maxWidthInPixels;
-        this.realNumberParser = realNumberParser;
+        vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
         final Context context = itemView.getContext();
+
+        this.style = style;
+        this.maxWidthInPixels = coverScale.getMaxWidthInPixels(context);
+        this.realNumberParser = realNumberParser;
+
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
         a_bracket_b_bracket = res.getString(R.string.a_bracket_b_bracket);
-
-        vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             coverHelper = new CoverHelper(maxWidthInPixels,

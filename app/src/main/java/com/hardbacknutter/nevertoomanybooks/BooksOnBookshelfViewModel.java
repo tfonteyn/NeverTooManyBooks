@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
 
-import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -555,21 +555,21 @@ public class BooksOnBookshelfViewModel
         final Style style = getStyle();
         final Style.Layout layout = style.getLayout(hasEmbeddedDetailsFrame);
 
-        @Dimension
-        final int maxWidthInPixels;
+
+        final CoverScale coverScale;
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             if (hasEmbeddedDetailsFrame) {
+                coverScale = style.getCoverScale().smaller();
                 // use a scale one smaller than on the non-embedded view.
-                maxWidthInPixels = style.getCoverScale().smaller().getMaxWidthInPixels(context);
             } else {
-                maxWidthInPixels = style.getCoverScale().getMaxWidthInPixels(context);
+                coverScale = style.getCoverScale();
             }
         } else {
-            maxWidthInPixels = 0;
+            coverScale = CoverScale.Hidden;
         }
 
-        final BooklistAdapter adapter = new BooklistAdapter(context, style, layout,
-                                                            maxWidthInPixels);
+
+        final BooklistAdapter adapter = new BooklistAdapter(context, style, layout, coverScale);
         adapter.setBooklist(booklist);
         return adapter;
     }

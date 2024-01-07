@@ -88,6 +88,11 @@ public enum CoverScale {
      */
     @Dimension
     public int getMaxWidthInPixels(@NonNull final Context context) {
+        // micro optimization
+        if (this == Hidden) {
+            return 0;
+        }
+
         // The scale is used to retrieve the cover dimensions.
         // We use a square space for the image so both portrait/landscape images work out.
         final TypedArray coverSizes = context
