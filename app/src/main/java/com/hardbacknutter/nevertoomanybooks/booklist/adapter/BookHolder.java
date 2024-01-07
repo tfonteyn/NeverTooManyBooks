@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -81,6 +82,7 @@ public class BookHolder
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
+    private final int maxWidthInPixels;
     @NonNull
     private final RealNumberParser realNumberParser;
     @NonNull
@@ -111,6 +113,7 @@ public class BookHolder
                @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
         this.style = style;
+        this.maxWidthInPixels = maxWidthInPixels;
         this.realNumberParser = realNumberParser;
 
         final Context context = itemView.getContext();
@@ -203,7 +206,20 @@ public class BookHolder
          */
         if (use.contains(DBKey.COVER[0])) {
             //noinspection DataFlowIssue
-            coverHelper.setImageView(vb.coverImage0, rowData.getString(DBKey.BOOK_UUID));
+            final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
+                                                              rowData.getString(DBKey.BOOK_UUID));
+            if (!hasImage) {
+                // leave the space blank, but preserve the width.
+                // This only applies in list-mode!
+                // Grid-mode will set the visibility of the view to GONE.
+                final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
+                // URGENT: this will in fact reserve TOO MUCH space, and the text aside the blank
+                //  space will be squeezed
+                lp.width = maxWidthInPixels;
+                lp.height = 0;
+                vb.coverImage0.setLayoutParams(lp);
+                vb.coverImage0.setImageDrawable(null);
+            }
         }
 
         if (use.contains(DBKey.FK_AUTHOR)) {

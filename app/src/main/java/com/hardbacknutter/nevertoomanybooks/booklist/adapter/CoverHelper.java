@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.graphics.Bitmap;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.Dimension;
@@ -117,7 +116,8 @@ class CoverHelper {
      *                  Passed in to allow for future expansion.
      * @param uuid      UUID of the book
      *
-     * @return {@code true} if an image was shown; {@code false} if there was no image
+     * @return {@code true} if an image was shown;
+     *         {@code false} if there was no image
      */
     boolean setImageView(@NonNull final ImageView coverView,
                          @NonNull final String uuid) {
@@ -136,18 +136,12 @@ class CoverHelper {
         // 2. Cache did not have it, or we were not allowed to check.
         // Check on the file system for the original image file.
         final Optional<File> file = coverStorage.getPersistedFile(uuid, 0);
-        // If the file image does not exist...
         if (file.isEmpty()) {
-            // leave the space blank, but preserve the width BASED on the coverLongestSide!
-            final ViewGroup.LayoutParams lp = coverView.getLayoutParams();
-            lp.width = (int) (maxSize * HW_RATIO);
-            lp.height = 0;
-            coverView.setLayoutParams(lp);
-            coverView.setImageDrawable(null);
+            // let the caller deal with a non-existing image
             return false;
         }
 
-        // Once we get here, we know the file is valid
+        // 3. We know the file is valid
         if (imageCachingEnabled) {
             // 1. Gets the image from the file system and display it.
             // 2. Start a subsequent task to send it to the cache.
@@ -157,7 +151,7 @@ class CoverHelper {
                 }
             });
         } else {
-            // Cache not used: Get the image from the file system and display it.
+            // Get the image from the file system and display it.
             imageLoader.fromFile(coverView, file.get(), null);
         }
         return true;
