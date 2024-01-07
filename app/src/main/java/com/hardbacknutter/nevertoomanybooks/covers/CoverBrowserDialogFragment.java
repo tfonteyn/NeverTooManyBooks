@@ -343,7 +343,7 @@ public class CoverBrowserDialogFragment
                     vm.setSelectedFile(file.get());
                     vb.preview.setVisibility(View.VISIBLE);
                     vb.statusMessage.setText(R.string.info_tap_on_image_to_select);
-                });
+                }, null);
                 return;
             }
         }
@@ -533,7 +533,7 @@ public class CoverBrowserDialogFragment
                 final Optional<File> file = imageFileInfo.getFile();
                 if (file.isPresent()) {
                     // YES, load it into the view.
-                    imageLoader.fromFile(holder.vb.coverImage0, file.get(), null);
+                    imageLoader.fromFile(holder.vb.coverImage0, file.get(), null, null);
 
                     holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
                     holder.vb.coverImage0.setOnClickListener(

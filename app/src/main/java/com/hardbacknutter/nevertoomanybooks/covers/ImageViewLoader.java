@@ -196,11 +196,13 @@ public class ImageViewLoader {
      * @param imageView to populate
      * @param file      to load, must be valid
      * @param onSuccess (optional) Consumer to execute after successfully displaying the image
+     * @param onFailed  (optional) Runnable to execute after failing to decode the file
      */
     @UiThread
     public void fromFile(@NonNull final ImageView imageView,
                          @NonNull final File file,
-                         @Nullable final Consumer<Bitmap> onSuccess) {
+                         @Nullable final Consumer<Bitmap> onSuccess,
+                         @Nullable final Runnable onFailed) {
 
         // TODO: not 100% convinced that using 'this' is a safe approach.
         // maybe replace with a UUID.randomUUID()
@@ -227,8 +229,13 @@ public class ImageViewLoader {
                         }
                     } else {
                         // We only get here if we found the image-file, but we failed to
-                        // load/decode it. So use 'broken-image' icon and preserve the space.
-                        placeholder(view, R.drawable.ic_baseline_broken_image_24);
+                        // load/decode it.
+                        if (onFailed != null) {
+                            onFailed.run();
+                        } else {
+                            // So use 'broken-image' icon and preserve the space.
+                            placeholder(view, R.drawable.ic_baseline_broken_image_24);
+                        }
                     }
                 }
             });

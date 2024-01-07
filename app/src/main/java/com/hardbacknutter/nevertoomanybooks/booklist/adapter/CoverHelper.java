@@ -149,10 +149,10 @@ class CoverHelper {
                 if (bitmap != null) {
                     coverStorage.saveToCache(uuid, 0, bitmap, maxWidthInPixels);
                 }
-            });
+            }, null);
         } else {
             // Get the image from the file system and display it.
-            imageLoader.fromFile(coverView, file.get(), null);
+            imageLoader.fromFile(coverView, file.get(), null, null);
         }
         return true;
     }

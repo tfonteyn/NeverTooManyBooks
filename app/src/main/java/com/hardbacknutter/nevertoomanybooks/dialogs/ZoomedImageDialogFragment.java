@@ -140,6 +140,6 @@ public class ZoomedImageDialogFragment
                             ImageView.ScaleType.FIT_CENTER,
                             ImageViewLoader.MaxSize.Unlimited,
                             maxWidth, maxHeight)
-                .fromFile(imageView, imageFile, null);
+                .fromFile(imageView, imageFile, null, null);
     }
 }

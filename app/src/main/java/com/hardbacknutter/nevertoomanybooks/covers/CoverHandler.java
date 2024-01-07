@@ -260,7 +260,7 @@ public class CoverHandler {
         // dev warning: in NO circumstances keep a reference to the view!
         final Optional<File> file = bookSupplier.get().getCover(cIdx);
         if (file.isPresent()) {
-            imageLoader.fromFile(view, file.get(), null);
+            imageLoader.fromFile(view, file.get(), null, null);
             view.setBackground(null);
         } else {
             imageLoader.placeholder(view, R.drawable.ic_baseline_add_a_photo_24);
