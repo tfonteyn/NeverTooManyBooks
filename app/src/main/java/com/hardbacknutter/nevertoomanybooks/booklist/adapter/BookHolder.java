@@ -25,7 +25,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -210,16 +209,7 @@ public class BookHolder
             final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
                                                               rowData.getString(DBKey.BOOK_UUID));
             if (!hasImage) {
-                // leave the space blank, but preserve the width.
-                // This only applies in list-mode!
-                // Grid-mode will set the visibility of the view to GONE.
-                final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-                // URGENT: this will in fact reserve TOO MUCH space, and the text aside the blank
-                //  space will be squeezed
-                lp.width = maxWidthInPixels;
-                lp.height = 0;
-                vb.coverImage0.setLayoutParams(lp);
-                vb.coverImage0.setImageDrawable(null);
+                vb.coverImage0.setVisibility(View.GONE);
             }
         }
 
