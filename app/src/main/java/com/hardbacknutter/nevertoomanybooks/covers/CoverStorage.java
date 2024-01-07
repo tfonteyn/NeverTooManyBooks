@@ -547,18 +547,15 @@ public class CoverStorage {
      * @param uuid   UUID of the book
      * @param cIdx   0..n image index
      * @param width  desired/maximum width
-     * @param height desired/maximum height
-     *
      * @return Bitmap (if cached) or {@code null} if not cached or if the cache was busy
      *
-     * @see CoverCacheDao#getCover(String, int, int, int)
+     * @see CoverCacheDao#getCover(String, int, int)
      */
     @Nullable
     public Bitmap getCachedBitmap(@NonNull final String uuid,
                                   @IntRange(from = 0, to = 1) final int cIdx,
-                                  final int width,
-                                  final int height) {
-        return coverCacheDaoSupplier.get().getCover(uuid, cIdx, width, height);
+                                  final int width) {
+        return coverCacheDaoSupplier.get().getCover(uuid, cIdx, width);
     }
 
     /**
@@ -571,16 +568,13 @@ public class CoverStorage {
      * @param cIdx   0..n image index
      * @param bitmap to save
      * @param width  desired/maximum width
-     * @param height desired/maximum height
-     *
-     * @see CoverCacheDao#saveCover(String, int, Bitmap, int, int)
+     * @see CoverCacheDao#saveCover(String, int, Bitmap, int)
      */
     @UiThread
     public void saveToCache(@NonNull final String uuid,
                             @IntRange(from = 0, to = 1) final int cIdx,
                             @NonNull final Bitmap bitmap,
-                            final int width,
-                            final int height) {
-        coverCacheDaoSupplier.get().saveCover(uuid, cIdx, bitmap, width, height);
+                            final int width) {
+        coverCacheDaoSupplier.get().saveCover(uuid, cIdx, bitmap, width);
     }
 }

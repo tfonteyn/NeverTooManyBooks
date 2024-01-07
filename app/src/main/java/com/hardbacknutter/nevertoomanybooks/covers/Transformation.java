@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.view.Surface;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -41,12 +42,19 @@ class Transformation {
 
     /** Log tag. */
     private static final String TAG = "Transformation";
-    /** By default, covers will always be downsized to maximum 600 x 1000 pixels. */
+    /**
+     * By default, covers will always be downsized to maximum 600 x 1000 pixels.
+     * Override with {@link #setScale(int, int)}
+     */
+    @Dimension
     private static final int MAX_IMAGE_WIDTH_PX = 600;
+    @Dimension
     private static final int MAX_IMAGE_HEIGHT_PX = 1000;
     @Nullable
     private File srcFile;
+    @Dimension
     private int maxWidth = MAX_IMAGE_WIDTH_PX;
+    @Dimension
     private int maxHeight = MAX_IMAGE_HEIGHT_PX;
     private boolean scale;
     private boolean rotate;
@@ -111,8 +119,8 @@ class Transformation {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    Transformation setScale(final int width,
-                            final int height) {
+    Transformation setScale(@Dimension final int width,
+                            @Dimension final int height) {
         maxWidth = width;
         maxHeight = height;
         scale = true;

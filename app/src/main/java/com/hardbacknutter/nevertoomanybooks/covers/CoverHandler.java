@@ -79,7 +79,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
  * A delegate class for handling a displayed Cover.
  * Offers context menus and all operations applicable on a Cover image.
  * <p>
- * Context/View dependent!
+ * <strong>Context/View dependent!</strong>
+ * <p>
+ * Handles displaying and zooming for cover-images on the book-details and book-edit screens.
+ * <p>
+ * For BoB displaying,
+ * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverListHandler}
  */
 public class CoverHandler {
 
@@ -122,6 +127,9 @@ public class CoverHandler {
 
     /**
      * Constructor.
+     * <p>
+     * Dev. note: the width/height values come from device dp-dependent resource values.
+     * (and NOT from the style cover scaling factor)
      *
      * @param coverHandlerOwner the hosting component
      * @param cIdx              0..n image index

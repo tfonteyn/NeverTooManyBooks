@@ -553,28 +553,25 @@ public class BooksOnBookshelfViewModel
     BooklistAdapter createBooklistAdapter(@NonNull final Context context,
                                           final boolean hasEmbeddedDetailsFrame) {
         final Style style = getStyle();
-        final BooklistAdapter adapter = new BooklistAdapter(
-                context, style,
-                style.getLayout(hasEmbeddedDetailsFrame),
-                getCoverLongestSide(context, style, hasEmbeddedDetailsFrame));
-        adapter.setBooklist(booklist);
-        return adapter;
-    }
+        final Style.Layout layout = style.getLayout(hasEmbeddedDetailsFrame);
 
-    @Dimension
-    private int getCoverLongestSide(@NonNull final Context context,
-                                    @NonNull final Style style,
-                                    final boolean hasEmbeddedDetailsFrame) {
+        @Dimension
+        final int maxWidthInPixels;
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             if (hasEmbeddedDetailsFrame) {
                 // use a scale one smaller than on the non-embedded view.
-                return style.getCoverScale().smaller().getMaxWidthInPixels(context);
+                maxWidthInPixels = style.getCoverScale().smaller().getMaxWidthInPixels(context);
             } else {
-                return style.getCoverScale().getMaxWidthInPixels(context);
+                maxWidthInPixels = style.getCoverScale().getMaxWidthInPixels(context);
             }
         } else {
-            return 0;
+            maxWidthInPixels = 0;
         }
+
+        final BooklistAdapter adapter = new BooklistAdapter(context, style, layout,
+                                                            maxWidthInPixels);
+        adapter.setBooklist(booklist);
+        return adapter;
     }
 
     /**

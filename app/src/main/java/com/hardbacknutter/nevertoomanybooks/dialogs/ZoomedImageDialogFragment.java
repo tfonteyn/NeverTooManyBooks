@@ -117,8 +117,7 @@ public class ZoomedImageDialogFragment
         final double screenHwRatio = ((float) configuration.screenHeightDp)
                                      / ((float) configuration.screenWidthDp);
 
-        // screen space we use is depending on the screen size...
-        // or we end up with pixelated overblown images.
+        // Use a percentage of the total screen space, to create a (dimmed) border
         final int percentage = res.getInteger(R.integer.cover_zoom_screen_percentage);
         final float multiplier = metrics.density * ((float) percentage / 100);
         final int maxWidth;

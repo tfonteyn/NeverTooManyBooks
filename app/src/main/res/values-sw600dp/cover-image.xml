@@ -52,7 +52,7 @@
     <integer name="cover_browser_gallery_span_count">2</integer>
 
 
-    <array name="cover_book_list_longest_side">
+    <array name="cover_max_width">
         <!-- hidden -->
         <item>0dp</item>
         <!-- small: 2 * 40dp

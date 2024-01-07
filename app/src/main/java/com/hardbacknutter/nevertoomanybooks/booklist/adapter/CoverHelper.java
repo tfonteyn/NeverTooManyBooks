@@ -40,7 +40,10 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 
 /**
- * Handles displaying and zooming for images in the Booklist.
+ * Handles displaying and zooming for cover-images on the Booklist (both list and grid modes).
+ * <p>
+ * For book-detail/edit screens,
+ * see {@code com.hardbacknutter.nevertoomanybooks.covers.CoverHandler}
  */
 class CoverHelper {
 
@@ -48,12 +51,12 @@ class CoverHelper {
      * 0.6 is based on a standard paperback 17.5cm x 10.6cm
      * -> width = 0.6 * maxHeight.
      *
-     * @see #maxSize
+     * @see #maxWidthInPixels
      */
     private static final float HW_RATIO = 0.6f;
 
     @Dimension
-    private final int maxSize;
+    private final int maxWidthInPixels;
     private final boolean imageCachingEnabled;
 
     @NonNull
@@ -65,18 +68,20 @@ class CoverHelper {
 
     /**
      * Constructor.
+     * <p>
+     * Dev. note: the width comes from the style scaling factor.
      *
-     * @param maxSize     Longest side for a cover in pixels
-     * @param scaleType   to use for images
-     *                    (ignored for placeholders)
-     * @param maxSizeType how to adjust the size, see {@link ImageViewLoader.MaxSize}
-     *                    (ignored for placeholders)
+     * @param maxWidthInPixels Maximum width for a cover in pixels
+     * @param scaleType        to use for images
+     *                         (ignored for placeholders)
+     * @param maxSizeType      how to adjust the size, see {@link ImageViewLoader.MaxSize}
+     *                         (ignored for placeholders)
      */
-    CoverHelper(@Dimension final int maxSize,
+    CoverHelper(@Dimension final int maxWidthInPixels,
                 @NonNull final ImageView.ScaleType scaleType,
                 @NonNull final ImageViewLoader.MaxSize maxSizeType) {
 
-        this.maxSize = maxSize;
+        this.maxWidthInPixels = maxWidthInPixels;
 
         coverStorage = ServiceLocator.getInstance().getCoverStorage();
 
@@ -84,8 +89,9 @@ class CoverHelper {
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           scaleType, maxSizeType,
-                                          maxSize, maxSize);
+                                          maxWidthInPixels, maxWidthInPixels);
     }
+
 
     /**
      * Zoom the given cover.
@@ -120,7 +126,7 @@ class CoverHelper {
 
         // 1. If caching is used, check it.
         if (imageCachingEnabled) {
-            final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, 0, maxSize, maxSize);
+            final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, 0, maxWidthInPixels);
             if (bitmap != null) {
                 imageLoader.fromBitmap(coverView, bitmap);
                 return true;
@@ -147,7 +153,7 @@ class CoverHelper {
             // 2. Start a subsequent task to send it to the cache.
             imageLoader.fromFile(coverView, file.get(), bitmap -> {
                 if (bitmap != null) {
-                    coverStorage.saveToCache(uuid, 0, bitmap, maxSize, maxSize);
+                    coverStorage.saveToCache(uuid, 0, bitmap, maxWidthInPixels);
                 }
             });
         } else {

@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * <p>
  * These values are used as the index into a resource array.
  *
- * @see com.hardbacknutter.nevertoomanybooks.R.array#cover_book_list_longest_side
+ * @see com.hardbacknutter.nevertoomanybooks.R.array#cover_max_width
  */
 public enum CoverScale {
     Hidden(0),
@@ -91,7 +91,7 @@ public enum CoverScale {
         // The scale is used to retrieve the cover dimensions.
         // We use a square space for the image so both portrait/landscape images work out.
         final TypedArray coverSizes = context
-                .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
+                .getResources().obtainTypedArray(R.array.cover_max_width);
         try {
             return coverSizes.getDimensionPixelSize(scale, 0);
         } finally {

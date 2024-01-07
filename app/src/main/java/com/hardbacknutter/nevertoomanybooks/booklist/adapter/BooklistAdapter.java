@@ -80,9 +80,9 @@ public class BooklistAdapter
     private final Style style;
     @Dimension
     private final int groupRowHeight;
-    /** Longest side for a cover in pixels. */
+    /** Maximum width for a cover in pixels. */
     @Dimension
-    private final int coverLongestSide;
+    private final int maxWidthInPixels;
     @NonNull
     private final Formatter formatter;
 
@@ -111,16 +111,16 @@ public class BooklistAdapter
      * @param context          Current context
      * @param style            to use
      * @param layout           to use
-     * @param coverLongestSide Longest side for a cover in pixels
+     * @param maxWidthInPixels Maximum width for a cover in pixels
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final Style style,
                            @NonNull final Style.Layout layout,
-                           final int coverLongestSide) {
+                           @Dimension final int maxWidthInPixels) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.layout = layout;
-        this.coverLongestSide = coverLongestSide;
+        this.maxWidthInPixels = maxWidthInPixels;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
@@ -313,11 +313,11 @@ public class BooklistAdapter
             case BooklistGroup.BOOK:
                 switch (layout) {
                     case List:
-                        holder = new BookHolder(itemView, style, coverLongestSide,
+                        holder = new BookHolder(itemView, style, maxWidthInPixels,
                                                 realNumberParser);
                         break;
                     case Grid:
-                        holder = new BookGridHolder(itemView, style, coverLongestSide);
+                        holder = new BookGridHolder(itemView, style, maxWidthInPixels);
                         break;
                     default:
                         throw new IllegalArgumentException();

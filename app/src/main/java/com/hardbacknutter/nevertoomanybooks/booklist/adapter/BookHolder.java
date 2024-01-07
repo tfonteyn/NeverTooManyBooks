@@ -99,18 +99,15 @@ public class BookHolder
 
     /**
      * Constructor.
-     * <p>
-     * <strong>Note:</strong> the itemView can be re-used.
-     * Hence make sure to explicitly set visibility.
      *
      * @param itemView         the view specific for this holder
      * @param style            to use
-     * @param coverLongestSide Longest side for a cover in pixels
+     * @param maxWidthInPixels Maximum width for a cover in pixels
      * @param realNumberParser the shared parser
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
-               @Dimension final int coverLongestSide,
+               @Dimension final int maxWidthInPixels,
                @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
         this.style = style;
@@ -124,12 +121,11 @@ public class BookHolder
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
-            coverHelper = new CoverHelper(coverLongestSide,
+            coverHelper = new CoverHelper(maxWidthInPixels,
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.MaxSize.Enforce);
         } else {
             coverHelper = null;
-            // hide it if not in use.
             vb.coverImage0.setVisibility(View.GONE);
         }
 
@@ -140,6 +136,7 @@ public class BookHolder
             dbgRowIdView.setId(View.generateViewId());
             dbgRowIdView.setTextColor(Color.BLUE);
             dbgRowIdView.setBackgroundColor(Color.WHITE);
+            //noinspection CheckStyle
             dbgRowIdView.setZ(5);
             //noinspection CheckStyle
             dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);

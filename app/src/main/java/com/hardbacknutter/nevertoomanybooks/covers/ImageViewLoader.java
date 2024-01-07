@@ -73,7 +73,7 @@ public class ImageViewLoader {
      *                  (ignored for placeholders)
      * @param maxSize   how to adjust the size, see {@link MaxSize}
      *                  (ignored for placeholders)
-     * @param width     Desired width of the image
+     * @param width     Desired width of the image; usually the "maxWidthInPixels" from the style
      * @param height    Desired height of the image
      */
     @UiThread
@@ -98,6 +98,13 @@ public class ImageViewLoader {
 
     /**
      * Load a placeholder drawable in the given view.
+     * <p>
+     * Dev. Note: a placeholder is ONLY used with
+     * {@link CoverBrowserDialogFragment}
+     * {@link CoverHandler} i.e. book detail and edit screens
+     * This class, BUT ONLY when the file we want to display is present AND corrupt
+     * <p>
+     * It is not used in BoB-mode!
      *
      * @param imageView View to populate
      * @param drawable  drawable to use
@@ -126,9 +133,6 @@ public class ImageViewLoader {
 
     /**
      * Load the image bitmap into the given view.
-     * The image is scaled to fit the box exactly preserving the aspect ratio.
-     * i.e. one dimension will fit 100%, the other dimension will (usually) have
-     * white-space left.
      *
      * @param imageView View to populate
      * @param bitmap    The Bitmap of the image
@@ -156,6 +160,7 @@ public class ImageViewLoader {
 
             case Constrained:
             default:
+                // Grid-mode
                 // use original constraints
         }
 
@@ -221,8 +226,8 @@ public class ImageViewLoader {
                             onSuccess.accept(oBitmap.get());
                         }
                     } else {
-                        // We only get here if we THOUGHT we had an image, but we failed to
-                        // load/decode it. So use 'broken-image' icon and preserve the space
+                        // We only get here if we found the image-file, but we failed to
+                        // load/decode it. So use 'broken-image' icon and preserve the space.
                         placeholder(view, R.drawable.ic_baseline_broken_image_24);
                     }
                 }
@@ -231,11 +236,11 @@ public class ImageViewLoader {
     }
 
     public enum MaxSize {
-        /** Enforce the desired size as the maximum size. */
+        /** Enforce the desired size as the maximum size. Used for list-mode. */
         Enforce,
-        /** Let the system maximize the view. */
+        /** Let the system maximize the image inside the provided view. Used for zooming. */
         Unlimited,
-        /** Don't change, let the xml constraint settings rule. */
+        /** Don't change, let the xml constraint settings rule. Used for grid-mode. */
         Constrained
     }
 }

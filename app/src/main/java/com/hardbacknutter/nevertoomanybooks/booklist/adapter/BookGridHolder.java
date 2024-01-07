@@ -65,20 +65,28 @@ public class BookGridHolder
     @Nullable
     private Boolean useAuthor;
 
+    /**
+     * Constructor.
+     *
+     * @param itemView         the view specific for this holder
+     * @param style            to use
+     * @param maxWidthInPixels Maximum width for a cover in pixels
+     */
     @SuppressLint("UseCompatLoadingForDrawables")
     BookGridHolder(@NonNull final View itemView,
                    @NonNull final Style style,
-                   @Dimension final int coverLongestSide) {
+                   @Dimension final int maxWidthInPixels) {
         super(itemView);
         this.style = style;
 
         vb = BooksonbookshelfGridBookBinding.bind(itemView);
 
-        coverHelper = new CoverHelper(coverLongestSide,
+        // We're using MaxSize.Constrained, so the maxWidthInPixels will in fact be IGNORED
+        coverHelper = new CoverHelper(maxWidthInPixels,
                                       ImageView.ScaleType.FIT_CENTER,
                                       ImageViewLoader.MaxSize.Constrained);
 
-        vb.gridCell.setMaxWidth(coverLongestSide);
+        vb.gridCell.setMaxWidth(maxWidthInPixels);
     }
 
     @Override
