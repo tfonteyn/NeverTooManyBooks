@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.2.4 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.2.4/NeverTooManyBooks-5.2.4.apk)
+## Download the latest release: [5.3.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.3.0/NeverTooManyBooks-5.3.0.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -78,6 +78,25 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - 7" and 10" tablets fully supported with dedicated screen layouts.
 
 ## History
+
+### 5.3.0
+
+NEW:
+
+- Improved grid-layout: the cover size as set in the style preference which was previously  
+  limited to list-mode only, is now also applied to the grid-layout. An XL size was added
+  which in portrait view will display 1 cover/book the full-width of the screen, and in
+  landscape view 2 covers/books. The 'large' and other sizes will use a number of covers
+  as suited to the size of your screen. (refer to #32)
+- Further customizing of grid-layout with style-preferences: Bringing up the
+  book-context-menu can now be configured to use a long-click on the cover
+  instead of the 3dot button.
+
+FIXES:
+
+- books without a cover are now displayed properly in list-mode.
+
+---
 
 ### 5.2.4
 
