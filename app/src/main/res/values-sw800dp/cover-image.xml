@@ -54,7 +54,7 @@
         <!-- hidden -->
         <item>0dp</item>
         <!-- small: 4 * 40dp -->
-        <item>160dp</item>
+        <item>120dp</item>
         <!-- medium: 5 * 40dp - the default. -->
         <item>200dp</item>
         <!-- large: 6 * 40dp -->

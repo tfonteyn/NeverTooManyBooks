@@ -58,9 +58,9 @@
         <item>120dp</item>
         <!-- medium: 4 * 40dp - the default. -->
         <item>160dp</item>
-        <!-- large: 5 * 40dp -->
-        <item>200dp</item>
-        <!-- X-Large: 6 * 40dp -->
+        <!-- large: 6 * 40dp -->
         <item>240dp</item>
+        <!-- X-Large: 7 * 40dp -->
+        <item>280dp</item>
     </array>
 </resources>
