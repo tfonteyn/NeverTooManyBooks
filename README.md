@@ -83,7 +83,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 NEW:
 
-- Improved grid-layout: the cover size as set in the style preference which was previously  
+- Improved grid-layout: the cover size as set in the style preference which was previously
   limited to list-mode only, is now also applied to the grid-layout. An XL size was added
   which in portrait view will display 1 cover/book the full-width of the screen, and in
   landscape view 2 covers/books. The 'large' and other sizes will use a number of covers
