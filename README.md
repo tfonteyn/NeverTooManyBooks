@@ -71,6 +71,11 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - Requires minimal Android 8.0 (API 26)
 - Supported/tested up to Android 14 (API 34).
 
+## Android Permissions:
+
+Please see
+the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki#android-permissions).
+
 ## Screen size support:
 
 - 4" works but will be very cramped.
