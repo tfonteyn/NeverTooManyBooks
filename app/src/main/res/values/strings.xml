@@ -1440,7 +1440,7 @@
     <!-- Option text for "pt_bob_cover_long_click" -->
     <string name="pe_bob_cover_long_click_ignore">By tapping a button.</string>
     <!-- Option text for "pt_bob_cover_long_click" -->
-    <string name="pe_bob_cover_long_click_popupmenu">By doing a long-click on a cover image</string>
+    <string name="pe_bob_cover_long_click_popupmenu">By doing a long-click on a cover image.</string>
 
     <!-- SeekBarPreference - Scale cover/thumbnail images. -->
     <string name="pt_bob_cover_scale">Cover size</string>
