@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -103,7 +100,7 @@
     <string name="action_done">Xong</string>
     <string name="action_edit">Chỉnh sửa</string>
     <string name="action_edit_ellipsis">Chỉnh sửa…</string>
-    <string name="error_backup_failed">Sao lưu không thành công.</string>
+    <string name="error_backup_failed">Sao lưu thất bại.</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="whichEditApplication">Chỉnh sửa bằng</string>
     <string name="X_action_execute">Thực hiện</string>
@@ -178,7 +175,7 @@
     <string name="action_undo">Hoàn tác</string>
     <string name="unknown">Không xác định</string>
     <string name="X_action_update">Cập nhật</string>
-    <string name="X_action_use_default_setting">Dùng chế độ cài đặt mặc định</string>
+    <string name="X_action_use_default_setting">Dùng các giá trị mặc định</string>
     <string name="unknown_author">[Không rõ tác giả]</string>
     <string name="unknown_title">[Tiêu đề không xác định]</string>
     <string name="username">Tên người dùng</string>
@@ -247,14 +244,14 @@
     <string name="error_export_failed">Xuất không thành công.</string>
     <string name="option_shop_books_in_series">Sách trong bộ này</string>
     <string name="info_backup_successful">Sao lưu thành công</string>
-    <string name="confirm_merge_bookshelves">Giá sách bạn đang sửa đổi đã tồn tại. Bạn có muốn hợp nhất chúng?</string>
+    <string name="confirm_merge_bookshelves">Kệ sách bạn đang sửa đổi đã tồn tại. Bạn có muốn hợp nhất chúng?</string>
     <string name="option_import_books_option_all">Tất cả sách</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Thoát và lắp lại thẻ SD chính xác</string>
     <string name="bookshelf_all_books">Tất cả sách</string>
     <string name="lbl_series_multiple">Bộ</string>
     <string name="btn_all_books">Tất cả sách</string>
     <string name="X_pt_sort_author_name_given_first">Sắp xếp tên tác giả</string>
-    <string name="X_style_type_defaults">Thiết đặt phong cách mặc định</string>
+    <string name="X_style_type_defaults">Các thiết đặt phong cách mặc định</string>
     <string name="option_shop_books_by_author_in_series">Sách theo tác giả/bộ</string>
     <string name="option_info_import_books_option_all">Nhập sách mới và ghi đè sách hiện có. Sử dụng điều này để khôi phục bản sao lưu.</string>
     <string name="lbl_styles_long">Kiểu danh mục sách</string>
@@ -290,4 +287,40 @@
     <string name="lbl_all_bookshelves">Tất cả giá sách</string>
     <string name="title_backup_and_export">Sao lưu &amp; Xuất</string>
     <string name="lbl_export_books_option_since_last_full_backup">Sách mới và đã cập nhật</string>
+    <string name="lbl_author_type_contributor">Người đóng góp</string>
+    <string name="lbl_author_type_intro">Giới thiệu etc.</string>
+    <string name="lbl_author_type_editor">Biên tập viên</string>
+    <string name="lbl_author_type_narrator">Người dẫn chuyện</string>
+    <string name="lbl_author_type_artist">Minh họa</string>
+    <string name="lbl_author_type_colorist">Người tô màu</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Luôn bắt đầu với mở rộng</string>
+    <string name="lbl_author_type_writer">Nhà văn</string>
+    <string name="lbl_author_type_translator">Dịch giả</string>
+    <string name="option_book_sync_list_with_details">Đồng bộ hóa/định vị danh sách</string>
+    <string name="option_level_reset">Mở rộng cấp độ ưa thích</string>
+    <string name="option_enable_sync_options">Bật tùy chọn đồng bộ hóa</string>
+    <string name="confirm_registration_benefits">Tính năng này được hưởng lợi từ việc đăng ký với %1$s. Bạn có muốn xem thêm thông tin hoặc tắt thông báo này không?
+\n Bạn có thể tìm thấy thông tin này sau này trong phần “%2$s” trong thiết đặt.</string>
+    <string name="action_synchronize">Đồng bộ hóa</string>
+    <string name="option_info_import_books_option_new_and_updated">Nhập sách mới và đồng bộ hóa sách hiện có dựa trên ngày sửa đổi cuối cùng của chúng.</string>
+    <string name="lbl_bookshelf">Kệ sách</string>
+    <string name="option_sync_deleted_book_records">Đồng bộ hóa sách đã xóa</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Sử dụng phần mở rộng ưa thích</string>
+    <string name="tip_configure_sites">Các trang web riêng lẻ có thể được định cấu hình bằng biểu tượng thiết đặt ở đầu màn hình.</string>
+    <string name="acra_report_saved">Bây giờ bạn có thể truy cập trang dự án trên Github và ghi lại vấn đề mới. Vui lòng đính kèm báo cáo đã lưu trước đó về vấn đề này. Nếu bạn chưa có tài khoản Github, bạn sẽ cần tạo một tài khoản.</string>
+    <string name="error_unexpected">Đã xảy ra lỗi không mong muốn.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Nếu sách được hiển thị cho mọi tác giả của cuốn sách đó thì chúng có thể xuất hiện nhiều lần trong danh sách. Xóa một trong những cuốn sách đó có tác dụng xóa tất cả các bản sao khỏi danh sách.</string>
+    <string name="tip_authors_works_single_book">Tiêu đề hiện diện trong một cuốn sách duy nhất.</string>
+    <string name="lbl_group_1st_char_author_family_name">Ký tự đầu tiên trong họ của Tác giả</string>
+    <string name="bookshelf_my_books">Sách của tôi</string>
+    <string name="debug_select_items">Chọn những gì bạn muốn bao gồm:</string>
+    <string name="info_authorized">Được ủy quyền</string>
+    <string name="tip_book_search_by_text">Thêm sách theo ISBN chính xác hơn nhiều so với thêm theo tác giả và tên sách và thường được ưu tiên hơn. Hãy nhớ rằng đôi khi bạn có thể tìm thấy mã vạch chính xác ở mặt trong của bìa trước.</string>
+    <string name="tip_authors_works_multiple_books">Tiêu đề này hiện diện trong nhiều cuốn sách.</string>
+    <string name="style_builtin_author_year">Tác giả, Năm</string>
+    <string name="bob_empty_author">(Đang thiếu tác giả)</string>
+    <string name="warning_cannot_delete_1st_bs">Không thể xóa Kệ sách thứ nhất.</string>
+    <string name="lbl_sync_date">Kể từ</string>
+    <string name="info_maintenance_sync_deleted_book_records">Thao tác này sẽ kiểm tra lịch sử sách đã xóa từ lần nhập trước đó từ một thiết bị khác và đồng bộ hóa các lần xóa đó. Nói cách khác, sách bị xóa trên thiết bị kia cũng sẽ bị xóa trên thiết bị này.</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Luôn bắt đầu với thu gọn</string>
 </resources>
