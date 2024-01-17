@@ -548,7 +548,7 @@
     <string name="pt_bob_books_under_multiple_series">Libros en varias series</string>
     <string name="pt_bob_cover_long_click">Abre el menú contextual del libro.</string>
     <string name="pe_bob_cover_long_click_ignore">Con un botón.</string>
-    <string name="pe_bob_cover_long_click_popupmenu">Con una pulsación larga sobre la imagen de portada.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Haciendo una pulsación prolongada en una imagen de la portada.</string>
     <string name="pt_bob_cover_scale">Tamaño de la imagen de portada</string>
     <string name="pt_bob_cover_show">Mostrar miniaturas</string>
     <string name="pt_bob_font_size">Tamaño de la fuente</string>
