@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -592,8 +589,7 @@
     <string name="pv_bob_header_nr_of_books">Mostra numero di libri</string>
     <string name="pv_bob_header_style_name">Nome dello stile</string>
     <!-- use the default single quote character and NOT the stylized! -->
-    <string name="pv_reformat_titles_prefixes"
-            tools:ignore="TypographyQuotes">il|Il|lo|Lo|la|La|l\'|L\'|i|I|gli|Gli|le|Le|un\'|Un\'|uno|Uno|una|Una|un|Un</string>
+    <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">il|Il|lo|Lo|la|La|l\'|L\'|i|I|gli|Gli|le|Le|un\'|Un\'|uno|Uno|una|Una|un|Un</string>
     <string name="size_hidden">Nascosto</string>
     <string name="size_large">Grande</string>
     <string name="size_medium">Medio</string>
