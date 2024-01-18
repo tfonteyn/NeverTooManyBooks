@@ -62,8 +62,8 @@
             style="@style/CoverImage.Edit.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@sample/covers"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <ImageView
@@ -71,8 +71,8 @@
             style="@style/CoverImage.Edit.1"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@sample/covers"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -90,8 +90,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
             style="@style/TIL.ListPicker"
-            android:hint="@string/lbl_author"
             android:layout_marginStart="@dimen/field_margin_start"
+            android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"

@@ -133,8 +133,8 @@ public class CoverHandler {
      *
      * @param coverHandlerOwner the hosting component
      * @param cIdx              0..n image index
-     * @param maxWidth          the maximum width for the cover
-     * @param maxHeight         the maximum height for the cover
+     * @param maxWidth          Maximum width for a cover in pixels
+     * @param maxHeight         Maximum height for a cover in pixels
      */
     public CoverHandler(@NonNull final CoverHandlerOwner coverHandlerOwner,
                         @IntRange(from = 0, to = 1) final int cIdx,

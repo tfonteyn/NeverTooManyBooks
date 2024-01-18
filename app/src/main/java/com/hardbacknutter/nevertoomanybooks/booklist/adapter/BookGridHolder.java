@@ -68,8 +68,8 @@ public class BookGridHolder
     /**
      * Constructor.
      *
-     * @param itemView         the view specific for this holder
-     * @param style            to use
+     * @param itemView   the view specific for this holder
+     * @param style      to use
      * @param coverScale to use
      */
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -81,14 +81,15 @@ public class BookGridHolder
 
         this.style = style;
 
-        final int maxWidthInPixels = coverScale.getMaxWidthInPixels(itemView.getContext(),
-                                                                    Style.Layout.Grid);
+        final int maxWidth = coverScale.getMaxWidthInPixels(itemView.getContext(),
+                                                            Style.Layout.Grid);
+        final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
-        // We're using MaxSize.Constrained, so the maxWidthInPixels will in fact be IGNORED
+        // We're using MaxSize.Constrained, so the maxWidth/maxHeight will in fact be IGNORED
         // except when displaying a placeholder
-        coverHelper = new CoverHelper(maxWidthInPixels,
-                                      ImageView.ScaleType.FIT_CENTER,
-                                      ImageViewLoader.MaxSize.Constrained);
+        coverHelper = new CoverHelper(ImageView.ScaleType.FIT_CENTER,
+                                      ImageViewLoader.MaxSize.Constrained,
+                                      maxWidth, maxHeight);
 
         // This is needed to allow taking up the entire width of the screen
         // when the cover-scale maxWidthInPixels exceeds the actual image width.

@@ -150,8 +150,8 @@
         <Button
             android:id="@+id/btn_show_toc"
             style="@style/Button.Action.OpenToc"
-            android:text="@string/action_show_toc"
             android:layout_marginTop="@dimen/field_margin_top"
+            android:text="@string/action_show_toc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             tools:visibility="visible"

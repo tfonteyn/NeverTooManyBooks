@@ -36,22 +36,22 @@
         <ImageView
             android:id="@id/cover_image_0"
             style="@style/CoverImage.Edit.0"
+            app:layout_constraintEnd_toStartOf="@id/cover_image_1"
+            app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cover_image_1"
-            tools:src="@sample/covers"
-            app:layout_constraintHorizontal_chainStyle="spread"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <ImageView
             android:id="@id/cover_image_1"
             style="@style/CoverImage.Edit.1"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:src="@sample/covers"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator

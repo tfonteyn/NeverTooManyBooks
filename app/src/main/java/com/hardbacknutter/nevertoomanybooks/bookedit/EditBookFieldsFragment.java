@@ -47,9 +47,9 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceDialogFragment;
@@ -172,7 +172,7 @@ public class EditBookFieldsFragment
                 // in edit mode, always show both covers unless globally disabled
                 if (ServiceLocator.getInstance().isFieldEnabled(DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
-                    final int maxHeight = (int) (maxWidth / ImageViewLoader.HW_RATIO);
+                    final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
                     //noinspection DataFlowIssue
                     coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)

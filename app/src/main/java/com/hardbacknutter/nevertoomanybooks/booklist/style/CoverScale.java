@@ -69,6 +69,13 @@ public enum CoverScale {
     MAX(4);
 
     public static final CoverScale DEFAULT = Medium;
+    /**
+     * A standard paperback measures 17.5cm x 10.6cm,
+     * which gives us a 5/3 ratio between height and width.
+     * <p>
+     * i.e.: height = width / 0.6
+     */
+    public static final float HW_RATIO = 0.6f;
 
     private final int scale;
 
@@ -118,15 +125,18 @@ public enum CoverScale {
             return 0;
         }
         if (this == MAX && layout == Style.Layout.Grid) {
+            final Resources res = context.getResources();
             // Calculate depending on the available screen width.
-            final Configuration configuration = context.getResources().getConfiguration();
-            final int orientation = configuration.orientation;
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            final double screenWidthInPx = Math.floor(
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                              res.getConfiguration().screenWidthDp,
+                                              res.getDisplayMetrics()));
+            if (res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape, half.
-                return getScreenWidthInPixels(context) / 2;
+                return (int) (screenWidthInPx / 2);
             } else {
                 // In portrait, the entire screen width
-                return getScreenWidthInPixels(context);
+                return (int) screenWidthInPx;
             }
         }
 
@@ -140,16 +150,6 @@ public enum CoverScale {
         }
     }
 
-    @Dimension
-    private int getScreenWidthInPixels(@NonNull final Context context) {
-        final Resources res = context.getResources();
-        final int screenWidthDp = res.getConfiguration().screenWidthDp;
-
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                    screenWidthDp,
-                                                    res.getDisplayMetrics()));
-    }
-
     /**
      * Use the available screen width and the scale to calculate the optimal
      * span-count for use by the BoB {@link Style.Layout#Grid} mode.
@@ -160,26 +160,33 @@ public enum CoverScale {
      */
     @IntRange(from = 1)
     public int getGridSpanCount(@NonNull final Context context) {
-        final int spanCount;
-        final Configuration configuration = context.getResources().getConfiguration();
-        if (this == MAX) {
-            if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                spanCount = 2;
-            } else {
-                spanCount = 1;
-            }
-        } else {
-            // Calculate depending on the available screen width.
-            final int coverMaxSizeInPixels = getMaxWidthInPixels(context, Style.Layout.Grid);
-            spanCount = (int) Math.floor((double) getScreenWidthInPixels(context)
-                                         / coverMaxSizeInPixels);
-        }
+        final Resources res = context.getResources();
 
-        // Sanity check ... if the developer (that'll be me...) made a boo-boo...
-        // the coverMaxSizeInPixels could be smaller than the screen-width.
-        if (spanCount < 0) {
-            return 1;
+        if (this == MAX) {
+            if (res.getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE) {
+                return 2;
+            } else {
+                // Configuration.ORIENTATION_PORTRAIT
+                return 1;
+            }
+        } else if (this != Hidden) {
+            // Calculate depending on the available screen width.
+            final TypedArray coverSizes = res.obtainTypedArray(R.array.cover_max_width);
+            try {
+                final int screenWidthDp = res.getConfiguration().screenWidthDp;
+                // Multiply by 0.6 as the values in the resource are optimized for list-mode,
+                // where we aim to fill up 1/3 of the width with the image, and 2/3 with text.
+                // The 0.6 could likely be tuned on a screen size basis... but the differences
+                // will be minimal hence not bothering for now.
+                final float coverWidthDp = 0.6f * coverSizes.getDimension(scale, 1);
+                return (int) Math.floor(screenWidthDp / coverWidthDp);
+            } finally {
+                coverSizes.recycle();
+            }
         }
-        return spanCount;
+        // Hidden.... we should never get here... flw
+        return 1;
     }
+
 }
