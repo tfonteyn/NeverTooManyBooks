@@ -34,26 +34,26 @@
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>
 
-    <!-- multiplier: 2 -->
+    <!-- 100/60 multiplier: 2 -->
     <dimen name="cover_details_0_height">200dp</dimen>
-    <dimen name="cover_details_0_width">128dp</dimen>
-    <!-- multiplier: 0.8 -->
+    <dimen name="cover_details_0_width">120dp</dimen>
+    <!-- 100/60 multiplier: 0.8 -->
     <dimen name="cover_details_1_height">80dp</dimen>
-    <dimen name="cover_details_1_width">52dp</dimen>
+    <dimen name="cover_details_1_width">48dp</dimen>
 
-    <!-- multiplier: 1 -->
+    <!-- 100/60 multiplier: 1 -->
     <dimen name="cover_edit_0_height">100dp</dimen>
-    <dimen name="cover_edit_0_width">64dp</dimen>
+    <dimen name="cover_edit_0_width">60dp</dimen>
     <dimen name="cover_edit_1_height">100dp</dimen>
-    <dimen name="cover_edit_1_width">64dp</dimen>
+    <dimen name="cover_edit_1_width">60dp</dimen>
 
-    <!-- multiplier: 0.8 -->
+    <!-- 100/60 multiplier: 0.8 -->
     <dimen name="cover_browser_gallery_height">80dp</dimen>
-    <dimen name="cover_browser_gallery_width">52dp</dimen>
+    <dimen name="cover_browser_gallery_width">48dp</dimen>
 
-    <!-- multiplier: 1.5 -->
+    <!-- 100/60 multiplier: 1.5 -->
     <dimen name="cover_browser_preview_height">150dp</dimen>
-    <dimen name="cover_browser_preview_width">96dp</dimen>
+    <dimen name="cover_browser_preview_width">90dp</dimen>
 
     <integer name="cover_browser_gallery_span_count">1</integer>
 
