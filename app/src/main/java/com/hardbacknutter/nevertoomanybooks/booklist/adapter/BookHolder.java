@@ -81,7 +81,6 @@ public class BookHolder
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
-    private final int maxWidthInPixels;
     @NonNull
     private final RealNumberParser realNumberParser;
     @NonNull
@@ -116,7 +115,6 @@ public class BookHolder
         final Context context = itemView.getContext();
 
         this.style = style;
-        this.maxWidthInPixels = coverScale.getMaxWidthInPixels(context, Style.Layout.List);
         this.realNumberParser = realNumberParser;
 
         final Resources res = context.getResources();
@@ -124,9 +122,11 @@ public class BookHolder
         a_bracket_b_bracket = res.getString(R.string.a_bracket_b_bracket);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
-            coverHelper = new CoverHelper(maxWidthInPixels,
-                                          ImageView.ScaleType.FIT_START,
-                                          ImageViewLoader.MaxSize.Enforce);
+            final int maxWidth = coverScale.getMaxWidthInPixels(context, Style.Layout.List);
+            final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
+            coverHelper = new CoverHelper(ImageView.ScaleType.FIT_START,
+                                          ImageViewLoader.MaxSize.Enforce,
+                                          maxWidth, maxHeight);
         } else {
             coverHelper = null;
             vb.coverImage0.setVisibility(View.GONE);

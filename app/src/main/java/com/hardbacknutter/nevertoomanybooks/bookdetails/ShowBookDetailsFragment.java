@@ -65,13 +65,13 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookById
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
@@ -281,7 +281,7 @@ public class ShowBookDetailsFragment
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 if (style.isShowField(FieldVisibility.Screen.Detail, DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
-                    final int maxHeight = (int) (maxWidth / ImageViewLoader.HW_RATIO);
+                    final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
                     coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())

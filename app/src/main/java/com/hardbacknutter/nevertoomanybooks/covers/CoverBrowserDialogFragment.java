@@ -53,6 +53,7 @@ import java.util.concurrent.Executor;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
@@ -154,7 +155,7 @@ public class CoverBrowserDialogFragment
 
         final Resources res = getResources();
         previewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
-        previewMaxHeight = (int) (previewMaxWidth / ImageViewLoader.HW_RATIO);
+        previewMaxHeight = (int) (previewMaxWidth / CoverScale.HW_RATIO);
     }
 
     @Override
@@ -495,7 +496,7 @@ public class CoverBrowserDialogFragment
             this.positionHandler = positionHandler;
             final Resources res = context.getResources();
             maxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
-            maxHeight = (int) (maxWidth / ImageViewLoader.HW_RATIO);
+            maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
             imageLoader = new ImageViewLoader(executor,
                                               ImageView.ScaleType.FIT_START,

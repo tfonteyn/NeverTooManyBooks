@@ -62,29 +62,29 @@ class CoverHelper {
      * <p>
      * Dev. note: the width comes from the style scaling factor.
      *
-     * @param maxWidthInPixels Maximum width for a cover in pixels
-     * @param scaleType        to use for images
-     *                         (ignored for placeholders)
-     * @param maxSizeType      how to adjust the size, see {@link ImageViewLoader.MaxSize}
-     *                         (ignored for placeholders)
+     * @param scaleType   to use for images
+     *                    (ignored for placeholders)
+     * @param maxSizeType how to adjust the size, see {@link ImageViewLoader.MaxSize}
+     *                    (ignored for placeholders)
+     * @param maxWidth    Maximum width for a cover in pixels
+     * @param maxHeight   Maximum height for a cover in pixels
      */
-    CoverHelper(@Dimension final int maxWidthInPixels,
-                @NonNull final ImageView.ScaleType scaleType,
-                @NonNull final ImageViewLoader.MaxSize maxSizeType) {
+    CoverHelper(@NonNull final ImageView.ScaleType scaleType,
+                @NonNull final ImageViewLoader.MaxSize maxSizeType,
+                @Dimension final int maxWidth,
+                @Dimension final int maxHeight) {
 
         // In THIS class only used for the image-caching "filename"
-        this.maxWidthInPixels = maxWidthInPixels;
+        this.maxWidthInPixels = maxWidth;
 
         coverStorage = ServiceLocator.getInstance().getCoverStorage();
 
         imageCachingEnabled = coverStorage.isImageCachingEnabled();
 
-        //URGENT: deal with  this.maxWidthInPixels, this.maxWidthInPixels
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           scaleType, maxSizeType,
-                                          this.maxWidthInPixels, this.maxWidthInPixels);
+                                          maxWidth, maxHeight);
     }
-
 
     /**
      * Zoom the given cover.

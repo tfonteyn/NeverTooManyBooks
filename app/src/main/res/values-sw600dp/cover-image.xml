@@ -48,13 +48,13 @@
     <array name="cover_max_width">
         <!-- hidden -->
         <item>0dp</item>
-        <!-- small: 3 * 40dp -->
-        <item>120dp</item>
-        <!-- medium: 4 * 40dp - the default. -->
-        <item>160dp</item>
-        <!-- large: 6 * 40dp -->
-        <item>240dp</item>
-        <!-- X-Large: 7 * 40dp -->
-        <item>280dp</item>
+        <!-- small: 3 * 24dp -->
+        <item>72dp</item>
+        <!-- medium: 4 * 24dp - the default. -->
+        <item>96dp</item>
+        <!-- large: 6 * 24dp -->
+        <item>144dp</item>
+        <!-- X-Large: 7 * 24dp -->
+        <item>168dp</item>
     </array>
 </resources>
