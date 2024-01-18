@@ -46,10 +46,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ImageViewLoader {
 
     /**
-     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
-     * -> width = 0.6 * maxHeight.
+     * A standard paperback measures 17.5cm x 10.6cm,
+     * which gives us a 5/3 ratio between height and width.
+     * <p>
+     * i.e.: height = width / 0.6
      */
-    private static final float HW_RATIO = 0.6f;
+    public static final float HW_RATIO = 0.6f;
 
     /** Log tag. */
     private static final String TAG = "ImageViewLoader";

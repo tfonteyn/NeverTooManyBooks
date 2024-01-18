@@ -55,6 +55,8 @@
          Images will always be scaled to fit this box.
 
         A height of "100dp" and width of "60dp" is considered the default, i.e. multiplier: 1
+
+        height = width / 0.6
         -->
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>
