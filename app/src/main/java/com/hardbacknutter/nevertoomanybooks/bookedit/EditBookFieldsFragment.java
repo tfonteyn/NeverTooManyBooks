@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceDialogFragment;
@@ -164,15 +165,14 @@ public class EditBookFieldsFragment
 
     private void createCoverDelegates() {
         final Resources res = getResources();
-        final TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
-        final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
+        final TypedArray width = res.obtainTypedArray(R.array.cover_edit_max_width);
         try {
 
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
                 if (ServiceLocator.getInstance().isFieldEnabled(DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
-                    final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
+                    final int maxHeight = (int) (maxWidth / ImageViewLoader.HW_RATIO);
 
                     //noinspection DataFlowIssue
                     coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
@@ -192,7 +192,6 @@ public class EditBookFieldsFragment
             }
         } finally {
             width.recycle();
-            height.recycle();
         }
     }
 

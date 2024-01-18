@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
@@ -274,14 +275,13 @@ public class ShowBookDetailsFragment
         final Context context = getContext();
         //noinspection DataFlowIssue
         final Resources res = context.getResources();
-        final TypedArray width = res.obtainTypedArray(R.array.cover_details_width);
-        final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
+        final TypedArray width = res.obtainTypedArray(R.array.cover_details_max_width);
         try {
             final Style style = aVm.getStyle();
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 if (style.isShowField(FieldVisibility.Screen.Detail, DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
-                    final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
+                    final int maxHeight = (int) (maxWidth / ImageViewLoader.HW_RATIO);
 
                     coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())
@@ -291,7 +291,6 @@ public class ShowBookDetailsFragment
             }
         } finally {
             width.recycle();
-            height.recycle();
         }
     }
 

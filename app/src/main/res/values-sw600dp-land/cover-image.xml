@@ -27,24 +27,18 @@
     <dimen name="cover_details_1_padding">20dp</dimen>
 
     <!-- 100/60 multiplier: 3 -->
-    <dimen name="cover_details_0_height">300dp</dimen>
     <dimen name="cover_details_0_width">180dp</dimen>
     <!-- 100/60 multiplier: 1.2 -->
-    <dimen name="cover_details_1_height">120dp</dimen>
     <dimen name="cover_details_1_width">72dp</dimen>
 
     <!-- 100/60 multiplier: 1.5 -->
-    <dimen name="cover_edit_0_height">150dp</dimen>
     <dimen name="cover_edit_0_width">90dp</dimen>
-    <dimen name="cover_edit_1_height">150dp</dimen>
     <dimen name="cover_edit_1_width">90dp</dimen>
 
     <!-- 100/60 multiplier: 1 -->
-    <dimen name="cover_browser_gallery_height">100dp</dimen>
     <dimen name="cover_browser_gallery_width">60dp</dimen>
 
     <!-- 100/60 multiplier: 3 -->
-    <dimen name="cover_browser_preview_height">300dp</dimen>
     <dimen name="cover_browser_preview_width">180dp</dimen>
 
     <integer name="cover_browser_gallery_span_count">2</integer>

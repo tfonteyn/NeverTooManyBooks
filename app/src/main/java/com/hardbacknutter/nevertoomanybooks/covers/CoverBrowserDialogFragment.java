@@ -154,7 +154,7 @@ public class CoverBrowserDialogFragment
 
         final Resources res = getResources();
         previewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
-        previewMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_preview_height);
+        previewMaxHeight = (int) (previewMaxWidth / ImageViewLoader.HW_RATIO);
     }
 
     @Override
@@ -495,7 +495,7 @@ public class CoverBrowserDialogFragment
             this.positionHandler = positionHandler;
             final Resources res = context.getResources();
             maxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
-            maxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
+            maxHeight = (int) (maxWidth / ImageViewLoader.HW_RATIO);
 
             imageLoader = new ImageViewLoader(executor,
                                               ImageView.ScaleType.FIT_START,

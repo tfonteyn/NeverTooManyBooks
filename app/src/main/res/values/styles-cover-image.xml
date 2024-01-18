@@ -48,7 +48,7 @@
            parent="Base.CoverImage">
         <item name="android:padding">@dimen/cover_details_0_padding</item>
         <item name="android:layout_width">@dimen/cover_details_0_width</item>
-        <item name="android:layout_height">@dimen/cover_details_0_height</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:contentDescription">@string/lbl_cover_front</item>
     </style>
 
@@ -56,19 +56,19 @@
            parent="Base.CoverImage">
         <item name="android:padding">@dimen/cover_details_1_padding</item>
         <item name="android:layout_width">@dimen/cover_details_1_width</item>
-        <item name="android:layout_height">@dimen/cover_details_1_height</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:contentDescription">@string/lbl_cover_back</item>
     </style>
 
     <style name="CoverImage.Edit.0" parent="Base.CoverImage">
         <item name="android:layout_width">@dimen/cover_edit_0_width</item>
-        <item name="android:layout_height">@dimen/cover_edit_0_height</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:contentDescription">@string/lbl_cover_front</item>
     </style>
 
     <style name="CoverImage.Edit.1" parent="Base.CoverImage">
         <item name="android:layout_width">@dimen/cover_edit_1_width</item>
-        <item name="android:layout_height">@dimen/cover_edit_1_height</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:contentDescription">@string/lbl_cover_back</item>
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
     </style>
@@ -84,13 +84,13 @@
     <style name="CoverImage.BrowserPreview" parent="Base.CoverImage">
         <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_width">@dimen/cover_browser_preview_width</item>
-        <item name="android:layout_height">@dimen/cover_browser_preview_height</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="CoverImage.BrowserGallery" parent="Base.CoverImage">
         <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_width">@dimen/cover_browser_gallery_width</item>
-        <item name="android:layout_height">@dimen/cover_browser_gallery_height</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/cover_list_padding</item>
     </style>
 </resources>

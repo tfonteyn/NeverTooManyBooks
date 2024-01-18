@@ -62,35 +62,23 @@
     <dimen name="cover_details_1_padding">10dp</dimen>
 
     <!-- 100/60 multiplier: 1.8 -->
-    <dimen name="cover_details_0_height">180dp</dimen>
     <dimen name="cover_details_0_width">108dp</dimen>
     <!-- 100/60 multiplier: 0.9 -->
-    <dimen name="cover_details_1_height">90dp</dimen>
     <dimen name="cover_details_1_width">54dp</dimen>
 
     <!-- Book edit layout. -->
     <!-- 100/60 multiplier: 1 -->
-    <dimen name="cover_edit_0_height">100dp</dimen>
     <dimen name="cover_edit_0_width">60dp</dimen>
     <!-- 100/60 multiplier: 1 -->
-    <dimen name="cover_edit_1_height">100dp</dimen>
     <dimen name="cover_edit_1_width">60dp</dimen>
 
     <!-- array access to cover sizes. -->
-    <array name="cover_details_height">
-        <item>@dimen/cover_details_0_height</item>
-        <item>@dimen/cover_details_1_height</item>
-    </array>
-    <array name="cover_details_width">
+    <array name="cover_details_max_width">
         <item>@dimen/cover_details_0_width</item>
         <item>@dimen/cover_details_1_width</item>
     </array>
 
-    <array name="cover_edit_height">
-        <item>@dimen/cover_edit_0_height</item>
-        <item>@dimen/cover_edit_1_height</item>
-    </array>
-    <array name="cover_edit_width">
+    <array name="cover_edit_max_width">
         <item>@dimen/cover_edit_0_width</item>
         <item>@dimen/cover_edit_1_width</item>
     </array>
@@ -99,11 +87,9 @@
     <integer name="cover_browser_gallery_span_count">1</integer>
 
     <!-- 100/60 multiplier: 0.9 -->
-    <dimen name="cover_browser_gallery_height">90dp</dimen>
     <dimen name="cover_browser_gallery_width">54dp</dimen>
 
     <!-- 100/60 multiplier: 1.5 -->
-    <dimen name="cover_browser_preview_height">150dp</dimen>
     <dimen name="cover_browser_preview_width">90dp</dimen>
 
     <!-- BoB. The maximum width of a cover image
