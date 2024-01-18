@@ -46,14 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
  */
 class CoverHelper {
 
-    /**
-     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
-     * -> width = 0.6 * maxHeight.
-     *
-     * @see #maxWidthInPixels
-     */
-    private static final float HW_RATIO = 0.6f;
-
     @Dimension
     private final int maxWidthInPixels;
     private final boolean imageCachingEnabled;
