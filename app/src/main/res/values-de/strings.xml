@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -56,8 +59,7 @@
     <string name="X_lbl_image">Bild</string>
     <string name="X_lbl_thumbnails">Vorschaubilder</string>
     <string name="X_neither">Weder</string>
-    <string name="X_option_bob_filter_anthology_no">Alle außer Anthologien</string>
-    <string name="X_option_bob_filter_anthology_yes">Anthologien</string>
+    <string name="X_lbl_anthologies">Anthologien</string>
     <string name="X_lbl_general">Allgemein</string>
     <string name="tip_booklist_style_defaults">Auf diesem Bildschirm können Sie die Standardmerkmale aller Stile festlegen. Diese werden von allen integrierten Stilen verwendet und dienen als Ausgangspunkt für jeden von Ihnen selbst definierten Stil.</string>
     <string name="X_action_use_default_setting">Standardeinstellungen verwenden</string>
@@ -558,12 +560,10 @@
     <string name="pt_search_reformat_color">Standardisieren Namen der Buchfarben</string>
     <string name="pt_search_reformat_format">Standardisieren Namen der Buchformate</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
-    <string name="X_pt_author_name_formatting">Formatierung des Autornamens</string>
     <string name="pt_show_title_reordered">Titel anzeigen als…</string>
     <string name="ps_show_titles_reordered_off">Anzeige wie angegeben,\nz. B. „Der Herr der Ringe“</string>
     <string name="error_type_not_supported">Typ nicht unterstützt: %1$s …</string>
     <string name="ps_show_titles_reordered_on">Einen führenden Artikel an das Ende verschieben,\nz. B. „Herr der Ringe, Der“</string>
-    <string name="X_pt_sort_author_name_given_first">Autorennamen sortieren</string>
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
     <string name="pt_cover_undo_enabled">Rückgängigmachen von Operationen auf Buchumschläge</string>
     <string name="ps_cover_undo_disabled">Ein Buchumschlag bearbeiten/ersetzen kann nicht rückgängig gemacht werden (verbraucht weniger Speicherplatz)</string>
@@ -702,8 +702,7 @@
     <string name="info_purge_blns_item_name">Knotenstatus von %1$s „%2$s“ löschen\?</string>
     <string name="error_updates_aborted">Aktualisierungen abgebrochen</string>
     <string name="lbl_country">Land</string>
-    <string name="pt_search_show_shopping_options">Standardisieren</string>
-    <string name="lbl_standardize">Einkaufsmenüs anzeigen</string>
+    <string name="pt_search_show_shopping_options">Einkaufsmenüs anzeigen</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Titel</string>
     <string name="lbl_original_title">Originaltitel</string>

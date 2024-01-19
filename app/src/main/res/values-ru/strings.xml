@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -62,8 +65,7 @@
     <string name="X_lbl_image">Изображение</string>
     <string name="X_lbl_thumbnails">Миниатюры</string>
     <string name="X_neither">Ни один</string>
-    <string name="X_option_bob_filter_anthology_no">Все, кроме антологий</string>
-    <string name="X_option_bob_filter_anthology_yes">Антологии</string>
+    <string name="X_lbl_anthologies">Антологии</string>
     <string name="X_lbl_general">Общие</string>
     <string name="tip_booklist_style_defaults">На этом экране задаются характеристики по умолчанию для всех стилей. Они используются всеми встроенными стилями и являются отправной точкой для любого стиля, который вы определяете самостоятельно.</string>
     <string name="X_action_use_default_setting">Использовать настройки по умолчанию</string>
@@ -574,9 +576,7 @@
     <string name="pt_search_reformat_color">Стандартизировать названия книг</string>
     <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
-    <string name="X_pt_author_name_formatting">Форматирование имени автора</string>
     <string name="pt_show_title_reordered">Показать названия как…</string>
-    <string name="X_pt_sort_author_name_given_first">Сортировка имени автора</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
     <string name="pt_cover_undo_enabled">Отмена операций на обложках книг</string>
     <string name="ps_cover_undo_disabled">Редактирование/замена обложки не может быть отменено (используется меньший объем памяти)</string>
@@ -715,7 +715,6 @@
     <string name="error_updates_aborted">Обновления прерваны</string>
     <string name="lbl_country">Страна</string>
     <string name="pt_search_show_shopping_options">Показать меню покупок</string>
-    <string name="lbl_standardize">стандартизировать</string>
     <string name="lbl_author_pseudonym_of_X">пс. %1$s</string>
     <string name="lbl_titles">Титулы</string>
     <string name="lbl_original_title">Оригинальное название</string>

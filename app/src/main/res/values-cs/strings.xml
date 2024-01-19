@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -62,8 +65,7 @@
     <string name="X_lbl_image">Obrázek</string>
     <string name="X_lbl_thumbnails">Náhledy</string>
     <string name="X_neither">Ani</string>
-    <string name="X_option_bob_filter_anthology_no">Všechno kromě Anthologies</string>
-    <string name="X_option_bob_filter_anthology_yes">Anthology</string>
+    <string name="X_lbl_anthologies">Anthology</string>
     <string name="X_lbl_general">Obecné</string>
     <string name="tip_booklist_style_defaults">Na této obrazovce můžete nastavit výchozí vlastnosti všech stylů. Ty jsou používány všemi vestavěnými styly a jako výchozí bod pro jakýkoli styl, který si sami definujete.</string>
     <string name="X_action_use_default_setting">Použít výchozí nastavení</string>
@@ -573,9 +575,7 @@
     <string name="pt_search_reformat_color">Standardizujte názvy barev knih</string>
     <string name="pt_search_reformat_format">Standardizujte názvy „formát knihy“</string>
     <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
-    <string name="X_pt_author_name_formatting">Formátování jména autora</string>
     <string name="pt_show_title_reordered">Zobrazit tituly jako…</string>
-    <string name="X_pt_sort_author_name_given_first">Třídění autorských jmen</string>
     <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
     <string name="pt_cover_undo_enabled">Zrušení operací na obálkách knih</string>
     <string name="ps_cover_undo_disabled">Úpravu/záměnu obálky nelze vrátit zpět (využívá méně úložného prostoru)</string>
@@ -714,7 +714,6 @@
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
     <string name="pt_search_show_shopping_options">Zobrazit nákupní nabídky</string>
-    <string name="lbl_standardize">Standardizovat</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Tituly</string>
     <string name="lbl_original_title">Originální název</string>

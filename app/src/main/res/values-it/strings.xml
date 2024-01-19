@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -59,8 +62,7 @@
     <string name="X_lbl_image">Immagine</string>
     <string name="X_lbl_thumbnails">Miniature</string>
     <string name="X_neither">Nessuno dei due</string>
-    <string name="X_option_bob_filter_anthology_no">Tutti tranne antologie</string>
-    <string name="X_option_bob_filter_anthology_yes">Antologie</string>
+    <string name="X_lbl_anthologies">Antologie</string>
     <string name="X_lbl_general">Generale</string>
     <string name="tip_booklist_style_defaults">Questa schermata consente di impostare le caratteristiche predefinite di tutti gli stili. Queste vengono utilizzate da tutti gli stili incorporati e come punto di partenza per qualsiasi stile definito dall’utente.</string>
     <string name="X_action_use_default_setting">Utilizza le impostazioni predefinite</string>
@@ -561,12 +563,10 @@
     <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
     <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
     <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
-    <string name="X_pt_author_name_formatting">Formattazione del nome dell’autore</string>
     <string name="pt_show_title_reordered">Mostra titoli come…</string>
     <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «IIl Signore degli Anelli»</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s …</string>
     <string name="ps_show_titles_reordered_on">Spostare un articolo iniziale alla fine,\nad esempio «ignore degli Anelli, Il»</string>
-    <string name="X_pt_sort_author_name_given_first">Ordinamento dei nomi degli autori</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>
     <string name="ps_cover_undo_disabled">Una modifica/sostituzione della copertina non può essere annullata (utilizza meno memoria)</string>
@@ -707,7 +707,6 @@
     <string name="error_updates_aborted">Aggiornamenti interrotti</string>
     <string name="lbl_country">Paese</string>
     <string name="pt_search_show_shopping_options">Mostra i menu dello shopping</string>
-    <string name="lbl_standardize">Standardizzare</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Titoli</string>
     <string name="lbl_original_title">Titolo originale</string>

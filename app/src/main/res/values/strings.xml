@@ -1165,8 +1165,6 @@
             translatable="false">@string/action_edit</string>
     <!-- Preference Category -->
     <string name="pc_lists">Lists</string>
-    <!-- Preference Category -->
-    <string name="lbl_standardize">Standardize</string>
     <!-- [VERIFIED] - Preference Category -->
     <string name="pc_advanced_options">Advanced</string>
     <!-- Preference Category -->
@@ -1487,16 +1485,12 @@
     <!-- Dialog title -->
     <string name="lbl_add_filter">Add filter</string>
 
-    <string name="X_option_bob_filter_read_yes">Books Read</string>
-    <string name="X_option_bob_filter_read_no">Books Unread</string>
     <string name="option_bob_filter_signed_yes">Books Signed</string>
     <string name="option_bob_filter_signed_no">Books Unsigned</string>
     <string name="option_bob_filter_lend_out_yes">Books lend out</string>
     <string name="option_bob_filter_lend_out_no">Books available</string>
     <string name="option_bob_filter_isbn_yes">With ISBN</string>
     <string name="option_bob_filter_isbn_no">Without ISBN</string>
-    <string name="X_option_bob_filter_anthology_yes">Anthologies</string>
-    <string name="X_option_bob_filter_anthology_no">All but Anthologies</string>
 
     <!-- [VERIFIED] Param 1: a filter name -->
     <string name="lbl_search_filtered_by_x">Filtered by: %1$s</string>
@@ -1649,11 +1643,10 @@
 
     <string name="X_neither">Neither</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
+    <string name="X_lbl_anthologies">Anthologies</string>
 
-    <!-- SwitchPreference - Display Authors by family (default) or given name. -->
-    <string name="X_pt_author_name_formatting">Author name formatting</string>
-    <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
-    <string name="X_pt_sort_author_name_given_first">Author name sorting</string>
+    <string name="X_option_bob_filter_read_yes">Books Read</string>
+    <string name="X_option_bob_filter_read_no">Books Unread</string>
 
     <!-- The global default values used as defaults for the builtin styles. -->
     <string name="X_style_type_defaults">Styles default settings</string>

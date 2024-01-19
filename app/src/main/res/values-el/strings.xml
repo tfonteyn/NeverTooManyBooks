@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -56,8 +59,7 @@
     <string name="X_lbl_image">Εικόνα</string>
     <string name="X_lbl_thumbnails">Μικρογραφίες</string>
     <string name="X_neither">κανενα απο τα δυο</string>
-    <string name="X_option_bob_filter_anthology_no">Όλοι εκτός από Ανθολογίες</string>
-    <string name="X_option_bob_filter_anthology_yes">Ανθολογίες</string>
+    <string name="X_lbl_anthologies">Ανθολογίες</string>
     <string name="X_lbl_general">Γενικά</string>
     <string name="tip_booklist_style_defaults">Χρησιμοποιήστε αυτή την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των στυλ. Αυτά χρησιμοποιούνται από όλα τα ενσωματωμένα στυλ και ως σημείο εκκίνησης για κάθε στυλ που ορίζετε εσείς οι ίδιοι.</string>
     <string name="X_action_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
@@ -559,12 +561,10 @@
     <string name="pt_search_reformat_color">Τυποποιήστε τα ονόματα «χρώματος βιβλίου»</string>
     <string name="pt_search_reformat_format">Τυποποιήστε τα ονόματα «μορφής βιβλίου»</string>
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
-    <string name="X_pt_author_name_formatting">Μορφοποίηση ονόματος συντάκτη</string>
     <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
     <string name="ps_show_titles_reordered_off">Εμφάνιση όπως δίνεται,\nπ.χ. «Ο Άρχοντας των Δαχτυλιδιών»</string>
     <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s …</string>
     <string name="ps_show_titles_reordered_on">Μετακινήστε ένα αρχικό άρθρο στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
-    <string name="X_pt_sort_author_name_given_first">Ταξινόμηση ονόματος συγγραφέα</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων με βάση</string>
     <string name="pt_cover_undo_enabled">Αναίρεση λειτουργιών σε εξώφυλλα βιβλίων</string>
     <string name="ps_cover_undo_disabled">Μια επεξεργασία/αντικατάσταση εξωφύλλου δεν μπορεί να αναιρεθεί (χρησιμοποιεί λιγότερο αποθηκευτικό χώρο)</string>
@@ -704,7 +704,6 @@
     <string name="error_updates_aborted">Οι ενημερώσεις ματαιώθηκαν</string>
     <string name="lbl_country">Χώρα</string>
     <string name="pt_search_show_shopping_options">Εμφάνιση μενού αγορών</string>
-    <string name="lbl_standardize">Τυποποιώ</string>
     <string name="lbl_author_pseudonym_of_X">ψε. %1$s</string>
     <string name="lbl_titles">Τίτλοι</string>
     <string name="lbl_original_title">Πρωτότυπος τίτλος</string>

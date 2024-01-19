@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -56,8 +59,7 @@
     <string name="X_lbl_image">Resim</string>
     <string name="X_lbl_thumbnails">Ufak resimler</string>
     <string name="X_neither">Hiç biri</string>
-    <string name="X_option_bob_filter_anthology_no">Antolojiler hariç hepsi</string>
-    <string name="X_option_bob_filter_anthology_yes">Antolojiler</string>
+    <string name="X_lbl_anthologies">Antolojiler</string>
     <string name="X_lbl_general">Genel</string>
     <string name="tip_booklist_style_defaults">Tüm stillerin varsayılan özelliklerini ayarlamak için bu ekranı kullanın. Bunlar tüm yerleşik stiller tarafından ve kendi tanımladığınız herhangi bir stil için başlangıç noktası olarak kullanılır.</string>
     <string name="X_action_use_default_setting">Varsayılan ayarları kullan</string>
@@ -564,9 +566,7 @@
     <string name="pt_search_reformat_color">“Kitap rengi” adlarını standartlaştırma</string>
     <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
     <string name="pt_search_uses_publisher">Arama yayıncı kullanıyor</string>
-    <string name="X_pt_author_name_formatting">Yazar adı biçimlendirme</string>
     <string name="pt_show_title_reordered">Başlıkları farklı göster…</string>
-    <string name="X_pt_sort_author_name_given_first">Yazar adı sıralama</string>
     <string name="pt_sort_title_reordered">Başlıkları sırala</string>
     <string name="pt_cover_undo_enabled">Kitap kapaklarındaki işlemleri geri alma</string>
     <string name="ps_cover_undo_disabled">Kapak düzenleme/değiştirme geri alınamaz (daha az depolama alanı kullanır)</string>
@@ -705,7 +705,6 @@
     <string name="error_updates_aborted">Güncellemeler iptal edildi</string>
     <string name="lbl_country">Ülke</string>
     <string name="pt_search_show_shopping_options">Alışveriş menülerini göster</string>
-    <string name="lbl_standardize">Standardize et</string>
     <string name="lbl_author_pseudonym_of_X">ta. %1$s</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
     <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir.\nİngilizce örnek: “Lord of The Rings, The”.</string>

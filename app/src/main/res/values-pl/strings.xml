@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -63,8 +66,7 @@
     <string name="X_lbl_image">Obraz</string>
     <string name="X_lbl_thumbnails">Miniatury</string>
     <string name="X_neither">Żaden</string>
-    <string name="X_option_bob_filter_anthology_no">Wszystkie oprócz antologii</string>
-    <string name="X_option_bob_filter_anthology_yes">Antologie</string>
+    <string name="X_lbl_anthologies">Antologie</string>
     <string name="X_lbl_general">Ogólne</string>
     <string name="tip_booklist_style_defaults">Ten ekran służy do ustawiania domyślnych właściwości wszystkich stylów. Są one używane przez wszystkie wbudowane style i stanowią punkt wyjścia dla każdego stylu zdefiniowanego przez użytkownika.</string>
     <string name="X_action_use_default_setting">Użyj ustawień domyślnych</string>
@@ -577,9 +579,7 @@
     <string name="pt_search_reformat_color">Standaryzuj nazwy „kolorów książek”</string>
     <string name="pt_search_reformat_format">Standaryzuj nazwy „formatu książki”</string>
     <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
-    <string name="X_pt_author_name_formatting">Formatowanie nazwiska autora</string>
     <string name="pt_show_title_reordered">Pokaż tytuły jako…</string>
-    <string name="X_pt_sort_author_name_given_first">Sortowanie nazwisk autorów</string>
     <string name="pt_sort_title_reordered">Sortuj tytuły według</string>
     <string name="pt_cover_undo_enabled">Cofanie operacji na okładkach książek</string>
     <string name="ps_cover_undo_disabled">Edycji/zmiany okładki nie można cofnąć (zużywa mniej pamięci)</string>
@@ -718,7 +718,6 @@
     <string name="error_updates_aborted">Aktualizacje przerwane</string>
     <string name="lbl_country">Kraj</string>
     <string name="pt_search_show_shopping_options">Pokaż menu zakupów</string>
-    <string name="lbl_standardize">Ujednolicić</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Tytuły</string>
     <string name="lbl_original_title">Tytuł oryginalny</string>

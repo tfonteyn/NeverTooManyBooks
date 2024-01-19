@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -250,7 +253,6 @@
     <string name="bookshelf_all_books">Tất cả sách</string>
     <string name="lbl_series_multiple">Bộ</string>
     <string name="btn_all_books">Tất cả sách</string>
-    <string name="X_pt_sort_author_name_given_first">Sắp xếp tên tác giả</string>
     <string name="X_style_type_defaults">Các thiết đặt phong cách mặc định</string>
     <string name="option_shop_books_by_author_in_series">Sách theo tác giả/bộ</string>
     <string name="option_info_import_books_option_all">Nhập sách mới và ghi đè sách hiện có. Sử dụng điều này để khôi phục bản sao lưu.</string>
@@ -274,7 +276,6 @@
     <string name="option_info_lbl_archive_type_backup">Sao lưu / Khôi phục kho lưu trữ đầy đủ</string>
     <string name="option_storage_select">Dùng “%1$s”</string>
     <string name="lbl_add_filter">Thêm bộ lọc</string>
-    <string name="X_option_bob_filter_anthology_no">Tất cả ngoại trừ tuyển tập</string>
     <string name="lbl_export_books_option_all">Tất cả sách</string>
     <string name="info_export_books_option_since_last_full_backup">Sách được thêm hoặc cập nhật kể từ lần sao lưu đầy đủ cuối cùng.</string>
     <string name="pt_collect_series_info_from_toc">Thu thập thông tin Bộ sách từ bảng nội dung</string>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -116,7 +119,6 @@
     <string name="lbl_publisher">Editor</string>
     <string name="lbl_publishers">Editores</string>
     <string name="lbl_settings">Configurações</string>
-    <string name="lbl_standardize">Padronizar</string>
     <string name="lbl_storage_settings">Armazenamento</string>
     <string name="lbl_system_default">(Padrão do sistema)</string>
     <string name="lbl_tab_publication">Publicação</string>
@@ -474,11 +476,9 @@
     <string name="lbl_purge_blns">Limpar o estado do nó</string>
     <string name="info_purge_blns_all">Limpar o estado do nó de todas as listas</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">apenas sob o seu autor principal</string>
-    <string name="X_pt_sort_author_name_given_first">Ordenação do nome do autor</string>
     <string name="info_select_fields_to_update">Os campos selecionados serão atualizados a partir da internet. Os campos não selecionados permanecerão inalterados.</string>
     <string name="option_bob_filter_lend_out_no">Livros disponíveis</string>
-    <string name="X_option_bob_filter_anthology_yes">Antologias</string>
-    <string name="X_option_bob_filter_anthology_no">Todos menos antologias</string>
+    <string name="X_lbl_anthologies">Antologias</string>
     <string name="option_field_usage_append">Acrescenta dados extras</string>
     <string name="lbl_lend_out">Emprestar</string>
     <string name="option_field_usage_copy_if_blank">Copiar se estiver em branco</string>
@@ -643,7 +643,6 @@
     <string name="pv_bob_header_filters">Filtros</string>
     <string name="pt_line_spacing">Espaçamento entre linhas</string>
     <string name="pt_bob_list_state_expansion_level">Expansão por defeito da lista de livros</string>
-    <string name="X_pt_author_name_formatting">Formatação do nome do autor</string>
     <string name="ps_bob_books_under_multiple_each_author">sob cada autor</string>
     <string name="X_option_bob_filter_read_yes">Livros lidos</string>
     <string name="ps_bob_books_under_multiple_each_publisher">em cada editor</string>
