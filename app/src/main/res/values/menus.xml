@@ -26,8 +26,6 @@
     <integer name="MENU_ORDER_BARCODE_SCAN_BATCH">42</integer>
     <integer name="MENU_ORDER_BARCODE_IMPORT">44</integer>
 
-    <integer name="MENU_ORDER_SEARCH_STRICT_ISBN">50</integer>
-
     <integer name="MENU_ORDER_SEARCH_SITES">90</integer>
 
     <integer name="MENU_ORDER_SEARCH">100</integer>
@@ -72,8 +70,6 @@
     <integer name="MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE">850</integer>
     <integer name="MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL">855</integer>
     <!-- Shops last -->
-    <integer name="MENU_ORDER_VIEW_BOOK_AT_AMAZON">890</integer>
-
     <integer name="MENU_ORDER_AMAZON">900</integer>
     <integer name="MENU_ORDER_BOL">910</integer>
 
