@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -100,7 +101,7 @@ public class CoverHandler {
     @IntRange(from = 0, to = 1)
     private final int cIdx;
     @NonNull
-    private final CoverHandlerOwner coverHandlerOwner;
+    private final Consumer<Integer> coverLoader;
     @NonNull
     private final CoverBrowserDialogFragment.Launcher coverBrowserLauncher;
     /** Main used is to run transformation tasks. Shared among all current CoverHandlers. */
@@ -131,20 +132,22 @@ public class CoverHandler {
      * Dev. note: the width/height values come from device dp-dependent resource values.
      * (and NOT from the style cover scaling factor)
      *
-     * @param coverHandlerOwner the hosting component
-     * @param cIdx              0..n image index
-     * @param maxWidth          Maximum width for a cover in pixels
-     * @param maxHeight         Maximum height for a cover in pixels
+     * @param viewModelStoreOwner the hosting component
+     * @param cIdx                0..n image index
+     * @param coverLoader         callback to reload the given cIdx
+     * @param maxWidth            Maximum width for a cover in pixels
+     * @param maxHeight           Maximum height for a cover in pixels
      */
-    public CoverHandler(@NonNull final CoverHandlerOwner coverHandlerOwner,
+    public CoverHandler(@NonNull final ViewModelStoreOwner viewModelStoreOwner,
                         @IntRange(from = 0, to = 1) final int cIdx,
+                        @NonNull final Consumer<Integer> coverLoader,
                         final int maxWidth,
                         final int maxHeight) {
-        this.coverHandlerOwner = coverHandlerOwner;
+        this.coverLoader = coverLoader;
         this.cIdx = cIdx;
 
         // We could store idx in the VM, but there really is no point
-        vm = new ViewModelProvider(this.coverHandlerOwner)
+        vm = new ViewModelProvider(viewModelStoreOwner)
                 .get(String.valueOf(this.cIdx), CoverHandlerViewModel.class);
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
@@ -346,7 +349,7 @@ public class CoverHandler {
 
         if (itemId == R.id.MENU_DELETE) {
             book.removeCover(cIdx);
-            coverHandlerOwner.reloadImage(cIdx);
+            coverLoader.accept(cIdx);
             return true;
 
         } else if (itemId == R.id.SUBMENU_THUMB_ROTATE) {
@@ -410,7 +413,7 @@ public class CoverHandler {
             try {
                 if (ServiceLocator.getInstance().getCoverStorage()
                                   .restore(book.getString(DBKey.BOOK_UUID), cIdx)) {
-                    coverHandlerOwner.reloadImage(cIdx);
+                    coverLoader.accept(cIdx);
                 }
             } catch (@NonNull final IOException e) {
                 ErrorDialog.show(context, TAG, e);
@@ -517,7 +520,7 @@ public class CoverHandler {
             bookSupplier.get().removeCover(cIdx);
         }
 
-        coverHandlerOwner.reloadImage(cIdx);
+        coverLoader.accept(cIdx);
     }
 
     /**
@@ -687,7 +690,7 @@ public class CoverHandler {
                     case Done: {
                         bookSupplier.get().setCover(cIdx, file);
                         // must use a post to force the View to update.
-                        fragmentView.post(() -> coverHandlerOwner.reloadImage(cIdx));
+                        fragmentView.post(() -> coverLoader.accept(cIdx));
                         return;
                     }
                 }
@@ -701,7 +704,7 @@ public class CoverHandler {
         // transformation failed
         bookSupplier.get().removeCover(cIdx);
         // must use a post to force the View to update.
-        fragmentView.post(() -> coverHandlerOwner.reloadImage(cIdx));
+        fragmentView.post(() -> coverLoader.accept(cIdx));
     }
 
     private void showProgress() {
@@ -752,16 +755,5 @@ public class CoverHandler {
                     return Done;
             }
         }
-    }
-
-    public interface CoverHandlerOwner
-            extends ViewModelStoreOwner {
-
-        /**
-         * Reload the given image into its View.
-         *
-         * @param cIdx 0..n image index
-         */
-        void reloadImage(int cIdx);
     }
 }

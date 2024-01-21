@@ -67,8 +67,7 @@ import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
  * i.e. Authors, Series, Bookshelves
  */
 public class EditBookFieldsFragment
-        extends EditBookBaseFragment
-        implements CoverHandler.CoverHandlerOwner {
+        extends EditBookBaseFragment {
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
@@ -175,7 +174,8 @@ public class EditBookFieldsFragment
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
                     //noinspection DataFlowIssue
-                    coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
+                    coverHandler[cIdx] = new CoverHandler(this, cIdx, this::reloadImage,
+                                                          maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
                             .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
@@ -220,8 +220,12 @@ public class EditBookFieldsFragment
         fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 
-    @Override
-    public void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
+    /**
+     * Callback passed to the {@link CoverHandler}; will be called after changing a cover image.
+     *
+     * @param cIdx 0..n image index
+     */
+    private void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
         if (coverHandler[cIdx] != null) {
             final ImageView view = cIdx == 0 ? vb.coverImage0 : vb.coverImage1;
             coverHandler[cIdx].onBindView(view);

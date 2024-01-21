@@ -96,8 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
  * Hence there is NO OnBackPressedCallback in this Fragment.
  */
 public class ShowBookDetailsFragment
-        extends BaseFragment
-        implements CoverHandler.CoverHandlerOwner {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "ShowBookDetailsFragment";
@@ -283,7 +282,8 @@ public class ShowBookDetailsFragment
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
-                    coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
+                    coverHandler[cIdx] = new CoverHandler(this, cIdx, this::reloadImage,
+                                                          maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())
                             .setProgressView(progressView)
                             .onFragmentViewCreated(this);
@@ -324,12 +324,11 @@ public class ShowBookDetailsFragment
     }
 
     /**
-     * Entry point for {@link CoverHandler} after changing a cover image.
+     * Callback passed to the {@link CoverHandler}; will be called after changing a cover image.
      *
      * @param cIdx 0..n image index
      */
-    @Override
-    public void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
+    private void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
         // needed when running inside the ViewPager to update the activity result data
         aVm.setDataModified();
 
