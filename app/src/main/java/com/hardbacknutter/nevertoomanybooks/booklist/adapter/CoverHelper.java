@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 /**
  * Handles displaying and zooming for cover-images on the Booklist (both list and grid modes).
  * <p>
+ * There is one instance of this class for each book-view-holder instance.
+ * <p>
  * For book-detail/edit screens,
  * see {@code com.hardbacknutter.nevertoomanybooks.covers.CoverHandler}
  */

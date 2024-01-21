@@ -98,13 +98,6 @@ public class ImageViewLoader {
 
     /**
      * Load a placeholder drawable in the given view.
-     * <p>
-     * Dev. Note: a placeholder is ONLY used with
-     * {@link CoverBrowserDialogFragment}
-     * {@link CoverHandler} i.e. book detail and edit screens
-     * This class, BUT ONLY when the file we want to display is present AND corrupt
-     * <p>
-     * It is not used in BoB-mode (unless we have a corrupt image-file).
      *
      * @param imageView View to populate
      * @param drawable  drawable to use
@@ -113,14 +106,13 @@ public class ImageViewLoader {
     public void placeholder(@NonNull final ImageView imageView,
                             @DrawableRes final int drawable) {
 
-        // The maximum ALLOWABLE size
-        final int maxWidth = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
-        final int maxHeight = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
-
+        // Use the maximum ALLOWABLE size
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.width = maxWidth;
-        lp.height = maxHeight;
+        lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+        lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
         imageView.setLayoutParams(lp);
+
+        // These are likely not needed...
         imageView.setMaxHeight(Integer.MAX_VALUE);
         imageView.setMaxWidth(Integer.MAX_VALUE);
 
@@ -140,40 +132,14 @@ public class ImageViewLoader {
     @UiThread
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
-
-        // TODO: 2024-01-07: this switch can be simplified, due to removal
-        // of the setMaxWidth/setMaxHeight in commit 3bec5d0aeb58364a433db19f2165669a6bf41d39
-        // but leaving this for a while until more tests have been done.
         switch (maxSize) {
             case Enforce: {
-                // List-mode
                 // Calculate the maximum ALLOWABLE size
-                final int maxWidth = width
-                                     + imageView.getPaddingLeft()
-                                     + imageView.getPaddingRight();
-                final int maxHeight = height
-                                      + imageView.getPaddingTop()
-                                      + imageView.getPaddingBottom();
-                adjustLayoutParameters(imageView, bitmap, maxWidth, maxHeight);
-                break;
-            }
-            case Unlimited: {
-                // Allow the image to use ALL available space.
-                // Calculate the maximum ALLOWABLE size
-                final int maxWidth = width
-                                     + imageView.getPaddingLeft()
-                                     + imageView.getPaddingRight();
-                final int maxHeight = height
-                                      + imageView.getPaddingTop()
-                                      + imageView.getPaddingBottom();
-                // and adjust for portrait/landscape images.
-                adjustLayoutParameters(imageView, bitmap, maxWidth, maxHeight);
+                adjustLayoutParameters(imageView, bitmap);
                 break;
             }
             case Constrained:
             default:
-                // Grid-mode
-                // use original constraints
         }
 
         // essential, so lets not rely on it having been set in xml
@@ -184,17 +150,16 @@ public class ImageViewLoader {
     }
 
     private void adjustLayoutParameters(@NonNull final ImageView imageView,
-                                        @NonNull final Bitmap bitmap,
-                                        final int maxWidth,
-                                        final int maxHeight) {
+                                        @NonNull final Bitmap bitmap) {
+
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         if (bitmap.getWidth() < bitmap.getHeight()) {
             // image is portrait; limit the height
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.height = maxHeight;
+            lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
         } else {
             // image is landscape; limit the width
-            lp.width = maxWidth;
+            lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         imageView.setLayoutParams(lp);
@@ -224,7 +189,7 @@ public class ImageViewLoader {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the actual background work.
             final Optional<Bitmap> oBitmap = scalableImageDecoder.setSource(file).transform();
-
+            //TODO: use the handler from the view instead?
             // all done; back to the UI thread.
             handler.post(() -> {
                 // are we still associated with this view ? (remember: views are recycled)
@@ -253,11 +218,12 @@ public class ImageViewLoader {
     }
 
     public enum MaxSize {
-        /** Enforce the desired size as the maximum size. Used for list-mode. */
+        /** Enforce the desired size as the maximum size. */
         Enforce,
-        /** Let the system maximize the image inside the provided view. Used for zooming. */
-        Unlimited,
-        /** Don't change, let the xml constraint settings rule. Used for grid-mode. */
+        /**
+         * Don't change, let the xml constraint settings rule.
+         * Used for grid-mode where the grid layout will control the available space.
+         */
         Constrained
     }
 }

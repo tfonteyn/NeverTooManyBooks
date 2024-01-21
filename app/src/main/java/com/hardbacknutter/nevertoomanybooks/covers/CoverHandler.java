@@ -84,6 +84,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
  * <p>
  * Handles displaying and zooming for cover-images on the book-details and book-edit screens.
  * <p>
+ * There is one instance of this class for each displayed cover.
+ * <p>
  * For BoB displaying,
  * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverListHandler}
  */
