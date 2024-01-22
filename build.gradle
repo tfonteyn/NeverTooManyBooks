@@ -97,7 +97,7 @@ ext {
     acraVersion = '5.11.3'
 
     // https://github.com/mockito/mockito
-    mockitoVersion = '5.8.0'
+    mockitoVersion = '5.9.0'
 
     // https://junit.org/junit5/docs/current/user-guide/#overview
     jupiterVersion = '5.10.1'
