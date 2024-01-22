@@ -29,13 +29,13 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 
-import com.google.android.material.internal.CheckableImageButton;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
@@ -89,7 +89,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
     private final View.OnFocusChangeListener focusChangeListener =
             (v, hasFocus) -> animateIcon(shouldBeVisible());
 
-    private CheckableImageButton endIconView;
+    private ImageButton endIconView;
 
     private final TextInputLayout.OnEditTextAttachedListener clearTextOnEditTextAttachedListener =
             new TextInputLayout.OnEditTextAttachedListener() {
