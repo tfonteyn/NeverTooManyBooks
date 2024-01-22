@@ -250,7 +250,7 @@ public class SynchronizedDb
      * <strong>native code</strong> based on sql string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
-     *
+     * <p>
      * <strong>Dev.Note</strong>: SQLExceptions are swallowed and {@code -1} returned!
      * Other (unlikely) RuntimeExceptions can still be thrown.
      *

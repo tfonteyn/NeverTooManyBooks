@@ -207,7 +207,7 @@ public class FtsDaoImpl
             }
         }
 
-        //noinspection CheckStyle,OverlyBroadCatchBlock
+        //noinspection CheckStyle
         try (Cursor cursor = db.rawQuery(Sql.BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
             processBooks(cursor, Sql.INSERT);
 
@@ -226,7 +226,7 @@ public class FtsDaoImpl
             }
         }
 
-        //noinspection CheckStyle,OverlyBroadCatchBlock
+        //noinspection CheckStyle
         try (Cursor cursor = db.rawQuery(Sql.BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
             processBooks(cursor, Sql.UPDATE);
 

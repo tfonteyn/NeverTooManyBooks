@@ -192,7 +192,7 @@ public class FileLogger
     private void debugArguments(@NonNull final Activity activity,
                                 @NonNull final String tag,
                                 @NonNull final String method) {
-        debugArguments(tag, method, ((Activity) activity).getIntent().getExtras());
+        debugArguments(tag, method, activity.getIntent().getExtras());
     }
 
     /**
@@ -202,7 +202,7 @@ public class FileLogger
     private void debugArguments(@NonNull final Fragment fragment,
                                 @NonNull final String tag,
                                 @NonNull final String method) {
-        debugArguments(tag, method, ((Fragment) fragment).getArguments());
+        debugArguments(tag, method, fragment.getArguments());
     }
 
     private void debugArguments(@NonNull final String tag,

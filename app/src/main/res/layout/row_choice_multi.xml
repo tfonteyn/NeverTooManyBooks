@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,5 +33,4 @@
     android:paddingEnd="?attr/listPreferredItemPaddingEnd"
     android:textAppearance="?attr/textAppearanceListItem"
     tools:text="@sample/data.json/editions/name"
-    tools:viewBindingIgnore="true"
     />

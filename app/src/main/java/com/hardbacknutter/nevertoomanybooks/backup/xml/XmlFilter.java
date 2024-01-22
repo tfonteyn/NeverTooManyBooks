@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * The XmlFilter objects build a tree of filters and XmlHandler objects
  * that make this process more manageable.
  */
-final class XmlFilter {
+public final class XmlFilter {
 
     /** The tag for this specific filter. */
     @NonNull
@@ -82,7 +82,7 @@ final class XmlFilter {
     @NonNull
     XmlFilter addFilter(@NonNull final String... filters) {
         if (filters.length == 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("No filters?");
         }
         return addFilter(Arrays.asList(filters).iterator());
     }

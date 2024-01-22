@@ -567,15 +567,15 @@ public class ISBN {
         final int size = digits.size();
 
         if (size == 8) {
-            if (calculateIssnChecksum(digits) == digits.get(size - 1)) {
+            if (calculateIssnChecksum(digits) == digits.get(7)) {
                 return Type.Issn8;
             }
         } else if (size == 10) {
-            if (calculateIsbn10Checksum(digits) == digits.get(size - 1)) {
+            if (calculateIsbn10Checksum(digits) == digits.get(9)) {
                 return Type.Isbn10;
             }
         } else if (size == 13) {
-            if (calculateEan13Checksum(digits) == digits.get(size - 1)) {
+            if (calculateEan13Checksum(digits) == digits.get(12)) {
                 // Prefix 978 is "Bookland"
                 if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 8) {
                     return Type.Isbn13;

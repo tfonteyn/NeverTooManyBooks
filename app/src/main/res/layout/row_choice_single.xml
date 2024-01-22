@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -34,5 +34,4 @@
     android:textAppearance="?attr/textAppearanceListItem"
     android:textColor="?android:attr/textColorAlertDialogListItem"
     tools:text="@sample/data.json/styles/name"
-    tools:viewBindingIgnore="true"
     />

@@ -378,7 +378,7 @@ public class LastDodoSearchEngine
         String tmpSeriesNr = null;
 
         final Elements sections = document.select("section.inner");
-        if (sections.size() < 1) {
+        if (sections.isEmpty()) {
             return;
         }
 

@@ -31,7 +31,7 @@ import java.util.Objects;
 
 /**
  * Wraps a {@link DaoWriteException} with an unchecked exception.
- *
+ * <p>
  * <strong>For use from WorkerThreads ONLY</strong>
  */
 @WorkerThread

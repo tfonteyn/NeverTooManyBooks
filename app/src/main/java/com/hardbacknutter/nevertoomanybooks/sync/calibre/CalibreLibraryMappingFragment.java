@@ -269,7 +269,7 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    private static class Holder
+    public static class Holder
             extends RecyclerView.ViewHolder {
 
         @NonNull
@@ -320,7 +320,6 @@ public class CalibreLibraryMappingFragment
             holder.vb.btnCreate.setOnClickListener(btn -> {
                 try {
                     btn.setEnabled(false);
-                    //noinspection DataFlowIssue
                     final Bookshelf bookshelf = vm.createVirtualLibraryAsBookshelf(
                             context, holder.getBindingAdapterPosition());
                     addBookshelf(bookshelf, holder.vb.bookshelf);

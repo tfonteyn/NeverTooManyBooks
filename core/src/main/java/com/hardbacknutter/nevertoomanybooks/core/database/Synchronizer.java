@@ -194,7 +194,7 @@ public class Synchronizer {
         mainLock.unlock();
     }
 
-    enum LockType {
+    public enum LockType {
         Shared,
         Exclusive
     }

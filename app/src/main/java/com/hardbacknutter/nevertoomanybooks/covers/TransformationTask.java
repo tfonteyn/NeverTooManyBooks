@@ -99,7 +99,7 @@ public class TransformationTask
     /**
      * Value class with the results.
      */
-    static class TransformedData {
+    public static class TransformedData {
 
         @Nullable
         private final File file;

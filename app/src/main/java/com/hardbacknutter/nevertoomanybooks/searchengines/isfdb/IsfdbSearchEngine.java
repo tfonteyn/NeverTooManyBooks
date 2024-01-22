@@ -341,8 +341,7 @@ public class IsfdbSearchEngine
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
                     args += String.format(USE, index, "pub_publisher",
-                                          URLEncoder
-                                                  .encode(publisher, CHARSET_ENCODE_URL));
+                                          URLEncoder.encode(publisher, CHARSET_ENCODE_URL));
                     // "&USE_" + index + "=pub_publisher"
                     // + "&O_" + index + "=contains"
                     // + "&TERM_" + index + "=" + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
@@ -1336,7 +1335,6 @@ public class IsfdbSearchEngine
      */
     private void processExternalIdElements(@NonNull final Collection<Element> elements,
                                            @NonNull final Book book) {
-        //noinspection DataFlowIssue
         elements.stream()
                 .map(element -> element.select("a").first())
                 .filter(Objects::nonNull)

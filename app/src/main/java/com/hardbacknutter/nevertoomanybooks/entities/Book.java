@@ -1450,7 +1450,7 @@ public class Book
 
         @NonNull
         public static ContentType getType(final int value) {
-            switch ((int) value) {
+            switch (value) {
                 case 3:
                     return Anthology;
                 case 1:

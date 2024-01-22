@@ -241,7 +241,7 @@ public class CropImageActivity
             }
         }
 
-        static class Input {
+        public static class Input {
 
             @NonNull
             final File srcFile;

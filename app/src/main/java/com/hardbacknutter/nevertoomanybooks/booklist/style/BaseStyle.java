@@ -443,7 +443,8 @@ public abstract class BaseStyle
     }
 
     @Override
-    public @NonNull CoverScale getCoverScale() {
+    @NonNull
+    public CoverScale getCoverScale() {
         return coverScale;
     }
 

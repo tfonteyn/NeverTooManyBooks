@@ -921,7 +921,7 @@ public class BookDaoImpl
          * The result will be {@code 0} or {@code 1}.
          */
         static final String BOOK_ISBN_EXISTS =
-                SELECT_EXISTS_ + '(' + Sql.FIND_BY_ISBN + ')';
+                SELECT_EXISTS_ + '(' + FIND_BY_ISBN + ')';
 
         /**
          * Check if a {@link Book} exists with a either a {@link DBKey#BOOK_ISBN}
@@ -929,7 +929,7 @@ public class BookDaoImpl
          * The result will be {@code 0} or {@code 1}.
          */
         static final String BOOK_ISBN_10_OR_13_EXISTS =
-                SELECT_EXISTS_ + '(' + Sql.FIND_BY_ISBN_10_OR_13 + ')';
+                SELECT_EXISTS_ + '(' + FIND_BY_ISBN_10_OR_13 + ')';
 
         /** Book UUID only, for accessing all cover image files. */
         static final String SELECT_ALL_UUID =
