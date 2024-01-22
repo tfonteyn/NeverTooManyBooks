@@ -777,11 +777,10 @@ public class Book
             final List<Series> seriesList = getSeries();
             if (!seriesList.isEmpty()) {
                 final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-                final Locale bookLocale = getLocaleOrUserLocale(context);
 
                 if (seriesDao.pruneList(context, seriesList,
-                                        series -> series.getLocale(context)
-                                                        .orElseGet(() -> bookLocale))) {
+                                        series -> series.getLocale(context).orElseGet(
+                                                () -> getLocaleOrUserLocale(context)))) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
             }
