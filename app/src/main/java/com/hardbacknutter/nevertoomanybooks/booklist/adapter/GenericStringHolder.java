@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 /**
  * ViewHolder to handle any field that can be displayed as a string.
  * <p>
- * Assumes there is a 'name' TextView.
+ * Assumes there is a {@link R.id#level_text} TextView.
  */
 public class GenericStringHolder
         extends RowViewHolder
