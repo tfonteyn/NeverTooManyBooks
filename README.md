@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.3.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.3.0/NeverTooManyBooks-5.3.0.apk)
+## Download the latest release: [5.3.1 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.3.1/NeverTooManyBooks-5.3.1.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -83,6 +83,14 @@ the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki#android-p
 - 7" and 10" tablets fully supported with dedicated screen layouts.
 
 ## History
+
+### 5.3.1
+
+FIXES:
+
+- fixes an issue with the "Set complete" function for both Authors and Series.
+
+---
 
 ### 5.3.0
 
