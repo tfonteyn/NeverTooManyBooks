@@ -1,0 +1,1 @@
+Fixes an issue with the 'set-complete' function for Authors/Series
