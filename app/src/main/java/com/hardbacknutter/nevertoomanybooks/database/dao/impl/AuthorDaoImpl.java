@@ -784,7 +784,7 @@ public class AuthorDaoImpl
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String SET_COMPLETE =
-                UPDATE + TBL_AUTHORS.getName()
+                UPDATE_ + TBL_AUTHORS.getName()
                 + _SET_ + DBKey.AUTHOR_IS_COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 

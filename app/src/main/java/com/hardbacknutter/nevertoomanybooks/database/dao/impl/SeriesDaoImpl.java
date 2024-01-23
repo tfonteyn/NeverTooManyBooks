@@ -540,7 +540,7 @@ public class SeriesDaoImpl
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String SET_COMPLETE =
-                UPDATE + TBL_SERIES.getName()
+                UPDATE_ + TBL_SERIES.getName()
                 + _SET_ + DBKey.SERIES_IS_COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
