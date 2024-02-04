@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -271,7 +268,7 @@
     <string name="lbl_books">Bücher</string>
     <string name="lbl_bookshelf">Bücherregal</string>
     <string name="lbl_bookshelves">Bücherregale</string>
-    <string name="lbl_calibre_content_server">Calibre inhaltsserver</string>
+    <string name="lbl_calibre_content_server">Calibre Inhalteserver</string>
     <string name="info_calibre_content_server_extension">Die Calibre-Inhaltsservererweiterung ist nicht installiert. Virtuelle Bibliotheken werden nicht verfügbar sein.</string>
     <string name="lbl_certificate_ca">CA-Zertifikat</string>
     <string name="lbl_certificates">Zertifikate</string>
@@ -279,13 +276,13 @@
     <string name="lbl_book_type_collection">Sammlung</string>
     <string name="lbl_ebook_file_type">eBook-Dateityp</string>
     <string name="lbl_color">Farbe</string>
-    <string name="lbl_condition">Bedingung</string>
+    <string name="lbl_condition">Zustand</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Vermisst/akzeptabel</string>
     <string name="lbl_condition_dust_cover_none">Keiner</string>
     <string name="lbl_condition_fair">Akzeptabel</string>
     <string name="lbl_condition_fine">Wie neu</string>
     <string name="lbl_condition_good">Gut</string>
-    <string name="lbl_condition_reading_copy">Kopie lesen</string>
+    <string name="lbl_condition_reading_copy">Leseexemplar</string>
     <string name="lbl_condition_very_good">Sehr gut</string>
     <string name="lbl_connection_timeout">Zeitüberschreitung beim Verbindung (Sekunden)</string>
     <string name="lbl_cover_back">Buchrückseite</string>
@@ -293,7 +290,7 @@
     <string name="lbl_covers">Buchumschläge</string>
     <string name="lbl_covers_long">Buchumschlagillustrationen</string>
     <string name="lbl_credentials">Nutzeranmeldedaten</string>
-    <string name="lbl_currency">Devisen</string>
+    <string name="lbl_currency">Währung</string>
     <string name="lbl_database">Datenbank</string>
     <string name="option_bug_report_database_upgrade">Datenbank-Upgrade-Dateien</string>
     <string name="lbl_date_acquired">Datum erworben</string>
@@ -410,7 +407,7 @@
     <string name="lbl_styles">Stile</string>
     <string name="lbl_styles_long">Stile der Bücherlisten</string>
     <string name="lbl_sync_date">Seit</string>
-    <string name="lbl_tab_alternative_editions">Alt. Editionen.</string>
+    <string name="lbl_tab_alternative_editions">Alt. Editionen</string>
     <string name="lbl_tab_details">Details</string>
     <string name="lbl_tab_lbl_ext_id">Externe ID</string>
     <string name="lbl_tab_notes">Notizen</string>
@@ -496,7 +493,7 @@
     <string name="pe_thumbnails_cache_resized_stored">Buchumschläge zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
     <string name="pe_ui_theme_dark">Dunkel</string>
     <string name="pe_ui_theme_day_night">Tag / Nacht</string>
-    <string name="pe_ui_theme_light">Licht</string>
+    <string name="pe_ui_theme_light">Hell</string>
     <string name="pt_barcode_scanner">Barcodelesegerät</string>
     <string name="pt_bob_show_details">In der Liste angezeigte Buchdetails</string>
     <string name="lbl_filters">Filter</string>
@@ -557,8 +554,8 @@
     <string name="pt_scanning_beep_on_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
     <string name="pt_scanning_beep_on_valid">Tonsignal bei gültig gescannter ISBN</string>
     <string name="pt_search_prefer_isbn10">Wenn möglich verwende ISBN-10</string>
-    <string name="pt_search_reformat_color">Standardisieren Namen der Buchfarben</string>
-    <string name="pt_search_reformat_format">Standardisieren Namen der Buchformate</string>
+    <string name="pt_search_reformat_color">Standardisiere die Namen der Buchfarben</string>
+    <string name="pt_search_reformat_format">Standardisiere die Namen der Buchformate</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
     <string name="pt_show_title_reordered">Titel anzeigen als…</string>
     <string name="ps_show_titles_reordered_off">Anzeige wie angegeben,\nz. B. „Der Herr der Ringe“</string>
@@ -572,7 +569,7 @@
     <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
     <string name="pt_ui_language">Sprache</string>
     <string name="pt_ui_system_locale">Systemsprache</string>
-    <string name="pt_ui_theme">Thema</string>
+    <string name="pt_ui_theme">Farbschema</string>
     <string name="pt_website_search_order_and_enable">Priorität, aktivieren und deaktivieren</string>
     <string name="ps_show_author_name_family_first">Anzeige mit dem Familiennamen zuerst,\nz.B. „Kafka, Franz“</string>
     <string name="ps_show_author_name_given_first">Anzeige mit den Vornamen zuerst,\nz.B. „Franz  Kafka“</string>
@@ -593,7 +590,7 @@
     <string name="size_x_large">X-Groß</string>
     <string name="size_x_small">X-Klein</string>
     <string name="pe_fast_scroller_overlay_static">Statisch</string>
-    <string name="strict">Strikte</string>
+    <string name="strict">Strikt</string>
     <string name="style_builtin_author_series">Autor, danach Serie</string>
     <string name="style_builtin_author_year">Autor und Jahr</string>
     <string name="lbl_date_read">Gelesen am</string>
