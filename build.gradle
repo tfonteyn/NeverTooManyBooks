@@ -61,7 +61,7 @@ ext {
     androidxAppcompatVersion = "1.6.1"
     androidxCameraxVersion = '1.3.1'
     androidxCardviewVersion = "1.0.0"
-    androidxCollectionVersion = '1.3.0'
+    androidxCollectionVersion = '1.4.0'
     androidxConstraintlayoutCoreVersion = "1.0.4"
     androidxConstraintlayoutVersion = "2.1.4"
     androidxCoordinatorlayoutVersion = "1.2.0"
@@ -100,7 +100,7 @@ ext {
     mockitoVersion = '5.10.0'
 
     // https://junit.org/junit5/docs/current/user-guide/#overview
-    jupiterVersion = '5.10.1'
+    jupiterVersion = '5.10.2'
 
     // https://developer.android.com/jetpack/androidx/releases/test
     androidxArchCoreTestingVersion = "2.2.0"
