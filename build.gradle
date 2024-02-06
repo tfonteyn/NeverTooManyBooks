@@ -91,7 +91,7 @@ ext {
     tinyZxingWrapperVersion = "1.0.0"
 
     // https://github.com/zxing/zxing
-    zxingCoreVersion = "3.5.2"
+    zxingCoreVersion = '3.5.3'
 
     // https://github.com/ACRA/acra
     acraVersion = '5.11.3'
