@@ -71,7 +71,7 @@ public class CalibreHandler {
     private final CalibreHandlerViewModel vm;
 
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
-    private ActivityResultLauncher<Uri> folderPickerLauncher;
+    private ActivityResultLauncher<Uri> pickFolderLauncher;
 
     /** The host Window. */
     private Window hostWindow;
@@ -168,7 +168,7 @@ public class CalibreHandler {
         hostWindow = window;
         hostView = view;
 
-        folderPickerLauncher = caller.registerForActivityResult(
+        pickFolderLauncher = caller.registerForActivityResult(
                 new GetDirectoryUriContract(), o -> o.ifPresent(uri -> {
                     CalibreContentServer.setFolderUri(hostView.getContext(), uri);
                     vm.startDownload(vm.getAndResetTempBook(), uri);
@@ -272,7 +272,7 @@ public class CalibreHandler {
             } else {
                 // ask for a download folder
                 vm.setTempBook(book);
-                folderPickerLauncher.launch(null);
+                pickFolderLauncher.launch(null);
             }
             return true;
 
