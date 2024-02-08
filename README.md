@@ -20,6 +20,9 @@
 
 ## Download the latest release: [5.3.1 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.3.1/NeverTooManyBooks-5.3.1.apk)
 
+Also available
+on [IzzySoft](https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks).
+
 This is a book collection application, to keep track of your books and comics.
 
 Add books by scanning their barcode, ISBN, or generic text searches.
