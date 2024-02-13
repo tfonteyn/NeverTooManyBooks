@@ -195,7 +195,8 @@ public class EditBookshelvesFragment
     /**
      * Called for toolbar and list adapter context menu.
      *
-     * @param menu o prepare
+     * @param menu     to prepare
+     * @param position as selected in the adapter
      */
     private void prepareMenu(@NonNull final Menu menu,
                              final int position) {
@@ -294,6 +295,7 @@ public class EditBookshelvesFragment
     private static class BookshelfAdapter
             extends MultiColumnRecyclerViewAdapter<Holder> {
 
+        private static final String ERROR_NO_LIST_INDEX_FOR_POSITION = "No ListIndex for position=";
         private final List<Bookshelf> bookshelfList;
         @NonNull
         private final PositionHandler positionHandler;
@@ -301,11 +303,14 @@ public class EditBookshelvesFragment
         /**
          * Constructor.
          *
-         * @param context Current context
+         * @param context         Current context
+         * @param columnCount     from the grid layout
+         * @param bookshelfList   to display
+         * @param positionHandler Proxy between adapter and ViewModel.
          */
         BookshelfAdapter(@NonNull final Context context,
                          final int columnCount,
-                         final List<Bookshelf> bookshelfList,
+                         @NonNull final List<Bookshelf> bookshelfList,
                          @NonNull final PositionHandler positionHandler) {
             super(context, columnCount);
             this.bookshelfList = bookshelfList;
@@ -329,7 +334,7 @@ public class EditBookshelvesFragment
                 final int listIndex = transpose(position);
                 if (listIndex == RecyclerView.NO_POSITION) {
                     // Should never get here
-                    throw new IllegalStateException("No ListIndex for position=" + position);
+                    throw new IllegalStateException(ERROR_NO_LIST_INDEX_FOR_POSITION + position);
                 }
                 positionHandler.setSelectedPosition(listIndex);
                 // update the newly selected row.
@@ -343,7 +348,7 @@ public class EditBookshelvesFragment
                         if (listIndex == RecyclerView.NO_POSITION) {
                             // Should never get here
                             throw new IllegalStateException(
-                                    "No ListIndex for position=" + position);
+                                    ERROR_NO_LIST_INDEX_FOR_POSITION + position);
                         }
                         positionHandler.showContextMenu(v, position, listIndex);
                     });
