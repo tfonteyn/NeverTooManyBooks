@@ -148,8 +148,6 @@ public class App
                         ReportField.TOTAL_MEM_SIZE,
                         ReportField.AVAILABLE_MEM_SIZE,
 
-                        // Privacy: do not use ReportField.DEVICE_ID,
-                        ReportField.INSTALLATION_ID,
                         ReportField.REPORT_ID,
 
                         // Application
