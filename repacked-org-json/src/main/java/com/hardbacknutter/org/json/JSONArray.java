@@ -184,8 +184,7 @@ public class JSONArray
     /**
      * Construct a JSONArray from an Iterable. This is a shallow copy.
      *
-     * @param iter
-     *            A Iterable collection.
+     * @param iter A Iterable collection.
      */
     public JSONArray(@Nullable Iterable<?> iter) {
         this();
@@ -198,8 +197,7 @@ public class JSONArray
     /**
      * Construct a JSONArray from another JSONArray. This is a shallow copy.
      *
-     * @param array
-     *            A array.
+     * @param array A array.
      */
     public JSONArray(@Nullable JSONArray array) {
         if (array == null) {
@@ -214,14 +212,11 @@ public class JSONArray
     /**
      * Construct a JSONArray from an array.
      *
-     * @param array
-     *            Array. If the parameter passed is null, or not an array, an
-     *            exception will be thrown.
+     * @param array Array. If the parameter passed is null, or not an array, an
+     *              exception will be thrown.
      *
-     * @throws JSONException
-     *            If not an array or if an array value is non-finite number.
-     * @throws NullPointerException
-     *            Thrown if the array parameter is null.
+     * @throws JSONException        If not an array or if an array value is non-finite number.
+     * @throws NullPointerException Thrown if the array parameter is null.
      */
     public JSONArray(@NonNull Object array)
             throws JSONException {
@@ -236,10 +231,9 @@ public class JSONArray
     /**
      * Construct a JSONArray with the specified initial capacity.
      *
-     * @param initialCapacity
-     *            the initial capacity of the JSONArray.
-     * @throws JSONException
-     *             If the initial capacity is negative.
+     * @param initialCapacity the initial capacity of the JSONArray.
+     *
+     * @throws JSONException If the initial capacity is negative.
      */
     public JSONArray(int initialCapacity)
             throws JSONException {
@@ -248,6 +242,37 @@ public class JSONArray
                     "JSONArray initial capacity cannot be negative.");
         }
         this.myArrayList = new ArrayList<Object>(initialCapacity);
+    }
+
+    /**
+     * Create a new JSONException in a common format for incorrect conversions.
+     *
+     * @param idx       index of the item
+     * @param valueType the type of value being coerced to
+     * @param cause     optional cause of the coercion failure
+     *
+     * @return JSONException that can be thrown.
+     */
+    @NonNull
+    private static JSONException wrongValueFormatException(
+            int idx,
+            String valueType,
+            @NonNull Object value,
+            @Nullable Throwable cause) {
+        if (value == null) {
+            return new JSONException(
+                    "JSONArray[" + idx + "] is not a " + valueType + " (null)."
+                    , cause);
+        }
+        // don't try to toString collections or known object types that could be large.
+        if (value instanceof Map || value instanceof Iterable || value instanceof JSONObject) {
+            return new JSONException(
+                    "JSONArray[" + idx + "] is not a " + valueType + " (" + value.getClass() + ")."
+                    , cause);
+        }
+        return new JSONException(
+                "JSONArray[" + idx + "] is not a " + valueType + " (" + value.getClass() + " : " + value + ")."
+                , cause);
     }
 
     @Override
@@ -259,11 +284,11 @@ public class JSONArray
     /**
      * Get the object value associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return An object value.
-     * @throws JSONException
-     *             If there is no value for the index.
+     *
+     * @throws JSONException If there is no value for the index.
      */
     @NonNull
     public Object get(int index)
@@ -279,12 +304,12 @@ public class JSONArray
      * Get the boolean value associated with an index. The string values "true"
      * and "false" are converted to boolean.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The truth.
-     * @throws JSONException
-     *             If there is no value for the index or if the value is not
-     *             convertible to boolean.
+     *
+     * @throws JSONException If there is no value for the index or if the value is not
+     *                       convertible to boolean.
      */
     public boolean getBoolean(int index)
             throws JSONException {
@@ -304,12 +329,12 @@ public class JSONArray
     /**
      * Get the double value associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
-     * @throws JSONException
-     *             If the key is not found or if the value cannot be converted
-     *             to a number.
+     *
+     * @throws JSONException If the key is not found or if the value cannot be converted
+     *                       to a number.
      */
     public double getDouble(int index)
             throws JSONException {
@@ -327,12 +352,12 @@ public class JSONArray
     /**
      * Get the float value associated with a key.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The numeric value.
-     * @throws JSONException
-     *             if the key is not found or if the value is not a Number
-     *             object and cannot be converted to a number.
+     *
+     * @throws JSONException if the key is not found or if the value is not a Number
+     *                       object and cannot be converted to a number.
      */
     public float getFloat(int index)
             throws JSONException {
@@ -350,12 +375,12 @@ public class JSONArray
     /**
      * Get the Number value associated with a key.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The numeric value.
-     * @throws JSONException
-     *             if the key is not found or if the value is not a Number
-     *             object and cannot be converted to a number.
+     *
+     * @throws JSONException if the key is not found or if the value is not a Number
+     *                       object and cannot be converted to a number.
      */
     @NonNull
     public Number getNumber(int index)
@@ -374,16 +399,14 @@ public class JSONArray
     /**
      * Get the enum value associated with an index.
      *
-     * @param <E>
-     *            Enum Type
-     * @param clazz
-     *            The type of enum to retrieve.
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param <E>   Enum Type
+     * @param clazz The type of enum to retrieve.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The enum value at the index location
-     * @throws JSONException
-     *            if the key is not found or if the value cannot be converted
-     *            to an enum.
+     *
+     * @throws JSONException if the key is not found or if the value cannot be converted
+     *                       to an enum.
      */
     @NonNull
     public <E extends Enum<E>> E getEnum(@NonNull Class<E> clazz,
@@ -407,12 +430,12 @@ public class JSONArray
      * will be used. See notes on the constructor for conversion issues that
      * may arise.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
-     * @throws JSONException
-     *             If the key is not found or if the value cannot be converted
-     *             to a BigDecimal.
+     *
+     * @throws JSONException If the key is not found or if the value cannot be converted
+     *                       to a BigDecimal.
      */
     @NonNull
     public BigDecimal getBigDecimal(int index)
@@ -428,12 +451,12 @@ public class JSONArray
     /**
      * Get the BigInteger value associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
-     * @throws JSONException
-     *             If the key is not found or if the value cannot be converted
-     *             to a BigInteger.
+     *
+     * @throws JSONException If the key is not found or if the value cannot be converted
+     *                       to a BigInteger.
      */
     @NonNull
     public BigInteger getBigInteger(int index)
@@ -449,11 +472,11 @@ public class JSONArray
     /**
      * Get the int value associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
-     * @throws JSONException
-     *             If the key is not found or if the value is not a number.
+     *
+     * @throws JSONException If the key is not found or if the value is not a number.
      */
     public int getInt(int index)
             throws JSONException {
@@ -471,12 +494,12 @@ public class JSONArray
     /**
      * Get the JSONArray associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return A JSONArray value.
-     * @throws JSONException
-     *             If there is no value for the index. or if the value is not a
-     *             JSONArray
+     *
+     * @throws JSONException If there is no value for the index. or if the value is not a
+     *                       JSONArray
      */
     @NonNull
     public JSONArray getJSONArray(int index)
@@ -491,12 +514,12 @@ public class JSONArray
     /**
      * Get the JSONObject associated with an index.
      *
-     * @param index
-     *            subscript
+     * @param index subscript
+     *
      * @return A JSONObject value.
-     * @throws JSONException
-     *             If there is no value for the index or if the value is not a
-     *             JSONObject
+     *
+     * @throws JSONException If there is no value for the index or if the value is not a
+     *                       JSONObject
      */
     @NonNull
     public JSONObject getJSONObject(int index)
@@ -511,12 +534,12 @@ public class JSONArray
     /**
      * Get the long value associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
-     * @throws JSONException
-     *             If the key is not found or if the value cannot be converted
-     *             to a number.
+     *
+     * @throws JSONException If the key is not found or if the value cannot be converted
+     *                       to a number.
      */
     public long getLong(int index)
             throws JSONException {
@@ -534,11 +557,11 @@ public class JSONArray
     /**
      * Get the string associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return A string value.
-     * @throws JSONException
-     *             If there is no string value for the index.
+     *
+     * @throws JSONException If there is no string value for the index.
      */
     @NonNull
     public String getString(int index)
@@ -553,8 +576,8 @@ public class JSONArray
     /**
      * Determine if the value is <code>null</code>.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return true if the value at the index is <code>null</code>, or if there is no value.
      */
     public boolean isNull(int index) {
@@ -566,11 +589,11 @@ public class JSONArray
      * <code>separator</code> string is inserted between each element. Warning:
      * This method assumes that the data structure is acyclical.
      *
-     * @param separator
-     *            A string that will be inserted between the elements.
+     * @param separator A string that will be inserted between the elements.
+     *
      * @return a string.
-     * @throws JSONException
-     *             If the array contains an invalid number.
+     *
+     * @throws JSONException If the array contains an invalid number.
      */
     @NonNull
     public String join(@NonNull String separator)
@@ -610,8 +633,8 @@ public class JSONArray
     /**
      * Get the optional object value associated with an index.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1. If not, null is returned.
+     * @param index The index must be between 0 and length() - 1. If not, null is returned.
+     *
      * @return An object value, or null if there is no object at that index.
      */
     @Nullable
@@ -625,8 +648,8 @@ public class JSONArray
      * if there is no value at that index, or if the value is not Boolean.TRUE
      * or the String "true".
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The truth.
      */
     public boolean optBoolean(int index) {
@@ -638,10 +661,9 @@ public class JSONArray
      * defaultValue if there is no value at that index or if it is not a Boolean
      * or the String "true" or "false" (case insensitive).
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            A boolean default.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue A boolean default.
+     *
      * @return The truth.
      */
     public boolean optBoolean(int index,
@@ -658,8 +680,8 @@ public class JSONArray
      * if there is no value for the index, or if the value is not a number and
      * cannot be converted to a number.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
      */
     public double optDouble(int index) {
@@ -671,10 +693,9 @@ public class JSONArray
      * is returned if there is no value for the index, or if the value is not a
      * number and cannot be converted to a number.
      *
-     * @param index
-     *            subscript
-     * @param defaultValue
-     *            The default value.
+     * @param index        subscript
+     * @param defaultValue The default value.
+     *
      * @return The value.
      */
     public double optDouble(int index,
@@ -695,8 +716,8 @@ public class JSONArray
      * if there is no value for the index, or if the value is not a number and
      * cannot be converted to a number.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
      */
     public float optFloat(int index) {
@@ -708,10 +729,9 @@ public class JSONArray
      * is returned if there is no value for the index, or if the value is not a
      * number and cannot be converted to a number.
      *
-     * @param index
-     *            subscript
-     * @param defaultValue
-     *            The default value.
+     * @param index        subscript
+     * @param defaultValue The default value.
+     *
      * @return The value.
      */
     public float optFloat(int index,
@@ -732,8 +752,8 @@ public class JSONArray
      * there is no value for the index, or if the value is not a number and
      * cannot be converted to a number.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
      */
     public int optInt(int index) {
@@ -745,10 +765,9 @@ public class JSONArray
      * returned if there is no value for the index, or if the value is not a
      * number and cannot be converted to a number.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            The default value.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     *
      * @return The value.
      */
     public int optInt(int index,
@@ -763,12 +782,10 @@ public class JSONArray
     /**
      * Get the enum value associated with a key.
      *
-     * @param <E>
-     *            Enum Type
-     * @param clazz
-     *            The type of enum to retrieve.
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param <E>   Enum Type
+     * @param clazz The type of enum to retrieve.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The enum value at the index location or null if not found
      */
     @Nullable
@@ -780,16 +797,13 @@ public class JSONArray
     /**
      * Get the enum value associated with a key.
      *
-     * @param <E>
-     *            Enum Type
-     * @param clazz
-     *            The type of enum to retrieve.
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            The default in case the value is not found
+     * @param <E>          Enum Type
+     * @param clazz        The type of enum to retrieve.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default in case the value is not found
+     *
      * @return The enum value at the index location or defaultValue if
-     *            the value is not found or cannot be assigned to clazz
+     *         the value is not found or cannot be assigned to clazz
      */
     @Nullable
     public <E extends Enum<E>> E optEnum(@NonNull Class<E> clazz,
@@ -815,14 +829,13 @@ public class JSONArray
     }
 
     /**
-     * Get the optional BigInteger value associated with an index. The 
-     * defaultValue is returned if there is no value for the index, or if the 
+     * Get the optional BigInteger value associated with an index. The
+     * defaultValue is returned if there is no value for the index, or if the
      * value is not a number and cannot be converted to a number.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            The default value.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     *
      * @return The value.
      */
     @Nullable
@@ -833,17 +846,16 @@ public class JSONArray
     }
 
     /**
-     * Get the optional BigDecimal value associated with an index. The 
-     * defaultValue is returned if there is no value for the index, or if the 
+     * Get the optional BigDecimal value associated with an index. The
+     * defaultValue is returned if there is no value for the index, or if the
      * value is not a number and cannot be converted to a number. If the value
      * is float or double, the {@link BigDecimal#BigDecimal(double)}
      * constructor will be used. See notes on the constructor for conversion
      * issues that may arise.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            The default value.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     *
      * @return The value.
      */
     @Nullable
@@ -856,8 +868,8 @@ public class JSONArray
     /**
      * Get the optional JSONArray associated with an index.
      *
-     * @param index
-     *            subscript
+     * @param index subscript
+     *
      * @return A JSONArray value, or null if the index has no value, or if the
      *         value is not a JSONArray.
      */
@@ -872,8 +884,8 @@ public class JSONArray
      * the key is not found, or null if the index has no value, or if the value
      * is not a JSONObject.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return A JSONObject value.
      */
     @Nullable
@@ -887,8 +899,8 @@ public class JSONArray
      * there is no value for the index, or if the value is not a number and
      * cannot be converted to a number.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return The value.
      */
     public long optLong(int index) {
@@ -900,10 +912,9 @@ public class JSONArray
      * returned if there is no value for the index, or if the value is not a
      * number and cannot be converted to a number.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            The default value.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     *
      * @return The value.
      */
     public long optLong(int index,
@@ -921,8 +932,8 @@ public class JSONArray
      * an attempt will be made to evaluate it as a number ({@link BigDecimal}). This method
      * would be used in cases where type coercion of the number value is unwanted.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return An object which is the value.
      */
     @Nullable
@@ -936,10 +947,9 @@ public class JSONArray
      * an attempt will be made to evaluate it as a number ({@link BigDecimal}). This method
      * would be used in cases where type coercion of the number value is unwanted.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            The default.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default.
+     *
      * @return An object which is the value.
      */
     @Nullable
@@ -968,8 +978,8 @@ public class JSONArray
      * empty string if there is no value at that index. If the value is not a
      * string and is not null, then it is converted to a string.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
+     * @param index The index must be between 0 and length() - 1.
+     *
      * @return A String value.
      */
     @Nullable
@@ -981,10 +991,9 @@ public class JSONArray
      * Get the optional string associated with an index. The defaultValue is
      * returned if the key is not found.
      *
-     * @param index
-     *            The index must be between 0 and length() - 1.
-     * @param defaultValue
-     *            The default value.
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     *
      * @return A String value.
      */
     @Nullable
@@ -998,8 +1007,8 @@ public class JSONArray
     /**
      * Append a boolean value. This increases the array's length by one.
      *
-     * @param value
-     *            A boolean value.
+     * @param value A boolean value.
+     *
      * @return this.
      */
     @NonNull
@@ -1011,11 +1020,11 @@ public class JSONArray
      * Put a value in the JSONArray, where the value will be a JSONArray which
      * is produced from a Collection.
      *
-     * @param value
-     *            A Collection value.
+     * @param value A Collection value.
+     *
      * @return this.
-     * @throws JSONException
-     *            If the value is non-finite number.
+     *
+     * @throws JSONException If the value is non-finite number.
      */
     @NonNull
     public JSONArray put(Collection<?> value) {
@@ -1025,11 +1034,11 @@ public class JSONArray
     /**
      * Append a double value. This increases the array's length by one.
      *
-     * @param value
-     *            A double value.
+     * @param value A double value.
+     *
      * @return this.
-     * @throws JSONException
-     *             if the value is not finite.
+     *
+     * @throws JSONException if the value is not finite.
      */
     @NonNull
     public JSONArray put(double value)
@@ -1055,8 +1064,8 @@ public class JSONArray
     /**
      * Append an int value. This increases the array's length by one.
      *
-     * @param value
-     *            An int value.
+     * @param value An int value.
+     *
      * @return this.
      */
     @NonNull
@@ -1067,8 +1076,8 @@ public class JSONArray
     /**
      * Append an long value. This increases the array's length by one.
      *
-     * @param value
-     *            A long value.
+     * @param value A long value.
+     *
      * @return this.
      */
     @NonNull
@@ -1080,13 +1089,12 @@ public class JSONArray
      * Put a value in the JSONArray, where the value will be a JSONObject which
      * is produced from a Map.
      *
-     * @param value
-     *            A Map value.
+     * @param value A Map value.
+     *
      * @return this.
-     * @throws JSONException
-     *            If a value in the map is non-finite number.
-     * @throws NullPointerException
-     *            If a key in the map is <code>null</code>
+     *
+     * @throws JSONException        If a value in the map is non-finite number.
+     * @throws NullPointerException If a key in the map is <code>null</code>
      */
     @NonNull
     public JSONArray put(@Nullable Map<?, ?> value) {
@@ -1096,13 +1104,13 @@ public class JSONArray
     /**
      * Append an object value. This increases the array's length by one.
      *
-     * @param value
-     *            An object value. The value should be a Boolean, Double,
-     *            Integer, JSONArray, JSONObject, Long, or String, or the
-     *            JSONObject.NULL object.
+     * @param value An object value. The value should be a Boolean, Double,
+     *              Integer, JSONArray, JSONObject, Long, or String, or the
+     *              JSONObject.NULL object.
+     *
      * @return this.
-     * @throws JSONException
-     *            If the value is non-finite number.
+     *
+     * @throws JSONException If the value is non-finite number.
      */
     @NonNull
     public JSONArray put(@Nullable Object value) {
@@ -1116,13 +1124,12 @@ public class JSONArray
      * than the length of the JSONArray, then null elements will be added as
      * necessary to pad it out.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            A boolean value.
+     * @param index The subscript.
+     * @param value A boolean value.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative.
+     *
+     * @throws JSONException If the index is negative.
      */
     @NonNull
     public JSONArray put(int index,
@@ -1135,13 +1142,12 @@ public class JSONArray
      * Put a value in the JSONArray, where the value will be a JSONArray which
      * is produced from a Collection.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            A Collection value.
+     * @param index The subscript.
+     * @param value A Collection value.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative or if the value is non-finite.
+     *
+     * @throws JSONException If the index is negative or if the value is non-finite.
      */
     @NonNull
     public JSONArray put(int index,
@@ -1155,13 +1161,12 @@ public class JSONArray
      * the JSONArray, then null elements will be added as necessary to pad it
      * out.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            A double value.
+     * @param index The subscript.
+     * @param value A double value.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative or if the value is non-finite.
+     *
+     * @throws JSONException If the index is negative or if the value is non-finite.
      */
     @NonNull
     public JSONArray put(int index,
@@ -1175,13 +1180,12 @@ public class JSONArray
      * the JSONArray, then null elements will be added as necessary to pad it
      * out.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            A float value.
+     * @param index The subscript.
+     * @param value A float value.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative or if the value is non-finite.
+     *
+     * @throws JSONException If the index is negative or if the value is non-finite.
      */
     @NonNull
     public JSONArray put(int index,
@@ -1195,13 +1199,12 @@ public class JSONArray
      * the JSONArray, then null elements will be added as necessary to pad it
      * out.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            An int value.
+     * @param index The subscript.
+     * @param value An int value.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative.
+     *
+     * @throws JSONException If the index is negative.
      */
     @NonNull
     public JSONArray put(int index,
@@ -1215,13 +1218,12 @@ public class JSONArray
      * the JSONArray, then null elements will be added as necessary to pad it
      * out.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            A long value.
+     * @param index The subscript.
+     * @param value A long value.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative.
+     *
+     * @throws JSONException If the index is negative.
      */
     @NonNull
     public JSONArray put(int index,
@@ -1234,16 +1236,14 @@ public class JSONArray
      * Put a value in the JSONArray, where the value will be a JSONObject that
      * is produced from a Map.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            The Map value.
+     * @param index The subscript.
+     * @param value The Map value.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative or if the value is an invalid
-     *             number.
-     * @throws NullPointerException
-     *             If a key in the map is <code>null</code>
+     *
+     * @throws JSONException        If the index is negative or if the value is an invalid
+     *                              number.
+     * @throws NullPointerException If a key in the map is <code>null</code>
      */
     @NonNull
     public JSONArray put(int index,
@@ -1258,16 +1258,15 @@ public class JSONArray
      * than the length of the JSONArray, then null elements will be added as
      * necessary to pad it out.
      *
-     * @param index
-     *            The subscript.
-     * @param value
-     *            The value to put into the array. The value should be a
-     *            Boolean, Double, Integer, JSONArray, JSONObject, Long, or
-     *            String, or the JSONObject.NULL object.
+     * @param index The subscript.
+     * @param value The value to put into the array. The value should be a
+     *              Boolean, Double, Integer, JSONArray, JSONObject, Long, or
+     *              String, or the JSONObject.NULL object.
+     *
      * @return this.
-     * @throws JSONException
-     *             If the index is negative or if the value is an invalid
-     *             number.
+     *
+     * @throws JSONException If the index is negative or if the value is an invalid
+     *                       number.
      */
     @NonNull
     public JSONArray put(int index,
@@ -1298,8 +1297,8 @@ public class JSONArray
     /**
      * Put a collection's elements in to the JSONArray.
      *
-     * @param collection
-     *            A Collection.
+     * @param collection A Collection.
+     *
      * @return this.
      */
     @NonNull
@@ -1324,8 +1323,8 @@ public class JSONArray
     /**
      * Put a JSONArray's elements in to the JSONArray.
      *
-     * @param array
-     *            A JSONArray.
+     * @param array A JSONArray.
+     *
      * @return this.
      */
     @NonNull
@@ -1339,15 +1338,13 @@ public class JSONArray
     /**
      * Put an array's elements in to the JSONArray.
      *
-     * @param array
-     *            Array. If the parameter passed is null, or not an array or Iterable, an
-     *            exception will be thrown.
+     * @param array Array. If the parameter passed is null, or not an array or Iterable, an
+     *              exception will be thrown.
+     *
      * @return this.
      *
-     * @throws JSONException
-     *            If not an array, JSONArray, Iterable or if an value is non-finite number.
-     * @throws NullPointerException
-     *            Thrown if the array parameter is null.
+     * @throws JSONException        If not an array, JSONArray, Iterable or if an value is non-finite number.
+     * @throws NullPointerException Thrown if the array parameter is null.
      */
     @NonNull
     public JSONArray putAll(@NonNull Object array)
@@ -1443,8 +1440,8 @@ public class JSONArray
     /**
      * Remove an index and close the hole.
      *
-     * @param index
-     *            The index of the element to be removed.
+     * @param index The index of the element to be removed.
+     *
      * @return The value that was associated with the index, or null if there
      *         was no value.
      */
@@ -1460,6 +1457,7 @@ public class JSONArray
      * They must contain similar sequences.
      *
      * @param other The other JSONArray
+     *
      * @return true if they are equal
      */
     public boolean similar(Object other) {
@@ -1507,13 +1505,13 @@ public class JSONArray
      * Produce a JSONObject by combining a JSONArray of names with the values of
      * this JSONArray.
      *
-     * @param names
-     *            A JSONArray containing a list of key strings. These will be
-     *            paired with the values.
+     * @param names A JSONArray containing a list of key strings. These will be
+     *              paired with the values.
+     *
      * @return A JSONObject, or null if there are no names or if this JSONArray
      *         has no values.
-     * @throws JSONException
-     *             If any of the names are null.
+     *
+     * @throws JSONException If any of the names are null.
      */
     @Nullable
     public JSONObject toJSONObject(JSONArray names)
@@ -1569,12 +1567,13 @@ public class JSONArray
      * Warning: This method assumes that the data structure is acyclical.
      * </b>
      *
-     * @param indentFactor
-     *            The number of spaces to add to each level of indentation.
+     * @param indentFactor The number of spaces to add to each level of indentation.
+     *
      * @return a printable, displayable, transmittable representation of the
      *         object, beginning with <code>[</code>&nbsp;<small>(left
      *         bracket)</small> and ending with <code>]</code>
      *         &nbsp;<small>(right bracket)</small>.
+     *
      * @throws JSONException if a called function fails
      */
     @SuppressWarnings("resource")
@@ -1592,9 +1591,12 @@ public class JSONArray
      * compactness, no whitespace is added.
      * <p><b>
      * Warning: This method assumes that the data structure is acyclical.
-     *</b>
+     * </b>
+     *
      * @param writer the writer object
+     *
      * @return The writer.
+     *
      * @throws JSONException if a called function fails
      */
     @NonNull
@@ -1622,13 +1624,12 @@ public class JSONArray
      * Warning: This method assumes that the data structure is acyclical.
      * </b>
      *
-     * @param writer
-     *            Writes the serialized JSON
-     * @param indentFactor
-     *            The number of spaces to add to each level of indentation.
-     * @param indent
-     *            The indentation of the top level.
+     * @param writer       Writes the serialized JSON
+     * @param indentFactor The number of spaces to add to each level of indentation.
+     * @param indent       The indentation of the top level.
+     *
      * @return The writer.
+     *
      * @throws JSONException if a called function fails or unable to write
      */
     @SuppressWarnings("resource")
@@ -1719,12 +1720,9 @@ public class JSONArray
     /**
      * Add a collection's elements to the JSONArray.
      *
-     * @param collection
-     *            A Collection.
-     * @param wrap
-     *            {@code true} to call {@link JSONObject#wrap(Object)} for each item,
-     *            {@code false} to add the items directly
-     *
+     * @param collection A Collection.
+     * @param wrap       {@code true} to call {@link JSONObject#wrap(Object)} for each item,
+     *                   {@code false} to add the items directly
      */
     private void addAll(@NonNull Collection<?> collection,
                         boolean wrap) {
@@ -1743,11 +1741,9 @@ public class JSONArray
     /**
      * Add an Iterable's elements to the JSONArray.
      *
-     * @param iter
-     *            An Iterable.
-     * @param wrap
-     *            {@code true} to call {@link JSONObject#wrap(Object)} for each item,
-     *            {@code false} to add the items directly
+     * @param iter An Iterable.
+     * @param wrap {@code true} to call {@link JSONObject#wrap(Object)} for each item,
+     *             {@code false} to add the items directly
      */
     private void addAll(@NonNull Iterable<?> iter,
                         boolean wrap) {
@@ -1802,37 +1798,6 @@ public class JSONArray
             throw new JSONException(
                     "JSONArray initial value should be a string or collection or array.");
         }
-    }
-
-    /**
-     * Create a new JSONException in a common format for incorrect conversions.
-     *
-     * @param idx       index of the item
-     * @param valueType the type of value being coerced to
-     * @param cause     optional cause of the coercion failure
-     *
-     * @return JSONException that can be thrown.
-     */
-    @NonNull
-    private static JSONException wrongValueFormatException(
-            int idx,
-            String valueType,
-            @NonNull Object value,
-            @Nullable Throwable cause) {
-        if (value == null) {
-            return new JSONException(
-                    "JSONArray[" + idx + "] is not a " + valueType + " (null)."
-                    , cause);
-        }
-        // don't try to toString collections or known object types that could be large.
-        if (value instanceof Map || value instanceof Iterable || value instanceof JSONObject) {
-            return new JSONException(
-                    "JSONArray[" + idx + "] is not a " + valueType + " (" + value.getClass() + ")."
-                    , cause);
-        }
-        return new JSONException(
-                "JSONArray[" + idx + "] is not a " + valueType + " (" + value.getClass() + " : " + value + ")."
-                , cause);
     }
 
 }

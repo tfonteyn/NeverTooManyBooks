@@ -126,8 +126,8 @@ public class XML {
      * &apos; (single quote / apostrophe) is replaced by &amp;apos;
      * }</pre>
      *
-     * @param string
-     *            The string to be escaped.
+     * @param string The string to be escaped.
+     *
      * @return The escaped string.
      */
     public static String escape(String string) {
@@ -245,17 +245,14 @@ public class XML {
     /**
      * Scan the content following the named tag, attaching it to the context.
      *
-     * @param x
-     *            The XMLTokener containing the source string.
-     * @param context
-     *            The JSONObject that will include the new material.
-     * @param name
-     *            The tag name.
-     * @param config
-     *            The XML parser configuration.
-     * @param currentNestingDepth
-     *            The current nesting depth.
+     * @param x                   The XMLTokener containing the source string.
+     * @param context             The JSONObject that will include the new material.
+     * @param name                The tag name.
+     * @param config              The XML parser configuration.
+     * @param currentNestingDepth The current nesting depth.
+     *
      * @return true if the close tag is processed.
+     *
      * @throws JSONException Thrown if any parsing error occurs.
      */
     private static boolean parse(XMLTokener x,
@@ -479,8 +476,10 @@ public class XML {
 
     /**
      * This method tries to convert the given string value to the target object
-     * @param string String to convert
+     *
+     * @param string        String to convert
      * @param typeConverter value converter to convert string to integer, boolean e.t.c
+     *
      * @return JSON value of this string or the string
      */
     public static Object stringToValue(String string,
@@ -495,6 +494,7 @@ public class XML {
      * This method is the same as {@link JSONObject#stringToValue(String)}.
      *
      * @param string String to convert
+     *
      * @return JSON value of this string or the string
      */
     // To maintain compatibility with the Android API, this method is a direct copy of
@@ -617,9 +617,10 @@ public class XML {
      * &lt;[ [ ]]>}</pre>
      * are ignored.
      *
-     * @param string
-     *            The source string.
+     * @param string The source string.
+     *
      * @return A JSONObject containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(String string)
@@ -640,7 +641,9 @@ public class XML {
      * are ignored.
      *
      * @param reader The XML source reader.
+     *
      * @return A JSONObject containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(Reader reader)
@@ -659,14 +662,16 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     *
+     * <p>
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
-     * @param reader The XML source reader.
+     * @param reader      The XML source reader.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *  or numeric values and will instead be left as strings
+     *                    or numeric values and will instead be left as strings
+     *
      * @return A JSONObject containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(Reader reader,
@@ -689,13 +694,15 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     *
+     * <p>
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
      * @param reader The XML source reader.
      * @param config Configuration options for the parser
+     *
      * @return A JSONObject containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(Reader reader,
@@ -723,15 +730,16 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     *
+     * <p>
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
-     * @param string
-     *            The source string.
+     * @param string      The source string.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *  or numeric values and will instead be left as strings
+     *                    or numeric values and will instead be left as strings
+     *
      * @return A JSONObject containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(String string,
@@ -751,14 +759,15 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     *
+     * <p>
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
-     * @param string
-     *            The source string.
+     * @param string The source string.
      * @param config Configuration options for the parser.
+     *
      * @return A JSONObject containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(String string,
@@ -770,9 +779,10 @@ public class XML {
     /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
      *
-     * @param object
-     *            A JSONObject.
+     * @param object A JSONObject.
+     *
      * @return A string.
+     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
     public static String toString(Object object)
@@ -783,11 +793,11 @@ public class XML {
     /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
      *
-     * @param object
-     *            A JSONObject.
-     * @param tagName
-     *            The optional name of the enclosing tag.
+     * @param object  A JSONObject.
+     * @param tagName The optional name of the enclosing tag.
+     *
      * @return A string.
+     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
     public static String toString(final Object object,
@@ -869,7 +879,7 @@ public class XML {
                         ja = (JSONArray) value;
                         int jaLength = ja.length();
                         // don't use the new iterator API to maintain support for Android
-						for (int i = 0; i < jaLength; i++) {
+                        for (int i = 0; i < jaLength; i++) {
                             if (i > 0) {
                                 sb.append('\n');
                             }

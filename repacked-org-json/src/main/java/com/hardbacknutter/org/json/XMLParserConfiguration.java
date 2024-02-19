@@ -266,8 +266,7 @@ public class XMLParserConfiguration {
      * been the value "content" but can be changed. Use <code>null</code> to indicate no CDATA
      * processing.
      *
-     * @param newVal
-     *      new value to use for the <code>cDataTagName</code> configuration option.
+     * @param newVal new value to use for the <code>cDataTagName</code> configuration option.
      *
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
@@ -293,8 +292,7 @@ public class XMLParserConfiguration {
      * should be kept as attribute(<code>false</code>), or they should be converted to
      * <code>null</code>(<code>true</code>)
      *
-     * @param newVal
-     *      new value to use for the <code>convertNilAttributeToNull</code> configuration option.
+     * @param newVal new value to use for the <code>convertNilAttributeToNull</code> configuration option.
      *
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
@@ -309,6 +307,7 @@ public class XMLParserConfiguration {
      * will be converted to target type defined to client in this configuration
      * {@code Map<String, XMLXsiTypeConverter<?>>} to parse values with attribute
      * xsi:type="integer" as integer,  xsi:type="string" as string
+     *
      * @return <code>xsiTypeMap</code> unmodifiable configuration map.
      */
     public Map<String, XMLXsiTypeConverter<?>> getXsiTypeMap() {

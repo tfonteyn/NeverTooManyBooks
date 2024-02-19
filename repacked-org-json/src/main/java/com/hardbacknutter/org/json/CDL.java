@@ -40,6 +40,7 @@ Public Domain.
  * A comma delimited list can be converted into a JSONArray of JSONObjects.
  * The names for the elements in the JSONObjects can be taken from the names
  * in the first row.
+ *
  * @author JSON.org
  * @version 2016-05-01
  */

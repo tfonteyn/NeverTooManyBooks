@@ -72,6 +72,38 @@ public class XMLTokener
     }
 
     /**
+     * Unescape an XML entity encoding;
+     *
+     * @param e entity (only the actual entity value, not the preceding & or ending ;
+     *
+     * @return
+     */
+    static String unescapeEntity(String e) {
+        // validate
+        if (e == null || e.isEmpty()) {
+            return "";
+        }
+        // if our entity is an encoded unicode point, parse it.
+        if (e.charAt(0) == '#') {
+            int cp;
+            if (e.charAt(1) == 'x' || e.charAt(1) == 'X') {
+                // hex encoded unicode
+                cp = Integer.parseInt(e.substring(2), 16);
+            } else {
+                // decimal encoded unicode
+                cp = Integer.parseInt(e.substring(1));
+            }
+            return new String(new int[]{cp}, 0, 1);
+        }
+        Character knownEntity = entity.get(e);
+        if (knownEntity == null) {
+            // we don't know the entity so keep it encoded
+            return '&' + e + ';';
+        }
+        return knownEntity.toString();
+    }
+
+    /**
      * Get the text in the CDATA block.
      *
      * @return The string up to the <code>]]&gt;</code>.
@@ -95,7 +127,6 @@ public class XMLTokener
         }
         throw syntaxError("Unclosed CDATA");
     }
-
 
     /**
      * Get the next XML outer token, trimming whitespace. There are two kinds
@@ -139,7 +170,6 @@ public class XMLTokener
         }
     }
 
-
     /**
      * <pre>{@code
      * Return the next entity. These entities are translated to Characters:
@@ -170,48 +200,15 @@ public class XMLTokener
     }
 
     /**
-     * Unescape an XML entity encoding;
-     *
-     * @param e entity (only the actual entity value, not the preceding & or ending ;
-     *
-     * @return
-     */
-    static String unescapeEntity(String e) {
-        // validate
-        if (e == null || e.isEmpty()) {
-            return "";
-        }
-        // if our entity is an encoded unicode point, parse it.
-        if (e.charAt(0) == '#') {
-            int cp;
-            if (e.charAt(1) == 'x' || e.charAt(1) == 'X') {
-                // hex encoded unicode
-                cp = Integer.parseInt(e.substring(2), 16);
-            } else {
-                // decimal encoded unicode
-                cp = Integer.parseInt(e.substring(1));
-            }
-            return new String(new int[]{cp}, 0, 1);
-        }
-        Character knownEntity = entity.get(e);
-        if (knownEntity == null) {
-            // we don't know the entity so keep it encoded
-            return '&' + e + ';';
-        }
-        return knownEntity.toString();
-    }
-
-
-    /**
      * <pre>{@code
      * Returns the next XML meta token. This is used for skipping over <!...>
      * and <?...?> structures.
      *  }</pre>
      *
      * @return <pre>{@code Syntax characters (< > / = ! ?) are returned as
-     *          Character, and strings and names are returned as Boolean. We don't care
-     *          what the values actually are.
-     *          }</pre>
+     *                  Character, and strings and names are returned as Boolean. We don't care
+     *                  what the values actually are.
+     *                  }</pre>
      *
      * @throws JSONException If a string is not properly closed or if the XML
      *                       is badly structured.

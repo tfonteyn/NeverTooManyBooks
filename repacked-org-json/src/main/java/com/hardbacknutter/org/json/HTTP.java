@@ -65,9 +65,12 @@ public class HTTP {
      * ...}</pre>
      * It does no further checking or conversion. It does not parse dates.
      * It does not do '%' transforms on URLs.
+     *
      * @param string An HTTP header string.
+     *
      * @return A JSONObject containing the elements and attributes
-     * of the XML string.
+     *         of the XML string.
+     *
      * @throws JSONException if a called function fails
      */
     public static JSONObject toJSONObject(String string)
@@ -122,10 +125,13 @@ public class HTTP {
      * }</pre>
      * Any other members of the JSONObject will be output as HTTP fields.
      * The result will end with two CRLF pairs.
+     *
      * @param jo A JSONObject
+     *
      * @return An HTTP header string.
+     *
      * @throws JSONException if the object does not contain enough
-     *  information.
+     *                       information.
      */
     public static String toString(JSONObject jo)
             throws JSONException {

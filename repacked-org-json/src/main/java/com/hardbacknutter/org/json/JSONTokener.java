@@ -37,11 +37,14 @@ Public Domain.
  * A JSONTokener takes a source string and extracts characters and tokens from
  * it. It is used by the JSONObject and JSONArray constructors to parse
  * JSON source strings.
+ *
  * @author JSON.org
  * @version 2014-05-03
  */
 @SuppressWarnings("ALL")
 public class JSONTokener {
+    /** Reader for the input. */
+    private final Reader reader;
     /** current read character position on the current line. */
     private long character;
     /** flag to indicate if the end of the input has been found. */
@@ -52,8 +55,6 @@ public class JSONTokener {
     private long line;
     /** previous character read from the input. */
     private char previous;
-    /** Reader for the input. */
-    private final Reader reader;
     /** flag to indicate that a previous character was requested. */
     private boolean usePrevious;
     /** the number of characters read in the previous line. */
@@ -98,13 +99,34 @@ public class JSONTokener {
         this(new StringReader(s));
     }
 
+    /**
+     * Get the hex value of a character (base16).
+     *
+     * @param c A character between '0' and '9' or between 'A' and 'F' or
+     *          between 'a' and 'f'.
+     *
+     * @return An int between 0 and 15, or -1 if c was not a hex digit.
+     */
+    public static int dehexchar(char c) {
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
+        if (c >= 'A' && c <= 'F') {
+            return c - ('A' - 10);
+        }
+        if (c >= 'a' && c <= 'f') {
+            return c - ('a' - 10);
+        }
+        return -1;
+    }
 
     /**
      * Back up one character. This provides a sort of lookahead capability,
      * so that you can test for a digit or letter before attempting to parse
      * the next number or identifier.
+     *
      * @throws JSONException Thrown if trying to step back more than 1 step
-     *  or if already at the start of the string
+     *                       or if already at the start of the string
      */
     public void back()
             throws JSONException {
@@ -127,27 +149,6 @@ public class JSONTokener {
         } else if (this.character > 0) {
             this.character--;
         }
-    }
-
-    /**
-     * Get the hex value of a character (base16).
-     *
-     * @param c A character between '0' and '9' or between 'A' and 'F' or
-     *          between 'a' and 'f'.
-     *
-     * @return An int between 0 and 15, or -1 if c was not a hex digit.
-     */
-    public static int dehexchar(char c) {
-        if (c >= '0' && c <= '9') {
-            return c - '0';
-        }
-        if (c >= 'A' && c <= 'F') {
-            return c - ('A' - 10);
-        }
-        if (c >= 'a' && c <= 'f') {
-            return c - ('a' - 10);
-        }
-        return -1;
     }
 
     /**

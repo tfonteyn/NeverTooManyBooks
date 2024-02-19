@@ -58,8 +58,10 @@ Public Domain.
  *      });
  * }
  * </pre>
- * @author kumar529
+ *
  * @param <T> return type of convert method
+ *
+ * @author kumar529
  */
 @SuppressWarnings("ALL")
 public interface XMLXsiTypeConverter<T> {

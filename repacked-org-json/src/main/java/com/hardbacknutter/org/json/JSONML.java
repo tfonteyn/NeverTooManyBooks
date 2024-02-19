@@ -418,8 +418,11 @@ public class JSONML {
      * name/value pairs. If the tag contains children, then strings and
      * JSONArrays will represent the child content and tags.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
+     *
      * @param x An XMLTokener.
+     *
      * @return A JSONArray containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
     public static JSONArray toJSONArray(XMLTokener x)
@@ -436,8 +439,11 @@ public class JSONML {
      * contains children, the object will have a "childNodes" property which
      * will be an array of strings and JsonML JSONObjects.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
+     *
      * @param string The XML source text.
+     *
      * @return A JSONObject containing the structured data from the XML string.
+     *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
     public static JSONObject toJSONObject(String string)
@@ -599,7 +605,7 @@ public class JSONML {
         object = ja.opt(1);
         if (object instanceof JSONObject) {
             i = 2;
-            jo = (JSONObject)object;
+            jo = (JSONObject) object;
 
 // Emit the attributes
 

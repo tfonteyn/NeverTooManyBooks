@@ -83,12 +83,15 @@ public class Cookie {
      * a JSONObject. All attribute names are converted to lower case keys in the
      * JSONObject (HttpOnly =&gt; httponly). If an attribute is specified more than
      * once, only the value found closer to the end of the cookie-string is kept.
+     *
      * @param string The cookie specification string.
+     *
      * @return A JSONObject containing "name", "value", and possibly other
-     *  members.
+     *         members.
+     *
      * @throws JSONException If there is an error parsing the Cookie String.
-     * Cookie strings must have at least one '=' character and the 'name'
-     * portion of the cookie must not be blank.
+     *                       Cookie strings must have at least one '=' character and the 'name'
+     *                       portion of the cookie must not be blank.
      */
     public static JSONObject toJSONObject(String string) {
         final JSONObject jo = new JSONObject();

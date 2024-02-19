@@ -56,81 +56,6 @@ public class JSONPointer {
 
     // used for URL encoding and decoding
     private static final String ENCODING = "utf-8";
-
-    /**
-     * This class allows the user to build a JSONPointer in steps, using
-     * exactly one segment in each step.
-     */
-    public static class Builder {
-
-        // Segments for the eventual JSONPointer string
-        private final List<String> refTokens = new ArrayList<String>();
-
-        /**
-         * Creates a {@code JSONPointer} instance using the tokens previously set using the
-         * {@link #append(String)} method calls.
-         *
-         * @return a JSONPointer object
-         */
-        public JSONPointer build() {
-            return new JSONPointer(this.refTokens);
-        }
-
-        /**
-         * Adds an arbitrary token to the list of reference tokens. It can be any non-null value.
-         * <p>
-         * Unlike in the case of JSON string or URI fragment representation of JSON pointers, the
-         * argument of this method MUST NOT be escaped. If you want to query the property called
-         * {@code "a~b"} then you should simply pass the {@code "a~b"} string as-is, there is no
-         * need to escape it as {@code "a~0b"}.
-         *
-         * @param token the new token to be appended to the list
-         *
-         * @return {@code this}
-         *
-         * @throws NullPointerException if {@code token} is null
-         */
-        public Builder append(String token) {
-            if (token == null) {
-                throw new NullPointerException("token cannot be null");
-            }
-            this.refTokens.add(token);
-            return this;
-        }
-
-        /**
-         * Adds an integer to the reference token list. Although not necessarily, mostly this token will
-         * denote an array index.
-         *
-         * @param arrayIndex the array index to be added to the token list
-         *
-         * @return {@code this}
-         */
-        public Builder append(int arrayIndex) {
-            this.refTokens.add(String.valueOf(arrayIndex));
-            return this;
-        }
-    }
-
-    /**
-     * Static factory method for {@link Builder}. Example usage:
-     *
-     * <pre><code>
-     * JSONPointer pointer = JSONPointer.builder()
-     *       .append("obj")
-     *       .append("other~key").append("another/key")
-     *       .append("\"")
-     *       .append(0)
-     *       .build();
-     * </code></pre>
-     *
-     * @return a builder instance which can be used to construct a {@code JSONPointer} instance by chained
-     *         {@link Builder#append(String)} calls.
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
     // Segments for the JSONPointer string
     private final List<String> refTokens;
 
@@ -194,10 +119,76 @@ public class JSONPointer {
     }
 
     /**
+     * Static factory method for {@link Builder}. Example usage:
+     *
+     * <pre><code>
+     * JSONPointer pointer = JSONPointer.builder()
+     *       .append("obj")
+     *       .append("other~key").append("another/key")
+     *       .append("\"")
+     *       .append(0)
+     *       .build();
+     * </code></pre>
+     *
+     * @return a builder instance which can be used to construct a {@code JSONPointer} instance by chained
+     *         {@link Builder#append(String)} calls.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
     private static String unescape(String token) {
         return token.replace("~1", "/").replace("~0", "~");
+    }
+
+    /**
+     * Matches a JSONArray element by ordinal position
+     *
+     * @param current    the JSONArray to be evaluated
+     * @param indexToken the array index in string form
+     *
+     * @return the matched object. If no matching item is found a
+     *
+     * @throws JSONPointerException is thrown if the index is out of bounds
+     */
+    private static Object readByIndexToken(Object current,
+                                           String indexToken)
+            throws JSONPointerException {
+        try {
+            int index = Integer.parseInt(indexToken);
+            JSONArray currentArr = (JSONArray) current;
+            if (index >= currentArr.length()) {
+                throw new JSONPointerException(
+                        format("index %s is out of bounds - the array has %d elements", indexToken,
+                               Integer.valueOf(currentArr.length())));
+            }
+            try {
+                return currentArr.get(index);
+            } catch (JSONException e) {
+                throw new JSONPointerException("Error reading value at index position " + index, e);
+            }
+        } catch (NumberFormatException e) {
+            throw new JSONPointerException(format("%s is not an array index", indexToken), e);
+        }
+    }
+
+    /**
+     * Escapes path segment values to an unambiguous form.
+     * The escape char to be inserted is '~'. The chars to be escaped
+     * are ~, which maps to ~0, and /, which maps to ~1.
+     *
+     * @param token the JSONPointer segment value to be escaped
+     *
+     * @return the escaped value for the token
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
+     */
+    private static String escape(String token) {
+        return token.replace("~", "~0")
+                    .replace("/", "~1");
     }
 
     /**
@@ -234,37 +225,6 @@ public class JSONPointer {
     }
 
     /**
-     * Matches a JSONArray element by ordinal position
-     *
-     * @param current    the JSONArray to be evaluated
-     * @param indexToken the array index in string form
-     *
-     * @return the matched object. If no matching item is found a
-     *
-     * @throws JSONPointerException is thrown if the index is out of bounds
-     */
-    private static Object readByIndexToken(Object current,
-                                           String indexToken)
-            throws JSONPointerException {
-        try {
-            int index = Integer.parseInt(indexToken);
-            JSONArray currentArr = (JSONArray) current;
-            if (index >= currentArr.length()) {
-                throw new JSONPointerException(
-                        format("index %s is out of bounds - the array has %d elements", indexToken,
-                               Integer.valueOf(currentArr.length())));
-            }
-            try {
-                return currentArr.get(index);
-            } catch (JSONException e) {
-                throw new JSONPointerException("Error reading value at index position " + index, e);
-            }
-        } catch (NumberFormatException e) {
-            throw new JSONPointerException(format("%s is not an array index", indexToken), e);
-        }
-    }
-
-    /**
      * Returns a string representing the JSONPointer path value using string
      * representation
      */
@@ -275,22 +235,6 @@ public class JSONPointer {
             rval.append('/').append(escape(token));
         }
         return rval.toString();
-    }
-
-    /**
-     * Escapes path segment values to an unambiguous form.
-     * The escape char to be inserted is '~'. The chars to be escaped
-     * are ~, which maps to ~0, and /, which maps to ~1.
-     *
-     * @param token the JSONPointer segment value to be escaped
-     *
-     * @return the escaped value for the token
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
-     */
-    private static String escape(String token) {
-        return token.replace("~", "~0")
-                    .replace("/", "~1");
     }
 
     /**
@@ -310,5 +254,60 @@ public class JSONPointer {
             throw new RuntimeException(e);
         }
     }
-    
+
+    /**
+     * This class allows the user to build a JSONPointer in steps, using
+     * exactly one segment in each step.
+     */
+    public static class Builder {
+
+        // Segments for the eventual JSONPointer string
+        private final List<String> refTokens = new ArrayList<String>();
+
+        /**
+         * Creates a {@code JSONPointer} instance using the tokens previously set using the
+         * {@link #append(String)} method calls.
+         *
+         * @return a JSONPointer object
+         */
+        public JSONPointer build() {
+            return new JSONPointer(this.refTokens);
+        }
+
+        /**
+         * Adds an arbitrary token to the list of reference tokens. It can be any non-null value.
+         * <p>
+         * Unlike in the case of JSON string or URI fragment representation of JSON pointers, the
+         * argument of this method MUST NOT be escaped. If you want to query the property called
+         * {@code "a~b"} then you should simply pass the {@code "a~b"} string as-is, there is no
+         * need to escape it as {@code "a~0b"}.
+         *
+         * @param token the new token to be appended to the list
+         *
+         * @return {@code this}
+         *
+         * @throws NullPointerException if {@code token} is null
+         */
+        public Builder append(String token) {
+            if (token == null) {
+                throw new NullPointerException("token cannot be null");
+            }
+            this.refTokens.add(token);
+            return this;
+        }
+
+        /**
+         * Adds an integer to the reference token list. Although not necessarily, mostly this token will
+         * denote an array index.
+         *
+         * @param arrayIndex the array index to be added to the token list
+         *
+         * @return {@code this}
+         */
+        public Builder append(int arrayIndex) {
+            this.refTokens.add(String.valueOf(arrayIndex));
+            return this;
+        }
+    }
+
 }
