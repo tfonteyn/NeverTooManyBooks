@@ -88,6 +88,7 @@ the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki#android-p
 ### History
 
 Please see the [CHANGELOG](/CHANGELOG.md)
+
 ---
 
 ## Thanks
