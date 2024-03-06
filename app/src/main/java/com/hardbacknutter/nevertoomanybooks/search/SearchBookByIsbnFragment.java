@@ -22,7 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -82,46 +84,20 @@ public class SearchBookByIsbnFragment
     /** Log tag. */
     private static final String TAG = "BookSearchByIsbnFrag";
     private static final String BKEY_SCANNER_ACTIVITY_STARTED = TAG + ":started";
+    private static final char KEY_CLEAR_QUEUE = 'q';
+    private static final char KEY_SEARCH = 's';
+    private static final char KEY_DELETE = 'd';
+    private static final char KEY_STOP_SCANNING = 'o';
 
-    /** flag indicating the scanner Activity is already started. */
-    private boolean scannerActivityStarted;
-
-    /** View Binding. */
-    private FragmentBooksearchByIsbnBinding vb;
-
-    /** manage the validation check next to the field. */
-    private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
-    private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
-    private SearchBookByIsbnViewModel vm;
     /** The user wants to import a list of ISBNs to the queue. */
     private final ActivityResultLauncher<String> openUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenUri));
-    @Nullable
-    private BarcodeScanner scanner;
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
-    }
 
     /** The user was prompted to edit an <strong>existing</strong> book (i.e. with a valid id). */
     private final ActivityResultLauncher<Long> editExistingBookLauncher =
             registerForActivityResult(new EditBookByIdContract(),
                                       o -> o.ifPresent(this::onBookEditingDone));
-
-    @Override
-    @Nullable
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
-        return vb.getRoot();
-    }
 
     /** Scan barcodes using the scanner Activity. */
     private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
@@ -134,6 +110,38 @@ public class SearchBookByIsbnFragment
                     switchOffScanner();
                 }
             });
+
+    /** flag indicating the scanner Activity is already started. */
+    private boolean scannerActivityStarted;
+
+    /** View Binding. */
+    private FragmentBooksearchByIsbnBinding vb;
+
+    /** manage the validation check next to the field. */
+    private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
+    private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
+    private SearchBookByIsbnViewModel vm;
+
+    @Nullable
+    private BarcodeScanner scanner;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
+    }
+
+    @Override
+    @Nullable
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -155,19 +163,23 @@ public class SearchBookByIsbnFragment
         vb.isbn.setText(coordinator.getIsbnSearchText());
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
-        vb.keypad.key0.setOnClickListener(v -> vb.isbn.onKey('0'));
-        vb.keypad.key1.setOnClickListener(v -> vb.isbn.onKey('1'));
-        vb.keypad.key2.setOnClickListener(v -> vb.isbn.onKey('2'));
-        vb.keypad.key3.setOnClickListener(v -> vb.isbn.onKey('3'));
-        vb.keypad.key4.setOnClickListener(v -> vb.isbn.onKey('4'));
-        vb.keypad.key5.setOnClickListener(v -> vb.isbn.onKey('5'));
-        vb.keypad.key6.setOnClickListener(v -> vb.isbn.onKey('6'));
-        vb.keypad.key7.setOnClickListener(v -> vb.isbn.onKey('7'));
-        vb.keypad.key8.setOnClickListener(v -> vb.isbn.onKey('8'));
-        vb.keypad.key9.setOnClickListener(v -> vb.isbn.onKey('9'));
-        vb.keypad.keyX.setOnClickListener(v -> vb.isbn.onKey('X'));
+        vb.keypad.key0.setOnClickListener(v -> onKeyPad(v, '0'));
+        vb.keypad.key1.setOnClickListener(v -> onKeyPad(v, '1'));
+        vb.keypad.key2.setOnClickListener(v -> onKeyPad(v, '2'));
+        vb.keypad.key3.setOnClickListener(v -> onKeyPad(v, '3'));
+        vb.keypad.key4.setOnClickListener(v -> onKeyPad(v, '4'));
+        vb.keypad.key5.setOnClickListener(v -> onKeyPad(v, '5'));
+        vb.keypad.key6.setOnClickListener(v -> onKeyPad(v, '6'));
+        vb.keypad.key7.setOnClickListener(v -> onKeyPad(v, '7'));
+        vb.keypad.key8.setOnClickListener(v -> onKeyPad(v, '8'));
+        vb.keypad.key9.setOnClickListener(v -> onKeyPad(v, '9'));
+        vb.keypad.keyX.setOnClickListener(v -> onKeyPad(v, 'X'));
 
-        vb.isbnDel.setOnClickListener(v -> vb.isbn.onKey(KeyEvent.KEYCODE_DEL));
+        vb.keypad.btnSearch.setOnClickListener(v -> onKeyPad(v, KEY_SEARCH));
+        vb.btnClearQueue.setOnClickListener(v -> onKeyPad(v, KEY_CLEAR_QUEUE));
+        vb.btnStopScanning.setOnClickListener(v -> onKeyPad(v, KEY_STOP_SCANNING));
+        vb.isbnDel.setOnClickListener(v -> onKeyPad(v, KEY_DELETE));
+
         vb.isbnDel.setOnLongClickListener(v -> {
             vb.isbn.setText("");
             return true;
@@ -184,13 +196,6 @@ public class SearchBookByIsbnFragment
                 new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
-        //noinspection DataFlowIssue
-        vb.keypad.btnSearch.setOnClickListener(
-                btn -> onBarcodeEntered(vb.isbn.getText().toString().trim()));
-
-        //noinspection DataFlowIssue
-        vb.btnClearQueue.setOnClickListener(v -> vm.clearQueue(getContext()));
-
         if (savedInstanceState == null) {
             //noinspection DataFlowIssue
             EngineId.promptToRegister(getContext(), coordinator.getSiteList(),
@@ -198,8 +203,89 @@ public class SearchBookByIsbnFragment
         } else {
             afterOnViewCreated();
         }
+    }
 
-        vb.btnStopScanning.setOnClickListener(v -> switchOffScanner());
+    private void afterOnViewCreated() {
+        if (vm.isAutoStart()) {
+            startScanner();
+        }
+    }
+
+    /**
+     * Reroute a key press on the virtual keypad.
+     *
+     * @param view the key View
+     * @param key  the key as a char
+     */
+    private void onKeyPad(@NonNull final View view,
+                          final char key) {
+        switch (key) {
+            case KEY_SEARCH: {
+                // The search button
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    view.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                } else {
+                    view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                }
+                //noinspection DataFlowIssue
+                onBarcodeEntered(vb.isbn.getText().toString().trim());
+                break;
+            }
+            case KEY_STOP_SCANNING: {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    view.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                } else {
+                    view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                }
+                switchOffScanner();
+                break;
+            }
+            case KEY_DELETE: {
+                // The delete button
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                vb.isbn.onKey(KeyEvent.KEYCODE_DEL);
+                break;
+            }
+            case KEY_CLEAR_QUEUE: {
+                // The clear-queue button
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                //noinspection DataFlowIssue
+                vm.clearQueue(getContext());
+                break;
+            }
+            default:
+                // any number pad key 0..9X
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                vb.isbn.onKey(key);
+                break;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //noinspection DataFlowIssue
+        coordinator.setIsbnSearchText(vb.isbn.getText().toString().trim());
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(BKEY_SCANNER_ACTIVITY_STARTED, scannerActivityStarted);
+    }
+
+    @Override
+    @NonNull
+    Intent createResultIntent() {
+        return vm.createResultIntent();
+    }
+
+    private void startScanner() {
+        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
+            startScannerEmbedded();
+        } else {
+            startScannerActivity();
+        }
     }
 
     /**
@@ -245,53 +331,6 @@ public class SearchBookByIsbnFragment
                       });
     }
 
-    private void afterOnViewCreated() {
-        if (vm.isAutoStart()) {
-            startScanner();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //noinspection DataFlowIssue
-        coordinator.setIsbnSearchText(vb.isbn.getText().toString().trim());
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(BKEY_SCANNER_ACTIVITY_STARTED, scannerActivityStarted);
-    }
-
-    @Override
-    @NonNull
-    Intent createResultIntent() {
-        return vm.createResultIntent();
-    }
-
-    private void startScanner() {
-        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
-            startScannerEmbedded();
-        } else {
-            startScannerActivity();
-        }
-    }
-
-    /**
-     * The user finished editing a book. Store results and continue scanning if applicable.
-     *
-     * @param data from the edit
-     */
-    @Override
-    void onBookEditingDone(@NonNull final EditBookOutput data) {
-        vm.onBookEditingDone(data);
-        if (vm.getScannerMode() == ScanMode.Continuous) {
-            // scan another book until the user cancels
-            startScanner();
-        }
-    }
-
     /**
      * Start the standalone scanner activity.
      */
@@ -320,62 +359,17 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Prepare to search with ISBN or, if allowed, with a generic code.
-     * If successful, {@link #startSearch()} will be called as the next step.
+     * The user finished editing a book. Store results and continue scanning if applicable.
      *
-     * @param code to search for
+     * @param data from the edit
      */
-    private void prepareSearch(@NonNull final ISBN code) {
-        coordinator.setIsbnSearchText(code.asText());
-
-        // See if ISBN already exists in our database, if not then start the search.
-        final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
-        if (existingIds.isEmpty()) {
-            startSearch();
-
-        } else {
-            // always quit scanning until the user manually starts it again
-            switchOffScanner();
-
-            // we always use the first one... really should offer the user a choice.
-            final long firstFound = existingIds.get(0).first;
-            // Show the "title (isbn)" with a caution message
-            final String msg = getString(R.string.a_bracket_b_bracket,
-                                         existingIds.get(0).second, code.asText())
-                               + "\n\n" + getString(R.string.confirm_duplicate_book_message);
-
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.lbl_duplicate_book)
-                    .setMessage(msg)
-                    // this dialog is important. Make sure the user pays some attention
-                    .setCancelable(false)
-                    // User aborts this isbn
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> onClearSearchCriteria())
-                    // User wants to review the existing book
-                    .setNeutralButton(R.string.action_edit, (d, w)
-                            -> editExistingBookLauncher.launch(firstFound))
-                    // User wants to add regardless
-                    .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
-                    .create()
-                    .show();
-        }
-    }
-
     @Override
-    void onSearchResults(@NonNull final Book book) {
-        // A non-empty result will have a title, or at least 3 fields:
-        // The isbn field should be present as we searched on one.
-        // The title field, *might* be there but *might* be empty.
-        // So a valid result means we either need a title, or a third field.
-        final String title = book.getString(DBKey.TITLE, null);
-        if ((title == null || title.isEmpty()) && book.size() <= 2) {
-            vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
-            return;
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        vm.onBookEditingDone(data);
+        if (vm.getScannerMode() == ScanMode.Continuous) {
+            // scan another book until the user cancels
+            startScanner();
         }
-        // edit book
-        super.onSearchResults(book);
     }
 
     /**
@@ -444,6 +438,65 @@ public class SearchBookByIsbnFragment
         } else {
             vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, barCode));
         }
+    }
+
+    /**
+     * Prepare to search with ISBN or, if allowed, with a generic code.
+     * If successful, {@link #startSearch()} will be called as the next step.
+     *
+     * @param code to search for
+     */
+    private void prepareSearch(@NonNull final ISBN code) {
+        coordinator.setIsbnSearchText(code.asText());
+
+        // See if ISBN already exists in our database, if not then start the search.
+        final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
+        if (existingIds.isEmpty()) {
+            startSearch();
+
+        } else {
+            // always quit scanning until the user manually starts it again
+            switchOffScanner();
+
+            // we always use the first one... really should offer the user a choice.
+            final long firstFound = existingIds.get(0).first;
+            // Show the "title (isbn)" with a caution message
+            final String msg = getString(R.string.a_bracket_b_bracket,
+                                         existingIds.get(0).second, code.asText())
+                               + "\n\n" + getString(R.string.confirm_duplicate_book_message);
+
+            //noinspection DataFlowIssue
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(R.string.lbl_duplicate_book)
+                    .setMessage(msg)
+                    // this dialog is important. Make sure the user pays some attention
+                    .setCancelable(false)
+                    // User aborts this isbn
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> onClearSearchCriteria())
+                    // User wants to review the existing book
+                    .setNeutralButton(R.string.action_edit, (d, w)
+                            -> editExistingBookLauncher.launch(firstFound))
+                    // User wants to add regardless
+                    .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
+                    .create()
+                    .show();
+        }
+    }
+
+    @Override
+    void onSearchResults(@NonNull final Book book) {
+        // A non-empty result will have a title, or at least 3 fields:
+        // The isbn field should be present as we searched on one.
+        // The title field, *might* be there but *might* be empty.
+        // So a valid result means we either need a title, or a third field.
+        final String title = book.getString(DBKey.TITLE, null);
+        if ((title == null || title.isEmpty()) && book.size() <= 2) {
+            vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
+            return;
+        }
+        // edit book
+        super.onSearchResults(book);
     }
 
     @Override
@@ -562,6 +615,4 @@ public class SearchBookByIsbnFragment
             return false;
         }
     }
-
-
 }
