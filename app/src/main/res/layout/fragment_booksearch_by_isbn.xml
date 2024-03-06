@@ -49,12 +49,18 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- don't align with the bottom of the isbn field.
+            When that fields shows an error message, this button will move downwards.
+            We also must add a small top margin to more or less center
+            this button with the actual EditText field (baseline does not work).
+            -->
         <Button
             android:id="@+id/isbn_del"
             style="@style/IsbnKeyPad.BackspaceButton"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
+            app:layout_constraintTop_toTopOf="@id/lbl_isbn"
             />
 
         <androidx.constraintlayout.widget.Group
