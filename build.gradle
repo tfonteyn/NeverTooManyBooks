@@ -22,7 +22,7 @@ plugins {
     id("com.android.application") version '8.3.0' apply false
     id("com.android.library") version '8.3.0' apply false
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
-    id("org.jetbrains.kotlin.android") version "1.9.10" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.23" apply false
     // https://github.com/mannodermaus/android-junit5
     // Don't forget to update ext.mannodermausVersion
     id("de.mannodermaus.android-junit5") version "1.10.0.0" apply false
