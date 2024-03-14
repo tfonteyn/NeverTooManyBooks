@@ -146,6 +146,7 @@
         <item translatable="false">Italiano</item>
         <item translatable="false">Nederlands</item>
         <item translatable="false">Português</item>
+        <item translatable="false">Tiếng Việt</item>
 
         <!-- Secondary translations - These really need checking by a native speaker -->
         <!-- Czech -->
@@ -172,6 +173,7 @@
         <item translatable="false">it</item>
         <item translatable="false">nl</item>
         <item translatable="false">pt</item>
+        <item translatable="false">vi</item>
 
         <!-- Secondary translations -->
         <item translatable="false">cs</item>
