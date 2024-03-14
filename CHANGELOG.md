@@ -1,3 +1,10 @@
+### 5.3.2
+
+NEW
+
+- partial Vietnamese translation activated.
+- added haptic feedback to the ISBN keypad (follows your device haptic settings)
+
 ### 5.3.1
 
 FIXES:

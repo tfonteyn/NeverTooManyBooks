@@ -1,0 +1,2 @@
+- partial Vietnamese translation activated.
+- added haptic feedback to the ISBN keypad (follows your device haptic settings)
