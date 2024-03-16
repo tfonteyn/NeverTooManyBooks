@@ -537,7 +537,7 @@
     <!-- Multiple Styles - Short label. -->
     <string name="lbl_styles">Đa phong cách</string>
     <!-- Multiple Styles - Long label. -->
-    <string name="lbl_styles_long">Kiểu danh sách sách</string>
+    <string name="lbl_styles_long">Kiểu danh mục sách</string>
     <!-- Style type -->
     <string name="style_type_builtin">Tích hợp</string>
     <!-- Style type -->
@@ -1287,7 +1287,7 @@
     <!-- ListPreference title: option title -->
     <string name="pt_edit_book_isbn_checks">Kiểm tra tính hợp lệ của ISBN</string>
     <!-- ListPreference title: Booklist startup-state preferences -->
-    <string name="pt_bob_list_rebuild_state">Trạng thái khởi động danh sách sách</string>
+    <string name="pt_bob_list_rebuild_state">Trạng thái khởi động danh mục sách</string>
     <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_preferred">Sử dụng phần mở rộng ưa thích</string>
     <!-- ListPreference value: Booklist tree-view expansion -->
@@ -1447,21 +1447,21 @@
     <!-- SwitchPreference - the height of the rows in the booklist (Small/Large) -->
     <string name="pt_line_spacing">Khoảng cách dòng</string>
     <!-- SeekBarPreference -->
-    <string name="pt_bob_list_state_expansion_level">Mở rộng danh sách sách mặc định</string>
+    <string name="pt_bob_list_state_expansion_level">Mở rộng danh mục sách mặc định</string>
 
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_given_first">Sắp xếp theo tên trước,\ne.g. “Connie Willis”</string>
+    <string name="ps_sort_author_name_given_first">Sắp xếp theo tên trước,\v.d. “Nhất Hạnh, Thích”</string>
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\n.e.g “Willis, Connie”</string>
+    <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\v.d. “Thích Nhất Hạnh”</string>
 
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_given_first">Hiển thị với các tên trước,\ne.g. “Connie Willis”</string>
+    <string name="ps_show_author_name_given_first">Hiển thị với tên trước,\v.d. “Nhất Hạnh, Thích”</string>
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\n.e.g “Willis, Connie”</string>
+    <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\v.d. “Thích Nhất Hạnh”</string>
 
 
     <!-- SwitchPreference - option title -->
@@ -1535,7 +1535,7 @@
     <!-- Edit book: Name of the 'External website id' tab.need to be very short -->
     <string name="lbl_tab_lbl_ext_id">ID bên ngoài</string>
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. need to be very short -->
-    <string name="lbl_tab_alternative_editions">Thay thế. Ed.</string>
+    <string name="lbl_tab_alternative_editions">Ấn.bản khác</string>
     <!-- endregion -->
     <!-- region ========== Single words used for multiple purposes. -->
     <!-- [VERIFIED] -->
