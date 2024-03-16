@@ -1451,17 +1451,17 @@
 
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_given_first">Sắp xếp theo tên trước,\v.d. “Nhất Hạnh, Thích”</string>
+    <string name="ps_sort_author_name_given_first">Sắp xếp theo tên trước,\v.d. “Du, Nguyễn”</string>
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\v.d. “Thích Nhất Hạnh”</string>
+    <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\v.d. “Nguyễn Du”</string>
 
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_given_first">Hiển thị với tên trước,\v.d. “Nhất Hạnh, Thích”</string>
+    <string name="ps_show_author_name_given_first">Hiển thị với tên trước,\v.d. “Du, Nguyễn”</string>
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\v.d. “Thích Nhất Hạnh”</string>
+    <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\v.d. “Nguyễn Du”</string>
 
 
     <!-- SwitchPreference - option title -->
