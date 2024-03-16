@@ -109,7 +109,7 @@
     <string name="notification_channel_info">Thông tin</string>
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
-    <string name="debug_select_items">Chọn nội dung bạn muốn đưa vào:</string>
+    <string name="debug_select_items">Chọn những gì bạn muốn đưa vào:</string>
 
     <string name="acra_dialog_message">Có vẻ như &APP_NAME; đã gặp sự cố. Nhấn vào “%1$s” để lưu báo cáo vào vị trí bạn chọn. Bạn có thể sử dụng báo cáo này để báo cáo vấn đề mới trên trang web của dự án.</string>
     <string name="acra_report_saved">Bây giờ bạn có thể truy cập trang dự án trên Github và ghi lại vấn đề mới. Vui lòng đính kèm báo cáo đã lưu trước đó về vấn đề này. Nếu bạn chưa có tài khoản Github, bạn cần tạo một tài khoản.</string>
@@ -1112,7 +1112,7 @@
     <string name="info_backup_email_subject"
             translatable="false">@string/lbl_backup</string>
     <!-- Dialog import all options. -->
-    <string name="lbl_import_options">Chọn nội dung sẽ được nhập.</string>
+    <string name="lbl_import_options">Chọn những gì sẽ được nhập.</string>
     <!-- Radio button text -->
     <string name="option_import_books_option_new_only">Chỉ sách mới</string>
     <!-- Info text for "option_import_books_option_new_only" -->
