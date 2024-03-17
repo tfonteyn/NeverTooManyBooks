@@ -124,7 +124,7 @@
     <string name="error_certificate_invalid">Chứng chỉ không hợp lệ hoặc không thể truy cập được.</string>
     <string name="error_network_site_access_failed">Đã xảy ra sự cố mạng khi truy cập %1$s. Vui lòng kiểm tra xem trang web có hoạt động không và nếu sự cố vẫn tiếp diễn, vui lòng liên hệ với bộ phận hỗ trợ.</string>
     <!-- [VERIFIED] -->
-    <string name="error_network_failed_try_again">Hãy kiểm tra trạng thái kết nối rồi thử lại</string>
+    <string name="error_network_failed_try_again">Hãy kiểm tra trạng thái kết nối rồi thử lại.</string>
     <!-- A website deliberately blocked us from accessing it. -->
     <string name="error_site_access_blocked">Quyền truy cập đã bị chặn bởi trang web.</string>
     <!-- Generic Authorization failure. -->
@@ -1425,17 +1425,17 @@
 
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_given_first">Sắp xếp theo tên trước,\v.d. “Du, Nguyễn”</string>
+    <string name="ps_sort_author_name_given_first">Sắp xếp theo tên trước,\nv.d. “Du, Nguyễn”</string>
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\v.d. “Nguyễn Du”</string>
+    <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\nv.d. “Nguyễn Du”</string>
 
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_given_first">Hiển thị với tên trước,\v.d. “Du, Nguyễn”</string>
+    <string name="ps_show_author_name_given_first">Hiển thị với tên trước,\nv.d. “Du, Nguyễn”</string>
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\v.d. “Nguyễn Du”</string>
+    <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\nv.d. “Nguyễn Du”</string>
 
 
     <!-- SwitchPreference - option title -->
