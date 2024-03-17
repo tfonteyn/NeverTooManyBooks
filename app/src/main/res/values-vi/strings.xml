@@ -93,7 +93,7 @@
     <!-- All the httpError strings were copied from:
         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
-    <string name="X_httpErrorIO">Couldn’t communicate with the server. Try again later.</string>
+    <string name="X_httpErrorIO">Không thể liên lạc với máy chủ. Hãy thử lại sau.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
     <string name="httpErrorTimeout">Kết nối tới máy chủ đã hết thời gian chờ.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
@@ -783,7 +783,7 @@
     <!-- [VERIFIED] -->
     <string name="action_retry">Thử lại</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_try_again">Try again</string>
+    <string name="X_action_try_again">Thử lại</string>
     <!-- [VERIFIED] -->
     <string name="action_not_now">Không phải bây giờ</string>
     <!-- [VERIFIED] e.g. clearing a form. -->
@@ -797,25 +797,25 @@
     <!-- [VERIFIED] -->
     <string name="action_report">Báo cáo</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_reset">Reset</string>
+    <string name="X_action_reset">Đặt lại</string>
     <!-- [VERIFIED] -->
     <string name="action_reset_to_default">Đặt lại về mặc định</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_clear_credentials">Clear credentials</string>
+    <string name="X_action_clear_credentials">Xóa thông tin xác thực</string>
     <!-- [VERIFIED] -->
     <string name="action_learn_more">Tìm hiểu thêm</string>
     <!-- [VERIFIED] -->
     <string name="action_email">Email</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_go">Go</string>
+    <string name="X_action_go">Đến</string>
     <!-- [VERIFIED] -->
     <string name="action_search">Tìm kiếm</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_send">Send</string>
-    <!-- [VERIFIED] 6 chars max -->
-    <string name="X_action_next">Next</string>
-    <!-- [VERIFIED] 6 chars max -->
-    <string name="X_action_previous">Prev</string>
+    <string name="X_action_send">Gửi</string>
+    <!-- [VERIFIED] -->
+    <string name="X_action_next">Tiếp theo</string>
+    <!-- [VERIFIED] -->
+    <string name="X_action_previous">Trước</string>
     <!-- [VERIFIED] -->
     <string name="action_done">Xong</string>
     <!-- [VERIFIED] -->
@@ -825,7 +825,7 @@
     <!-- button: see less items -->
     <string name="action_less_ellipsis">Ít hơn…</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_move">Move</string>
+    <string name="X_action_move">Chuyển</string>
     <!-- [VERIFIED] -->
     <string name="X_action_execute">Thực hiện</string>
     <!-- [VERIFIED] -->
@@ -890,9 +890,9 @@
     <string name="whichEditApplication">Chỉnh sửa bằng</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting an application to run to
      send content to a specific recipient. -->
-    <string name="X_whichSendToApplication">Send using</string>
+    <string name="X_whichSendToApplication">Gửi bằng</string>
     <!-- [VERIFIED] Title of intent resolver dialog when capturing an image. -->
-    <string name="X_whichImageCaptureApplication">Capture image with</string>
+    <string name="X_whichImageCaptureApplication">Chụp ảnh bằng</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting a sharing application to run. -->
     <string name="whichSendApplication">Chia sẻ</string>
     <!-- endregion -->
@@ -1248,7 +1248,7 @@
     <string name="pt_primary_author_type">Loại tác giả chính</string>
     <!-- [VERIFIED] ListPreference title: "UI Language" -->
     <string name="pt_ui_language">Ngôn ngữ</string>
-    <!--  [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
+    <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
     <string name="pt_ui_system_locale">Ngôn ngữ hệ thống</string>
     <!-- ListPreference title: UI Theme -->
     <string name="pt_ui_theme">Chủ đề giao diện</string>
@@ -1600,48 +1600,19 @@
     <!-- endregion -->
     <!-- region ========== Unused, but not removing as we have translations which might be useful later. -->
     <!-- [VERIFIED] -->
-    <string name="X_action_customize">Customize…</string>
+    <string name="X_action_customize">Tùy chỉnh…</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_use_default_setting">Use default values</string>
+    <string name="X_action_use_default_setting">Sử dụng các giá trị mặc định</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_update">Update</string>
+    <string name="X_action_update">Cập nhật</string>
     <!-- [VERIFIED] -->
-    <string name="X_lbl_folder">Folder</string>
+    <string name="X_lbl_folder">Thư mục</string>
     <!-- [VERIFIED] -->
-    <string name="X_lbl_general">General</string>
+    <string name="X_lbl_general">Chung</string>
     <!-- [VERIFIED] -->
-    <string name="X_lbl_image">Image</string>
+    <string name="X_lbl_image">Hình ảnh</string>
     <!-- [VERIFIED] -->
-    <string name="X_lbl_system">(System)</string>
-
-
-    <string name="X_neither">Neither</string>
-    <string name="X_lbl_thumbnails">Thumbnails</string>
-    <string name="X_lbl_anthologies">Anthologies</string>
-
-    <string name="X_option_bob_filter_read_yes">Books Read</string>
-    <string name="X_option_bob_filter_read_no">Books Unread</string>
-
-    <!-- The global default values used as defaults for the builtin styles. -->
-    <string name="X_style_type_defaults">Styles default settings</string>
-
-    <!-- A website did respond to a request, but the response was not valid.
-         We report to the user that the site is not working as expected. -->
-    <string name="X_error_network_site_has_problems">The website is not working as expected.</string>
-    <!-- Generic Authentication failure. -->
-    <string name="X_error_authentication_failed">Authentication failed</string>
-    <string name="X_info_not_authorized">Not Authorized</string>
-    <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
+    <string name="X_lbl_system">(Hệ thống)</string>
 
     <!-- endregion -->
-
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_normalize_series_title"
-            translatable="false">Normalize series titles (EXPERIMENTAL, see Help)</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_normalize_publisher_name"
-            translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
-
-    <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
-
 </resources>
