@@ -1123,24 +1123,26 @@
         TRANSLATORS: FIRST READ the information for the string "pv_reformat_titles_prefixes".
 
          Example of how a title is displayed, i.e. exactly as printed on the book.
-         For languages which do not use articles, use the following text.
-         Use the book title as given IN ENGLISH.
+
+         For languages with a grammar which does not use articles, use the following text:
          ==> "Only applicable to languages that use articles. English example: \"The Lord of The Rings\""
+         Use the book title as given IN ENGLISH.
 
          FIXME: check with translator
          -->
-    <string name="ps_show_titles_reordered_off">Hiển thị như đã cho,\ne.g. “Chúa tể của những chiếc nhẫn”</string>
+    <string name="ps_show_titles_reordered_off">Hiển thị như đã cho,\nv.d. “Chúa tể của những chiếc nhẫn”</string>
     <!--
         TRANSLATORS: FIRST READ the information for the string "pv_reformat_titles_prefixes".
 
          Example of how a reordered title is displayed.
-         For languages which do not use articles, use the text.
-         Use the book title as given IN ENGLISH.
+
+         For languages with a grammar which does not use articles, use the following text:
          ==> "Only applicable to languages that use articles. English example: \"Lord of The Rings, The\""
+         Use the book title as given IN ENGLISH.
 
          FIXME: check with translator
          -->
-    <string name="ps_show_titles_reordered_on">Chuyển bài viết hàng đầu xuống cuối,\ne.g. “Chúa tể của những chiếc nhẫn, The”</string>
+    <string name="ps_show_titles_reordered_on">Chuyển bài viết hàng đầu xuống cuối,\nv.d. “Chúa tể của những chiếc nhẫn, The”</string>
 
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Cho phép sử dụng dữ liệu di động</string>

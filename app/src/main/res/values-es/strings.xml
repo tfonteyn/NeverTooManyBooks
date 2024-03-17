@@ -576,7 +576,7 @@
     <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="ps_show_titles_reordered_off">Mostrar como se indica,\npor ejemplo «El Señor de los Anillos»</string>
     <string name="error_type_not_supported">Tipo no soportado: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">Mover un artículo inicial al final,\npor ejemplo, «Señor de los Anillos, El»</string>
+    <string name="ps_show_titles_reordered_on">Mover un artículo al principio de un título al final,\npor ejemplo, «Señor de los Anillos, El»</string>
     <string name="pt_sort_title_reordered">Ordenar títulos por</string>
     <string name="pt_cover_undo_enabled">Deshacer operaciones en portadas de libros</string>
     <string name="ps_cover_undo_disabled">Una edición/reemplazo de portada no se puede deshacer (utiliza menos espacio de almacenamiento)</string>

@@ -563,7 +563,7 @@
     <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
     <string name="ps_show_titles_reordered_off">Εμφάνιση όπως δίνεται,\nπ.χ. «Ο Άρχοντας των Δαχτυλιδιών»</string>
     <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">Μετακινήστε ένα αρχικό άρθρο στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
+    <string name="ps_show_titles_reordered_on">Μετακινήστε ένα άρθρο στην αρχή ενός τίτλου στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων με βάση</string>
     <string name="pt_cover_undo_enabled">Αναίρεση λειτουργιών σε εξώφυλλα βιβλίων</string>
     <string name="ps_cover_undo_disabled">Μια επεξεργασία/αντικατάσταση εξωφύλλου δεν μπορεί να αναιρεθεί (χρησιμοποιεί λιγότερο αποθηκευτικό χώρο)</string>

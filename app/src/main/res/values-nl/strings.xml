@@ -567,7 +567,7 @@
     <string name="ps_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="ps_show_titles_reordered_off">Weergeven zoals gegeven,\nbvb. „De schat van Beersel”</string>
     <string name="error_type_not_supported">Type niet ondersteund: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">Verplaats een lidwoord naar het einde,\nbvb. „schat van Beersel, De”</string>
+    <string name="ps_show_titles_reordered_on">Verplaats een lidwoord aan de start van een titel naar het einde,\nbvb. „schat van Beersel, De”</string>
     <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe</string>
     <string name="pt_allow_metered_network_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>

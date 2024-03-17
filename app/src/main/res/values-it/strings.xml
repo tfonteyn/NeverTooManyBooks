@@ -565,7 +565,7 @@
     <string name="pt_show_title_reordered">Mostra titoli come…</string>
     <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «IIl Signore degli Anelli»</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">Spostare un articolo iniziale alla fine,\nad esempio «ignore degli Anelli, Il»</string>
+    <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «ignore degli Anelli, Il»</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>
     <string name="ps_cover_undo_disabled">Una modifica/sostituzione della copertina non può essere annullata (utilizza meno memoria)</string>

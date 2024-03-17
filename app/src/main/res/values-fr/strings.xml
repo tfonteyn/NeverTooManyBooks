@@ -566,7 +566,7 @@
     <string name="pt_show_title_reordered">Afficher les titres en tant que…</string>
     <string name="ps_show_titles_reordered_off">Afficher comme indiqué,\npar exemple « Le Seigneur des anneaux »</string>
     <string name="error_type_not_supported">Type non pris en charge : %1$s …</string>
-    <string name="ps_show_titles_reordered_on">Déplacer un article de tête à la fin,\npar exemple « Seigneur des anneaux, Le »</string>
+    <string name="ps_show_titles_reordered_on">Déplacer un article en début de titre vers la fin,\npar exemple « Seigneur des anneaux, Le »</string>
     <string name="pt_sort_title_reordered">Trier les titres par</string>
     <string name="pt_cover_undo_enabled">Annulation des opérations sur les couvertures de livres</string>
     <string name="ps_cover_undo_disabled">L’édition/le remplacement d’une couverture ne peut pas être annulé(e) (moins d’espace de stockage)</string>

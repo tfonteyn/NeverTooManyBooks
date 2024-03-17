@@ -562,7 +562,7 @@
     <string name="pt_show_title_reordered">Titel anzeigen als…</string>
     <string name="ps_show_titles_reordered_off">Anzeige wie angegeben,\nz. B. „Der Herr der Ringe“</string>
     <string name="error_type_not_supported">Typ nicht unterstützt: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">Einen führenden Artikel an das Ende verschieben,\nz. B. „Herr der Ringe, Der“</string>
+    <string name="ps_show_titles_reordered_on">Verschieben Sie einen Artikel am Anfang eines Titels an das Ende,\nz. B. „Herr der Ringe, Der“</string>
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
     <string name="pt_cover_undo_enabled">Rückgängigmachen von Operationen auf Buchumschläge</string>
     <string name="ps_cover_undo_disabled">Ein Buchumschlag bearbeiten/ersetzen kann nicht rückgängig gemacht werden (verbraucht weniger Speicherplatz)</string>

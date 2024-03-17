@@ -502,7 +502,7 @@
     <string name="pt_field_visibility">Visibilidade do campo</string>
     <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="error_type_not_supported">Tipo não suportado: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">Mover um artigo principal para o fim,\npor exemplo, “Senhor dos Anéis, O”</string>
+    <string name="ps_show_titles_reordered_on">Mover um artigo do início de um título para o final,\npor exemplo, “Senhor dos Anéis, O”</string>
     <string name="ps_show_author_name_family_first">Mostrar com o nome de família em primeiro lugar,\npor exemplo, “de Camões, Luís”</string>
     <string name="pt_bob_books_under_multiple_authors">Mostrar livros com vários autores</string>
     <string name="lbl_filter">Filtro</string>
