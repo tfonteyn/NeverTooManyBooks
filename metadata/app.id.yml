@@ -15,19 +15,17 @@ SourceCode: https://github.com/tfonteyn/NeverTooManyBooks
 IssueTracker: https://github.com/tfonteyn/NeverTooManyBooks/issues
 Translation: https://hosted.weblate.org/engage/nevertoomanybooks/
 
-# Donate: (web link)
-
 RepoType: git
 Repo: https://github.com/tfonteyn/NeverTooManyBooks.git
 Binaries: https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v%v/NeverTooManyBooks-v%v.apk
 
 Builds:
-  - versionName: '5.3.1'
-    versionCode: 73
-    commit: v5.3.1
+  - versionName: '5.3.2'
+    versionCode: 74
+    commit: v5.3.2
     subdir: app
     gradle: [ 'release' ]
-    output: NeverTooManyBooks-v5.3.1.apk
+    output: NeverTooManyBooks-v5.3.2.apk
 
 
 # MaintainerNotes: |-
@@ -39,5 +37,5 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 AllowedAPKSigningKeys: df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
-CurrentVersion: '5.3.1'
-CurrentVersionCode: 73
+CurrentVersion: '5.3.2'
+CurrentVersionCode: 74
