@@ -907,7 +907,7 @@
     <string name="lbl_storage_settings">Storage</string>
     <!-- [VERIFIED] - Dialog title when moving data to external storage [CHAR LIMIT=32] -->
     <string name="lbl_moving_data">Moving data</string>
-    <!-- [VERIFIED] Dialog title - Calibre specific.-->
+    <!-- [VERIFIED] Dialog title - Calibre specific. https://manual.calibre-ebook.com/server.html-->
     <string name="lbl_calibre_content_server">Calibre Content Server</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting a viewer application to run. -->
     <string name="whichViewApplication">Open with</string>
@@ -1273,7 +1273,7 @@
     <string name="pt_primary_author_type">Primary author type</string>
     <!-- [VERIFIED] ListPreference title: "UI Language" -->
     <string name="pt_ui_language">Language</string>
-    <!--  [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
+    <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
     <string name="pt_ui_system_locale">System language</string>
     <!-- ListPreference title: UI Theme -->
     <string name="pt_ui_theme">Interface Theme</string>
