@@ -118,13 +118,13 @@
     <!-- Shown when the user aborts an automatic internet-data update for a list of books -->
     <string name="error_updates_aborted">Cập nhật bị hủy bỏ</string>
     <!-- [VERIFIED] Ask user to connect to the internet -->
-    <string name="error_network_please_connect">Hãy kết nối với internet.</string>
+    <string name="error_network_please_connect">Vui lòng kết nối internet.</string>
     <!-- [VERIFIED] An error message presented to the user when the certificate they
          specified for connecting to a server is inaccessible -->
     <string name="error_certificate_invalid">Chứng chỉ không hợp lệ hoặc không thể truy cập được.</string>
     <string name="error_network_site_access_failed">Đã xảy ra sự cố mạng khi truy cập %1$s. Vui lòng kiểm tra xem trang web có hoạt động không và nếu sự cố vẫn tiếp diễn, vui lòng liên hệ với bộ phận hỗ trợ.</string>
     <!-- [VERIFIED] -->
-    <string name="error_network_failed_try_again">Hãy kiểm tra kết nối và thử lại.</string>
+    <string name="error_network_failed_try_again">Hãy kiểm tra trạng thái kết nối rồi thử lại</string>
     <!-- A website deliberately blocked us from accessing it. -->
     <string name="error_site_access_blocked">Quyền truy cập đã bị chặn bởi trang web.</string>
     <!-- Generic Authorization failure. -->
@@ -271,7 +271,7 @@
     <!-- endregion -->
     <!-- region ========== Progress messages for 'lengthy' actions. -->
     <!-- [VERIFIED] -->
-    <string name="progress_msg_please_wait">Xin vui lòng đợi…</string>
+    <string name="progress_msg_please_wait">Vui lòng đợi…</string>
     <!-- [VERIFIED] -->
     <string name="progress_msg_loading">Đang tải…</string>
     <string name="progress_msg_loading_page">Đang tải trang %1$d…</string>
@@ -396,7 +396,7 @@
     <!-- [VERIFIED] from android-29#keyguard_accessibility_widget_empty_slot
         BoB generic place holder text for EMPTY fields.
         The actual text is different from info_not_set in Translations. -->
-    <string name="bob_empty_field">(Chưa đặt)</string>
+    <string name="bob_empty_field">(Trống)</string>
     <!-- BoB specific place holder text for Author rows.
      Theoretically this string will never be shown unless there is ever bad data. -->
     <string name="bob_empty_author">(Đang thiếu tác giả)</string>
@@ -638,7 +638,7 @@
     <!-- "view all works of an author" menu option - show only TOC entries -->
     <string name="option_author_works_toc">Chỉ có tiêu đề Mục lục</string>
     <!-- [VERIFIED] Cover image context menu option -->
-    <string name="action_crop">Cắt bớt</string>
+    <string name="action_crop">Cắt</string>
 
     <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#replace"
         Context menu for a cover image submenu title -->
@@ -785,7 +785,7 @@
     <!-- [VERIFIED] -->
     <string name="X_action_try_again">Thử lại</string>
     <!-- [VERIFIED] -->
-    <string name="action_not_now">Không phải bây giờ</string>
+    <string name="action_not_now">Để sau</string>
     <!-- [VERIFIED] e.g. clearing a form. -->
     <string name="action_clear">Xóa</string>
     <!-- [VERIFIED] -->
@@ -821,7 +821,7 @@
     <!-- [VERIFIED] -->
     <string name="action_undo">Hoàn tác</string>
     <!-- [VERIFIED] button: see more items -->
-    <string name="action_more_ellipsis">Nhiều hơn…</string>
+    <string name="action_more_ellipsis">Thêm…</string>
     <!-- button: see less items -->
     <string name="action_less_ellipsis">Ít hơn…</string>
     <!-- [VERIFIED] -->
@@ -1367,7 +1367,7 @@
     <string name="lbl_certificate_issued_by">Cấp bởi: %1$s</string>
     <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog.
          param 1: date-from; param 2: date-until -->
-    <string name="lbl_certificate_validity_period">Hiệu lực: %1$s - %2$s</string>
+    <string name="lbl_certificate_validity_period">Tính hợp lệ: %1$s - %2$s</string>
 
     <!-- endregion -->
     <!-- region ========== Style settings. -->
