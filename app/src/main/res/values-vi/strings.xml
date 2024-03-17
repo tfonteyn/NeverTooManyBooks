@@ -827,8 +827,7 @@
     <!-- [VERIFIED] -->
     <string name="X_action_move">Move</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_execute">Execute</string>
-    <string name="X_action_validate">Validate</string>
+    <string name="X_action_execute">Thực hiện</string>
     <!-- [VERIFIED] -->
     <string name="action_create">Tạo</string>
     <!-- merging two objects (e.g. two Bookshelves; two Author names... -->

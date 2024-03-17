@@ -51,7 +51,6 @@
     <string name="X_action_send">Отправить</string>
     <string name="X_action_try_again">Повторить попытку</string>
     <string name="X_action_update">Обновить</string>
-    <string name="X_action_validate">проверять</string>
     <string name="X_action_customize">Настроить…</string>
     <string name="btn_show_list">Показать список</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить?</string>

@@ -538,7 +538,6 @@
     <string name="pe_ui_theme_day_night">Dia / Noite</string>
     <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
     <string name="confirm_email_file">Gostaria de enviar este ficheiro como um e-mail?</string>
-    <string name="X_action_validate">Validar</string>
     <string name="action_merge">Unir</string>
     <string name="action_duplicate">Repetido</string>
     <string name="action_show_options">Opções</string>

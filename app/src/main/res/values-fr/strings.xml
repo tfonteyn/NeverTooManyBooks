@@ -49,7 +49,6 @@
     <string name="X_action_send">Envoyer</string>
     <string name="X_action_try_again">Réessayer</string>
     <string name="X_action_update">Mettre à jour</string>
-    <string name="X_action_validate">Valider</string>
     <string name="X_action_customize">Personnaliser…</string>
     <string name="btn_show_list">Afficher la liste</string>
     <string name="confirm_continue">Es-tu sur de vouloir continuer ?</string>

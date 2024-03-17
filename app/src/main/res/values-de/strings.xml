@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -42,7 +45,6 @@
     <string name="X_action_send">Senden</string>
     <string name="X_action_try_again">Noch einmal versuchen</string>
     <string name="X_action_update">Aktualisieren</string>
-    <string name="X_action_validate">Bestätigen</string>
     <string name="X_action_customize">Anpassen…</string>
     <string name="btn_show_list">Liste anzeigen</string>
     <string name="confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten?</string>

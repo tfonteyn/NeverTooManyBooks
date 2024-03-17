@@ -45,7 +45,6 @@
     <string name="X_action_send">Αποστολή</string>
     <string name="X_action_try_again">Δοκιμάστε ξανά</string>
     <string name="X_action_update">Ενημέρωση</string>
-    <string name="X_action_validate">Επικυρώνω</string>
     <string name="X_action_customize">Προσαρμογή…</string>
     <string name="btn_show_list">Εμφάνιση λίστας</string>
     <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις;</string>
