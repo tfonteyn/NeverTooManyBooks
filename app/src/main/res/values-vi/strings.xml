@@ -17,26 +17,20 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <!-- region ========== Plurals. -->
     <!-- displayed in the header of booklist -->
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d cuốn sách</item>
         <item quantity="other">%1$d cuốn sách</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">Đã tìm thấy %1$d cuốn sách</item>
         <item quantity="other">Đã tìm thấy %1$d cuốn sách</item>
     </plurals>
-
     <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
         <item quantity="one">%1$s sao</item>
@@ -53,7 +47,6 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <!-- generic "label: value"; support for RTL languages -->
     <string name="name_colon_value">%1$s: %2$s</string>
-
     <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern. -->
     <string name="list_element">• %s</string>
     <!-- "name #nr" where the # is a potential language dependent symbol for 'number'.-->
@@ -85,7 +78,6 @@
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
     <string name="debug_select_items">Chọn những gì bạn muốn đưa vào:</string>
-
     <string name="acra_dialog_message">Có vẻ như &APP_NAME; đã gặp sự cố. Nhấn vào “%1$s” để lưu báo cáo vào vị trí bạn chọn. Bạn có thể sử dụng báo cáo này để báo cáo vấn đề mới trên trang web của dự án.</string>
     <string name="acra_report_saved">Bây giờ bạn có thể truy cập trang dự án trên Github và ghi lại vấn đề mới. Vui lòng đính kèm báo cáo đã lưu trước đó về vấn đề này. Nếu bạn chưa có tài khoản Github, bạn cần tạo một tài khoản.</string>
     <!-- endregion -->
@@ -106,7 +98,6 @@
     <string name="httpErrorFile">Không thể truy cập tệp.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Không thể tìm thấy tệp được yêu cầu.</string>
-
     <string name="error_invalid_url">Địa chỉ (URL) không hợp lệ</string>
     <!-- endregion -->
     <!-- region ========== General error messages. -->
@@ -131,7 +122,6 @@
     <string name="error_http_401_authorization_failed">Ủy quyền không thành công</string>
     <!-- 'Site' Authorization failure. Param 1: the website name -->
     <string name="error_http_401_site_authorization_failed">Việc ủy quyền %1$s đã dẫn đến lỗi.</string>
-
     <!-- 'Site' Authentication failure. Param 1: the website name -->
     <string name="error_site_authentication_failed">Xác thực %1$s không thành công</string>
     <!-- 'Site' Forbidden. Param 1: the website name -->
@@ -302,7 +292,6 @@
     <string name="progress_msg_x_skipped">%1$d bị bỏ qua</string>
     <!-- Progress message displayed when importing: the number of books/covers deleted so far. -->
     <string name="progress_msg_x_deleted">%1$d đã xóa</string>
-
     <!-- e.g. after an import -->
     <string name="progress_msg_cleaning_up">Đang dọn dẹp…</string>
     <!-- endregion -->
@@ -343,7 +332,6 @@
     <string name="info_isfdb_warning_limited_to">(chỉ được hỗ trợ bởi trang web ISFDB)</string>
     <!-- Information on which websites will be searched. Param 1: list of website names. -->
     <string name="info_site_list">Tìm kiếm bị giới hạn ở: %1$s</string>
-
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue">Tiếng Hà Lan và hơn thế nữa; Bảng tổng kê</string>
     <!-- website info: languages; type; specifics. -->
@@ -380,9 +368,7 @@
      The referred "View on…" is "option_view_book_at"
      TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
     <string name="tip_update_fields_from_internet">Các liên kết trang web bên ngoài chỉ được xử lý nếu trang web đó thực sự được liên hệ. Do đó, menu “Xem trên…” cũng sẽ chỉ hiển thị những gì có sẵn.</string>
-
     <string name="tip_configure_sites">Các trang web riêng lẻ có thể được định cấu hình bằng biểu tượng thiết đặt ở đầu màn hình.</string>
-
     <!-- tip title and explanations for the icons used. -->
     <string name="tip_authors_works">Các biểu tượng đã dùng</string>
     <!-- shown next to the Book icon -->
@@ -475,36 +461,21 @@
     <!-- builtin style name -->
     <string name="style_builtin_author_year">Tác giả, Năm</string>
     <!-- builtin style name -->
-    <string name="style_builtin_bookshelf"
-            translatable="false">@string/lbl_bookshelf</string>
-    <string name="style_builtin_date_acquired"
-            translatable="false">@string/lbl_date_acquired</string>
-    <string name="style_builtin_date_added"
-            translatable="false">@string/lbl_date_added</string>
-    <string name="style_builtin_date_last_updated"
-            translatable="false">@string/lbl_date_last_updated</string>
-    <string name="style_builtin_date_published"
-            translatable="false">@string/lbl_date_published</string>
-    <string name="style_builtin_date_read"
-            translatable="false">@string/lbl_date_read</string>
-    <string name="style_builtin_1st_char_book_title"
-            translatable="false">@string/lbl_group_1st_char_book_title</string>
-    <string name="style_builtin_format"
-            translatable="false">@string/lbl_format</string>
-    <string name="style_builtin_genre"
-            translatable="false">@string/lbl_genre</string>
-    <string name="style_builtin_language"
-            translatable="false">@string/lbl_language</string>
-    <string name="style_builtin_lending"
-            translatable="false">@string/lbl_lending</string>
-    <string name="style_builtin_location"
-            translatable="false">@string/lbl_location</string>
-    <string name="style_builtin_rating"
-            translatable="false">@string/lbl_rating</string>
-    <string name="style_builtin_read_and_unread"
-            translatable="false">@string/lbl_group_read_and_unread</string>
-    <string name="style_builtin_series"
-            translatable="false">@string/lbl_series</string>
+    <string name="style_builtin_bookshelf" translatable="false">@string/lbl_bookshelf</string>
+    <string name="style_builtin_date_acquired" translatable="false">@string/lbl_date_acquired</string>
+    <string name="style_builtin_date_added" translatable="false">@string/lbl_date_added</string>
+    <string name="style_builtin_date_last_updated" translatable="false">@string/lbl_date_last_updated</string>
+    <string name="style_builtin_date_published" translatable="false">@string/lbl_date_published</string>
+    <string name="style_builtin_date_read" translatable="false">@string/lbl_date_read</string>
+    <string name="style_builtin_1st_char_book_title" translatable="false">@string/lbl_group_1st_char_book_title</string>
+    <string name="style_builtin_format" translatable="false">@string/lbl_format</string>
+    <string name="style_builtin_genre" translatable="false">@string/lbl_genre</string>
+    <string name="style_builtin_language" translatable="false">@string/lbl_language</string>
+    <string name="style_builtin_lending" translatable="false">@string/lbl_lending</string>
+    <string name="style_builtin_location" translatable="false">@string/lbl_location</string>
+    <string name="style_builtin_rating" translatable="false">@string/lbl_rating</string>
+    <string name="style_builtin_read_and_unread" translatable="false">@string/lbl_group_read_and_unread</string>
+    <string name="style_builtin_series" translatable="false">@string/lbl_series</string>
     <!-- endregion -->
     <!-- region ========== Style terminology. -->
     <!-- Single Style -->
@@ -538,16 +509,11 @@
     <!-- Predefined/proposed name for a bookshelf when synchronizing with
          a wishlist from some websites. -->
     <string name="bookshelf_my_wishlist">Danh sách muốn đọc</string>
-
     <!-- header for a screen where the user can map/assign local bookshelves to remote bookshelves. -->
     <string name="lbl_assign_bookshelves">Chỉ định kệ sách</string>
-    <string name="lbl_strip_info_bookshelf_assigned_to_wishlist"
-            translatable="false">@string/bookshelf_my_wishlist</string>
-    <string name="lbl_strip_info_bookshelf_assigned_to_owned_books"
-            translatable="false">@string/lbl_owned</string>
-    <string name="lbl_strip_info_bookshelf_assigned_to_digital_books"
-            translatable="false">@string/book_format_ebook</string>
-
+    <string name="lbl_strip_info_bookshelf_assigned_to_wishlist" translatable="false">@string/bookshelf_my_wishlist</string>
+    <string name="lbl_strip_info_bookshelf_assigned_to_owned_books" translatable="false">@string/lbl_owned</string>
+    <string name="lbl_strip_info_bookshelf_assigned_to_digital_books" translatable="false">@string/book_format_ebook</string>
     <!-- endregion -->
     <!-- region ========== Book editions values NEWTHINGS: add book edition: add label here. -->
     <!-- Book edition -->
@@ -556,8 +522,7 @@
     <string name="lbl_edition_first_impression">Ấn tượng đầu tiên</string>
     <!-- Book edition -->
     <string name="lbl_edition_limited">Bị giới hạn</string>
-    <string name="lbl_edition_signed"
-            translatable="false">@string/lbl_signed</string>
+    <string name="lbl_edition_signed" translatable="false">@string/lbl_signed</string>
     <!-- Book edition -->
     <string name="lbl_edition_slipcase">Hộp đựng</string>
     <!-- Book edition -->
@@ -626,7 +591,6 @@
     <string name="option_author_details">Tất cả tác phẩm của tác giả này</string>
     <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
     <string name="option_view_book_at">Xem trên…</string>
-
     <!-- submenu options for the "amazon" menu -->
     <string name="option_shop_books_in_series">Sách trong bộ này</string>
     <!-- submenu options for the "amazon" menu -->
@@ -639,7 +603,6 @@
     <string name="option_author_works_toc">Chỉ có tiêu đề Mục lục</string>
     <!-- [VERIFIED] Cover image context menu option -->
     <string name="action_crop">Cắt</string>
-
     <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#replace"
         Context menu for a cover image submenu title -->
     <string name="option_cover_replace">Thay thế…</string>
@@ -658,10 +621,8 @@
     <!-- Cover image context menu option -->
     <string name="option_cover_rotate_ccw">Ngược chiều kim đồng hồ</string>
     <!-- Cover image context menu option -->
-    <string name="option_cover_rotate_180"
-            translatable="false">180°</string>
+    <string name="option_cover_rotate_180" translatable="false">180°</string>
     <string name="option_restore_cover">Khôi phục hình ảnh trước đó</string>
-
     <!-- Booklist FAB menu option; Start the barcode scanner and scan a single barcode/book. -->
     <string name="option_fab_add_book_by_barcode_scan">Quét mã vạch</string>
     <!-- Booklist FAB menu option; Start the barcode scanner and scan a batch of barcodes/books. -->
@@ -674,29 +635,23 @@
     <string name="option_fab_add_book_manually">Thêm thủ công</string>
     <!-- Booklist FAB menu option / screen title -->
     <string name="option_fab_add_book_by_external_id">Id sách trang web</string>
-
     <!-- [VERIFIED] -->
     <string name="option_select_all">Chọn tất cả</string>
     <!-- [VERIFIED] -->
     <string name="option_select_none">Bỏ chọn tất cả</string>
-
     <!-- Whether an action will apply to all bookshelves, or... -->
     <string name="lbl_all_bookshelves">Tất cả kệ sách</string>
     <!-- whether an action will only apply to the current bookshelf. -->
     <string name="btn_just_this_shelf">Chỉ kệ này</string>
-
     <string name="btn_show_list">Hiển thị danh sách</string>
-
     <!-- whether an action will apply only to the selected booklist (tree) node. -->
     <string name="option_apply_to_this_node_only">Chỉ nút này</string>
     <!-- whether an action will apply to all items related to the selected booklist (tree) node. -->
     <string name="option_apply_to_all_related_books">Tất cả sách liên quan</string>
-
     <string name="pt_scan_mode">Chế độ quét</string>
     <!-- [VERIFIED] -->
     <string name="option_barcode_scan_mode_manual">Hướng dẫn sử dụng</string>
     <string name="option_barcode_scan_mode_continuous">Quét liên tục</string>
-
     <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
     <string name="option_isbn_strict">ISBN nghiêm ngặt</string>
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
@@ -705,8 +660,7 @@
     <string name="option_auto_updates">Cho phép cập nhật tự động từ internet.</string>
     <!-- [VERIFIED] -->
     <string name="option_import">Nhập</string>
-    <string name="option_backup_and_export"
-            translatable="false">@string/title_backup_and_export</string>
+    <string name="option_backup_and_export" translatable="false">@string/title_backup_and_export</string>
     <string name="option_download_set_folder">Đặt thư mục tải xuống</string>
     <string name="option_download_folder">Thư mục tải xuống cục bộ</string>
     <string name="option_download_ebook_format">Tải xuống sách điện tử (%1$s)</string>
@@ -769,9 +723,7 @@
     <string name="action_edit">Chỉnh sửa</string>
     <!-- [VERIFIED] -->
     <string name="action_edit_ellipsis">Chỉnh sửa…</string>
-
     <string name="action_edit_defaults">Chỉnh sửa thiết đặt mặc định</string>
-
     <!-- [VERIFIED] -->
     <string name="action_delete">Xóa</string>
     <!-- [VERIFIED] -->
@@ -846,8 +798,7 @@
     <string name="action_export">Xuất</string>
     <string name="action_synchronize">Đồng bộ hóa</string>
     <!-- Small screens. Ideally 3-5 characters long. -->
-    <string name="action_show_toc"
-            translatable="false">@string/lbl_table_of_content_short</string>
+    <string name="action_show_toc" translatable="false">@string/lbl_table_of_content_short</string>
     <!-- Large screens; max 25 chars -->
     <string name="action_show_toc_long">Hiển thị mục lục</string>
     <!-- endregion -->
@@ -908,8 +859,7 @@
     <!-- Author types -->
     <string name="lbl_author_type">Loại tác giả</string>
     <!-- Author. Whether the user considers his collection of this Author to be complete. -->
-    <string name="lbl_author_is_complete"
-            translatable="false">@string/lbl_is_complete</string>
+    <string name="lbl_author_is_complete" translatable="false">@string/lbl_is_complete</string>
     <!-- Heading above an edit field. -->
     <string name="lbl_author_is_a_pen_name_of">Đây là bút danh của:</string>
     <!-- Label -->
@@ -925,8 +875,7 @@
     <!-- The book's number in a series. Either a symbol (e.g. '#') or a very short label (e.g. 'Nr') -->
     <string name="lbl_series_num">#</string>
     <!-- Series. Whether the user considers his collection of this Series to be complete. -->
-    <string name="lbl_series_is_complete"
-            translatable="false">@string/lbl_is_complete</string>
+    <string name="lbl_series_is_complete" translatable="false">@string/lbl_is_complete</string>
     <!-- A single Publisher. -->
     <string name="lbl_publisher">Nhà xuất bản</string>
     <!-- Multiple Publishers. -->
@@ -940,8 +889,7 @@
     <!-- Multiple Book. -->
     <string name="lbl_books">Sách</string>
     <string name="lbl_book_type">Loại sách</string>
-    <string name="lbl_book_type_book"
-            translatable="false">@string/lbl_book</string>
+    <string name="lbl_book_type_book" translatable="false">@string/lbl_book</string>
     <string name="lbl_book_type_anthology">Tuyển tập</string>
     <string name="lbl_book_type_collection">Bộ sưu tập</string>
     <!-- Single book cover - Short label. -->
@@ -955,14 +903,11 @@
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Trang</string>
     <!-- number of pages; this is formatted text. -->
-    <string name="info_x_pages"
-            tools:ignore="PluralsCandidate">%1$d trang</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d trang</string>
     <!-- [VERIFIED] -->
     <string name="lbl_country">Quốc gia</string>
-
     <!-- Label for a booklist group -->
     <string name="lbl_group">Nhóm</string>
-
     <!-- Label for the currency used for prices. -->
     <string name="lbl_currency">Tiền tệ</string>
     <!-- Official price for a book -->
@@ -975,7 +920,6 @@
     <string name="lbl_format">Định dạng</string>
     <!-- If it's an eBook, the file format (e.g. pdf, epub, ...) -->
     <string name="lbl_ebook_file_type">Loại tệp sách điện tử</string>
-
     <!-- [VERIFIED] -->
     <string name="lbl_color">Màu</string>
     <!-- [VERIFIED] -->
@@ -1083,8 +1027,7 @@
     <string name="info_export_successful">Xuất thành công</string>
     <!-- progress final message - displayed when a Backup is done: 1: file size; 2: filename.  -->
     <string name="info_export_report">Tệp %1$s có tên “%2$s” đã được tạo trong thư mục đã chọn và bạn nên sao chép thủ công tệp đó sang nơi khác để bảo vệ dữ liệu trong trường hợp thiết bị của bạn bị hỏng, bị mất hoặc bị đánh cắp.</string>
-    <string name="info_backup_email_subject"
-            translatable="false">@string/lbl_backup</string>
+    <string name="info_backup_email_subject" translatable="false">@string/lbl_backup</string>
     <!-- Dialog import all options. -->
     <string name="lbl_import_options">Chọn những gì sẽ được nhập.</string>
     <!-- Radio button text -->
@@ -1105,20 +1048,16 @@
     <string name="option_import_books_option_all">Tất cả sách</string>
     <!-- Info text for "option_import_books_option_all" -->
     <string name="option_info_import_books_option_all">Nhập sách mới và ghi đè sách hiện có. Sử dụng cái này để khôi phục bản sao lưu.</string>
-
     <!-- Option on the import screen to synchronize/mirror imported 'deleted-books' records by deleting the actual books.
          Also used on the Maintenance screen for the same action. -->
     <string name="option_sync_deleted_book_records">Đồng bộ hóa sách đã xóa</string>
     <!-- Info text for "option_sync_deleted_book_records" -->
     <string name="option_info_delete_removed_books">Sách đã xóa trên thiết bị kia cũng sẽ bị xóa trên thiết bị này.</string>
-
     <!-- [VERIFIED] progress final message - all data was imported. -->
     <string name="info_import_complete">Nhập hoàn tất</string>
     <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
     <string name="info_import_partially_complete">Đã nhập một phần</string>
-
     <string name="info_books_deleted">Sách đã xóa: %1$d</string>
-
     <!-- endregion -->
     <!-- region ========== Global settings. -->
     <!-- [VERIFIED] -->
@@ -1130,13 +1069,11 @@
     <!-- Preference Category -->
     <string name="pc_ui">Giao diện người dùng</string>
     <!-- Preference Category -->
-    <string name="pc_search"
-            translatable="false">@android:string/search_go</string>
+    <string name="pc_search" translatable="false">@android:string/search_go</string>
     <!-- Preference Category -->
     <string name="pc_formatting">Định dạng</string>
     <!-- Preference Category -->
-    <string name="pc_edit"
-            translatable="false">@string/action_edit</string>
+    <string name="pc_edit" translatable="false">@string/action_edit</string>
     <!-- Preference Category -->
     <string name="pc_lists">Danh sách</string>
     <!-- [VERIFIED] - Preference Category -->
@@ -1147,12 +1084,10 @@
     <string name="pc_camera">Máy ảnh</string>
     <!-- Preference option title: search websites ordering -->
     <string name="pt_website_search_order_and_enable">Ưu tiên, bật &amp; tắt</string>
-    <string name="pt_covers"
-            translatable="false">@string/lbl_covers_long</string>
+    <string name="pt_covers" translatable="false">@string/lbl_covers_long</string>
     <!-- Preference Category -->
     <string name="pt_barcode_scanner">Máy quét mã vạch</string>
-    <string name="pt_calibre_content_server"
-            translatable="false">@string/lbl_calibre_content_server</string>
+    <string name="pt_calibre_content_server" translatable="false">@string/lbl_calibre_content_server</string>
     <!-- Preference Category: the volume/sd-card where the covers will be stored.  -->
     <string name="pt_storage_volume">Dung lượng lưu trữ</string>
     <!-- Preference Category -->
@@ -1165,7 +1100,6 @@
     <string name="pt_show_title_reordered">Hiển thị nhan đề dưới dạng…</string>
     <!-- SwitchPreference title: How to sort titles. -->
     <string name="pt_sort_title_reordered">Sắp xếp nhan đề theo</string>
-
     <!--
          These are the Locale specific title prefixes (grammar: 'article') that will be moved to
          the end of a title, if automatic reformatting of titles is enabled by the user.
@@ -1181,7 +1115,6 @@
          https://en.wikipedia.org/wiki/Article_(grammar)#Tables
     -->
     <string name="pv_reformat_titles_prefixes">một|Một|một|Một|the|The</string>
-
     <!--
         TRANSLATORS: FIRST READ the information for the string "pv_reformat_titles_prefixes".
 
@@ -1200,32 +1133,27 @@
          ==> "Only applicable to languages that use articles. English example: \"Lord of The Rings, The\""
          -->
     <string name="ps_show_titles_reordered_on">Chuyển bài viết hàng đầu xuống cuối,\ne.g. “Chúa tể của những chiếc nhẫn, The”</string>
-
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Cho phép sử dụng dữ liệu di động</string>
     <!-- SwitchPreference - Some web sites expose their website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_editing_external_id">Cho phép chỉnh sửa id sách trang web</string>
     <!-- SwitchPreference title: Enable or disable all lending functionality. -->
-    <string name="pt_lending_enabled"
-            translatable="false">@string/lbl_lending</string>
+    <string name="pt_lending_enabled" translatable="false">@string/lbl_lending</string>
     <!-- SwitchPreference title: beep when the barcode scanner found a valid code -->
     <string name="pt_scanning_beep_on_barcode_found">Bíp khi tìm thấy mã vạch</string>
     <!-- SwitchPreference title -->
     <string name="pt_scanning_beep_on_valid">Bíp nếu ISBN được quét hợp lệ</string>
     <!-- SwitchPreference title -->
     <string name="pt_scanning_beep_on_invalid">Bíp nếu ISBN được quét không hợp lệ</string>
-
     <!-- SwitchPreference title: support undoing an edit or replacement of a cover image. -->
     <string name="pt_cover_undo_enabled">Hoàn tác các thao tác trên bìa sách</string>
     <string name="ps_cover_undo_disabled">Không thể hoàn tác việc chỉnh sửa/thay thế bìa (sử dụng ít bộ nhớ hơn)</string>
     <string name="ps_cover_undo_enabled">Việc chỉnh sửa/thay thế bìa có thể được hoàn tác (sử dụng nhiều bộ nhớ hơn)</string>
-
     <!-- SwitchPreference title: Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Hình ảnh đã thay đổi kích thước được lưu trữ</string>
     <string name="pe_thumbnails_cache_resized_each_time">Thay đổi kích thước hình ảnh mỗi khi cần thiết (sử dụng ít bộ nhớ hơn, cuộn sẽ chậm hơn)</string>
     <string name="pe_thumbnails_cache_resized_stored">Hình ảnh đã được thay đổi kích thước trong bộ nhớ đệm (cuộn sẽ nhanh hơn, sử dụng nhiều bộ nhớ hơn)</string>
-
     <!-- SwitchPreference title -->
     <string name="pt_search_reformat_format">Chuẩn hóa tên “định dạng sách”</string>
     <!-- SwitchPreference title -->
@@ -1281,8 +1209,7 @@
     <!-- ListPreference title: the popup bubble displayed while scrolling through a booklist. -->
     <string name="pt_fast_scroller_overlay">Bong bóng văn bản trong khi cuộn.</string>
     <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
-    <string name="pe_fast_scroller_overlay_none"
-            translatable="false">@string/none</string>
+    <string name="pe_fast_scroller_overlay_none" translatable="false">@string/none</string>
     <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_static">Tĩnh</string>
     <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
@@ -1292,8 +1219,7 @@
     <!-- ListPreference title: the user can choose which action to take after taking a picture -->
     <string name="camera_next_action">Hành động sau khi chụp ảnh</string>
     <!-- ListPreference title: shows a list of cameras of the device by lens-facing -->
-    <string name="pt_camera_lens_facing"
-            translatable="false">@string/pc_camera</string>
+    <string name="pt_camera_lens_facing" translatable="false">@string/pc_camera</string>
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_front">Camera trước</string>
     <!-- ListPreference value -->
@@ -1336,14 +1262,12 @@
     <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
     <string name="option_bug_report">Báo cáo lỗi</string>
     <!-- The user can choose which files to include in a debug report. -->
-    <string name="option_bug_report_database"
-            translatable="false">@string/lbl_database</string>
+    <string name="option_bug_report_database" translatable="false">@string/lbl_database</string>
     <!-- The user can choose which files to include in a debug report. -->
     <string name="option_bug_report_database_upgrade">Tệp nâng cấp cơ sở dữ liệu</string>
     <!-- The user can choose which files to include in a debug report. -->
     <string name="option_bug_report_logfiles">Tệp nhật ký</string>
-    <string name="option_bug_report_settings"
-            translatable="false">@string/lbl_settings</string>
+    <string name="option_bug_report_settings" translatable="false">@string/lbl_settings</string>
     <!-- the hint text for the input field on the SQLite Shell debug page. -->
     <string name="lbl_sql_query">Truy vấn SQL</string>
     <!-- endregion -->
@@ -1368,7 +1292,6 @@
     <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog.
          param 1: date-from; param 2: date-until -->
     <string name="lbl_certificate_validity_period">Tính hợp lệ: %1$s - %2$s</string>
-
     <!-- endregion -->
     <!-- region ========== Style settings. -->
     <!-- Preference Category -->
@@ -1397,7 +1320,6 @@
     <string name="pe_grid">Lưới</string>
     <!-- SwitchPreference - Show thumbnail image for each book -->
     <string name="pt_bob_cover_show">Hiển thị bìa</string>
-
     <!-- ListPreference - When a user taps on the thumbnail/cover-image...
          Will have the option(s) listed underneath. -->
     <string name="pt_bob_cover_click">Nhấn vào ảnh bìa.</string>
@@ -1405,7 +1327,6 @@
     <string name="pe_bob_cover_click_zoom">Sẽ phóng to ảnh bìa.</string>
     <!-- Option text for "pt_bob_cover_click" -->
     <string name="pe_bob_cover_click_details">Sẽ mở trang chi tiết sách.</string>
-
     <!-- ListPreference - How to open the book menu for a book in BoB grid-mode.
          Will have the option(s) listed underneath. -->
     <string name="pt_bob_cover_long_click">Mở menu sách.</string>
@@ -1413,7 +1334,6 @@
     <string name="pe_bob_cover_long_click_ignore">Bằng cách nhấn vào một nút.</string>
     <!-- Option text for "pt_bob_cover_long_click" -->
     <string name="pe_bob_cover_long_click_popupmenu">Bằng cách nhấn lâu vào ảnh bìa.</string>
-
     <!-- SeekBarPreference - Scale cover/thumbnail images. -->
     <string name="pt_bob_cover_scale">Cỡ bìa</string>
     <!-- [VERIFIED] SeekBarPreference - Scale text. -->
@@ -1422,22 +1342,18 @@
     <string name="pt_line_spacing">Khoảng cách dòng</string>
     <!-- SeekBarPreference -->
     <string name="pt_bob_list_state_expansion_level">Mở rộng danh mục sách mặc định</string>
-
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
     <string name="ps_sort_author_name_given_first">Sắp xếp theo tên trước,\nv.d. “Du, Nguyễn”</string>
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
     <string name="ps_sort_author_name_family_first">Sắp xếp theo họ trước,\nv.d. “Nguyễn Du”</string>
-
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
     <string name="ps_show_author_name_given_first">Hiển thị với tên trước,\nv.d. “Du, Nguyễn”</string>
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
     <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\nv.d. “Nguyễn Du”</string>
-
-
     <!-- SwitchPreference - option title -->
     <string name="pt_bob_books_under_multiple_authors">Hiển thị sách có nhiều tác giả</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">chỉ theo tác giả chính của chúng</string>
@@ -1458,14 +1374,12 @@
     <string name="lbl_filter">Bộ lọc</string>
     <!-- Dialog title -->
     <string name="lbl_add_filter">Thêm bộ lọc</string>
-
     <string name="option_bob_filter_signed_yes">Sách đã ký</string>
     <string name="option_bob_filter_signed_no">Sách chưa được ký</string>
     <string name="option_bob_filter_lend_out_yes">Sách cho mượn</string>
     <string name="option_bob_filter_lend_out_no">Sách có sẵn</string>
     <string name="option_bob_filter_isbn_yes">Với ISBN</string>
     <string name="option_bob_filter_isbn_no">Không có ISBN</string>
-
     <!-- [VERIFIED] Param 1: a filter name -->
     <string name="lbl_search_filtered_by_x">Lọc theo: %1$s</string>
     <!-- endregion -->
@@ -1504,8 +1418,7 @@
     <!-- [VERIFIED] Edit book: Name of the 'Notes' tab. need to be very short-->
     <string name="lbl_tab_notes">Ghi chú</string>
     <!-- Edit book: Name of the 'Table Of Content' tab. need to be very short -->
-    <string name="lbl_tab_table_of_content"
-            translatable="false">@string/lbl_table_of_content_short</string>
+    <string name="lbl_tab_table_of_content" translatable="false">@string/lbl_table_of_content_short</string>
     <!-- Edit book: Name of the 'External website id' tab.need to be very short -->
     <string name="lbl_tab_lbl_ext_id">ID bên ngoài</string>
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. need to be very short -->
@@ -1538,8 +1451,7 @@
     <string name="list_and">và</string>
     <!-- endregion -->
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
-    <string name="lbl_add_book_by_external_id"
-            translatable="false">@string/option_fab_add_book_by_external_id</string>
+    <string name="lbl_add_book_by_external_id" translatable="false">@string/option_fab_add_book_by_external_id</string>
     <string name="lbl_local_search">Tìm kiếm cục bộ</string>
     <string name="lbl_local_search_long">Tìm kiếm cục bộ nâng cao</string>
     <!-- Search on keywords entered. -->
@@ -1578,7 +1490,6 @@
     <string name="option_delete_removed_books">Xóa các sách cục bộ không còn tồn tại trên máy chủ</string>
     <!-- [VERIFIED] -->
     <string name="lbl_system_default">(Mặc định hệ thống)</string>
-
     <!-- Label for the list of sorting options. -->
     <string name="lbl_sorting">Sắp xếp</string>
     <!-- Sorting option: unsorted -->
@@ -1587,14 +1498,12 @@
     <string name="lbl_sort_ascending">Tăng dần</string>
     <!-- Sorting option: Z-A -->
     <string name="lbl_sort_descending">Giảm dần</string>
-
     <!-- Book status/flag: I have read and finished this book. -->
     <string name="lbl_read">Đã đọc</string>
     <!-- [VERIFIED] - Book status/flag: I have not read this book yet. -->
     <string name="lbl_unread">Chưa đọc</string>
     <!-- Book status/flag: I'm currently reading this book -->
     <string name="lbl_reading">Đang đọc</string>
-
     <!-- [VERIFIED] -->
     <string name="lbl_settings">Thiết đặt</string>
     <!-- endregion -->
@@ -1613,6 +1522,8 @@
     <string name="X_lbl_image">Hình ảnh</string>
     <!-- [VERIFIED] -->
     <string name="X_lbl_system">(Hệ thống)</string>
-
     <!-- endregion -->
+<string name="X_style_type_defaults">Các thiết đặt phong cách mặc định</string>
+    <string name="X_error_authentication_failed">Quá trình xác thực đã thất bại</string>
+    <string name="X_error_network_site_has_problems">Trang web không hoạt động như mong đợi.</string>
 </resources>
