@@ -28,18 +28,15 @@
     <!-- region ========== Plurals. -->
     <!-- displayed in the header of booklist -->
     <plurals name="displaying_n_books">
-        <item quantity="one">%1$d cuốn sách</item>
         <item quantity="other">%1$d cuốn sách</item>
     </plurals>
 
     <plurals name="n_books_found">
-        <item quantity="one">Đã tìm thấy %1$d cuốn sách</item>
         <item quantity="other">Đã tìm thấy %1$d cuốn sách</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
-        <item quantity="one">%1$s sao</item>
         <item quantity="other">%1$s sao</item>
     </plurals>
     <!-- endregion -->
