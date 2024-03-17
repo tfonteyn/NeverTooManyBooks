@@ -1543,8 +1543,15 @@
     <!-- [VERIFIED] -->
     <string name="X_lbl_system">(Hệ thống)</string>
 
+    <string name="X_neither">Không</string>
+    <string name="X_lbl_thumbnails">Hình thu nhỏ</string>
+    <string name="X_lbl_anthologies">Tuyển tập</string>
+    <string name="X_option_bob_filter_read_yes">Sách đã đọc</string>
+    <string name="X_option_bob_filter_read_no">Sách chưa đọc</string>
     <string name="X_style_type_defaults">Các thiết đặt phong cách mặc định</string>
     <string name="X_error_authentication_failed">Quá trình xác thực đã thất bại</string>
     <string name="X_error_network_site_has_problems">Trang web không hoạt động như mong đợi.</string>
+    <string name="X_info_not_authorized">Không được ủy quyền</string>
+    <string name="X_info_site_authorization_successful">Ủy quyền %1$s thành công</string>
     <!-- endregion -->
 </resources>
