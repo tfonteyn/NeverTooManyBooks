@@ -1231,11 +1231,10 @@
     <string name="pt_thumbnails_rotate_auto">Xoay ảnh</string>
     <!-- ListPreference title: the user can choose which action to take after taking a picture -->
     <string name="camera_next_action">Hành động sau khi chụp ảnh</string>
-    <!-- ListPreference title: shows a list of cameras of the device by lens-facing -->
-    <!-- [VERIFIED] ListPreference value FIXME: check front/back camera for ALL languages-->
-    <string name="pe_camera_front">Camera trước</string>
+    <!-- [VERIFIED] ListPreference value -->
+    <string name="pe_camera_front">Máy ảnh mặt trước</string>
     <!-- ListPreference value -->
-    <string name="pe_camera_back">Camera sau</string>
+    <string name="pe_camera_back">Máy ảnh mặt sau</string>
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_other">Khác</string>
     <!-- Preference option title -->
