@@ -474,37 +474,7 @@
     <string name="style_builtin_author_series">Tác giả, Bộ sách</string>
     <!-- builtin style name -->
     <string name="style_builtin_author_year">Tác giả, Năm</string>
-    <!-- builtin style name -->
-    <string name="style_builtin_bookshelf"
-            translatable="false">@string/lbl_bookshelf</string>
-    <string name="style_builtin_date_acquired"
-            translatable="false">@string/lbl_date_acquired</string>
-    <string name="style_builtin_date_added"
-            translatable="false">@string/lbl_date_added</string>
-    <string name="style_builtin_date_last_updated"
-            translatable="false">@string/lbl_date_last_updated</string>
-    <string name="style_builtin_date_published"
-            translatable="false">@string/lbl_date_published</string>
-    <string name="style_builtin_date_read"
-            translatable="false">@string/lbl_date_read</string>
-    <string name="style_builtin_1st_char_book_title"
-            translatable="false">@string/lbl_group_1st_char_book_title</string>
-    <string name="style_builtin_format"
-            translatable="false">@string/lbl_format</string>
-    <string name="style_builtin_genre"
-            translatable="false">@string/lbl_genre</string>
-    <string name="style_builtin_language"
-            translatable="false">@string/lbl_language</string>
-    <string name="style_builtin_lending"
-            translatable="false">@string/lbl_lending</string>
-    <string name="style_builtin_location"
-            translatable="false">@string/lbl_location</string>
-    <string name="style_builtin_rating"
-            translatable="false">@string/lbl_rating</string>
-    <string name="style_builtin_read_and_unread"
-            translatable="false">@string/lbl_group_read_and_unread</string>
-    <string name="style_builtin_series"
-            translatable="false">@string/lbl_series</string>
+
     <!-- endregion -->
     <!-- region ========== Style terminology. -->
     <!-- Single Style -->
@@ -541,12 +511,6 @@
 
     <!-- header for a screen where the user can map/assign local bookshelves to remote bookshelves. -->
     <string name="lbl_assign_bookshelves">Chỉ định kệ sách</string>
-    <string name="lbl_strip_info_bookshelf_assigned_to_wishlist"
-            translatable="false">@string/bookshelf_my_wishlist</string>
-    <string name="lbl_strip_info_bookshelf_assigned_to_owned_books"
-            translatable="false">@string/lbl_owned</string>
-    <string name="lbl_strip_info_bookshelf_assigned_to_digital_books"
-            translatable="false">@string/book_format_ebook</string>
 
     <!-- endregion -->
     <!-- region ========== Book editions values NEWTHINGS: add book edition: add label here. -->
@@ -556,8 +520,6 @@
     <string name="lbl_edition_first_impression">Ấn tượng đầu tiên</string>
     <!-- Book edition -->
     <string name="lbl_edition_limited">Bị giới hạn</string>
-    <string name="lbl_edition_signed"
-            translatable="false">@string/lbl_signed</string>
     <!-- Book edition -->
     <string name="lbl_edition_slipcase">Hộp đựng</string>
     <!-- Book edition -->
@@ -657,9 +619,6 @@
     <string name="option_cover_rotate_cw">Theo chiều kim đồng hồ</string>
     <!-- Cover image context menu option -->
     <string name="option_cover_rotate_ccw">Ngược chiều kim đồng hồ</string>
-    <!-- Cover image context menu option -->
-    <string name="option_cover_rotate_180"
-            translatable="false">180°</string>
     <string name="option_restore_cover">Khôi phục hình ảnh trước đó</string>
 
     <!-- Booklist FAB menu option; Start the barcode scanner and scan a single barcode/book. -->
@@ -705,8 +664,6 @@
     <string name="option_auto_updates">Cho phép cập nhật tự động từ internet.</string>
     <!-- [VERIFIED] -->
     <string name="option_import">Nhập</string>
-    <string name="option_backup_and_export"
-            translatable="false">@string/title_backup_and_export</string>
     <string name="option_download_set_folder">Đặt thư mục tải xuống</string>
     <string name="option_download_folder">Thư mục tải xuống cục bộ</string>
     <string name="option_download_ebook_format">Tải xuống sách điện tử (%1$s)</string>
@@ -845,9 +802,6 @@
     <!-- [VERIFIED] -->
     <string name="action_export">Xuất</string>
     <string name="action_synchronize">Đồng bộ hóa</string>
-    <!-- Small screens. Ideally 3-5 characters long. -->
-    <string name="action_show_toc"
-            translatable="false">@string/lbl_table_of_content_short</string>
     <!-- Large screens; max 25 chars -->
     <string name="action_show_toc_long">Hiển thị mục lục</string>
     <!-- endregion -->
@@ -907,9 +861,6 @@
     <string name="lbl_given_names">Tên riêng</string>
     <!-- Author types -->
     <string name="lbl_author_type">Loại tác giả</string>
-    <!-- Author. Whether the user considers his collection of this Author to be complete. -->
-    <string name="lbl_author_is_complete"
-            translatable="false">@string/lbl_is_complete</string>
     <!-- Heading above an edit field. -->
     <string name="lbl_author_is_a_pen_name_of">Đây là bút danh của:</string>
     <!-- Label -->
@@ -924,9 +875,7 @@
     <string name="lbl_series_multiple">Bộ sách</string>
     <!-- The book's number in a series. Either a symbol (e.g. '#') or a very short label (e.g. 'Nr') -->
     <string name="lbl_series_num">#</string>
-    <!-- Series. Whether the user considers his collection of this Series to be complete. -->
-    <string name="lbl_series_is_complete"
-            translatable="false">@string/lbl_is_complete</string>
+
     <!-- A single Publisher. -->
     <string name="lbl_publisher">Nhà xuất bản</string>
     <!-- Multiple Publishers. -->
@@ -940,8 +889,6 @@
     <!-- Multiple Book. -->
     <string name="lbl_books">Sách</string>
     <string name="lbl_book_type">Loại sách</string>
-    <string name="lbl_book_type_book"
-            translatable="false">@string/lbl_book</string>
     <string name="lbl_book_type_anthology">Tuyển tập</string>
     <string name="lbl_book_type_collection">Bộ sưu tập</string>
     <!-- Single book cover - Short label. -->
@@ -1083,8 +1030,6 @@
     <string name="info_export_successful">Xuất thành công</string>
     <!-- progress final message - displayed when a Backup is done: 1: file size; 2: filename.  -->
     <string name="info_export_report">Tệp %1$s có tên “%2$s” đã được tạo trong thư mục đã chọn và bạn nên sao chép thủ công tệp đó sang nơi khác để bảo vệ dữ liệu trong trường hợp thiết bị của bạn bị hỏng, bị mất hoặc bị đánh cắp.</string>
-    <string name="info_backup_email_subject"
-            translatable="false">@string/lbl_backup</string>
     <!-- Dialog import all options. -->
     <string name="lbl_import_options">Chọn những gì sẽ được nhập.</string>
     <!-- Radio button text -->
@@ -1129,14 +1074,10 @@
     <string name="preference_not_set">Chưa đặt</string>
     <!-- Preference Category -->
     <string name="pc_ui">Giao diện người dùng</string>
-    <!-- Preference Category -->
-    <string name="pc_search"
-            translatable="false">@android:string/search_go</string>
+
     <!-- Preference Category -->
     <string name="pc_formatting">Định dạng</string>
-    <!-- Preference Category -->
-    <string name="pc_edit"
-            translatable="false">@string/action_edit</string>
+
     <!-- Preference Category -->
     <string name="pc_lists">Danh sách</string>
     <!-- [VERIFIED] - Preference Category -->
@@ -1147,12 +1088,10 @@
     <string name="pc_camera">Máy ảnh</string>
     <!-- Preference option title: search websites ordering -->
     <string name="pt_website_search_order_and_enable">Ưu tiên, bật &amp; tắt</string>
-    <string name="pt_covers"
-            translatable="false">@string/lbl_covers_long</string>
+
     <!-- Preference Category -->
     <string name="pt_barcode_scanner">Máy quét mã vạch</string>
-    <string name="pt_calibre_content_server"
-            translatable="false">@string/lbl_calibre_content_server</string>
+
     <!-- Preference Category: the volume/sd-card where the covers will be stored.  -->
     <string name="pt_storage_volume">Dung lượng lưu trữ</string>
     <!-- Preference Category -->
@@ -1211,9 +1150,7 @@
     <!-- SwitchPreference - Some web sites expose their website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_editing_external_id">Cho phép chỉnh sửa id sách trang web</string>
-    <!-- SwitchPreference title: Enable or disable all lending functionality. -->
-    <string name="pt_lending_enabled"
-            translatable="false">@string/lbl_lending</string>
+
     <!-- SwitchPreference title: beep when the barcode scanner found a valid code -->
     <string name="pt_scanning_beep_on_barcode_found">Bíp khi tìm thấy mã vạch</string>
     <!-- SwitchPreference title -->
@@ -1285,9 +1222,7 @@
     <string name="pe_bob_row_menu_long_click">Luôn sử dụng nhấn lâu.</string>
     <!-- ListPreference title: the popup bubble displayed while scrolling through a booklist. -->
     <string name="pt_fast_scroller_overlay">Bong bóng văn bản trong khi cuộn.</string>
-    <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
-    <string name="pe_fast_scroller_overlay_none"
-            translatable="false">@string/none</string>
+
     <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_static">Tĩnh</string>
     <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
@@ -1297,8 +1232,6 @@
     <!-- ListPreference title: the user can choose which action to take after taking a picture -->
     <string name="camera_next_action">Hành động sau khi chụp ảnh</string>
     <!-- ListPreference title: shows a list of cameras of the device by lens-facing -->
-    <string name="pt_camera_lens_facing"
-            translatable="false">@string/pc_camera</string>
     <!-- [VERIFIED] ListPreference value FIXME: check front/back camera for ALL languages-->
     <string name="pe_camera_front">Camera trước</string>
     <!-- ListPreference value -->
@@ -1340,15 +1273,11 @@
     <string name="info_purge_blns_item_name">Xóa trạng thái nút cho %1$s “%2$s”?</string>
     <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
     <string name="option_bug_report">Báo cáo lỗi</string>
-    <!-- The user can choose which files to include in a debug report. -->
-    <string name="option_bug_report_database"
-            translatable="false">@string/lbl_database</string>
+
     <!-- The user can choose which files to include in a debug report. -->
     <string name="option_bug_report_database_upgrade">Tệp nâng cấp cơ sở dữ liệu</string>
     <!-- The user can choose which files to include in a debug report. -->
     <string name="option_bug_report_logfiles">Tệp nhật ký</string>
-    <string name="option_bug_report_settings"
-            translatable="false">@string/lbl_settings</string>
     <!-- the hint text for the input field on the SQLite Shell debug page. -->
     <string name="lbl_sql_query">Truy vấn SQL</string>
     <!-- endregion -->
@@ -1508,9 +1437,6 @@
     <string name="lbl_tab_publication">Xuất bản</string>
     <!-- [VERIFIED] Edit book: Name of the 'Notes' tab. need to be very short-->
     <string name="lbl_tab_notes">Ghi chú</string>
-    <!-- Edit book: Name of the 'Table Of Content' tab. need to be very short -->
-    <string name="lbl_tab_table_of_content"
-            translatable="false">@string/lbl_table_of_content_short</string>
     <!-- Edit book: Name of the 'External website id' tab.need to be very short -->
     <string name="lbl_tab_lbl_ext_id">ID bên ngoài</string>
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. need to be very short -->
@@ -1543,8 +1469,6 @@
     <string name="list_and">và</string>
     <!-- endregion -->
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
-    <string name="lbl_add_book_by_external_id"
-            translatable="false">@string/option_fab_add_book_by_external_id</string>
     <string name="lbl_local_search">Tìm kiếm cục bộ</string>
     <string name="lbl_local_search_long">Tìm kiếm cục bộ nâng cao</string>
     <!-- Search on keywords entered. -->
