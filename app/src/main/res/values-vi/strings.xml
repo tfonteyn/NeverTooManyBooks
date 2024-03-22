@@ -1142,7 +1142,7 @@
 
          FIXME: check with translator
          -->
-    <string name="ps_show_titles_reordered_on">Chuyển mạo từ xuống cuối,\nv.d. “Lord of The Rings, The”</string>
+    <string name="ps_show_titles_reordered_on">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “Lord of The Rings, The”</string>
 
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Cho phép sử dụng dữ liệu di động</string>
