@@ -1,7 +1,5 @@
 /build
 /beta/output.json
 /beta/app-beta.apk
-/src/main/res/layout/z_color_debug.xml
-/src/main/res/layout/z_alertdialog.xml
-/src/main/res/layout/z_text_sizes.xml
 /release/
+
