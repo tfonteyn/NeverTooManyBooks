@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -156,8 +156,8 @@ public class MoneyParser {
         // supported locales (including pre-euro)
         CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
         CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
-        CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
-        CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
+        CURRENCY_MAP.put("kč", "CZK"); // Czech Koruna
+        CURRENCY_MAP.put("kc", "CZK"); // Czech Koruna
         CURRENCY_MAP.put("dm", "DEM"); // German Marks
         CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
         CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
@@ -168,7 +168,9 @@ public class MoneyParser {
         CURRENCY_MAP.put("l", "ITL"); // Italian Lira
         CURRENCY_MAP.put("lit", "ITL"); // Italian Lira
         CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
-        CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
+        CURRENCY_MAP.put("₺", "TRY"); // Turkish Lira
+        CURRENCY_MAP.put("₫", "VND"); // Vietnamese đồng
+        CURRENCY_MAP.put("đ", "VND"); // Vietnamese đồng
 
         // some others
         CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
