@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.3.2 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.3.2/NeverTooManyBooks-5.3.2.apk)
+## Download the latest release: [5.4.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.4.0/NeverTooManyBooks-5.4.0.apk)
 
 Also available
 on [IzzySoft](https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks).
@@ -31,7 +31,7 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 
 ## User Interface languages:
 
-- English, Dutch, Portuguese.
+- English, Dutch, Portuguese, Vietnamese.
 - German, French, Spanish: quality should be very good but could benefit from a native speaker
   verification.
 - Italian: should be usable, but certainly not perfect. Verification by a native speaker needed.
@@ -40,9 +40,10 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 Translations are now integrated and editable
 on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
 
-- Everyone welcome; log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) if
-  you want to be credited with your help.
-- Volunteers have started on Chinese (49%), Vietnamese (43%) and Faroese (16%). These will be added
+- Everyone welcome; please log a
+  GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
+  if you want to be credited with your help.
+- Volunteers have started on Chinese (49%) and Faroese (16%). These will be added
   if/when completed.
 
 ## Data sources
@@ -55,7 +56,9 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 > *WARNING:* Amazon is increasingly blocking access.
 > If you see any Amazon specific errors, I suggest you switch off Amazon in
-> Settings/Search/Websites.
+> Settings/Search/Websites and log a
+> GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
+> explaining what went wrong.
 
 > Please do not ask for GoodReads/LibraryThing/AbeBooks to be added.
 
@@ -92,6 +95,8 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 ---
 
 ## Thanks
+
+Vietnamese translation kindly contributed by [ngocanhtve](https://github.com/ngocanhtve).
 
 In August 2018, this project was forked from:
 Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.

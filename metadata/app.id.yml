@@ -4,6 +4,9 @@
 # and the Metadata reference
 # https://f-droid.org/docs/Build_Metadata_Reference/
 #
+# Quick Fastlane Cheat-Sheet:
+# https://gitlab.com/-/snippets/1895688
+#
 # Single-line fields start right after the colon (with a whitespace).
 
 Summary: book collection application, to keep track of your books and comics.
@@ -20,12 +23,12 @@ Repo: https://github.com/tfonteyn/NeverTooManyBooks.git
 Binaries: https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v%v/NeverTooManyBooks-v%v.apk
 
 Builds:
-  - versionName: '5.3.2'
-    versionCode: 74
-    commit: v5.3.2
+  - versionName: '5.4.0'
+    versionCode: 75
+    commit: v5.4.0
     subdir: app
     gradle: [ 'release' ]
-    output: NeverTooManyBooks-v5.3.2.apk
+    output: NeverTooManyBooks-v5.4.0.apk
 
 
 # MaintainerNotes: |-
@@ -37,5 +40,5 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 AllowedAPKSigningKeys: df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
-CurrentVersion: '5.3.2'
-CurrentVersionCode: 74
+CurrentVersion: '5.4.0'
+CurrentVersionCode: 75

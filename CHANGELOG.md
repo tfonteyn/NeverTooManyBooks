@@ -1,3 +1,7 @@
+### 5.4.0
+
+- Vietnamese translation completed.
+
 ### 5.3.2
 
 NEW
