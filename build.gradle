@@ -19,8 +19,8 @@
  */
 
 plugins {
-    id("com.android.application") version '8.3.0' apply false
-    id("com.android.library") version '8.3.0' apply false
+    id("com.android.application") version '8.3.1' apply false
+    id("com.android.library") version '8.3.1' apply false
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
     id("org.jetbrains.kotlin.android") version "1.9.23" apply false
     // https://github.com/mannodermaus/android-junit5
@@ -33,10 +33,6 @@ tasks.register("clean", Delete) {
 }
 
 ext {
-    applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 75
-    applicationVersionName = "5.3.3"
-
     // see NOTES.txt
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
     // 2023-10-04 world wide:
@@ -47,6 +43,7 @@ ext {
     // 9.0      88.66
     // 8.1      91.16
     // 8.0      94.23
+    toolChain = 17
     minSdkVersion = 26
     targetSdkVersion = 34
     compileSdkVersion = 34
@@ -81,8 +78,6 @@ ext {
 
     // https://github.com/material-components/material-components-android/releases
     googleMaterialVersion = '1.11.0'
-
-//    googleAutoServiceVersion = "1.1.1"
 
     // https://jsoup.org/
     jsoupVersion = '1.17.2'
