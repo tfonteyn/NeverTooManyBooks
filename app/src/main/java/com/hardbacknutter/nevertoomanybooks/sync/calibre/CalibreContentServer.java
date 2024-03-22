@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -503,85 +503,91 @@ public final class CalibreContentServer
         final SynchronizedDb db = serviceLocator.getDb();
 
         Synchronizer.SyncLock txLock = null;
-        if (!db.inTransaction()) {
-            txLock = db.beginTransaction(true);
-        }
-        final Iterator<String> it = libraryMap.keys();
-        while (it.hasNext()) {
-            final String libraryId = it.next();
-            // read the standard info
-            final String name = libraryMap.getString(libraryId);
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+            final Iterator<String> it = libraryMap.keys();
+            while (it.hasNext()) {
+                final String libraryId = it.next();
+                // read the standard info
+                final String name = libraryMap.getString(libraryId);
 
-            // read the extended info if present
-            final String uuid;
-            @Nullable
-            final JSONObject vlibs;
-            if (libraryDetails != null && !libraryDetails.isNull(libraryId)) {
-                final JSONObject details = libraryDetails.getJSONObject(libraryId);
-                uuid = details.getString("uuid");
-                if (details.isNull(RESPONSE_TAG_VIRTUAL_LIBRARIES)) {
-                    vlibs = null;
+                // read the extended info if present
+                final String uuid;
+                @Nullable
+                final JSONObject vlibs;
+                if (libraryDetails != null && !libraryDetails.isNull(libraryId)) {
+                    final JSONObject details = libraryDetails.getJSONObject(libraryId);
+                    uuid = details.getString("uuid");
+                    if (details.isNull(RESPONSE_TAG_VIRTUAL_LIBRARIES)) {
+                        vlibs = null;
+                    } else {
+                        vlibs = details.getJSONObject(RESPONSE_TAG_VIRTUAL_LIBRARIES);
+                    }
                 } else {
-                    vlibs = details.getJSONObject(RESPONSE_TAG_VIRTUAL_LIBRARIES);
+                    uuid = "";
+                    vlibs = null;
                 }
-            } else {
-                uuid = "";
-                vlibs = null;
+
+                @Nullable
+                CalibreLibrary library = null;
+                if (!uuid.isEmpty()) {
+                    library = libraryDao.findLibraryByUuid(uuid).orElse(null);
+                }
+                if (library == null) {
+                    library = libraryDao.findLibraryByStringId(libraryId).orElse(null);
+                }
+                if (library == null) {
+                    // must be a new one.
+                    library = new CalibreLibrary(uuid, libraryId, name, currentBookshelfId);
+
+                } else {
+                    // we found it by uuid or id, update it with the server info
+                    // (even if unchanged... )
+                    library.setUuid(uuid);
+                    library.setName(name);
+                }
+
+                // If we have vl info, process it
+                // If we don't; the library will keep any vl defined previously
+                if (vlibs != null) {
+                    processVirtualLibraries(libraryDao, library, vlibs);
+                }
+
+                if (library.getId() > 0) {
+                    libraryDao.update(library);
+                } else {
+                    libraryDao.insert(library);
+                }
+
+                // add to cached list
+                libraries.add(library);
+                // and set as default if it is.
+                if (libraryId.equals(defaultLibraryId)) {
+                    defaultLibrary = library;
+                }
+
+                // read the first book available to get the customs fields (if any)
+                final JSONObject result = getBookIds(library.getLibraryStringId(), 1, 0);
+                // grab the initial/current total number of books while we have it
+                library.setTotalBooks(result.optInt(RESPONSE_TAG_TOTAL_NUM));
+
+                final JSONArray calibreIds = result.optJSONArray(RESPONSE_TAG_BOOK_IDS);
+                if (calibreIds != null && !calibreIds.isEmpty()) {
+                    loadCustomFieldDefinitions(library, calibreIds.getInt(0));
+                }
             }
 
-            @Nullable
-            CalibreLibrary library = null;
-            if (!uuid.isEmpty()) {
-                library = libraryDao.findLibraryByUuid(uuid).orElse(null);
-            }
-            if (library == null) {
-                library = libraryDao.findLibraryByStringId(libraryId).orElse(null);
-            }
-            if (library == null) {
-                // must be a new one.
-                library = new CalibreLibrary(uuid, libraryId, name, currentBookshelfId);
-
-            } else {
-                // we found it by uuid or id, update it with the server info
-                // (even if unchanged... )
-                library.setUuid(uuid);
-                library.setName(name);
+            if (txLock != null) {
+                db.setTransactionSuccessful();
             }
 
-            // If we have vl info, process it
-            // If we don't; the library will keep any vl defined previously
-            if (vlibs != null) {
-                processVirtualLibraries(libraryDao, library, vlibs);
-            }
-
-            if (library.getId() > 0) {
-                libraryDao.update(library);
-            } else {
-                libraryDao.insert(library);
-            }
-
-            // add to cached list
-            libraries.add(library);
-            // and set as default if it is.
-            if (libraryId.equals(defaultLibraryId)) {
-                defaultLibrary = library;
-            }
-
-            // read the first book available to get the customs fields (if any)
-            final JSONObject result = getBookIds(library.getLibraryStringId(), 1, 0);
-            // grab the initial/current total number of books while we have it
-            library.setTotalBooks(result.optInt(RESPONSE_TAG_TOTAL_NUM));
-
-            final JSONArray calibreIds = result.optJSONArray(RESPONSE_TAG_BOOK_IDS);
-            if (calibreIds != null && !calibreIds.isEmpty()) {
-                loadCustomFieldDefinitions(library, calibreIds.getInt(0));
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
             }
         }
-
-        if (txLock != null) {
-            db.setTransactionSuccessful();
-        }
-
         // Sanity check
         Objects.requireNonNull(defaultLibrary, NULL_DEFAULT_LIBRARY);
     }
