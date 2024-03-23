@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -366,6 +366,7 @@ public class Author
      *
      * @return filtered name
      */
+    @NonNull
     private static String filterLtG(@NonNull final String name) {
         if (name.startsWith("<") && name.endsWith(">")) {
             return name.substring(1, name.length() - 1);
@@ -373,9 +374,10 @@ public class Author
         return name;
     }
 
-    private static Author createWithBrackets(@NonNull final String familyName,
-                                             @Nullable final String givenNames,
-                                             @Nullable final String bracketSection) {
+    @NonNull
+    private static Author createWithOptionalBrackets(@NonNull final String familyName,
+                                                     @Nullable final String givenNames,
+                                                     @Nullable final String bracketSection) {
         if (bracketSection == null || bracketSection.isEmpty()) {
             return new Author(familyName, givenNames);
 
@@ -477,7 +479,7 @@ public class Author
             } else {
                 // FamilyName, GivenNames
                 // no suffix, assume the names are already formatted.
-                return createWithBrackets(tmp.get(0), tmp.get(1), bracketSection);
+                return createWithOptionalBrackets(tmp.get(0), tmp.get(1), bracketSection);
             }
         }
 
@@ -485,9 +487,9 @@ public class Author
         // two easy cases
         switch (names.length) {
             case 1:
-                return createWithBrackets(names[0], "", bracketSection);
+                return createWithOptionalBrackets(names[0], "", bracketSection);
             case 2:
-                return createWithBrackets(names[1], names[0], bracketSection);
+                return createWithOptionalBrackets(names[1], names[0], bracketSection);
             default:
                 break;
         }
@@ -523,8 +525,8 @@ public class Author
         }
 
 
-        return createWithBrackets(buildFamilyName.toString(), buildGivenNames.toString(),
-                                  bracketSection);
+        return createWithOptionalBrackets(buildFamilyName.toString(), buildGivenNames.toString(),
+                                          bracketSection);
     }
 
     /**
