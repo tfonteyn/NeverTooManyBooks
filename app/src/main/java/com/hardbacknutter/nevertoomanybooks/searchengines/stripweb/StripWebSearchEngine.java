@@ -70,12 +70,27 @@ public class StripWebSearchEngine
      * Param 1: ISBN.
      */
     private static final String BY_ISBN = "/nl-nl/zoeken?type=&text=%1$s";
+
     /**
-     * A bit of a mess....
-     * /* Some titles have suffixes which we need to strip
+     *
+     * Some titles have suffixes which we need to strip.
+     * A big mess.... there is no structure on the website for these.. seems
+     * to depend on the mood of the person entering the title...
+     * However, these books are generally NOT listed under their ISBN,
+     * so unless the user enters the private site code they won't show up anyhow.
+     * <p>
+     * Entries MUST all be lowercase.
      */
-    private static final Set<String> TITLE_SUFFIXES = Set.of(" + ex lbiris SC",
-                                                             " SC");
+    private static final Set<String> TITLE_SUFFIXES = Set.of(" - met ex libris - sc",
+                                                             " - met ex libris hc",
+                                                             " - met ex libris",
+                                                             " met ex libris sc",
+                                                             " + ex libris",
+                                                             " -vip club met ex libris",
+                                                             " + ex libris gesigneerd hc",
+                                                             // typo is from website!
+                                                             " + ex lbiris sc",
+                                                             " sc");
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -349,9 +364,10 @@ public class StripWebSearchEngine
                             @NonNull final Book book) {
         final String text = SearchEngineUtils.cleanText(titleElement.text());
         if (!text.isEmpty()) {
+            final String lcText = text.toLowerCase(Locale.ROOT);
             final String title = TITLE_SUFFIXES
                     .stream()
-                    .filter(text::endsWith)
+                    .filter(lcText::endsWith)
                     .map(suffix -> text.substring(0, text.length() - suffix.length()))
                     .findAny()
                     .orElse(text);
