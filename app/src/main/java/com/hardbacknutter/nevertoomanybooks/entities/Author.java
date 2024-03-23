@@ -983,61 +983,61 @@ public class Author
     @Override
     @NonNull
     public String toString() {
-        final StringJoiner sj = new StringJoiner(",", "Type{", "}");
+        final StringJoiner sj = new StringJoiner("|", "Type{", "}");
 
         if ((type & TYPE_WRITER) != 0) {
-            sj.add("TYPE_WRITER");
+            sj.add("Author.TYPE_WRITER");
         }
         //        if ((mType & TYPE_ORIGINAL_SCRIPT_WRITER) != 0) {
         //            sj.add("TYPE_ORIGINAL_SCRIPT_WRITER");
         //        }
         if ((type & TYPE_FOREWORD) != 0) {
-            sj.add("TYPE_FOREWORD");
+            sj.add("Author.TYPE_FOREWORD");
         }
         if ((type & TYPE_AFTERWORD) != 0) {
-            sj.add("TYPE_AFTERWORD");
+            sj.add("Author.TYPE_AFTERWORD");
         }
 
 
         if ((type & TYPE_TRANSLATOR) != 0) {
-            sj.add("TYPE_TRANSLATOR");
+            sj.add("Author.TYPE_TRANSLATOR");
         }
         if ((type & TYPE_INTRODUCTION) != 0) {
-            sj.add("TYPE_INTRODUCTION");
+            sj.add("Author.TYPE_INTRODUCTION");
         }
         if ((type & TYPE_EDITOR) != 0) {
-            sj.add("TYPE_EDITOR");
+            sj.add("Author.TYPE_EDITOR");
         }
         if ((type & TYPE_CONTRIBUTOR) != 0) {
-            sj.add("TYPE_CONTRIBUTOR");
+            sj.add("Author.TYPE_CONTRIBUTOR");
         }
 
 
         if ((type & TYPE_COVER_ARTIST) != 0) {
-            sj.add("TYPE_COVER_ARTIST");
+            sj.add("Author.TYPE_COVER_ARTIST");
         }
         if ((type & TYPE_COVER_INKING) != 0) {
-            sj.add("TYPE_COVER_INKING");
+            sj.add("Author.TYPE_COVER_INKING");
         }
         if ((type & TYPE_NARRATOR) != 0) {
-            sj.add("TYPE_NARRATOR");
+            sj.add("Author.TYPE_NARRATOR");
         }
         if ((type & TYPE_COVER_COLORIST) != 0) {
-            sj.add("TYPE_COVER_COLORIST");
+            sj.add("Author.TYPE_COVER_COLORIST");
         }
 
 
         if ((type & TYPE_ARTIST) != 0) {
-            sj.add("TYPE_ARTIST");
+            sj.add("Author.TYPE_ARTIST");
         }
         if ((type & TYPE_INKING) != 0) {
-            sj.add("TYPE_INKING");
+            sj.add("Author.TYPE_INKING");
         }
         if ((type & TYPE_COLORIST) != 0) {
-            sj.add("TYPE_COLORIST");
+            sj.add("Author.TYPE_COLORIST");
         }
         if ((type & TYPE_PSEUDONYM) != 0) {
-            sj.add("TYPE_PSEUDONYM");
+            sj.add("Author.TYPE_PSEUDONYM");
         }
 
         return "Author{"
