@@ -29,10 +29,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -72,7 +74,6 @@ public class StripWebSearchEngine
     private static final String BY_ISBN = "/nl-nl/zoeken?type=&text=%1$s";
 
     /**
-     *
      * Some titles have suffixes which we need to strip.
      * A big mess.... there is no structure on the website for these.. seems
      * to depend on the mood of the person entering the title...
@@ -275,9 +276,9 @@ public class StripWebSearchEngine
                         break;
                     case "Verschijningsdatum":
                         // We've seen 'impossible' dates like "01-01-0001", "01-01-1753" ...
-                        final String text = SearchEngineUtils.cleanText(td.text());
-                        if (!text.isEmpty()) {
-                            processPublicationDate(context, getLocale(context), text, book);
+                        tmpString = SearchEngineUtils.cleanText(td.text());
+                        if (!tmpString.isEmpty()) {
+                            processPublicationDate(context, getLocale(context), tmpString, book);
                         }
                         break;
 
@@ -302,11 +303,16 @@ public class StripWebSearchEngine
                         processText(td, SiteField.SIZE, book);
                         break;
 
-                    case "Trefwoorden":
-                        // comma separated words
-                        processText(td, SiteField.KEY_WORDS, book);
+                    case "Trefwoorden": {
+                        // comma separated words but with extra whitespace we must remove
+                        final String[] split = SearchEngineUtils.cleanText(td.text())
+                                                                .split(",");
+                        tmpString = Arrays.stream(split)
+                                          .map(String::strip)
+                                          .collect(Collectors.joining(","));
+                        book.putString(SiteField.KEY_WORDS, tmpString);
                         break;
-
+                    }
                     default:
                         // Other labels which are ignored:
                         // "Collectie" seen for a "Schilderdoeken"
