@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,6 +60,9 @@ public final class FormatMapper
         MAPPINGS.put("gebonden", R.string.book_format_hardcover);
         // french - BOL
         MAPPINGS.put("couverture rigide", R.string.book_format_hardcover);
+        // french - Stripweb
+        MAPPINGS.put("relié", R.string.book_format_hardcover);
+
         // portuguese
         MAPPINGS.put("capa dura", R.string.book_format_hardcover);
 
@@ -79,6 +82,7 @@ public final class FormatMapper
 
         // ### Mid-size (a.k.a 'trade') format paperback ###
         MAPPINGS.put("tp", R.string.book_format_paperback_large);
+        MAPPINGS.put("tpb", R.string.book_format_paperback_large);
 
 
         // ### Large format softcover ###
