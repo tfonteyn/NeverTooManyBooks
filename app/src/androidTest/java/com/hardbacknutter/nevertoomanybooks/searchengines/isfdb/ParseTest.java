@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -151,8 +151,6 @@ public class ParseTest
         final TocEntry entry = toc.get(3);
         assertEquals("Into Your Tent I'll Creep", entry.getTitle());
         assertEquals(1957, entry.getFirstPublicationDate().getYearValue());
-        // don't do this, the first pub date is read as a year-string only.
-        //assertEquals("1957-01-01", entry.getFirstPublication());
         assertEquals("Russell", entry.getPrimaryAuthor().getFamilyName());
         assertEquals("Eric Frank", entry.getPrimaryAuthor().getGivenNames());
     }

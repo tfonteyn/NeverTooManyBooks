@@ -133,7 +133,7 @@ public class ParseTest
         assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST | Author.TYPE_COLORIST,
                      author.getType());
 
-        assertEquals("western, avontuur", book.getString(StripWebSearchEngine
+        assertEquals("western,avontuur", book.getString(StripWebSearchEngine
                                                                  .SiteField.KEY_WORDS));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
@@ -246,7 +246,7 @@ public class ParseTest
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
 
-        assertEquals("detective, spionage, thriller", book.getString(StripWebSearchEngine
+        assertEquals("detective,spionage,thriller", book.getString(StripWebSearchEngine
                                                                              .SiteField.KEY_WORDS));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
@@ -345,7 +345,7 @@ public class ParseTest
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        assertEquals("avonturen, thriller", book.getString(StripWebSearchEngine
+        assertEquals("avonturen,thriller", book.getString(StripWebSearchEngine
                                                                    .SiteField.KEY_WORDS));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);

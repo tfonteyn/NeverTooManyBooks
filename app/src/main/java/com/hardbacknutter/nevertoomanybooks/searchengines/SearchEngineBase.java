@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -322,7 +322,6 @@ public abstract class SearchEngineBase
         // httpGet.setRequestProperty(HttpConstants.CACHE_CONTROL, HttpConstants.CACHE_CONTROL_0);
 
 
-
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
                .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler());
@@ -485,6 +484,10 @@ public abstract class SearchEngineBase
 
     /**
      * Process the publication-date field according to the given site locale.
+     * <p>
+     * If the given date-string consists of 4 characters, it is assumed it's
+     * a year-value and the simplified form will be set on the book.
+     * Otherwise full parsing is done.
      *
      * @param context    Current context
      * @param siteLocale for parsing
@@ -497,7 +500,21 @@ public abstract class SearchEngineBase
                                        @NonNull final Book book) {
 
         if (dateStr != null && !dateStr.isBlank()) {
-            getDateParser(context, siteLocale).parse(dateStr).ifPresent(book::setPublicationDate);
+            if (dateStr.length() == 4) {
+                // we have a 4-digit year, use the simplified notation.
+                try {
+                    book.setPublicationDate(Integer.parseInt(dateStr));
+                    return;
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore and continue with full parsing
+                }
+            }
+
+            // error or not 4 digits? Do a full parse.
+            getDateParser(context, siteLocale)
+                    .parse(dateStr)
+                    .ifPresent(book::setPublicationDate);
+
         }
     }
 }

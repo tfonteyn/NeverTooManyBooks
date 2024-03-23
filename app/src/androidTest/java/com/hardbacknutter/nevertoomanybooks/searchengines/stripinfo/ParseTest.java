@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,7 +89,7 @@ public class ParseTest
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
         assertEquals("9789463064385", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2018-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -158,7 +158,7 @@ public class ParseTest
 
         assertEquals("De boom van de twee lentes", book.getString(DBKey.TITLE, null));
         assertEquals("905581315X", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2000-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -227,7 +227,7 @@ public class ParseTest
         assertEquals("Het huis van verboden geneugten",
                      book.getString(DBKey.TITLE, null));
         assertEquals("9789085522072", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2012-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2012", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -290,7 +290,7 @@ public class ParseTest
 
         assertEquals("De integrale 5", book.getString(DBKey.TITLE, null));
         assertEquals("9789055819485", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2017-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2017", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("224", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -352,7 +352,7 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Red Dust", book.getString(DBKey.TITLE, null));
-        assertEquals("1972-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1972", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -412,7 +412,7 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Spoken in de grot", book.getString(DBKey.TITLE, null));
-        assertEquals("1977-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1977", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
@@ -474,7 +474,7 @@ public class ParseTest
 
         assertEquals("9782756010830", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Le chant du pluvier", book.getString(DBKey.TITLE, null));
-        assertEquals("2009-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2009", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("172", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Frans", book.getString(DBKey.LANGUAGE, null));

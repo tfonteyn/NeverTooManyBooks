@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -235,6 +235,7 @@ public class ParseTest
         assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
         assertEquals(13.19d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        // The date is REALLY given as 1-jan.
         assertEquals("1995-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
