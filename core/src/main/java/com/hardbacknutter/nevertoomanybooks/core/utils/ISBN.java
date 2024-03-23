@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
  * An Universal Product Code (UPC) is a barcode symbology that is widely used
  * worldwide for tracking trade items in stores.
  * See <a href="https://en.wikipedia.org/wiki/Universal_Product_Code">UPC_A</a>
+ * and <a href="https://www.cbr.com/comic-book-covers-upc-meaning/">Specifics for comics</a>
  * <p>
  * An Amazon Standard Identification Number (ASIN) is a 10-character alphanumeric unique
  * identifier assigned by Amazon.com.
