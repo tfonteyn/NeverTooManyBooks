@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -777,4 +777,5 @@
     <string name="ps_sort_author_name_family_first">Ordenar primeiro pelo apelido,\npor exemplo, “de Camões, Luís”</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Atribuir estantes de livros</string>
+    <string name="site_description_dutch_comics_shopping">Holandês e mais; Banda desenhada; Compras</string>
 </resources>

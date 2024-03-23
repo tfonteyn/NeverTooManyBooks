@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearc
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -95,7 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *      <li>Add a new {@link Site} instance to the one or more list(s) in {@link #registerSites}
  *      </li>
  *
- *      <li>Optional: Add a preference fragment for the user to configure the engine.
+ *      <li>Add a preference fragment for the user to configure the engine.
  *          The class MUST be annotated with "@Keep".
  *          See the OpenLibrary engine for an simple example:
  *          a class, an xml file, and an entry in "src/main/res/xml/preferences_site_searches.xml"
@@ -242,7 +243,15 @@ public enum EngineId
                 new Locale("nl", "BE"),
                 StripInfoSearchEngine.class,
                 BuildConfig.ENABLE_STRIP_INFO),
-    ;
+
+    /** Dutch language (and to some extend other languages) comics. */
+    StripWebBe("stripweb",
+               R.string.site_stripweb_be,
+               R.string.site_info_stripweb_be,
+               "https://www.stripweb.be",
+               new Locale("nl", "BE"),
+               StripWebSearchEngine.class,
+               BuildConfig.ENABLE_STRIP_WEB);
 
     // NEWTHINGS: adding a new search engine: add an engine id definition
 
@@ -420,6 +429,10 @@ public enum EngineId
                        .setReadTimeoutMs(60_000)
                        .build();
         }
+        if (StripWebBe.isEnabled()) {
+            StripWebBe.createConfiguration()
+                      .build();
+        }
 
         // NEWTHINGS: adding a new search engine: add the search engine configuration
     }
@@ -463,6 +476,7 @@ public enum EngineId
                 type.addSite(Bedetheque, activateIfFrench);
                 type.addSite(KbNl, activateIfDutch);
                 type.addSite(Bol, activateIfDutch);
+                type.addSite(StripWebBe, activateIfDutch);
                 type.addSite(OpenLibrary, true);
                 break;
             }

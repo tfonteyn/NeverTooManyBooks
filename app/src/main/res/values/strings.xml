@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -375,6 +375,7 @@
     <string name="site_description_dutch_catalogue_eu_comics">Dutch and more; Catalogue; European Comics</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_shopping">Dutch and more; Shop</string>
+    <string name="site_description_dutch_comics_shopping">Dutch and more; Comics; Shop</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_english_catalogue">English and more; Catalogue</string>
     <!-- website info: languages; type; specifics. -->

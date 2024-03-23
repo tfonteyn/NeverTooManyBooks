@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -769,4 +769,5 @@
     <string name="ps_sort_author_name_family_first">Sortuj według nazwiska w pierwszej kolejności,\nnp. „Lem, Stanisław”</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Przypisywanie półek na książki</string>
+    <string name="site_description_dutch_comics_shopping">Niderlandzki i więcej; Komiksy; Zakupy</string>
 </resources>

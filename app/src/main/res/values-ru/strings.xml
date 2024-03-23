@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -766,4 +766,5 @@
     <string name="ps_sort_author_name_family_first">Сортировка по фамилии в первую очередь,\nнапример «Достоевский, Фёдор»</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Назначение книжных полок</string>
+    <string name="site_description_dutch_comics_shopping">Голландский и не только; комиксы; Покупки</string>
 </resources>

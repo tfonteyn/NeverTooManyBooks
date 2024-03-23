@@ -94,6 +94,7 @@ android {
         buildConfigField("boolean", "ENABLE_LAST_DODO", "true")
         buildConfigField("boolean", "ENABLE_OPEN_LIBRARY", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO", "true")
+        buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
 
         buildConfigField("boolean", "ENABLE_GOODREADS_BY_EXT_ID", "true")
         buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
@@ -120,6 +121,8 @@ android {
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
             // under development
+            buildConfigField("boolean", "ENABLE_STRIP_WEB", "false")
+            // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             // under development
             buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
@@ -141,6 +144,8 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
+            // under development
+            buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
         }
         debug {
             debuggable = true
@@ -154,6 +159,8 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
+            // under development
+            buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
             // under development

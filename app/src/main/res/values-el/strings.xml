@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -748,4 +748,5 @@
     <string name="ps_sort_author_name_family_first">Ταξινόμηση με πρώτο το επώνυμο,\nγια παράδειγμα «Παλαμάς, Κωστής»</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Αναθέστε βιβλιοθήκες</string>
+    <string name="site_description_dutch_comics_shopping">Ολλανδικά και άλλα; κόμικς; Αγορές</string>
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -1548,5 +1548,6 @@
     <string name="X_error_network_site_has_problems">Trang web không hoạt động như mong đợi.</string>
     <string name="X_info_not_authorized">Không được ủy quyền</string>
     <string name="X_info_site_authorization_successful">Ủy quyền %1$s thành công</string>
+    <string name="site_description_dutch_comics_shopping">Tiếng Hà Lan và hơn thế nữa; Truyện tranh; Mua sắm</string>
     <!-- endregion -->
 </resources>
