@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -617,12 +617,10 @@ public class LastDodoSearchEngine
         for (final Element a : td.select("a")) {
             final String name = a.text();
             final Series currentSeries = Series.from(name);
-            // check if already present
-            if (book.getSeries().stream().anyMatch(series -> series.equals(currentSeries))) {
-                return;
+            // add if not already present
+            if (book.getSeries().stream().noneMatch(series -> series.equals(currentSeries))) {
+                book.add(currentSeries);
             }
-            // just add
-            book.add(currentSeries);
         }
     }
 
@@ -637,14 +635,11 @@ public class LastDodoSearchEngine
         for (final Element a : td.select("a")) {
             final String name = SearchEngineUtils.cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
-            // check if already present
-            if (book.getPublishers().stream().anyMatch(pub -> pub.equals(currentPublisher))) {
-                return;
+            // add if not already present
+            if (book.getPublishers().stream().noneMatch(pub -> pub.equals(currentPublisher))) {
+                book.add(currentPublisher);
             }
-            // just add
-            book.add(currentPublisher);
         }
-
     }
 
     private void processType(@NonNull final Element td,
