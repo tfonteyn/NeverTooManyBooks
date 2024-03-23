@@ -48,11 +48,14 @@ Booklist style sorting by date-read or date-added etc...:
 
 ----------------------------------------------------------------------------------------------------
 
-### 5.3.3
+### 5.5.0
 
 NEW:
+- StripWebSearchEngine
 
 FIXES:
+- Calibre fix a database lock preventing imports sometimes.
+- LastDodo better handling of duplicate authors
 
 REMOVED:
 
