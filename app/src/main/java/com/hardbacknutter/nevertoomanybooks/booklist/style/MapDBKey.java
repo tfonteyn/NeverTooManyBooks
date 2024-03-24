@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,24 +38,10 @@ public final class MapDBKey {
             Map.entry(DBKey.COVER[0], DBKey.BOOK_UUID),
             Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
 
-            Map.entry(DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION),
-            Map.entry(DBKey.BOOK_ISBN, DBKey.BOOK_ISBN),
-            Map.entry(DBKey.BOOK_PUBLICATION__DATE, DBKey.BOOK_PUBLICATION__DATE),
-            Map.entry(DBKey.EDITION__BITMASK, DBKey.EDITION__BITMASK),
             Map.entry(DBKey.FK_AUTHOR, DBKey.AUTHOR_FORMATTED),
             Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF_NAME_CSV),
             Map.entry(DBKey.FK_PUBLISHER, DBKey.PUBLISHER_NAME),
-            Map.entry(DBKey.FK_SERIES, DBKey.SERIES_TITLE),
-            Map.entry(DBKey.FORMAT, DBKey.FORMAT),
-            Map.entry(DBKey.LANGUAGE, DBKey.LANGUAGE),
-            Map.entry(DBKey.LOANEE_NAME, DBKey.LOANEE_NAME),
-            Map.entry(DBKey.LOCATION, DBKey.LOCATION),
-            Map.entry(DBKey.PAGE_COUNT, DBKey.PAGE_COUNT),
-            Map.entry(DBKey.RATING, DBKey.RATING),
-            Map.entry(DBKey.READ__BOOL, DBKey.READ__BOOL),
-            Map.entry(DBKey.SIGNED__BOOL, DBKey.SIGNED__BOOL),
-            Map.entry(DBKey.TITLE, DBKey.TITLE),
-            Map.entry(DBKey.TITLE_ORIGINAL_LANG, DBKey.TITLE_ORIGINAL_LANG)
+            Map.entry(DBKey.FK_SERIES, DBKey.SERIES_TITLE)
     );
 
     private static final Map<String, Integer> DB_KEY_TO_LABEL_RES_ID = Map.ofEntries(
@@ -118,7 +104,8 @@ public final class MapDBKey {
      */
     @NonNull
     public static String getDomainName(@NonNull final String dbKey) {
-        return Objects.requireNonNull(DB_KEY_TO_DOMAIN_NAME.get(dbKey), dbKey);
+        final String domainName = DB_KEY_TO_DOMAIN_NAME.get(dbKey);
+        return Objects.requireNonNullElse(domainName, dbKey);
     }
 
     /**
