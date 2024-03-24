@@ -48,6 +48,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
+        // https://developer.android.com/studio/releases/#4-0-0-desugar
+        coreLibraryDesugaringEnabled = true
     }
 
     lint {
@@ -56,6 +59,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
+
     implementation("androidx.activity:activity:${androidxActivityVersion}")
     implementation("androidx.annotation:annotation:${androidxAnnotationVersion}")
     implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
