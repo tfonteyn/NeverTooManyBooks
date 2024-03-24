@@ -24,6 +24,9 @@ FIXME: check all cover logic where source and destination is allowed to be the s
  We should ALWAYS use a temporary file to write to, and only on success rename it to
  the actual destination file to prevent loss of original on failure.
 
+FIXME: the dialog-fragment launcher api is increasingly adding overhead.
+ It needs to be replaced by ViewModel sharing on Activity level.
+
  ENHANCE: add rotating functions to the cropper activity. This would allow
   multi-rotate-undo by simply quiting the cropper.
 ----------------------------------------------------------------------------------------------------

@@ -705,6 +705,7 @@ public class ShowBookDetailsFragment
                 updateMenuLendingOptions(getToolbar().getMenu());
             }
 
+            // needed when running in embedded mode to update the BoB list
             if (bookChangedListener != null) {
                 bookChangedListener.onBookUpdated(book, DBKey.LOANEE_NAME);
             }
@@ -719,8 +720,8 @@ public class ShowBookDetailsFragment
                 vm.deleteBook();
                 aVm.setDataModified();
 
+                // needed when running in embedded mode to update the BoB list
                 if (bookChangedListener != null) {
-                    // explicitly tell the listener WHICH book we deleted.
                     bookChangedListener.onBookDeleted(bookIdDeleted);
 
                 } else {

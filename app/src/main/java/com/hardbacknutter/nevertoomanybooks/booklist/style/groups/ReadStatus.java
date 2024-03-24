@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  * <ul>
  * <li>Reading: most interesting</li>
  * <li>Unread</li>
- * <li>Reading: least interesting</li>
+ * <li>Read: least interesting</li>
  * </ul>
  * The numerical value {@link #id} is used in SQL but not stored other than in the
  * temporary book-list table.
@@ -56,7 +56,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  */
 public enum ReadStatus
         implements Entity {
-    /** Currently reading - the read-start-date is set, the read-end-date is not. */
+    /**
+     * Currently reading - the read-start-date is set, the read-end-date is not.
+     */
     Reading(1, R.string.lbl_reading),
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#DOM_BOOK_READ}
