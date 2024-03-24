@@ -609,10 +609,13 @@
     <string name="lbl_author_type_artist">Illustrations</string>
     <string name="lbl_author_type_inking">Inking</string>
     <string name="lbl_author_type_colorist">Colorist</string>
+    <string name="lbl_author_type_storyboard">Storyboard</string>
+    <string name="lbl_author_type_lettering">Lettering</string>
     <!-- Cover art / Cover illustration -->
     <string name="lbl_author_type_cover_artist">Cover art</string>
     <string name="lbl_author_type_cover_inking">Cover inking</string>
     <string name="lbl_author_type_cover_colorist">Cover colorist</string>
+
     <!-- endregion -->
     <!-- region ========== Options - radio, checkbox, preferences or menus. -->
     <!-- Move covers from one storage device to another (e.g. internal to sdcard) -->

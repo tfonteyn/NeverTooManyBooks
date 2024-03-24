@@ -753,4 +753,6 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Attribuer des étagères</string>
     <string name="site_description_dutch_comics_shopping">Néerlandais et plus ; Bandes dessinées; Shopping</string>
+    <string name="lbl_author_type_storyboard">"Scénarimage "</string>
+    <string name="lbl_author_type_lettering">Lettrage</string>
 </resources>

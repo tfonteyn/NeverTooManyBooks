@@ -1549,5 +1549,7 @@
     <string name="X_info_not_authorized">Không được ủy quyền</string>
     <string name="X_info_site_authorization_successful">Ủy quyền %1$s thành công</string>
     <string name="site_description_dutch_comics_shopping">Tiếng Hà Lan và hơn thế nữa; Truyện tranh; Mua sắm</string>
+    <string name="lbl_author_type_storyboard">Cốt truyện</string>
+    <string name="lbl_author_type_lettering">Chữ viết</string>
     <!-- endregion -->
 </resources>

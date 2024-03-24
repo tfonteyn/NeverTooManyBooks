@@ -757,4 +757,6 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Kitap raflarını atayın</string>
     <string name="site_description_dutch_comics_shopping">Hollandaca ve daha fazlası; Çizgi Romanları; Alışveriş</string>
+    <string name="lbl_author_type_storyboard">Film şeridi</string>
+    <string name="lbl_author_type_lettering">Yazıları</string>
 </resources>

@@ -748,4 +748,6 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Bücherregale zuweisen</string>
     <string name="site_description_dutch_comics_shopping">Niederländisch und mehr; Comics; Einkaufen</string>
+    <string name="lbl_author_type_storyboard">"Drehbuch "</string>
+    <string name="lbl_author_type_lettering">Beschriftung</string>
 </resources>

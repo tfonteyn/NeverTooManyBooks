@@ -762,4 +762,6 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Asignar estanterías</string>
     <string name="site_description_dutch_comics_shopping">Holandés y más; Cómics; Compras</string>
+    <string name="lbl_author_type_storyboard">Guión gráfico</string>
+    <string name="lbl_author_type_lettering">Letras</string>
 </resources>

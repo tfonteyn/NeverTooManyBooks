@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -162,7 +162,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
-            app:constraint_referenced_ids="cbx_author_type_writer,cbx_author_type_intro,cbx_author_type_contributor,cbx_author_type_translator,cbx_author_type_editor,cbx_author_type_narrator,cbx_author_type_artist,cbx_author_type_inking,cbx_author_type_colorist,cbx_author_type_cover_artist,cbx_author_type_cover_inking,cbx_author_type_cover_colorist"
+            app:constraint_referenced_ids="cbx_author_type_writer,cbx_author_type_intro,cbx_author_type_contributor,cbx_author_type_translator,cbx_author_type_editor,cbx_author_type_narrator,cbx_author_type_artist,cbx_author_type_inking,cbx_author_type_colorist,cbx_author_type_cover_artist,cbx_author_type_cover_inking,cbx_author_type_cover_colorist,cbx_author_type_storyboard,cbx_author_type_lettering"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0.5"
             app:flow_horizontalGap="@dimen/field_margin_inline"
@@ -245,6 +245,18 @@
             android:id="@+id/cbx_author_type_cover_colorist"
             style="@style/AuthorStyleCheckBox"
             android:text="@string/lbl_author_type_cover_colorist"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_storyboard"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_storyboard"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_lettering"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_lettering"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout

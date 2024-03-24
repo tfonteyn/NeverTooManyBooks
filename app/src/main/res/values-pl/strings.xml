@@ -770,4 +770,6 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Przypisywanie półek na książki</string>
     <string name="site_description_dutch_comics_shopping">Niderlandzki i więcej; Komiksy; Zakupy</string>
+    <string name="lbl_author_type_storyboard">Scenorys</string>
+    <string name="lbl_author_type_lettering">Lettering</string>
 </resources>

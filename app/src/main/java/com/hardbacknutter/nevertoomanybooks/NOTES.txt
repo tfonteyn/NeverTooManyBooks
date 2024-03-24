@@ -52,6 +52,7 @@ Booklist style sorting by date-read or date-added etc...:
 
 NEW:
 - StripWebSearchEngine
+- Author types added: storyboard, lettering
 
 FIXES:
 - Calibre fix a database lock preventing imports sometimes.

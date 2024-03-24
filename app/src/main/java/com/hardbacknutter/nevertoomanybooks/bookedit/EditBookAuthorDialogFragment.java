@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -186,6 +186,8 @@ public class EditBookAuthorDialogFragment
         typeButtons.put(Author.TYPE_ARTIST, vb.cbxAuthorTypeArtist);
         typeButtons.put(Author.TYPE_INKING, vb.cbxAuthorTypeInking);
         typeButtons.put(Author.TYPE_COLORIST, vb.cbxAuthorTypeColorist);
+        typeButtons.put(Author.TYPE_STORYBOARD, vb.cbxAuthorTypeStoryboard);
+        typeButtons.put(Author.TYPE_LETTERING, vb.cbxAuthorTypeLettering);
 
         typeButtons.put(Author.TYPE_COVER_ARTIST, vb.cbxAuthorTypeCoverArtist);
         typeButtons.put(Author.TYPE_COVER_INKING, vb.cbxAuthorTypeCoverInking);

@@ -87,6 +87,7 @@ public class Author
             return new Author[size];
         }
     };
+
     /** Generic Author; the default. A single person created the book. */
     public static final int TYPE_UNKNOWN = 0;
 
@@ -98,10 +99,11 @@ public class Author
      * WRITER: primary or only writer. i.e. in contrast to any of the below.
      */
     public static final int TYPE_WRITER = 1;
+
     /**
      * WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1;
      * <p>
-     * <strong>Dev. note:</strong> do NOT Do not set "= TYPE_WRITER"
+     * <strong>Dev. note:</strong> do NOT set "= TYPE_WRITER"
      * as Android Studio formatting will be [censored]
      * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
      */
@@ -140,8 +142,8 @@ public class Author
     /** ARTIST: art work inking (if different from above). */
     public static final int TYPE_INKING = 1 << 13;
 
-    // unused for now
-    // public static final int TYPE_ = 1 << 14;
+    /** WRITER/ARTIST: for comics and movies. */
+    public static final int TYPE_STORYBOARD = 1 << 14;
 
     /** COLOR: internal colorist. */
     public static final int TYPE_COLORIST = 1 << 15;
@@ -155,6 +157,9 @@ public class Author
     @Deprecated
     public static final int TYPE_PSEUDONYM = 1 << 16;
 
+    /** Comics only. */
+    public static final int TYPE_LETTERING = 1 << 17;
+
     /**
      * All valid bits for the type.
      * NEWTHINGS: author type: add to the mask
@@ -164,7 +169,8 @@ public class Author
             | TYPE_WRITER | TYPE_ORIGINAL_SCRIPT_WRITER | TYPE_FOREWORD | TYPE_AFTERWORD
             | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
             | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_NARRATOR | TYPE_COVER_COLORIST
-            | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST | TYPE_PSEUDONYM;
+            | TYPE_ARTIST | TYPE_INKING | TYPE_STORYBOARD | TYPE_COLORIST
+            | TYPE_PSEUDONYM | TYPE_LETTERING;
 
     /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
@@ -249,6 +255,8 @@ public class Author
         TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
         TYPES.put(TYPE_INKING, R.string.lbl_author_type_inking);
         TYPES.put(TYPE_COLORIST, R.string.lbl_author_type_colorist);
+        TYPES.put(TYPE_STORYBOARD, R.string.lbl_author_type_storyboard);
+        TYPES.put(TYPE_LETTERING, R.string.lbl_author_type_lettering);
 
         TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_author_type_cover_artist);
         TYPES.put(TYPE_COVER_INKING, R.string.lbl_author_type_cover_inking);
@@ -1000,7 +1008,6 @@ public class Author
             sj.add("Author.TYPE_AFTERWORD");
         }
 
-
         if ((type & TYPE_TRANSLATOR) != 0) {
             sj.add("Author.TYPE_TRANSLATOR");
         }
@@ -1013,7 +1020,6 @@ public class Author
         if ((type & TYPE_CONTRIBUTOR) != 0) {
             sj.add("Author.TYPE_CONTRIBUTOR");
         }
-
 
         if ((type & TYPE_COVER_ARTIST) != 0) {
             sj.add("Author.TYPE_COVER_ARTIST");
@@ -1028,20 +1034,25 @@ public class Author
             sj.add("Author.TYPE_COVER_COLORIST");
         }
 
-
         if ((type & TYPE_ARTIST) != 0) {
             sj.add("Author.TYPE_ARTIST");
         }
         if ((type & TYPE_INKING) != 0) {
             sj.add("Author.TYPE_INKING");
         }
+        if ((type & TYPE_STORYBOARD) != 0) {
+            sj.add("Author.TYPE_STORYBOARD");
+        }
         if ((type & TYPE_COLORIST) != 0) {
             sj.add("Author.TYPE_COLORIST");
         }
+
         if ((type & TYPE_PSEUDONYM) != 0) {
             sj.add("Author.TYPE_PSEUDONYM");
         }
-
+        if ((type & TYPE_LETTERING) != 0) {
+            sj.add("Author.TYPE_LETTERING");
+        }
         return "Author{"
                + "id=" + id
                + ", familyName=`" + familyName + '`'
@@ -1058,7 +1069,8 @@ public class Author
                     TYPE_WRITER, TYPE_FOREWORD, TYPE_AFTERWORD,
                     TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
                     TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_NARRATOR, TYPE_COVER_COLORIST,
-                    TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST, TYPE_PSEUDONYM
+                    TYPE_ARTIST, TYPE_INKING, TYPE_STORYBOARD, TYPE_COLORIST,
+                    TYPE_PSEUDONYM, TYPE_LETTERING
             })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
