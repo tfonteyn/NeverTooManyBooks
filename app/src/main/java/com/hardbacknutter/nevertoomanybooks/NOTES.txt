@@ -69,16 +69,3 @@ ISFDB:
 // Problem: if it's the real-author anyhow, then loading
 // that url can become very slow if the author has many books.
 // Alternative: lookup Author names individually.
-
-Amazon
-// not available
-
-Google books
-// not available
-
-openlibrary
-// no structured data
-
-----------------------------------------------------------------------------------------------------
-Seems we're mirrored/listed on:
-https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks
