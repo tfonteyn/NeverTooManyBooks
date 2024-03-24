@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -706,7 +703,8 @@
     <string name="pt_search_show_shopping_options">Alışveriş menülerini göster</string>
     <string name="lbl_author_pseudonym_of_X">ta. %1$s</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
-    <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir.\nİngilizce örnek: “Lord of The Rings, The”.</string>
+    <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir.
+\nİngilizce örnek: “Lord of The Rings, The”.</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
     <string name="ps_show_titles_reordered_off">Yalnızca makalelerin kullanıldığı diller için geçerlidir.\nİngilizce örnek: “The Lord of The Rings”.</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. MUST be set to a single vertical bar character. -->
