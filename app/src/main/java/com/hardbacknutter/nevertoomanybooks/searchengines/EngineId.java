@@ -244,7 +244,12 @@ public enum EngineId
                 StripInfoSearchEngine.class,
                 BuildConfig.ENABLE_STRIP_INFO),
 
-    /** Dutch language (and to some extend other languages) comics. */
+    /**
+     * Dutch language (and to some extend other languages) comics.
+     * The site can be accessed in Dutch,French,English. We use the Dutch site for access.
+     * The main reason for this one is having access to current list-prices;
+     * otherwise the recommendation is to use {@link #StripInfoBe} and {@link #LastDodoNl}.
+     */
     StripWebBe("stripweb",
                R.string.site_stripweb_be,
                R.string.site_info_stripweb_be,
@@ -470,14 +475,15 @@ public enum EngineId
                 type.addSite(GoogleBooks, true);
                 type.addSite(Isfdb, true);
                 type.addSite(BookFinder, true);
+                type.addSite(OpenLibrary, true);
 
                 type.addSite(StripInfoBe, activateIfDutch);
                 type.addSite(LastDodoNl, activateIfDutch);
+                type.addSite(StripWebBe, activateIfDutch);
                 type.addSite(Bedetheque, activateIfFrench);
+
                 type.addSite(KbNl, activateIfDutch);
                 type.addSite(Bol, activateIfDutch);
-                type.addSite(StripWebBe, activateIfDutch);
-                type.addSite(OpenLibrary, true);
                 break;
             }
             case Covers: {
@@ -596,6 +602,11 @@ public enum EngineId
         return new SearchEngineConfig.Builder(this);
     }
 
+    /**
+     * Get the preference key / generic string identifier for this engine.
+     *
+     * @return key
+     */
     @NonNull
     public String getPreferenceKey() {
         return key;
