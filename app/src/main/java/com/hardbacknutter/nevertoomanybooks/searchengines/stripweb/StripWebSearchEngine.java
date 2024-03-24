@@ -174,7 +174,7 @@ public class StripWebSearchEngine
             final Element urlElement = section.selectFirst("a");
             if (urlElement != null) {
                 String url = urlElement.attr("href");
-                // sanity check - it normally does NOT have the protocol/site part
+                // sanity check
                 if (url.startsWith("/")) {
                     url = getHostUrl(context) + url;
                 }
@@ -241,21 +241,18 @@ public class StripWebSearchEngine
         //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;
 
-        String tmpString;
-
         for (final Element divRows : techInfoSection.select("div")) {
             final Element th = divRows.selectFirst("strong");
             final Element td = divRows.selectFirst("span");
             if (th != null && td != null) {
                 switch (th.text()) {
-                    case "ISBN nummer":
-                        tmpString = td.text();
-                        tmpString = ISBN.cleanText(tmpString);
-                        if (!tmpString.isEmpty()) {
-                            book.putString(DBKey.BOOK_ISBN, tmpString);
+                    case "ISBN nummer": {
+                        final String text = ISBN.cleanText(td.text());
+                        if (!text.isEmpty()) {
+                            book.putString(DBKey.BOOK_ISBN, text);
                         }
                         break;
-
+                    }
                     case "Pagina's":
                         processText(td, DBKey.PAGE_COUNT, book);
                         break;
@@ -274,14 +271,13 @@ public class StripWebSearchEngine
                     case "Genre":
                         processText(td, DBKey.GENRE, book);
                         break;
-                    case "Verschijningsdatum":
-                        // We've seen 'impossible' dates like "01-01-0001", "01-01-1753" ...
-                        tmpString = SearchEngineUtils.cleanText(td.text());
-                        if (!tmpString.isEmpty()) {
-                            processPublicationDate(context, getLocale(context), tmpString, book);
+                    case "Verschijningsdatum": {
+                        final String text = SearchEngineUtils.cleanText(td.text());
+                        if (!text.isEmpty()) {
+                            processPublicationDate(context, getLocale(context), text, book);
                         }
                         break;
-
+                    }
                     case "Tekenaars":
                         processAuthor(td, Author.TYPE_ARTIST, book);
                         break;
@@ -298,7 +294,6 @@ public class StripWebSearchEngine
                         processPublisher(td, book);
                         break;
 
-
                     case "Afmetingen":
                         processText(td, SiteField.SIZE, book);
                         break;
@@ -307,10 +302,10 @@ public class StripWebSearchEngine
                         // comma separated words but with extra whitespace we must remove
                         final String[] split = SearchEngineUtils.cleanText(td.text())
                                                                 .split(",");
-                        tmpString = Arrays.stream(split)
-                                          .map(String::strip)
-                                          .collect(Collectors.joining(","));
-                        book.putString(SiteField.KEY_WORDS, tmpString);
+                        final String text = Arrays.stream(split)
+                                                  .map(String::strip)
+                                                  .collect(Collectors.joining(","));
+                        book.putString(SiteField.KEY_WORDS, text);
                         break;
                     }
                     default:
@@ -421,7 +416,7 @@ public class StripWebSearchEngine
         final Element desc = document.selectFirst("div.txt-product");
         if (desc != null) {
             String html = desc.html();
-            // Potentially contains an iframe (e.g. to youtube content); strip that out.
+            // Potentially contains an iframe (e.g. to youtube content); remove it.
             final int iStart = html.indexOf("<iframe");
             if (iStart > 0) {
                 final int iEnd = html.indexOf("</iframe>");
