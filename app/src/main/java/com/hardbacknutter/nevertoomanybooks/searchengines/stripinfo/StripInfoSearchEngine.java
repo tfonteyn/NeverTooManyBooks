@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -418,6 +418,14 @@ public class StripInfoSearchEngine
 
                                 case "Vertaling":
                                     i += processAuthor(td, Author.TYPE_TRANSLATOR, book);
+                                    break;
+
+                                case "Storyboard":
+                                    i += processAuthor(td, Author.TYPE_STORYBOARD, book);
+                                    break;
+
+                                case "Lettering":
+                                    i += processAuthor(td, Author.TYPE_LETTERING, book);
                                     break;
 
                                 case "Uitgever(s)":
