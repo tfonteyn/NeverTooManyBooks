@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -58,6 +58,7 @@
         android:id="@+id/note"
         style="@style/Text.Body"
         android:text="@string/warning_immediate_global_changes"
+        android:maxLines="2"
         android:textAppearance="?attr/textAppearanceBodySmall"
         app:layout_constraintStart_toStartOf="@id/lbl_publisher_name"
         app:layout_constraintTop_toBottomOf="@id/lbl_publisher_name"
