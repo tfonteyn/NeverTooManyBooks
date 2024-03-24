@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -36,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -414,23 +414,35 @@ public class SearchCoordinator
     private Book accumulateResults(@NonNull final Context context) {
 
         final Book book = new Book();
+        final List<EngineId> sitesInOrder;
 
-        final Set<EngineId> activeEngines = allSites
-                .stream()
-                .filter(Site::isActive)
-                .map(Site::getEngineId)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        // 2023-04-21: bugfix: We MUST merge with engine keys for which results were found.
-        // We need to do this when the user was for example
-        // searching by native-web-id on a site which was NOT on the active list.
-        // We use this somewhat convoluted method to make sure the priority order is kept.
-        // Keep in mind that the results are NOT ordered by priority, but, at this point,
-        // by order in which the engines completed the searches.
-        activeEngines.addAll(resultsByEngineId.keySet());
+        // Determine the set of sites for which we have results in the order the search completed
+        final Set<EngineId> completedOrder = determineCompletedOrder();
 
         // Now convert the 'completed' order to the 'best' order
-        final Map<Locale, Book> results = determineOrder(context, activeEngines, book);
+        if (isbn.isValid(strictIsbn)) {
+            // When searching by ISBN, determine the best order use the site-data found.
+            sitesInOrder = determineBestOrder(completedOrder);
+            // Add the ISBN we initially searched for.
+            // This avoids overwriting with a potentially different isbn from the sites
+            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
+        } else {
+            // We did not have an ISBN as a search criteria; use the default order
+            sitesInOrder = new ArrayList<>(completedOrder);
+        }
+
+        // Filter the results so we end up with the non-null and 'present' results only,
+        // and convert the list to an ORDERED map with SearchEngine/Data pairs
+        //noinspection DataFlowIssue
+        final List<Pair<Locale, Book>> results = sitesInOrder
+                .stream()
+                .map(resultsByEngineId::get)
+                .filter(Objects::nonNull)
+                .filter(result -> result.getResult().isPresent())
+                .map(searchResult -> new Pair<>(
+                        engineCache.get(searchResult.getEngineId()).getLocale(context),
+                        searchResult.getResult().get()))
+                .collect(Collectors.toList());
 
         // Merge the data we have in the order as decided upon above.
         // no synchronized needed, at this point all other threads have finished.
@@ -452,88 +464,83 @@ public class SearchCoordinator
     }
 
     /**
+     * Determine the set of sites for which we have results.
+     *
+     * @return sites ordered by completion time.
+     */
+    @NonNull
+    private Set<EngineId> determineCompletedOrder() {
+        final Set<EngineId> completedOrder = allSites
+                .stream()
+                .filter(Site::isActive)
+                .map(Site::getEngineId)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // 2023-04-21: bugfix: We MUST merge with engine keys for which results were found.
+        // We need to do this when the user was for example searching by native-web-id
+        // on a site which was NOT on the active list.
+        // We use this somewhat convoluted method to make sure the priority order is kept.
+        // Keep in mind that the results are NOT ordered by 'best order' YET, but in the order
+        // in which the engines completed the searches.
+        completedOrder.addAll(resultsByEngineId.keySet());
+        return completedOrder;
+    }
+
+
+    /**
      * Determine the order in which to apply the results from the list of sites.
      * <p>
      * The order will be based on the site order as set by the user AND the actual results.
      *
-     * @param context       Current context
      * @param activeEngines all engines we searched
-     * @param book          to access/set the ISBN of.
      *
-     * @return an ordered Map of Locale/Book's we found in the 'best' order for further processing
+     * @return the list of sites in the 'best' order for further processing
      */
     @NonNull
-    private Map<Locale, Book> determineOrder(@NonNull final Context context,
-                                             @NonNull final Set<EngineId> activeEngines,
-                                             @NonNull final Book book) {
-
+    private List<EngineId> determineBestOrder(@NonNull final Set<EngineId> activeEngines) {
         final List<EngineId> sitesInOrder = new ArrayList<>();
+        final Collection<EngineId> sitesWithoutIsbn = new ArrayList<>();
 
-        if (isbn.isValid(strictIsbn)) {
-            final Collection<EngineId> sitesWithoutIsbn = new ArrayList<>();
+        activeEngines.forEach(engineId -> {
+            // no synchronized needed, at this point all other threads have finished.
+            final SearchResult siteData = resultsByEngineId.get(engineId);
+            if (siteData != null) {
+                siteData.getResult().ifPresent(result -> {
 
-            activeEngines.forEach(engineId -> {
-                // no synchronized needed, at this point all other threads have finished.
-                final SearchResult siteData = resultsByEngineId.get(engineId);
-                if (siteData != null) {
-                    siteData.getResult().ifPresent(result -> {
+                    if (siteData.getSearchBy() == SearchEngine.SearchBy.ExternalId
+                        && !strictIsbn) {
+                        // We searched by website id and didn't insist on an exact ISBN
+                        // so we SHOULD be pretty sure about the data...
+                        sitesInOrder.add(engineId);
 
-                        if (siteData.getSearchBy() == SearchEngine.SearchBy.ExternalId
-                            && !strictIsbn) {
-                            // We searched by website id and didn't insist on an exact ISBN
-                            // so we SHOULD be pretty sure about the data...
+                    } else if (result.contains(DBKey.BOOK_ISBN)) {
+                        // We did a general search with an ISBN; check if it matches
+                        final String isbnFound = result.getString(DBKey.BOOK_ISBN, null);
+                        if (isbnFound != null && !isbnFound.isEmpty()
+                            && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
                             sitesInOrder.add(engineId);
-
-                        } else if (result.contains(DBKey.BOOK_ISBN)) {
-                            // We did a general search with an ISBN; check if it matches
-                            final String isbnFound = result.getString(DBKey.BOOK_ISBN, null);
-                            if (isbnFound != null && !isbnFound.isEmpty()
-                                && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
-                                sitesInOrder.add(engineId);
-                            } else {
-                                // The ISBN found does not match the ISBN we searched for;
-                                // 2023-05-30: don't just skip; add it to the less reliables
-                                sitesWithoutIsbn.add(engineId);
-                            }
-
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                                LoggerFactory.getLogger().d(TAG, "accumulateResults",
-                                                            "isbn=" + isbn,
-                                                            "isbnFound=" + isbnFound);
-                            }
                         } else {
-                            // The result did not have an ISBN at all.
+                            // The ISBN found does not match the ISBN we searched for;
+                            // 2023-05-30: don't just skip; add it to the less reliables
                             sitesWithoutIsbn.add(engineId);
                         }
-                    });
-                }
-            });
 
-            // now add the less reliable ones at the end of the list.
-            sitesInOrder.addAll(sitesWithoutIsbn);
-            // Add the ISBN we initially searched for.
-            // This avoids overwriting with a potentially different isbn from the sites
-            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            LoggerFactory.getLogger().d(TAG, "accumulateResults",
+                                                        "isbn=" + isbn,
+                                                        "isbnFound=" + isbnFound);
+                        }
+                    } else {
+                        // The result did not have an ISBN at all.
+                        sitesWithoutIsbn.add(engineId);
+                    }
+                });
+            }
+        });
 
-        } else {
-            // We did not have an ISBN as a search criteria; use the default order
-            sitesInOrder.addAll(activeEngines);
-        }
-
-        //noinspection DataFlowIssue
-        return sitesInOrder
-                .stream()
-                .map(resultsByEngineId::get)
-                .filter(Objects::nonNull)
-                .filter(result -> result.getResult().isPresent())
-                // We now have non-null and 'present' results,
-                // create the ORDERED map with Locale/Book we found for that each engine
-                .collect(Collectors.toMap(
-                        searchResult -> engineCache.get(searchResult.getEngineId())
-                                                   .getLocale(context),
-                        searchResult -> searchResult.getResult().get(),
-                        (existingKey, replacement) -> existingKey,
-                        LinkedHashMap::new));
+        // finally add the less reliable ones at the end of the list.
+        sitesInOrder.addAll(sitesWithoutIsbn);
+        return sitesInOrder;
     }
 
     @Override

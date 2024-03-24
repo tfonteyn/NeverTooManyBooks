@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,13 +25,13 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -120,14 +120,16 @@ class ResultsAccumulator {
      *  also handle that here.
      *
      * @param context Current context
-     * @param results ordered Map of Locale/Book to process
+     * @param results list of Locale/Book data to process
      * @param book    to update; this is the Book which will be returned as
      *                the final result for this search.
      */
     void process(@NonNull final Context context,
-                 @NonNull final Map<Locale, Book> results,
+                 @NonNull final List<Pair<Locale, Book>> results,
                  @NonNull final Book book) {
-        results.forEach((locale, result) -> {
+        results.forEach(localeBookPair -> {
+            final Locale locale = localeBookPair.first;
+            final Book result = localeBookPair.second;
             final List<Locale> locales = LocaleListUtils.asList(context, locale);
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
             final DateParser dateParser = new FullDateParser(systemLocale, locales);

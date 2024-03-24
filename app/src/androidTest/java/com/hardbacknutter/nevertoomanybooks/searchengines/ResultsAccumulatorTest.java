@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,10 +23,9 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -403,15 +402,10 @@ public class ResultsAccumulatorTest
                 new ResultsAccumulator(context, systemLocale,
                                        serviceLocator::getLanguages);
 
-        final Map<Locale, Book> results = new LinkedHashMap<>();
-        Pair<Locale, Book> localeBookPair;
-
-        localeBookPair = create01();
-        results.put(localeBookPair.first, localeBookPair.second);
-        localeBookPair = create02();
-        results.put(localeBookPair.first, localeBookPair.second);
-        localeBookPair = create03();
-        results.put(localeBookPair.first, localeBookPair.second);
+        final List<Pair<Locale, Book>> results = new ArrayList<>();
+        results.add(create01());
+        results.add(create02());
+        results.add(create03());
 
         final Book book = new Book();
         book.putString(DBKey.BOOK_ISBN, SEARCH_ISBN);
