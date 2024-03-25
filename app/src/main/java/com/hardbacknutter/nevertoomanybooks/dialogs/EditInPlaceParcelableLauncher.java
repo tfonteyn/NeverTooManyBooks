@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,10 @@ import java.util.function.Supplier;
 public class EditInPlaceParcelableLauncher<T extends Parcelable>
         extends EditLauncher {
 
+    private static final String TAG = "EditInPlaceParcelableLa";
+
+    private static final String MODIFIED = TAG + ":m";
+
     @NonNull
     private final OnModifiedCallback<T> onModifiedCallback;
 
@@ -75,15 +79,10 @@ public class EditInPlaceParcelableLauncher<T extends Parcelable>
      * @param item to edit
      */
     public void launch(@NonNull final T item) {
-        Objects.requireNonNull(fragmentManager, "fragmentManager");
-
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putParcelable(BKEY_ITEM, item);
 
-        final DialogFragment dialogFragment = dialogFragmentSupplier.get();
-        dialogFragment.setArguments(args);
-        dialogFragment.show(fragmentManager, TAG);
+        createDialog(args);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -27,30 +29,44 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public abstract class EditLauncher
         implements FragmentResultListener {
 
-    protected static final String TAG = "EditLauncher";
+    private static final String TAG = "EditLauncher";
 
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
     public static final String BKEY_ITEM = TAG + ":item";
 
-    static final String ORIGINAL = TAG + ":o";
-    static final String MODIFIED = TAG + ":m";
-
     /** FragmentResultListener request key to use for our response. */
-    protected final String requestKey;
+    private final String requestKey;
     @NonNull
-    final Supplier<DialogFragment> dialogFragmentSupplier;
+    private final Supplier<DialogFragment> dialogFragmentSupplier;
     @Nullable
-    protected FragmentManager fragmentManager;
+    private FragmentManager fragmentManager;
 
-    EditLauncher(@NonNull final String requestKey,
-                 @NonNull final Supplier<DialogFragment> dialogSupplier) {
+    /**
+     * Constructor.
+     *
+     * @param requestKey     FragmentResultListener request key to use for our response.
+     * @param dialogSupplier a supplier for a new DialogFragment
+     */
+    protected EditLauncher(@NonNull final String requestKey,
+                           @NonNull final Supplier<DialogFragment> dialogSupplier) {
         this.requestKey = requestKey;
         this.dialogFragmentSupplier = dialogSupplier;
+    }
+
+    protected void createDialog(@NonNull final Bundle args) {
+        Objects.requireNonNull(fragmentManager, "fragmentManager");
+
+        args.putString(BKEY_REQUEST_KEY, requestKey);
+
+        final DialogFragment dialogFragment = dialogFragmentSupplier.get();
+        dialogFragment.setArguments(args);
+        dialogFragment.show(fragmentManager, TAG);
     }
 
     public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,

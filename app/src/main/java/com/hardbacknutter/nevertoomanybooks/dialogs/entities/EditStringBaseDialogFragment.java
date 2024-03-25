@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,12 +82,12 @@ public abstract class EditStringBaseDialogFragment
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
                 args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
-        originalText = args.getString(EditLauncher.BKEY_ITEM, "");
+        originalText = args.getString(EditStringLauncher.BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
             currentText = originalText;
         } else {
-            currentText = savedInstanceState.getString(EditLauncher.BKEY_ITEM, "");
+            currentText = savedInstanceState.getString(EditStringLauncher.BKEY_TEXT, "");
         }
     }
 
@@ -183,7 +183,7 @@ public abstract class EditStringBaseDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EditLauncher.BKEY_ITEM, currentText);
+        outState.putString(EditStringLauncher.BKEY_TEXT, currentText);
     }
 
     @Override

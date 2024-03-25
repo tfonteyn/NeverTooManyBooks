@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,8 +50,13 @@ import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
  *
  * @param <T> type of editable object
  */
-public abstract class EditParcelableLauncher<T extends Parcelable>
+public class EditParcelableLauncher<T extends Parcelable>
         extends EditLauncher {
+
+    private static final String TAG = "EditParcelableLauncher";
+
+    private static final String ORIGINAL = TAG + ":o";
+    private static final String MODIFIED = TAG + ":m";
 
     protected EditParcelableLauncher(@NonNull final String requestKey,
                                      @NonNull final Supplier<DialogFragment> dialogSupplier) {
@@ -103,16 +108,11 @@ public abstract class EditParcelableLauncher<T extends Parcelable>
      */
     public void launch(@NonNull final EditAction action,
                        @NonNull final T item) {
-        Objects.requireNonNull(fragmentManager, "fragmentManager");
-
         final Bundle args = new Bundle(3);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putParcelable(EditAction.BKEY, action);
         args.putParcelable(BKEY_ITEM, item);
 
-        final DialogFragment dialogFragment = dialogFragmentSupplier.get();
-        dialogFragment.setArguments(args);
-        dialogFragment.show(fragmentManager, TAG);
+        createDialog(args);
     }
 
     @Override

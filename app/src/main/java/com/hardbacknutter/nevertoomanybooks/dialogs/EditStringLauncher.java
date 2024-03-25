@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,9 +40,27 @@ import java.util.function.Supplier;
 public class EditStringLauncher
         extends EditLauncher {
 
+    private static final String TAG = "EditStringLauncher";
+
+    /** Input value: the text (String) to edit. */
+    public static final String BKEY_TEXT = TAG + ":text";
+
+    /** Return value: the original text. i.e. what was passed in using {@link #BKEY_TEXT}. */
+    private static final String ORIGINAL = TAG + ":o";
+    /** Return value: the modified text. */
+    private static final String MODIFIED = TAG + ":m";
+
     @NonNull
     private final OnModifiedCallback onModifiedCallback;
 
+    /**
+     * Constructor.
+     *
+     * @param requestKey         FragmentResultListener request key to use for our response.
+     *                           Typically the {@code DBKey} for the column we're editing
+     * @param dialogSupplier     a supplier for a new DialogFragment
+     * @param onModifiedCallback callback for results
+     */
     public EditStringLauncher(@NonNull final String requestKey,
                               @NonNull final Supplier<DialogFragment> dialogSupplier,
                               @NonNull final OnModifiedCallback onModifiedCallback) {
@@ -66,15 +84,10 @@ public class EditStringLauncher
      * @param text to edit.
      */
     public void launch(@NonNull final String text) {
-        Objects.requireNonNull(fragmentManager, "fragmentManager");
-
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putString(BKEY_ITEM, text);
+        args.putString(BKEY_TEXT, text);
 
-        final DialogFragment dialogFragment = dialogFragmentSupplier.get();
-        dialogFragment.setArguments(args);
-        dialogFragment.show(fragmentManager, TAG);
+        createDialog(args);
     }
 
     @Override
