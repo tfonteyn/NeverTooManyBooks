@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_content"
+    style="@style/Dialog.Content">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/dialog_toolbar"
+        style="@style/Toolbar.Dialog.Content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/lbl_reading_progress"
+        />
+
+    <com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup
+        android:id="@+id/rb_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="rb_pages,rb_percentage"
+        tools:ignore="MissingConstraints"
+        />
+
+    <RadioButton
+        android:id="@+id/rb_pages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_pages"
+        app:layout_constraintEnd_toStartOf="@id/rb_percentage"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar" />
+
+    <RadioButton
+        android:id="@+id/rb_percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="@string/lbl_percentage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/rb_pages"
+        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_percentage"
+        style="@style/TIL.Text"
+        android:layout_width="100dp"
+        android:hint="@string/lbl_percentage_read"
+        android:visibility="gone"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rb_percentage"
+        tools:visibility="visible"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/percentage"
+            style="@style/TIE.Generic"
+            android:inputType="number"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_current_page"
+        style="@style/TIL.Text"
+        android:layout_width="100dp"
+        android:hint="@string/lbl_current"
+        android:visibility="gone"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toStartOf="@id/lbl_total_pages"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_percentage"
+        tools:visibility="visible"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/current_page"
+            style="@style/TIE.Generic"
+            android:inputType="number"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_total_pages"
+        style="@style/TIL.Text"
+        android:layout_width="100dp"
+        android:layout_marginStart="@dimen/field_margin_inline"
+        android:hint="@string/lbl_total"
+        android:visibility="gone"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/lbl_current_page"
+        app:layout_constraintTop_toBottomOf="@id/lbl_percentage"
+        tools:visibility="visible"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/total_pages"
+            style="@style/TIE.Generic"
+            android:inputType="number"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="lbl_percentage,lbl_current_page"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/button_panel_layout"
+        style="@style/ButtonPanel.Container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/barrier_content">
+
+        <Button
+            android:id="@+id/btn_neutral"
+            style="?attr/buttonBarNeutralButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_finished"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <Button
+            android:id="@+id/btn_negative"
+            style="?attr/buttonBarNegativeButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@android:string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_positive"
+            />
+
+        <Button
+            android:id="@+id/btn_positive"
+            style="?attr/buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

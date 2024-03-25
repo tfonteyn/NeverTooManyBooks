@@ -1673,6 +1673,23 @@
     <string name="pt_normalize_publisher_name"
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
 
+    <!-- Button Label: reading-progress is a percentage. -->
+    <string name="lbl_percentage">Percentage</string>
+    <!-- Field label for reading-progress in percent. -->
+    <string name="lbl_percentage_read">% read</string>
+    <!-- Field label; e.g. Current page. -->
+    <string name="lbl_current">Current</string>
+    <!-- Field label; e.g. Total number of pages. -->
+    <string name="lbl_total">Total</string>
+    <!-- Field label / Dialog title. -->
+    <string name="lbl_reading_progress">Reading progress</string>
+    <!-- Button label: the user finished reading a book. -->
+    <string name="btn_finished">Finished</string>
+
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
+    <!-- Reading progress: param1: percentage 0..100 displayed with a percentage sign "%%". -->
+    <string name="info_progress_x_percent">Reading\nProgress: %1$d%%</string>
+    <!-- Reading progress: param1: current page; param2: total nr of pages. -->
+    <string name="info_progress_page_x_of_y">Reading\nPage: %1$d of %2$d</string>
 </resources>
