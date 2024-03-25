@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -203,6 +203,12 @@ public final class DBKey {
     public static final String PRINT_RUN = "print_run";
     public static final String PRICE_LISTED = "list_price";
     public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + CURRENCY_SUFFIX;
+    /**
+     * This field value is <strong>TEXT</strong> data by design to accommodate
+     * sites which provide a description of the page structure.
+     * Example: "xxxvi+278" -> a book which has 36 roman numerals numbered pages
+     * with an introduction, followed by 278 numbered content pages.
+     */
     public static final String PAGE_COUNT = "pages";
     public static final String FORMAT = "format";
     public static final String COLOR = "color";
@@ -220,6 +226,7 @@ public final class DBKey {
     public static final String DATE_ACQUIRED = "date_acquired";
     public static final String LOCATION = "location";
     public static final String READ__BOOL = "read";
+    public static final String READ_PROGRESS = "read_progress";
     public static final String READ_START__DATE = "read_start";
     public static final String READ_END__DATE = "read_end";
     public static final String SIGNED__BOOL = "signed";

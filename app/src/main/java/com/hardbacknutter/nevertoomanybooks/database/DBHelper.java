@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -104,10 +104,11 @@ public class DBHelper
      * v5.2.1: 29
      * v5.2.2: 30
      * v5.3.0: 31
+     * v5.5.0: 32
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 31;
+    public static final int DATABASE_VERSION = 32;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -773,6 +774,9 @@ public class DBHelper
         if (oldVersion < 31) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db, DBDefinitions.DOM_STYLE_COVER_LONG_CLICK_ACTION);
+        }
+        if (oldVersion < 32) {
+            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_BOOK_READ_PROGRESS);
         }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN

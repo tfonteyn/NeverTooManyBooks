@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
@@ -427,6 +428,7 @@ public class Book
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
         duplicate.putLong(DBKey.READ__BOOL, getLong(DBKey.READ__BOOL));
+        duplicate.putString(DBKey.READ_PROGRESS, getString(DBKey.READ_PROGRESS));
         duplicate.putString(DBKey.READ_START__DATE, getString(DBKey.READ_START__DATE));
         duplicate.putString(DBKey.READ_END__DATE, getString(DBKey.READ_END__DATE));
 
@@ -1049,7 +1051,7 @@ public class Book
     }
 
     /**
-     * Toggle the read-status for this book.
+     * Toggle and update the read-status for this book in the database.
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
@@ -1058,21 +1060,55 @@ public class Book
     }
 
     /**
-     * Update the 'read' status of a book in the database + sets the 'read end' to today.
-     * The book will have its 'read' status updated ONLY if the update went through.
+     * Update the 'read' status of a book in the database.
+     * The 'read end' date is updated as needed.
+     * Any 'progress' data is erased.
      *
-     * @param isRead Flag for the 'read' status
+     * @param read the status to set
      *
-     * @return the new 'read' status. If the update failed, this will be the unchanged status.
+     * @return the new status. If the update failed, this will be the unchanged status.
      */
-    private boolean setRead(final boolean isRead) {
+    public boolean setRead(final boolean read) {
         final boolean old = getBoolean(DBKey.READ__BOOL);
 
-        if (ServiceLocator.getInstance().getBookDao().setRead(this, isRead)) {
-            return isRead;
+        if (ServiceLocator.getInstance().getBookDao().setRead(this, read)) {
+            return read;
         }
 
         return old;
+    }
+
+    /**
+     * Get the progress the reader has made on this book.
+     *
+     * @return progress
+     */
+    @NonNull
+    public ReadProgress getReadProgress() {
+        if (getBoolean(DBKey.READ__BOOL)) {
+            return ReadProgress.finished(true);
+        } else {
+            return ReadProgress.fromJson(getString(DBKey.READ_PROGRESS));
+        }
+    }
+
+    /**
+     * Update the 'read-progress' status of a book in the database.
+     * The 'read end' date is updated as needed.
+     *
+     * @param readProgress the progress data to set
+     *
+     * @return the new status. If the update failed, this will be the unchanged status.
+     */
+    @NonNull
+    public ReadProgress setReadProgress(@NonNull final ReadProgress readProgress) {
+        final ReadProgress oldProgress = getReadProgress();
+
+        if (ServiceLocator.getInstance().getBookDao().setReadProgress(this, readProgress)) {
+            return readProgress;
+        }
+
+        return oldProgress;
     }
 
     /**

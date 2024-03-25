@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -153,6 +154,9 @@ public class BookDaoHelper {
         // cleanup/build all price related fields
         DBKey.MONEY_KEYS.forEach(this::processPrice);
 
+        // Try to cross-pollinate the ReadProgress and page-count fields.
+        processReadProgress();
+
         // replace 'T' by ' ' and truncate pure date fields if needed
         processDates();
 
@@ -163,6 +167,22 @@ public class BookDaoHelper {
         processNullsAndBlanks();
 
         return this;
+    }
+
+    /**
+     * If the {@link DBKey#PAGE_COUNT} field is empty and we have
+     * a total-pages value from the {@link DBKey#READ_PROGRESS} field,
+     * copy the value across.
+     * We do NOT overwrite existing values!
+     *
+     * @see BookDaoImpl#setReadProgress(Book, ReadProgress)
+     */
+    private void processReadProgress() {
+        final String pageCount = book.getString(DBKey.PAGE_COUNT);
+        final ReadProgress readProgress = book.getReadProgress();
+        if (!readProgress.asPercentage() && pageCount.isEmpty()) {
+            book.putString(DBKey.PAGE_COUNT, String.valueOf(readProgress.getTotalPages()));
+        }
     }
 
     /**

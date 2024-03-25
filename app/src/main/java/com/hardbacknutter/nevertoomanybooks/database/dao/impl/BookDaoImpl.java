@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,6 +41,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -561,11 +562,12 @@ public class BookDaoImpl
         final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
 
         final boolean success;
-        // don't call standalone method, we want to use the same 'now' to update the book
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_FIELD_READ)) {
+
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_READ_PROGRESS)) {
             stmt.bindBoolean(1, read);
             stmt.bindString(2, now);
-            stmt.bindLong(3, book.getId());
+            stmt.bindString(3, "");
+            stmt.bindLong(4, book.getId());
             success = 0 < stmt.executeUpdateDelete();
         }
 
@@ -573,6 +575,63 @@ public class BookDaoImpl
             book.putBoolean(DBKey.READ__BOOL, read);
             book.putString(DBKey.READ_END__DATE, now);
             book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
+            book.putString(DBKey.READ_PROGRESS, "");
+        }
+
+        return success;
+    }
+
+    @Override
+    public boolean setReadProgress(@NonNull final Book book,
+                                   @NonNull final ReadProgress readProgress) {
+
+        final boolean read = readProgress.isRead();
+
+        final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
+
+        final boolean success;
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            // If the separate page-count field is empty and we have a total-pages value,
+            // set it as well.
+            // Keep in sync with {@link BookDaoHelper#processReadProgress()} !
+            String pageCount = book.getString(DBKey.PAGE_COUNT);
+            if (!readProgress.asPercentage() && pageCount.isEmpty()) {
+                pageCount = String.valueOf(readProgress.getTotalPages());
+            }
+
+            // We might be updating the page-count needlessly, but no harm done.
+            try (SynchronizedStatement stmt = db.compileStatement(
+                    Sql.UPDATE_READ_PROGRESS_AND_PAGE_COUNT)) {
+                stmt.bindBoolean(1, read);
+                stmt.bindString(2, now);
+                stmt.bindString(3, readProgress.toJson());
+                stmt.bindString(4, pageCount);
+                stmt.bindLong(5, book.getId());
+                success = 0 < stmt.executeUpdateDelete();
+            }
+
+            if (success) {
+                book.putBoolean(DBKey.READ__BOOL, read);
+                book.putString(DBKey.READ_END__DATE, now);
+                book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
+                // reminder... don't call book.setReadProgress or we'll be recursive looping!
+                book.putString(DBKey.READ_PROGRESS, readProgress.toJson());
+                book.putString(DBKey.PAGE_COUNT, pageCount);
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
 
         return success;
@@ -861,12 +920,26 @@ public class BookDaoImpl
         static final String DELETE_BY_UUID =
                 DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.BOOK_UUID + "=?";
 
-        /** Update a single Book's read status and read_end date. */
-        static final String UPDATE_FIELD_READ =
+        /** Update a single Book's read status/progress and read_end date. */
+        static final String UPDATE_READ_PROGRESS =
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
                 + ',' + DBKey.READ__BOOL + "=?"
                 + ',' + DBKey.READ_END__DATE + "=?"
+                + ',' + DBKey.READ_PROGRESS + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * Update a single Book's read status/progress and read_end date.
+         * Potentially update the book's page-count as well.
+         */
+        static final String UPDATE_READ_PROGRESS_AND_PAGE_COUNT =
+                UPDATE_ + TBL_BOOKS.getName()
+                + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                + ',' + DBKey.READ__BOOL + "=?"
+                + ',' + DBKey.READ_END__DATE + "=?"
+                + ',' + DBKey.READ_PROGRESS + "=?"
+                + ',' + DBKey.PAGE_COUNT + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Update a {@link Book} {@link DBKey#DATE_LAST_UPDATED__UTC} to 'now'. */
@@ -961,7 +1034,8 @@ public class BookDaoImpl
                     DBKey.PERSONAL_NOTES,
                     DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION_COVER,
                     DBKey.LOCATION, DBKey.SIGNED__BOOL, DBKey.RATING,
-                    DBKey.READ__BOOL, DBKey.READ_START__DATE, DBKey.READ_END__DATE,
+                    DBKey.READ__BOOL, DBKey.READ_PROGRESS,
+                    DBKey.READ_START__DATE, DBKey.READ_END__DATE,
                     DBKey.DATE_ACQUIRED,
                     DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY,
                     // added/updated

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -139,7 +140,9 @@ public interface BookDao {
     int deleteByUuid(@NonNull List<String> uuids);
 
     /**
-     * Update the 'read' status and the 'read_end' date of the book.
+     * Update the 'read' status of a book.
+     * The 'read end' date is updated as needed.
+     * Any 'progress' data is erased.
      * <p>
      * If successful, the book object will have been updated with the new status.
      *
@@ -150,6 +153,20 @@ public interface BookDao {
      */
     boolean setRead(@NonNull Book book,
                     boolean read);
+
+    /**
+     * Update the 'read-progress' status of a book.
+     * The 'read end' date is updated as needed.
+     * <p>
+     * If successful, the book object will have been updated with the new status.
+     *
+     * @param book         to update
+     * @param readProgress the progress data to set
+     *
+     * @return {@code true} for success.
+     */
+    boolean setReadProgress(@NonNull Book book,
+                            @NonNull ReadProgress readProgress);
 
     /**
      * Count all books.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -295,7 +295,11 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_PRICE_LISTED;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_PRICE_LISTED_CURRENCY;
-    /** {@link #TBL_BOOKS}. */
+    /**
+     * {@link #TBL_BOOKS}.
+     * <p>
+     * Note this is a <strong>TEXT</strong> field. See {@link DBKey#PAGE_COUNT}.
+     */
     public static final Domain DOM_BOOK_PAGES;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_FORMAT;
@@ -330,6 +334,12 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_LOCATION;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_READ;
+    /**
+     * {@link #TBL_BOOKS}. This is a string with different encodings.
+     *
+     * @see Book#getReadProgress()
+     */
+    public static final Domain DOM_BOOK_READ_PROGRESS;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_DATE_READ_START;
     /** {@link #TBL_BOOKS}. */
@@ -909,6 +919,11 @@ public final class DBDefinitions {
                         .notNull()
                         .withDefault(false)
                         .build();
+        DOM_BOOK_READ_PROGRESS =
+                new Domain.Builder(DBKey.READ_PROGRESS, SqLiteDataType.Text)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
         DOM_BOOK_DATE_READ_START =
                 new Domain.Builder(DBKey.READ_START__DATE, SqLiteDataType.Date)
                         .notNull()
@@ -1425,6 +1440,7 @@ public final class DBDefinitions {
                             DOM_BOOK_DATE_ACQUIRED,
 
                             DOM_BOOK_READ,
+                            DOM_BOOK_READ_PROGRESS,
                             DOM_BOOK_DATE_READ_START,
                             DOM_BOOK_DATE_READ_END,
 
