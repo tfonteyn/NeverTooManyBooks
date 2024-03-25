@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -191,7 +190,7 @@ public class ShowBookDetailsFragment
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
         aVm.init(args);
 
-        vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(ShowBookDetailsViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), args, aVm.getStyle());
 
@@ -241,9 +240,7 @@ public class ShowBookDetailsFragment
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
         vm.onUpdateToolbar().observe(getViewLifecycleOwner(), this::onUpdateToolbar);
-
-        final Field<Boolean, CheckBox> cbxRead = vm.requireField(R.id.read);
-        cbxRead.requireView().setOnClickListener(v -> toggleReadStatus());
+        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
     }
 
     /**
@@ -341,20 +338,16 @@ public class ShowBookDetailsFragment
         }
     }
 
-    private void toggleReadStatus() {
-        final Book book = vm.getBook();
-        final boolean read = book.toggleRead();
+    private void onReadStatusChanged() {
         aVm.setDataModified();
 
-        vm.requireField(R.id.read).setValue(read);
+        final Book book = vm.getBook();
 
         vm.getField(R.id.read_end).ifPresent(field -> {
             field.setValue(book.getString(DBKey.READ_END__DATE));
             //noinspection DataFlowIssue
             field.setVisibility(getView(), true, false);
         });
-
-        toolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
 
         if (bookChangedListener != null) {
             bookChangedListener.onBookUpdated(book, DBKey.READ__BOOL, DBKey.READ_END__DATE);
@@ -398,6 +391,7 @@ public class ShowBookDetailsFragment
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(context, book, realNumberParser));
 
+        bindReadFragment();
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);
@@ -424,6 +418,34 @@ public class ShowBookDetailsFragment
         // All views should now have proper visibility set, so fix their focus order.
         //noinspection DataFlowIssue
         ViewFocusOrder.fix(parentView);
+    }
+
+    private void bindReadFragment() {
+        final FragmentManager fm = getChildFragmentManager();
+
+        if (false) {
+            Fragment fragment = fm.findFragmentByTag(ReadStatusFragment.TAG);
+            if (fragment == null) {
+                fragment = ReadStatusFragment.create();
+                fm.beginTransaction()
+                  .setReorderingAllowed(true)
+                  .replace(R.id.fragment_read, fragment, ReadStatusFragment.TAG)
+                  .commit();
+            } else {
+                ((ReadStatusFragment) fragment).reload();
+            }
+        } else {
+            Fragment fragment = fm.findFragmentByTag(ReadProgressFragment.TAG);
+            if (fragment == null) {
+                fragment = ReadProgressFragment.create();
+                fm.beginTransaction()
+                  .setReorderingAllowed(true)
+                  .replace(R.id.fragment_read, fragment, ReadProgressFragment.TAG)
+                  .commit();
+            } else {
+                ((ReadProgressFragment) fragment).reload();
+            }
+        }
     }
 
     private void bindCoverImages() {
@@ -612,8 +634,19 @@ public class ShowBookDetailsFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            updateMenuReadOptions(menu);
-            updateMenuLendingOptions(menu);
+            final boolean isRead = vm.getBook().getBoolean(DBKey.READ__BOOL);
+            menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
+            menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
+
+            // Always check LOANEE_NAME usage independent from the style in use.
+            if (aVm.getStyle().isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
+                final boolean isLendOut = vm.getBook().getLoanee().isPresent();
+                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);
+                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isLendOut);
+            } else {
+                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(false);
+                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(false);
+            }
 
             final Context context = getContext();
             final Book book = vm.getBook();
@@ -643,7 +676,7 @@ public class ShowBookDetailsFragment
                 return true;
 
             } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
-                toggleReadStatus();
+                vm.toggleReadStatus();
                 return true;
 
             } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
@@ -701,9 +734,6 @@ public class ShowBookDetailsFragment
             aVm.setDataModified();
 
             bindLoanee(book);
-            if (vm.isEmbedded()) {
-                updateMenuLendingOptions(getToolbar().getMenu());
-            }
 
             // needed when running in embedded mode to update the BoB list
             if (bookChangedListener != null) {
@@ -734,22 +764,5 @@ public class ShowBookDetailsFragment
             });
         }
 
-        private void updateMenuReadOptions(@NonNull final Menu menu) {
-            final boolean isRead = vm.getBook().getBoolean(DBKey.READ__BOOL);
-            menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
-            menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
-        }
-
-        private void updateMenuLendingOptions(@NonNull final Menu menu) {
-            // Always check LOANEE_NAME usage independent from the style in use.
-            if (aVm.getStyle().isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
-                final boolean isLendOut = vm.getBook().getLoanee().isPresent();
-                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);
-                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isLendOut);
-            } else {
-                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(false);
-                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(false);
-            }
-        }
     }
 }

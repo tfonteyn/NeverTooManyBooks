@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -113,12 +113,14 @@
             tools:text="@sample/data.json/book/title"
             />
 
-        <CheckBox
-            android:id="@+id/read"
-            style="@style/Field.Checkable"
-            android:text="@string/lbl_read"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_read"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintEnd_toStartOf="@id/rating"
             app:layout_constraintTop_toBottomOf="@id/original_title"
+            tools:layout="@layout/fragment_read_progress"
             />
 
         <RatingBar
@@ -127,7 +129,7 @@
             android:layout_marginStart="@dimen/field_margin_inline"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintHorizontal_bias="0.8"
-            app:layout_constraintStart_toEndOf="@id/read"
+            app:layout_constraintBottom_toTopOf="@id/author"
             app:layout_constraintTop_toBottomOf="@id/original_title"
             />
 
@@ -136,7 +138,7 @@
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/read"
+            app:layout_constraintTop_toBottomOf="@id/fragment_read"
             tools:ignore="SelectableText,DuplicateSpeakableTextCheck"
             tools:text="@sample/data.json/author/full_name"
             />

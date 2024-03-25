@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- The text is free form; the code will either fill it
+         with a percentage, or with a page x of y -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/lbl_read_progress"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/info_progress_x_percent"
+        android:drawableEnd="@drawable/ic_baseline_edit_24"
+        android:drawablePadding="20dp"
+        android:labelFor="@id/read_progress"
+        app:layout_constraintEnd_toEndOf="@id/read_progress"
+        app:layout_constraintStart_toStartOf="@id/read_progress"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Reading: 67%"
+        />
+
+    <!-- always shown as a percentage; when using pages, the code will convert to % -->
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/read_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:min="0"
+        app:indicatorColor="?attr/colorSecondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_read_progress"
+        tools:progress="67" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

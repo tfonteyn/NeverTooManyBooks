@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResForm
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
- * Contains ONLY data in the <strong>Fragment</strong> scope.
+ * Shared data between details and Read fragments.
  */
 public class ShowBookDetailsViewModel
         extends ViewModel {
@@ -70,6 +70,7 @@ public class ShowBookDetailsViewModel
 
     private final MutableLiveData<Book> onBookLoaded = new MutableLiveData<>();
     private final MutableLiveData<Book> onUpdateToolbar = new MutableLiveData<>();
+    private final MutableLiveData<Void> onReadStatusChanged = new MutableLiveData<>();
 
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
@@ -119,6 +120,11 @@ public class ShowBookDetailsViewModel
     @NonNull
     MutableLiveData<Book> onUpdateToolbar() {
         return onUpdateToolbar;
+    }
+
+    @NonNull
+    MutableLiveData<Void> onReadStatusChanged() {
+        return onReadStatusChanged;
     }
 
     /**
@@ -222,6 +228,24 @@ public class ShowBookDetailsViewModel
         }
     }
 
+    void toggleReadStatus() {
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
+        book.toggleRead();
+        onReadStatusChanged.setValue(null);
+    }
+
+    void setRead(final boolean isRead) {
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
+        book.setRead(isRead);
+        onReadStatusChanged.setValue(null);
+    }
+
+    void setReadProgress(@NonNull final ReadProgress readProgress) {
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
+        book.setReadProgress(readProgress);
+        onReadStatusChanged.setValue(null);
+    }
+
     @NonNull
     List<Field<?, ? extends View>> getFields() {
         return fields;
@@ -234,27 +258,6 @@ public class ShowBookDetailsViewModel
                      .filter(field -> field.getFieldViewId() == id)
                      .map(field -> (Field<T, V>) field)
                      .findFirst();
-    }
-
-    /**
-     * Return the Field associated with the passed ID.
-     *
-     * @param <T> type of Field value.
-     * @param <V> type of View for this field.
-     * @param id  Field/View ID
-     *
-     * @return Associated Field.
-     *
-     * @throws IllegalArgumentException if the field id was not found
-     */
-    @NonNull
-    <T, V extends View> Field<T, V> requireField(@IdRes final int id) {
-        //noinspection unchecked
-        return fields.stream()
-                     .filter(field -> field.getFieldViewId() == id)
-                     .map(field -> (Field<T, V>) field)
-                     .findFirst()
-                     .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
     }
 
     private void initFields(@NonNull final Context context,
@@ -285,11 +288,10 @@ public class ShowBookDetailsViewModel
                                        fullDetailListFormatter)
                            .addRelatedViews(R.id.lbl_author));
 
-        fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
-                                    DBKey.FK_SERIES,
-                                    fullDetailListFormatter)
-                        .addRelatedViews(R.id.lbl_series));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
+                                       DBKey.FK_SERIES,
+                                       fullDetailListFormatter)
+                           .addRelatedViews(R.id.lbl_series));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.BOOK_ISBN)
                            .addRelatedViews(R.id.lbl_isbn));
@@ -314,10 +316,9 @@ public class ShowBookDetailsViewModel
         fields.add(new TextViewField<>(FragmentId.Main, R.id.format, DBKey.FORMAT));
         fields.add(new TextViewField<>(FragmentId.Main, R.id.color, DBKey.COLOR));
 
-        fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                    DBKey.FK_PUBLISHER,
-                                    normalDetailListFormatter));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
+                                       DBKey.FK_PUBLISHER,
+                                       normalDetailListFormatter));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.date_published,
                                        DBKey.BOOK_PUBLICATION__DATE,
@@ -342,11 +343,10 @@ public class ShowBookDetailsViewModel
 
         // Personal fields
 
-        fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
-                                    DBKey.FK_BOOKSHELF,
-                                    normalDetailListFormatter)
-                        .addRelatedViews(R.id.lbl_bookshelves));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
+                                       DBKey.FK_BOOKSHELF,
+                                       normalDetailListFormatter)
+                           .addRelatedViews(R.id.lbl_bookshelves));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.date_acquired,
                                        DBKey.DATE_ACQUIRED,
@@ -377,9 +377,6 @@ public class ShowBookDetailsViewModel
                                        notesFormatter)
                            .addRelatedViews(R.id.lbl_notes));
 
-        fields.add(new BooleanIndicatorField(FragmentId.Main, R.id.read,
-                                             DBKey.READ__BOOL));
-
         fields.add(new TextViewField<>(FragmentId.Main, R.id.read_start,
                                        DBKey.READ_START__DATE,
                                        dateFormatter)
@@ -408,7 +405,5 @@ public class ShowBookDetailsViewModel
                                        DBKey.DATE_LAST_UPDATED__UTC,
                                        dateUtcFormatter)
                            .addRelatedViews(R.id.lbl_date_last_updated));
-
-
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -111,20 +111,23 @@
             app:layout_constraintTop_toBottomOf="@id/original_title"
             />
 
-        <CheckBox
-            android:id="@+id/read"
-            style="@style/Field.Checkable"
-            android:text="@string/lbl_read"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_read"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
+            tools:layout="@layout/fragment_read_progress"
             />
 
         <TextView
             android:id="@+id/author"
             style="@style/Field.Generic"
+            android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/read"
+            app:layout_constraintTop_toBottomOf="@id/fragment_read"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
@@ -147,7 +150,7 @@
             tools:text="@sample/data.json/series_list/title_nr"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_show_toc"
             style="@style/Button.Action.OpenToc"
             android:layout_marginTop="@dimen/field_margin_top"
