@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,6 +94,15 @@ public class StyleDataStore
      * @see BaseStyle#setShowReorderedTitle(boolean)
      */
     public static final String PK_SHOW_TITLES_REORDERED = "show.title.reordered";
+
+    /**
+     * How to track reading-progress.
+     * <p>
+     * {@code true} to use the extended tracking; {@code false} to use traditional Read/Unread.
+     *
+     * @see BaseStyle#setUseReadProgress(boolean)
+     */
+    public static final String PK_USE_READ_PROGRESS = "style.read.status.extended";
 
     /**
      * How to sort Author names.
@@ -296,6 +305,11 @@ public class StyleDataStore
                 style.setSortAuthorByGivenName(value);
                 setModified();
                 return;
+
+            case PK_USE_READ_PROGRESS:
+                style.setUseReadProgress(value);
+                setModified();
+                return;
         }
 
         final String listDbKey = PK_LIST_SHOW_FIELD_TO_DB_KEY.get(key);
@@ -339,6 +353,9 @@ public class StyleDataStore
 
             case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 return style.isSortAuthorByGivenName();
+
+            case PK_USE_READ_PROGRESS:
+                return style.useReadProgress();
         }
 
         final String listDbKey = PK_LIST_SHOW_FIELD_TO_DB_KEY.get(key);

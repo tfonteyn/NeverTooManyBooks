@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,6 +64,15 @@ public interface WritableStyle
      * @param value {@code true} for "given family", or {@code false} for "family, given"
      */
     void setSortAuthorByGivenName(boolean value);
+
+    /**
+     * Set the preference whether to use the extended "Read progress" settings,
+     * or the simple "Read/Unread" status.
+     *
+     * @param useReadProgress @code true} to use the extended options,
+     *                        {@code false} to use the traditional "Read/Unread" status.
+     */
+    void setUseReadProgress(boolean useReadProgress);
 
     /**
      * Set the text/font scale.

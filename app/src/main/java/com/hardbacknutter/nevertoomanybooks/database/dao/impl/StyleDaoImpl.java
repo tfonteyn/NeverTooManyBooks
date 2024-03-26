@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -166,6 +166,8 @@ public class StyleDaoImpl
         stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
         stmt.bindBoolean(++c, style.isShowReorderedTitle());
 
+        stmt.bindBoolean(++c, style.useReadProgress());
+
         stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
 
         stmt.bindLong(++c, style.getExpansionLevel());
@@ -292,6 +294,8 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME, style.isShowAuthorByGivenName());
             cv.put(DBKey.STYLE_TITLE_SHOW_REORDERED, style.isShowReorderedTitle());
 
+            cv.put(DBKey.STYLE_READ_STATUS_WITH_PROGRESS, style.useReadProgress());
+
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
         }
@@ -411,6 +415,8 @@ public class StyleDaoImpl
 
                     + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
                     + ',' + DBKey.STYLE_TITLE_SHOW_REORDERED
+
+                    + ',' + DBKey.STYLE_READ_STATUS_WITH_PROGRESS
 
                     + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
 

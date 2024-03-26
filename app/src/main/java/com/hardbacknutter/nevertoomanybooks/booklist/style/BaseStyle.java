@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -156,6 +156,7 @@ public abstract class BaseStyle
     private boolean showAuthorByGivenName;
     private boolean showReorderedTitle;
 
+    private boolean useReadProgress;
 
     /** The default number of levels to expand the list tree to. */
     private int expansionLevel = 1;
@@ -234,6 +235,8 @@ public abstract class BaseStyle
         showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
         showReorderedTitle = rowData.getBoolean(DBKey.STYLE_TITLE_SHOW_REORDERED);
 
+        useReadProgress = rowData.getBoolean(DBKey.STYLE_READ_STATUS_WITH_PROGRESS);
+
         // groups
         expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
         final String groupsAsCsv = rowData.getString(DBKey.STYLE_GROUPS);
@@ -286,6 +289,8 @@ public abstract class BaseStyle
         sortAuthorByGivenName = from.isSortAuthorByGivenName();
         showAuthorByGivenName = from.isShowAuthorByGivenName();
         showReorderedTitle = from.isShowReorderedTitle();
+
+        useReadProgress = from.useReadProgress();
     }
 
     /**
@@ -430,6 +435,15 @@ public abstract class BaseStyle
 
     public void setSortAuthorByGivenName(final boolean value) {
         sortAuthorByGivenName = value;
+    }
+
+    @Override
+    public boolean useReadProgress() {
+        return useReadProgress;
+    }
+
+    public void setUseReadProgress(final boolean useReadProgress) {
+        this.useReadProgress = useReadProgress;
     }
 
     @NonNull
@@ -662,6 +676,8 @@ public abstract class BaseStyle
                && showReorderedTitle == style.showReorderedTitle
                && sortAuthorByGivenName == style.sortAuthorByGivenName
 
+               && useReadProgress == style.useReadProgress
+
                && Objects.equals(fieldVisibility, style.fieldVisibility);
     }
 
@@ -684,6 +700,8 @@ public abstract class BaseStyle
                             showReorderedTitle,
 
                             sortAuthorByGivenName,
+
+                            useReadProgress,
 
                             fieldVisibility);
     }
@@ -711,6 +729,8 @@ public abstract class BaseStyle
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
                + ", showAuthorByGivenName=" + showAuthorByGivenName
                + ", showReorderedTitle=" + showReorderedTitle
+
+               + ", useReadProgress=" + useReadProgress
 
                + ", fieldVisibility=" + fieldVisibility
                + '}';

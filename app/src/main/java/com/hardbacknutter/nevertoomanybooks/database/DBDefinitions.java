@@ -442,6 +442,7 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME;
     public static final Domain DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME;
     public static final Domain DOM_STYLE_TITLE_SHOW_REORDERED;
+    public static final Domain DOM_STYLE_READ_STATUS_WITH_PROGRESS;
     public static final Domain DOM_STYLE_TEXT_SCALE;
     public static final Domain DOM_STYLE_COVER_SCALE;
     public static final Domain DOM_STYLE_LIST_HEADER;
@@ -1272,6 +1273,13 @@ public final class DBDefinitions {
 
         DOM_STYLE_TITLE_SHOW_REORDERED =
                 new Domain.Builder(DBKey.STYLE_TITLE_SHOW_REORDERED,
+                                   SqLiteDataType.Boolean)
+                        .notNull()
+                        .withDefault(false)
+                        .build();
+
+        DOM_STYLE_READ_STATUS_WITH_PROGRESS =
+                new Domain.Builder(DBKey.STYLE_READ_STATUS_WITH_PROGRESS,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)

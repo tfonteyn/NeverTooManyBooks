@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -380,6 +380,14 @@ public interface Style {
      * @return flag
      */
     boolean isShowBooksUnderEachGroup(@BooklistGroup.Id int groupId);
+
+    /**
+     * Should we use the extended "Read progress" settings, or the simple "Read/Unread" status.
+     *
+     * @return {@code true} to use the extended options,
+     *         {@code false} to use the traditional "Read/Unread" status.
+     */
+    boolean useReadProgress();
 
     /**
      * Convenience method for use in the Preferences screen.

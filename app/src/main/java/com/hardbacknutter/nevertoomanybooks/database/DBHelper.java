@@ -777,6 +777,8 @@ public class DBHelper
         }
         if (oldVersion < 32) {
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_BOOK_READ_PROGRESS);
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db, DBDefinitions.DOM_STYLE_READ_STATUS_WITH_PROGRESS);
         }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN

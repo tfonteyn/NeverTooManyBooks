@@ -276,6 +276,8 @@ public final class DBKey {
     public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";
     public static final String STYLE_AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
     public static final String STYLE_TITLE_SHOW_REORDERED = "show_reorder_title";
+    public static final String STYLE_READ_STATUS_WITH_PROGRESS = "read_status_with_progress";
+
     /**
      * @see com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale
      */

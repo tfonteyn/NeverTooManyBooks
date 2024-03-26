@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -158,6 +158,9 @@ public class StyleCoder
         settings.put(StyleDataStore.PK_SHOW_TITLES_REORDERED,
                      style.isShowReorderedTitle());
 
+        settings.put(StyleDataStore.PK_USE_READ_PROGRESS,
+                     style.useReadProgress());
+
         settings.put(PK_DETAILS_FIELD_VISIBILITY,
                      style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
 
@@ -315,6 +318,10 @@ public class StyleCoder
         if (source.has(StyleDataStore.PK_SHOW_TITLES_REORDERED)) {
             style.setShowReorderedTitle(
                     source.getBoolean(StyleDataStore.PK_SHOW_TITLES_REORDERED));
+        }
+        if (source.has(StyleDataStore.PK_USE_READ_PROGRESS)) {
+            style.setUseReadProgress(
+                    source.getBoolean(StyleDataStore.PK_USE_READ_PROGRESS));
         }
         if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
             style.setFieldVisibility(FieldVisibility.Screen.Detail,
