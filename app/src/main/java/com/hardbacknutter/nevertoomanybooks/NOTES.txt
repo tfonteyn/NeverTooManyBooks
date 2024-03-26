@@ -3,6 +3,22 @@ Supported Android versions:
 * v2.1.0 requires Android 8.0 (API 26)
 
 ----------------------------------------------------------------------------------------------------
+Draft notes for next version:
+
+### 5.5.0
+
+NEW:
+- Reading progress options: [read/unread], [percentage], [page x of y]
+- StripWebSearchEngine
+- Author types added: storyboard, lettering
+
+FIXES:
+- Calibre fix a database lock preventing imports sometimes.
+- LastDodo better handling of duplicate authors
+
+REMOVED:
+
+----------------------------------------------------------------------------------------------------
 Amazon... or "why are these sites not supported?"
  * Goodreads is owned by Amazon and has shut their API down.
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is shut down.
@@ -27,8 +43,18 @@ FIXME: check all cover logic where source and destination is allowed to be the s
 FIXME: the dialog-fragment launcher api is increasingly adding overhead.
  It needs to be replaced by ViewModel sharing on Activity level.
 
- ENHANCE: add rotating functions to the cropper activity. This would allow
-  multi-rotate-undo by simply quiting the cropper.
+TODO: bring some unity to our use of child-fragments (e.g. ReadStatus)
+ and helper/handlers (e.g. CoverHandler) and similar constructs
+
+ENHANCE: add rotating functions to the cropper activity. This would allow
+ multi-rotate-undo by simply quiting the cropper.
+
+ENHANCE Pseudonyms on ISFDB:
+ While reading the book page, we could follow the author url,
+ and from there check the header for "Used As Alternate Name By"
+ Problem: if it's the real-author anyhow, then loading
+ that url can become very slow if the author has many books.
+ Alternative: lookup Author names individually.
 ----------------------------------------------------------------------------------------------------
 
 Known issues:
@@ -48,27 +74,3 @@ Prices: when importing books with a price field containing a value which cannot 
 Booklist style sorting by date-read or date-added etc...:
  samsung A520 with A8.0, month name not shown; we get the month number instead.
  Does not happen on other devices/emulators. Won't pursue/fix.
-
-----------------------------------------------------------------------------------------------------
-
-### 5.5.0
-
-NEW:
-- StripWebSearchEngine
-- Author types added: storyboard, lettering
-
-FIXES:
-- Calibre fix a database lock preventing imports sometimes.
-- LastDodo better handling of duplicate authors
-
-REMOVED:
-
-----------------------------------------------------------------------------------------------------
-Pseudonyms:
-
-ISFDB:
-// While reading the book page, we could follow the author url,
-// and from there check the header for "Used As Alternate Name By"
-// Problem: if it's the real-author anyhow, then loading
-// that url can become very slow if the author has many books.
-// Alternative: lookup Author names individually.
