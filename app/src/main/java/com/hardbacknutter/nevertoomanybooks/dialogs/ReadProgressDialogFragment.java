@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressContentBinding;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class ReadProgressDialogFragment
         extends FFBaseDialogFragment {
@@ -195,24 +194,8 @@ public class ReadProgressDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
-        public void launch(@NonNull final Book book) {
+        public void launch(@NonNull final ReadProgress readProgress) {
             final Bundle args = new Bundle(2);
-            final ReadProgress readProgress = book.getReadProgress();
-            if (readProgress.getTotalPages() == 0) {
-                // Copy the total number of pages if possible.
-                final String pageCountStr = book.getString(DBKey.PAGE_COUNT);
-                if (!pageCountStr.isEmpty()) {
-                    try {
-                        final int totalPages = Integer.parseInt(pageCountStr);
-                        readProgress.setTotalPages(totalPages);
-                    } catch (@NonNull final NumberFormatException ignore) {
-                        // The field was likely a description of some sort,
-                        // and not a simple page count number.
-                        // See the docs on DBKey.PAGE_COUNT
-                    }
-                }
-            }
-
             args.putParcelable(BKEY_PROGRESS, readProgress);
             createDialog(args);
         }

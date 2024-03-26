@@ -74,7 +74,6 @@ public class ReadProgressFragment
         vm = new ViewModelProvider(getActivity()).get(ShowBookDetailsViewModel.class);
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
-
     }
 
     @Nullable
@@ -94,7 +93,7 @@ public class ReadProgressFragment
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
 
         reload();
-        vb.lblReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getBook()));
+        vb.lblReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getReadProgress()));
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")

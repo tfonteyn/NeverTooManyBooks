@@ -1080,11 +1080,30 @@ public class Book
      */
     @NonNull
     public ReadProgress getReadProgress() {
-        if (getBoolean(DBKey.READ__BOOL)) {
-            return ReadProgress.finished(true);
+        final ReadProgress readProgress;
+
+        if (isRead()) {
+            readProgress = ReadProgress.finished(true);
         } else {
-            return ReadProgress.fromJson(getString(DBKey.READ_PROGRESS));
+            readProgress = ReadProgress.fromJson(getString(DBKey.READ_PROGRESS));
         }
+
+        // Copy the total number of pages if needed AND possible.
+        if (readProgress.getTotalPages() == 0) {
+            final String pageCountStr = getString(DBKey.PAGE_COUNT);
+            if (!pageCountStr.isEmpty()) {
+                try {
+                    final int totalPages = Integer.parseInt(pageCountStr);
+                    readProgress.setTotalPages(totalPages);
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // The field was likely a description of some sort,
+                    // and not a simple page count number.
+                    // See the docs on DBKey.PAGE_COUNT
+                }
+            }
+        }
+
+        return readProgress;
     }
 
     /**
