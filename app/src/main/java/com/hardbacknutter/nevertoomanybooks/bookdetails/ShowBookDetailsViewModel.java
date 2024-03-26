@@ -188,7 +188,6 @@ public class ShowBookDetailsViewModel
      * @return the book
      */
     @NonNull
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Book getBook() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         return book;
@@ -228,10 +227,9 @@ public class ShowBookDetailsViewModel
         }
     }
 
-    void toggleReadStatus() {
+    public boolean isRead() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        book.toggleRead();
-        onReadStatusChanged.setValue(null);
+        return book.isRead();
     }
 
     void setRead(final boolean isRead) {

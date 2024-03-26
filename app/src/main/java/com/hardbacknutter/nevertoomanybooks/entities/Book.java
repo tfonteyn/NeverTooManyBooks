@@ -1051,15 +1051,6 @@ public class Book
     }
 
     /**
-     * Toggle and update the read-status for this book in the database.
-     *
-     * @return the new 'read' status. If the update failed, this will be the unchanged status.
-     */
-    public boolean toggleRead() {
-        return setRead(!getBoolean(DBKey.READ__BOOL));
-    }
-
-    /**
      * Update the 'read' status of a book in the database.
      * The 'read end' date is updated as needed.
      * Any 'progress' data is erased.
@@ -1069,13 +1060,17 @@ public class Book
      * @return the new status. If the update failed, this will be the unchanged status.
      */
     public boolean setRead(final boolean read) {
-        final boolean old = getBoolean(DBKey.READ__BOOL);
+        final boolean old = isRead();
 
         if (ServiceLocator.getInstance().getBookDao().setRead(this, read)) {
             return read;
         }
 
         return old;
+    }
+
+    public boolean isRead() {
+        return getBoolean(DBKey.READ__BOOL);
     }
 
     /**

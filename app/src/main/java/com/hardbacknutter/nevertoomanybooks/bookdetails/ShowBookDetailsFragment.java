@@ -634,13 +634,15 @@ public class ShowBookDetailsFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            final boolean isRead = vm.getBook().getBoolean(DBKey.READ__BOOL);
+            final Book book = vm.getBook();
+
+            final boolean isRead = book.isRead();
             menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
             menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
             // Always check LOANEE_NAME usage independent from the style in use.
             if (aVm.getStyle().isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
-                final boolean isLendOut = vm.getBook().getLoanee().isPresent();
+                final boolean isLendOut = book.getLoanee().isPresent();
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isLendOut);
             } else {
@@ -649,7 +651,6 @@ public class ShowBookDetailsFragment
             }
 
             final Context context = getContext();
-            final Book book = vm.getBook();
 
             if (calibreHandler != null) {
                 //noinspection DataFlowIssue
@@ -676,7 +677,8 @@ public class ShowBookDetailsFragment
                 return true;
 
             } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
-                vm.toggleReadStatus();
+                // toggle the status
+                vm.setRead(!book.isRead());
                 return true;
 
             } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -957,10 +957,8 @@ public class BooksOnBookshelfViewModel
         } else {
             // The change will not affect the group the book is in,
             // update the <strong>book-list</strong> 'read' status of the given book.
-            final long id = book.getId();
-            final boolean read = book.getBoolean(DBKey.READ__BOOL);
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            final int[] positions = booklist.updateBookRead(id, read)
+            final int[] positions = booklist.updateBookRead(book.getId(), book.isRead())
                                             .stream()
                                             .mapToInt(BooklistNode::getAdapterPosition)
                                             .toArray();

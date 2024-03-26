@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -116,6 +116,7 @@ public class EditBookViewModel
 
     /**
      * The Book we're editing (creating/updating).
+     * It will never be {@code null} after being loaded in {@link #init(Context, Bundle)}.
      */
     private Book book;
     /**

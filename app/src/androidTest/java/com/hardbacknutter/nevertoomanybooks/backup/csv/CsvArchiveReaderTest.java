@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -148,7 +147,7 @@ public class CsvArchiveReaderTest
         bookCursor = bookDao.fetchById(666000002);
         assertTrue(bookCursor.moveToFirst());
         book = Book.from(bookCursor);
-        assertTrue(book.getBoolean(DBKey.READ__BOOL));
+        assertTrue(book.isRead());
 
         // same import, but using
 
@@ -166,7 +165,7 @@ public class CsvArchiveReaderTest
         bookCursor = bookDao.fetchById(666000002);
         assertTrue(bookCursor.moveToFirst());
         book = Book.from(bookCursor);
-        assertFalse(book.getBoolean(DBKey.READ__BOOL));
+        assertFalse(book.isRead());
     }
 
     @NonNull
