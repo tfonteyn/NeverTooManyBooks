@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.bookdetails;
+package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -33,27 +33,29 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * A data class to facilitate passing these values around.
+ * A data class to facilitate encoding/decoding the database String value
+ * and passing these values around.
  */
-public final class ReadProgress
+public final class ReadingProgress
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<ReadProgress> CREATOR = new Creator<>() {
+    public static final Creator<ReadingProgress> CREATOR = new Creator<>() {
         @Override
-        public ReadProgress createFromParcel(@NonNull final Parcel in) {
-            return new ReadProgress(in);
+        public ReadingProgress createFromParcel(@NonNull final Parcel in) {
+            return new ReadingProgress(in);
         }
 
         @Override
-        public ReadProgress[] newArray(final int size) {
-            return new ReadProgress[size];
+        public ReadingProgress[] newArray(final int size) {
+            return new ReadingProgress[size];
         }
     };
+
     private static final String JSON_PCT = "pct";
     private static final String JSON_CURRENT_PAGE = "cp";
     private static final String JSON_TOTAL_PAGES = "tp";
-    private static final String TAG = "ReadProgress";
+    private static final String TAG = "ReadingProgress";
     @Nullable
     private Integer percentage;
     @Nullable
@@ -62,19 +64,19 @@ public final class ReadProgress
     private Integer totalPages;
     private boolean asPercentage;
 
-    private ReadProgress(@Nullable final Integer percentage) {
+    private ReadingProgress(@Nullable final Integer percentage) {
         asPercentage = true;
         this.percentage = percentage;
     }
 
-    private ReadProgress(@Nullable final Integer currentPage,
-                         @Nullable final Integer totalPages) {
+    private ReadingProgress(@Nullable final Integer currentPage,
+                            @Nullable final Integer totalPages) {
         asPercentage = false;
         this.currentPage = currentPage;
         this.totalPages = totalPages;
     }
 
-    private ReadProgress(@NonNull final Parcel in) {
+    private ReadingProgress(@NonNull final Parcel in) {
         asPercentage = in.readInt() != 0;
 
         if (in.readByte() == 0) {
@@ -99,11 +101,11 @@ public final class ReadProgress
      *
      * @param read flag
      *
-     * @return new instance with percentage==100
+     * @return new instance with percentage set to either {@code 100} or {@code 0}.
      */
     @NonNull
-    public static ReadProgress finished(final boolean read) {
-        return new ReadProgress(read ? 100 : 0);
+    public static ReadingProgress finished(final boolean read) {
+        return new ReadingProgress(read ? 100 : 0);
     }
 
     /**
@@ -114,19 +116,19 @@ public final class ReadProgress
      * @return new instance
      */
     @NonNull
-    public static ReadProgress fromJson(@NonNull final String s) {
+    public static ReadingProgress fromJson(@NonNull final String s) {
         if (s.isEmpty()) {
             // Unread
-            return new ReadProgress(0);
+            return new ReadingProgress(0);
         }
 
         try {
             final JSONObject json = new JSONObject(s);
             if (json.has(JSON_PCT)) {
-                return new ReadProgress(json.getInt(JSON_PCT));
+                return new ReadingProgress(json.getInt(JSON_PCT));
             } else {
-                return new ReadProgress(json.getInt(JSON_CURRENT_PAGE),
-                                        json.getInt(JSON_TOTAL_PAGES));
+                return new ReadingProgress(json.getInt(JSON_CURRENT_PAGE),
+                                           json.getInt(JSON_TOTAL_PAGES));
 
             }
         } catch (@NonNull final JSONException e) {
@@ -134,19 +136,7 @@ public final class ReadProgress
         }
 
         // Unexpected decoding error
-        return new ReadProgress(0);
-    }
-
-    /**
-     * Encode to a JSON string.
-     *
-     * @param read flag
-     *
-     * @return JSON string <strong>or {@code ""}</strong>
-     */
-    @NonNull
-    public static String toJson(final boolean read) {
-        return "{" + JSON_PCT + ": \"" + (read ? "100" : "0") + "\"}";
+        return new ReadingProgress(0);
     }
 
     /**
@@ -158,14 +148,18 @@ public final class ReadProgress
     public String toJson() {
         if (asPercentage()) {
             if (percentage != null) {
-                return "{" + JSON_PCT + ": \"" + percentage + "\"}";
+                //noinspection DataFlowIssue
+                return new JSONObject().put(JSON_PCT, percentage)
+                                       .toString();
             } else {
+                // Don't return an empty JSON string, just a normal empty string!
                 return "";
             }
         } else {
-            return "{"
-                   + JSON_CURRENT_PAGE + ": \"" + getCurrentPage() + "\","
-                   + JSON_TOTAL_PAGES + ": \"" + getTotalPages() + "\"}";
+            //noinspection DataFlowIssue
+            return new JSONObject().put(JSON_CURRENT_PAGE, getCurrentPage())
+                                   .put(JSON_TOTAL_PAGES, getTotalPages())
+                                   .toString();
         }
     }
 
@@ -199,14 +193,31 @@ public final class ReadProgress
         return 0;
     }
 
+    /**
+     * Check if this object represents a percentage.
+     *
+     * @return {@code true} if this represents a percentage.
+     *         {@code false} if it's a "page x of y" value.
+     */
     public boolean asPercentage() {
         return asPercentage;
     }
 
-    public void setAsPercentage(final boolean asPercentage) {
+    /**
+     * Set this object to represent a percentage.
+     *
+     * @param asPercentage {@code true} if this represents a percentage.
+     *                     {@code false} if it's a "page x of y" value.
+     */
+    void setAsPercentage(final boolean asPercentage) {
         this.asPercentage = asPercentage;
     }
 
+    /**
+     * Quick check if the value represents a finished/read book.
+     *
+     * @return flag
+     */
     public boolean isRead() {
         if (percentage != null) {
             return percentage == 100;

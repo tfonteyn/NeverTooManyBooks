@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -161,12 +161,12 @@ public interface BookDao {
      * If successful, the book object will have been updated with the new status.
      *
      * @param book         to update
-     * @param readProgress the progress data to set
+     * @param readingProgress the progress data to set
      *
      * @return {@code true} for success.
      */
     boolean setReadProgress(@NonNull Book book,
-                            @NonNull ReadProgress readProgress);
+                            @NonNull ReadingProgress readingProgress);
 
     /**
      * Count all books.

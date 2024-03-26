@@ -39,6 +39,8 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewModel;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -64,7 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * Shared data between details and Read fragments.
  */
 public class ShowBookDetailsViewModel
-        extends ViewModel {
+        extends ViewModel
+        implements BookReadStatusViewModel {
 
     private static final String BOOK_NOT_LOADED_YET = "Book not loaded yet";
 
@@ -120,11 +123,6 @@ public class ShowBookDetailsViewModel
     @NonNull
     MutableLiveData<Book> onUpdateToolbar() {
         return onUpdateToolbar;
-    }
-
-    @NonNull
-    MutableLiveData<Void> onReadStatusChanged() {
-        return onReadStatusChanged;
     }
 
     /**
@@ -232,16 +230,27 @@ public class ShowBookDetailsViewModel
         return book.isRead();
     }
 
-    void setRead(final boolean isRead) {
+    public void setRead(final boolean isRead) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        book.setRead(isRead);
+        ServiceLocator.getInstance().getBookDao().setRead(book, isRead);
         onReadStatusChanged.setValue(null);
     }
 
-    void setReadProgress(@NonNull final ReadProgress readProgress) {
+    public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        book.setReadProgress(readProgress);
+        ServiceLocator.getInstance().getBookDao().setReadProgress(book, readingProgress);
         onReadStatusChanged.setValue(null);
+    }
+
+    @NonNull
+    public ReadingProgress getReadingProgress() {
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
+        return book.getReadingProgress();
+    }
+
+    @NonNull
+    public MutableLiveData<Void> onReadStatusChanged() {
+        return onReadStatusChanged;
     }
 
     @NonNull

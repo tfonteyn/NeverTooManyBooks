@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Checkable;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -39,7 +38,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -57,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DateRangePicker;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -216,10 +215,6 @@ public abstract class EditBookBaseFragment
                                R.string.lbl_read_start, R.id.read_start,
                                R.string.lbl_read_end, R.id.read_end);
         }
-
-        if (vm.handlesField(getFragmentId(), R.id.cbx_read)) {
-            addReadCheckboxOnClickListener();
-        }
     }
 
     /**
@@ -258,22 +253,6 @@ public abstract class EditBookBaseFragment
         vm.saveFields(getFragmentId(), book);
     }
 
-    /**
-     * Set the OnClickListener for the 'read' fields.
-     * <p>
-     * When user checks 'read', set the read-end date to today (unless set before)
-     */
-    private void addReadCheckboxOnClickListener() {
-        vm.requireField(R.id.cbx_read).requireView().setOnClickListener(v -> {
-            if (((Checkable) v).isChecked()) {
-                final Field<String, TextView> readEnd = vm.requireField(R.id.read_end);
-                if (readEnd.isEmpty()) {
-                    readEnd.setValue(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                    readEnd.notifyIfChanged("");
-                }
-            }
-        });
-    }
 
     /**
      * Setup a date picker for selecting a date range.
@@ -381,8 +360,14 @@ public abstract class EditBookBaseFragment
 
         // special case, if a read-end date is set, then obviously we must set the read-flag
         if (fieldId == R.id.read_end) {
-            vm.requireField(R.id.cbx_read).setValue(true);
+            vm.setRead(true);
         }
+    }
+
+    void onReadStatusChanged() {
+        // Refresh the read_end value displayed
+        final Field<String, TextView> readEnd = vm.requireField(R.id.read_end);
+        readEnd.setValue(vm.getBook().getString(DBKey.READ_END__DATE));
     }
 
     private class MenuHandlersMenuProvider

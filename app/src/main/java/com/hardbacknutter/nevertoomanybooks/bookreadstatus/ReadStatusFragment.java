@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.bookdetails;
+package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadCheckboxBinding;
 
 /**
@@ -39,22 +38,19 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadCheckboxBind
 public class ReadStatusFragment
         extends Fragment {
 
-    static final String TAG = "ReadStatusFragment";
+    public static final String TAG = "ReadStatusFragment";
 
     private FragmentReadCheckboxBinding vb;
 
-    private ShowBookDetailsViewModel vm;
-
-    @NonNull
-    static Fragment create() {
-        return new ReadStatusFragment();
-    }
+    private BookReadStatusViewModel vm;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(ShowBookDetailsViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(
+                ReadStatusFragmentFactory.getViewModelClass(requireArguments()));
     }
 
     @Nullable
@@ -74,11 +70,10 @@ public class ReadStatusFragment
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
 
         reload();
-        vb.read.setOnClickListener(v -> vm.toggleReadStatus());
+        vb.read.setOnClickListener(v -> vm.setRead(!vm.isRead()));
     }
 
-    void reload() {
-        final boolean read = vm.getBook().getBoolean(DBKey.READ__BOOL);
-        vb.read.setChecked(read);
+    public void reload() {
+        vb.read.setChecked(vm.isRead());
     }
 }

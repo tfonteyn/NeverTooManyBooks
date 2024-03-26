@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadStatusFragmentFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
@@ -343,6 +344,7 @@ public class ShowBookDetailsFragment
 
         final Book book = vm.getBook();
 
+        // Refresh the read_end value displayed
         vm.getField(R.id.read_end).ifPresent(field -> {
             field.setValue(book.getString(DBKey.READ_END__DATE));
             //noinspection DataFlowIssue
@@ -391,7 +393,9 @@ public class ShowBookDetailsFragment
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(context, book, realNumberParser));
 
-        bindReadFragment();
+        ReadStatusFragmentFactory.bind(getChildFragmentManager(), R.id.fragment_read,
+                                       aVm.getStyle(),
+                                       ReadStatusFragmentFactory.VIEWMODEL_SHOW);
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);
@@ -418,34 +422,6 @@ public class ShowBookDetailsFragment
         // All views should now have proper visibility set, so fix their focus order.
         //noinspection DataFlowIssue
         ViewFocusOrder.fix(parentView);
-    }
-
-    private void bindReadFragment() {
-        final FragmentManager fm = getChildFragmentManager();
-
-        if (false) {
-            Fragment fragment = fm.findFragmentByTag(ReadStatusFragment.TAG);
-            if (fragment == null) {
-                fragment = ReadStatusFragment.create();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .replace(R.id.fragment_read, fragment, ReadStatusFragment.TAG)
-                  .commit();
-            } else {
-                ((ReadStatusFragment) fragment).reload();
-            }
-        } else {
-            Fragment fragment = fm.findFragmentByTag(ReadProgressFragment.TAG);
-            if (fragment == null) {
-                fragment = ReadProgressFragment.create();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .replace(R.id.fragment_read, fragment, ReadProgressFragment.TAG)
-                  .commit();
-            } else {
-                ((ReadProgressFragment) fragment).reload();
-            }
-        }
     }
 
     private void bindCoverImages() {

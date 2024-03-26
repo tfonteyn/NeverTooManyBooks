@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
 import android.os.Bundle;
 import android.view.View;
@@ -30,16 +30,21 @@ import androidx.fragment.app.Fragment;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 
-public class ReadProgressDialogFragment
+/**
+ * Dialog for the user to update their progress.
+ * Supports percentage and "page x of y".
+ */
+public class ReadingProgressDialogFragment
         extends FFBaseDialogFragment {
 
     private static final String TAG = "ReadProgressDialogFrg";
 
-    private ReadProgress readProgress;
+    private ReadingProgress readingProgress;
 
     private DialogBookReadProgressContentBinding vb;
     private String requestKey;
@@ -47,7 +52,7 @@ public class ReadProgressDialogFragment
     /**
      * No-arg constructor for OS use.
      */
-    public ReadProgressDialogFragment() {
+    public ReadingProgressDialogFragment() {
         super(R.layout.dialog_book_read_progress,
               R.layout.dialog_book_read_progress_content);
     }
@@ -63,7 +68,7 @@ public class ReadProgressDialogFragment
             args = savedInstanceState;
         }
 
-        readProgress = Objects.requireNonNull(args.getParcelable(
+        readingProgress = Objects.requireNonNull(args.getParcelable(
                 Launcher.BKEY_PROGRESS));
     }
 
@@ -77,13 +82,13 @@ public class ReadProgressDialogFragment
 
         vb.rbGroup.setOnCheckedChangeListener(
                 (group, checkedId) -> {
-                    readProgress.setAsPercentage(checkedId == R.id.rb_percentage);
+                    readingProgress.setAsPercentage(checkedId == R.id.rb_percentage);
                     updateUI();
                 });
     }
 
     private void updateUI() {
-        if (readProgress.asPercentage()) {
+        if (readingProgress.asPercentage()) {
             vb.rbPercentage.setChecked(true);
             vb.lblPercentage.setVisibility(View.VISIBLE);
             vb.lblCurrentPage.setVisibility(View.GONE);
@@ -99,9 +104,9 @@ public class ReadProgressDialogFragment
             vb.currentPage.requestFocus();
         }
 
-        vb.percentage.setText(String.valueOf(readProgress.getPercentage()));
-        vb.currentPage.setText(String.valueOf(readProgress.getCurrentPage()));
-        vb.totalPages.setText(String.valueOf(readProgress.getTotalPages()));
+        vb.percentage.setText(String.valueOf(readingProgress.getPercentage()));
+        vb.currentPage.setText(String.valueOf(readingProgress.getCurrentPage()));
+        vb.totalPages.setText(String.valueOf(readingProgress.getTotalPages()));
     }
 
     @Override
@@ -125,7 +130,7 @@ public class ReadProgressDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        Launcher.setResult(this, requestKey, readProgress);
+        Launcher.setResult(this, requestKey, readingProgress);
         return true;
     }
 
@@ -133,30 +138,30 @@ public class ReadProgressDialogFragment
         try {
             //noinspection DataFlowIssue
             final String txt = vb.percentage.getText().toString().trim();
-            readProgress.setPercentage(txt.isEmpty() ? null : Integer.parseInt(txt));
+            readingProgress.setPercentage(txt.isEmpty() ? null : Integer.parseInt(txt));
         } catch (@NonNull final NumberFormatException ignore) {
-            readProgress.setPercentage(null);
+            readingProgress.setPercentage(null);
         }
         try {
             //noinspection DataFlowIssue
             final String txt = vb.currentPage.getText().toString().trim();
-            readProgress.setCurrentPage(txt.isEmpty() ? null : Integer.parseInt(txt));
+            readingProgress.setCurrentPage(txt.isEmpty() ? null : Integer.parseInt(txt));
         } catch (@NonNull final NumberFormatException ignore) {
-            readProgress.setCurrentPage(null);
+            readingProgress.setCurrentPage(null);
         }
         try {
             //noinspection DataFlowIssue
             final String txt = vb.totalPages.getText().toString().trim();
-            readProgress.setTotalPages(txt.isEmpty() ? null : Integer.parseInt(txt));
+            readingProgress.setTotalPages(txt.isEmpty() ? null : Integer.parseInt(txt));
         } catch (@NonNull final NumberFormatException ignore) {
-            readProgress.setTotalPages(null);
+            readingProgress.setTotalPages(null);
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(Launcher.BKEY_PROGRESS, readProgress);
+        outState.putParcelable(Launcher.BKEY_PROGRESS, readingProgress);
     }
 
     @Override
@@ -174,7 +179,7 @@ public class ReadProgressDialogFragment
         private final OnModifiedCallback onModifiedCallback;
 
         public Launcher(@NonNull final OnModifiedCallback onModifiedCallback) {
-            super(DBKey.READ_PROGRESS, ReadProgressDialogFragment::new);
+            super(DBKey.READ_PROGRESS, ReadingProgressDialogFragment::new);
             this.onModifiedCallback = onModifiedCallback;
         }
 
@@ -188,15 +193,20 @@ public class ReadProgressDialogFragment
 
         public static void setResult(@NonNull final Fragment fragment,
                                      @NonNull final String requestKey,
-                                     @Nullable final ReadProgress readProgress) {
+                                     @Nullable final ReadingProgress readingProgress) {
             final Bundle result = new Bundle(1);
-            result.putParcelable(BKEY_PROGRESS, readProgress);
+            result.putParcelable(BKEY_PROGRESS, readingProgress);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
-        public void launch(@NonNull final ReadProgress readProgress) {
+        /**
+         * Launch the dialog.
+         *
+         * @param readingProgress to edit
+         */
+        public void launch(@NonNull final ReadingProgress readingProgress) {
             final Bundle args = new Bundle(2);
-            args.putParcelable(BKEY_PROGRESS, readProgress);
+            args.putParcelable(BKEY_PROGRESS, readingProgress);
             createDialog(args);
         }
 
@@ -226,11 +236,11 @@ public class ReadProgressDialogFragment
             /**
              * Callback handler.
              *
-             * @param requestKey   the key as passed in
-             * @param readProgress progress
+             * @param requestKey      the key as passed in
+             * @param readingProgress progress
              */
             void onModified(@NonNull String requestKey,
-                            @NonNull ReadProgress readProgress);
+                            @NonNull ReadingProgress readingProgress);
         }
     }
 }

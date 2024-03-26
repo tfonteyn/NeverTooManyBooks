@@ -33,7 +33,6 @@
         style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/info_progress_x_percent"
         android:drawableEnd="@drawable/ic_baseline_edit_24"
         android:drawablePadding="20dp"
         android:labelFor="@id/read_progress"

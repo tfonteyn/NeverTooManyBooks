@@ -41,7 +41,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -559,23 +559,21 @@ public class BookDaoImpl
     @Override
     public boolean setRead(@NonNull final Book book,
                            final boolean read) {
-        final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
+        final String now = SqlEncode.date(LocalDateTime.now());
+        final String endDate = read ? now : "";
 
         final boolean success;
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_READ_PROGRESS)) {
             stmt.bindBoolean(1, read);
-            stmt.bindString(2, now);
+            stmt.bindString(2, endDate);
             stmt.bindString(3, "");
             stmt.bindLong(4, book.getId());
             success = 0 < stmt.executeUpdateDelete();
         }
 
         if (success) {
-            book.putBoolean(DBKey.READ__BOOL, read);
-            book.putString(DBKey.READ_END__DATE, now);
-            book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
-            book.putString(DBKey.READ_PROGRESS, "");
+            book.internalSetReadingProgress(now, read, endDate);
         }
 
         return success;
@@ -583,11 +581,12 @@ public class BookDaoImpl
 
     @Override
     public boolean setReadProgress(@NonNull final Book book,
-                                   @NonNull final ReadProgress readProgress) {
+                                   @NonNull final ReadingProgress readingProgress) {
 
-        final boolean read = readProgress.isRead();
+        final boolean read = readingProgress.isRead();
 
-        final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
+        final String now = SqlEncode.date(LocalDateTime.now());
+        final String endDate = read ? now : "";
 
         final boolean success;
 
@@ -601,28 +600,23 @@ public class BookDaoImpl
             // set it as well.
             // Keep in sync with {@link BookDaoHelper#processReadProgress()} !
             String pageCount = book.getString(DBKey.PAGE_COUNT);
-            if (!readProgress.asPercentage() && pageCount.isEmpty()) {
-                pageCount = String.valueOf(readProgress.getTotalPages());
+            if (!readingProgress.asPercentage() && pageCount.isEmpty()) {
+                pageCount = String.valueOf(readingProgress.getTotalPages());
             }
 
             // We might be updating the page-count needlessly, but no harm done.
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.UPDATE_READ_PROGRESS_AND_PAGE_COUNT)) {
                 stmt.bindBoolean(1, read);
-                stmt.bindString(2, now);
-                stmt.bindString(3, readProgress.toJson());
+                stmt.bindString(2, endDate);
+                stmt.bindString(3, readingProgress.toJson());
                 stmt.bindString(4, pageCount);
                 stmt.bindLong(5, book.getId());
                 success = 0 < stmt.executeUpdateDelete();
             }
 
             if (success) {
-                book.putBoolean(DBKey.READ__BOOL, read);
-                book.putString(DBKey.READ_END__DATE, now);
-                book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
-                // reminder... don't call book.setReadProgress or we'll be recursive looping!
-                book.putString(DBKey.READ_PROGRESS, readProgress.toJson());
-                book.putString(DBKey.PAGE_COUNT, pageCount);
+                book.internalSetReadingProgress(now, readingProgress, read, endDate, pageCount);
             }
 
             if (txLock != null) {

@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.bookdetails;
+package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,7 +32,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadProgressBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ReadProgressDialogFragment;
 
 /**
  * Allows setting the book status to either a percentage or a "page x of y" status.
@@ -40,13 +39,15 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ReadProgressDialogFragment;
 public class ReadProgressFragment
         extends Fragment {
 
-    static final String TAG = "ReadProgressFragment";
+    public static final String TAG = "ReadProgressFragment";
 
-    private ShowBookDetailsViewModel vm;
+    private FragmentReadProgressBinding vb;
 
-    private final ReadProgressDialogFragment.Launcher editLauncher =
-            new ReadProgressDialogFragment.Launcher(
-                    new ReadProgressDialogFragment.Launcher.OnModifiedCallback() {
+    private BookReadStatusViewModel vm;
+
+    private final ReadingProgressDialogFragment.Launcher editLauncher =
+            new ReadingProgressDialogFragment.Launcher(
+                    new ReadingProgressDialogFragment.Launcher.OnModifiedCallback() {
                         @Override
                         public void onModified(@NonNull final String requestKey,
                                                final boolean read) {
@@ -55,23 +56,17 @@ public class ReadProgressFragment
 
                         @Override
                         public void onModified(@NonNull final String requestKey,
-                                               @NonNull final ReadProgress readProgress) {
-                            vm.setReadProgress(readProgress);
+                                               @NonNull final ReadingProgress readingProgress) {
+                            vm.setReadingProgress(readingProgress);
                         }
                     });
-
-    private FragmentReadProgressBinding vb;
-
-    @NonNull
-    static Fragment create() {
-        return new ReadProgressFragment();
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(ShowBookDetailsViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(
+                ReadStatusFragmentFactory.getViewModelClass(requireArguments()));
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
@@ -93,21 +88,20 @@ public class ReadProgressFragment
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
 
         reload();
-        vb.lblReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getReadProgress()));
+        vb.lblReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getReadingProgress()));
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    void reload() {
-        final ReadProgress readProgress = vm.getBook().getReadProgress();
+    public void reload() {
+        final ReadingProgress readingProgress = vm.getReadingProgress();
 
-        final int percentage = readProgress.getPercentage();
+        final int percentage = readingProgress.getPercentage();
         final String txt;
-        if (readProgress.asPercentage()) {
+        if (readingProgress.asPercentage()) {
             txt = getString(R.string.info_progress_x_percent, percentage);
         } else {
             txt = getString(R.string.info_progress_page_x_of_y,
-                            readProgress.getCurrentPage(),
-                            readProgress.getTotalPages());
+                            readingProgress.getCurrentPage(),
+                            readingProgress.getTotalPages());
         }
 
         switch (percentage) {

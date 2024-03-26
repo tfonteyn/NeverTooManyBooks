@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadStatusFragmentFactory;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
@@ -59,6 +60,12 @@ public class EditBookNotesFragment
 
         //noinspection DataFlowIssue
         vm.initFields(getContext(), FragmentId.Notes, FieldGroup.Notes);
+
+        ReadStatusFragmentFactory.bind(getChildFragmentManager(), R.id.fragment_read,
+                                       vm.getStyle(),
+                                       ReadStatusFragmentFactory.VIEWMODEL_EDIT);
+
+        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
     }
 
     @Override

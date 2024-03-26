@@ -49,9 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ReadProgress;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -1050,27 +1052,26 @@ public class Book
         }
     }
 
+
     /**
-     * Update the 'read' status of a book in the database.
-     * The 'read end' date is updated as needed.
-     * Any 'progress' data is erased.
+     * Get the Read/Unread status.
      *
-     * @param read the status to set
-     *
-     * @return the new status. If the update failed, this will be the unchanged status.
+     * @return {@code true} if this book was read/finished.
      */
-    public boolean setRead(final boolean read) {
-        final boolean old = isRead();
-
-        if (ServiceLocator.getInstance().getBookDao().setRead(this, read)) {
-            return read;
-        }
-
-        return old;
-    }
-
     public boolean isRead() {
         return getBoolean(DBKey.READ__BOOL);
+    }
+
+    /**
+     * Set the Read/Unread status.
+     * Related fields are updated as needed.
+     *
+     * @param read flag
+     */
+    public void setRead(final boolean read) {
+        final String now = SqlEncode.date(LocalDateTime.now());
+        final String endDate = read ? now : "";
+        internalSetReadingProgress(now, read, endDate);
     }
 
     /**
@@ -1079,22 +1080,22 @@ public class Book
      * @return progress
      */
     @NonNull
-    public ReadProgress getReadProgress() {
-        final ReadProgress readProgress;
+    public ReadingProgress getReadingProgress() {
+        final ReadingProgress readingProgress;
 
         if (isRead()) {
-            readProgress = ReadProgress.finished(true);
+            readingProgress = ReadingProgress.finished(true);
         } else {
-            readProgress = ReadProgress.fromJson(getString(DBKey.READ_PROGRESS));
+            readingProgress = ReadingProgress.fromJson(getString(DBKey.READ_PROGRESS));
         }
 
-        // Copy the total number of pages if needed AND possible.
-        if (readProgress.getTotalPages() == 0) {
+        // Copy the total number of pages if needed/possible.
+        if (readingProgress.getTotalPages() == 0) {
             final String pageCountStr = getString(DBKey.PAGE_COUNT);
             if (!pageCountStr.isEmpty()) {
                 try {
                     final int totalPages = Integer.parseInt(pageCountStr);
-                    readProgress.setTotalPages(totalPages);
+                    readingProgress.setTotalPages(totalPages);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // The field was likely a description of some sort,
                     // and not a simple page count number.
@@ -1103,27 +1104,74 @@ public class Book
             }
         }
 
-        return readProgress;
+        return readingProgress;
     }
 
     /**
-     * Update the 'read-progress' status of a book in the database.
-     * The 'read end' date is updated as needed.
+     * Set the progress the reader has made on this book.
+     * Related fields are updated as needed.
      *
-     * @param readProgress the progress data to set
-     *
-     * @return the new status. If the update failed, this will be the unchanged status.
+     * @param progress to set
      */
-    @NonNull
-    public ReadProgress setReadProgress(@NonNull final ReadProgress readProgress) {
-        final ReadProgress oldProgress = getReadProgress();
+    public void setReadingProgress(@NonNull final ReadingProgress progress) {
+        final boolean read = progress.isRead();
 
-        if (ServiceLocator.getInstance().getBookDao().setReadProgress(this, readProgress)) {
-            return readProgress;
+        final String now = SqlEncode.date(LocalDateTime.now());
+        final String endDate = read ? now : "";
+
+        // If the separate page-count field is empty and we have a total-pages value,
+        // set it as well.
+        // Keep in sync with {@link BookDaoHelper#processReadProgress()} !
+        String pageCount = getString(DBKey.PAGE_COUNT);
+        if (!progress.asPercentage() && pageCount.isEmpty()) {
+            pageCount = String.valueOf(progress.getTotalPages());
         }
 
-        return oldProgress;
+        internalSetReadingProgress(now, progress, read, endDate, pageCount);
     }
+
+
+    /**
+     * <strong>WARNING</strong> this method only to be used by
+     * {@link #setRead(boolean)} and
+     * {@link BookDao#setRead(Book, boolean)}.
+     *
+     * @param now     date-time-stamp
+     * @param read    the status to set
+     * @param endDate value for {@link DBKey#READ_END__DATE}
+     */
+    public void internalSetReadingProgress(@NonNull final String now,
+                                           final boolean read,
+                                           @NonNull final String endDate) {
+        putBoolean(DBKey.READ__BOOL, read);
+        putString(DBKey.READ_END__DATE, endDate);
+        putString(DBKey.DATE_LAST_UPDATED__UTC, now);
+        putString(DBKey.READ_PROGRESS, "");
+    }
+
+    /**
+     * <strong>WARNING</strong> this method only to be used by
+     * {@link #setReadingProgress(ReadingProgress)} and
+     * {@link BookDao#setReadProgress(Book, ReadingProgress)}.
+     *
+     * @param now             date-time-stamp when the data was stored
+     * @param readingProgress value for {@link DBKey#READ_PROGRESS}
+     * @param read            value for {@link DBKey#READ__BOOL}
+     * @param endDate         value for {@link DBKey#READ_END__DATE}
+     * @param pageCount       value for {@link DBKey#PAGE_COUNT}
+     */
+    public void internalSetReadingProgress(@NonNull final String now,
+                                           @NonNull final ReadingProgress readingProgress,
+                                           final boolean read,
+                                           @NonNull final String endDate,
+                                           @NonNull final String pageCount) {
+        putBoolean(DBKey.READ__BOOL, read);
+        putString(DBKey.READ_END__DATE, endDate);
+        putString(DBKey.DATE_LAST_UPDATED__UTC, now);
+        putString(DBKey.READ_PROGRESS, readingProgress.toJson());
+        putString(DBKey.PAGE_COUNT, pageCount);
+    }
+
 
     /**
      * Get the <strong>current</strong> cover file for this book.

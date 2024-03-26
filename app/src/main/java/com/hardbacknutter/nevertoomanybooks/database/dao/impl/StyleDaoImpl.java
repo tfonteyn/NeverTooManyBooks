@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
@@ -118,8 +119,11 @@ public class StyleDaoImpl
                                             @NonNull final Style style) {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(
                 db.compileStatement(Sql.INSERT_STYLE))) {
-            // ignore insert errors... if that happens at this time, we're in a real mess anyhow
             doInsert(style, null, stmt);
+        } catch (@NonNull final SQLException e) {
+            // log, but just rethrow insert errors... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw e;
         }
     }
 

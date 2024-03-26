@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,8 +27,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopNestedScroller"
-    tools:viewBindingIgnore="true"
     tools:context=".FragmentHostActivity"
+    tools:viewBindingIgnore="true"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,32 +45,24 @@
             app:layout_constraintGuide_percent="0.5"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_read"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginTop="@dimen/field_margin_top"
-            android:text="@string/lbl_read"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:checked="true"
-            />
-
         <RatingBar
             android:id="@+id/rating"
             style="@style/Field.RatingBar.Editable"
             app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
+            tools:rating="2.5"
             />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_read_rating_bottom"
-            android:layout_width="wrap_content"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_read"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cbx_read,rating"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rating"
+            tools:layout="@layout/fragment_read_progress"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -79,7 +71,7 @@
             android:hint="@string/lbl_read_start"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_read_rating_bottom"
+            app:layout_constraintTop_toBottomOf="@id/fragment_read"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -128,7 +120,7 @@
             android:id="@+id/lbl_price_paid_currency"
             style="@style/TIL.Currency"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -146,7 +138,7 @@
             style="@style/TIL.Text.Price"
             android:hint="@string/lbl_price_paid"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
-            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
+            app:layout_constraintTop_toTopOf="parent"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -165,7 +157,7 @@
             android:hint="@string/lbl_condition"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -229,13 +221,21 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="lbl_date_acquired,lbl_location"
+            />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_notes"
             style="@style/TIL.Text.Note"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            app:layout_constraintTop_toBottomOf="@id/barrier_notes"
             >
 
             <com.google.android.material.textfield.TextInputEditText

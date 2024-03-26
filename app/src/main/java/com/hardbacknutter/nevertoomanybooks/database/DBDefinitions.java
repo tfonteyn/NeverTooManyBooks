@@ -337,7 +337,7 @@ public final class DBDefinitions {
     /**
      * {@link #TBL_BOOKS}. This is a string with different encodings.
      *
-     * @see Book#getReadProgress()
+     * @see Book#getReadingProgress()
      */
     public static final Domain DOM_BOOK_READ_PROGRESS;
     /** {@link #TBL_BOOKS}. */
@@ -1348,6 +1348,7 @@ public final class DBDefinitions {
                             DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
                             DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
                             DOM_STYLE_TITLE_SHOW_REORDERED,
+                            DOM_STYLE_READ_STATUS_WITH_PROGRESS,
                             DOM_STYLE_TEXT_SCALE,
                             DOM_STYLE_COVER_SCALE,
                             DOM_STYLE_LIST_HEADER,

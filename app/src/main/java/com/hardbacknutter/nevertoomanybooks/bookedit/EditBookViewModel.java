@@ -29,6 +29,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -49,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewModel;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -92,7 +95,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 @SuppressWarnings("WeakerAccess")
 public class EditBookViewModel
-        extends ViewModel {
+        extends ViewModel
+        implements BookReadStatusViewModel {
 
     /** Log tag. */
     private static final String TAG = "EditBookViewModel";
@@ -111,9 +115,8 @@ public class EditBookViewModel
     /** The key is the fragment tag. */
     private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
-
+    private final MutableLiveData<Void> onReadStatusChanged = new MutableLiveData<>();
     private List<MenuHandler> menuHandlers;
-
     /**
      * The Book we're editing (creating/updating).
      * It will never be {@code null} after being loaded in {@link #init(Context, Bundle)}.
@@ -162,23 +165,20 @@ public class EditBookViewModel
     /** Field drop down list. */
     @Nullable
     private List<String> seriesTitles;
-
     /** The currently displayed tab. */
     private int currentTab;
-
     /** These FieldFormatters can be shared between multiple fields. */
     private FieldFormatter<String> dateFormatter;
     private FieldFormatter<String> languageFormatter;
     private ListFormatter<Entity> listFormatterAutoDetails;
     private ListFormatter<Entity> listFormatterNormalDetails;
     private DoubleNumberFormatter doubleNumberFormatter;
-
     /** {@code true} if the book was changed and successfully saved. */
     private boolean modified;
-
     private String errStrNonBlankRequired;
     private String errStrReadStartAfterEnd;
     private RealNumberParser realNumberParser;
+    private Style style;
 
     int getCurrentTab() {
         return currentTab;
@@ -204,7 +204,7 @@ public class EditBookViewModel
             menuHandlers = MenuHandlerFactory.create();
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-            final Style globalStyle = serviceLocator.getStyles().getGlobalStyle();
+            style = serviceLocator.getStyles().getGlobalStyle();
             final Languages languages = serviceLocator.getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
@@ -213,8 +213,8 @@ public class EditBookViewModel
             dateFormatter = new DateFieldFormatter(userLocale, false);
             languageFormatter = new LanguageFormatter(userLocale, languages);
             doubleNumberFormatter = new DoubleNumberFormatter(realNumberParser);
-            listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, globalStyle);
-            listFormatterNormalDetails = new ListFormatter<>(Details.Normal, globalStyle);
+            listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, style);
+            listFormatterNormalDetails = new ListFormatter<>(Details.Normal, style);
 
             if (args != null) {
                 // 1. Do we have a Book? e.g. after an internet search
@@ -336,8 +336,42 @@ public class EditBookViewModel
     }
 
     @NonNull
+    public Style getStyle() {
+        return style;
+    }
+
+    @NonNull
     Book getBook() {
         return book;
+    }
+
+    @Override
+    public boolean isRead() {
+        return book.isRead();
+    }
+
+    @Override
+    public void setRead(final boolean isRead) {
+        book.setRead(isRead);
+        onReadStatusChanged.setValue(null);
+    }
+
+    @NonNull
+    @Override
+    public ReadingProgress getReadingProgress() {
+        return book.getReadingProgress();
+    }
+
+    @Override
+    public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
+        book.setReadingProgress(readingProgress);
+        onReadStatusChanged.setValue(null);
+    }
+
+    @NonNull
+    @Override
+    public MutableLiveData<Void> onReadStatusChanged() {
+        return onReadStatusChanged;
     }
 
     boolean isAnthology() {
@@ -1060,7 +1094,6 @@ public class EditBookViewModel
 
     private void initFieldsNotes(@NonNull final Context context,
                                  @NonNull final FragmentId fragmentId) {
-        fields.add(new CompoundButtonField(fragmentId, R.id.cbx_read, DBKey.READ__BOOL));
 
         fields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.SIGNED__BOOL));
 
