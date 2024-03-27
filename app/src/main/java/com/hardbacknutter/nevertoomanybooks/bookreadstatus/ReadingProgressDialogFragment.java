@@ -32,7 +32,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 
 /**
@@ -62,7 +62,7 @@ public class ReadingProgressDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        requestKey = args.getString(EditLauncher.BKEY_REQUEST_KEY);
+        requestKey = args.getString(DialogLauncher.BKEY_REQUEST_KEY);
 
         if (savedInstanceState != null) {
             args = savedInstanceState;
@@ -171,7 +171,7 @@ public class ReadingProgressDialogFragment
     }
 
     public static class Launcher
-            extends EditLauncher {
+            extends DialogLauncher {
 
         static final String BKEY_PROGRESS = TAG + ":progress";
 

@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationList
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
@@ -181,7 +181,7 @@ public class BookshelfFiltersDialogFragment
     }
 
     public static class Launcher
-            extends EditLauncher {
+            extends DialogLauncher {
 
         private static final String BKEY_MODIFIED = TAG + ":m";
 

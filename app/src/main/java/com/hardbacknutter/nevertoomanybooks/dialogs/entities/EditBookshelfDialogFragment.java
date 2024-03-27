@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,8 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -75,14 +75,14 @@ public class EditBookshelfDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
         bookshelf = Objects.requireNonNull(
-                args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
+                args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = bookshelf.getName();
         } else {
-            currentEdit = savedInstanceState.getString(EditLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getString(DialogLauncher.BKEY_ITEM);
         }
     }
 
@@ -147,7 +147,7 @@ public class EditBookshelfDialogFragment
             return false;
         }
 
-        final Consumer<Bookshelf> onSuccess = savedBookshelf -> EditInPlaceParcelableLauncher
+        final Consumer<Bookshelf> onSuccess = savedBookshelf -> InPlaceParcelableDialogLauncher
                 .setResult(this, requestKey, savedBookshelf);
 
         try {
@@ -181,7 +181,7 @@ public class EditBookshelfDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EditLauncher.BKEY_ITEM, currentEdit);
+        outState.putString(DialogLauncher.BKEY_ITEM, currentEdit);
     }
 
     @Override

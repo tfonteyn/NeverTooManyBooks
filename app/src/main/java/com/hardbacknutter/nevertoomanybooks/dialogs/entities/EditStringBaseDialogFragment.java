@@ -34,9 +34,9 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditStringLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StringDialogLauncher;
 
 /**
  * Base Dialog class to edit an <strong>in-line String field</strong> in Books table.
@@ -81,13 +81,13 @@ public abstract class EditStringBaseDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
-        originalText = args.getString(EditStringLauncher.BKEY_TEXT, "");
+                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
+        originalText = args.getString(StringDialogLauncher.BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
             currentText = originalText;
         } else {
-            currentText = savedInstanceState.getString(EditStringLauncher.BKEY_TEXT, "");
+            currentText = savedInstanceState.getString(StringDialogLauncher.BKEY_TEXT, "");
         }
     }
 
@@ -159,7 +159,7 @@ public abstract class EditStringBaseDialogFragment
         }
 
         final String storedText = onSave(originalText, currentText);
-        EditStringLauncher.setResult(this, requestKey, originalText, storedText);
+        StringDialogLauncher.setResult(this, requestKey, originalText, storedText);
         return true;
     }
 
@@ -183,7 +183,7 @@ public abstract class EditStringBaseDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EditStringLauncher.BKEY_TEXT, currentText);
+        outState.putString(StringDialogLauncher.BKEY_TEXT, currentText);
     }
 
     @Override

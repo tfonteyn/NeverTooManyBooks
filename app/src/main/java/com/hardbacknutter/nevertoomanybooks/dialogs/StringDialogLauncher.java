@@ -37,10 +37,10 @@ import java.util.function.Supplier;
  * <li>returns the modified text (and the original)</li>
  * </ul>
  */
-public class EditStringLauncher
-        extends EditLauncher {
+public class StringDialogLauncher
+        extends DialogLauncher {
 
-    private static final String TAG = "EditStringLauncher";
+    private static final String TAG = "StringDialogLauncher";
 
     /** Input value: the text (String) to edit. */
     public static final String BKEY_TEXT = TAG + ":text";
@@ -61,9 +61,9 @@ public class EditStringLauncher
      * @param dialogSupplier     a supplier for a new DialogFragment
      * @param onModifiedCallback callback for results
      */
-    public EditStringLauncher(@NonNull final String requestKey,
-                              @NonNull final Supplier<DialogFragment> dialogSupplier,
-                              @NonNull final OnModifiedCallback onModifiedCallback) {
+    public StringDialogLauncher(@NonNull final String requestKey,
+                                @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                @NonNull final OnModifiedCallback onModifiedCallback) {
         super(requestKey, dialogSupplier);
         this.onModifiedCallback = onModifiedCallback;
     }

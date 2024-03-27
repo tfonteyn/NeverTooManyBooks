@@ -39,8 +39,8 @@ import java.util.function.Supplier;
  *
  * @param <T> type of editable object
  */
-public class EditInPlaceParcelableLauncher<T extends Parcelable>
-        extends EditLauncher {
+public class InPlaceParcelableDialogLauncher<T extends Parcelable>
+        extends DialogLauncher {
 
     private static final String TAG = "EditInPlaceParcelableLa";
 
@@ -49,9 +49,9 @@ public class EditInPlaceParcelableLauncher<T extends Parcelable>
     @NonNull
     private final OnModifiedCallback<T> onModifiedCallback;
 
-    public EditInPlaceParcelableLauncher(@NonNull final String requestKey,
-                                         @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                         @NonNull final OnModifiedCallback<T> onModifiedCallback) {
+    public InPlaceParcelableDialogLauncher(@NonNull final String requestKey,
+                                           @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                           @NonNull final OnModifiedCallback<T> onModifiedCallback) {
         super(requestKey, dialogSupplier);
         this.onModifiedCallback = onModifiedCallback;
     }

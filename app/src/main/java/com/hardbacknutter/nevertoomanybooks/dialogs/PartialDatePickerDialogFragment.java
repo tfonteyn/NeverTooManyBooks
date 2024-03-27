@@ -396,7 +396,7 @@ public class PartialDatePickerDialogFragment
     }
 
     public static class Launcher
-            extends EditLauncher {
+            extends DialogLauncher {
 
         private static final String FIELD_ID = "fieldId";
         private static final String YEAR = "year";

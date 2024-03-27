@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -100,10 +100,10 @@ public class EditBookshelvesFragment
     private BookshelfAdapter adapter;
 
     /** Accept the result from the dialog. */
-    private final EditInPlaceParcelableLauncher<Bookshelf> editLauncher =
-            new EditInPlaceParcelableLauncher<>(RK_EDIT_BOOKSHELF,
-                                                EditBookshelfDialogFragment::new,
-                                                this::onModified);
+    private final InPlaceParcelableDialogLauncher<Bookshelf> editLauncher =
+            new InPlaceParcelableDialogLauncher<>(RK_EDIT_BOOKSHELF,
+                                                  EditBookshelfDialogFragment::new,
+                                                  this::onModified);
     private final PositionHandler positionHandler = new PositionHandler() {
         @Override
         public int getSelectedPosition() {

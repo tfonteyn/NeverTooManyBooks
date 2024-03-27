@@ -118,7 +118,7 @@ public class MultiChoiceDialogFragment
     }
 
     public static class Launcher<T extends Parcelable & Entity>
-            extends EditLauncher {
+            extends DialogLauncher {
 
         private static final String SELECTED = "selected";
         @NonNull

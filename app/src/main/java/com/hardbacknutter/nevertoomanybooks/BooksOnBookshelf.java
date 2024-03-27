@@ -95,9 +95,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditStringLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StringDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
@@ -276,35 +276,35 @@ public class BooksOnBookshelf
             new EditLenderDialogFragment.Launcher(
                     DBKey.LOANEE_NAME,
                     (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
-    private final EditStringLauncher editColorLauncher = new EditStringLauncher(
+    private final StringDialogLauncher editColorLauncher = new StringDialogLauncher(
             DBKey.COLOR, EditColorDialogFragment::new, (dbKey, original, modified)
             -> vm.onInlineStringUpdate(dbKey, original, modified));
-    private final EditStringLauncher editFormatLauncher = new EditStringLauncher(
+    private final StringDialogLauncher editFormatLauncher = new StringDialogLauncher(
             DBKey.FORMAT, EditFormatDialogFragment::new, (dbKey, original, modified)
             -> vm.onInlineStringUpdate(dbKey, original, modified));
-    private final EditStringLauncher editGenreLauncher = new EditStringLauncher(
+    private final StringDialogLauncher editGenreLauncher = new StringDialogLauncher(
             DBKey.GENRE, EditGenreDialogFragment::new, (dbKey, original, modified)
             -> vm.onInlineStringUpdate(dbKey, original, modified));
-    private final EditStringLauncher editLanguageLauncher = new EditStringLauncher(
+    private final StringDialogLauncher editLanguageLauncher = new StringDialogLauncher(
             DBKey.LANGUAGE, EditLanguageDialogFragment::new, (dbKey, original, modified)
             -> vm.onInlineStringUpdate(dbKey, original, modified));
-    private final EditStringLauncher editLocationLauncher = new EditStringLauncher(
+    private final StringDialogLauncher editLocationLauncher = new StringDialogLauncher(
             DBKey.LOCATION, EditLocationDialogFragment::new, (dbKey, original, modified)
             -> vm.onInlineStringUpdate(dbKey, original, modified));
-    private final EditInPlaceParcelableLauncher<Bookshelf> editBookshelfLauncher =
-            new EditInPlaceParcelableLauncher<>(
+    private final InPlaceParcelableDialogLauncher<Bookshelf> editBookshelfLauncher =
+            new InPlaceParcelableDialogLauncher<>(
                     DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new, (dbKey, entity)
                     -> vm.onEntityUpdate(dbKey, entity));
-    private final EditInPlaceParcelableLauncher<Author> editAuthorLauncher =
-            new EditInPlaceParcelableLauncher<>(
+    private final InPlaceParcelableDialogLauncher<Author> editAuthorLauncher =
+            new InPlaceParcelableDialogLauncher<>(
                     DBKey.FK_AUTHOR, EditAuthorDialogFragment::new, (dbKey, entity)
                     -> vm.onEntityUpdate(dbKey, entity));
-    private final EditInPlaceParcelableLauncher<Series> editSeriesLauncher =
-            new EditInPlaceParcelableLauncher<>(
+    private final InPlaceParcelableDialogLauncher<Series> editSeriesLauncher =
+            new InPlaceParcelableDialogLauncher<>(
                     DBKey.FK_SERIES, EditSeriesDialogFragment::new, (dbKey, entity)
                     -> vm.onEntityUpdate(dbKey, entity));
-    private final EditInPlaceParcelableLauncher<Publisher> editPublisherLauncher =
-            new EditInPlaceParcelableLauncher<>(
+    private final InPlaceParcelableDialogLauncher<Publisher> editPublisherLauncher =
+            new InPlaceParcelableDialogLauncher<>(
                     DBKey.FK_PUBLISHER,
                     EditPublisherDialogFragment::new, (dbKey, entity)
                             -> vm.onEntityUpdate(dbKey, entity));

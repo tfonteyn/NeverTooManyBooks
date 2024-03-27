@@ -145,7 +145,7 @@ public class SingleChoiceDialogFragment
     }
 
     public static class Launcher<T extends Parcelable & Entity>
-            extends EditLauncher {
+            extends DialogLauncher {
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTED = "selected";

@@ -39,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -251,11 +251,11 @@ public class EditBookAuthorDialogFragment
         }
 
         if (action == EditAction.Add) {
-            EditParcelableLauncher.setResult(this, authorVm.getRequestKey(),
-                                             currentEdit);
+            ParcelableDialogLauncher.setResult(this, authorVm.getRequestKey(),
+                                               currentEdit);
         } else {
-            EditParcelableLauncher.setResult(this, authorVm.getRequestKey(),
-                                             authorVm.getAuthor(), currentEdit);
+            ParcelableDialogLauncher.setResult(this, authorVm.getRequestKey(),
+                                               authorVm.getAuthor(), currentEdit);
         }
         return true;
     }

@@ -32,16 +32,19 @@ import androidx.lifecycle.LifecycleOwner;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public abstract class EditLauncher
+public abstract class DialogLauncher
         implements FragmentResultListener {
 
-    private static final String TAG = "EditLauncher";
+    private static final String TAG = "DialogLauncher";
 
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
     //TODO: move this to the classes where it's actually used.
     public static final String BKEY_ITEM = TAG + ":item";
 
-    /** FragmentResultListener request key to use for our response. */
+    /**
+     * FragmentResultListener request key to use for our response.
+     * Doubles up as the fragment TAG
+     */
     private final String requestKey;
     @NonNull
     private final Supplier<DialogFragment> dialogFragmentSupplier;
@@ -54,8 +57,8 @@ public abstract class EditLauncher
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param dialogSupplier a supplier for a new DialogFragment
      */
-    protected EditLauncher(@NonNull final String requestKey,
-                           @NonNull final Supplier<DialogFragment> dialogSupplier) {
+    protected DialogLauncher(@NonNull final String requestKey,
+                             @NonNull final Supplier<DialogFragment> dialogSupplier) {
         this.requestKey = requestKey;
         this.dialogFragmentSupplier = dialogSupplier;
     }
@@ -67,7 +70,7 @@ public abstract class EditLauncher
 
         final DialogFragment dialogFragment = dialogFragmentSupplier.get();
         dialogFragment.setArguments(args);
-        dialogFragment.show(fragmentManager, TAG);
+        dialogFragment.show(fragmentManager, requestKey);
     }
 
     public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,

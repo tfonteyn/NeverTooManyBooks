@@ -50,16 +50,16 @@ import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
  *
  * @param <T> type of editable object
  */
-public class EditParcelableLauncher<T extends Parcelable>
-        extends EditLauncher {
+public class ParcelableDialogLauncher<T extends Parcelable>
+        extends DialogLauncher {
 
-    private static final String TAG = "EditParcelableLauncher";
+    private static final String TAG = "ParcelableDialogLauncher";
 
     private static final String ORIGINAL = TAG + ":o";
     private static final String MODIFIED = TAG + ":m";
 
-    protected EditParcelableLauncher(@NonNull final String requestKey,
-                                     @NonNull final Supplier<DialogFragment> dialogSupplier) {
+    protected ParcelableDialogLauncher(@NonNull final String requestKey,
+                                       @NonNull final Supplier<DialogFragment> dialogSupplier) {
         super(requestKey, dialogSupplier);
     }
 

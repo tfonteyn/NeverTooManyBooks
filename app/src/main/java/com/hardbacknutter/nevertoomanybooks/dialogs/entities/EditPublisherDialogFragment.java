@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,8 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
@@ -76,14 +76,14 @@ public class EditPublisherDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
         publisher = Objects.requireNonNull(
-                args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
+                args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
         } else {
-            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DialogLauncher.BKEY_ITEM);
         }
     }
 
@@ -143,7 +143,7 @@ public class EditPublisherDialogFragment
         final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
         final Locale locale = getResources().getConfiguration().getLocales().get(0);
 
-        final Consumer<Publisher> onSuccess = savedPublisher -> EditInPlaceParcelableLauncher
+        final Consumer<Publisher> onSuccess = savedPublisher -> InPlaceParcelableDialogLauncher
                 .setResult(this, requestKey, savedPublisher);
 
         try {
@@ -188,7 +188,7 @@ public class EditPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
+        outState.putParcelable(DialogLauncher.BKEY_ITEM, currentEdit);
     }
 
     @Override

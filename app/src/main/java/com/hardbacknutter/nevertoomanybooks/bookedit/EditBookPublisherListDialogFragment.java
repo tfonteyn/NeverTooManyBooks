@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,9 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -85,8 +85,9 @@ public class EditBookPublisherListDialogFragment
             };
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
-    private final EditParcelableLauncher<Publisher> editLauncher =
-            new EditParcelableLauncher<>(RK_EDIT_PUBLISHER, EditBookPublisherDialogFragment::new) {
+    private final ParcelableDialogLauncher<Publisher> editLauncher =
+            new ParcelableDialogLauncher<>(RK_EDIT_PUBLISHER,
+                                           EditBookPublisherDialogFragment::new) {
                 @Override
                 public void onAdd(@NonNull final Publisher publisher) {
                     add(publisher);

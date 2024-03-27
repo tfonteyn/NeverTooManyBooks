@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
@@ -190,7 +190,7 @@ public class EditAuthorDialogFragment
 
         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
 
-        final Consumer<Author> onSuccess = savedAuthor -> EditInPlaceParcelableLauncher
+        final Consumer<Author> onSuccess = savedAuthor -> InPlaceParcelableDialogLauncher
                 .setResult(this, authorVm.getRequestKey(), savedAuthor);
 
         try {

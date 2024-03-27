@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,9 +32,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 /**
@@ -79,17 +79,17 @@ public class EditBookSeriesDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(
                 args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         series = Objects.requireNonNull(
-                args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
+                args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());
             currentEdit.setNumber(series.getNumber());
         } else {
-            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DialogLauncher.BKEY_ITEM);
         }
     }
 
@@ -138,9 +138,9 @@ public class EditBookSeriesDialogFragment
         }
 
         if (action == EditAction.Add) {
-            EditParcelableLauncher.setResult(this, requestKey, currentEdit);
+            ParcelableDialogLauncher.setResult(this, requestKey, currentEdit);
         } else {
-            EditParcelableLauncher.setResult(this, requestKey, series, currentEdit);
+            ParcelableDialogLauncher.setResult(this, requestKey, series, currentEdit);
         }
         return true;
     }
