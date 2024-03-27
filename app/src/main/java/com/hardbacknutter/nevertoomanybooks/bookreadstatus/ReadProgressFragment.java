@@ -47,7 +47,7 @@ public class ReadProgressFragment
 
     private final ReadingProgressDialogFragment.Launcher editLauncher =
             new ReadingProgressDialogFragment.Launcher(
-                    new ReadingProgressDialogFragment.Launcher.OnModifiedCallback() {
+                    new ReadingProgressDialogFragment.Launcher.ResultListener() {
                         @Override
                         public void onModified(@NonNull final String requestKey,
                                                final boolean read) {

@@ -176,11 +176,11 @@ public class ReadingProgressDialogFragment
         static final String BKEY_PROGRESS = TAG + ":progress";
 
         @NonNull
-        private final OnModifiedCallback onModifiedCallback;
+        private final ResultListener resultListener;
 
-        public Launcher(@NonNull final OnModifiedCallback onModifiedCallback) {
+        public Launcher(@NonNull final ResultListener resultListener) {
             super(DBKey.READ_PROGRESS, ReadingProgressDialogFragment::new);
-            this.onModifiedCallback = onModifiedCallback;
+            this.resultListener = resultListener;
         }
 
         public static void setResult(@NonNull final Fragment fragment,
@@ -214,15 +214,15 @@ public class ReadingProgressDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             if (result.containsKey(DBKey.READ__BOOL)) {
-                onModifiedCallback.onModified(requestKey, result.getBoolean(DBKey.READ__BOOL));
+                resultListener.onModified(requestKey, result.getBoolean(DBKey.READ__BOOL));
             } else {
-                onModifiedCallback.onModified(requestKey, Objects.requireNonNull(
+                resultListener.onModified(requestKey, Objects.requireNonNull(
                         result.getParcelable(BKEY_PROGRESS)));
 
             }
         }
 
-        public interface OnModifiedCallback {
+        public interface ResultListener {
 
             /**
              * Callback handler.
