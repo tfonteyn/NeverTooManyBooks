@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,9 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -148,19 +145,17 @@ public class SingleChoiceDialogFragment
     }
 
     public static class Launcher<T extends Parcelable & Entity>
-            implements FragmentResultListener {
+            extends EditLauncher {
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTED = "selected";
-        @NonNull
-        private final String requestKey;
+
         @NonNull
         private final ResultListener resultListener;
-        private FragmentManager fragmentManager;
 
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
-            this.requestKey = requestKey;
+            super(requestKey, SingleChoiceDialogFragment::new);
             this.resultListener = resultListener;
         }
 
@@ -172,12 +167,6 @@ public class SingleChoiceDialogFragment
             result.putInt(FIELD_ID, fieldId);
             result.putLong(SELECTED, selectedItem);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -197,7 +186,6 @@ public class SingleChoiceDialogFragment
                            @NonNull final T selectedItem) {
 
             final Bundle args = new Bundle(5);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(BKEY_DIALOG_TITLE, dialogTitle);
             args.putInt(BKEY_FIELD_ID, fieldId);
 
@@ -208,9 +196,7 @@ public class SingleChoiceDialogFragment
 
             args.putLong(BKEY_SELECTED, selectedItem.getId());
 
-            final DialogFragment frag = new SingleChoiceDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
+            createDialog(args);
         }
 
         @Override
