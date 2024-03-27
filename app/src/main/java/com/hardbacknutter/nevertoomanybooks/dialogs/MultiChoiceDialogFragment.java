@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,9 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -121,18 +118,15 @@ public class MultiChoiceDialogFragment
     }
 
     public static class Launcher<T extends Parcelable & Entity>
-            implements FragmentResultListener {
+            extends EditLauncher {
 
         private static final String SELECTED = "selected";
         @NonNull
-        private final String requestKey;
-        @NonNull
         private final ResultListener resultListener;
-        private FragmentManager fragmentManager;
 
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
-            this.requestKey = requestKey;
+            super(requestKey, MultiChoiceDialogFragment::new);
             this.resultListener = resultListener;
         }
 
@@ -142,12 +136,6 @@ public class MultiChoiceDialogFragment
             final Bundle result = new Bundle(1);
             result.putLongArray(SELECTED, selectedItems.stream().mapToLong(o -> o).toArray());
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -164,7 +152,6 @@ public class MultiChoiceDialogFragment
                            @NonNull final List<T> selectedItems) {
 
             final Bundle args = new Bundle(5);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(BKEY_DIALOG_TITLE, dialogTitle);
 
             args.putLongArray(BKEY_ALL_IDS, allItems
@@ -175,9 +162,7 @@ public class MultiChoiceDialogFragment
             args.putLongArray(BKEY_SELECTED, selectedItems
                     .stream().mapToLong(Entity::getId).toArray());
 
-            final DialogFragment frag = new MultiChoiceDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
+            createDialog(args);
         }
 
         @Override
