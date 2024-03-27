@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,11 +32,7 @@ import android.widget.ImageView;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
@@ -373,18 +370,15 @@ public class CoverBrowserDialogFragment
     }
 
     public static class Launcher
-            implements FragmentResultListener {
+            extends EditLauncher {
 
         private static final String COVER_FILE_SPEC = "fileSpec";
         @NonNull
-        private final String requestKey;
-        @NonNull
         private final ResultListener resultListener;
-        private FragmentManager fragmentManager;
 
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
-            this.requestKey = requestKey;
+            super(requestKey, CoverBrowserDialogFragment::new);
             this.resultListener = resultListener;
         }
 
@@ -408,20 +402,11 @@ public class CoverBrowserDialogFragment
                            @IntRange(from = 0, to = 1) final int cIdx) {
 
             final Bundle args = new Bundle(4);
-            args.putString(CoverBrowserViewModel.BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, bookTitle);
             args.putString(DBKey.BOOK_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
-            final DialogFragment fragment = new CoverBrowserDialogFragment();
-            fragment.setArguments(args);
-            fragment.show(fragmentManager, TAG);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
+            createDialog(args);
         }
 
         @Override
