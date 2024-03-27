@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,11 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -400,21 +396,18 @@ public class PartialDatePickerDialogFragment
     }
 
     public static class Launcher
-            implements FragmentResultListener {
+            extends EditLauncher {
 
         private static final String FIELD_ID = "fieldId";
         private static final String YEAR = "year";
         private static final String MONTH = "month";
         private static final String DAY = "day";
         @NonNull
-        private final String requestKey;
-        @NonNull
         private final ResultListener resultListener;
-        private FragmentManager fragmentManager;
 
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
-            this.requestKey = requestKey;
+            super(requestKey, PartialDatePickerDialogFragment::new);
             this.resultListener = resultListener;
         }
 
@@ -431,12 +424,6 @@ public class PartialDatePickerDialogFragment
             result.putInt(DAY, day);
 
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -460,14 +447,11 @@ public class PartialDatePickerDialogFragment
             }
 
             final Bundle args = new Bundle(4);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putInt(BKEY_DIALOG_TITLE, dialogTitleId);
             args.putInt(BKEY_FIELD_ID, fieldId);
             args.putString(BKEY_DATE, dateStr);
 
-            final DialogFragment frag = new PartialDatePickerDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
+            createDialog(args);
         }
 
         @Override
