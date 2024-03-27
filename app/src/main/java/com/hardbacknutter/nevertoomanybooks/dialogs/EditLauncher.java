@@ -38,6 +38,7 @@ public abstract class EditLauncher
     private static final String TAG = "EditLauncher";
 
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    //TODO: move this to the classes where it's actually used.
     public static final String BKEY_ITEM = TAG + ":item";
 
     /** FragmentResultListener request key to use for our response. */
