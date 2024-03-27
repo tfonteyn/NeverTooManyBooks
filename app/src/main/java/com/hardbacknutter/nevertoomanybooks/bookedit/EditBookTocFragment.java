@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,9 +38,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -138,7 +137,8 @@ public class EditBookTocFragment
     private EditBookTocViewModel editTocVm;
 
     private final ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher =
-            new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
+            new ConfirmTocDialogFragment.Launcher(
+                    RK_CONFIRM_TOC, new ConfirmTocDialogFragment.Launcher.ResultListener() {
                 @Override
                 public void onResult(@NonNull final Book.ContentType contentType,
                                      @NonNull final List<TocEntry> tocEntries) {
@@ -149,7 +149,7 @@ public class EditBookTocFragment
                 public void searchNextEdition() {
                     searchIsfdb();
                 }
-            };
+            });
 
     private ExtPopupMenu contextMenu;
 
@@ -560,18 +560,19 @@ public class EditBookTocFragment
             return dialog;
         }
 
-        public abstract static class Launcher
-                implements FragmentResultListener {
+        public static class Launcher
+                extends EditLauncher {
 
             private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
             private static final String BKEY_TOC_BIT_MASK = "tocBitMask";
             private static final String BKEY_TOC_LIST = "tocEntries";
             @NonNull
-            private final String requestKey;
-            private FragmentManager fragmentManager;
+            private final ResultListener resultListener;
 
-            protected Launcher(@NonNull final String requestKey) {
-                this.requestKey = requestKey;
+            protected Launcher(@NonNull final String requestKey,
+                               @NonNull final ResultListener resultListener) {
+                super(requestKey, ConfirmTocDialogFragment::new);
+                this.resultListener = resultListener;
             }
 
             static void setResult(@NonNull final Fragment fragment,
@@ -604,47 +605,40 @@ public class EditBookTocFragment
 
                 final Bundle args = new Bundle(4);
                 args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
-                args.putString(BKEY_REQUEST_KEY, requestKey);
                 args.putLong(DBKey.BOOK_CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
-                final DialogFragment fragment = new ConfirmTocDialogFragment();
-                fragment.setArguments(args);
-                fragment.show(fragmentManager, TAG);
-            }
-
-            public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                                  @NonNull final LifecycleOwner lifecycleOwner) {
-                this.fragmentManager = fragmentManager;
-                this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner,
-                                                               this);
+                createDialog(args);
             }
 
             @Override
             public void onFragmentResult(@NonNull final String requestKey,
                                          @NonNull final Bundle result) {
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
-                    searchNextEdition();
+                    resultListener.searchNextEdition();
                 } else {
-                    onResult(Book.ContentType.getType(result.getInt(BKEY_TOC_BIT_MASK)),
-                             Objects.requireNonNull(result.getParcelableArrayList(BKEY_TOC_LIST),
-                                                    BKEY_TOC_LIST));
+                    resultListener.onResult(
+                            Book.ContentType.getType(result.getInt(BKEY_TOC_BIT_MASK)),
+                            Objects.requireNonNull(result.getParcelableArrayList(BKEY_TOC_LIST),
+                                                   BKEY_TOC_LIST));
                 }
             }
 
-            /**
-             * Callback handler.
-             *
-             * @param contentType bit flags
-             * @param tocEntries  the list of entries
-             */
-            public abstract void onResult(@NonNull Book.ContentType contentType,
-                                          @NonNull List<TocEntry> tocEntries);
+            public interface ResultListener {
+                /**
+                 * Callback handler.
+                 *
+                 * @param contentType bit flags
+                 * @param tocEntries  the list of entries
+                 */
+                void onResult(@NonNull Book.ContentType contentType,
+                              @NonNull List<TocEntry> tocEntries);
 
-            /**
-             * Callback handler.
-             */
-            public abstract void searchNextEdition();
+                /**
+                 * Callback handler.
+                 */
+                void searchNextEdition();
+            }
         }
     }
 
