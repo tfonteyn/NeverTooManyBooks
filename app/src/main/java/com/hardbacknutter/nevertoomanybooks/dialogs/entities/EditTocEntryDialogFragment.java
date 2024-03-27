@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,11 +24,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Objects;
 
@@ -38,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -216,17 +213,14 @@ public class EditTocEntryDialogFragment
     }
 
     public static class Launcher
-            implements FragmentResultListener {
+            extends EditLauncher {
 
         @NonNull
-        private final String requestKey;
-        @NonNull
         private final ResultListener resultListener;
-        private FragmentManager fragmentManager;
 
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
-            this.requestKey = requestKey;
+            super(requestKey, EditTocEntryDialogFragment::new);
             this.resultListener = resultListener;
         }
 
@@ -239,12 +233,6 @@ public class EditTocEntryDialogFragment
             result.putParcelable(BKEY_TOC_ENTRY, tocEntry);
             result.putInt(BKEY_POSITION, position);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -261,15 +249,12 @@ public class EditTocEntryDialogFragment
                            final boolean isAnthology) {
 
             final Bundle args = new Bundle(5);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, book.getTitle());
             args.putBoolean(BKEY_ANTHOLOGY, isAnthology);
             args.putInt(BKEY_POSITION, position);
             args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
 
-            final DialogFragment frag = new EditTocEntryDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
+            createDialog(args);
         }
 
         @Override
