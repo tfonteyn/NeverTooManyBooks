@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,11 +26,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationList
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
@@ -184,19 +181,16 @@ public class BookshelfFiltersDialogFragment
     }
 
     public static class Launcher
-            implements FragmentResultListener {
+            extends EditLauncher {
 
         private static final String BKEY_MODIFIED = TAG + ":m";
 
         @NonNull
-        private final String requestKey;
-        @NonNull
         private final ResultListener resultListener;
-        private FragmentManager fragmentManager;
 
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
-            this.requestKey = requestKey;
+            super(requestKey, BookshelfFiltersDialogFragment::new);
             this.resultListener = resultListener;
         }
 
@@ -208,32 +202,21 @@ public class BookshelfFiltersDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
-        }
-
         /**
          * Launch the dialog.
          *
          * @param bookshelf to edit
          */
         public void launch(@NonNull final Bookshelf bookshelf) {
-
             final Bundle args = new Bundle(2);
-            args.putString(BookshelfFiltersViewModel.BKEY_REQUEST_KEY, requestKey);
             args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
-
-            final DialogFragment frag = new BookshelfFiltersDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
+            createDialog(args);
         }
 
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            resultListener.onResult(result.getBoolean(BKEY_MODIFIED));
+            resultListener.onModified(result.getBoolean(BKEY_MODIFIED));
         }
 
         @FunctionalInterface
@@ -243,7 +226,7 @@ public class BookshelfFiltersDialogFragment
              *
              * @param modified flag to indicate whether the filters have changed
              */
-            void onResult(boolean modified);
+            void onModified(boolean modified);
         }
     }
 
