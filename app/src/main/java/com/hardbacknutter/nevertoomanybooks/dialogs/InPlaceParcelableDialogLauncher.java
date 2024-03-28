@@ -47,15 +47,14 @@ public class InPlaceParcelableDialogLauncher<T extends Parcelable>
     private static final String MODIFIED = TAG + ":m";
 
     @NonNull
-    private final OnModifiedCallback<T> onModifiedCallback;
+    private final ResultListener<T> resultListener;
 
     public InPlaceParcelableDialogLauncher(@NonNull final String requestKey,
                                            @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                           @NonNull final OnModifiedCallback<T> onModifiedCallback) {
+                                           @NonNull final ResultListener<T> resultListener) {
         super(requestKey, dialogSupplier);
-        this.onModifiedCallback = onModifiedCallback;
+        this.resultListener = resultListener;
     }
-
 
     /**
      * Set the result.
@@ -88,21 +87,21 @@ public class InPlaceParcelableDialogLauncher<T extends Parcelable>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        onModifiedCallback.onModified(requestKey,
-                                      Objects.requireNonNull(result.getParcelable(MODIFIED),
-                                                             MODIFIED));
+        resultListener.onResult(requestKey,
+                                Objects.requireNonNull(result.getParcelable(MODIFIED),
+                                                       MODIFIED));
     }
 
     @FunctionalInterface
-    public interface OnModifiedCallback<T> {
+    public interface ResultListener<T> {
 
         /**
          * Callback handler.
          *
          * @param requestKey the key as passed in
-         * @param modified   the modified item
+         * @param item       the modified item
          */
-        void onModified(@NonNull String requestKey,
-                        @NonNull T modified);
+        void onResult(@NonNull String requestKey,
+                      @NonNull T item);
     }
 }
