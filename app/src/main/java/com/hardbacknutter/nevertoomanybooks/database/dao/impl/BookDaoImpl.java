@@ -590,42 +590,27 @@ public class BookDaoImpl
 
         final boolean success;
 
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
+        // If the separate page-count field is empty and we have a total-pages value,
+        // set it as well.
+        // Keep in sync with {@link BookDaoHelper#processReadProgress()} !
+        String pageCount = book.getString(DBKey.PAGE_COUNT);
+        if (!readingProgress.asPercentage() && pageCount.isEmpty()) {
+            pageCount = String.valueOf(readingProgress.getTotalPages());
+        }
 
-            // If the separate page-count field is empty and we have a total-pages value,
-            // set it as well.
-            // Keep in sync with {@link BookDaoHelper#processReadProgress()} !
-            String pageCount = book.getString(DBKey.PAGE_COUNT);
-            if (!readingProgress.asPercentage() && pageCount.isEmpty()) {
-                pageCount = String.valueOf(readingProgress.getTotalPages());
-            }
+        // We might be updating the page-count needlessly, but no harm done.
+        try (SynchronizedStatement stmt = db.compileStatement(
+                Sql.UPDATE_READ_PROGRESS_AND_PAGE_COUNT)) {
+            stmt.bindBoolean(1, read);
+            stmt.bindString(2, endDate);
+            stmt.bindString(3, readingProgress.toJson());
+            stmt.bindString(4, pageCount);
+            stmt.bindLong(5, book.getId());
+            success = 0 < stmt.executeUpdateDelete();
+        }
 
-            // We might be updating the page-count needlessly, but no harm done.
-            try (SynchronizedStatement stmt = db.compileStatement(
-                    Sql.UPDATE_READ_PROGRESS_AND_PAGE_COUNT)) {
-                stmt.bindBoolean(1, read);
-                stmt.bindString(2, endDate);
-                stmt.bindString(3, readingProgress.toJson());
-                stmt.bindString(4, pageCount);
-                stmt.bindLong(5, book.getId());
-                success = 0 < stmt.executeUpdateDelete();
-            }
-
-            if (success) {
-                book.internalSetReadingProgress(now, readingProgress, read, endDate, pageCount);
-            }
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
+        if (success) {
+            book.internalSetReadingProgress(now, readingProgress, read, endDate, pageCount);
         }
 
         return success;
