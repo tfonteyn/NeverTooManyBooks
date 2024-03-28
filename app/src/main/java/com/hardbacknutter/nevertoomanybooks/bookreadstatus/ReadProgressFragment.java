@@ -49,14 +49,14 @@ public class ReadProgressFragment
             new ReadingProgressDialogFragment.Launcher(
                     new ReadingProgressDialogFragment.Launcher.ResultListener() {
                         @Override
-                        public void onModified(@NonNull final String requestKey,
-                                               final boolean read) {
+                        public void onResult(@NonNull final String requestKey,
+                                             final boolean read) {
                             vm.setRead(read);
                         }
 
                         @Override
-                        public void onModified(@NonNull final String requestKey,
-                                               @NonNull final ReadingProgress readingProgress) {
+                        public void onResult(@NonNull final String requestKey,
+                                             @NonNull final ReadingProgress readingProgress) {
                             vm.setReadingProgress(readingProgress);
                         }
                     });

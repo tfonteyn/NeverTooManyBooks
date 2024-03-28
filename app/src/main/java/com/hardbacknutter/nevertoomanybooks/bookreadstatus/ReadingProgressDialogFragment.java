@@ -214,9 +214,9 @@ public class ReadingProgressDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             if (result.containsKey(DBKey.READ__BOOL)) {
-                resultListener.onModified(requestKey, result.getBoolean(DBKey.READ__BOOL));
+                resultListener.onResult(requestKey, result.getBoolean(DBKey.READ__BOOL));
             } else {
-                resultListener.onModified(requestKey, Objects.requireNonNull(
+                resultListener.onResult(requestKey, Objects.requireNonNull(
                         result.getParcelable(BKEY_PROGRESS)));
 
             }
@@ -230,8 +230,8 @@ public class ReadingProgressDialogFragment
              * @param requestKey the key as passed in
              * @param read       flag
              */
-            void onModified(@NonNull String requestKey,
-                            boolean read);
+            void onResult(@NonNull String requestKey,
+                          boolean read);
 
             /**
              * Callback handler.
@@ -239,8 +239,8 @@ public class ReadingProgressDialogFragment
              * @param requestKey      the key as passed in
              * @param readingProgress progress
              */
-            void onModified(@NonNull String requestKey,
-                            @NonNull ReadingProgress readingProgress);
+            void onResult(@NonNull String requestKey,
+                          @NonNull ReadingProgress readingProgress);
         }
     }
 }
