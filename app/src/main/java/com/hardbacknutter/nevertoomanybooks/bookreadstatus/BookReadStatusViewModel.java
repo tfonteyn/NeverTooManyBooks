@@ -28,15 +28,49 @@ import androidx.lifecycle.MutableLiveData;
  */
 public interface BookReadStatusViewModel {
 
+    /**
+     * Get the Read/Unread status of the book we're currently displaying/editing.
+     *
+     * @return flag
+     */
     boolean isRead();
 
-    void setRead(boolean isRead);
+    /**
+     * Set the Read/Unread status of the book we're currently displaying/editing.
+     *
+     * @param read flag
+     *
+     * @see #onReadStatusChanged()
+     */
+    void setRead(boolean read);
 
-    void setReadingProgress(@NonNull ReadingProgress readingProgress);
-
+    /**
+     * Get the ReadingProgress status of the book we're currently displaying/editing.
+     *
+     * @return progress
+     */
     @NonNull
     ReadingProgress getReadingProgress();
 
+    /**
+     * Set the ReadingProgress status of the book we're currently displaying/editing.
+     *
+     * @param readingProgress to set
+     *
+     * @see #onReadStatusChanged()
+     */
+    void setReadingProgress(@NonNull ReadingProgress readingProgress);
+
+    /**
+     * Triggered after a call to
+     * {@link #setRead(boolean)} and
+     * {@link #setReadingProgress(ReadingProgress)}.
+     *
+     * @return void; indicates the UI should update the read-status related fields.
+     *
+     * @see #setRead(boolean)
+     * @see #setReadingProgress(ReadingProgress)
+     */
     @NonNull
     MutableLiveData<Void> onReadStatusChanged();
 }

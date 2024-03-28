@@ -214,7 +214,7 @@ public final class ReadingProgress
     }
 
     /**
-     * Quick check if the value represents a finished/read book.
+     * Check if this object represents a finished/read book.
      *
      * @return flag
      */
@@ -241,10 +241,24 @@ public final class ReadingProgress
         return 0;
     }
 
+    /**
+     * Set the raw value for the percentage.
+     * Calling this method does <strong>NOT</strong> flag this object as being a percentage value.
+     *
+     * @param percentage to set
+     *
+     * @see #setAsPercentage(boolean)
+     */
     public void setPercentage(@Nullable final Integer percentage) {
         this.percentage = percentage;
     }
 
+    /**
+     * Get the raw value for the current page.
+     *
+     * @return page; or {@code 0} if unknown
+     */
+    @SuppressWarnings("WeakerAccess")
     public int getCurrentPage() {
         if (currentPage != null) {
             return currentPage;
@@ -252,10 +266,25 @@ public final class ReadingProgress
         return 0;
     }
 
+    /**
+     * Set the raw value for the percentage.
+     * Calling this method does <strong>NOT</strong> flag
+     * this object as being a "page x of y" value.
+     *
+     * @param currentPage to set
+     *
+     * @see #setAsPercentage(boolean)
+     */
+    @SuppressWarnings("WeakerAccess")
     public void setCurrentPage(@Nullable final Integer currentPage) {
         this.currentPage = currentPage;
     }
 
+    /**
+     * Get the raw value for the total number of pages.
+     *
+     * @return pages; or {@code 0} if unknown
+     */
     public int getTotalPages() {
         if (totalPages != null) {
             return totalPages;
@@ -263,6 +292,15 @@ public final class ReadingProgress
         return 0;
     }
 
+    /**
+     * Set the raw value for the percentage.
+     * Calling this method does <strong>NOT</strong> flag
+     * this object as being a "page x of y" value.
+     *
+     * @param totalPages to set
+     *
+     * @see #setAsPercentage(boolean)
+     */
     public void setTotalPages(@Nullable final Integer totalPages) {
         this.totalPages = totalPages;
     }
