@@ -87,9 +87,7 @@ public class InPlaceParcelableDialogLauncher<T extends Parcelable>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(requestKey,
-                                Objects.requireNonNull(result.getParcelable(MODIFIED),
-                                                       MODIFIED));
+        resultListener.onResult(Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
     }
 
     @FunctionalInterface
@@ -98,10 +96,8 @@ public class InPlaceParcelableDialogLauncher<T extends Parcelable>
         /**
          * Callback handler.
          *
-         * @param requestKey the key as passed in
-         * @param item       the modified item
+         * @param item the modified item
          */
-        void onResult(@NonNull String requestKey,
-                      @NonNull T item);
+        void onResult(@NonNull T item);
     }
 }

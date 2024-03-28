@@ -293,21 +293,20 @@ public class BooksOnBookshelf
             -> vm.onInlineStringUpdate(dbKey, original, modified));
     private final InPlaceParcelableDialogLauncher<Bookshelf> editBookshelfLauncher =
             new InPlaceParcelableDialogLauncher<>(
-                    DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new, (dbKey, entity)
-                    -> vm.onEntityUpdate(dbKey, entity));
+                    DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new,
+                    bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
     private final InPlaceParcelableDialogLauncher<Author> editAuthorLauncher =
             new InPlaceParcelableDialogLauncher<>(
-                    DBKey.FK_AUTHOR, EditAuthorDialogFragment::new, (dbKey, entity)
-                    -> vm.onEntityUpdate(dbKey, entity));
+                    DBKey.FK_AUTHOR, EditAuthorDialogFragment::new,
+                    author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
     private final InPlaceParcelableDialogLauncher<Series> editSeriesLauncher =
             new InPlaceParcelableDialogLauncher<>(
-                    DBKey.FK_SERIES, EditSeriesDialogFragment::new, (dbKey, entity)
-                    -> vm.onEntityUpdate(dbKey, entity));
+                    DBKey.FK_SERIES, EditSeriesDialogFragment::new,
+                    series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
     private final InPlaceParcelableDialogLauncher<Publisher> editPublisherLauncher =
             new InPlaceParcelableDialogLauncher<>(
-                    DBKey.FK_PUBLISHER,
-                    EditPublisherDialogFragment::new, (dbKey, entity)
-                            -> vm.onEntityUpdate(dbKey, entity));
+                    DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new,
+                    publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
 

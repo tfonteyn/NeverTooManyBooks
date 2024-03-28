@@ -256,12 +256,11 @@ public class EditBookshelvesFragment
         return false;
     }
 
-    private void onModified(@NonNull final String requestKey,
-                            @NonNull final Bookshelf modified) {
+    private void onModified(@NonNull final Bookshelf bookshelf) {
         // first update the previous, now unselected, row.
         adapter.notifyItemChanged(vm.getSelectedPosition());
         // store the newly selected row.
-        vm.onBookshelfEdited(modified.getId());
+        vm.onBookshelfEdited(bookshelf.getId());
         // update the newly selected row.
         adapter.notifyItemChanged(vm.getSelectedPosition());
     }
