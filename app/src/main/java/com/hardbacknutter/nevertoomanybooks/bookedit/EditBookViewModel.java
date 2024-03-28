@@ -98,15 +98,6 @@ public class EditBookViewModel
         extends ViewModel
         implements BookReadStatusViewModel {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookViewModel";
-    /** Log string. */
-    private static final String UPDATE_FAILED = "Update failed:";
-    /** Log string. */
-    private static final String ORIGINAL = "original=";
-    /** Log string. */
-    private static final String MODIFIED = "modified=";
-
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
