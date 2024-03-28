@@ -216,7 +216,7 @@ public class BookshelfFiltersDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            resultListener.onModified(result.getBoolean(BKEY_MODIFIED));
+            resultListener.onResult(result.getBoolean(BKEY_MODIFIED));
         }
 
         @FunctionalInterface
@@ -226,8 +226,7 @@ public class BookshelfFiltersDialogFragment
              *
              * @param modified flag to indicate whether the filters have changed
              */
-            void onModified(boolean modified);
+            void onResult(boolean modified);
         }
     }
-
 }
