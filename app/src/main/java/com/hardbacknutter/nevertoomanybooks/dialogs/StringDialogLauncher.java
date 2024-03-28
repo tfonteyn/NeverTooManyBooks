@@ -45,8 +45,6 @@ public class StringDialogLauncher
     /** Input value: the text (String) to edit. */
     public static final String BKEY_TEXT = TAG + ":text";
 
-    /** Return value: the original text. i.e. what was passed in using {@link #BKEY_TEXT}. */
-    private static final String ORIGINAL = TAG + ":o";
     /** Return value: the modified text. */
     private static final String MODIFIED = TAG + ":m";
 
@@ -73,7 +71,7 @@ public class StringDialogLauncher
                                  @NonNull final String original,
                                  @NonNull final String modified) {
         final Bundle result = new Bundle(2);
-        result.putString(ORIGINAL, original);
+        result.putString(BKEY_TEXT, original);
         result.putString(MODIFIED, modified);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -94,7 +92,8 @@ public class StringDialogLauncher
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
         onModifiedCallback.onModified(requestKey,
-                                      Objects.requireNonNull(result.getString(ORIGINAL), ORIGINAL),
+                                      Objects.requireNonNull(result.getString(BKEY_TEXT),
+                                                             BKEY_TEXT),
                                       Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
     }
 
