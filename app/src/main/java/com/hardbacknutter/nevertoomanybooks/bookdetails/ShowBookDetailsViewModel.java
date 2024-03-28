@@ -230,9 +230,9 @@ public class ShowBookDetailsViewModel
         return book.isRead();
     }
 
-    public void setRead(final boolean isRead) {
+    public void setRead(final boolean read) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        ServiceLocator.getInstance().getBookDao().setRead(book, isRead);
+        ServiceLocator.getInstance().getBookDao().setRead(book, read);
         onReadStatusChanged.setValue(null);
     }
 
