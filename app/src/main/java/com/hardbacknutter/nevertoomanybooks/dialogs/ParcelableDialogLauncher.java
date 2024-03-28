@@ -56,7 +56,6 @@ public class ParcelableDialogLauncher<T extends Parcelable>
 
     private static final String TAG = "ParcelableDialogLauncher";
 
-    private static final String ORIGINAL = TAG + ":o";
     private static final String MODIFIED = TAG + ":m";
     @NonNull
     private final ResultListener<T> resultListener;
@@ -98,7 +97,7 @@ public class ParcelableDialogLauncher<T extends Parcelable>
                                                         @NonNull final T original,
                                                         @NonNull final T modified) {
         final Bundle result = new Bundle(3);
-        result.putParcelable(ORIGINAL, original);
+        result.putParcelable(BKEY_ITEM, original);
         result.putParcelable(MODIFIED, modified);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -123,7 +122,7 @@ public class ParcelableDialogLauncher<T extends Parcelable>
                                  @NonNull final Bundle result) {
 
         // original can be null, modified cannot be null
-        resultListener.onResult(result.getParcelable(ORIGINAL),
+        resultListener.onResult(result.getParcelable(BKEY_ITEM),
                                 Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
     }
 
