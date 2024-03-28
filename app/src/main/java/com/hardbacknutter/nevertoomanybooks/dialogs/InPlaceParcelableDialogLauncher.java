@@ -31,11 +31,6 @@ import java.util.function.Supplier;
 
 /**
  * Launcher to edit an in-place Parcelable object.
- * <ul>
- * <li>used for direct/in-place editing of an existing item</li>
- * <li>modifications ARE STORED in the database</li>
- * <li>returns the modified item.</li>
- * </ul>
  *
  * @param <T> type of editable object
  */

@@ -34,20 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 
 /**
  * Launcher to edit a Parcelable object.
- * <p>
- * {@link EditAction#Add}:
- * <ul>
- * <li>used for list-dialogs needing to add a NEW item to the list</li>
- * <li>the item is NOT stored in the database</li>
- * <li>returns the new item</li>
- * </ul>
- * <p>
- * {@link EditAction#Edit}:
- * <ul>
- * <li>used for list-dialogs needing to EDIT an existing item in the list</li>
- * <li>the modifications are NOT stored in the database</li>
- * <li>returns the original untouched + a new copy with the modifications</li>
- * </ul>
  *
  * @param <T> type of editable object
  */

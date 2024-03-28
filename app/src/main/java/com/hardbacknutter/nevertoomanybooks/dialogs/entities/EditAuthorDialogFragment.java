@@ -47,13 +47,18 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.
- * <p>
- * For now this + its 3 sibling classes are not in fact called to create a new entry.
+ * For now this class is not in fact called to create a new entry.
  * We do however keep the code flexible enough to allow it for future usage.
+ * <ul>
+ * <li>Direct/in-place editing.</li>
+ * <li>Modifications ARE STORED in the database</li>
+ * <li>Returns the modified item.</li>
+ * </ul>
  *
- * @see EditBookshelfDialogFragment
+ * @see EditAuthorDialogFragment
  * @see EditSeriesDialogFragment
  * @see EditPublisherDialogFragment
+ * @see EditBookshelfDialogFragment
  */
 public class EditAuthorDialogFragment
         extends EditMergeableDialogFragment<Author> {
