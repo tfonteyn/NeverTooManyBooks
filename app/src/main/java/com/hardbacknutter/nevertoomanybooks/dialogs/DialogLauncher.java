@@ -38,7 +38,11 @@ public abstract class DialogLauncher
     private static final String TAG = "DialogLauncher";
 
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
-    //TODO: move this to the classes where it's actually used.
+
+    /**
+     * Input value: the item we're going to edit.
+     * Not used in all child classes!
+     */
     public static final String BKEY_ITEM = TAG + ":item";
 
     /**
