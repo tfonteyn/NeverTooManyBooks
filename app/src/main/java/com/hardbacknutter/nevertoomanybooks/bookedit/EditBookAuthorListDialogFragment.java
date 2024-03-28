@@ -91,18 +91,16 @@ public class EditBookAuthorListDialogFragment
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
     private final ParcelableDialogLauncher<Author> editLauncher =
-            new ParcelableDialogLauncher<>(RK_EDIT_AUTHOR, EditBookAuthorDialogFragment::new) {
-                @Override
-                public void onAdd(@NonNull final Author author) {
-                    add(author);
-                }
-
-                @Override
-                public void onModified(@NonNull final Author original,
-                                       @NonNull final Author modified) {
-                    processChanges(original, modified);
-                }
-            };
+            new ParcelableDialogLauncher<>(
+                    RK_EDIT_AUTHOR,
+                    EditBookAuthorDialogFragment::new,
+                    (original, modified) -> {
+                        if (original == null) {
+                            add(modified);
+                        } else {
+                            processChanges(original, modified);
+                        }
+                    });
     private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;

@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -57,10 +58,14 @@ public class ParcelableDialogLauncher<T extends Parcelable>
 
     private static final String ORIGINAL = TAG + ":o";
     private static final String MODIFIED = TAG + ":m";
+    @NonNull
+    private final ResultListener<T> resultListener;
 
-    protected ParcelableDialogLauncher(@NonNull final String requestKey,
-                                       @NonNull final Supplier<DialogFragment> dialogSupplier) {
+    public ParcelableDialogLauncher(@NonNull final String requestKey,
+                                    @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                    @NonNull final ResultListener<T> resultListener) {
         super(requestKey, dialogSupplier);
+        this.resultListener = resultListener;
     }
 
     /**
@@ -75,7 +80,6 @@ public class ParcelableDialogLauncher<T extends Parcelable>
                                                         @NonNull final String requestKey,
                                                         @NonNull final T item) {
         final Bundle result = new Bundle(2);
-        result.putParcelable(EditAction.BKEY, EditAction.Add);
         result.putParcelable(MODIFIED, item);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -94,7 +98,6 @@ public class ParcelableDialogLauncher<T extends Parcelable>
                                                         @NonNull final T original,
                                                         @NonNull final T modified) {
         final Bundle result = new Bundle(3);
-        result.putParcelable(EditAction.BKEY, EditAction.Edit);
         result.putParcelable(ORIGINAL, original);
         result.putParcelable(MODIFIED, modified);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
@@ -118,37 +121,21 @@ public class ParcelableDialogLauncher<T extends Parcelable>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final EditAction action = Objects.requireNonNull(result.getParcelable(EditAction.BKEY),
-                                                         EditAction.BKEY);
-        switch (action) {
-            case Add:
-                onAdd(Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
-                break;
 
-            case Edit:
-                onModified(Objects.requireNonNull(result.getParcelable(ORIGINAL), ORIGINAL),
-                           Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
-                break;
-        }
+        // original can be null, modified cannot be null
+        resultListener.onResult(result.getParcelable(ORIGINAL),
+                                Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
     }
 
-    /**
-     * Callback handler - {@link EditAction#Add}.
-     *
-     * @param item the new item
-     */
-    public void onAdd(@NonNull final T item) {
-        throw new UnsupportedOperationException(EditAction.Add.name());
-    }
-
-    /**
-     * Callback handler - {@link EditAction#Edit}.
-     *
-     * @param original the original item
-     * @param modified the modified item
-     */
-    public void onModified(@NonNull final T original,
-                           @NonNull final T modified) {
-        throw new UnsupportedOperationException(EditAction.Edit.name());
+    @FunctionalInterface
+    public interface ResultListener<T> {
+        /**
+         * Callback handler.
+         *
+         * @param original the original item; or {@code null} if we're adding a new item
+         * @param modified the modified or new item
+         */
+        void onResult(@Nullable T original,
+                      @NonNull T modified);
     }
 }

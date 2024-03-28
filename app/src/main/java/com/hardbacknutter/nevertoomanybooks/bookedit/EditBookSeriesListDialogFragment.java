@@ -86,18 +86,17 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter adapter;
     private final ParcelableDialogLauncher<Series> editLauncher =
-            new ParcelableDialogLauncher<>(RK_EDIT_SERIES, EditBookSeriesDialogFragment::new) {
-                @Override
-                public void onAdd(@NonNull final Series series) {
-                    add(series);
-                }
+            new ParcelableDialogLauncher<>(
+                    RK_EDIT_SERIES,
+                    EditBookSeriesDialogFragment::new,
+                    (original, modified) -> {
+                        if (original == null) {
+                            add(modified);
+                        } else {
+                            processChanges(original, modified);
+                        }
+                    });
 
-                @Override
-                public void onModified(@NonNull final Series original,
-                                       @NonNull final Series modified) {
-                    processChanges(original, modified);
-                }
-            };
     private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -232,7 +231,7 @@ public class EditBookSeriesListDialogFragment
         if (button != null) {
             // Fullscreen only;
             // R.id.btn_add
-            // R.id.btn_add_details
+            // R.id.btn_add_details (2024-03-28: not used/available for now)
             onAdd(button.getId() == R.id.btn_add_details);
             return true;
         }

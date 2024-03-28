@@ -86,19 +86,16 @@ public class EditBookPublisherListDialogFragment
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
     private final ParcelableDialogLauncher<Publisher> editLauncher =
-            new ParcelableDialogLauncher<>(RK_EDIT_PUBLISHER,
-                                           EditBookPublisherDialogFragment::new) {
-                @Override
-                public void onAdd(@NonNull final Publisher publisher) {
-                    add(publisher);
-                }
-
-                @Override
-                public void onModified(@NonNull final Publisher original,
-                                       @NonNull final Publisher modified) {
-                    processChanges(original, modified);
-                }
-            };
+            new ParcelableDialogLauncher<>(
+                    RK_EDIT_PUBLISHER,
+                    EditBookPublisherDialogFragment::new,
+                    (original, modified) -> {
+                        if (original == null) {
+                            add(modified);
+                        } else {
+                            processChanges(original, modified);
+                        }
+                    });
     private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -232,7 +229,7 @@ public class EditBookPublisherListDialogFragment
         if (button != null) {
             // Fullscreen only;
             // R.id.btn_add
-            // R.id.btn_add_details
+            // R.id.btn_add_details (2024-03-28: not used/available for now)
             onAdd(button.getId() == R.id.btn_add_details);
             return true;
         }
