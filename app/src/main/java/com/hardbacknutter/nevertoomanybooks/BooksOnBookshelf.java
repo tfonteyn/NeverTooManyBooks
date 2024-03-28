@@ -277,20 +277,20 @@ public class BooksOnBookshelf
                     DBKey.LOANEE_NAME,
                     (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
     private final StringDialogLauncher editColorLauncher = new StringDialogLauncher(
-            DBKey.COLOR, EditColorDialogFragment::new, (dbKey, original, modified)
-            -> vm.onInlineStringUpdate(dbKey, original, modified));
+            DBKey.COLOR, EditColorDialogFragment::new, (original, modified)
+            -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
     private final StringDialogLauncher editFormatLauncher = new StringDialogLauncher(
-            DBKey.FORMAT, EditFormatDialogFragment::new, (dbKey, original, modified)
-            -> vm.onInlineStringUpdate(dbKey, original, modified));
+            DBKey.FORMAT, EditFormatDialogFragment::new, (original, modified)
+            -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
     private final StringDialogLauncher editGenreLauncher = new StringDialogLauncher(
-            DBKey.GENRE, EditGenreDialogFragment::new, (dbKey, original, modified)
-            -> vm.onInlineStringUpdate(dbKey, original, modified));
+            DBKey.GENRE, EditGenreDialogFragment::new, (original, modified)
+            -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
     private final StringDialogLauncher editLanguageLauncher = new StringDialogLauncher(
-            DBKey.LANGUAGE, EditLanguageDialogFragment::new, (dbKey, original, modified)
-            -> vm.onInlineStringUpdate(dbKey, original, modified));
+            DBKey.LANGUAGE, EditLanguageDialogFragment::new, (original, modified)
+            -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
     private final StringDialogLauncher editLocationLauncher = new StringDialogLauncher(
-            DBKey.LOCATION, EditLocationDialogFragment::new, (dbKey, original, modified)
-            -> vm.onInlineStringUpdate(dbKey, original, modified));
+            DBKey.LOCATION, EditLocationDialogFragment::new, (original, modified)
+            -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
     private final InPlaceParcelableDialogLauncher<Bookshelf> editBookshelfLauncher =
             new InPlaceParcelableDialogLauncher<>(
                     DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new,

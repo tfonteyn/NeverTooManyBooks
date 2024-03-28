@@ -91,8 +91,7 @@ public class StringDialogLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(requestKey,
-                                Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
+        resultListener.onResult(Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
                                 Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
     }
 
@@ -101,12 +100,10 @@ public class StringDialogLauncher
         /**
          * Callback handler - modifying an existing item.
          *
-         * @param requestKey the key as passed in
          * @param original   the original item
          * @param modified   the modified item
          */
-        void onResult(@NonNull String requestKey,
-                      @NonNull String original,
+        void onResult(@NonNull String original,
                       @NonNull String modified);
     }
 }
