@@ -49,7 +49,7 @@ public class StringDialogLauncher
     private static final String MODIFIED = TAG + ":m";
 
     @NonNull
-    private final OnModifiedCallback onModifiedCallback;
+    private final ResultListener resultListener;
 
     /**
      * Constructor.
@@ -57,13 +57,13 @@ public class StringDialogLauncher
      * @param requestKey         FragmentResultListener request key to use for our response.
      *                           Typically the {@code DBKey} for the column we're editing
      * @param dialogSupplier     a supplier for a new DialogFragment
-     * @param onModifiedCallback callback for results
+     * @param resultListener callback for results
      */
     public StringDialogLauncher(@NonNull final String requestKey,
                                 @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                @NonNull final OnModifiedCallback onModifiedCallback) {
+                                @NonNull final ResultListener resultListener) {
         super(requestKey, dialogSupplier);
-        this.onModifiedCallback = onModifiedCallback;
+        this.resultListener = resultListener;
     }
 
     public static void setResult(@NonNull final Fragment fragment,
@@ -91,14 +91,13 @@ public class StringDialogLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        onModifiedCallback.onModified(requestKey,
-                                      Objects.requireNonNull(result.getString(BKEY_TEXT),
-                                                             BKEY_TEXT),
-                                      Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
+        resultListener.onResult(requestKey,
+                                Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
+                                Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
     }
 
     @FunctionalInterface
-    public interface OnModifiedCallback {
+    public interface ResultListener {
         /**
          * Callback handler - modifying an existing item.
          *
@@ -106,8 +105,8 @@ public class StringDialogLauncher
          * @param original   the original item
          * @param modified   the modified item
          */
-        void onModified(@NonNull String requestKey,
-                        @NonNull String original,
-                        @NonNull String modified);
+        void onResult(@NonNull String requestKey,
+                      @NonNull String original,
+                      @NonNull String modified);
     }
 }
