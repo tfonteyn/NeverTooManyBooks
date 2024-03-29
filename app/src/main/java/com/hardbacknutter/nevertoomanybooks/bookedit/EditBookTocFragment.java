@@ -138,18 +138,7 @@ public class EditBookTocFragment
 
     private final ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher(
-                    RK_CONFIRM_TOC, new ConfirmTocDialogFragment.Launcher.ResultListener() {
-                @Override
-                public void onResult(@NonNull final Book.ContentType contentType,
-                                     @NonNull final List<TocEntry> tocEntries) {
-                    onIsfdbDataConfirmed(contentType, tocEntries);
-                }
-
-                @Override
-                public void searchNextEdition() {
-                    searchIsfdb();
-                }
-            });
+                    RK_CONFIRM_TOC, this::onIsfdbDataConfirmed, this::searchIsfdb);
 
     private ExtPopupMenu contextMenu;
 
@@ -568,11 +557,15 @@ public class EditBookTocFragment
             private static final String BKEY_TOC_LIST = "tocEntries";
             @NonNull
             private final ResultListener resultListener;
+            @NonNull
+            private final OnSearchNextListener onSearchNextListener;
 
             protected Launcher(@NonNull final String requestKey,
-                               @NonNull final ResultListener resultListener) {
+                               @NonNull final ResultListener resultListener,
+                               @NonNull final OnSearchNextListener onSearchNextListener) {
                 super(requestKey, ConfirmTocDialogFragment::new);
                 this.resultListener = resultListener;
+                this.onSearchNextListener = onSearchNextListener;
             }
 
             static void setResult(@NonNull final Fragment fragment,
@@ -615,7 +608,7 @@ public class EditBookTocFragment
             public void onFragmentResult(@NonNull final String requestKey,
                                          @NonNull final Bundle result) {
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
-                    resultListener.searchNextEdition();
+                    onSearchNextListener.searchNextEdition();
                 } else {
                     resultListener.onResult(
                             Book.ContentType.getType(result.getInt(BKEY_TOC_BIT_MASK)),
@@ -624,6 +617,7 @@ public class EditBookTocFragment
                 }
             }
 
+            @FunctionalInterface
             public interface ResultListener {
                 /**
                  * Callback handler.
@@ -633,7 +627,10 @@ public class EditBookTocFragment
                  */
                 void onResult(@NonNull Book.ContentType contentType,
                               @NonNull List<TocEntry> tocEntries);
+            }
 
+            @FunctionalInterface
+            public interface OnSearchNextListener {
                 /**
                  * Callback handler.
                  */
