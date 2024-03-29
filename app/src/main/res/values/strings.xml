@@ -1675,12 +1675,12 @@
 
     <!-- Button Label: reading-progress is a percentage. -->
     <string name="lbl_percentage">Percentage</string>
-    <!-- Field label for reading-progress in percent. -->
+    <!-- Field label; reading-progress in percent. -->
     <string name="lbl_percentage_read">% read</string>
-    <!-- Field label; e.g. Current page. -->
-    <string name="lbl_current">Current</string>
-    <!-- Field label; e.g. Total number of pages. -->
-    <string name="lbl_total">Total</string>
+    <!-- Field label; reading-progress: Current page. -->
+    <string name="lbl_current_page">Current page</string>
+    <!-- Field label; reading-progress: Total number of pages. -->
+    <string name="lbl_total_pages">Total pages</string>
     <!-- Field label / Dialog title. -->
     <string name="lbl_reading_progress">Reading progress</string>
     <!-- Button label: the user finished reading a book. -->

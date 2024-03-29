@@ -80,6 +80,7 @@
             android:id="@+id/percentage"
             style="@style/TIE.Generic"
             android:inputType="number"
+            tools:text="56"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -87,8 +88,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_current_page"
         style="@style/TIL.Text"
-        android:layout_width="100dp"
-        android:hint="@string/lbl_current"
+        android:layout_width="120dp"
+        android:hint="@string/lbl_current_page"
         android:visibility="gone"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toStartOf="@id/lbl_total_pages"
@@ -102,6 +103,7 @@
             android:id="@+id/current_page"
             style="@style/TIE.Generic"
             android:inputType="number"
+            tools:text="23"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -109,9 +111,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_total_pages"
         style="@style/TIL.Text"
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_marginStart="@dimen/field_margin_inline"
-        android:hint="@string/lbl_total"
+        android:hint="@string/lbl_total_pages"
         android:visibility="gone"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -124,6 +126,7 @@
             android:id="@+id/total_pages"
             style="@style/TIE.Generic"
             android:inputType="number"
+            tools:text="1176"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
