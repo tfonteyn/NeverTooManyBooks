@@ -38,7 +38,7 @@
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog.Fullscreen"
             app:menu="@menu/toolbar_action_save"
-            app:title="@string/lbl_reading_progress"
+            app:title="@string/lbl_track_progress_long"
             />
 
     </com.google.android.material.appbar.AppBarLayout>

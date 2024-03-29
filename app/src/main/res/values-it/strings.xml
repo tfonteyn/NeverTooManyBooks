@@ -754,4 +754,9 @@
     <string name="site_description_dutch_comics_shopping">Olandese e altro; Fumetti; Shopping</string>
     <string name="lbl_author_type_storyboard">Scénarimage</string>
     <string name="lbl_author_type_lettering">Lettering</string>
+    <string name="lbl_percentage">Percentuale</string>
+    <string name="lbl_current_page">Pagina corrente</string>
+    <string name="btn_finished">Completato</string>
+    <string name="ps_use_read_progress_off">Utilizzare un semplice stato di lettura/non lettura.</string>
+    <string name="ps_use_read_progress_on">Traccia l\'avanzamento in percentuale o in numero di pagina.</string>
 </resources>

@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/lbl_reading_progress"
+        app:title="@string/lbl_track_progress_long"
         />
 
     <com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup

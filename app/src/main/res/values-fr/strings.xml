@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -752,4 +755,9 @@
     <string name="site_description_dutch_comics_shopping">Néerlandais et plus ; Bandes dessinées ; Shopping</string>
     <string name="lbl_author_type_storyboard">Scénarimage</string>
     <string name="lbl_author_type_lettering">Lettrage</string>
+    <string name="lbl_percentage">Pourcentage</string>
+    <string name="lbl_current_page">Page actuelle</string>
+    <string name="btn_finished">Terminé</string>
+    <string name="ps_use_read_progress_off">Utilisez un simple statut \"lu/non lu\".</string>
+    <string name="ps_use_read_progress_on">Suivez la progression en pourcentage ou en nombre de pages.</string>
 </resources>

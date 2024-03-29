@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -776,4 +779,9 @@
     <string name="lbl_assign_bookshelves">Atribuir estantes de livros</string>
     <string name="site_description_dutch_comics_shopping">Holandês e mais; Banda desenhada; Compras</string>
     <string name="lbl_author_type_storyboard">Guião</string>
+    <string name="lbl_percentage">Percentagem</string>
+    <string name="lbl_current_page">Página atual</string>
+    <string name="btn_finished">Concluído</string>
+    <string name="ps_use_read_progress_off">Utilize um simples estado Lido/Não lido.</string>
+    <string name="ps_use_read_progress_on">Acompanhe o progresso em percentagem ou número de página.</string>
 </resources>

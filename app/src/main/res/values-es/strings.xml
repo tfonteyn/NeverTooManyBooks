@@ -764,4 +764,9 @@
     <string name="site_description_dutch_comics_shopping">Holandés y más; Cómics; Compras</string>
     <string name="lbl_author_type_storyboard">Guión gráfico</string>
     <string name="lbl_author_type_lettering">Letras</string>
+    <string name="lbl_percentage">Porcentaje</string>
+    <string name="lbl_current_page">Página actual</string>
+    <string name="btn_finished">Completado</string>
+    <string name="ps_use_read_progress_off">Utilice un simple estado de leído/no leído.</string>
+    <string name="ps_use_read_progress_on">Siga el progreso en porcentaje o número de página.</string>
 </resources>

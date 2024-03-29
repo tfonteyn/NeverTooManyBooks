@@ -326,7 +326,7 @@
             android:key="style.read.status.extended"
             android:summaryOff="@string/ps_use_read_progress_off"
             android:summaryOn="@string/ps_use_read_progress_on"
-            android:title="@string/lbl_reading_progress" />
+            android:title="@string/lbl_track_progress_long" />
 
     </PreferenceCategory>
 </PreferenceScreen>

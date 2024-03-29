@@ -751,4 +751,9 @@
     <string name="site_description_dutch_comics_shopping">Ολλανδικά και άλλα; κόμικς; Αγορές</string>
     <string name="lbl_author_type_storyboard">εικονογραφημένο σενάριο</string>
     <string name="lbl_author_type_lettering">Γράμματα</string>
+    <string name="lbl_percentage">Ποσοστό</string>
+    <string name="lbl_current_page">Τρέχουσα σελίδα</string>
+    <string name="btn_finished">Ολοκληρώθηκε</string>
+    <string name="ps_use_read_progress_off">Χρησιμοποιήστε μια απλή κατάσταση Ανάγνωση/Δεν έχει διαβαστεί.</string>
+    <string name="ps_use_read_progress_on">Παρακολουθήστε την πρόοδο σε ποσοστό ή αριθμό σελίδας.</string>
 </resources>

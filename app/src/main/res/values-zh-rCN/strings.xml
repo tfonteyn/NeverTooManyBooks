@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -172,6 +175,7 @@
     <string name="progress_msg_please_wait">请稍等…</string>
     <string name="vldt_read_start_after_end">阅读开始日期，在结束日期之后</string>
     <string name="vldt_real_author_must_be_valid">必须为空或现有作者</string>
+    <string name="lbl_series_num">不</string>
     <string name="lbl_pages">页数</string>
     <string name="lbl_country">国家/地区</string>
     <string name="error_site_access_blocked">访问被该网站阻止。</string>
@@ -376,4 +380,9 @@
     <string name="lbl_assign_bookshelves">分配书架</string>
     <string name="lbl_author_type_storyboard">故事板</string>
     <string name="lbl_author_type_lettering">字体</string>
+    <string name="lbl_percentage">百分比</string>
+    <string name="lbl_current_page">当前页面</string>
+    <string name="btn_finished">已完成</string>
+    <string name="ps_use_read_progress_off">使用简单的已读/未读状态。</string>
+    <string name="ps_use_read_progress_on">以百分比或页码跟踪进度。</string>
 </resources>
