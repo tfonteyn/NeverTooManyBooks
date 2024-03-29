@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -765,4 +762,12 @@
     <string name="btn_finished">Tamamlandı</string>
     <string name="ps_use_read_progress_off">Basit bir Okundu/Okunmadı durumu kullanın.</string>
     <string name="ps_use_read_progress_on">İlerlemeyi yüzde veya sayfa sayısı olarak takip edin.</string>
+    <string name="lbl_percentage_read">okunan %</string>
+    <string name="info_progress_x_percent">Okuma
+\nİlerlemesi: %%%1$d</string>
+    <string name="info_progress_page_x_of_y">Okunan
+\nSayfa: %1$d / %2$d</string>
+    <string name="lbl_track_progress_long">İlerleme takibi</string>
+    <string name="lbl_total_pages">Toplam</string>
+    <string name="lbl_track_progress">İlerleme</string>
 </resources>
