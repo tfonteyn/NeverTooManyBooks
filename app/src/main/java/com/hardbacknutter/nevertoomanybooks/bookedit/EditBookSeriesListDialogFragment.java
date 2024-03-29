@@ -86,16 +86,8 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter adapter;
     private final ParcelableDialogLauncher<Series> editLauncher =
-            new ParcelableDialogLauncher<>(
-                    RK_EDIT_SERIES,
-                    EditBookSeriesDialogFragment::new,
-                    (original, modified) -> {
-                        if (original == null) {
-                            add(modified);
-                        } else {
-                            processChanges(original, modified);
-                        }
-                    });
+            new ParcelableDialogLauncher<>(RK_EDIT_SERIES, EditBookSeriesDialogFragment::new,
+                                           this::add, this::processChanges);
 
     private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */

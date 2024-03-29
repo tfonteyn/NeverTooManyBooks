@@ -44,13 +44,16 @@ public class ParcelableDialogLauncher<T extends Parcelable>
 
     private static final String MODIFIED = TAG + ":m";
     @NonNull
-    private final ResultListener<T> resultListener;
+    private final OnAddListener<T> onAddListener;
+    private final OnEditListener<T> onEditListener;
 
     public ParcelableDialogLauncher(@NonNull final String requestKey,
                                     @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                    @NonNull final ResultListener<T> resultListener) {
+                                    @NonNull final OnAddListener<T> onAddListener,
+                                    @NonNull final OnEditListener<T> onEditListener) {
         super(requestKey, dialogSupplier);
-        this.resultListener = resultListener;
+        this.onAddListener = onAddListener;
+        this.onEditListener = onEditListener;
     }
 
     /**
@@ -107,20 +110,37 @@ public class ParcelableDialogLauncher<T extends Parcelable>
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
 
-        // original can be null, modified cannot be null
-        resultListener.onResult(result.getParcelable(BKEY_ITEM),
-                                Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+        @Nullable
+        final T original = result.getParcelable(BKEY_ITEM);
+        if (original == null) {
+            onAddListener.onAdd(Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+        } else {
+            onEditListener.onEdit(original,
+                                  Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+        }
     }
 
     @FunctionalInterface
-    public interface ResultListener<T> {
+    public interface OnAddListener<T> {
+
         /**
-         * Callback handler.
+         * Callback handler - {@link EditAction#Add}.
          *
-         * @param original the original item; or {@code null} if we're adding a new item
-         * @param modified the modified or new item
+         * @param item the new item
          */
-        void onResult(@Nullable T original,
-                      @NonNull T modified);
+        void onAdd(@NonNull final T item);
+    }
+
+    @FunctionalInterface
+    public interface OnEditListener<T> {
+
+        /**
+         * Callback handler - {@link EditAction#Edit}.
+         *
+         * @param original the original item
+         * @param modified the modified item
+         */
+        void onEdit(@NonNull T original,
+                    @NonNull T modified);
     }
 }
