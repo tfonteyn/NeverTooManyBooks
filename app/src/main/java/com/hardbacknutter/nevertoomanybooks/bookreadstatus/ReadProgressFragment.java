@@ -47,17 +47,8 @@ public class ReadProgressFragment
 
     private final ReadingProgressDialogFragment.Launcher editLauncher =
             new ReadingProgressDialogFragment.Launcher(
-                    new ReadingProgressDialogFragment.Launcher.ResultListener() {
-                        @Override
-                        public void onResult(final boolean read) {
-                            vm.setRead(read);
-                        }
-
-                        @Override
-                        public void onResult(@NonNull final ReadingProgress readingProgress) {
-                            vm.setReadingProgress(readingProgress);
-                        }
-                    });
+                    read -> vm.setRead(read),
+                    readingProgress -> vm.setReadingProgress(readingProgress));
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

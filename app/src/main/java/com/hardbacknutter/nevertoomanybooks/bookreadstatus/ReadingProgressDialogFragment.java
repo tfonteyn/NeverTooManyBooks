@@ -174,13 +174,17 @@ public class ReadingProgressDialogFragment
             extends DialogLauncher {
 
         static final String BKEY_PROGRESS = TAG + ":progress";
-
         @NonNull
-        private final ResultListener resultListener;
+        private final OnReadListener onReadListener;
+        @NonNull
+        private final OnReadingProgressListener onReadingProgressListener;
 
-        public Launcher(@NonNull final ResultListener resultListener) {
+
+        public Launcher(@NonNull final OnReadListener onReadListener,
+                        @NonNull final OnReadingProgressListener onReadingProgressListener) {
             super(DBKey.READ_PROGRESS, ReadingProgressDialogFragment::new);
-            this.resultListener = resultListener;
+            this.onReadListener = onReadListener;
+            this.onReadingProgressListener = onReadingProgressListener;
         }
 
         public static void setResult(@NonNull final Fragment fragment,
@@ -214,29 +218,34 @@ public class ReadingProgressDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             if (result.containsKey(DBKey.READ__BOOL)) {
-                resultListener.onResult(result.getBoolean(DBKey.READ__BOOL));
+                onReadListener.onRead(result.getBoolean(DBKey.READ__BOOL));
             } else {
-                resultListener.onResult(
-                        Objects.requireNonNull(result.getParcelable(BKEY_PROGRESS)));
+                onReadingProgressListener.onReadingProgress(
+                        Objects.requireNonNull(result.getParcelable(BKEY_PROGRESS), BKEY_PROGRESS));
 
             }
         }
 
-        public interface ResultListener {
+        @FunctionalInterface
+        public interface OnReadListener {
 
             /**
              * Callback handler.
              *
              * @param read flag
              */
-            void onResult(boolean read);
+            void onRead(boolean read);
+        }
+
+        @FunctionalInterface
+        public interface OnReadingProgressListener {
 
             /**
              * Callback handler.
              *
              * @param readingProgress progress
              */
-            void onResult(@NonNull ReadingProgress readingProgress);
+            void onReadingProgress(@NonNull ReadingProgress readingProgress);
         }
     }
 }
