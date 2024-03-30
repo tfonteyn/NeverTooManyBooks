@@ -1091,6 +1091,8 @@ public class Book
 
         // Copy the total number of pages if needed/possible.
         if (readingProgress.getTotalPages() == 0) {
+            // We didn't have a total-pages,
+            // try to coerce the detailed TEXT value into a raw number
             final String pageCountStr = getString(DBKey.PAGE_COUNT);
             if (!pageCountStr.isEmpty()) {
                 try {

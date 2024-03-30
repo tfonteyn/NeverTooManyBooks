@@ -173,14 +173,14 @@ public class BookDaoHelper {
      * If the {@link DBKey#PAGE_COUNT} field is empty and we have
      * a total-pages value from the {@link DBKey#READ_PROGRESS} field,
      * copy the value across.
-     * We do NOT overwrite existing values!
+     * We do NOT overwrite existing {@link DBKey#PAGE_COUNT} values!
      *
      * @see BookDaoImpl#setReadProgress(Book, ReadingProgress)
      */
     private void processReadProgress() {
-        final String pageCount = book.getString(DBKey.PAGE_COUNT);
         final ReadingProgress readingProgress = book.getReadingProgress();
-        if (!readingProgress.asPercentage() && pageCount.isEmpty()) {
+        // KEEP THIS LOGIC IN SYNC with {@link BookDaoImpl#setReadProgress()} !
+        if (!readingProgress.asPercentage() && book.getString(DBKey.PAGE_COUNT).isEmpty()) {
             book.putString(DBKey.PAGE_COUNT, String.valueOf(readingProgress.getTotalPages()));
         }
     }
