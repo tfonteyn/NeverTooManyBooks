@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -196,7 +196,18 @@
 
     </style>
 
-    <!-- Dedicated series 'number' field.
+    <!-- Generic number field. Accepts only positive integer values.
+         Not localized.
+    -->
+    <style name="TIE.Number"
+           parent="Base.TIE">
+        <item name="android:inputType">number</item>
+        <item name="android:digits">0123456789</item>
+        <item name="android:selectAllOnFocus">true</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <!-- Dedicated series-number field. Note this is a TEXT field.
          Not localized.
      -->
     <style name="TIE.SeriesNumber" parent="Base.TIE">

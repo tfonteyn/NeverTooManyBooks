@@ -74,6 +74,7 @@ public final class ReadingProgress
         asPercentage = false;
         this.currentPage = currentPage;
         this.totalPages = totalPages;
+        sanitizePages();
     }
 
     private ReadingProgress(@NonNull final Parcel in) {
@@ -127,8 +128,9 @@ public final class ReadingProgress
             if (json.has(JSON_PCT)) {
                 return new ReadingProgress(json.getInt(JSON_PCT));
             } else {
-                return new ReadingProgress(json.getInt(JSON_CURRENT_PAGE),
-                                           json.getInt(JSON_TOTAL_PAGES));
+                return new ReadingProgress(
+                        json.has(JSON_CURRENT_PAGE) ? json.optInt(JSON_CURRENT_PAGE) : null,
+                        json.has(JSON_TOTAL_PAGES) ? json.optInt(JSON_TOTAL_PAGES) : null);
 
             }
         } catch (@NonNull final JSONException e) {
@@ -151,16 +153,23 @@ public final class ReadingProgress
                 //noinspection DataFlowIssue
                 return new JSONObject().put(JSON_PCT, percentage)
                                        .toString();
-            } else {
-                // Don't return an empty JSON string, just a normal empty string!
-                return "";
             }
         } else {
-            //noinspection DataFlowIssue
-            return new JSONObject().put(JSON_CURRENT_PAGE, getCurrentPage())
-                                   .put(JSON_TOTAL_PAGES, getTotalPages())
-                                   .toString();
+            final JSONObject out = new JSONObject();
+            if (currentPage != null) {
+                out.put(JSON_CURRENT_PAGE, (int) currentPage);
+            }
+            if (totalPages != null) {
+                out.put(JSON_TOTAL_PAGES, (int) totalPages);
+            }
+            if (!out.isEmpty()) {
+                //noinspection DataFlowIssue
+                return out.toString();
+            }
         }
+
+        // Don't return an empty JSON string, just a normal empty string!
+        return "";
     }
 
     @Override
@@ -227,23 +236,27 @@ public final class ReadingProgress
     }
 
     /**
-     * Get either the percentage as set, or calculate it from the pages.
+     * Get either the raw percentage if set, or calculate it from the pages.
      *
-     * @return percentage; can be {@code 0}
+     * @return percentage; can be {@code 0} if there is not enough data to calculate it
      */
     public int getPercentage() {
-        if (percentage != null) {
-            return percentage;
+        if (asPercentage) {
+            if (percentage != null) {
+                return percentage;
+            }
         } else if (currentPage != null && totalPages != null) {
             return (int) (((float) currentPage / totalPages) * 100);
         }
-        // should never get here... flw
+
+        // fallback
         return 0;
     }
 
     /**
      * Set the raw value for the percentage.
-     * Calling this method does <strong>NOT</strong> flag this object as being a percentage value.
+     * Calling this method does <strong>NOT</strong> flag
+     * this object as being a percentage value.
      *
      * @param percentage to set
      *
@@ -267,20 +280,6 @@ public final class ReadingProgress
     }
 
     /**
-     * Set the raw value for the percentage.
-     * Calling this method does <strong>NOT</strong> flag
-     * this object as being a "page x of y" value.
-     *
-     * @param currentPage to set
-     *
-     * @see #setAsPercentage(boolean)
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void setCurrentPage(@Nullable final Integer currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    /**
      * Get the raw value for the total number of pages.
      *
      * @return pages; or {@code 0} if unknown
@@ -293,9 +292,12 @@ public final class ReadingProgress
     }
 
     /**
-     * Set the raw value for the percentage.
+     * Set the raw value for the total number of pages.
      * Calling this method does <strong>NOT</strong> flag
      * this object as being a "page x of y" value.
+     * <p>
+     * The value set <strong>will</strong> be adjusted upwards if it's smaller
+     * than the current-page value.
      *
      * @param totalPages to set
      *
@@ -303,5 +305,35 @@ public final class ReadingProgress
      */
     public void setTotalPages(@Nullable final Integer totalPages) {
         this.totalPages = totalPages;
+        sanitizePages();
+    }
+
+    /**
+     * Set the raw value for the total number of pages.
+     * Calling this method does <strong>NOT</strong> flag
+     * this object as being a "page x of y" value.
+     *
+     * @param currentPage to set; can be {@code null}
+     * @param totalPages  to set; can be {@code null}
+     *
+     * @see #setAsPercentage(boolean)
+     */
+    public void setPages(@Nullable final Integer currentPage,
+                         @Nullable final Integer totalPages) {
+        this.currentPage = currentPage;
+        this.totalPages = totalPages;
+        sanitizePages();
+    }
+
+    private void sanitizePages() {
+        if (currentPage == null || totalPages == null) {
+            return;
+        }
+
+        // If the current-page is larger .... then adjust the total-pages silently
+        // (and NOT the other way around)
+        if (currentPage > totalPages) {
+            totalPages = currentPage;
+        }
     }
 }

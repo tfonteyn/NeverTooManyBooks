@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -139,6 +139,9 @@
     <dimen name="til_fixed_width_external_id">160dp</dimen>
     <!-- the Series number field -->
     <dimen name="til_fixed_width_series_num">200dp</dimen>
+    <!-- the number fields on the "Reading Progress" dialog. -->
+    <dimen name="reading_progress_field_width">120dp</dimen>
+
     <!-- Editing an Author; the check boxes with the author types -->
     <dimen name="cbx_fixed_width_author_type">132dp</dimen>
 

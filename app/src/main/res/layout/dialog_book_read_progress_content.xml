@@ -66,7 +66,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_percentage"
         style="@style/TIL.Text"
-        android:layout_width="100dp"
+        android:layout_width="@dimen/reading_progress_field_width"
         android:hint="@string/lbl_percentage_read"
         android:visibility="gone"
         app:endIconMode="clear_text"
@@ -78,31 +78,43 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/percentage"
-            style="@style/TIE.Generic"
-            android:inputType="number"
+            style="@style/TIE.Number"
+            android:maxLength="3"
             tools:text="56"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_percentage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stepSize="1"
+        android:valueFrom="0"
+        android:valueTo="100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_percentage"
+        tools:value="56"
+        />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_current_page"
         style="@style/TIL.Text"
-        android:layout_width="120dp"
+        android:layout_width="@dimen/reading_progress_field_width"
         android:hint="@string/lbl_current_page"
         android:visibility="gone"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toStartOf="@id/lbl_total_pages"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_percentage"
+        app:layout_constraintTop_toBottomOf="@id/slider_percentage"
         tools:visibility="visible"
         >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/current_page"
-            style="@style/TIE.Generic"
-            android:inputType="number"
+            style="@style/TIE.Number"
             tools:text="23"
             />
 
@@ -111,32 +123,36 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_total_pages"
         style="@style/TIL.Text"
-        android:layout_width="120dp"
+        android:layout_width="@dimen/reading_progress_field_width"
         android:layout_marginStart="@dimen/field_margin_inline"
         android:hint="@string/lbl_total_pages"
         android:visibility="gone"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_current_page"
-        app:layout_constraintTop_toBottomOf="@id/lbl_percentage"
+        app:layout_constraintTop_toBottomOf="@id/slider_percentage"
         tools:visibility="visible"
         >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/total_pages"
-            style="@style/TIE.Generic"
-            android:inputType="number"
+            style="@style/TIE.Number"
             tools:text="1176"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier_content"
-        android:layout_width="wrap_content"
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_pages"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="lbl_percentage,lbl_current_page"
+        android:stepSize="1"
+        android:valueFrom="0"
+        android:valueTo="100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_current_page"
+        tools:value="56"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -144,7 +160,7 @@
         style="@style/ButtonPanel.Container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barrier_content">
+        app:layout_constraintTop_toBottomOf="@id/slider_pages">
 
         <Button
             android:id="@+id/btn_neutral"
