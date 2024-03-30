@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -55,7 +56,6 @@ public class CoverBrowserViewModel
 
     /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** int 0..1 */
     static final String BKEY_FILE_INDEX = TAG + ":cIdx";
@@ -160,8 +160,8 @@ public class CoverBrowserViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                BKEY_REQUEST_KEY);
+            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                                DialogLauncher.BKEY_REQUEST_KEY);
             baseIsbn = SanityCheck.requireValue(args.getString(DBKey.BOOK_ISBN),
                                                 DBKey.BOOK_ISBN);
             cIdx = args.getInt(BKEY_FILE_INDEX);

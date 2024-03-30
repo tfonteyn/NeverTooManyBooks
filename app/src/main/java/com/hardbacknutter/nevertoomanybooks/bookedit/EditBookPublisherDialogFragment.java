@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -93,16 +92,18 @@ public class EditBookPublisherDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
+                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
+                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(
                 args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         publisher = Objects.requireNonNull(
-                args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
+                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
+                ParcelableDialogLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
         } else {
-            currentEdit = savedInstanceState.getParcelable(DialogLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
         }
     }
 
@@ -148,11 +149,7 @@ public class EditBookPublisherDialogFragment
             return false;
         }
 
-        if (action == EditAction.Add) {
-            ParcelableDialogLauncher.setResult(this, requestKey, currentEdit);
-        } else {
-            ParcelableDialogLauncher.setResult(this, requestKey, publisher, currentEdit);
-        }
+        ParcelableDialogLauncher.setResult(this, requestKey, action, publisher, currentEdit);
         return true;
     }
 

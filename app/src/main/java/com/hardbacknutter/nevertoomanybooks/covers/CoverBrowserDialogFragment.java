@@ -77,6 +77,7 @@ public class CoverBrowserDialogFragment
 
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
+
     private static final String ERROR_GALLERY_ADAPTER = "galleryAdapter";
 
     /** The adapter for the horizontal scrolling covers list. */
@@ -376,12 +377,28 @@ public class CoverBrowserDialogFragment
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, CoverBrowserDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param fileSpec   for the selected file
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @NonNull final String fileSpec) {

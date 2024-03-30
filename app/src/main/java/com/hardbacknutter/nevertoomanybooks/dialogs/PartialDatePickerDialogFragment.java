@@ -65,7 +65,6 @@ public class PartialDatePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "PartialDatePickerDialog";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** a standard sql style date string, must be correct. */
     private static final String BKEY_DATE = TAG + ":date";
     /** Argument. */
@@ -147,7 +146,8 @@ public class PartialDatePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         dialogTitleId = args.getInt(BKEY_DIALOG_TITLE, R.string.action_edit);
         fieldId = args.getInt(BKEY_FIELD_ID);
 
@@ -235,7 +235,8 @@ public class PartialDatePickerDialogFragment
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            Launcher.setResult(this, requestKey, fieldId, year, month, day);
+            Launcher.setResult(this, requestKey, fieldId,
+                               new PartialDate(year, month, day));
             return true;
         }
 
@@ -398,30 +399,39 @@ public class PartialDatePickerDialogFragment
     public static class Launcher
             extends DialogLauncher {
 
-        private static final String FIELD_ID = "fieldId";
-        private static final String YEAR = "year";
-        private static final String MONTH = "month";
-        private static final String DAY = "day";
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, PartialDatePickerDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param fieldId    this destination field id
+         * @param date       the picked date
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @IdRes final int fieldId,
-                              final int year,
-                              final int month,
-                              final int day) {
+                              @NonNull final PartialDate date) {
             final Bundle result = new Bundle(4);
-            result.putInt(FIELD_ID, fieldId);
-            result.putInt(YEAR, year);
-            result.putInt(MONTH, month);
-            result.putInt(DAY, day);
+            result.putInt(BKEY_FIELD_ID, fieldId);
+            result.putParcelable(BKEY_DATE, date);
 
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
@@ -458,10 +468,9 @@ public class PartialDatePickerDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
 
-            resultListener.onResult(result.getInt(FIELD_ID),
-                                    new PartialDate(result.getInt(YEAR),
-                                                    result.getInt(MONTH),
-                                                    result.getInt(DAY)));
+            resultListener.onResult(result.getInt(BKEY_FIELD_ID),
+                                    Objects.requireNonNull(result.getParcelable(BKEY_DATE),
+                                                           BKEY_DATE));
         }
 
         @FunctionalInterface

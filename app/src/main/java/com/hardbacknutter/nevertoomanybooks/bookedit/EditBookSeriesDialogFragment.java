@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -93,17 +92,19 @@ public class EditBookSeriesDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
+                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
+                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(
                 args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         series = Objects.requireNonNull(
-                args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
+                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
+                ParcelableDialogLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());
             currentEdit.setNumber(series.getNumber());
         } else {
-            currentEdit = savedInstanceState.getParcelable(DialogLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
         }
     }
 
@@ -151,11 +152,7 @@ public class EditBookSeriesDialogFragment
             return false;
         }
 
-        if (action == EditAction.Add) {
-            ParcelableDialogLauncher.setResult(this, requestKey, currentEdit);
-        } else {
-            ParcelableDialogLauncher.setResult(this, requestKey, series, currentEdit);
-        }
+        ParcelableDialogLauncher.setResult(this, requestKey, action, series, currentEdit);
         return true;
     }
 

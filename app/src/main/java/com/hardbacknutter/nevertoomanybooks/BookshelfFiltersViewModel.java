@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,13 +38,13 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfFiltersViewModel
         extends ViewModel {
 
     private static final String TAG = "BookshelfFiltersVM";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
 
@@ -61,8 +61,8 @@ public class BookshelfFiltersViewModel
 
     void init(@NonNull final Bundle args) {
         if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                BKEY_REQUEST_KEY);
+            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                                DialogLauncher.BKEY_REQUEST_KEY);
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
             filterList = bookshelf.getFilters();

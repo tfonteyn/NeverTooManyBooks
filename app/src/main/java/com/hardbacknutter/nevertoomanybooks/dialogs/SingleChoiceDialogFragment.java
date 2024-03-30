@@ -54,7 +54,6 @@ public class SingleChoiceDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "SingleChoiceDialogFragment";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_DIALOG_TITLE = TAG + ":title";
     private static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
@@ -84,7 +83,8 @@ public class SingleChoiceDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         dialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_select));
         dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
         fieldId = args.getInt(BKEY_FIELD_ID);
@@ -147,25 +147,39 @@ public class SingleChoiceDialogFragment
     public static class Launcher<T extends Parcelable & Entity>
             extends DialogLauncher {
 
-        private static final String FIELD_ID = "fieldId";
-        private static final String SELECTED = "selected";
-
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, SingleChoiceDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment     the calling DialogFragment
+         * @param requestKey   to use
+         * @param fieldId      this destination field id
+         * @param selectedItem the single selected item
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @IdRes final int fieldId,
                               final long selectedItem) {
             final Bundle result = new Bundle(2);
-            result.putInt(FIELD_ID, fieldId);
-            result.putLong(SELECTED, selectedItem);
+            result.putInt(BKEY_FIELD_ID, fieldId);
+            result.putLong(BKEY_SELECTED, selectedItem);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -185,7 +199,7 @@ public class SingleChoiceDialogFragment
                            @NonNull final List<T> allItems,
                            @NonNull final T selectedItem) {
 
-            final Bundle args = new Bundle(5);
+            final Bundle args = new Bundle(6);
             args.putString(BKEY_DIALOG_TITLE, dialogTitle);
             args.putInt(BKEY_FIELD_ID, fieldId);
 
@@ -202,8 +216,8 @@ public class SingleChoiceDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            resultListener.onResult(result.getInt(FIELD_ID),
-                                    result.getLong(SELECTED));
+            resultListener.onResult(result.getInt(BKEY_FIELD_ID),
+                                    result.getLong(BKEY_SELECTED));
         }
 
         @FunctionalInterface

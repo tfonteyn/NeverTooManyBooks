@@ -47,12 +47,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -100,10 +101,10 @@ public class EditBookshelvesFragment
     private BookshelfAdapter adapter;
 
     /** Accept the result from the dialog. */
-    private final InPlaceParcelableDialogLauncher<Bookshelf> editLauncher =
-            new InPlaceParcelableDialogLauncher<>(RK_EDIT_BOOKSHELF,
-                                                  EditBookshelfDialogFragment::new,
-                                                  this::onModified);
+    private final ParcelableDialogLauncher<Bookshelf> editLauncher =
+            new ParcelableDialogLauncher<>(RK_EDIT_BOOKSHELF,
+                                           EditBookshelfDialogFragment::new,
+                                           this::onModified);
     private final PositionHandler positionHandler = new PositionHandler() {
         @Override
         public int getSelectedPosition() {
@@ -189,7 +190,8 @@ public class EditBookshelvesFragment
 
     private void editNewBookshelf() {
         final Style style = ServiceLocator.getInstance().getStyles().getDefault();
-        editLauncher.launch(new Bookshelf("", style));
+        // Not as 'add' as we DO want this new shelf stored in the database when edited.
+        editLauncher.launch(EditAction.EditInPlace, new Bookshelf("", style));
     }
 
     /**
@@ -220,7 +222,7 @@ public class EditBookshelvesFragment
         final Bookshelf bookshelf = vm.getBookshelf(index);
 
         if (itemId == R.id.MENU_EDIT) {
-            editLauncher.launch(bookshelf);
+            editLauncher.launch(EditAction.EditInPlace, bookshelf);
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {

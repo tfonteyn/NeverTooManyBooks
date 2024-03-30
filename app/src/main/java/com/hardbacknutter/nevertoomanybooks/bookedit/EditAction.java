@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,8 +26,21 @@ import androidx.annotation.NonNull;
 
 public enum EditAction
         implements Parcelable {
+    /**
+     * Add a new item. New items <strong>are NOT</strong> stored in the database.
+     * Return the new item.
+     */
     Add,
-    Edit;
+    /**
+     * Edit an item. Modifications <strong>are NOT</strong> stored in the database.
+     * Return the original item + a separate copied/modified item.
+     */
+    Edit,
+    /**
+     * Edit an item in-place. Modifications <strong>ARE</strong> stored in the database.
+     * Returns the modified item.
+     */
+    EditInPlace;
 
     public static final String BKEY = "EditAction";
 

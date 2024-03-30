@@ -32,24 +32,24 @@ import androidx.lifecycle.LifecycleOwner;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+//URGENT: clean up this mess of subclasses
 public abstract class DialogLauncher
         implements FragmentResultListener {
 
     private static final String TAG = "DialogLauncher";
-
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
     /**
-     * Input value: the item we're going to edit.
-     * Not used in all child classes!
+     * The bundle key to pass the {@link #requestKey} around.
+     * Keep in mind this value is irrelevant to the Android OS.
+     * Only the actual {@link #requestKey} is relevant to Android.
      */
-    public static final String BKEY_ITEM = TAG + ":item";
+    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /**
      * FragmentResultListener request key to use for our response.
      * Doubles up as the fragment TAG
      */
     private final String requestKey;
+
     @NonNull
     private final Supplier<DialogFragment> dialogFragmentSupplier;
     @Nullable
@@ -67,6 +67,17 @@ public abstract class DialogLauncher
         this.dialogFragmentSupplier = dialogSupplier;
     }
 
+    public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                          @NonNull final LifecycleOwner lifecycleOwner) {
+        this.fragmentManager = fragmentManager;
+        this.fragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);
+    }
+
+    /**
+     * Create the dialog, setup the arguments adding the requestKey and show it.
+     *
+     * @param args to pass
+     */
     protected void createDialog(@NonNull final Bundle args) {
         Objects.requireNonNull(fragmentManager, "fragmentManager");
 
@@ -74,12 +85,7 @@ public abstract class DialogLauncher
 
         final DialogFragment dialogFragment = dialogFragmentSupplier.get();
         dialogFragment.setArguments(args);
+        // using the requestKey as the fragment tag.
         dialogFragment.show(fragmentManager, requestKey);
-    }
-
-    public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                          @NonNull final LifecycleOwner lifecycleOwner) {
-        this.fragmentManager = fragmentManager;
-        this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
     }
 }

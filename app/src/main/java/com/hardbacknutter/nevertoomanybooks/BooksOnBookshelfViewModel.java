@@ -1026,8 +1026,8 @@ public class BooksOnBookshelfViewModel
      * Receives notifications that an inline-string column was updated.
      *
      * @param dbKey    the request-key, a {@link DBKey}, from the update event
-     * @param original the original string
-     * @param modified the updated string
+     * @param original the original text which was passed in to be edited
+     * @param modified the modified text
      */
     void onInlineStringUpdate(@NonNull final String dbKey,
                               @NonNull final String original,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -132,13 +132,25 @@ public final class WrappedMaterialDatePicker<S>
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param fieldIds   one or two field resource ids this dialog was bound to
+         * @param selections one or two values with the selected date(s);
+         *                   either/both can be {@code null}
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @NonNull final int[] fieldIds,
-                              @Nullable final long... selection) {
+                              @Nullable final long... selections) {
             final Bundle result = new Bundle(2);
             result.putIntArray(FIELD_ID, fieldIds);
-            result.putLongArray(SELECTIONS, selection);
+            result.putLongArray(SELECTIONS, selections);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 

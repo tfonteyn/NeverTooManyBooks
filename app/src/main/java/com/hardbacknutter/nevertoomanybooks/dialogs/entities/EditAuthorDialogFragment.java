@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
@@ -66,6 +66,9 @@ public class EditAuthorDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
 
+    /** FragmentResultListener request key to use for our response. */
+    private String requestKey;
+
     /** Author View model. Fragment scope. */
     private EditAuthorViewModel authorVm;
 
@@ -83,9 +86,13 @@ public class EditAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Bundle args = requireArguments();
+        requestKey = Objects.requireNonNull(
+                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
+                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
+
         authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
-        //noinspection DataFlowIssue
-        authorVm.init(getContext(), requireArguments());
+        authorVm.init(args);
     }
 
     @Override
@@ -195,8 +202,8 @@ public class EditAuthorDialogFragment
 
         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
 
-        final Consumer<Author> onSuccess = savedAuthor -> InPlaceParcelableDialogLauncher
-                .setResult(this, authorVm.getRequestKey(), savedAuthor);
+        final Consumer<Author> onSuccess = savedAuthor -> ParcelableDialogLauncher
+                .setEditInPlaceResult(this, requestKey, savedAuthor);
 
         try {
             if (author.getId() == 0 || nameChanged) {

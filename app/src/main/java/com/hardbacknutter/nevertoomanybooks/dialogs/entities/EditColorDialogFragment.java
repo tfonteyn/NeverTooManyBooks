@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * Dialog to edit an <strong>in-line in Books table</strong> Color.
  */
 public class EditColorDialogFragment
-        extends EditStringBaseDialogFragment {
+        extends EditStringDialogFragment {
 
     /**
      * No-arg constructor for OS use.

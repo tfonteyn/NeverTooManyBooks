@@ -26,22 +26,24 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StringDialogLauncher;
 
 /**
  * Base Dialog class to edit an <strong>in-line String field</strong> in Books table.
  */
-public abstract class EditStringBaseDialogFragment
+public abstract class EditStringDialogFragment
         extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
@@ -67,8 +69,8 @@ public abstract class EditStringBaseDialogFragment
      * @param dialogTitleId for the dialog (i.e. the toolbar)
      * @param labelResId    to use for the 'hint' of the input field
      */
-    EditStringBaseDialogFragment(@StringRes final int dialogTitleId,
-                                 @StringRes final int labelResId) {
+    EditStringDialogFragment(@StringRes final int dialogTitleId,
+                             @StringRes final int labelResId) {
         super(R.layout.dialog_edit_string, R.layout.dialog_edit_string_content);
 
         this.dialogTitleId = dialogTitleId;
@@ -80,14 +82,14 @@ public abstract class EditStringBaseDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
-        originalText = args.getString(StringDialogLauncher.BKEY_TEXT, "");
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
+        originalText = args.getString(Launcher.BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
             currentText = originalText;
         } else {
-            currentText = savedInstanceState.getString(StringDialogLauncher.BKEY_TEXT, "");
+            currentText = savedInstanceState.getString(Launcher.BKEY_TEXT, "");
         }
     }
 
@@ -159,7 +161,7 @@ public abstract class EditStringBaseDialogFragment
         }
 
         final String storedText = onSave(originalText, currentText);
-        StringDialogLauncher.setResult(this, requestKey, originalText, storedText);
+        Launcher.setResult(this, requestKey, originalText, storedText);
         return true;
     }
 
@@ -168,7 +170,7 @@ public abstract class EditStringBaseDialogFragment
     }
 
     /**
-     * Save data.
+     * Save the modifications to the database.
      *
      * @param originalText the original text which was passed in to be edited
      * @param currentText  the modified text
@@ -183,12 +185,102 @@ public abstract class EditStringBaseDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(StringDialogLauncher.BKEY_TEXT, currentText);
+        outState.putString(Launcher.BKEY_TEXT, currentText);
     }
 
     @Override
     public void onPause() {
         viewToModel();
         super.onPause();
+    }
+
+    /**
+     * Launcher for one of the inline-string fields in the Books table.
+     * <ul>
+     * <li>used for direct/in-place editing of an inline field text; e.g. Book Color, Format...</li>
+     * <li>modifications ARE STORED in the database</li>
+     * <li>returns the original and the modified/stored text</li>
+     * </ul>
+     */
+    public static class Launcher
+            extends DialogLauncher {
+
+        private static final String TAG = "Launcher";
+
+        /** Input value: the text (String) to edit. */
+        static final String BKEY_TEXT = TAG + ":text";
+
+        /** Return value: the modified text. */
+        private static final String MODIFIED = TAG + ":m";
+
+        @NonNull
+        private final ResultListener resultListener;
+
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         *                       Typically the {@code DBKey} for the column we're editing.
+         * @param dialogSupplier a supplier for a new DialogFragment
+         * @param resultListener callback for results
+         */
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final Supplier<DialogFragment> dialogSupplier,
+                        @NonNull final ResultListener resultListener) {
+            super(requestKey, dialogSupplier);
+            this.resultListener = resultListener;
+        }
+
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param original   the original text which was passed in to be edited
+         * @param modified   the modified text
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @NonNull final String original,
+                              @NonNull final String modified) {
+            final Bundle result = new Bundle(2);
+            result.putString(BKEY_TEXT, original);
+            result.putString(MODIFIED, modified);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        /**
+         * Launch the dialog.
+         *
+         * @param text to edit.
+         */
+        public void launch(@NonNull final String text) {
+            final Bundle args = new Bundle(2);
+            args.putString(BKEY_TEXT, text);
+
+            createDialog(args);
+        }
+
+        @Override
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
+            resultListener.onResult(Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
+                                    Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
+        }
+
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler - modifying an existing item.
+             *
+             * @param original the original item
+             * @param modified the modified item
+             */
+            void onResult(@NonNull String original,
+                          @NonNull String modified);
+        }
     }
 }

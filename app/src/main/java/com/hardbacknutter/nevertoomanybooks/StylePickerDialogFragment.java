@@ -49,8 +49,6 @@ public class StylePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
-
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
 
     /** The list of styles to display. */
@@ -86,8 +84,8 @@ public class StylePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                            BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
 
         if (savedInstanceState == null) {
             currentStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
@@ -235,12 +233,28 @@ public class StylePickerDialogFragment
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, StylePickerDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param uuid       the selected style
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @NonNull final String uuid) {

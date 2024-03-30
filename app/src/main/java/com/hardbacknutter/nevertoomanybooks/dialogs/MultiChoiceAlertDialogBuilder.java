@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,12 +75,22 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     @Nullable
     private Runnable onDismiss;
 
+    /**
+     * Constructor - standalone usage.
+     *
+     * @param context Current context
+     */
     public MultiChoiceAlertDialogBuilder(@NonNull final Context context) {
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
     }
 
-    public MultiChoiceAlertDialogBuilder(@NonNull final LayoutInflater layoutInflater) {
+    /**
+     * Constructor - DialogFragment usage.
+     *
+     * @param layoutInflater to use
+     */
+    MultiChoiceAlertDialogBuilder(@NonNull final LayoutInflater layoutInflater) {
         this.context = layoutInflater.getContext();
         this.layoutInflater = layoutInflater;
     }

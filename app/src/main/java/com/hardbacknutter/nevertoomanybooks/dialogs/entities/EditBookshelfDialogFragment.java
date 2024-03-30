@@ -35,10 +35,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -87,14 +87,16 @@ public class EditBookshelfDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
+                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
+                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
         bookshelf = Objects.requireNonNull(
-                args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
+                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
+                ParcelableDialogLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = bookshelf.getName();
         } else {
-            currentEdit = savedInstanceState.getString(DialogLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getString(DBKey.FK_BOOKSHELF);
         }
     }
 
@@ -159,8 +161,8 @@ public class EditBookshelfDialogFragment
             return false;
         }
 
-        final Consumer<Bookshelf> onSuccess = savedBookshelf -> InPlaceParcelableDialogLauncher
-                .setResult(this, requestKey, savedBookshelf);
+        final Consumer<Bookshelf> onSuccess = savedBookshelf -> ParcelableDialogLauncher
+                .setEditInPlaceResult(this, requestKey, savedBookshelf);
 
         try {
             if (existingEntity.isPresent()) {
@@ -193,7 +195,7 @@ public class EditBookshelfDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DialogLauncher.BKEY_ITEM, currentEdit);
+        outState.putString(DBKey.FK_BOOKSHELF, currentEdit);
     }
 
     @Override

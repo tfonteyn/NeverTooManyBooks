@@ -47,7 +47,6 @@ public class MultiChoiceDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "MultiChoiceDialogFragment";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_DIALOG_TITLE = TAG + ":title";
     private static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
@@ -74,7 +73,8 @@ public class MultiChoiceDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         dialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_edit));
         dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
 
@@ -124,12 +124,28 @@ public class MultiChoiceDialogFragment
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, MultiChoiceDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment      the calling DialogFragment
+         * @param requestKey    to use
+         * @param selectedItems the set of <strong>checked</strong> items
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @NonNull final Set<Long> selectedItems) {

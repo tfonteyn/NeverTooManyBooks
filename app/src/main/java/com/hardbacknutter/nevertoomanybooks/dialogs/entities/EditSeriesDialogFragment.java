@@ -36,10 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 /**
@@ -88,14 +88,16 @@ public class EditSeriesDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(
-                args.getString(DialogLauncher.BKEY_REQUEST_KEY), DialogLauncher.BKEY_REQUEST_KEY);
+                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
+                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
         series = Objects.requireNonNull(
-                args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
+                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
+                ParcelableDialogLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());
         } else {
-            currentEdit = savedInstanceState.getParcelable(DialogLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
         }
     }
 
@@ -158,8 +160,8 @@ public class EditSeriesDialogFragment
         final Locale locale = series.getLocale(context).orElseGet(
                 () -> getResources().getConfiguration().getLocales().get(0));
 
-        final Consumer<Series> onSuccess = savedSeries -> InPlaceParcelableDialogLauncher
-                .setResult(this, requestKey, savedSeries);
+        final Consumer<Series> onSuccess = savedSeries -> ParcelableDialogLauncher
+                .setEditInPlaceResult(this, requestKey, savedSeries);
 
         try {
             if (series.getId() == 0 || nameChanged) {
@@ -204,7 +206,7 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DialogLauncher.BKEY_ITEM, currentEdit);
+        outState.putParcelable(DBKey.FK_SERIES, currentEdit);
     }
 
     @Override

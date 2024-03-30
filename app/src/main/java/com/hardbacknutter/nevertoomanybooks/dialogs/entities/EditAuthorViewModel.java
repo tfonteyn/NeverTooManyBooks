@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
@@ -48,9 +48,6 @@ public class EditAuthorViewModel
         extends ViewModel {
 
     private static final String TAG = "EditAuthorViewModel";
-
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
 
     /** The Author we're editing. */
     private Author author;
@@ -72,17 +69,13 @@ public class EditAuthorViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
-     * @param args    {@link Fragment#getArguments()}
+     * @param args {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(
-                    args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                    DialogLauncher.BKEY_REQUEST_KEY);
+    public void init(@NonNull final Bundle args) {
+        if (author == null) {
             author = Objects.requireNonNull(
-                    args.getParcelable(DialogLauncher.BKEY_ITEM), DialogLauncher.BKEY_ITEM);
+                    args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
+                    ParcelableDialogLauncher.BKEY_ITEM);
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
@@ -100,16 +93,6 @@ public class EditAuthorViewModel
 
     public boolean useAuthorType() {
         return useAuthorType;
-    }
-
-    /**
-     * Get the request-key for Launcher/Listener communications.
-     *
-     * @return key
-     */
-    @NonNull
-    public String getRequestKey() {
-        return requestKey;
     }
 
     @NonNull

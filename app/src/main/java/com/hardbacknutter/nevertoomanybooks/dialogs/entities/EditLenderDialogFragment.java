@@ -65,7 +65,6 @@ public class EditLenderDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** savedInstanceState key for the newly entered loanee name. */
     private static final String SIS_NEW_LOANEE = TAG + ':' + DBKey.LOANEE_NAME;
     /** FragmentResultListener request key to use for our response. */
@@ -126,7 +125,8 @@ public class EditLenderDialogFragment
         people = loaneeDao.getList();
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         bookId = args.getLong(DBKey.FK_BOOK);
         bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
 
@@ -244,12 +244,29 @@ public class EditLenderDialogFragment
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, EditLenderDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param bookId     the id of the updated book
+         * @param loanee     the name of the loanee, or {@code ""} for a returned book
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @IntRange(from = 1) final long bookId,

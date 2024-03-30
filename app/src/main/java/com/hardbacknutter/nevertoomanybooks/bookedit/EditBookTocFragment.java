@@ -482,7 +482,6 @@ public class EditBookTocFragment
         /** Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "ConfirmTocDialogFrag";
-        private static final String BKEY_REQUEST_KEY = TAG + ":rk";
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
         /** FragmentResultListener request key to use for our response. */
         private String requestKey;
@@ -495,8 +494,8 @@ public class EditBookTocFragment
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
-            requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                BKEY_REQUEST_KEY);
+            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                                DialogLauncher.BKEY_REQUEST_KEY);
             tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                 Book.BKEY_TOC_LIST);
 
@@ -560,14 +559,33 @@ public class EditBookTocFragment
             @NonNull
             private final OnSearchNextListener onSearchNextListener;
 
-            protected Launcher(@NonNull final String requestKey,
-                               @NonNull final ResultListener resultListener,
-                               @NonNull final OnSearchNextListener onSearchNextListener) {
+            /**
+             * Constructor.
+             *
+             * @param requestKey           FragmentResultListener request key to use for our
+             *                             response.
+             * @param resultListener       listener
+             * @param onSearchNextListener listener to trigger if the user wants a new/next search
+             */
+            Launcher(@NonNull final String requestKey,
+                     @NonNull final ResultListener resultListener,
+                     @NonNull final OnSearchNextListener onSearchNextListener) {
                 super(requestKey, ConfirmTocDialogFragment::new);
                 this.resultListener = resultListener;
                 this.onSearchNextListener = onSearchNextListener;
             }
 
+            /**
+             * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+             *
+             * @param fragment        the calling DialogFragment
+             * @param requestKey      to use
+             * @param bookContentType bit flags
+             * @param tocEntries      the list of entries
+             *
+             * @see #onFragmentResult(String, Bundle)
+             */
+            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
                                   @NonNull final Book.ContentType bookContentType,
@@ -578,6 +596,7 @@ public class EditBookTocFragment
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
 
+            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void searchNextEdition(@NonNull final Fragment fragment,
                                           @NonNull final String requestKey) {
                 final Bundle result = new Bundle(1);
@@ -622,10 +641,10 @@ public class EditBookTocFragment
                 /**
                  * Callback handler.
                  *
-                 * @param contentType bit flags
-                 * @param tocEntries  the list of entries
+                 * @param bookContentType bit flags
+                 * @param tocEntries      the list of entries
                  */
-                void onResult(@NonNull Book.ContentType contentType,
+                void onResult(@NonNull Book.ContentType bookContentType,
                               @NonNull List<TocEntry> tocEntries);
             }
 

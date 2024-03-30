@@ -188,12 +188,28 @@ public class BookshelfFiltersDialogFragment
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, BookshelfFiltersDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param modified   flag to indicate whether the filters have changed
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               final boolean modified) {
@@ -210,6 +226,7 @@ public class BookshelfFiltersDialogFragment
         public void launch(@NonNull final Bookshelf bookshelf) {
             final Bundle args = new Bundle(2);
             args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
+
             createDialog(args);
         }
 

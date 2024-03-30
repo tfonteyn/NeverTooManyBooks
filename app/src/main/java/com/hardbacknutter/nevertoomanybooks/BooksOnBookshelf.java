@@ -82,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContract
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -95,9 +96,8 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.InPlaceParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StringDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
@@ -109,6 +109,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFra
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditStringDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -269,42 +270,44 @@ public class BooksOnBookshelf
             registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
                     bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
 
-    /**
-     * Accept the result from the dialog.
-     */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
             new EditLenderDialogFragment.Launcher(
                     DBKey.LOANEE_NAME,
                     (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
-    private final StringDialogLauncher editColorLauncher = new StringDialogLauncher(
-            DBKey.COLOR, EditColorDialogFragment::new, (original, modified)
-            -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
-    private final StringDialogLauncher editFormatLauncher = new StringDialogLauncher(
-            DBKey.FORMAT, EditFormatDialogFragment::new, (original, modified)
-            -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
-    private final StringDialogLauncher editGenreLauncher = new StringDialogLauncher(
-            DBKey.GENRE, EditGenreDialogFragment::new, (original, modified)
-            -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
-    private final StringDialogLauncher editLanguageLauncher = new StringDialogLauncher(
-            DBKey.LANGUAGE, EditLanguageDialogFragment::new, (original, modified)
-            -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
-    private final StringDialogLauncher editLocationLauncher = new StringDialogLauncher(
-            DBKey.LOCATION, EditLocationDialogFragment::new, (original, modified)
-            -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
-    private final InPlaceParcelableDialogLauncher<Bookshelf> editBookshelfLauncher =
-            new InPlaceParcelableDialogLauncher<>(
+    private final EditStringDialogFragment.Launcher editColorLauncher =
+            new EditStringDialogFragment.Launcher(
+                    DBKey.COLOR, EditColorDialogFragment::new, (original, modified)
+                    -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
+    private final EditStringDialogFragment.Launcher editFormatLauncher =
+            new EditStringDialogFragment.Launcher(
+                    DBKey.FORMAT, EditFormatDialogFragment::new, (original, modified)
+                    -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
+    private final EditStringDialogFragment.Launcher editGenreLauncher =
+            new EditStringDialogFragment.Launcher(
+                    DBKey.GENRE, EditGenreDialogFragment::new, (original, modified)
+                    -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
+    private final EditStringDialogFragment.Launcher editLanguageLauncher =
+            new EditStringDialogFragment.Launcher(
+                    DBKey.LANGUAGE, EditLanguageDialogFragment::new, (original, modified)
+                    -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
+    private final EditStringDialogFragment.Launcher editLocationLauncher =
+            new EditStringDialogFragment.Launcher(
+                    DBKey.LOCATION, EditLocationDialogFragment::new, (original, modified)
+                    -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
+    private final ParcelableDialogLauncher<Bookshelf> editBookshelfLauncher =
+            new ParcelableDialogLauncher<>(
                     DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new,
                     bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
-    private final InPlaceParcelableDialogLauncher<Author> editAuthorLauncher =
-            new InPlaceParcelableDialogLauncher<>(
+    private final ParcelableDialogLauncher<Author> editAuthorLauncher =
+            new ParcelableDialogLauncher<>(
                     DBKey.FK_AUTHOR, EditAuthorDialogFragment::new,
                     author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
-    private final InPlaceParcelableDialogLauncher<Series> editSeriesLauncher =
-            new InPlaceParcelableDialogLauncher<>(
+    private final ParcelableDialogLauncher<Series> editSeriesLauncher =
+            new ParcelableDialogLauncher<>(
                     DBKey.FK_SERIES, EditSeriesDialogFragment::new,
                     series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
-    private final InPlaceParcelableDialogLauncher<Publisher> editPublisherLauncher =
-            new InPlaceParcelableDialogLauncher<>(
+    private final ParcelableDialogLauncher<Publisher> editPublisherLauncher =
+            new ParcelableDialogLauncher<>(
                     DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new,
                     publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
     /** Encapsulates the FAB button/menu. */
@@ -1418,7 +1421,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
             final Author author = DataHolderUtils.requireAuthor(rowData);
-            editAuthorLauncher.launch(author);
+            editAuthorLauncher.launch(EditAction.EditInPlace, author);
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1483,7 +1486,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_SERIES_EDIT) {
             final Series series = DataHolderUtils.requireSeries(rowData);
-            editSeriesLauncher.launch(series);
+            editSeriesLauncher.launch(EditAction.EditInPlace, series);
             return true;
 
         } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
@@ -1536,7 +1539,7 @@ public class BooksOnBookshelf
                                           @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-            editPublisherLauncher.launch(publisher);
+            editPublisherLauncher.launch(EditAction.EditInPlace, publisher);
             return true;
 
         } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
@@ -1583,7 +1586,7 @@ public class BooksOnBookshelf
                                           @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_BOOKSHELF_EDIT) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-            editBookshelfLauncher.launch(bookshelf);
+            editBookshelfLauncher.launch(EditAction.EditInPlace, bookshelf);
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {

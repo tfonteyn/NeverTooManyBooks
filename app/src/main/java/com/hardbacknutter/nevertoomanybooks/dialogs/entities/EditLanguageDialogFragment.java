@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * and a manual edit *will* be needed.
  */
 public class EditLanguageDialogFragment
-        extends EditStringBaseDialogFragment {
+        extends EditStringDialogFragment {
     /**
      * No-arg constructor for OS use.
      */

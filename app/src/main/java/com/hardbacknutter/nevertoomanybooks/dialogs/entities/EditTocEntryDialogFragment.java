@@ -51,7 +51,6 @@ public class EditTocEntryDialogFragment
     private static final String BKEY_ANTHOLOGY = TAG + ":anthology";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
     private static final String BKEY_POSITION = TAG + ":pos";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     private String requestKey;
 
@@ -88,7 +87,8 @@ public class EditTocEntryDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         bookTitle = args.getString(DBKey.TITLE);
         isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
         tocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
@@ -218,12 +218,29 @@ public class EditTocEntryDialogFragment
         @NonNull
         private final ResultListener resultListener;
 
+        /**
+         * Constructor.
+         *
+         * @param requestKey     FragmentResultListener request key to use for our response.
+         * @param resultListener listener
+         */
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
             super(requestKey, EditTocEntryDialogFragment::new);
             this.resultListener = resultListener;
         }
 
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param tocEntry   the modified entry
+         * @param position   the position in the list we we're editing
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @NonNull final TocEntry tocEntry,
@@ -251,8 +268,8 @@ public class EditTocEntryDialogFragment
             final Bundle args = new Bundle(5);
             args.putString(DBKey.TITLE, book.getTitle());
             args.putBoolean(BKEY_ANTHOLOGY, isAnthology);
-            args.putInt(BKEY_POSITION, position);
             args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
+            args.putInt(BKEY_POSITION, position);
 
             createDialog(args);
         }

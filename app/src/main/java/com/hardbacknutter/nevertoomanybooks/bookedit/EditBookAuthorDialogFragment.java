@@ -51,16 +51,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * <p>
  * {@link EditAction#Add}:
  * <ul>
- * <li>used for list-dialogs needing to add a NEW item to the list</li>
- * <li>the item is NOT stored in the database</li>
- * <li>returns the new item</li>
+ * <li>Used for list-dialogs needing to add a NEW item to the list</li>
+ * <li>The new item is NOT stored in the database</li>
+ * <li>Returns the new item</li>
  * </ul>
  * <p>
  * {@link EditAction#Edit}:
  * <ul>
- * <li>used for list-dialogs needing to EDIT an existing item in the list</li>
- * <li>the modifications are NOT stored in the database</li>
- * <li>returns the original untouched + a new copy with the modifications</li>
+ * <li>Used for list-dialogs needing to EDIT an existing item in the list</li>
+ * <li>The modifications are NOT stored in the database</li>
+ * <li>Returns the original untouched + a new copy with the modifications</li>
  * </ul>
  * Must be a public static class to be properly recreated from instance state.
  */
@@ -75,6 +75,9 @@ public class EditBookAuthorDialogFragment
      * The key is the Type.
      */
     private final SparseArray<CompoundButton> typeButtons = new SparseArray<>();
+
+    /** FragmentResultListener request key to use for our response. */
+    private String requestKey;
 
     /** Book View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
@@ -98,14 +101,16 @@ public class EditBookAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Bundle args = requireArguments();
+        requestKey = Objects.requireNonNull(
+                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
+                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
+        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
         authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
-        //noinspection DataFlowIssue
-        authorVm.init(getContext(), requireArguments());
-
-        final Bundle args = requireArguments();
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+        authorVm.init(args);
     }
 
     @Override
@@ -264,13 +269,8 @@ public class EditBookAuthorDialogFragment
             return false;
         }
 
-        if (action == EditAction.Add) {
-            ParcelableDialogLauncher.setResult(this, authorVm.getRequestKey(),
-                                               currentEdit);
-        } else {
-            ParcelableDialogLauncher.setResult(this, authorVm.getRequestKey(),
-                                               authorVm.getAuthor(), currentEdit);
-        }
+        ParcelableDialogLauncher
+                .setResult(this, requestKey, action, authorVm.getAuthor(), currentEdit);
         return true;
     }
 

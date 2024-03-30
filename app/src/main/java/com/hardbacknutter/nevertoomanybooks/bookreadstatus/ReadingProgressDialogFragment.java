@@ -48,16 +48,10 @@ public class ReadingProgressDialogFragment
 
     private static final String TAG = "ReadProgressDialogFrg";
 
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
     private ReadingProgress readingProgress;
 
     private DialogBookReadProgressContentBinding vb;
     private String requestKey;
-
-    private final ExtTextWatcher percentageTextWatcher = this::percentageTextToSlider;
-    private final ExtTextWatcher currentPageTextWatcher = this::currentPageTextToSlider;
-    private final ExtTextWatcher totalPagesTextWatcher = this::totalPagesTextToSlider;
 
     /**
      * No-arg constructor for OS use.
@@ -82,18 +76,21 @@ public class ReadingProgressDialogFragment
         return Optional.empty();
     }
 
+    private final ExtTextWatcher percentageTextWatcher = this::percentageTextToSlider;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
 
         if (savedInstanceState != null) {
             args = savedInstanceState;
         }
 
-        readingProgress = Objects.requireNonNull(args.getParcelable(Launcher.BKEY_PROGRESS));
+        readingProgress = Objects.requireNonNull(args.getParcelable(DBKey.READ_PROGRESS));
     }
 
     @Override
@@ -127,6 +124,8 @@ public class ReadingProgressDialogFragment
         });
     }
 
+    private final ExtTextWatcher currentPageTextWatcher = this::currentPageTextToSlider;
+
     private void addTextWatchers() {
         vb.percentage.addTextChangedListener(percentageTextWatcher);
         vb.currentPage.addTextChangedListener(currentPageTextWatcher);
@@ -138,6 +137,8 @@ public class ReadingProgressDialogFragment
         vb.currentPage.removeTextChangedListener(currentPageTextWatcher);
         vb.totalPages.removeTextChangedListener(totalPagesTextWatcher);
     }
+
+    private final ExtTextWatcher totalPagesTextWatcher = this::totalPagesTextToSlider;
 
     private void updateUI() {
         if (readingProgress.asPercentage()) {
@@ -189,7 +190,7 @@ public class ReadingProgressDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(Launcher.BKEY_PROGRESS, readingProgress);
+        outState.putParcelable(DBKey.READ_PROGRESS, readingProgress);
     }
 
     @Override
@@ -342,6 +343,12 @@ public class ReadingProgressDialogFragment
         private final OnReadingProgressListener onReadingProgressListener;
 
 
+        /**
+         * Constructor.
+         *
+         * @param onReadListener            listener for Read/Unread status updates
+         * @param onReadingProgressListener listener for extended progress updates
+         */
         public Launcher(@NonNull final OnReadListener onReadListener,
                         @NonNull final OnReadingProgressListener onReadingProgressListener) {
             super(DBKey.READ_PROGRESS, ReadingProgressDialogFragment::new);
@@ -349,17 +356,37 @@ public class ReadingProgressDialogFragment
             this.onReadingProgressListener = onReadingProgressListener;
         }
 
-        public static void setResult(@NonNull final Fragment fragment,
-                                     @NonNull final String requestKey,
-                                     final boolean read) {
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment   the calling DialogFragment
+         * @param requestKey to use
+         * @param read       Read/Unread status
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings({"StaticMethodOnlyUsedInOneClass", "SameParameterValue"})
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              final boolean read) {
             final Bundle result = new Bundle(1);
             result.putBoolean(DBKey.READ__BOOL, read);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
-        public static void setResult(@NonNull final Fragment fragment,
-                                     @NonNull final String requestKey,
-                                     @Nullable final ReadingProgress readingProgress) {
+        /**
+         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
+         *
+         * @param fragment        the calling DialogFragment
+         * @param requestKey      to use
+         * @param readingProgress data
+         *
+         * @see #onFragmentResult(String, Bundle)
+         */
+        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @Nullable final ReadingProgress readingProgress) {
             final Bundle result = new Bundle(1);
             result.putParcelable(BKEY_PROGRESS, readingProgress);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
@@ -372,8 +399,8 @@ public class ReadingProgressDialogFragment
          */
         public void launch(@NonNull final ReadingProgress readingProgress) {
             final Bundle args = new Bundle(2);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putParcelable(BKEY_PROGRESS, readingProgress);
+
             createDialog(args);
         }
 
@@ -411,4 +438,6 @@ public class ReadingProgressDialogFragment
             void onReadingProgress(@NonNull ReadingProgress readingProgress);
         }
     }
+
+
 }
