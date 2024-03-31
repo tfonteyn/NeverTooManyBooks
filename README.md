@@ -34,17 +34,24 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 - English, Dutch, Portuguese, Vietnamese.
 - German, French, Spanish: quality should be very good but could benefit from a native speaker
   verification.
-- Italian: should be usable, but certainly not perfect. Verification by a native speaker needed.
-- Czech, Greek, Polish, Russian, Turkish: mostly machine translated, no guarantees for quality.
-
-Translations are now integrated and editable
-on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
-
-- Everyone welcome; please log a
-  GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
-  if you want to be credited with your help.
+- Italian, Turkish: should be usable, but certainly not perfect. Verification by a native speaker
+  needed.
+- Czech, Greek, Polish, Russian: mostly machine translated, no guarantees for quality.
 - Volunteers have started on Chinese (49%) and Faroese (16%). These will be added
   if/when completed.
+
+Translations are now integrated and editable
+on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
+
+- Pull-requests with translations are also welcome.
+- Contact me by logging an [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) if you want
+  to provide translations in another way.
+- Please log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
+  if you want to be credited by name with your help.
+
+<a href="https://hosted.weblate.org/engage/nevertoomanybooks/">
+<img src="https://hosted.weblate.org/widget/nevertoomanybooks/multi-auto.svg" alt="Translation status" />
+</a>
 
 ## Data sources
 
@@ -96,7 +103,10 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
-Vietnamese translation kindly contributed by [ngocanhtve](https://github.com/ngocanhtve).
+- Vietnamese translation contributed by [ngocanhtve](https://github.com/ngocanhtve).
+- Portugese translation contributed by [maverick74](https://github.com/maverick74).
+- All other translation volunteers
+  on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
 
 In August 2018, this project was forked from:
 Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
