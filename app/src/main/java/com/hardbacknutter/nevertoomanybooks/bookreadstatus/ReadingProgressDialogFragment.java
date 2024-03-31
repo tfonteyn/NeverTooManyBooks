@@ -46,8 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 public class ReadingProgressDialogFragment
         extends FFBaseDialogFragment {
 
-    private static final String TAG = "ReadProgressDialogFrg";
-
     private ReadingProgress readingProgress;
 
     private DialogBookReadProgressContentBinding vb;
@@ -336,7 +334,6 @@ public class ReadingProgressDialogFragment
     public static class Launcher
             extends DialogLauncher {
 
-        static final String BKEY_PROGRESS = TAG + ":progress";
         @NonNull
         private final OnReadListener onReadListener;
         @NonNull
@@ -388,7 +385,7 @@ public class ReadingProgressDialogFragment
                               @NonNull final String requestKey,
                               @Nullable final ReadingProgress readingProgress) {
             final Bundle result = new Bundle(1);
-            result.putParcelable(BKEY_PROGRESS, readingProgress);
+            result.putParcelable(DBKey.READ_PROGRESS, readingProgress);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -399,7 +396,7 @@ public class ReadingProgressDialogFragment
          */
         public void launch(@NonNull final ReadingProgress readingProgress) {
             final Bundle args = new Bundle(2);
-            args.putParcelable(BKEY_PROGRESS, readingProgress);
+            args.putParcelable(DBKey.READ_PROGRESS, readingProgress);
 
             createDialog(args);
         }
@@ -411,7 +408,8 @@ public class ReadingProgressDialogFragment
                 onReadListener.onRead(result.getBoolean(DBKey.READ__BOOL));
             } else {
                 onReadingProgressListener.onReadingProgress(
-                        Objects.requireNonNull(result.getParcelable(BKEY_PROGRESS), BKEY_PROGRESS));
+                        Objects.requireNonNull(result.getParcelable(DBKey.READ_PROGRESS),
+                                               DBKey.READ_PROGRESS));
 
             }
         }
