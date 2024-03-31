@@ -41,6 +41,11 @@ public final class ReadStatusFragmentFactory {
     public static final int VIEWMODEL_SHOW = 0;
     public static final int VIEWMODEL_EDIT = 1;
 
+    public static final Class<?>[] VIEW_MODELS = {
+            ShowBookDetailsViewModel.class,
+            EditBookViewModel.class
+    };
+
     private static final String TAG = "ReadStatusFragmentFactory";
     private static final String BKEY_VIEWMODEL = TAG + ":vm";
 
@@ -97,20 +102,14 @@ public final class ReadStatusFragmentFactory {
      * @param args bundle
      *
      * @return the class to use for the {@code ViewModelProvider}.
+     *
+     * @throws IndexOutOfBoundsException for illegal values
      */
-    @SuppressWarnings("unchecked")
     @NonNull
     static <T extends BookReadStatusViewModel> Class<T> getViewModelClass(
             @NonNull final Bundle args) {
-        final int viewModelClass = args.getInt(BKEY_VIEWMODEL);
-        switch (viewModelClass) {
-            case VIEWMODEL_SHOW:
-                return (Class<T>) ShowBookDetailsViewModel.class;
-            case VIEWMODEL_EDIT:
-                return (Class<T>) EditBookViewModel.class;
-            default:
-                throw new IllegalArgumentException("viewModelClass=" + viewModelClass);
-        }
+        //noinspection unchecked
+        return (Class<T>) VIEW_MODELS[args.getInt(BKEY_VIEWMODEL)];
     }
 
     @IntDef({VIEWMODEL_SHOW, VIEWMODEL_EDIT})
