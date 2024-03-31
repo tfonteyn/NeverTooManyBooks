@@ -1688,11 +1688,14 @@
     <!-- Button label: the user finished reading a book. -->
     <string name="btn_finished">Completed</string>
 
-    <!-- Reading progress: "I'm currently reading this book"
-        param1: percentage 0..100 displayed with a percentage sign "%%". -->
-    <string name="info_progress_x_percent">Reading\nProgress: %1$d%%</string>
-    <!-- Reading progress: "I'm currently reading this book"
-        param1: current page; param2: total nr of pages. -->
+    <!-- Reading progress:
+         The user is reading this book, and their progress is at "x % read"
+         param1: percentage 0..100 displayed with a percentage sign "%%". -->
+    <string name="info_progress_x_percent">%1$d%% read</string>
+    <!-- Reading progress:
+         The user is reading this book, and they are on page "x of y"
+         param1: x: current page;
+         param2: y: total number of pages. -->
     <string name="info_progress_page_x_of_y">Reading\nPage: %1$d of %2$d</string>
 
     <!-- SwitchPreference : Read Progress: use the traditional Read/Unread checkbox style. -->

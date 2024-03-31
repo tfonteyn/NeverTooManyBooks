@@ -39,8 +39,10 @@
         app:layout_constraintEnd_toEndOf="@id/read_progress"
         app:layout_constraintStart_toStartOf="@id/read_progress"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Reading: 67%"
+        tools:text="67% read"
         />
+
+    <!--    tools:text="Reading:\nPage: 123 of 432"-->
 
     <!-- always shown as a percentage; when using pages, the code will convert to % -->
     <com.google.android.material.progressindicator.LinearProgressIndicator

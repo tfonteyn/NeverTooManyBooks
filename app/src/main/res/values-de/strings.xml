@@ -756,7 +756,7 @@
     <string name="btn_finished">Beendet</string>
     <string name="ps_use_read_progress_off">Verwenden Sie einen einfachen Gelesen/Ungelesen-Status.</string>
     <string name="ps_use_read_progress_on">Verfolgen Sie den Fortschritt in Prozent oder Seitenzahl.</string>
-    <string name="info_progress_x_percent">Am Lesen\nFortschritt: %1$d%%</string>
+    <string name="info_progress_x_percent">%1$d%% gelesen</string>
     <string name="info_progress_page_x_of_y">Am Lesen\nSeite: %1$d von %2$d</string>
     <string name="lbl_track_progress_long">Verfolgen Sie Ihren Fortschritt</string>
     <string name="lbl_total_pages">Gesamt</string>

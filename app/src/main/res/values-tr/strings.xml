@@ -766,7 +766,7 @@
     <string name="ps_use_read_progress_off">Basit bir Okundu/Okunmadı durumu kullanın.</string>
     <string name="ps_use_read_progress_on">İlerlemeyi yüzde veya sayfa sayısı olarak takip edin.</string>
     <string name="lbl_percentage_read">okunan %</string>
-    <string name="info_progress_x_percent">Okuma\nİlerlemesi: %%%1$d</string>
+    <string name="info_progress_x_percent">okunan %%%1$d</string>
     <string name="info_progress_page_x_of_y">Okunan\nSayfa: %1$d / %2$d</string>
     <string name="lbl_track_progress_long">İlerlemenizi takip edin</string>
     <string name="lbl_total_pages">Toplam</string>
