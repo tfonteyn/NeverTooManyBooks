@@ -24,7 +24,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
@@ -48,6 +50,7 @@ public abstract class DialogLauncher
      * FragmentResultListener request key to use for our response.
      * Doubles up as the fragment TAG
      */
+    @NonNull
     private final String requestKey;
 
     @NonNull
@@ -67,6 +70,13 @@ public abstract class DialogLauncher
         this.dialogFragmentSupplier = dialogSupplier;
     }
 
+    /**
+     * Register this object for receiving Fragment results.
+     *
+     * @param fragmentManager typically the {@link Fragment#getChildFragmentManager()}
+     *                        or the {@link AppCompatActivity#getSupportFragmentManager()}
+     * @param lifecycleOwner  typically the {@link Fragment} or the {@link AppCompatActivity}
+     */
     public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
         this.fragmentManager = fragmentManager;

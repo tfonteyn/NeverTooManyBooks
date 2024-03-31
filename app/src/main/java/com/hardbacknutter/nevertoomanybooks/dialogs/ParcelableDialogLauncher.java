@@ -185,18 +185,6 @@ public class ParcelableDialogLauncher<T extends Parcelable>
         }
     }
 
-
-    @FunctionalInterface
-    public interface OnModifiedListener<T> {
-
-        /**
-         * Callback handler.
-         *
-         * @param item the modified item
-         */
-        void onModified(@NonNull T item);
-    }
-
     @FunctionalInterface
     public interface OnAddListener<T> {
 
@@ -219,5 +207,16 @@ public class ParcelableDialogLauncher<T extends Parcelable>
          */
         void onEdit(@NonNull T original,
                     @NonNull T modified);
+    }
+
+    @FunctionalInterface
+    public interface OnModifiedListener<T> {
+
+        /**
+         * Callback handler - {@link EditAction#EditInPlace}.
+         *
+         * @param item the modified item
+         */
+        void onModified(@NonNull T item);
     }
 }

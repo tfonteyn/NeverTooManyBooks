@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -239,12 +239,13 @@ public class CoverHandler {
                 new CropImageActivity.ResultContract(), o -> o.ifPresent(this::onPictureResult));
 
 
-        final LifecycleOwner lifecycleOwner = fragment.getViewLifecycleOwner();
+        final LifecycleOwner viewLifecycleOwner = fragment.getViewLifecycleOwner();
 
+        // TODO: should we not just use the fragment itself as the 2nd param?
         coverBrowserLauncher.registerForFragmentResult(fragment.getChildFragmentManager(),
-                                                       lifecycleOwner);
+                                                       viewLifecycleOwner);
 
-        vm.onFinished().observe(lifecycleOwner, message -> {
+        vm.onFinished().observe(viewLifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 LoggerFactory.getLogger().d(TAG, "onFragmentViewCreated",
                                             "vm.onFinished()|event=" + message);
