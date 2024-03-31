@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -46,7 +43,7 @@
     <string name="X_action_previous">Anterior</string>
     <string name="X_action_reset">Restablecer</string>
     <string name="X_action_send">Enviar</string>
-    <string name="X_action_try_again">Reintentar</string>
+    <string name="X_action_try_again">Volver a intentar</string>
     <string name="X_action_update">Actualizar</string>
     <string name="X_action_customize">Personalizar…</string>
     <string name="btn_show_list">Mostrar lista</string>
@@ -304,7 +301,7 @@
     <string name="lbl_cover_back">Contraportada</string>
     <string name="lbl_cover_front">Portada</string>
     <string name="lbl_covers">Portadas</string>
-    <string name="lbl_covers_long">Portadas</string>
+    <string name="lbl_covers_long">Imágenes de la portada</string>
     <string name="lbl_credentials">Credenciales de usuario</string>
     <string name="lbl_currency">Moneda</string>
     <string name="lbl_database">Base de datos</string>
