@@ -760,4 +760,10 @@
     <string name="btn_finished">Terminé</string>
     <string name="ps_use_read_progress_off">Utilisez un simple statut \"lu/non lu\".</string>
     <string name="ps_use_read_progress_on">Suivez la progression en pourcentage ou en nombre de pages.</string>
+    <string name="info_progress_x_percent">En cours\nProgrès : %1$d%%</string>
+    <string name="info_progress_page_x_of_y">En cours\nPage : %1$d de %2$d</string>
+    <string name="lbl_track_progress_long">Suivez vos progrès</string>
+    <string name="lbl_total_pages">Total</string>
+    <string name="lbl_percentage_read">% de lecture</string>
+    <string name="lbl_track_progress">Progrès</string>
 </resources>

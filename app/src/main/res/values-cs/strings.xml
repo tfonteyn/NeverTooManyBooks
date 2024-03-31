@@ -760,7 +760,7 @@
     <string name="action_report">Hlášení</string>
     <string name="error_invalid_url">Neplatná adresa (URL)</string>
     <string name="lbl_certificate_validity_period">Platnost: %1$s - %2$s</string>
-    <string name="lbl_reading">Rozečtené</string>
+    <string name="lbl_reading">Čtení</string>
     <string name="action_edit_defaults">Úprava výchozího nastavení</string>
     <string name="ps_sort_author_name_given_first">Řazení podle prvních křestních jmen,\ntj. „Karel Čapek“</string>
     <string name="ps_sort_author_name_family_first">Řazení podle příjmení na prvním místě,\ntj. „Čapek, Karel“</string>
@@ -775,4 +775,9 @@
     <string name="btn_finished">Dokončeno</string>
     <string name="ps_use_read_progress_off">Použijte jednoduchý stav přečteno/nepřečteno.</string>
     <string name="ps_use_read_progress_on">Sledujte pokrok v procentech nebo v počtu stránek.</string>
+    <string name="info_progress_x_percent">Čtení\nPokrok: %1$d%%</string>
+    <string name="info_progress_page_x_of_y">Čtení\nStránka: %1$d z %2$d</string>
+    <string name="lbl_track_progress_long">Sledujte svůj pokrok</string>
+    <string name="lbl_total_pages">Celkem</string>
+    <string name="lbl_track_progress">Pokrok</string>
 </resources>

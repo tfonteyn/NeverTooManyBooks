@@ -1681,16 +1681,18 @@
     <string name="lbl_current_page">Current page</string>
     <!-- Field label; reading-progress: Total number of pages. -->
     <string name="lbl_total_pages">Total</string>
-    <!-- Field label / Dialog title. Short for "Track progress" -->
+    <!-- Field label / Dialog title. Short for "Track your progress" -->
     <string name="lbl_track_progress">Progress</string>
     <!-- Field label / Dialog title. -->
-    <string name="lbl_track_progress_long">Track progress</string>
+    <string name="lbl_track_progress_long">Track your progress</string>
     <!-- Button label: the user finished reading a book. -->
     <string name="btn_finished">Completed</string>
 
-    <!-- Reading progress: param1: percentage 0..100 displayed with a percentage sign "%%". -->
+    <!-- Reading progress: "I'm currently reading this book"
+        param1: percentage 0..100 displayed with a percentage sign "%%". -->
     <string name="info_progress_x_percent">Reading\nProgress: %1$d%%</string>
-    <!-- Reading progress: param1: current page; param2: total nr of pages. -->
+    <!-- Reading progress: "I'm currently reading this book"
+        param1: current page; param2: total nr of pages. -->
     <string name="info_progress_page_x_of_y">Reading\nPage: %1$d of %2$d</string>
 
     <!-- SwitchPreference : Read Progress: use the traditional Read/Unread checkbox style. -->

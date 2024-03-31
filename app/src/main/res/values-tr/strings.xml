@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -748,7 +751,7 @@
     <string name="action_report">Bildir</string>
     <string name="error_invalid_url">Geçersiz adres (URL)</string>
     <string name="lbl_certificate_validity_period">Geçerlilik: %1$s - %2$s</string>
-    <string name="lbl_reading">Okunuyor</string>
+    <string name="lbl_reading">Okunan</string>
     <string name="action_edit_defaults">Varsayılan ayarları düzenleme</string>
     <string name="ps_sort_author_name_given_first">Önce verilen isimlere göre sıralayın,\nÖrneğin “Aziz Nesin”</string>
     <string name="ps_sort_author_name_family_first">Önce soyadına göre sıralayın,\nÖrneğin “Nesin, Aziz”</string>
@@ -763,11 +766,9 @@
     <string name="ps_use_read_progress_off">Basit bir Okundu/Okunmadı durumu kullanın.</string>
     <string name="ps_use_read_progress_on">İlerlemeyi yüzde veya sayfa sayısı olarak takip edin.</string>
     <string name="lbl_percentage_read">okunan %</string>
-    <string name="info_progress_x_percent">Okuma
-\nİlerlemesi: %%%1$d</string>
-    <string name="info_progress_page_x_of_y">Okunan
-\nSayfa: %1$d / %2$d</string>
-    <string name="lbl_track_progress_long">İlerleme takibi</string>
+    <string name="info_progress_x_percent">Okuma\nİlerlemesi: %%%1$d</string>
+    <string name="info_progress_page_x_of_y">Okunan\nSayfa: %1$d / %2$d</string>
+    <string name="lbl_track_progress_long">İlerlemenizi takip edin</string>
     <string name="lbl_total_pages">Toplam</string>
     <string name="lbl_track_progress">İlerleme</string>
 </resources>

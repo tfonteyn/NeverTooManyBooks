@@ -756,4 +756,9 @@
     <string name="btn_finished">Voltooid</string>
     <string name="ps_use_read_progress_off">Gebruik een eenvoudige status Lezen/Niet gelezen.</string>
     <string name="ps_use_read_progress_on">Volg de voortgang in percentage of paginanummer.</string>
+    <string name="info_progress_x_percent">Aan het lezen\nVordering: %1$d%%</string>
+    <string name="info_progress_page_x_of_y">Aan het lezení\nPagina: %1$d van %2$d</string>
+    <string name="lbl_track_progress_long">Volg je vooruitgang</string>
+    <string name="lbl_total_pages">Totaal</string>
+    <string name="lbl_track_progress">Vordering</string>
 </resources>
