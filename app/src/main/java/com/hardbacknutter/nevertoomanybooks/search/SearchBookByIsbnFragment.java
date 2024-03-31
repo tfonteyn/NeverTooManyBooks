@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -222,7 +222,7 @@ public class SearchBookByIsbnFragment
         switch (key) {
             case KEY_SEARCH: {
                 // The search button
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Build.VERSION.SDK_INT >= 30) {
                     view.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
                 } else {
                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -232,7 +232,7 @@ public class SearchBookByIsbnFragment
                 break;
             }
             case KEY_STOP_SCANNING: {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Build.VERSION.SDK_INT >= 30) {
                     view.performHapticFeedback(HapticFeedbackConstants.REJECT);
                 } else {
                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
