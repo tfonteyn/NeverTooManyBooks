@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
@@ -51,6 +50,11 @@ public class ReadingProgressDialogFragment
     private DialogBookReadProgressContentBinding vb;
     private String requestKey;
 
+    private final ExtTextWatcher percentageTextWatcher = this::percentageTextToSlider;
+    private final ExtTextWatcher currentPageTextWatcher = this::currentPageTextToSlider;
+    private final ExtTextWatcher totalPagesTextWatcher = this::totalPagesTextToSlider;
+
+
     /**
      * No-arg constructor for OS use.
      */
@@ -59,22 +63,28 @@ public class ReadingProgressDialogFragment
               R.layout.dialog_book_read_progress_content);
     }
 
-    @NonNull
-    private static Optional<Integer> parseInt(@Nullable final Editable text) {
+    /**
+     * Parse the text to an integer.
+     *
+     * @param text     to parse
+     * @param defValue value to return if parsing fails,
+     *
+     * @return parsed value
+     */
+    private static int parseInt(@Nullable final Editable text,
+                                final int defValue) {
         if (text != null) {
             final String txt = text.toString().trim();
             try {
                 if (!txt.isEmpty()) {
-                    return Optional.of(Integer.parseInt(txt));
+                    return Integer.parseInt(txt);
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }
         }
-        return Optional.empty();
+        return defValue;
     }
-
-    private final ExtTextWatcher percentageTextWatcher = this::percentageTextToSlider;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -122,8 +132,6 @@ public class ReadingProgressDialogFragment
         });
     }
 
-    private final ExtTextWatcher currentPageTextWatcher = this::currentPageTextToSlider;
-
     private void addTextWatchers() {
         vb.percentage.addTextChangedListener(percentageTextWatcher);
         vb.currentPage.addTextChangedListener(currentPageTextWatcher);
@@ -135,8 +143,6 @@ public class ReadingProgressDialogFragment
         vb.currentPage.removeTextChangedListener(currentPageTextWatcher);
         vb.totalPages.removeTextChangedListener(totalPagesTextWatcher);
     }
-
-    private final ExtTextWatcher totalPagesTextWatcher = this::totalPagesTextToSlider;
 
     private void updateUI() {
         if (readingProgress.asPercentage()) {
@@ -204,21 +210,28 @@ public class ReadingProgressDialogFragment
      */
     private void modelToView() {
         final int percentage = readingProgress.getPercentage();
-        vb.percentage.setText(String.valueOf(percentage));
+        vb.percentage.setText(percentage == 0 ? "" : String.valueOf(percentage));
         vb.sliderPercentage.setValue(percentage);
 
-        final int currentPage = readingProgress.getCurrentPage();
+
+        int currentPage = readingProgress.getCurrentPage();
         int totalPages = readingProgress.getTotalPages();
 
-        if (currentPage > totalPages) {
-            totalPages = currentPage;
+        // sanity check, should never happen... flw
+        if (currentPage < 0) {
+            currentPage = 0;
         }
-        // Prevent the slider from crashing
-        if (totalPages == 0) {
+        // sanity check, should never happen... flw
+        if (totalPages < 1) {
             totalPages = 1;
         }
 
-        vb.currentPage.setText(String.valueOf(currentPage));
+        // INCREASE the total-pages value if needed
+        if (currentPage > totalPages) {
+            totalPages = currentPage;
+        }
+
+        vb.currentPage.setText(currentPage == 0 ? "" : String.valueOf(currentPage));
         vb.totalPages.setText(String.valueOf(totalPages));
 
         // Adjust the upper limit first or we might crash!
@@ -227,30 +240,35 @@ public class ReadingProgressDialogFragment
     }
 
     private void viewToModel() {
-        readingProgress.setPercentage(parseInt(vb.percentage.getText()).orElse(null));
-        readingProgress.setPages(parseInt(vb.currentPage.getText()).orElse(null),
-                                 parseInt(vb.totalPages.getText()).orElse(null));
+        readingProgress.setPercentage(parseInt(vb.percentage.getText(), 0));
+        readingProgress.setPages(parseInt(vb.currentPage.getText(), 0),
+                                 parseInt(vb.totalPages.getText(), 1));
     }
 
     private void percentageSliderToText(final float value) {
         removeTextWatchers();
-        vb.percentage.setText(String.valueOf((int) value));
+        vb.percentage.setText(((int) value) == 0 ? "" : String.valueOf((int) value));
         addTextWatchers();
     }
 
     private void pagesSliderToText(final float value) {
         removeTextWatchers();
-        vb.currentPage.setText(String.valueOf((int) value));
+        vb.currentPage.setText(((int) value) == 0 ? "" : String.valueOf((int) value));
+        // copy the ValueTo as well to recover from error situations (see #totalPagesTextToSlider)
+        vb.totalPages.setText(String.valueOf((int) vb.sliderPages.getValueTo()));
+        vb.lblTotalPages.setError(null);
+        vb.btnPositive.setEnabled(true);
         addTextWatchers();
     }
 
     @SuppressLint("SetTextI18n")
     private void percentageTextToSlider(@Nullable final Editable s) {
         removeTextWatchers();
-        int value = parseInt(s).orElse(0);
+        int value = parseInt(s, 0);
+        // only call setText for illegal values
         if (value < 0) {
             value = 0;
-            vb.percentage.setText("0");
+            vb.percentage.setText("");
         } else if (value > 100) {
             value = 100;
             vb.percentage.setText("100");
@@ -262,33 +280,35 @@ public class ReadingProgressDialogFragment
     private void currentPageTextToSlider(@Nullable final Editable s) {
         removeTextWatchers();
 
-        int currentPage = parseInt(s).orElse(0);
-        int totalPages = parseInt(vb.totalPages.getText()).orElse(1);
+        int currentPage = parseInt(s, 0);
+        int totalPages = parseInt(vb.totalPages.getText(), 1);
 
-        boolean updateCurrent = false;
         boolean updateTotal = false;
 
+        // sanity check, should never happen... flw
         if (currentPage < 0) {
             currentPage = 0;
-            updateCurrent = true;
+            vb.currentPage.setText("");
         }
+        // sanity check, should never happen... flw
         if (totalPages < 1) {
             totalPages = 1;
             updateTotal = true;
         }
+
+        // INCREASE the total-pages value if needed
         if (currentPage > totalPages) {
-            // INCREASE the total-pages value
             totalPages = currentPage;
             updateTotal = true;
         }
 
-        if (updateCurrent) {
-            vb.currentPage.setText(String.valueOf(currentPage));
-        }
         if (updateTotal) {
             vb.totalPages.setText(String.valueOf(totalPages));
+            vb.lblTotalPages.setError(null);
+            vb.btnPositive.setEnabled(true);
         }
 
+        // Adjust the upper limit first or we might crash!
         vb.sliderPages.setValueTo(totalPages);
         vb.sliderPages.setValue(currentPage);
 
@@ -298,35 +318,34 @@ public class ReadingProgressDialogFragment
     private void totalPagesTextToSlider(@Nullable final Editable s) {
         removeTextWatchers();
 
-        int currentPage = parseInt(vb.currentPage.getText()).orElse(0);
-        int totalPages = parseInt(s).orElse(1);
+        int currentPage = parseInt(vb.currentPage.getText(), 0);
+        int totalPages = parseInt(s, 1);
 
-        boolean updateCurrent = false;
-        boolean updateTotal = false;
-
+        // sanity check, should never happen... flw
         if (currentPage < 0) {
             currentPage = 0;
-            updateCurrent = true;
+            vb.currentPage.setText("");
         }
+        // sanity check, should never happen... flw
         if (totalPages < 1) {
             totalPages = 1;
-            updateTotal = true;
+            vb.totalPages.setText("1");
         }
+
+        // DO NOT automatically update the current-page.
         if (currentPage > totalPages) {
-            // DECREASE the current-pages value
-            currentPage = totalPages;
-            updateCurrent = true;
-        }
+            vb.lblTotalPages.setError(
+                    getString(R.string.error_total_pages_must_be_larger_than_current_page));
+            vb.btnPositive.setEnabled(false);
+            // do NOT update the slider!
+        } else {
+            vb.lblTotalPages.setError(null);
+            vb.btnPositive.setEnabled(true);
 
-        if (updateCurrent) {
-            vb.currentPage.setText(String.valueOf(currentPage));
+            // Adjust the upper limit first or we might crash!
+            vb.sliderPages.setValueTo(totalPages);
+            vb.sliderPages.setValue(currentPage);
         }
-        if (updateTotal) {
-            vb.totalPages.setText(String.valueOf(totalPages));
-        }
-
-        vb.sliderPages.setValueTo(totalPages);
-        vb.sliderPages.setValue(currentPage);
 
         addTextWatchers();
     }
@@ -436,6 +455,4 @@ public class ReadingProgressDialogFragment
             void onReadingProgress(@NonNull ReadingProgress readingProgress);
         }
     }
-
-
 }

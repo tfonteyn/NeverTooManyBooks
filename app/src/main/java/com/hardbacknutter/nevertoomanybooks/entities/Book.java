@@ -1097,7 +1097,9 @@ public class Book
             if (!pageCountStr.isEmpty()) {
                 try {
                     final int totalPages = Integer.parseInt(pageCountStr);
-                    readingProgress.setTotalPages(totalPages);
+                    if (totalPages > 0) {
+                        readingProgress.setTotalPages(totalPages);
+                    }
                 } catch (@NonNull final NumberFormatException ignore) {
                     // The field was likely a description of some sort,
                     // and not a simple page count number.

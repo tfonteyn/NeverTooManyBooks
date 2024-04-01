@@ -23,8 +23,9 @@ package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.core.math.MathUtils;
 
 import java.util.Objects;
 
@@ -42,59 +43,42 @@ public final class ReadingProgress
     /** {@link Parcelable}. */
     public static final Creator<ReadingProgress> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public ReadingProgress createFromParcel(@NonNull final Parcel in) {
             return new ReadingProgress(in);
         }
 
         @Override
+        @NonNull
         public ReadingProgress[] newArray(final int size) {
             return new ReadingProgress[size];
         }
     };
-
     private static final String JSON_PCT = "pct";
     private static final String JSON_CURRENT_PAGE = "cp";
     private static final String JSON_TOTAL_PAGES = "tp";
     private static final String TAG = "ReadingProgress";
-    @Nullable
-    private Integer percentage;
-    @Nullable
-    private Integer currentPage;
-    @Nullable
-    private Integer totalPages;
+    private int percentage;
+    private int currentPage;
+    private int totalPages = 1;
     private boolean asPercentage;
 
-    private ReadingProgress(@Nullable final Integer percentage) {
+    private ReadingProgress(@IntRange(from = 0, to = 100) final int percentage) {
         asPercentage = true;
-        this.percentage = percentage;
+        setPercentage(percentage);
     }
 
-    private ReadingProgress(@Nullable final Integer currentPage,
-                            @Nullable final Integer totalPages) {
+    private ReadingProgress(@IntRange(from = 0) final int currentPage,
+                            @IntRange(from = 1) final int totalPages) {
         asPercentage = false;
-        this.currentPage = currentPage;
-        this.totalPages = totalPages;
-        sanitizePages();
+        setPages(currentPage, totalPages);
     }
 
     private ReadingProgress(@NonNull final Parcel in) {
-        asPercentage = in.readInt() != 0;
-
-        if (in.readByte() == 0) {
-            percentage = null;
-        } else {
-            percentage = in.readInt();
-        }
-        if (in.readByte() == 0) {
-            currentPage = null;
-        } else {
-            currentPage = in.readInt();
-        }
-        if (in.readByte() == 0) {
-            totalPages = null;
-        } else {
-            totalPages = in.readInt();
-        }
+        percentage = in.readInt();
+        currentPage = in.readInt();
+        totalPages = in.readInt();
+        asPercentage = in.readByte() != 0;
     }
 
     /**
@@ -129,8 +113,8 @@ public final class ReadingProgress
                 return new ReadingProgress(json.getInt(JSON_PCT));
             } else {
                 return new ReadingProgress(
-                        json.has(JSON_CURRENT_PAGE) ? json.optInt(JSON_CURRENT_PAGE) : null,
-                        json.has(JSON_TOTAL_PAGES) ? json.optInt(JSON_TOTAL_PAGES) : null);
+                        json.has(JSON_CURRENT_PAGE) ? json.optInt(JSON_CURRENT_PAGE) : 0,
+                        json.has(JSON_TOTAL_PAGES) ? json.optInt(JSON_TOTAL_PAGES) : 1);
 
             }
         } catch (@NonNull final JSONException e) {
@@ -141,6 +125,20 @@ public final class ReadingProgress
         return new ReadingProgress(0);
     }
 
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(percentage);
+        dest.writeInt(currentPage);
+        dest.writeInt(totalPages);
+        dest.writeByte((byte) (asPercentage ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     /**
      * Encode to a JSON string.
      *
@@ -148,58 +146,20 @@ public final class ReadingProgress
      */
     @NonNull
     public String toJson() {
-        if (asPercentage()) {
-            if (percentage != null) {
-                //noinspection DataFlowIssue
-                return new JSONObject().put(JSON_PCT, percentage)
-                                       .toString();
-            }
-        } else {
-            final JSONObject out = new JSONObject();
-            if (currentPage != null) {
-                out.put(JSON_CURRENT_PAGE, (int) currentPage);
-            }
-            if (totalPages != null) {
-                out.put(JSON_TOTAL_PAGES, (int) totalPages);
-            }
-            if (!out.isEmpty()) {
-                //noinspection DataFlowIssue
-                return out.toString();
-            }
+        if (asPercentage() && percentage > 0) {
+            //noinspection DataFlowIssue
+            return new JSONObject().put(JSON_PCT, percentage).toString();
+
+        } else if (currentPage > 0 && totalPages > 1) {
+            //noinspection DataFlowIssue
+            return new JSONObject()
+                    .put(JSON_CURRENT_PAGE, currentPage)
+                    .put(JSON_TOTAL_PAGES, totalPages)
+                    .toString();
         }
 
-        // Don't return an empty JSON string, just a normal empty string!
+        // Not set; just return the empty String.
         return "";
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(asPercentage ? 1 : 0);
-
-        if (percentage == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(percentage);
-        }
-        if (currentPage == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(currentPage);
-        }
-        if (totalPages == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(totalPages);
-        }
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     /**
@@ -228,7 +188,7 @@ public final class ReadingProgress
      * @return flag
      */
     public boolean isRead() {
-        if (percentage != null) {
+        if (asPercentage) {
             return percentage == 100;
         } else {
             return Objects.equals(currentPage, totalPages);
@@ -240,15 +200,14 @@ public final class ReadingProgress
      *
      * @return percentage; can be {@code 0} if there is not enough data to calculate it
      */
+    @IntRange(from = 0, to = 100)
     public int getPercentage() {
         if (asPercentage) {
-            if (percentage != null) {
-                return percentage;
-            }
-        } else if (currentPage != null && totalPages != null) {
+            return percentage;
+
+        } else if (currentPage > 0 && totalPages > 1) {
             return (int) (((float) currentPage / totalPages) * 100);
         }
-
         // fallback
         return 0;
     }
@@ -262,50 +221,42 @@ public final class ReadingProgress
      *
      * @see #setAsPercentage(boolean)
      */
-    public void setPercentage(@Nullable final Integer percentage) {
-        this.percentage = percentage;
+    public void setPercentage(@IntRange(from = 0, to = 100) final int percentage) {
+        this.percentage = MathUtils.clamp(percentage, 0, 100);
     }
 
     /**
      * Get the raw value for the current page.
      *
-     * @return page; or {@code 0} if unknown
+     * @return page
      */
     @SuppressWarnings("WeakerAccess")
+    @IntRange(from = 0)
     public int getCurrentPage() {
-        if (currentPage != null) {
-            return currentPage;
-        }
-        return 0;
+        return currentPage;
     }
 
     /**
      * Get the raw value for the total number of pages.
      *
-     * @return pages; or {@code 0} if unknown
+     * @return pages
      */
+    @IntRange(from = 1)
     public int getTotalPages() {
-        if (totalPages != null) {
-            return totalPages;
-        }
-        return 0;
+        return totalPages;
     }
 
     /**
      * Set the raw value for the total number of pages.
      * Calling this method does <strong>NOT</strong> flag
      * this object as being a "page x of y" value.
-     * <p>
-     * The value set <strong>will</strong> be adjusted upwards if it's smaller
-     * than the current-page value.
      *
      * @param totalPages to set
      *
      * @see #setAsPercentage(boolean)
      */
-    public void setTotalPages(@Nullable final Integer totalPages) {
+    public void setTotalPages(@IntRange(from = 1) final int totalPages) {
         this.totalPages = totalPages;
-        sanitizePages();
     }
 
     /**
@@ -313,27 +264,18 @@ public final class ReadingProgress
      * Calling this method does <strong>NOT</strong> flag
      * this object as being a "page x of y" value.
      *
-     * @param currentPage to set; can be {@code null}
-     * @param totalPages  to set; can be {@code null}
+     * @param currentPage to set
+     * @param totalPages  to set
      *
      * @see #setAsPercentage(boolean)
      */
-    public void setPages(@Nullable final Integer currentPage,
-                         @Nullable final Integer totalPages) {
-        this.currentPage = currentPage;
-        this.totalPages = totalPages;
-        sanitizePages();
-    }
+    public void setPages(@IntRange(from = 0) final int currentPage,
+                         @IntRange(from = 1) final int totalPages) {
+        this.currentPage = currentPage < 0 ? 0 : currentPage;
+        this.totalPages = totalPages < 1 ? 1 : totalPages;
 
-    private void sanitizePages() {
-        if (currentPage == null || totalPages == null) {
-            return;
-        }
-
-        // If the current-page is larger .... then adjust the total-pages silently
-        // (and NOT the other way around)
         if (currentPage > totalPages) {
-            totalPages = currentPage;
+            this.totalPages = currentPage;
         }
     }
 }
