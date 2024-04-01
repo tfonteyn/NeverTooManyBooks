@@ -26,6 +26,7 @@
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_lbl_folder">文件夹</string>
     <string name="lbl_books">书籍</string>
+    <string name="lbl_book_type">书籍类型</string>
     <string name="lbl_cover_front">封面</string>
     <string name="X_lbl_image">图片</string>
     <string name="X_whichImageCaptureApplication">使用以下应用截图</string>
@@ -46,6 +47,14 @@
     <string name="whichViewApplication">打开方式</string>
     <string name="x_of_y">%1$d本 • 共%2$d本</string>
     <string name="option_cover_replace">替换…</string>
+    <string name="confirm_unsaved_edits">如果现在退出，您尚未保存的更改将丢失。</string>
+    <string name="confirm_merge_bookshelves">您要修改的书架已经存在。您想合并它们吗？</string>
+    <string name="confirm_merge_authors">您要修改的作者已经存在。您想合并它们吗？</string>
+    <string name="confirm_merge_series">您要修改的系列已经存在。您想合并它们吗？</string>
+    <string name="confirm_merge_publishers">您要修改的出版商已经存在。您想合并它们吗？</string>
+    <string name="confirm_duplicate_book_message">您要添加的图书已经存在于数据库中，您确定要再添加一本吗？</string>
+    <string name="confirm_email_file">您希望将此文件作为电子邮件发送吗？</string>
+    <string name="confirm_test_connection">建议对该连接进行测试，以避免日后出现问题。</string>
     <string name="action_add">添加</string>
     <string name="action_clear">创建</string>
     <string name="action_create">创建</string>
@@ -178,6 +187,7 @@
     <string name="vldt_real_author_must_be_valid">必须为空或现有作者</string>
     <string name="lbl_series_num">不</string>
     <string name="lbl_pages">页数</string>
+    <string name="info_x_pages">%1$d 页</string>
     <string name="lbl_country">国家/地区</string>
     <string name="error_site_access_blocked">访问被该网站阻止。</string>
     <string name="vldt_non_blank_required">需要非空值</string>
@@ -194,6 +204,7 @@
     <string name="progress_msg_searching_editions">正在搜索其他版本…</string>
     <string name="progress_msg_connecting">连接中…</string>
     <string name="progress_msg_cleaning_up">清理中…</string>
+    <string name="info_nothing_to_do">无事可做。</string>
     <string name="info_story_in_multiple_books">“%1$s”存在与多本书中：
 \n
 \n%2$s</string>
@@ -202,7 +213,9 @@
     <string name="progress_msg_upgrading">更新中…</string>
     <string name="progress_msg_rebuilding_search_index">重建搜索索引…</string>
     <string name="info_authorized">已授权</string>
+    <string name="pt_line_spacing">行距</string>
     <string name="lbl_filters">过滤器</string>
+    <string name="pe_bob_row_menu_button">始终显示一个按钮。</string>
     <string name="pe_fast_scroller_overlay_dynamic">动态的</string>
     <string name="pe_camera_front">前置摄像头</string>
     <string name="pe_camera_other">其他</string>
@@ -229,8 +242,14 @@
     <string name="lbl_date_last_updated">最后更新日期</string>
     <string name="lbl_date_last_updated_year">最后更新的年</string>
     <string name="lbl_date_last_updated_month">最后更新的月</string>
+    <string name="lbl_export_options">选择要导出的内容。</string>
     <string name="lbl_export_books_option_all">所有书籍</string>
+    <string name="lbl_export_books_option_since_last_full_backup">新书和更新书</string>
     <string name="option_archive_type_backup_zip">备份 (.zip)</string>
+    <string name="option_info_archive_format_db">SQLite 数据库。</string>
+    <string name="lbl_import_options">选择要导入的内容。</string>
+    <string name="option_import_books_option_new_only">仅限新书</string>
+    <string name="option_import_books_option_new_and_updated">新书和更新书</string>
     <string name="option_import_books_option_all">所有书籍</string>
     <string name="lbl_group_read_and_unread">已读 &amp; 未读</string>
     <string name="book_format_hardcover_oblong">精装本 - 长方形</string>
@@ -263,6 +282,7 @@
     <string name="info_tap_on_image_to_select">点击大图来选择它。</string>
     <string name="info_download_successful">下载成功</string>
     <string name="lbl_about">简介</string>
+    <string name="pc_lists">列表</string>
     <string name="pc_advanced_options">高级</string>
     <string name="lbl_author">作者</string>
     <string name="lbl_author_type">作者类型</string>
@@ -286,6 +306,8 @@
     <string name="action_email">电子邮件</string>
     <string name="action_learn_more">了解详情</string>
     <string name="size_bytes">%1$.0fB</string>
+    <string name="pt_bob_groups">组别</string>
+    <string name="pv_bob_header_nr_of_books">书籍数量</string>
     <string name="pv_bob_header_filters">过滤器</string>
     <string name="size_hidden">已隐藏</string>
     <string name="size_x_large">极大</string>
@@ -303,6 +325,7 @@
     <string name="pe_bob_cover_long_click_popupmenu">长按封面图片。</string>
     <string name="pt_bob_cover_scale">封面图像大小</string>
     <string name="pt_bob_font_size">字体大小</string>
+    <string name="pt_allow_metered_network_data">允许使用移动数据</string>
     <string name="pt_ui_language">语言</string>
     <string name="unknown">未知</string>
     <string name="pc_camera">相机</string>
@@ -312,6 +335,7 @@
     <string name="unknown_title">[标题不明]</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
+    <string name="enabled">启用</string>
     <string name="disabled">关闭</string>
     <string name="none">无</string>
     <string name="action_more_ellipsis">更多…</string>
@@ -319,6 +343,8 @@
     <string name="lbl_available">在线</string>
     <string name="lbl_importing">正在导入…</string>
     <string name="lbl_backup">备份</string>
+    <string name="lbl_bookshelf">书架</string>
+    <string name="lbl_bookshelves">书架</string>
     <string name="lbl_book">书</string>
     <string name="pc_bob_list">列表</string>
     <string name="pc_bob_layout">列表布局</string>
@@ -333,6 +359,7 @@
     <string name="ps_show_titles_reordered_off">仅适用于使用冠词的语言。\n英语示例：“The Lord of The Rings”。</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
+    <string name="X_neither">都不是。</string>
     <string name="X_style_type_defaults">风格默认值</string>
     <string name="action_edit_ellipsis">修改…</string>
     <string name="tip_booklist_style_defaults">使用此界面设置所有样式的默认特征。所有内置样式都会使用这些特征，您自己定义的任何样式也会以这些特征为起点。</string>
@@ -340,12 +367,21 @@
     <string name="action_report">报告</string>
     <string name="action_export">导出</string>
     <string name="X_action_update">更新</string>
+    <string name="lbl_add_filter">添加过滤器</string>
+    <string name="option_bob_filter_signed_yes">签名书籍</string>
     <string name="lbl_search_filtered_by_x">过滤条件: %1$s</string>
+    <string name="action_disable_message">禁用消息</string>
     <string name="action_import">导入</string>
     <string name="option_import">导入</string>
     <string name="lbl_filter">过滤</string>
+    <string name="lbl_search_isbn">国际标准书号搜索</string>
+    <string name="lbl_add_book">添加书籍</string>
+    <string name="lbl_search_for_books">搜索书籍</string>
+    <string name="lbl_details_have_changed">详细信息已更改</string>
+    <string name="lbl_test_connection">测试连接</string>
     <string name="lbl_import">导入</string>
     <string name="lbl_language">语言</string>
+    <string name="lbl_personal_notes">个人笔记</string>
     <string name="lbl_location">地点</string>
     <string name="lbl_tab_notes">备注</string>
     <string name="action_show_options">选项</string>
@@ -353,25 +389,39 @@
     <string name="X_action_use_default_setting">使用默认设置</string>
     <string name="pt_ui_system_locale">N系统语言</string>
     <string name="error_invalid_url">无效地址（URL）</string>
+    <string name="option_fab_add_book_by_isbn">按国际标准书号搜索</string>
+    <string name="option_fab_add_book_by_internet_search">按标题搜索</string>
     <string name="option_select_all">"全选"</string>
     <string name="option_select_none">"取消全选"</string>
     <string name="lbl_tab_details">"详细信息"</string>
     <string name="lbl_author_type_writer">作家</string>
     <string name="lbl_author_type_translator">翻译者</string>
     <string name="lbl_author_type_cover_artist">封面</string>
+    <string name="option_author_details">该作者的所有作品</string>
+    <string name="option_shop_books_in_series">本系列图书</string>
+    <string name="option_shop_books_by_author">该作者的书籍</string>
+    <string name="option_author_works_book">仅限书籍</string>
     <string name="action_crop">"剪裁"</string>
     <string name="lbl_certificate_ca">CA 证书</string>
     <string name="lbl_certificate_issued_by">颁发者：%1$s</string>
+    <string name="lbl_certificates">证书</string>
     <string name="lbl_certificate_issued_to">颁发给： %1$s</string>
+    <string name="lbl_currency">货币</string>
+    <string name="lbl_price_listed">挂牌价</string>
     <string name="lbl_price_paid">付款</string>
+    <string name="lbl_rating">评级</string>
     <string name="lbl_color">颜色</string>
     <string name="lbl_timeouts">超时</string>
     <string name="lbl_credentials">用户凭据</string>
     <string name="lbl_day">天</string>
     <string name="lbl_name">姓名</string>
+    <string name="lbl_signed">已签署</string>
     <string name="lbl_title">标题</string>
     <string name="lbl_titles">标题</string>
     <string name="lbl_description">描述</string>
+    <string name="lbl_all_bookshelves">所有书架</string>
+    <string name="option_apply_to_all_related_books">所有相关书籍</string>
+    <string name="pt_scan_mode">扫描模式</string>
     <string name="option_barcode_scan_mode_manual">手动</string>
     <string name="info_import_complete">"导入已完成"</string>
     <string name="error_import_failed">"导入失败"</string>
@@ -382,14 +432,19 @@
     <string name="book_format_digest">小型</string>
     <string name="action_edit_defaults">编辑默认设置</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="bookshelf_my_wishlist">心愿单</string>
     <string name="lbl_assign_bookshelves">分配书架</string>
+    <string name="lbl_author_type_artist">插图</string>
     <string name="lbl_author_type_storyboard">故事板</string>
     <string name="lbl_author_type_lettering">字体</string>
+    <string name="X_info_not_authorized">违例</string>
     <string name="lbl_percentage">百分比</string>
     <string name="lbl_current_page">当前页面</string>
     <string name="btn_finished">已完成</string>
+    <string name="lbl_total_pages">总页数</string>
     <string name="ps_use_read_progress_off">使用简单的已读/未读状态。</string>
     <string name="ps_use_read_progress_on">以百分比或页码跟踪进度。</string>
+    <string name="lbl_track_progress">进展情况</string>
     <string name="error_total_pages_must_be_larger_than_current_page">必须大于或等于当前页面</string>
     <string name="lbl_date_last_updated_day">最后更新日</string>
 </resources>
