@@ -1064,9 +1064,9 @@
     <string name="lbl_read_end">Date finished reading</string>
     <!-- The date the book was last updated. -->
     <string name="lbl_date_last_updated">Date last updated</string>
-    <string name="lbl_date_last_updated_year">Update Year</string>
-    <string name="lbl_date_last_updated_month">Update Month</string>
-    <string name="lbl_date_last_updated_day">Update Day</string>
+    <string name="lbl_date_last_updated_year">Year last updated </string>
+    <string name="lbl_date_last_updated_month">Month last updated </string>
+    <string name="lbl_date_last_updated_day">Day last updated</string>
     <!-- The date a user acquired the book. -->
     <string name="lbl_date_acquired">Date Acquired</string>
     <string name="lbl_date_acquired_year">Year Acquired</string>

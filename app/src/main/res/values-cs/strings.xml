@@ -436,9 +436,9 @@
     <string name="lbl_timeouts">Časové limity</string>
     <string name="lbl_title">Titul</string>
     <string name="lbl_unread">Nepřečtené</string>
-    <string name="lbl_date_last_updated_day">Den aktualizace</string>
-    <string name="lbl_date_last_updated_month">Měsíc aktualizace</string>
-    <string name="lbl_date_last_updated_year">Rok aktualizace</string>
+    <string name="lbl_date_last_updated_day">Den poslední aktualizace</string>
+    <string name="lbl_date_last_updated_month">Měsíc poslední aktualizace</string>
+    <string name="lbl_date_last_updated_year">Rok poslední aktualizace</string>
     <string name="lbl_virtual_libraries">Virtuální knihovny v této knihovně</string>
     <string name="lbl_website_address">Adresa webu (URL)</string>
     <string name="lbl_websites">Webové stránky</string>
@@ -780,4 +780,5 @@
     <string name="lbl_track_progress_long">Sledujte svůj pokrok</string>
     <string name="lbl_total_pages">Celkem</string>
     <string name="lbl_track_progress">Pokrok</string>
+    <string name="error_total_pages_must_be_larger_than_current_page">Musí být větší nebo stejná jako aktuální stránka</string>
 </resources>

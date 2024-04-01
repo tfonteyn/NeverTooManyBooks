@@ -294,21 +294,21 @@
     <string name="lbl_date_acquired_month">Maand verworven</string>
     <string name="lbl_date_acquired_year">Jaar verworven</string>
     <string name="lbl_date_added">Datum toegevoegd</string>
-    <string name="lbl_date_added_day">Dag</string>
+    <string name="lbl_date_added_day">Dag toegevoegd</string>
     <string name="lbl_date_added_month">Maand</string>
     <string name="lbl_date_added_year">Jaar</string>
     <string name="lbl_date_first_publication">Eerste uitgave</string>
     <string name="lbl_date_first_publication_month">Eerste uitg. Maand</string>
     <string name="lbl_date_first_publication_year">Eerste uitg. Dag</string>
     <string name="lbl_date_last_updated">Datum laatst bijgewerkt</string>
-    <string name="lbl_date_last_updated_day">Dag update</string>
-    <string name="lbl_date_last_updated_month">Maand update</string>
-    <string name="lbl_date_last_updated_year">Jaar update</string>
+    <string name="lbl_date_last_updated_day">Dag bijgewerkt</string>
+    <string name="lbl_date_last_updated_month">Maand bijgewerkt</string>
+    <string name="lbl_date_last_updated_year">Jaar bijgewerkt</string>
     <string name="lbl_date_published">Datum uitgave</string>
     <string name="lbl_date_published_month">Maand</string>
     <string name="lbl_date_published_year">Jaar</string>
     <string name="lbl_date_read">Datum gelezen</string>
-    <string name="lbl_date_read_day">Dag</string>
+    <string name="lbl_date_read_day">Dag gelezen</string>
     <string name="lbl_date_read_month">Maand</string>
     <string name="lbl_date_read_year">Jaar</string>
     <string name="lbl_day">Dag</string>
@@ -761,4 +761,5 @@
     <string name="lbl_track_progress_long">Volg je vooruitgang</string>
     <string name="lbl_total_pages">Totaal</string>
     <string name="lbl_track_progress">Vordering</string>
+    <string name="error_total_pages_must_be_larger_than_current_page">Moet groter of gelijk zijn aan de huidige pagina</string>
 </resources>

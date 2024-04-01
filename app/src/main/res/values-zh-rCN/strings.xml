@@ -25,6 +25,7 @@
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_lbl_folder">文件夹</string>
+    <string name="lbl_books">书籍</string>
     <string name="lbl_cover_front">封面</string>
     <string name="X_lbl_image">图片</string>
     <string name="X_whichImageCaptureApplication">使用以下应用截图</string>
@@ -225,6 +226,9 @@
     <string name="lbl_styles">风格</string>
     <string name="lbl_style">风格</string>
     <string name="lbl_date_added">收藏日期</string>
+    <string name="lbl_date_last_updated">最后更新日期</string>
+    <string name="lbl_date_last_updated_year">最后更新的年</string>
+    <string name="lbl_date_last_updated_month">最后更新的月</string>
     <string name="lbl_export_books_option_all">所有书籍</string>
     <string name="option_archive_type_backup_zip">备份 (.zip)</string>
     <string name="option_import_books_option_all">所有书籍</string>
@@ -359,6 +363,7 @@
     <string name="lbl_certificate_ca">CA 证书</string>
     <string name="lbl_certificate_issued_by">颁发者：%1$s</string>
     <string name="lbl_certificate_issued_to">颁发给： %1$s</string>
+    <string name="lbl_price_paid">付款</string>
     <string name="lbl_color">颜色</string>
     <string name="lbl_timeouts">超时</string>
     <string name="lbl_credentials">用户凭据</string>
@@ -385,4 +390,6 @@
     <string name="btn_finished">已完成</string>
     <string name="ps_use_read_progress_off">使用简单的已读/未读状态。</string>
     <string name="ps_use_read_progress_on">以百分比或页码跟踪进度。</string>
+    <string name="error_total_pages_must_be_larger_than_current_page">必须大于或等于当前页面</string>
+    <string name="lbl_date_last_updated_day">最后更新日</string>
 </resources>

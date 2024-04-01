@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -72,6 +75,7 @@
     <string name="option_author_details">Alt av hesum rithøvundi</string>
     <string name="option_view_book_at">Vís á…</string>
     <string name="option_shop_books_in_series">Bøkur í hesum raðið</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="lbl_style">Stílur</string>
     <string name="lbl_group_read_and_unread">Lisið og ólisið</string>
     <string name="lbl_edition_first_impression">Fyrsta upplag</string>

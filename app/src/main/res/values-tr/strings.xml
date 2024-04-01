@@ -771,4 +771,5 @@
     <string name="lbl_track_progress_long">İlerlemenizi takip edin</string>
     <string name="lbl_total_pages">Toplam</string>
     <string name="lbl_track_progress">İlerleme</string>
+    <string name="error_total_pages_must_be_larger_than_current_page">Geçerli sayfadan büyük veya eşit olmalıdır</string>
 </resources>
