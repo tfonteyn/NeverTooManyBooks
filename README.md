@@ -37,8 +37,8 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 - Italian, Turkish: should be usable, but certainly not perfect. Verification by a native speaker
   needed.
 - Czech, Greek, Polish, Russian: mostly machine translated, no guarantees for quality.
-- Volunteers have started on Chinese (49%) and Faroese (16%). These will be added
-  if/when completed.
+- Volunteers have started on Chinese (58%) and Faroese (16%). These will be added
+  if/when completed. A NEW CHINESE LANGUAGE VOLUNTEER WOULD BE VERY WELCOME
 
 Translations are now integrated and editable
 on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
