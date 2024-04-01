@@ -759,7 +759,7 @@
     <string name="info_progress_x_percent">%1$d%% gelezen</string>
     <string name="info_progress_page_x_of_y">Aan het lezen\nPagina: %1$d van %2$d</string>
     <string name="lbl_track_progress_long">Volg je vooruitgang</string>
-    <string name="lbl_total_pages">Totaal</string>
+    <string name="lbl_total_pages">Aantal pagina\'s</string>
     <string name="lbl_track_progress">Vordering</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Moet groter of gelijk zijn aan de huidige pagina</string>
 </resources>

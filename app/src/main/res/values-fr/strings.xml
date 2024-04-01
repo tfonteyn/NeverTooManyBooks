@@ -763,7 +763,7 @@
     <string name="info_progress_x_percent">%1$d %% lu</string>
     <string name="info_progress_page_x_of_y">En cours\nPage : %1$d de %2$d</string>
     <string name="lbl_track_progress_long">Suivez vos progrès</string>
-    <string name="lbl_total_pages">Total</string>
+    <string name="lbl_total_pages">Nombre de pages</string>
     <string name="lbl_percentage_read">% lu</string>
     <string name="lbl_track_progress">Progrès</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Doit être supérieur ou égal à la page actuelle</string>

@@ -787,7 +787,7 @@
     <string name="info_progress_x_percent">%1$d%% ler</string>
     <string name="info_progress_page_x_of_y">A ler\nPágina: %1$d de %2$d</string>
     <string name="lbl_track_progress_long">Acompanhe o seu progresso</string>
-    <string name="lbl_total_pages">Total</string>
+    <string name="lbl_total_pages">Total de páginas</string>
     <string name="lbl_percentage_read">% ler</string>
     <string name="lbl_track_progress">Progresso</string>
     <string name="lbl_author_type_lettering">Letrista</string>
