@@ -132,6 +132,7 @@
         app:layout_constraintStart_toEndOf="@id/lbl_current_page"
         app:layout_constraintTop_toBottomOf="@id/slider_percentage"
         tools:visibility="visible"
+        app:errorEnabled="true"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -142,6 +143,14 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_pages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="lbl_current_page,lbl_total_pages"
+        />
+
     <com.google.android.material.slider.Slider
         android:id="@+id/slider_pages"
         android:layout_width="match_parent"
@@ -151,7 +160,7 @@
         android:valueTo="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_current_page"
+        app:layout_constraintTop_toBottomOf="@id/barrier_pages"
         tools:value="56"
         />
 
