@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -93,6 +93,9 @@ public class BoBTask
         }
     }
 
+    /*
+     * NEWTHINGS: BookLevelField: add field
+     */
     @VisibleForTesting
     @NonNull
     public static List<DomainExpression> createDomainExpressions(@NonNull final String dbKey,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,8 +29,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * <p>
  * TODO: merge with BaseStyle#bookLevelFieldsOrderBy
  * <p>
- * Keys must be kept in sync with {@link StyleDataStore} preference keys
- * and "res/xml/preferences_style_book_details.xml".
+ * NEWTHINGS: BookLevelField: add field to FIELDS and optionally to DEFAULT.
+ *  Keys must be kept in sync with {@link StyleDataStore}
+ *  preference keys and "res/xml/preferences_style_book_details.xml".
  */
 public class BookLevelFieldVisibility
         extends FieldVisibility {
@@ -54,7 +55,8 @@ public class BookLevelFieldVisibility
             DBKey.PAGE_COUNT,
             DBKey.RATING,
             DBKey.SIGNED__BOOL,
-            DBKey.TITLE_ORIGINAL_LANG
+            DBKey.TITLE_ORIGINAL_LANG,
+            DBKey.READ_PROGRESS
     );
 
     /** The fields which will be visible by default. */

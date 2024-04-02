@@ -20,6 +20,9 @@
   -->
 
 <!--
+      NEWTHINGS: BookLevelField: Keys must be kept in sync with {@link StyleDataStore}
+       preference keys and "res/xml/preferences_style_book_details.xml".
+
       Preferences are shown in locale-alphabetical order.
       "app:orderingFromXml" do NOT use "android:orderingFromXml" ... will not work!
       https://issuetracker.google.com/issues/232805589

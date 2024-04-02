@@ -64,6 +64,9 @@ public abstract class BaseStyle
     private static final Map<String, Sort> BOOK_LEVEL_FIELDS_DEFAULTS = new LinkedHashMap<>();
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
+    /*
+     * NEWTHINGS: BookLevelField: add mapping
+     */
     static {
         // The default is sorting by book title only
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE, Sort.Asc);
