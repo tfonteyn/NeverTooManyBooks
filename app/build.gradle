@@ -121,8 +121,6 @@ android {
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
             // under development
-            buildConfigField("boolean", "ENABLE_STRIP_WEB", "false")
-            // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             // under development
             buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
@@ -144,8 +142,6 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
-            // under development
-            buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
         }
         debug {
             debuggable = true
@@ -159,8 +155,6 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
-            // under development
-            buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
             // under development
