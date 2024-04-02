@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -34,128 +34,96 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.author"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_author"
             />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="style.booklist.show.series"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_series"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.publisher"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_publisher"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.bookshelves"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_bookshelves"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.original.title"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_original_title"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.condition"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_condition"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.isbn"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_isbn"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.publication.date"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_date_published"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.format"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_format"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.language"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_language"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.location"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_location"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.rating"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_rating"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="style.booklist.show.pages"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_pages"
             />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="style.booklist.show.signed"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_signed"
             />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="style.booklist.show.edition"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_edition"
             />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="style.booklist.show.loanee"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
             android:title="@string/lbl_lend_out"
             />
 
