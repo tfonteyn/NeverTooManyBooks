@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -60,6 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
  * ViewHolder for a {@link BooklistGroup#BOOK} row.
+ * <p>
+ * TODO: adapt {@link Formatter} to support the BookHolder class.
  */
 public class BookHolder
         extends RowViewHolder
@@ -203,8 +206,28 @@ public class BookHolder
         // It does not make much sense in this particular view/holder,
         // and slows down scrolling to much.
         vb.title.setText(rowData.getString(DBKey.TITLE));
+
         // Always show the 'read' icon.
         showOrHide(vb.iconRead, rowData.getBoolean(DBKey.READ__BOOL));
+
+        if (use.contains(DBKey.READ_PROGRESS)) {
+            String txt = rowData.getString(DBKey.READ_PROGRESS);
+            if (txt.isEmpty()) {
+                vb.readProgress.setVisibility(View.GONE);
+            } else {
+                final ReadingProgress readingProgress = ReadingProgress.fromJson(txt);
+                final Context context = vb.readProgress.getContext();
+                if (readingProgress.asPercentage()) {
+                    txt = context.getString(R.string.info_progress_x_percent,
+                                            readingProgress.getPercentage());
+                } else {
+                    txt = context.getString(R.string.info_progress_page_x_of_y,
+                                            readingProgress.getCurrentPage(),
+                                            readingProgress.getTotalPages());
+                }
+                showOrHide(vb.readProgress, txt);
+            }
+        }
 
         /*
          * USE SAME ORDER AS BookLevelFieldVisibility FOR EASE OF UPDATES

@@ -153,6 +153,7 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "signed", DBKey.SIGNED__BOOL);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "edition", DBKey.EDITION__BITMASK);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "loanee", DBKey.LOANEE_NAME);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "reading.progress", DBKey.READ_PROGRESS);
     }
 
     static {

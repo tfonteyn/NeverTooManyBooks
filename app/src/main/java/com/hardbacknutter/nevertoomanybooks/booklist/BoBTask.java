@@ -105,10 +105,11 @@ public class BoBTask
         if (DBKey.COVER[0].equals(dbKey)
             || DBKey.COVER[1].equals(dbKey)) {
             // We need the (unsorted duh!) UUID for the book to get covers
-            return List.of(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_UUID,
-                    DBDefinitions.TBL_BOOKS,
-                    Sort.Unsorted));
+            return List.of(
+                    new DomainExpression(
+                            DBDefinitions.DOM_BOOK_UUID,
+                            DBDefinitions.TBL_BOOKS,
+                            Sort.Unsorted));
         } else {
             switch (dbKey) {
                 case DBKey.BOOK_CONDITION: {
@@ -236,6 +237,13 @@ public class BoBTask
                 case DBKey.READ__BOOL: {
                     return List.of(
                             new DomainExpression(DBDefinitions.DOM_BOOK_READ,
+                                                 DBDefinitions.TBL_BOOKS,
+                                                 Sort.Unsorted)
+                    );
+                }
+                case DBKey.READ_PROGRESS: {
+                    return List.of(
+                            new DomainExpression(DBDefinitions.DOM_BOOK_READ_PROGRESS,
                                                  DBDefinitions.TBL_BOOKS,
                                                  Sort.Unsorted)
                     );

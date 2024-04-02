@@ -130,5 +130,11 @@
             android:title="@string/lbl_lend_out"
             />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="style.booklist.show.reading.progress"
+            android:title="@string/lbl_track_progress"
+            />
+
     </PreferenceCategory>
 </PreferenceScreen>

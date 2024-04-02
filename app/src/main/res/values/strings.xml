@@ -1681,7 +1681,8 @@
 
     <!-- Reading progress: Field label / Dialog title. -->
     <string name="lbl_track_progress_long">Track your progress</string>
-    <!-- Reading progress: Field label / Dialog title. Short for "Track your progress" -->
+    <!-- Reading progress: Field label / Dialog title. Short for "Track your progress"
+         URGENT: lbl_track_progress must be improved. -->
     <string name="lbl_track_progress">Progress</string>
 
     <!-- Editing Reading progress: Button Label: reading-progress is a percentage. -->

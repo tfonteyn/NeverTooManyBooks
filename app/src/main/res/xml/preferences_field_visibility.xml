@@ -230,5 +230,11 @@
             android:key="real_author"
             android:title="@string/lbl_author_pseudonym" />
 
+        <!-- bit 34; This is the detailed progress only.
+            The read/unread status is always displayed. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="read_progress"
+            android:title="@string/lbl_track_progress" />
     </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
 </PreferenceScreen>
