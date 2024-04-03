@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -752,11 +755,11 @@
     <string name="lbl_current_page">Huidige pagina</string>
     <string name="btn_finished">Voltooid</string>
     <string name="ps_use_read_progress_off">Gebruik een eenvoudige status Lezen/Niet gelezen.</string>
-    <string name="ps_use_read_progress_on">Volg de voortgang in percentage of paginanummer.</string>
+    <string name="ps_use_read_progress_on">Volg de vooruitgang in percentage of paginanummer.</string>
     <string name="info_progress_x_percent">%1$d%% gelezen</string>
     <string name="info_progress_page_x_of_y">Aan het lezen\nPagina: %1$d van %2$d</string>
     <string name="lbl_track_progress_long">Volg je vooruitgang</string>
     <string name="lbl_total_pages">Aantal pagina\'s</string>
-    <string name="lbl_track_progress">Vordering</string>
+    <string name="lbl_track_progress">Vooruitgang</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Moet groter of gelijk zijn aan de huidige pagina</string>
 </resources>
