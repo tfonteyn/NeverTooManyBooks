@@ -176,7 +176,7 @@
             style="?attr/buttonBarNeutralButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_finished"
+            android:text="@string/btn_completed"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />

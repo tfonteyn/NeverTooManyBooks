@@ -318,7 +318,7 @@
     <!--    </PreferenceCategory>-->
 
     <PreferenceCategory
-        android:title="@string/lbl_reading">
+        android:title="@string/pc_reading">
 
         <SwitchPreference
             android:defaultValue="false"

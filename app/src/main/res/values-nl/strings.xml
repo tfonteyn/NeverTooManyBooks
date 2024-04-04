@@ -753,7 +753,7 @@
     <string name="lbl_percentage">Percentage</string>
     <string name="lbl_percentage_read">% gelezen</string>
     <string name="lbl_current_page">Huidige pagina</string>
-    <string name="btn_finished">Voltooid</string>
+    <string name="btn_completed">Voltooid</string>
     <string name="ps_use_read_progress_off">Gebruik een eenvoudige status Lezen/Niet gelezen.</string>
     <string name="ps_use_read_progress_on">Volg de vooruitgang in percentage of paginanummer.</string>
     <string name="info_progress_x_percent">%1$d%% gelezen</string>
