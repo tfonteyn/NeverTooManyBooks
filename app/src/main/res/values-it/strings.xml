@@ -760,7 +760,7 @@
     <string name="ps_use_read_progress_off">Utilizzare un semplice stato di lettura/non lettura.</string>
     <string name="ps_use_read_progress_on">Traccia l\'avanzamento in percentuale o in numero di pagina.</string>
     <string name="info_progress_x_percent">%1$d%% lettura</string>
-    <string name="info_progress_page_x_of_y">In lettura\nPagina: %1$d di %2$d</string>
+    <string name="info_progress_page_x_of_y">Pagina: %1$d di %2$d</string>
     <string name="lbl_track_progress_long">Traccia i tuoi progressi</string>
     <string name="lbl_total_pages">Pagine totali</string>
     <string name="lbl_percentage_read">% lettura</string>

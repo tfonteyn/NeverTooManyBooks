@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -29,6 +30,7 @@ import androidx.core.math.MathUtils;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -276,6 +278,32 @@ public final class ReadingProgress
 
         if (currentPage > totalPages) {
             this.totalPages = currentPage;
+        }
+    }
+
+    /**
+     * Get the formatted string to display to the user describing their progress.
+     *
+     * @param context Current context
+     *
+     * @return localized string to display
+     */
+    @NonNull
+    public String toFormattedText(@NonNull final Context context) {
+        if (asPercentage) {
+            switch (percentage) {
+                case 100:
+                    return context.getString(R.string.lbl_read);
+                case 0:
+                    return context.getString(R.string.lbl_unread);
+                default:
+                    return context.getString(R.string.info_progress_x_percent,
+                                             getPercentage());
+            }
+        } else {
+            return context.getString(R.string.info_progress_page_x_of_y,
+                                     getCurrentPage(),
+                                     getTotalPages());
         }
     }
 }

@@ -776,7 +776,7 @@
     <string name="ps_use_read_progress_off">Используйте простой статус \"Прочитано/Не прочитано\".</string>
     <string name="ps_use_read_progress_on">Отслеживайте прогресс в процентах или по номеру страницы.</string>
     <string name="info_progress_x_percent">%1$d%% читать</string>
-    <string name="info_progress_page_x_of_y">Читаю\nСтраница: %1$d из %2$d</string>
+    <string name="info_progress_page_x_of_y">Страница: %1$d из %2$d</string>
     <string name="lbl_track_progress_long">Отслеживайте свой прогресс</string>
     <string name="lbl_total_pages">Всего страниц</string>
     <string name="lbl_percentage_read">% читать</string>

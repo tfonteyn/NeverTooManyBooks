@@ -148,7 +148,7 @@
             <!-- layout_goneMarginTop for when 'rating' is GONE. -->
             <TextView
                 android:id="@+id/read_progress"
-                style="@style/BoB.Group.Book.Text"
+                style="@style/BoB.Group.Book.ReadingProgress"
                 android:visibility="gone"
                 app:layout_goneMarginTop="@dimen/section_margin_top"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"

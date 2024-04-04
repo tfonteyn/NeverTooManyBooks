@@ -779,7 +779,7 @@
     <string name="ps_use_read_progress_off">Użyj prostego statusu Przeczytane/Nieprzeczytane.</string>
     <string name="ps_use_read_progress_on">Śledź postępy w procentach lub liczbie stron.</string>
     <string name="info_progress_x_percent">%1$d%% czytaj</string>
-    <string name="info_progress_page_x_of_y">Czytane\nStrona: %1$d z %2$d</string>
+    <string name="info_progress_page_x_of_y">Strona: %1$d z %2$d</string>
     <string name="lbl_track_progress_long">Śledzenie postępów</string>
     <string name="lbl_total_pages">Całkowita liczba stron</string>
     <string name="lbl_percentage_read">% czytaj</string>

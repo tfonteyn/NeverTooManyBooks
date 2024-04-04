@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadProgressBinding;
 
 /**
@@ -39,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadProgressBind
 public class ReadProgressFragment
         extends Fragment {
 
+    /** Fragment/Log tag. */
     public static final String TAG = "ReadProgressFragment";
 
     private FragmentReadProgressBinding vb;
@@ -77,39 +77,17 @@ public class ReadProgressFragment
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
 
         reload();
-        vb.lblReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getReadingProgress()));
+        vb.btnReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getReadingProgress()));
     }
 
     public void reload() {
         final ReadingProgress readingProgress = vm.getReadingProgress();
 
         final int percentage = readingProgress.getPercentage();
-        final String txt;
-        if (readingProgress.asPercentage()) {
-            txt = getString(R.string.info_progress_x_percent, percentage);
-        } else {
-            txt = getString(R.string.info_progress_page_x_of_y,
-                            readingProgress.getCurrentPage(),
-                            readingProgress.getTotalPages());
-        }
-
-        switch (percentage) {
-            case 100:
-                vb.lblReadProgress.setText(R.string.lbl_read);
-                vb.readProgress.setVisibility(View.GONE);
-                vb.readProgress.setProgress(100);
-                break;
-            case 0:
-                vb.lblReadProgress.setText(R.string.lbl_unread);
-                vb.readProgress.setVisibility(View.GONE);
-                vb.readProgress.setProgress(0);
-                break;
-            default:
-                vb.lblReadProgress.setText(txt);
-                vb.readProgress.setVisibility(View.VISIBLE);
-                vb.readProgress.setProgress(percentage);
-                break;
-        }
+        vb.readProgressBar.setProgress(percentage);
+        //noinspection DataFlowIssue
+        vb.lblReadProgress.setText(readingProgress.toFormattedText(getContext()));
+        vb.readProgressBar.setVisibility(
+                percentage == 100 || percentage == 0 ? View.GONE : View.VISIBLE);
     }
-
 }

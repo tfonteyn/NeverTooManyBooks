@@ -211,27 +211,9 @@ public class BookHolder
         showOrHide(vb.iconRead, rowData.getBoolean(DBKey.READ__BOOL));
 
         if (use.contains(DBKey.READ_PROGRESS)) {
-            String txt = rowData.getString(DBKey.READ_PROGRESS);
-            if (txt.isEmpty()) {
-                vb.readProgress.setVisibility(View.GONE);
-            } else {
-                final ReadingProgress readingProgress = ReadingProgress.fromJson(txt);
-                final Context context = vb.readProgress.getContext();
-                if (readingProgress.asPercentage()) {
-                    txt = context.getString(R.string.info_progress_x_percent,
-                                            readingProgress.getPercentage());
-                } else {
-                    txt = context.getString(R.string.info_progress_page_x_of_y,
-                                            readingProgress.getCurrentPage(),
-                                            readingProgress.getTotalPages());
-                }
-                showOrHide(vb.readProgress, txt);
-            }
+            showOrHideReadingProgress(rowData);
         }
 
-        /*
-         * USE SAME ORDER AS BookLevelFieldVisibility FOR EASE OF UPDATES
-         */
         if (use.contains(DBKey.COVER[0])) {
             //noinspection DataFlowIssue
             final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
@@ -293,7 +275,7 @@ public class BookHolder
             // We could use the LanguageFormatter but there is really no point here
             final String language = ServiceLocator
                     .getInstance().getLanguages().getDisplayNameFromISO3(
-                            vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));
+                            itemView.getContext(), rowData.getString(DBKey.LANGUAGE));
             showOrHide(vb.language, language);
         }
 
@@ -312,9 +294,9 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.PAGE_COUNT)) {
-            final String pages = rowData.getString(DBKey.PAGE_COUNT);
             //noinspection DataFlowIssue
-            showOrHide(vb.pages, pagesFormatter.format(itemView.getContext(), pages));
+            showOrHide(vb.pages, pagesFormatter.format(itemView.getContext(),
+                                                       rowData.getString(DBKey.PAGE_COUNT)));
         }
 
         if (use.contains(DBKey.SIGNED__BOOL)) {
@@ -367,6 +349,29 @@ public class BookHolder
     }
 
     /**
+     * Conditionally show the detailed reading-progress information.
+     *
+     * @param rowData with the data
+     */
+    private void showOrHideReadingProgress(@NonNull final DataHolder rowData) {
+        String txt = rowData.getString(DBKey.READ_PROGRESS);
+        if (txt.isEmpty()) {
+            // no details available
+            vb.readProgress.setVisibility(View.GONE);
+        } else {
+            final ReadingProgress readingProgress = ReadingProgress.fromJson(txt);
+            final int percentage = readingProgress.getPercentage();
+            if (percentage == 0 || percentage == 100) {
+                // The Read/Unread status is already indicated by vb.iconRead
+                vb.readProgress.setVisibility(View.GONE);
+            } else {
+                txt = readingProgress.toFormattedText(itemView.getContext());
+                showOrHide(vb.readProgress, txt);
+            }
+        }
+    }
+
+    /**
      * The combined (primary) Series title + number.
      * Shown if we're NOT grouping by title AND the user enabled this.
      * <p>
@@ -393,7 +398,7 @@ public class BookHolder
     }
 
     /**
-     * Shown the Series number if we're grouping by Series AND the user enabled this.
+     * Show the Series number if we're grouping by Series AND the user enabled this.
      * The view {@code vb.seriesTitle} is hidden.
      * <p>
      * If the Series number is a short piece of text (len <= 4 characters).

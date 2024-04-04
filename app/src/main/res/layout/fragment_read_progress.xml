@@ -26,27 +26,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- The text is free form; the code will either fill it
-         with a percentage, or with a page x of y -->
-    <com.google.android.material.button.MaterialButton
+    <!-- The code will set the text to "x% read" or "page x of y" -->
+    <TextView
         android:id="@+id/lbl_read_progress"
-        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/ic_baseline_edit_24"
-        android:drawablePadding="20dp"
-        android:labelFor="@id/read_progress"
-        app:layout_constraintEnd_toEndOf="@id/read_progress"
-        app:layout_constraintStart_toStartOf="@id/read_progress"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="67% read"
-        />
+        android:drawableStart="@drawable/ic_baseline_menu_book_24"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:labelFor="@id/read_progress_bar"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toBottomOf="@id/btn_read_progress"
+        app:layout_constraintEnd_toStartOf="@id/btn_read_progress"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_read_progress"
+        tools:ignore="LabelFor,UseCompatTextViewDrawableXml"
+        tools:text="67% read" />
 
-    <!--    tools:text="Reading:\nPage: 123 of 432"-->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_read_progress"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/action_edit"
+        app:icon="@drawable/ic_baseline_edit_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/lbl_read_progress"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <!-- always shown as a percentage; when using pages, the code will convert to % -->
     <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/read_progress"
+        android:id="@+id/read_progress_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:max="100"
@@ -54,7 +67,7 @@
         app:indicatorColor="?attr/colorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_read_progress"
+        app:layout_constraintTop_toBottomOf="@id/btn_read_progress"
         tools:progress="67" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

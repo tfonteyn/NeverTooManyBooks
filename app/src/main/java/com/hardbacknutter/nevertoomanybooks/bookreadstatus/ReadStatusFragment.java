@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadCheckboxBind
 public class ReadStatusFragment
         extends Fragment {
 
+    /** Fragment/Log tag. */
     public static final String TAG = "ReadStatusFragment";
 
     private FragmentReadCheckboxBinding vb;

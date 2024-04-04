@@ -776,7 +776,7 @@
     <string name="ps_use_read_progress_off">Použijte jednoduchý stav přečteno/nepřečteno.</string>
     <string name="ps_use_read_progress_on">Sledujte pokrok v procentech nebo v počtu stránek.</string>
     <string name="info_progress_x_percent">%1$d%% přečteno</string>
-    <string name="info_progress_page_x_of_y">Čtení\nStránka: %1$d z %2$d</string>
+    <string name="info_progress_page_x_of_y">Stránka: %1$d z %2$d</string>
     <string name="lbl_track_progress_long">Sledujte svůj pokrok</string>
     <string name="lbl_total_pages">Celkem stránek</string>
     <string name="lbl_track_progress">Pokrok</string>
