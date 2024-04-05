@@ -958,10 +958,13 @@ public class BooksOnBookshelfViewModel
             // The change will not affect the group the book is in,
             // update the <strong>book-list</strong> 'read' status of the given book.
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            final int[] positions = booklist.updateBookRead(book.getId(), book.isRead())
-                                            .stream()
-                                            .mapToInt(BooklistNode::getAdapterPosition)
-                                            .toArray();
+            final int[] positions = booklist
+                    .updateBookReadStatus(book.getId(),
+                                          book.isRead(),
+                                          book.getString(DBKey.READ_PROGRESS))
+                    .stream()
+                    .mapToInt(BooklistNode::getAdapterPosition)
+                    .toArray();
             positionsUpdated.setValue(positions);
             return false;
         }

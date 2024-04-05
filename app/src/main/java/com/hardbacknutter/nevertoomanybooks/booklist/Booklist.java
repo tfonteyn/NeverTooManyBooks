@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -161,7 +161,7 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlUpdateSeriesIsComplete;
 
-    /** {@link #updateBookRead(long, boolean)}. */
+    /** {@link #updateBookReadStatus(long, boolean, String)}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlUpdateBookRead;
 
@@ -548,26 +548,31 @@ public class Booklist
      * Allows updating the current list-table without requiring a whole new build
      * with the 'read' status of a book. Will update all nodes for the given book.
      *
-     * @param bookId to update
-     * @param read   status to set
+     * @param bookId       to update
+     * @param read         the Read/Unread status to set
+     * @param readProgress the reading-progress to set as the encoded string value
      *
      * @return <strong>all</strong> nodes which were changed.
      */
     @NonNull
-    public List<BooklistNode> updateBookRead(@IntRange(from = 1) final long bookId,
-                                             final boolean read) {
+    public List<BooklistNode> updateBookReadStatus(@IntRange(from = 1) final long bookId,
+                                                   final boolean read,
+                                                   @NonNull final String readProgress) {
         if (listTable.contains(DBDefinitions.DOM_BOOK_READ)) {
             if (sqlUpdateBookRead == null) {
                 sqlUpdateBookRead =
                         UPDATE_ + listTable.getName()
-                        + _SET_ + DBKey.READ__BOOL + "=?"
+                        + _SET_
+                        + DBKey.READ__BOOL + "=?"
+                        + ',' + DBKey.READ_PROGRESS + "=?"
                         + _WHERE_ + DBKey.FK_BOOK + "=?"
                         + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookRead)) {
                 stmt.bindBoolean(1, read);
-                stmt.bindLong(2, bookId);
+                stmt.bindString(2, readProgress);
+                stmt.bindLong(3, bookId);
                 stmt.executeUpdateDelete();
             }
         }
