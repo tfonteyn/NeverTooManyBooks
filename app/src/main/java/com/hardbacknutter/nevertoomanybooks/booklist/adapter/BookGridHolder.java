@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -152,7 +152,7 @@ public class BookGridHolder
                         listener.onClick(v, getBindingAdapterPosition());
                         return true;
                     });
-                    // Force-hide the the context menu button.
+                    // Force-hide the context menu button.
                     super.setOnRowLongClickListener(ShowContextMenu.NoButton, listener);
                     break;
                 }

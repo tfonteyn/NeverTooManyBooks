@@ -234,7 +234,7 @@ public class ShowBookDetailsFragment
         createSyncDelegates();
 
         if (pagerVm != null) {
-            // hook up the ViewPager so we can react to swipes a swipe
+            // hook up the ViewPager so we can react to swipes
             pagerVm.onCurrentBookUpdated().observe(getViewLifecycleOwner(),
                                                    bookId -> vm.updateUIAfterPagerUpdate(bookId));
         }
