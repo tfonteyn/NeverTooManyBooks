@@ -255,8 +255,8 @@ public class Author
         TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
         TYPES.put(TYPE_INKING, R.string.lbl_author_type_inking);
         TYPES.put(TYPE_COLORIST, R.string.lbl_author_type_colorist);
-        TYPES.put(TYPE_STORYBOARD, R.string.lbl_author_type_storyboard);
         TYPES.put(TYPE_LETTERING, R.string.lbl_author_type_lettering);
+        TYPES.put(TYPE_STORYBOARD, R.string.lbl_author_type_storyboard);
 
         TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_author_type_cover_artist);
         TYPES.put(TYPE_COVER_INKING, R.string.lbl_author_type_cover_inking);
