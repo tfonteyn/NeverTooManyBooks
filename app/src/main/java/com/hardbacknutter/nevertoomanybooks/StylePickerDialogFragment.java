@@ -191,7 +191,7 @@ public class StylePickerDialogFragment
                 styleList.stream()
                          .filter(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))
                          .findFirst()
-                         .orElseThrow(IllegalStateException::new);
+                         .orElseThrow(() -> new IllegalStateException(currentStyleUuid));
 
         // use the activity so we get the results there.
         //noinspection DataFlowIssue
