@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public enum StyleType {
             case 2:
                 return Global;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.valueOf(id));
         }
     }
 
