@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * </ul>
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class RowViewHolder
+public class RowViewHolder
         extends RecyclerView.ViewHolder {
 
     /**
