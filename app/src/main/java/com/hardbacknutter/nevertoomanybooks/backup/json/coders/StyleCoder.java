@@ -247,7 +247,7 @@ public class StyleCoder
                 break;
             }
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.valueOf(type));
         }
 
         style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
