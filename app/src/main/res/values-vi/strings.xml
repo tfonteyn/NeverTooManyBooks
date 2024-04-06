@@ -946,9 +946,9 @@
     <string name="lbl_read_end">Ngày đọc xong</string>
     <!-- The date the book was last updated. -->
     <string name="lbl_date_last_updated">Ngày cập nhật lần cuối</string>
-    <string name="lbl_date_last_updated_year">Năm cập nhật</string>
-    <string name="lbl_date_last_updated_month">Tháng cập nhật</string>
-    <string name="lbl_date_last_updated_day">Ngày cập nhật</string>
+    <string name="lbl_date_last_updated_year">Năm cập nhật lần cuối</string>
+    <string name="lbl_date_last_updated_month">Tháng cập nhật lần cuối</string>
+    <string name="lbl_date_last_updated_day">Ngày cập nhật lần cuối</string>
     <!-- The date a user acquired the book. -->
     <string name="lbl_date_acquired">Ngày mua</string>
     <string name="lbl_date_acquired_year">Năm mua</string>
@@ -1488,4 +1488,16 @@
     <string name="lbl_author_type_storyboard">Cốt truyện</string>
     <string name="lbl_author_type_lettering">Chữ viết</string>
     <!-- endregion -->
+<string name="lbl_total_pages">Tổng số trang</string>
+    <string name="btn_completed">Hoàn thành</string>
+    <string name="error_total_pages_must_be_larger_than_current_page">Phải lớn hơn hoặc bằng trang hiện tại</string>
+    <string name="lbl_track_progress">Tiến độ</string>
+    <string name="lbl_percentage_read">% đã đọc</string>
+    <string name="info_progress_x_percent">%1$d%% đã đọc</string>
+    <string name="ps_use_read_progress_off">Sử dụng trạng thái Đọc/Chưa đọc đơn giản.</string>
+    <string name="ps_use_read_progress_on">Theo dõi tiến độ theo tỷ lệ phần trăm hoặc số trang.</string>
+    <string name="info_progress_page_x_of_y">Trang: %1$d trên %2$d</string>
+    <string name="lbl_track_progress_long">Theo dõi tiến độ của bạn</string>
+    <string name="lbl_percentage">Tỷ lệ phần trăm</string>
+    <string name="lbl_current_page">Trang hiện tại</string>
 </resources>
