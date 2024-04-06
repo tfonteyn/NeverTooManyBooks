@@ -26,6 +26,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
 import java.util.Objects;
@@ -103,8 +104,8 @@ public final class ReadingProgress
      * @return new instance
      */
     @NonNull
-    public static ReadingProgress fromJson(@NonNull final String s) {
-        if (s.isEmpty()) {
+    public static ReadingProgress fromJson(@Nullable final String s) {
+        if (s == null || s.isEmpty()) {
             // Unread
             return new ReadingProgress(0);
         }
@@ -282,14 +283,17 @@ public final class ReadingProgress
     }
 
     /**
-     * Get the formatted string to display to the user describing their progress.
+     * Format the value to display to the user describing their progress.
+     * <p>
+     * Dev. Reminder: we're not using a {@code FieldFormatter} as
+     * we're not using this class as a {@code Field}.
      *
      * @param context Current context
      *
      * @return localized string to display
      */
     @NonNull
-    public String toFormattedText(@NonNull final Context context) {
+    public String format(@NonNull final Context context) {
         if (asPercentage) {
             switch (percentage) {
                 case 100:

@@ -365,7 +365,7 @@ public class BookHolder
                 // The Read/Unread status is already indicated by vb.iconRead
                 vb.readProgress.setVisibility(View.GONE);
             } else {
-                txt = readingProgress.toFormattedText(itemView.getContext());
+                txt = readingProgress.format(itemView.getContext());
                 showOrHide(vb.readProgress, txt);
             }
         }

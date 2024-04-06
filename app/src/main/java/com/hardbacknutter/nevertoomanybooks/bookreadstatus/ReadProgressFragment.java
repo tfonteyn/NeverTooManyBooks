@@ -83,11 +83,12 @@ public class ReadProgressFragment
     public void reload() {
         final ReadingProgress readingProgress = vm.getReadingProgress();
 
+        //noinspection DataFlowIssue
+        vb.lblReadProgress.setText(readingProgress.format(getContext()));
+
         final int percentage = readingProgress.getPercentage();
         vb.readProgressBar.setProgress(percentage);
-        //noinspection DataFlowIssue
-        vb.lblReadProgress.setText(readingProgress.toFormattedText(getContext()));
-        vb.readProgressBar.setVisibility(
-                percentage == 100 || percentage == 0 ? View.GONE : View.VISIBLE);
+        vb.readProgressBar.setVisibility(percentage == 100 || percentage == 0 ? View.GONE
+                                                                              : View.VISIBLE);
     }
 }
