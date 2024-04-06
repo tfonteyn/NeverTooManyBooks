@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.header;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
 
 public class HeaderAdapter
-        extends RecyclerView.Adapter<HeaderViewHolder> {
+        extends RecyclerView.Adapter<HeaderAdapter.HeaderViewHolder> {
 
     @NonNull
     private final LayoutInflater inflater;
@@ -56,8 +57,9 @@ public class HeaderAdapter
     @Override
     public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                final int viewType) {
-        return new HeaderViewHolder(
-                BooksonbookshelfHeaderBinding.inflate(inflater, parent, false));
+        final BooksonbookshelfHeaderBinding vb = BooksonbookshelfHeaderBinding
+                .inflate(inflater, parent, false);
+        return new HeaderViewHolder(vb);
     }
 
     @Override
@@ -75,5 +77,36 @@ public class HeaderAdapter
     public long getItemId(final int position) {
         // we only have one row; return a dummy value which is not a row-id in the list-table
         return Integer.MAX_VALUE;
+    }
+
+    public static class HeaderViewHolder
+            extends RecyclerView.ViewHolder {
+
+        @NonNull
+        private final BooksonbookshelfHeaderBinding vb;
+
+        HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
+        }
+
+        void onBind(@NonNull final BooklistHeader headerContent) {
+            String header;
+            header = headerContent.getStyleName();
+            vb.styleName.setText(header);
+            vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getFilterText();
+            vb.filterText.setText(header);
+            vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getSearchText();
+            vb.searchText.setText(header);
+            vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getBookCount();
+            vb.bookCount.setText(header);
+            vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
+        }
     }
 }
