@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 
 /**
@@ -307,8 +306,7 @@ public class SearchBookUpdatesFragment
     }
 
     private static class Holder
-            extends RecyclerView.ViewHolder
-            implements BindableViewHolder<SyncField> {
+            extends RecyclerView.ViewHolder {
 
         @NonNull
         private final RowUpdateFromInternetBinding vb;
@@ -318,8 +316,7 @@ public class SearchBookUpdatesFragment
             this.vb = vb;
         }
 
-        @Override
-        public void onBind(@Nullable final SyncField syncField) {
+        void onBind(@Nullable final SyncField syncField) {
             if (syncField == null) {
                 vb.field.setVisibility(View.INVISIBLE);
                 vb.cbxUsage.setVisibility(View.INVISIBLE);
