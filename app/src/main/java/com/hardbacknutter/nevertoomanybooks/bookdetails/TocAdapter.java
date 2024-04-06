@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -136,7 +136,7 @@ public class TocAdapter
                 break;
             }
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.valueOf(viewType));
         }
 
         holder.setOnRowClickListener(rowClickListener);
@@ -277,7 +277,7 @@ public class TocAdapter
         }
     }
 
-    public abstract static class AuthorWorkHolder
+    public static class AuthorWorkHolder
             extends RowViewHolder
             implements BindableViewHolder<AuthorWork> {
 
