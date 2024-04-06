@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,7 +80,9 @@ public class SearchBookUpdatesFragment
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesFragment";
 
+    /** Optional argument to set a Toolbar title. */
     public static final String BKEY_SCREEN_TITLE = TAG + ":title";
+    /** Optional argument to set a Toolbar subtitle. */
     public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
 
     /** The extended SearchCoordinator. */
