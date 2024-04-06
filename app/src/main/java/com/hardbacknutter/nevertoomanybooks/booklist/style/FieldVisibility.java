@@ -64,7 +64,7 @@ public class FieldVisibility {
      * The position in the list represents their bit-number in the {@link #bits} value.
      * <p>
      * <strong>NEVER CHANGE THE ORDER. NEW ENTRIES MUST BE ADDED AT THE END.</strong>
-     *
+     * <p>
      * NEWTHINGS: BookLevelField: add new field
      */
     private static final List<String> DB_KEYS = List.of(
