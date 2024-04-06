@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 
 /**
@@ -149,8 +148,7 @@ public class SearchOrderFragment
      * Holder for each row.
      */
     private static class Holder
-            extends CheckableDragDropViewHolder
-            implements BindableViewHolder<Site> {
+            extends CheckableDragDropViewHolder {
 
         @NonNull
         private final RowEditSearchsiteBinding vb;
@@ -160,8 +158,7 @@ public class SearchOrderFragment
             this.vb = vb;
         }
 
-        @Override
-        public void onBind(@NonNull final Site site) {
+        void onBind(@NonNull final Site site) {
             final Context context = itemView.getContext();
             vb.websiteName.setText(site.getEngineId().getName(context));
 
