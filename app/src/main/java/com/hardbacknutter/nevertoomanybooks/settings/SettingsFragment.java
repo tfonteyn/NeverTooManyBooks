@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,6 +81,7 @@ public class SettingsFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "SettingsFragment";
+    /** Passed in by the startup routines, indicating the storage device was not found. */
     public static final String BKEY_STORAGE_WAS_MISSING = TAG + ":swm";
     /** savedInstanceState key. */
     private static final String SIS_TITLE_ORDERBY = TAG + ":tob";
@@ -364,7 +365,7 @@ public class SettingsFragment
                 break;
             }
             default:
-                throw new IllegalStateException();
+                throw new IllegalStateException(String.valueOf(volumeChangedOptionChosen));
         }
     }
 
