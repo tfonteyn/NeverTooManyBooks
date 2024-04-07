@@ -1085,30 +1085,33 @@ public class BooksOnBookshelfViewModel
         // The only thing we are updating here is the temporary BookList table
         // as itself and/or the displayed data
 
-        if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
-            Objects.requireNonNull(book);
-            if (onBookReadStatusChanged(book)) {
-                // Full rebuild was triggered
-                return;
+        if (keys != null) {
+            final List<String> keyList = Arrays.asList(keys);
+
+            if (keyList.contains(DBKey.READ__BOOL) || keyList.contains(DBKey.READ_PROGRESS)) {
+                Objects.requireNonNull(book);
+                if (onBookReadStatusChanged(book)) {
+                    // Full rebuild was triggered
+                    return;
+                }
+            }
+
+            if (keyList.contains(DBKey.LOANEE_NAME)) {
+                Objects.requireNonNull(book);
+                if (onBookLoaneeChanged(book.getId(), book.getLoanee().orElse(null))) {
+                    // Full rebuild was triggered
+                    return;
+                }
+            }
+
+            if (keyList.contains(DBKey.COVER[0])) {
+                Objects.requireNonNull(book);
+                if (onBookCoverChanged(book.getId())) {
+                    // Full rebuild was triggered
+                    return;
+                }
             }
         }
-
-        if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
-            Objects.requireNonNull(book);
-            if (onBookLoaneeChanged(book.getId(), book.getLoanee().orElse(null))) {
-                // Full rebuild was triggered
-                return;
-            }
-        }
-
-        if (keys != null && Arrays.asList(keys).contains(DBKey.COVER[0])) {
-            Objects.requireNonNull(book);
-            if (onBookCoverChanged(book.getId())) {
-                // Full rebuild was triggered
-                return;
-            }
-        }
-
         // ENHANCE: update the modified row without a rebuild for more keys
         triggerRebuildList.setValue(false);
     }

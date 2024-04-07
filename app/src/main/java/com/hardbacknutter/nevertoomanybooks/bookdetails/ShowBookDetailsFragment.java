@@ -356,9 +356,7 @@ public class ShowBookDetailsFragment
         });
 
         if (bookChangedListener != null) {
-            bookChangedListener.onBookUpdated(book,
-                                              DBKey.READ__BOOL,
-                                              DBKey.READ_PROGRESS,
+            bookChangedListener.onBookUpdated(book, DBKey.READ__BOOL, DBKey.READ_PROGRESS,
                                               DBKey.READ_END__DATE);
         }
     }

@@ -558,21 +558,36 @@ public class Booklist
     public List<BooklistNode> updateBookReadStatus(@IntRange(from = 1) final long bookId,
                                                    final boolean read,
                                                    @NonNull final String readProgress) {
-        if (listTable.contains(DBDefinitions.DOM_BOOK_READ)) {
+
+        final boolean addReadFlag = listTable.contains(DBDefinitions.DOM_BOOK_READ);
+        final boolean addReadProgress = listTable.contains(DBDefinitions.DOM_BOOK_READ_PROGRESS);
+
+        if (addReadFlag || addReadProgress) {
             if (sqlUpdateBookRead == null) {
-                sqlUpdateBookRead =
-                        UPDATE_ + listTable.getName()
-                        + _SET_
-                        + DBKey.READ__BOOL + "=?"
-                        + ',' + DBKey.READ_PROGRESS + "=?"
-                        + _WHERE_ + DBKey.FK_BOOK + "=?"
-                        + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
+                final StringJoiner sj = new StringJoiner(
+                        ",",
+                        UPDATE_ + listTable.getName() + _SET_,
+                        _WHERE_ + DBKey.FK_BOOK + "=?"
+                        + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK);
+
+                if (addReadFlag) {
+                    sj.add(DBKey.READ__BOOL + "=?");
+                }
+                if (addReadProgress) {
+                    sj.add(DBKey.READ_PROGRESS + "=?");
+                }
+                sqlUpdateBookRead = sj.toString();
             }
 
+            int i = 0;
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookRead)) {
-                stmt.bindBoolean(1, read);
-                stmt.bindString(2, readProgress);
-                stmt.bindLong(3, bookId);
+                if (addReadFlag) {
+                    stmt.bindBoolean(++i, read);
+                }
+                if (addReadProgress) {
+                    stmt.bindString(++i, readProgress);
+                }
+                stmt.bindLong(++i, bookId);
                 stmt.executeUpdateDelete();
             }
         }
