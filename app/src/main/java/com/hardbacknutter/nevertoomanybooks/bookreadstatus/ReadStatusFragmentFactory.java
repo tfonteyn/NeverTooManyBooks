@@ -41,7 +41,7 @@ public final class ReadStatusFragmentFactory {
     public static final int VIEWMODEL_SHOW = 0;
     public static final int VIEWMODEL_EDIT = 1;
 
-    public static final Class<?>[] VIEW_MODELS = {
+    private static final Class<?>[] VIEW_MODELS = {
             ShowBookDetailsViewModel.class,
             EditBookViewModel.class
     };

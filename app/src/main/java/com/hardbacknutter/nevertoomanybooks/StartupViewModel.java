@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,21 +59,24 @@ public class StartupViewModel
         extends ViewModel {
 
     /** Flag to indicate the OrderBy column for titles must be rebuild at startup. */
-    @RebuildFlag
+    @StartupAction
     public static final String PK_REBUILD_TITLE_OB = "startup.task.rebuild.title.sorting";
 
     /** Flag to indicate all indexes must be rebuild at startup. */
-    @RebuildFlag
+    @StartupAction
     public static final String PK_REBUILD_INDEXES = "startup.task.rebuild.index";
+
     /** Flag to indicate FTS rebuild is required at startup. */
-    @RebuildFlag
+    @StartupAction
     public static final String PK_REBUILD_FTS = "startup.task.rebuild.fts";
+
     /** Flag to indicate maintenance (cleaner) is required at startup. */
-    @RebuildFlag
+    @StartupAction
     public static final String PK_RUN_MAINTENANCE = "startup.task.maintenance";
 
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     private static final String PK_MAINTENANCE_COUNTDOWN = "startup.startCountdown";
+
     /** Number of app startup's between some periodic action. */
     private static final int MAINTENANCE_COUNTDOWN = 5;
 
@@ -140,8 +143,19 @@ public class StartupViewModel
     private boolean maintenanceNeeded;
 
 
+    /**
+     * Schedule one of the {@link StartupAction} actions.
+     * <p>
+     * These will be executed during {@link #startTasks},
+     * <br>i.e. <strong>AFTER</strong> initialising storage and any database upgrades
+     * <br>but <strong>BEFORE</strong> the main activity is started.
+     *
+     * @param context Current context
+     * @param key     the desired action
+     * @param flag    to enable/disable the action
+     */
     public static void schedule(@NonNull final Context context,
-                                @RebuildFlag @NonNull final String key,
+                                @StartupAction @NonNull final String key,
                                 final boolean flag) {
         final SharedPreferences.Editor ed = PreferenceManager
                 .getDefaultSharedPreferences(context)
@@ -154,7 +168,8 @@ public class StartupViewModel
         ed.apply();
     }
 
-    public boolean isRunning() {
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private boolean isRunning() {
         return !allTasks.isEmpty();
     }
 
@@ -274,6 +289,8 @@ public class StartupViewModel
 
     /**
      * Called when all tasks have finished.
+     *
+     * @return {@code true}
      */
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onFinished() {
@@ -309,12 +326,13 @@ public class StartupViewModel
         void start();
     }
 
-    @StringDef({PK_REBUILD_FTS,
-                PK_REBUILD_INDEXES,
-                PK_REBUILD_TITLE_OB,
-                PK_RUN_MAINTENANCE})
+    @StringDef({
+            PK_REBUILD_FTS,
+            PK_REBUILD_INDEXES,
+            PK_REBUILD_TITLE_OB,
+            PK_RUN_MAINTENANCE})
     @Retention(RetentionPolicy.SOURCE)
-    private @interface RebuildFlag {
+    private @interface StartupAction {
 
     }
 }

@@ -89,6 +89,7 @@ public class BooksOnBookshelfViewModel
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
 
+    /** Passed in by the {@link StartupActivity} if the user confirmed to take a backup. */
     static final String BKEY_PROPOSE_BACKUP = TAG + ":pb";
 
     private static final String GROUP_NOT_DEFINED = "Group not defined: ";
@@ -947,6 +948,7 @@ public class BooksOnBookshelfViewModel
      * @param book which was changed
      *
      * @return {@code true} if a full rebuild of the list was triggered
+     *         {@code false} if we only triggered a positional update
      */
     private boolean onBookReadStatusChanged(@NonNull final Book book) {
         if (getStyle().hasGroup(BooklistGroup.READ_STATUS)) {
@@ -1069,6 +1071,9 @@ public class BooksOnBookshelfViewModel
      * For a limited set of keys, we directly update the list table which is very fast.
      * <p>
      * Other keys, or full books, will always trigger a list rebuild.
+     * <p>
+     * <strong>This method is only called when the book-details are embedded</strong>
+     * i.e. when we're running on a tablet/big screen.
      *
      * @param book the book
      * @param keys the item(s) that potentially were changed,

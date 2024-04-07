@@ -124,7 +124,11 @@ public class ShowBookDetailsFragment
     private ShowBookPagerViewModel pagerVm;
     private RealNumberParser realNumberParser;
 
-    /** Callback - used when we're running inside another component; e.g. the BoB. */
+    /**
+     * Callback - used when we're running inside another component;
+     * e.g. when running on a tablet (or other bigger screen) the BoB is showing
+     * the details as an embedded fragment.
+     */
     @Nullable
     private BookChangedListener bookChangedListener;
 
