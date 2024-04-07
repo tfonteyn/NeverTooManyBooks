@@ -31,14 +31,10 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 
 ## User Interface languages:
 
-- English, Dutch, Portuguese, Vietnamese.
-- German, French, Spanish: quality should be very good but could benefit from a native speaker
-  verification.
-- Italian, Turkish: should be usable, but certainly not perfect. Verification by a native speaker
-  needed.
+- Dutch, English, French, German, Italian, Portuguese, Spanish, Turkish, Vietnamese.
 - Czech, Greek, Polish, Russian: mostly machine translated, no guarantees for quality.
 - Volunteers have started on Chinese (58%) and Faroese (16%). These will be added
-  if/when completed. A NEW CHINESE LANGUAGE VOLUNTEER WOULD BE VERY WELCOME
+  if/when completed.
 
 Translations are now integrated and editable
 on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
@@ -48,9 +44,11 @@ on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
   to provide translations in another way.
 - Please log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
   if you want to be credited by name with your help.
+- A NEW CHINESE LANGUAGE VOLUNTEER WOULD BE VERY WELCOME
 
 <a href="https://hosted.weblate.org/engage/nevertoomanybooks/">
-<img src="https://hosted.weblate.org/widget/nevertoomanybooks/multi-auto.svg" alt="Translation status" />
+<img src="https://hosted.weblate.org/widget/nevertoomanybooks/multi-auto.svg"
+     alt="Translation status" />
 </a>
 
 ## Data sources
@@ -105,12 +103,10 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 - Vietnamese translation contributed by [ngocanhtve](https://github.com/ngocanhtve).
 - Portugese translation contributed by [maverick74](https://github.com/maverick74).
-- All other translation volunteers
-  on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
+- All other volunteers on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
 
 In August 2018, this project was forked from:
-Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
-Without their original creation, this project would not exist in its
-current form. It was however largely rewritten/refactored and any
-comments on this fork should be directed at myself and not
-at the original creators.
+_Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn._
+Without their original creation, this project would not exist in its current form.
+It was however largely rewritten/refactored and any comments on this fork should be
+directed at myself and not at the original creators.
