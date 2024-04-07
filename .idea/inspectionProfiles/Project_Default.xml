@@ -236,6 +236,7 @@
           <option value="CallToNumericToString" />
           <option value="OverlyBroadThrowsClause" />
           <option value="StaticMethodOnlyUsedInOneClass" />
+          <option value="MethodOnlyUsedFromInnerClass" />
         </list>
       </option>
     </inspection_tool>
