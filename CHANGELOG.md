@@ -2,16 +2,16 @@
 
 - Vietnamese translation completed.
 
-### 5.3.2
+---
 
-NEW
+### 5.3.2
 
 - partial Vietnamese translation activated.
 - added haptic feedback to the ISBN keypad (follows your device haptic settings)
 
-### 5.3.1
+---
 
-FIXES:
+### 5.3.1
 
 - fixes an issue with the "Set complete" function for both Authors and Series.
 
@@ -38,7 +38,9 @@ FIXES:
 
 ### 5.2.4
 
-Optimized build of 5.2.3 with better responsiveness during book searches.
+- Optimized build of 5.2.3 with better responsiveness during book searches.
+
+---
 
 ### 5.2.3
 
@@ -64,8 +66,6 @@ REMOVED:
 ---
 
 ### 5.1.1
-
-FIXES:
 
 - fix issue #27
 - sync menu visibility no longer needs a restart
@@ -118,8 +118,6 @@ FIXES:
 
 ### 4.6.6
 
-FIXES
-
 - fix #21 regression bug in UI in export
 
 ---
@@ -143,8 +141,6 @@ FIXES:
 
 ### 4.6.0
 
-NEW:
-
 - Cover operations can now be undone (via the cover context menu).
   This can be disabled in preferences if you are low on storage space.
 
@@ -152,9 +148,7 @@ NEW:
 
 ### 4.5.1
 
-FIXES:
-
-- UI bug in export
+- fix UI bug in export
 
 ---
 
