@@ -676,7 +676,7 @@ public class BooksOnBookshelf
                 break;
             }
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.valueOf(layout));
         }
     }
 
@@ -1080,13 +1080,13 @@ public class BooksOnBookshelf
         int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_NEXT_MISSING_COVER);
 
         // forms its own group
-        menu.add(R.id.MENU_NEXT_MISSING_COVER, R.id.MENU_NEXT_MISSING_COVER, menuOrder++,
+        menu.add(R.id.MENU_NEXT_MISSING_COVER, R.id.MENU_NEXT_MISSING_COVER, menuOrder,
                  R.string.option_goto_next_book_without_cover)
             .setIcon(R.drawable.ic_baseline_broken_image_24);
 
         // if it's a level, add the expand option
         if (rowData.getInt(DBKey.BL_NODE_GROUP) != BooklistGroup.BOOK) {
-            menu.add(R.id.MENU_GROUP_BOB_EXPANSION, R.id.MENU_LEVEL_EXPAND, menuOrder++,
+            menu.add(R.id.MENU_GROUP_BOB_EXPANSION, R.id.MENU_LEVEL_EXPAND, ++menuOrder,
                      R.string.option_level_expand)
                 .setIcon(R.drawable.ic_baseline_unfold_more_24);
         }
