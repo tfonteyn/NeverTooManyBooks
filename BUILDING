@@ -1,5 +1,4 @@
-* Use Android Studio Flamingo or whichever later non-broken version
-  of Studio that works at all...
+* Use Android Studio Jellyfish or whichever later non-broken version of Studio that works at all...
 * Use Java 17 to run Studio, and set Gradle to the same.
 * Coding is in Java 11 with desugaring as per Android needs.
 
@@ -8,8 +7,7 @@
   - TEST: work done and minimal testing shows it works; but full testing wasn't done (yet)
 
   - RELEASE: things that must be checked before doing a public release
-  - NEWTHINGS: where a list of 'items' is processed -> you can/should add 'items' to that list
-
+  - NEWTHINGS: notes on how to add new functionality
   - FIXME: work around present or situation acceptable, but should be properly fixed
   - TODO: time...
   - ENHANCE: more time...
