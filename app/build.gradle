@@ -68,7 +68,7 @@ android {
     defaultConfig {
         applicationId = "com.hardbacknutter.nevertoomanybooks"
         versionCode = 76
-        versionName = "5.4.1"
+        versionName = "5.5.0"
 
         minSdk = rootProject.ext.minSdkVersion
         targetSdk = rootProject.ext.targetSdkVersion
