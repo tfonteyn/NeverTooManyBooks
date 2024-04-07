@@ -175,7 +175,8 @@ public class BooksOnBookshelfViewModel
     private final MutableLiveData<Pair<Integer, Integer>> highlightSelection =
             new MutableLiveData<>();
 
-    private final MutableLiveData<Boolean> triggerRebuildList = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<Boolean>> triggerRebuildList =
+            new MutableLiveData<>();
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     @Nullable
@@ -271,7 +272,7 @@ public class BooksOnBookshelfViewModel
      * @return flag, whether the LayoutManager needs to be recreated or not.
      */
     @NonNull
-    LiveData<Boolean> onTriggerRebuildList() {
+    LiveData<LiveDataEvent<Boolean>> onTriggerRebuildList() {
         return triggerRebuildList;
     }
 
@@ -953,7 +954,7 @@ public class BooksOnBookshelfViewModel
     private boolean onBookReadStatusChanged(@NonNull final Book book) {
         if (getStyle().hasGroup(BooklistGroup.READ_STATUS)) {
             // The book might move to another group - no choice, we must rebuild
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
             return true;
 
         } else {
@@ -995,7 +996,7 @@ public class BooksOnBookshelfViewModel
                                 @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
         if (getStyle().hasGroup(BooklistGroup.LENDING)) {
             // The book might move to another group - no choice, we must rebuild
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
             return true;
         } else {
             // The change will not affect the group the book is in,
@@ -1039,11 +1040,11 @@ public class BooksOnBookshelfViewModel
                               @NonNull final String modified) {
         if (getStyle().isShowField(FieldVisibility.Screen.List, dbKey)) {
             // The entity is shown on the book level, do a full rebuild
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
         } else {
             // Update only the levels, and trigger an adapter update
             // ENHANCE: update the modified row without a rebuild.
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
 
@@ -1057,11 +1058,11 @@ public class BooksOnBookshelfViewModel
                         @NonNull final Entity entity) {
         if (getStyle().isShowField(FieldVisibility.Screen.List, dbKey)) {
             // The entity is shown on the book level, do a full rebuild
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
         } else {
             // Update only the levels, and trigger an adapter update
             // ENHANCE: update the modified row without a rebuild.
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
 
@@ -1113,7 +1114,7 @@ public class BooksOnBookshelfViewModel
             }
         }
         // ENHANCE: update the modified row without a rebuild for more keys
-        triggerRebuildList.setValue(false);
+        triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
     /**
@@ -1125,7 +1126,7 @@ public class BooksOnBookshelfViewModel
     void delete(@NonNull final Context context,
                 @NonNull final Series series) {
         if (ServiceLocator.getInstance().getSeriesDao().delete(context, series)) {
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
 
@@ -1138,7 +1139,7 @@ public class BooksOnBookshelfViewModel
     void delete(@NonNull final Context context,
                 @NonNull final Publisher publisher) {
         if (ServiceLocator.getInstance().getPublisherDao().delete(context, publisher)) {
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
 
@@ -1151,7 +1152,7 @@ public class BooksOnBookshelfViewModel
     void delete(@NonNull final Context context,
                 @NonNull final Bookshelf bookshelf) {
         if (bookshelfDao.delete(context, bookshelf)) {
-            triggerRebuildList.setValue(false);
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
 
@@ -1178,7 +1179,7 @@ public class BooksOnBookshelfViewModel
         // We don't try to remove the row without a rebuild as this could quickly become complex...
         // e.g. if there is(was) only a single book on the level, we'd have to recursively
         // cleanup each level above the book
-        triggerRebuildList.setValue(false);
+        triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
     /**

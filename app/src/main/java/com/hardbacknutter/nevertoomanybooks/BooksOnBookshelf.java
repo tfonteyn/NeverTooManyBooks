@@ -522,14 +522,15 @@ public class BooksOnBookshelf
             }
         });
 
-        vm.onTriggerRebuildList().observe(this, recreateLayoutManager -> {
-            if (!vm.isBuilding()) {
-                if (recreateLayoutManager) {
-                    createLayoutManager();
-                }
-                buildBookList();
-            }
-        });
+        vm.onTriggerRebuildList().observe(this, message ->
+                message.process(recreateLayoutManager -> {
+                    if (!vm.isBuilding()) {
+                        if (recreateLayoutManager) {
+                            createLayoutManager();
+                        }
+                        buildBookList();
+                    }
+                }));
     }
 
     /**
