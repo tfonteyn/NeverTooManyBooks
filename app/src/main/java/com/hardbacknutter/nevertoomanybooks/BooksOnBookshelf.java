@@ -1332,6 +1332,12 @@ public class BooksOnBookshelf
             // toggle the read status
             final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
             vm.setBookRead(bookId, status);
+            if (hasEmbeddedDetailsFrame()) {
+                // refresh the entire fragment.
+                // We could send a message so only the child-fragment
+                // with the read-status is updated but it's complicated enough already
+                openEmbeddedBookDetails(bookId);
+            }
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_EDIT) {
@@ -1811,10 +1817,17 @@ public class BooksOnBookshelf
             // prevent quick users on slow devices to switch while building
             vb.bookshelfSpinner.setEnabled(false);
 
-            // If the book details frame and fragment is present, remove the fragment
+            // If the book details frame/fragment is present, remove the fragment
+            // and it's children
             if (hasEmbeddedDetailsFrame()) {
                 final Fragment fragment = vb.content.detailsFrame.getFragment();
                 if (fragment != null) {
+                    final FragmentManager childFm = fragment.getChildFragmentManager();
+                    childFm.getFragments().forEach(child -> childFm.beginTransaction()
+                                                                   .setReorderingAllowed(true)
+                                                                   .remove(child)
+                                                                   .commit());
+
                     getSupportFragmentManager()
                             .beginTransaction()
                             .setReorderingAllowed(true)
