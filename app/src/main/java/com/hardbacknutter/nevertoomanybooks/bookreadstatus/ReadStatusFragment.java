@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadCheckboxBinding;
 
@@ -49,9 +48,7 @@ public class ReadStatusFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(
-                ReadStatusFragmentFactory.getViewModelClass(requireArguments()));
+        vm = ReadStatusFragmentFactory.getViewModel(this, requireArguments());
     }
 
     @Nullable

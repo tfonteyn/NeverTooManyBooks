@@ -195,7 +195,9 @@ public class ShowBookDetailsFragment
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
         aVm.init(args);
 
-        vm = new ViewModelProvider(getActivity()).get(ShowBookDetailsViewModel.class);
+        // MUST be in the Fragment scope, as we'll have multiple copies of this Fragment
+        // object in the {@link ShowBookPagerFragment} and each showing a different book obv.
+        vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), args, aVm.getStyle());
 

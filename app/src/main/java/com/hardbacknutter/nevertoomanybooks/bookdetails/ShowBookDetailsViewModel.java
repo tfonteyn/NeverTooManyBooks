@@ -153,7 +153,7 @@ public class ShowBookDetailsViewModel
     //    }
 
     /**
-     * Should the fragment run in embedded mode.
+     * Are we running in embedded mode.
      *
      * @return flag
      */

@@ -28,6 +28,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,11 +41,6 @@ public final class ReadStatusFragmentFactory {
 
     public static final int VIEWMODEL_SHOW = 0;
     public static final int VIEWMODEL_EDIT = 1;
-
-    private static final Class<?>[] VIEW_MODELS = {
-            ShowBookDetailsViewModel.class,
-            EditBookViewModel.class
-    };
 
     private static final String TAG = "ReadStatusFragmentFactory";
     private static final String BKEY_VIEWMODEL = TAG + ":vm";
@@ -65,13 +61,12 @@ public final class ReadStatusFragmentFactory {
                             @NonNull final Style style,
                             @ViewModelClass final int viewModelClass) {
 
-        final Bundle args = new Bundle(1);
-        args.putInt(BKEY_VIEWMODEL, viewModelClass);
-
         if (style.useReadProgress()) {
             Fragment fragment = fm.findFragmentByTag(ReadProgressFragment.TAG);
             if (fragment == null) {
                 fragment = new ReadProgressFragment();
+                final Bundle args = new Bundle(1);
+                args.putInt(BKEY_VIEWMODEL, viewModelClass);
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -85,6 +80,8 @@ public final class ReadStatusFragmentFactory {
             Fragment fragment = fm.findFragmentByTag(ReadStatusFragment.TAG);
             if (fragment == null) {
                 fragment = new ReadStatusFragment();
+                final Bundle args = new Bundle(1);
+                args.putInt(BKEY_VIEWMODEL, viewModelClass);
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -99,17 +96,32 @@ public final class ReadStatusFragmentFactory {
     /**
      * To be called from the Read status/progress {@link Fragment#onCreate(Bundle)}.
      *
-     * @param args bundle
+     * @param fragment hosting fragment
+     * @param args     bundle
      *
-     * @return the class to use for the {@code ViewModelProvider}.
+     * @return the ViewModel
      *
-     * @throws IndexOutOfBoundsException for illegal values
+     * @throws IllegalArgumentException for illegal values
      */
     @NonNull
-    static <T extends BookReadStatusViewModel> Class<T> getViewModelClass(
-            @NonNull final Bundle args) {
-        //noinspection unchecked
-        return (Class<T>) VIEW_MODELS[args.getInt(BKEY_VIEWMODEL)];
+    static BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
+                                                @NonNull final Bundle args) {
+        @ViewModelClass
+        final int type = args.getInt(BKEY_VIEWMODEL);
+        switch (type) {
+            case VIEWMODEL_SHOW:
+                // https://developer.android.com/guide/fragments/communicate#share_data_between_a_parent_and_child_fragment
+                // MUST be in the PARENT Fragment scope
+                return new ViewModelProvider(fragment.requireParentFragment())
+                        .get(ShowBookDetailsViewModel.class);
+            case VIEWMODEL_EDIT:
+                // MUST be in the Activity scope
+                //noinspection DataFlowIssue
+                return new ViewModelProvider(fragment.getActivity())
+                        .get(EditBookViewModel.class);
+            default:
+                throw new IllegalArgumentException(String.valueOf(type));
+        }
     }
 
     @IntDef({VIEWMODEL_SHOW, VIEWMODEL_EDIT})
