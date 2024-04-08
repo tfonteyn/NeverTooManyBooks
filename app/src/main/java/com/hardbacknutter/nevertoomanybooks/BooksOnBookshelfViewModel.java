@@ -1091,29 +1091,24 @@ public class BooksOnBookshelfViewModel
 
             if (keyList.contains(DBKey.READ__BOOL) || keyList.contains(DBKey.READ_PROGRESS)) {
                 Objects.requireNonNull(book);
-                if (onBookReadStatusChanged(book)) {
-                    // Full rebuild was triggered
-                    return;
-                }
+                onBookReadStatusChanged(book);
+                return;
             }
 
             if (keyList.contains(DBKey.LOANEE_NAME)) {
                 Objects.requireNonNull(book);
-                if (onBookLoaneeChanged(book.getId(), book.getLoanee().orElse(null))) {
-                    // Full rebuild was triggered
-                    return;
-                }
+                onBookLoaneeChanged(book.getId(), book.getLoanee().orElse(null));
+                return;
             }
 
             if (keyList.contains(DBKey.COVER[0])) {
                 Objects.requireNonNull(book);
-                if (onBookCoverChanged(book.getId())) {
-                    // Full rebuild was triggered
-                    return;
-                }
+                onBookCoverChanged(book.getId());
+                return;
             }
         }
-        // ENHANCE: update the modified row without a rebuild for more keys
+
+        // ENHANCE: update the modified row without a rebuild: support more keys above
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
