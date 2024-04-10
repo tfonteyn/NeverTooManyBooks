@@ -184,6 +184,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/pc_reading">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_menu_book_24"
+            android:key="style.read.status.extended"
+            android:summaryOff="@string/ps_use_read_progress_off"
+            android:summaryOn="@string/ps_use_read_progress_on"
+            android:title="@string/lbl_track_progress" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/lbl_titles">
 
         <SwitchPreference
@@ -316,17 +329,4 @@
     <!--            />-->
 
     <!--    </PreferenceCategory>-->
-
-    <PreferenceCategory
-        android:title="@string/pc_reading">
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_menu_book_24"
-            android:key="style.read.status.extended"
-            android:summaryOff="@string/ps_use_read_progress_off"
-            android:summaryOn="@string/ps_use_read_progress_on"
-            android:title="@string/lbl_track_progress_long" />
-
-    </PreferenceCategory>
 </PreferenceScreen>

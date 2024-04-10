@@ -1676,7 +1676,7 @@
 
     <!-- Preference category : "Reading Progress" options. -->
     <string name="pc_reading"
-            translatable="false">@string/lbl_reading</string>
+            translatable="false">@string/lbl_track_progress_long</string>
     <!-- SwitchPreference : Reading Progress: use the traditional Read/Unread checkbox style. -->
     <string name="ps_use_read_progress_off">Use a simple Read/Unread status.</string>
     <!-- SwitchPreference : Reading Progress: use the extended progress options. -->
