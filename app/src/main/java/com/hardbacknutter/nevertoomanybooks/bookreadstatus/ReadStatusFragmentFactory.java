@@ -28,6 +28,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.lang.annotation.Retention;
@@ -39,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
 public final class ReadStatusFragmentFactory {
 
-    public static final int VIEWMODEL_SHOW = 0;
-    public static final int VIEWMODEL_EDIT = 1;
+    private static final int VIEWMODEL_SHOW = 0;
+    private static final int VIEWMODEL_EDIT = 1;
 
     private static final String TAG = "ReadStatusFragmentFactory";
     private static final String BKEY_VIEWMODEL = TAG + ":vm";
@@ -59,14 +60,14 @@ public final class ReadStatusFragmentFactory {
     public static void bind(@NonNull final FragmentManager fm,
                             @IdRes final int fragmentContainerViewId,
                             @NonNull final Style style,
-                            @ViewModelClass final int viewModelClass) {
+                            final Class<? extends ViewModel> viewModelClass) {
 
         if (style.useReadProgress()) {
             Fragment fragment = fm.findFragmentByTag(ReadProgressFragment.TAG);
             if (fragment == null) {
                 fragment = new ReadProgressFragment();
                 final Bundle args = new Bundle(1);
-                args.putInt(BKEY_VIEWMODEL, viewModelClass);
+                args.putInt(BKEY_VIEWMODEL, getIntArg(viewModelClass));
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -81,7 +82,7 @@ public final class ReadStatusFragmentFactory {
             if (fragment == null) {
                 fragment = new ReadStatusFragment();
                 final Bundle args = new Bundle(1);
-                args.putInt(BKEY_VIEWMODEL, viewModelClass);
+                args.putInt(BKEY_VIEWMODEL, getIntArg(viewModelClass));
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -91,6 +92,19 @@ public final class ReadStatusFragmentFactory {
                 ((ReadStatusFragment) fragment).reload();
             }
         }
+    }
+
+    @SuppressWarnings("ChainOfInstanceofChecks")
+    private static int getIntArg(final Class<? extends ViewModel> viewModelClass) {
+        final int vm;
+        if (viewModelClass == ShowBookDetailsViewModel.class) {
+            vm = VIEWMODEL_SHOW;
+        } else if (viewModelClass == EditBookViewModel.class) {
+            vm = VIEWMODEL_EDIT;
+        } else {
+            throw new IllegalArgumentException(viewModelClass.getName());
+        }
+        return vm;
     }
 
     /**
