@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,8 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
@@ -31,10 +34,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 
 @SuppressWarnings("WeakerAccess")
@@ -57,6 +63,7 @@ public class SearchBookByTextViewModel
 
     /** Flag: allow/provide searching by publisher. */
     private Boolean usePublisher;
+    private Style style;
 
     @NonNull
     Intent createResultIntent() {
@@ -71,14 +78,29 @@ public class SearchBookByTextViewModel
      * Pseudo constructor.
      *
      * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    void init(@NonNull final Context context) {
+    void init(@NonNull final Context context,
+              @Nullable final Bundle args) {
         if (usePublisher == null) {
             // Hardcoded to ISFDB only for now, as that's the only site supporting this field.
             // This will be refactored/moved/... at some point.
             usePublisher = PreferenceManager.getDefaultSharedPreferences(context)
                                             .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
+
+            if (args != null) {
+                // Lookup the provided style or use the default if not found.
+                final String styleUuid = args.getString(Style.BKEY_UUID);
+                final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+                style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
+            }
         }
+    }
+
+    @NonNull
+    Style getStyle() {
+        Objects.requireNonNull(style, "style");
+        return style;
     }
 
     boolean addAuthorName(@NonNull final String searchText) {

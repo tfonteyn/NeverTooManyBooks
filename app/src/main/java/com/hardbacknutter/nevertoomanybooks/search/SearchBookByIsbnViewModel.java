@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,12 +42,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 
 public class SearchBookByIsbnViewModel
         extends ViewModel {
@@ -71,6 +74,8 @@ public class SearchBookByIsbnViewModel
     private final EditBookOutput resultData = new EditBookOutput();
     /** Database Access. */
     private BookDao bookDao;
+
+    private Style style;
 
     @NonNull
     private ScanMode scannerMode = ScanMode.Off;
@@ -113,6 +118,11 @@ public class SearchBookByIsbnViewModel
                 if (scanMode != null) {
                     scannerMode = scanMode;
                 }
+
+                // Lookup the provided style or use the default if not found.
+                final String styleUuid = args.getString(Style.BKEY_UUID);
+                final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+                style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
             }
         }
 
@@ -241,5 +251,11 @@ public class SearchBookByIsbnViewModel
     @NonNull
     List<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
         return bookDao.getBookIdAndTitleByIsbn(code);
+    }
+
+    @NonNull
+    Style getStyle() {
+        Objects.requireNonNull(style, "style");
+        return style;
     }
 }
