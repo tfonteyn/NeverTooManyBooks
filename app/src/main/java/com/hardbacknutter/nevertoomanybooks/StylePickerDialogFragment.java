@@ -88,6 +88,7 @@ public class StylePickerDialogFragment
                                             DialogLauncher.BKEY_REQUEST_KEY);
 
         if (savedInstanceState == null) {
+            // We MUST have a style
             currentStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
                                                         Style.BKEY_UUID);
             showAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);

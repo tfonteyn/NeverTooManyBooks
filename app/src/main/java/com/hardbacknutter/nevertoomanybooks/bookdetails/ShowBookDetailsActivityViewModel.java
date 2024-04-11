@@ -82,9 +82,8 @@ public class ShowBookDetailsActivityViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (style == null) {
-            // The style CAN be 'null' here.
+            // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
-            // Validate and use the default if needed.
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,8 @@ public interface Entity {
      * Get the label to use for <strong>displaying</strong>.
      * Suitable for (and may contain) HTML output.
      * <p>
-     * Convenience method to {@link #getLabel(Context, Details, Style)}.
+     * Convenience method to {@link #getLabel(Context, Details, Style)}
+     * using the <strong>GLOBAL Style</strong>
      *
      * @param context Current context
      *

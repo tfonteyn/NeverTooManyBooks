@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,6 +67,7 @@ public class PreferredStylesViewModel
             stylesHelper = ServiceLocator.getInstance().getStyles();
             styleList = stylesHelper.getStyles(true);
 
+            // We MUST have a style
             final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
                                                          Style.BKEY_UUID);
             selectedPosition = findSelectedPosition(uuid);

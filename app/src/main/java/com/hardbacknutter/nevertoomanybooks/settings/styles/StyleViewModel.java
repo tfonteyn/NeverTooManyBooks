@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -126,6 +126,7 @@ public class StyleViewModel
                 style = (WritableStyle) stylesHelper.getGlobalStyle();
 
             } else {
+                // We MUST have a style
                 final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
                                                              Style.BKEY_UUID);
                 // ALWAYS pass the original style uuid back.
