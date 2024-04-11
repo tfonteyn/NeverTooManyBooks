@@ -37,8 +37,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
@@ -166,7 +166,7 @@ public class EditBookAuthorListDialogFragment
         authorList = vm.getBook().getAuthors();
 
         //noinspection DataFlowIssue
-        adapter = new AuthorListAdapter(context, authorList,
+        adapter = new AuthorListAdapter(context, authorList, vm.getStyle(),
                                         vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
         adapter.setOnRowShowMenuListener(
@@ -420,15 +420,15 @@ public class EditBookAuthorListDialogFragment
          *
          * @param context           Current context
          * @param items             List of Authors
+         * @param style             to use
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         AuthorListAdapter(@NonNull final Context context,
                           @NonNull final List<Author> items,
+                          @NonNull final Style style,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            formatter = new EntityFormatter<>(Details.Full, ServiceLocator.getInstance()
-                                                                          .getStyles()
-                                                                          .getGlobalStyle());
+            formatter = new EntityFormatter<>(Details.Full, style);
         }
 
         @NonNull
