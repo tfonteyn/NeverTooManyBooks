@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -195,7 +196,12 @@ public class EditBookViewModel
             menuHandlers = MenuHandlerFactory.create();
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-            style = serviceLocator.getStyles().getGlobalStyle();
+
+            // Lookup the provided style or use the default if not found.
+            final String styleUuid = args != null ? args.getString(Style.BKEY_UUID) : null;
+            final StylesHelper stylesHelper = serviceLocator.getStyles();
+            style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
+
             final Languages languages = serviceLocator.getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
