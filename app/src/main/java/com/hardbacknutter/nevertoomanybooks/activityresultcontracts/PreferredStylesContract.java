@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,18 +46,18 @@ public class PreferredStylesContract
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
-     * @param uuid     Return the currently selected style UUID, so the caller can apply it.
-     *                 This is independent from any modification to this or another style,
-     *                 or the order of the styles.
-     * @param modified flag indicating if <strong>anything at all</strong> was modified.
-     *                 This is independent from the returned style
+     * @param styleUuid Return the currently selected style UUID, so the caller can apply it.
+     *                  This is independent from any modification to this or another style,
+     *                  or the order of the styles.
+     * @param modified  flag indicating if <strong>anything at all</strong> was modified.
+     *                  This is independent from the returned style
      *
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(@Nullable final String uuid,
+    public static Intent createResult(@Nullable final String styleUuid,
                                       final boolean modified) {
-        return new Intent().putExtra(Style.BKEY_UUID, uuid)
+        return new Intent().putExtra(Style.BKEY_UUID, styleUuid)
                            .putExtra(BKEY_MODIFIED, modified);
     }
 
@@ -76,7 +76,7 @@ public class PreferredStylesContract
                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
