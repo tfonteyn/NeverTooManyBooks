@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -77,7 +78,7 @@ public class SearchBookByTextFragment
 
         vm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(getContext());
+        vm.init(getContext(), getArguments());
     }
 
     @Override
@@ -269,8 +270,7 @@ public class SearchBookByTextFragment
                            coordinator.getPublisherSearchText());
         }
 
-        // edit book
-        super.onSearchResults(book);
+        editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
     }
 
     @Override

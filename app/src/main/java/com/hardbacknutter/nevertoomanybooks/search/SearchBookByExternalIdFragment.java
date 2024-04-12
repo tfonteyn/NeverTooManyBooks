@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
@@ -93,6 +94,7 @@ public class SearchBookByExternalIdFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
+        vm.init(getArguments());
     }
 
     @Override
@@ -243,8 +245,8 @@ public class SearchBookByExternalIdFragment
                           Snackbar.LENGTH_LONG).show();
             return;
         }
-        // edit book
-        super.onSearchResults(book);
+
+        editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
     }
 
     @Override

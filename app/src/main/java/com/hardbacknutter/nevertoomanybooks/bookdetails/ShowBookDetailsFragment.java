@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
@@ -133,20 +133,22 @@ public class ShowBookDetailsFragment
     private BookChangedListener bookChangedListener;
 
     /** User edits a book. */
-    private final ActivityResultLauncher<Long> editBookLauncher = registerForActivityResult(
-            new EditBookByIdContract(), o -> o.ifPresent(data -> {
-                if (data.isModified()) {
-                    onBookEditFinished((String) null);
-                }
-            }));
+    private final ActivityResultLauncher<EditBookContract.Input> editBookLauncher =
+            registerForActivityResult(
+                    new EditBookContract(), o -> o.ifPresent(data -> {
+                        if (data.isModified()) {
+                            onBookEditFinished((String) null);
+                        }
+                    }));
 
     /** User updates a book with internet data. */
-    private final ActivityResultLauncher<Book> updateBookLauncher = registerForActivityResult(
-            new UpdateSingleBookContract(), o -> o.ifPresent(data -> {
-                if (data.isModified()) {
-                    onBookEditFinished((String) null);
-                }
-            }));
+    private final ActivityResultLauncher<Book> updateBookLauncher =
+            registerForActivityResult(
+                    new UpdateSingleBookContract(), o -> o.ifPresent(data -> {
+                        if (data.isModified()) {
+                            onBookEditFinished((String) null);
+                        }
+                    }));
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
@@ -652,7 +654,8 @@ public class ShowBookDetailsFragment
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_BOOK_EDIT) {
-                editBookLauncher.launch(book.getId());
+                editBookLauncher.launch(new EditBookContract.Input(book.getId(),
+                                                                   aVm.getStyle()));
                 return true;
 
             } else if (itemId == R.id.MENU_BOOK_DELETE) {

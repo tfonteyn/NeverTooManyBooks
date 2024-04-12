@@ -51,7 +51,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
@@ -93,11 +93,6 @@ public class SearchBookByIsbnFragment
     private final ActivityResultLauncher<String> openUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenUri));
-
-    /** The user was prompted to edit an <strong>existing</strong> book (i.e. with a valid id). */
-    private final ActivityResultLauncher<Long> editExistingBookLauncher =
-            registerForActivityResult(new EditBookByIdContract(),
-                                      o -> o.ifPresent(this::onBookEditingDone));
 
     /** Scan barcodes using the scanner Activity. */
     private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
@@ -476,7 +471,8 @@ public class SearchBookByIsbnFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> onClearSearchCriteria())
                     // User wants to review the existing book
                     .setNeutralButton(R.string.action_edit, (d, w)
-                            -> editExistingBookLauncher.launch(firstFound))
+                            -> editBookLauncher.launch(new EditBookContract
+                            .Input(firstFound, vm.getStyle())))
                     // User wants to add regardless
                     .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
                     .create()
@@ -495,8 +491,8 @@ public class SearchBookByIsbnFragment
             vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
             return;
         }
-        // edit book
-        super.onSearchResults(book);
+
+        editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
     }
 
     @Override

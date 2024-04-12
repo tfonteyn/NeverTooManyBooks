@@ -65,7 +65,6 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
@@ -231,17 +230,12 @@ public class BooksOnBookshelf
                     data -> vm.onBookEditFinished(data)));
 
     /** Add a Book by doing a search on the internet. */
-    private final ActivityResultLauncher<AddBookBySearchContract.By> addBookBySearchLauncher =
+    private final ActivityResultLauncher<AddBookBySearchContract.Input> addBookBySearchLauncher =
             registerForActivityResult(new AddBookBySearchContract(), o -> o.ifPresent(
                     data -> vm.onBookEditFinished(data)));
 
     /** Edit a Book. */
-    private final ActivityResultLauncher<Long> editByIdLauncher =
-            registerForActivityResult(new EditBookByIdContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
-    /** Duplicate and edit a Book. */
-    private final ActivityResultLauncher<Book> duplicateLauncher =
+    private final ActivityResultLauncher<EditBookContract.Input> editBookLauncher =
             registerForActivityResult(new EditBookContract(), o -> o.ifPresent(
                     data -> vm.onBookEditFinished(data)));
 
@@ -1337,12 +1331,13 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_EDIT) {
-            editByIdLauncher.launch(bookId);
+            editBookLauncher.launch(new EditBookContract.Input(bookId, vm.getStyle()));
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DUPLICATE) {
             final Book book = Book.from(bookId);
-            duplicateLauncher.launch(book.duplicate(this));
+            editBookLauncher.launch(new EditBookContract.Input(book.duplicate(this),
+                                                               vm.getStyle()));
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DELETE) {
@@ -1674,22 +1669,32 @@ public class BooksOnBookshelf
     private void onFabMenuItemSelected(@IdRes final int menuItemId) {
 
         if (menuItemId == R.id.fab0_scan_barcode) {
-            addBookBySearchLauncher.launch(AddBookBySearchContract.By.Scan);
+            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
+                    AddBookBySearchContract.By.Scan,
+                    vm.getStyle()));
 
         } else if (menuItemId == R.id.fab0_scan_barcode_batch) {
-            addBookBySearchLauncher.launch(AddBookBySearchContract.By.ScanBatch);
+            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
+                    AddBookBySearchContract.By.ScanBatch,
+                    vm.getStyle()));
 
         } else if (menuItemId == R.id.fab1_search_isbn) {
-            addBookBySearchLauncher.launch(AddBookBySearchContract.By.Isbn);
+            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
+                    AddBookBySearchContract.By.Isbn,
+                    vm.getStyle()));
 
         } else if (menuItemId == R.id.fab2_search_text) {
-            addBookBySearchLauncher.launch(AddBookBySearchContract.By.Text);
+            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
+                    AddBookBySearchContract.By.Text,
+                    vm.getStyle()));
 
         } else if (menuItemId == R.id.fab3_add_manually) {
-            editByIdLauncher.launch(0L);
+            editBookLauncher.launch(new EditBookContract.Input(0L, vm.getStyle()));
 
         } else if (menuItemId == R.id.fab4_search_external_id) {
-            addBookBySearchLauncher.launch(AddBookBySearchContract.By.ExternalId);
+            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
+                    AddBookBySearchContract.By.ExternalId,
+                    vm.getStyle()));
 
         } else {
             throw new IllegalArgumentException(String.valueOf(menuItemId));

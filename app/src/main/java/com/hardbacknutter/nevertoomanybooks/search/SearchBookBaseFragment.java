@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,9 +60,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
-    /** After a successful scan/search, the book is offered for editing. */
-    private final ActivityResultLauncher<Book> editBookFoundLauncher = registerForActivityResult(
-            new EditBookContract(), o -> o.ifPresent(this::onBookEditingDone));
+    final ActivityResultLauncher<EditBookContract.Input> editBookLauncher =
+            registerForActivityResult(new EditBookContract(),
+                                      o -> o.ifPresent(this::onBookEditingDone));
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -218,8 +218,7 @@ public abstract class SearchBookBaseFragment
         return coordinator.search();
     }
 
-    @CallSuper
-    void onSearchCancelled(@NonNull final LiveDataEvent<Book> message) {
+    private void onSearchCancelled(@NonNull final LiveDataEvent<Book> message) {
         closeProgressDialog();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
@@ -243,14 +242,14 @@ public abstract class SearchBookBaseFragment
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             d.dismiss();
                             if (hasData) {
-                                onSearchResults(book);
+                                searchAndClearCriteria(book);
                             }
                         })
                         .create()
                         .show();
 
             } else if (hasData) {
-                onSearchResults(book);
+                searchAndClearCriteria(book);
 
             } else {
                 //noinspection DataFlowIssue
@@ -260,16 +259,18 @@ public abstract class SearchBookBaseFragment
         });
     }
 
+    // Don't allow child classes to override.
+    private void searchAndClearCriteria(@NonNull final Book book) {
+        onSearchResults(book);
+        onClearSearchCriteria();
+    }
+
     /**
      * Process the search results.
-     * The default implementation starts the book-edit activity.
      *
      * @param book results of the search
      */
-    void onSearchResults(@NonNull final Book book) {
-        editBookFoundLauncher.launch(book);
-        onClearSearchCriteria();
-    }
+    abstract void onSearchResults(@NonNull final Book book);
 
     /**
      * Add the needed listeners to automatically remove any error text from

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
@@ -41,41 +42,50 @@ import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
 
 public class AddBookBySearchContract
-        extends ActivityResultContract<AddBookBySearchContract.By, Optional<EditBookOutput>> {
+        extends ActivityResultContract<AddBookBySearchContract.Input, Optional<EditBookOutput>> {
 
     private static final String TAG = "AddBookBySearchContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final By by) {
-        switch (by) {
+                               @NonNull final Input input) {
+        @NonNull
+        final Intent intent;
+        switch (input.by) {
             case Isbn:
-                return FragmentHostActivity
+                intent = FragmentHostActivity
                         .createIntent(context, SearchBookByIsbnFragment.class);
+                break;
 
             case Scan:
-                return FragmentHostActivity
+                intent = FragmentHostActivity
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
                                   (Parcelable) ScanMode.getSingleScanMode(context));
+                break;
 
             case ScanBatch:
-                return FragmentHostActivity
+                intent = FragmentHostActivity
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
                                   (Parcelable) ScanMode.Batch);
+                break;
 
             case ExternalId:
-                return FragmentHostActivity
+                intent = FragmentHostActivity
                         .createIntent(context, SearchBookByExternalIdFragment.class);
+                break;
 
             case Text:
-                return FragmentHostActivity
+                intent = FragmentHostActivity
                         .createIntent(context, SearchBookByTextFragment.class);
+                break;
+            default:
+                throw new IllegalArgumentException(input.by.name());
         }
 
-        throw new IllegalArgumentException(by.name());
+        return intent.putExtra(Style.BKEY_UUID, input.styleUuid);
     }
 
     @Override
@@ -100,5 +110,19 @@ public class AddBookBySearchContract
         ScanBatch,
         Text,
         ExternalId
+    }
+
+    public static class Input {
+
+        @NonNull
+        final By by;
+        @NonNull
+        final String styleUuid;
+
+        public Input(@NonNull final By by,
+                     @NonNull final Style style) {
+            this.by = by;
+            this.styleUuid = style.getUuid();
+        }
     }
 }
