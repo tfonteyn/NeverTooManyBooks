@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,17 +76,17 @@ public class EditStyleContract
      * @param templateUuid uuid of the original style we cloned (different from current)
      *                     or edited (same as current).
      * @param modified     flag; whether the style was modified (either created ot updated)
-     * @param uuid         uuid of the modified (or newly created) style
+     * @param styleUuid    uuid of the modified (or newly created) style
      *
      * @return Intent
      */
     @NonNull
     public static Intent createResult(@NonNull final String templateUuid,
                                       final boolean modified,
-                                      @Nullable final String uuid) {
+                                      @Nullable final String styleUuid) {
         return new Intent().putExtra(BKEY_TEMPLATE_UUID, templateUuid)
                            .putExtra(BKEY_MODIFIED, modified)
-                           .putExtra(Style.BKEY_UUID, uuid);
+                           .putExtra(Style.BKEY_UUID, styleUuid);
     }
 
     @NonNull
@@ -96,7 +96,7 @@ public class EditStyleContract
         return FragmentHostActivity
                 .createIntent(context, StyleFragment.class)
                 .putExtra(BKEY_ACTION, input.action)
-                .putExtra(Style.BKEY_UUID, input.uuid)
+                .putExtra(Style.BKEY_UUID, input.styleUuid)
                 .putExtra(BKEY_SET_AS_PREFERRED, input.setAsPreferred);
     }
 
@@ -133,7 +133,7 @@ public class EditStyleContract
         final int action;
 
         @NonNull
-        final String uuid;
+        final String styleUuid;
 
         /**
          * If set to {@code true} the edited/cloned style will be set to preferred.
@@ -145,14 +145,14 @@ public class EditStyleContract
               @NonNull final Style style,
               final boolean setAsPreferred) {
             this.action = action;
-            this.uuid = style.getUuid();
+            this.styleUuid = style.getUuid();
             this.setAsPreferred = setAsPreferred;
         }
     }
 
     public static final class Output {
 
-        /** The uuid which was passed into the {@link Input#uuid} for editing. */
+        /** The uuid which was passed into the {@link Input#styleUuid} for editing. */
         @NonNull
         private final String templateUuid;
 
