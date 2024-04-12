@@ -415,12 +415,9 @@ public class BooksOnBookshelf
         // setup the list related stuff; the actual list data is generated in onResume
         createBooklistView();
 
-        // After a transition from landscape to portrait,
-        // we need to remove the potentially embedded fragment manually.
+        // Remove the potentially embedded fragment and its children.
         // Otherwise, even while not showing, it will be put in 'resumed' state by the system
-        if (!hasEmbeddedDetailsFrame()) {
-            removeEmbeddedDetailsFragment();
-        }
+        removeEmbeddedDetailsFragment();
 
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -1818,11 +1815,8 @@ public class BooksOnBookshelf
             // prevent quick users on slow devices to switch while building
             vb.bookshelfSpinner.setEnabled(false);
 
-            // If the book details frame/fragment is present, remove the fragment
-            // and it's children
-            if (hasEmbeddedDetailsFrame()) {
-                removeEmbeddedDetailsFragment();
-            }
+            // Remove the potentially embedded fragment and its children.
+            removeEmbeddedDetailsFragment();
 
             // force the adapter to stop displaying by disabling the list.
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
@@ -1831,27 +1825,6 @@ public class BooksOnBookshelf
                 adapter.setBooklist(null);
             }
             vm.buildBookList();
-        }
-    }
-
-    /**
-     * If present, remove the embedded fragment and its children fragments.
-     */
-    private void removeEmbeddedDetailsFragment() {
-        //noinspection DataFlowIssue
-        final Fragment fragment = vb.content.detailsFrame.getFragment();
-        if (fragment != null) {
-            final FragmentManager childFm = fragment.getChildFragmentManager();
-            childFm.getFragments().forEach(child -> childFm.beginTransaction()
-                                                           .setReorderingAllowed(true)
-                                                           .remove(child)
-                                                           .commit());
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .remove(fragment)
-                    .commit();
         }
     }
 
@@ -1941,6 +1914,37 @@ public class BooksOnBookshelf
      */
     private boolean hasEmbeddedDetailsFrame() {
         return vb.content.detailsFrame != null;
+    }
+
+    /**
+     * If present, remove the embedded fragment and its children fragments.
+     */
+    private void removeEmbeddedDetailsFragment() {
+        @Nullable
+        final Fragment fragment;
+
+        if (vb.content.detailsFrame != null) {
+            fragment = vb.content.detailsFrame.getFragment();
+        } else {
+            // We STILL try to find it, as it could be existing in the FM
+            // but not hooked-up with the frame
+            fragment = getSupportFragmentManager()
+                    .findFragmentByTag(ShowBookDetailsFragment.TAG);
+        }
+
+        if (fragment != null) {
+            final FragmentManager childFm = fragment.getChildFragmentManager();
+            childFm.getFragments().forEach(child -> childFm.beginTransaction()
+                                                           .setReorderingAllowed(true)
+                                                           .remove(child)
+                                                           .commit());
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .remove(fragment)
+                    .commit();
+        }
     }
 
     /**
