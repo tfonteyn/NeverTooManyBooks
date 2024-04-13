@@ -34,15 +34,6 @@ tasks.register("clean", Delete) {
 
 ext {
     // see NOTES.txt
-    // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2023-10-04 world wide:
-    // 13.0     34.90
-    // 12.0     53.85
-    // 11.0     72.59
-    // 10.0     81.64
-    // 9.0      88.66
-    // 8.1      91.16
-    // 8.0      94.23
     toolChain = 17
     minSdkVersion = 26
     targetSdkVersion = 34
