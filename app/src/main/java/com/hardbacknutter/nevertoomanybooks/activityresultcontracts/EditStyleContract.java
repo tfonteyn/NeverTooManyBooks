@@ -95,8 +95,8 @@ public class EditStyleContract
                                @NonNull final Input input) {
         return FragmentHostActivity
                 .createIntent(context, StyleFragment.class)
-                .putExtra(BKEY_ACTION, input.action)
                 .putExtra(Style.BKEY_UUID, input.styleUuid)
+                .putExtra(BKEY_ACTION, input.action)
                 .putExtra(BKEY_SET_AS_PREFERRED, input.setAsPreferred);
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,9 +48,9 @@ public class AuthorWorksContract
                                @NonNull final Input input) {
         return FragmentHostActivity
                 .createIntent(context, AuthorWorksFragment.class)
+                .putExtra(Style.BKEY_UUID, input.styleUuid)
                 .putExtra(DBKey.FK_AUTHOR, input.authorId)
-                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId)
-                .putExtra(Style.BKEY_UUID, input.styleUuid);
+                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
     }
 
     @Override

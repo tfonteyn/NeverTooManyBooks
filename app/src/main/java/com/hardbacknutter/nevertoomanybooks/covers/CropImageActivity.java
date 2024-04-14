@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -184,8 +184,8 @@ public class CropImageActivity
                 final File destination = new File(destinationPath);
                 ServiceLocator.getInstance().getCoverStorage().persist(bitmap, destination);
 
-                setResult(Activity.RESULT_OK, new Intent().putExtra(BKEY_DESTINATION,
-                                                                    destinationPath));
+                setResult(Activity.RESULT_OK,
+                          new Intent().putExtra(BKEY_DESTINATION, destinationPath));
                 finish();
 
             } catch (@NonNull final IOException | CoverStorageException e) {

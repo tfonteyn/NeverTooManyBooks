@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,10 +51,10 @@ public class ShowBookPagerContract
                                @NonNull final Input input) {
         return FragmentHostActivity
                 .createIntent(context, R.layout.activity_book_details, ShowBookPagerFragment.class)
+                .putExtra(Style.BKEY_UUID, input.styleUuid)
                 .putExtra(DBKey.FK_BOOK, input.bookId)
                 .putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME, input.navTableName)
-                .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID, input.listTableRowId)
-                .putExtra(Style.BKEY_UUID, input.styleUuid);
+                .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID, input.listTableRowId);
     }
 
     @Override

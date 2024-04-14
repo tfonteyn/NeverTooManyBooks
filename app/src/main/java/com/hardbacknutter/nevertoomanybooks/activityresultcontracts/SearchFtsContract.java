@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,9 +45,9 @@ public class SearchFtsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SearchCriteria criteria) {
-        final Intent intent = FragmentHostActivity.createIntent(context, SearchFtsFragment.class);
-        intent.putExtra(SearchCriteria.BKEY, criteria);
-        return intent;
+        return FragmentHostActivity
+                .createIntent(context, SearchFtsFragment.class)
+                .putExtra(SearchCriteria.BKEY, criteria);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class SearchFtsContract
                                                 @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

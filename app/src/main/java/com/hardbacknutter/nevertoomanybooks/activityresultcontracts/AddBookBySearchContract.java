@@ -50,42 +50,38 @@ public class AddBookBySearchContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        @NonNull
-        final Intent intent;
         switch (input.by) {
             case Isbn:
-                intent = FragmentHostActivity
-                        .createIntent(context, SearchBookByIsbnFragment.class);
-                break;
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByIsbnFragment.class)
+                        .putExtra(Style.BKEY_UUID, input.styleUuid);
 
             case Scan:
-                intent = FragmentHostActivity
+                return FragmentHostActivity
                         .createIntent(context, SearchBookByIsbnFragment.class)
+                        .putExtra(Style.BKEY_UUID, input.styleUuid)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
                                   (Parcelable) ScanMode.getSingleScanMode(context));
-                break;
 
             case ScanBatch:
-                intent = FragmentHostActivity
+                return FragmentHostActivity
                         .createIntent(context, SearchBookByIsbnFragment.class)
+                        .putExtra(Style.BKEY_UUID, input.styleUuid)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
                                   (Parcelable) ScanMode.Batch);
-                break;
 
             case ExternalId:
-                intent = FragmentHostActivity
-                        .createIntent(context, SearchBookByExternalIdFragment.class);
-                break;
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByExternalIdFragment.class)
+                        .putExtra(Style.BKEY_UUID, input.styleUuid);
 
             case Text:
-                intent = FragmentHostActivity
-                        .createIntent(context, SearchBookByTextFragment.class);
-                break;
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByTextFragment.class)
+                        .putExtra(Style.BKEY_UUID, input.styleUuid);
             default:
                 throw new IllegalArgumentException(input.by.name());
         }
-
-        return intent.putExtra(Style.BKEY_UUID, input.styleUuid);
     }
 
     @Override
