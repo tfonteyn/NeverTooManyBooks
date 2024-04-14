@@ -516,9 +516,9 @@
     <!-- endregion -->
     <!-- region ========== Author types. -->
     <string name="lbl_author_type_writer">Người viết</string>
-    <string name="lbl_author_type_translator">Người dịch</string>
-    <string name="lbl_author_type_editor">Người biên tập</string>
-    <string name="lbl_author_type_contributor">Người đóng góp</string>
+    <string name="lbl_author_type_translator">Dịch giả</string>
+    <string name="lbl_author_type_editor">Biên tập viên</string>
+    <string name="lbl_author_type_contributor">Cộng tác</string>
     <string name="lbl_author_type_intro">Giới thiệu v.v.</string>
     <string name="lbl_author_type_narrator">Người kể chuyện</string>
     <!-- Interior art / illustrations -->
