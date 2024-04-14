@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,11 +42,11 @@ android {
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
         /**
-         * RELEASE: 2023-10-31. Continuously update to latest version.
+         * RELEASE: Update to latest version: current is 2024-04-14.
          * Some sites don't return full data unless the user agent is set to a valid browser.
          */
         buildConfigField("String", "BROWSER_USER_AGENT",
-                "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0\"")
+                "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0\"")
 
     }
 
