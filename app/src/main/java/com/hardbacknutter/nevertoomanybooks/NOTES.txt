@@ -16,16 +16,13 @@ ttps://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwid
 ----------------------------------------------------------------------------------------------------
 Draft notes for next version:
 
-### 5.5.0
+### 5.6.0
 
 NEW:
-- Reading progress options: [read/unread], [percentage], [page x of y]
-- StripWebSearchEngine
-- Author types added: storyboard, lettering
+
 
 FIXES:
-- Calibre fix a database lock preventing imports sometimes.
-- LastDodo better handling of duplicate authors
+
 
 REMOVED:
 

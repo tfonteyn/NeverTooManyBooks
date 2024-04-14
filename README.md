@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.4.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.4.0/NeverTooManyBooks-5.4.0.apk)
+## Download the latest release: [5.5.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.5.0/NeverTooManyBooks-5.5.0.apk)
 
 Also available
 on [IzzySoft](https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks).
@@ -75,6 +75,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - **LastDodo** (Dutch and more; Catalogue; European Comics)
 - **OpenLibrary** (English and more; Catalogue)
 - **StripInfo** (Dutch and more; Catalogue; European Comics)
+- **StripWeb** (Dutch/French; Shop; European Comics)
 - Supports synchronizing with a [Calibre](https://calibre-ebook.com/) Content Server.
 
 ## Device support:

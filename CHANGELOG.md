@@ -1,3 +1,17 @@
+### 5.5.0
+
+NEW:
+
+- Track your reading progress (see #16 ) options: [read/unread] (default)
+  or [percentage] / [page x of y], configurable for each Style
+- New search site: StripWeb (www.bdweb.be) for dutch/french comics.
+- Author types added: storyboard, lettering
+
+FIXES:
+
+- Calibre synchronization: fixes a database lock preventing imports sometimes.
+- LastDodo site: better handling of duplicate authors
+
 ### 5.4.0
 
 - Vietnamese translation completed.

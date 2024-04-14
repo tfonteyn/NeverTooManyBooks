@@ -1,0 +1,5 @@
+- Track your reading progress
+- New search site: StripWeb
+- Author types added: storyboard, lettering
+- fix: Calibre synchronization: occasional db locking during import
+- fix: LastDodo site: better handling of duplicate authors
