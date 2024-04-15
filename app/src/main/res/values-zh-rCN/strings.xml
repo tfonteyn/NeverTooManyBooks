@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -360,7 +357,7 @@
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="X_neither">都不是</string>
-    <string name="X_style_type_defaults">风格默认值</string>
+    <string name="X_style_type_defaults">默认样式设置</string>
     <string name="action_edit_ellipsis">修改…</string>
     <string name="tip_booklist_style_defaults">使用此界面设置所有样式的默认特征。所有内置样式都会使用这些特征，您自己定义的任何样式也会以这些特征为起点。</string>
     <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并记录新问题。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
@@ -447,4 +444,165 @@
     <string name="lbl_track_progress">进展情况</string>
     <string name="error_total_pages_must_be_larger_than_current_page">必须大于或等于当前页面</string>
     <string name="lbl_date_last_updated_day">最后更新日</string>
+    <string name="option_bob_filter_lend_out_no">可用书籍</string>
+    <string name="lbl_group_1st_char_series_title">系列标题的首字符</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">缺失/尚可</string>
+    <string name="lbl_condition_reading_copy">阅读拷贝</string>
+    <string name="lbl_author_type_cover_inking">封面书写</string>
+    <string name="lbl_author_type_cover_colorist">封面上色者</string>
+    <string name="btn_just_this_shelf">仅此书架</string>
+    <string name="option_download_set_folder">设置下载目录</string>
+    <string name="option_download_folder">本地下载目录</string>
+    <string name="action_stop_scanning">停止扫描</string>
+    <string name="lbl_series">系列</string>
+    <string name="lbl_barcode">条形码</string>
+    <string name="lbl_condition">状况</string>
+    <string name="strict">严格</string>
+    <string name="list_and">与</string>
+    <string name="btn_this_book">仅这本书</string>
+    <string name="lbl_sort_unsorted">不排序</string>
+    <string name="lbl_sorting">排序</string>
+    <string name="X_info_site_authorization_successful">%1$s 认证成功</string>
+    <string name="X_lbl_thumbnails">缩略图</string>
+    <string name="info_progress_page_x_of_y">页数：%1$d 页，共 %2$d 页</string>
+    <string name="info_progress_x_percent">已读 %1$d%%</string>
+    <string name="lbl_original_title">原标题</string>
+    <string name="lbl_publication">出版信息</string>
+    <string name="lbl_date_added_month">添加月份</string>
+    <string name="lbl_read_start">开始阅读日期</string>
+    <string name="X_option_bob_filter_read_no">未读书籍</string>
+    <string name="X_lbl_anthologies">选集</string>
+    <string name="X_lbl_system">（系统）</string>
+    <string name="lbl_virtual_libraries">此图书馆中的虚拟书架</string>
+    <string name="lbl_date_read">阅读日期</string>
+    <string name="lbl_condition_good">好</string>
+    <string name="confirm_create_real_author">“%1$s”尚不存在。要创建吗？</string>
+    <string name="action_clear_queue">清空队列</string>
+    <string name="site_description_dutch_comics_shopping">荷兰语及其他；漫画；商店</string>
+    <string name="site_description_english_catalogue_FSF">英语及其他；目录；奇幻与科幻小说</string>
+    <string name="site_description_french_catalogue_eu_comics">法语及其他；目录；欧洲漫画</string>
+    <string name="site_description_general_shopping">通用；商店</string>
+    <string name="lbl_edition_first_edition">首发版</string>
+    <string name="lbl_edition_slipcase">精装版（书套）</string>
+    <string name="lbl_condition_fair">可接受</string>
+    <string name="lbl_author_type_editor">编辑</string>
+    <string name="lbl_author_type_intro">引言撰写等</string>
+    <string name="option_sort_and_style_ellipsis">排序与样式…</string>
+    <string name="option_storage_edit_settings">编辑设置</string>
+    <string name="option_lend_out_book">借出给…</string>
+    <string name="option_cover_replace_from_gallery">来自图库…</string>
+    <string name="option_cover_replace_from_alt_editions">来自其他版本…</string>
+    <string name="option_fab_add_book_by_barcode_scan">扫描单个条形码</string>
+    <string name="option_apply_to_this_node_only">仅此节点</string>
+    <string name="action_add_with_details">随详情添加</string>
+    <string name="lbl_publisher">出版商</string>
+    <string name="lbl_publishers">出版商</string>
+    <string name="lbl_covers">封面</string>
+    <string name="lbl_original_title_long">原标题（此书为翻译）</string>
+    <string name="lbl_location_long">书籍位置</string>
+    <string name="lbl_print_run">印刷次数</string>
+    <string name="lbl_month">月</string>
+    <string name="lbl_date_added_day">添加日</string>
+    <string name="lbl_date_read_year">阅读年份</string>
+    <string name="lbl_date_read_day">阅读日</string>
+    <string name="option_bob_filter_isbn_no">没有 ISBN</string>
+    <string name="option_bob_filter_lend_out_yes">已借出书籍</string>
+    <string name="lbl_keywords">关键词</string>
+    <string name="lbl_site_book_id">网站书籍 ID</string>
+    <string name="lbl_about_contact">联系人：</string>
+    <string name="lbl_database">数据库</string>
+    <string name="lbl_system_default">（系统默认）</string>
+    <string name="option_field_usage_overwrite">覆盖已有数据</string>
+    <string name="option_restore_cover">恢复上个图像</string>
+    <string name="lbl_is_complete">已完结</string>
+    <string name="lbl_lend_out_to_name">已借出给 %1$s</string>
+    <string name="lbl_date_read_month">阅读月份</string>
+    <string name="lbl_group_1st_char_publisher_name">出版社名的首字符</string>
+    <string name="lbl_edition_first_impression">一版一印</string>
+    <string name="lbl_edition_book_club">读书俱乐部版</string>
+    <string name="lbl_condition_fine">全新</string>
+    <string name="option_level_expand">全部展开</string>
+    <string name="option_set_unread">标为未读</string>
+    <string name="option_shop_books_by_author_in_series">同作者/系列书籍</string>
+    <string name="option_cover_rotate_ccw">逆时针</string>
+    <string name="option_fab_add_book_manually">手动添加</string>
+    <string name="option_fab_add_book_by_external_id">网站书籍编号</string>
+    <string name="option_isbn_strict">严格 ISBN</string>
+    <string name="lbl_group_1st_char_book_title">书籍标题的首字符</string>
+    <string name="bookshelf_my_books">我的书籍</string>
+    <string name="lbl_edition_limited">限量版</string>
+    <string name="lbl_author_type_inking">书写</string>
+    <string name="option_storage_quit_and_reinsert_sdcard">退出并重新插入正确的 SD 卡</string>
+    <string name="option_level_collapse">全部收起</string>
+    <string name="option_set_read">标为已读</string>
+    <string name="option_goto_next_book_without_cover">跳转到下一本无封面书籍</string>
+    <string name="option_view_book_at">查看于…</string>
+    <string name="option_download_ebook_format">下载电子书（%1$s）</string>
+    <string name="action_synchronize">同步</string>
+    <string name="lbl_read_end">阅读完成日期</string>
+    <string name="pt_bob_books_under_multiple_publisher">显示有多个出版社的书籍</string>
+    <string name="lbl_tab_lbl_ext_id">外部 ID</string>
+    <string name="lbl_group_1st_char_author_family_name">作者姓氏的首字符</string>
+    <string name="action_merge">合并</string>
+    <string name="lbl_moving_data">迁移数据</string>
+    <string name="lbl_covers_long">封面图像</string>
+    <string name="lbl_table_of_content_short">目录</string>
+    <string name="lbl_read">已读</string>
+    <string name="option_delete_removed_books">删除服务器上已不存在的本地书籍</string>
+    <string name="lbl_select_website">选择一个网站：</string>
+    <string name="lbl_websites">网站</string>
+    <string name="lbl_table_of_content">目录</string>
+    <string name="lbl_number">数目</string>
+    <string name="lbl_local_search_long">高级本地搜索</string>
+    <string name="lbl_local_search">本地搜索</string>
+    <string name="loose">宽松</string>
+    <string name="lbl_lend_out">已借出</string>
+    <string name="lbl_lend_book_to_colon">将这本书借给：</string>
+    <string name="menu_update_books">更新书籍</string>
+    <string name="option_bob_filter_isbn_yes">有 ISBN</string>
+    <string name="X_option_bob_filter_read_yes">已读书籍</string>
+    <string name="error_type_not_supported">类型不支持：%1$s …</string>
+    <string name="info_site_list">搜索结果限于：%1$s</string>
+    <string name="site_description_dutch_catalogue_eu_comics">荷兰语及其他；目录；欧洲漫画</string>
+    <string name="tip_configure_sites">可点击屏幕顶部的设置图标来单独配置每个网站。</string>
+    <string name="lbl_condition_very_good">非常好</string>
+    <string name="lbl_author_type_colorist">上色者</string>
+    <string name="lbl_author_type_narrator">讲述者</string>
+    <string name="lbl_author_type_contributor">贡献者</string>
+    <string name="option_moving_covers_from_x_to_y">将所有封面从“%1$s”移动到“%2$s”</string>
+    <string name="option_storage_select">使用“%1$s”</string>
+    <string name="option_lend_return_book">借书已还</string>
+    <string name="option_author_works_toc">仅目录标题</string>
+    <string name="option_cover_replace_from_camera">来自相机…</string>
+    <string name="option_cover_rotate">旋转…</string>
+    <string name="option_cover_rotate_cw">顺时针</string>
+    <string name="option_fab_add_book_by_barcode_scan_batch">批量扫描条形码</string>
+    <string name="confirm_delete_style">删除样式“%1$s”吗？</string>
+    <string name="confirm_no_missing_covers_search_from_top">此行以下的所有书籍均有封面。从顶部再次搜索吗？</string>
+    <string name="action_duplicate">创建副本</string>
+    <string name="action_show_toc_long">显示目录</string>
+    <string name="lbl_edit_style">编辑样式</string>
+    <string name="lbl_clone_style">复制样式</string>
+    <string name="lbl_series_multiple">系列</string>
+    <string name="lbl_import_books">导入书籍</string>
+    <string name="lbl_calibre_content_server">Calibre 内容服务器</string>
+    <string name="lbl_family_name">姓氏</string>
+    <string name="lbl_given_names">名字</string>
+    <string name="lbl_author_is_a_pen_name_of">此笔名属于：</string>
+    <string name="lbl_format">格式</string>
+    <string name="lbl_ebook_file_type">电子书文件类型</string>
+    <string name="lbl_date_added_year">添加年份</string>
+    <string name="error_http_403_site_forbidden">%1$s 已拒绝访问。</string>
+    <string name="error_http_403_forbidden">网站已拒绝访问。</string>
+    <string name="progress_msg_x_deleted">已删除 %1$d</string>
+    <string name="site_description_dutch_catalogue">荷兰语及其他；目录</string>
+    <string name="site_description_dutch_shopping">荷兰语及其他；商店</string>
+    <string name="site_description_english_catalogue">英语及其他；目录</string>
+    <string name="option_barcode_scan_mode_continuous">持续扫描</string>
+    <string name="btn_show_list">显示列表</string>
+    <string name="option_auto_updates">允许自动从网络更新。</string>
+    <string name="option_enable_sync_options">启用同步设置</string>
+    <string name="confirm_continue">你确定要继续吗？</string>
+    <string name="lbl_percentage_read">% 已读</string>
+    <string name="lbl_track_progress_long">跟踪你的进度</string>
 </resources>
