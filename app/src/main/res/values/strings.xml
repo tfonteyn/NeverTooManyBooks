@@ -604,6 +604,10 @@
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_contributor">Contributor</string>
     <string name="lbl_author_type_intro">Introduction etc.</string>
+    <string name="lbl_author_type_foreword"
+            translatable="false">@string/lbl_author_type_intro</string>
+    <string name="lbl_author_type_afterword"
+            translatable="false">@string/lbl_author_type_intro</string>
     <string name="lbl_author_type_narrator">Narrator</string>
     <!-- Interior art / illustrations -->
     <string name="lbl_author_type_artist">Illustrations</string>

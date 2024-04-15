@@ -248,6 +248,9 @@ public class Author
         TYPES.put(TYPE_WRITER, R.string.lbl_author_type_writer);
         TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_type_contributor);
         TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_type_intro);
+        TYPES.put(TYPE_FOREWORD, R.string.lbl_author_type_foreword);
+        TYPES.put(TYPE_AFTERWORD, R.string.lbl_author_type_afterword);
+
         TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_type_translator);
         TYPES.put(TYPE_EDITOR, R.string.lbl_author_type_editor);
         TYPES.put(TYPE_NARRATOR, R.string.lbl_author_type_narrator);
