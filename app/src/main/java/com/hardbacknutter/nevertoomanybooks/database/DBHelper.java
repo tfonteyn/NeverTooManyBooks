@@ -105,10 +105,11 @@ public class DBHelper
      * v5.2.2: 30
      * v5.3.0: 31
      * v5.5.0: 32
+     * v5.5.1: 33
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 32;
+    public static final int DATABASE_VERSION = 33;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -738,13 +739,6 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_COVER_CLICK_ACTION,
                     DBDefinitions.DOM_STYLE_LAYOUT);
         }
-        // if (oldVersion < 27) {
-        //      Inserting the global style, now moved to db30 due to github issue #30.
-        //      We were doing StyleDaoImpl.insertGlobalDefaults(db, style)
-        //      which in db28 got a new column...
-        //      As we have at least one user who is now on db29... fixing this by
-        //      conditionally insertGlobalDefaults in db30
-        // }
         if (oldVersion < 28) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
@@ -768,9 +762,6 @@ public class DBHelper
             TBL_STRIPINFO_COLLECTION.alterTableAddColumns(
                     db, DBDefinitions.DOM_STRIP_INFO_BE_DIGITAL);
         }
-        if (oldVersion < 30) {
-            insertGlobalStyleIfNotYetDone(context, db);
-        }
         if (oldVersion < 31) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db, DBDefinitions.DOM_STYLE_COVER_LONG_CLICK_ACTION);
@@ -780,6 +771,9 @@ public class DBHelper
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db, DBDefinitions.DOM_STYLE_READ_STATUS_WITH_PROGRESS);
         }
+//        if (oldVersion < 33) {
+//          nothing, we moved insertGlobalStyleIfNotYetDone to ALWAYS execute
+//        }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN
         // SqLite 3.25.0 from 2018-09-15 added ALTER TABLE RENAME COLUMN
@@ -793,6 +787,13 @@ public class DBHelper
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);
 
+        // We have to do this here due to some users skipping updates (see github #30)
+        // The issue is that this only works ok if the TBL_BOOKLIST_STYLES contains
+        // ALL columns at the time we're executing it.
+        // We do: StyleDaoImpl.insertGlobalDefaults(db, style)
+        insertGlobalStyleIfNotYetDone(context, db);
+
+        // Migrate any FieldVisibility keys + remove all obsolete keys
         migratePreferenceKeys(context);
 
         // Rebuild all indices
