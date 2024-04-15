@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,11 +27,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
+import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Shared on the Activity level as it's needed by more than 1 Fragment.
@@ -48,6 +52,33 @@ public class SettingsViewModel
     private boolean requiresActivityRecreation;
 
     private boolean forceRebuildBooklist;
+
+    private String[] uiLangNames;
+
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current context
+     */
+    public void init(@NonNull final Context context) {
+        if (uiLangNames == null) {
+            final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+
+            final String[] uiLangCodes = context.getResources()
+                                                .getStringArray(R.array.pv_ui_language);
+            uiLangNames = new String[uiLangCodes.length];
+            uiLangNames[0] = context.getString(R.string.pt_ui_system_locale);
+            for (int i = 1; i < uiLangCodes.length; i++) {
+                final Locale locale = appLocale.getLocale(context, uiLangCodes[i]).orElseThrow();
+                uiLangNames[i] = locale.getDisplayName(locale);
+            }
+        }
+    }
+
+    @NonNull
+    public String[] getUiLangNames() {
+        return uiLangNames;
+    }
 
     boolean isRequiresActivityRecreation() {
         return requiresActivityRecreation;

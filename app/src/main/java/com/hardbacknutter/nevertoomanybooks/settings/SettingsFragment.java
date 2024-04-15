@@ -138,6 +138,8 @@ public class SettingsFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext());
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
@@ -145,8 +147,9 @@ public class SettingsFragment
                 ListPreference.SimpleSummaryProvider.getInstance();
 
 
-        final Preference pUiLocale = findPreference(Prefs.pk_ui_locale);
+        final ListPreference pUiLocale = findPreference(Prefs.pk_ui_locale);
         //noinspection DataFlowIssue
+        pUiLocale.setEntries(vm.getUiLangNames());
         pUiLocale.setSummaryProvider(listSummaryProvider);
         pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
             // Set the activity result so our caller will recreate itself

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -37,10 +37,11 @@
     <PreferenceCategory
         android:title="@string/pc_ui">
         <!-- The language list contains Locale string IDs in contrast to other
-             ListPreference which use 0,1... -->
+             ListPreference which use 0,1...
+
+             android:entries is set from code -->
         <ListPreference
             android:defaultValue="system"
-            android:entries="@array/pe_ui_language"
             android:entryValues="@array/pv_ui_language"
             android:icon="@drawable/ic_baseline_language_24"
             android:key="ui.locale"

@@ -137,42 +137,10 @@
     <string-array name="empty_array" />
 
     <!-- ListPreference - Preferred interface Language -->
-    <!-- each language listed here must be written in its own language and spelling. -->
-    <string-array name="pe_ui_language">
-        <item translatable="false">@string/pt_ui_system_locale</item>
-
-        <!-- Primary translations - done by native speaker or pretty good. -->
-        <item translatable="false">Deutsch</item>
-        <item translatable="false">English (GB)</item>
-        <item translatable="false">English (US)</item>
-        <item translatable="false">Español</item>
-        <item translatable="false">Français</item>
-        <item translatable="false">Italiano</item>
-        <item translatable="false">Nederlands</item>
-        <item translatable="false">Português</item>
-        <!-- Vietnamese -->
-        <item translatable="false">Tiếng Việt</item>
-        <!-- Chinese -->
-        <item translatable="false">中文</item>
-        <!-- NEWTHINGS: add app language: add the native string -->
-
-        <!-- Secondary translations - These really need checking by a native speaker -->
-        <!-- Czech -->
-        <item translatable="false">Česky</item>
-        <!-- Greek -->
-        <item translatable="false">ελληνικά</item>
-        <!-- Polish -->
-        <item translatable="false">Polský</item>
-        <!-- Russian -->
-        <item translatable="false">русский</item>
-        <!-- Turkish -->
-        <item translatable="false">Türk</item>
-    </string-array>
-
     <string-array name="pv_ui_language">
         <item translatable="false">system</item>
 
-        <!-- Primary translations -->
+        <!-- Primary translations - done by native speaker or pretty good. -->
         <item translatable="false">de</item>
         <item translatable="false">en_GB</item>
         <item translatable="false">en_US</item>
@@ -185,7 +153,7 @@
         <item translatable="false">zh_CN</item>
         <!-- NEWTHINGS: add app language: add the iso code -->
 
-        <!-- Secondary translations -->
+        <!-- Secondary translations - These really need checking by a native speaker -->
         <item translatable="false">cs</item>
         <item translatable="false">el</item>
         <item translatable="false">pl</item>
