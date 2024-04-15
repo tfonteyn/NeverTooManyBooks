@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,9 +24,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -167,8 +167,8 @@ public abstract class BaseRecordReader
         final long preImportId = book.getId();
 
         // explicitly allow the id to be reused if present
-        bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch,
-                                             BookDao.BookFlag.UseIdIfPresent));
+        bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                                 BookDao.BookFlag.UseIdIfPresent));
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
@@ -237,8 +237,8 @@ public abstract class BaseRecordReader
     private void updateBook(@NonNull final Context context,
                             @NonNull final Book book)
             throws StorageException, DaoWriteException {
-        bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,
-                                             BookDao.BookFlag.UseUpdateDateIfPresent));
+        bookDao.update(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                                 BookDao.BookFlag.UseUpdateDateIfPresent));
         results.booksUpdated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import java.net.CookieManager;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -406,7 +407,7 @@ public class StripInfoReader
         final String preImportUuid = book.getString(DBKey.BOOK_UUID, null);
         final long preImportId = book.getId();
 
-        bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
+        bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
@@ -423,8 +424,8 @@ public class StripInfoReader
                             final Book book,
                             final Book delta)
             throws StorageException, DaoWriteException {
-        bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,
-                                              BookDao.BookFlag.UseUpdateDateIfPresent));
+        bookDao.update(context, delta, EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
         results.booksUpdated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {

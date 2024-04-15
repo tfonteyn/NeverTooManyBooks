@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -541,8 +542,8 @@ public class CalibreContentServerReader
                                       realNumberParser);
 
         if (delta != null) {
-            bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,
-                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
+            bookDao.update(context, delta, EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                                      BookDao.BookFlag.UseUpdateDateIfPresent));
             results.booksUpdated++;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -566,7 +567,7 @@ public class CalibreContentServerReader
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
-        bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
+        bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
