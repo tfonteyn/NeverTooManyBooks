@@ -31,10 +31,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 
 ## User Interface languages:
 
-- Dutch, English, French, German, Italian, Portuguese, Spanish, Turkish, Vietnamese.
+- Dutch, English, French, German, Italian, Portuguese, Spanish.
+- Turkish, Vietnamese.
 - Czech, Greek, Polish, Russian: mostly machine translated, no guarantees for quality.
-- Volunteers have started on Chinese (58%) and Faroese (16%). These will be added
-  if/when completed.
 
 Translations are now integrated and editable
 on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
@@ -44,7 +43,6 @@ on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
   to provide translations in another way.
 - Please log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
   if you want to be credited by name with your help.
-- A NEW CHINESE LANGUAGE VOLUNTEER WOULD BE VERY WELCOME
 
 <a href="https://hosted.weblate.org/engage/nevertoomanybooks/">
 <img src="https://hosted.weblate.org/widget/nevertoomanybooks/multi-auto.svg"
