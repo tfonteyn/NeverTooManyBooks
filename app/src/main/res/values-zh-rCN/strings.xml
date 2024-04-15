@@ -72,7 +72,7 @@
     <string name="and_others">%1$s …</string>
     <string name="notification_channel_warn">警告</string>
     <string name="notification_channel_info">信息</string>
-    <string name="debug_select_items">选择您要选择的内容：</string>
+    <string name="debug_select_items">选择要包含的内容：</string>
     <string name="X_action_try_again">重试</string>
     <string name="X_httpErrorIO">无法与服务器通信。请稍后再试。</string>
     <string name="httpErrorTimeout">与服务器的连接超时。</string>
@@ -81,14 +81,14 @@
     <string name="httpErrorFile">无法访问该文件。</string>
     <string name="httpErrorFileNotFound">找不到请求的文件。</string>
     <string name="error_unexpected">发生了一个意外的错误。</string>
-    <string name="error_upgrade_not_supported">不支持从 %1$s 以下的版本升级。</string>
-    <string name="error_updates_aborted">更新中止</string>
+    <string name="error_upgrade_not_supported">不支持从低于 %1$s 的版本升级。</string>
+    <string name="error_updates_aborted">更新已取消</string>
     <string name="error_network_please_connect">请连接到互联网。</string>
     <string name="error_network_site_access_failed">访问 %1$s 时出现网络问题。 请检查网站是否正常运行，如果问题仍然存在，请联系支持人员。</string>
     <string name="X_error_network_site_has_problems">该网站未按预期运行。</string>
-    <string name="error_network_failed_try_again">请检查您的网络连接后重试。</string>
+    <string name="error_network_failed_try_again">请检查网络连接后重试。</string>
     <string name="error_http_401_authorization_failed">验证失败</string>
-    <string name="error_http_401_site_authorization_failed">%1$s 验证导致错误。</string>
+    <string name="error_http_401_site_authorization_failed">%1$s 验证出现了错误。</string>
     <string name="X_action_reset">重置</string>
     <string name="X_action_send">发送</string>
     <string name="X_action_clear_credentials">清除凭据</string>
@@ -99,8 +99,8 @@
     <string name="X_action_previous">上一页</string>
     <string name="X_action_customize">自定义…</string>
     <string name="X_error_authentication_failed">验证失败</string>
-    <string name="error_site_authentication_failed">%1$s验证失败</string>
-    <string name="error_storage_not_accessible">请检查App存储权限。</string>
+    <string name="error_site_authentication_failed">%1$s 验证失败</string>
+    <string name="error_storage_not_accessible">请检查应用存储权限。</string>
     <string name="error_insufficient_storage">存储空间不足。</string>
     <string name="error_search_could_not_be_started">搜索图书失败。</string>
     <string name="error_search_failed_network">请打开设置并检查您的网络和搜索站点首选项。
@@ -127,12 +127,12 @@
     <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="no">取消</string>
-    <string name="notification_channel_error">出错了</string>
-    <string name="acra_dialog_message">看起来 &APP_NAME; 已经崩溃。点击 “%1$s” 将报告保存到您选择的位置。您可以使用此报告在项目网站上报告新问题。</string>
+    <string name="notification_channel_error">错误</string>
+    <string name="acra_dialog_message">看起来 &APP_NAME; 崩溃了。点击 “%1$s” 将报告保存到您选择的位置。您可以使用此报告在项目网站上报告新问题。</string>
     <string name="httpError">出现网络错误。</string>
-    <string name="error_unexpected_long">发生了一个意外的错误。如果问题仍然存在，请通过设置页面底部的 “%1$s” 选项联系支持。</string>
+    <string name="error_unexpected_long">发生了一个意外的错误。如果问题仍然存在，请使用设置页面底部的 “%1$s” 选项联系支持。</string>
     <string name="error_certificate_invalid">证书无效或不可访问。</string>
-    <string name="error_storage_not_writable">请检查存储是否可写，并且有足够的空间。</string>
+    <string name="error_storage_not_writable">请检查存储是否可写，并确认有足够的空间。</string>
     <string name="error_search_x_failed_y">搜索%1$s失败：%2$s</string>
     <string name="error_file_not_found">找不到文件：%1$s</string>
     <string name="error_import_failed_for_record">导入失败（%1$s)</string>
@@ -350,17 +350,18 @@
     <string name="pe_list">列表</string>
     <string name="pe_grid">网格</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
-    <string name="ps_show_titles_reordered_on">仅适用于使用冠词的语言。
-\n英语示例：“Lord of The Rings, The”。</string>
+    <string name="ps_show_titles_reordered_on">将冠词移到标题末尾，仅适用于使用冠词的语言。
+\n英语示例：“Lord of The Rings, The”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
-    <string name="ps_show_titles_reordered_off">仅适用于使用冠词的语言。\n英语示例：“The Lord of The Rings”。</string>
+    <string name="ps_show_titles_reordered_off">按原标题显示，仅适用于使用冠词的语言。
+\n英语示例：“The Lord of The Rings”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="X_neither">都不是</string>
     <string name="X_style_type_defaults">默认样式设置</string>
     <string name="action_edit_ellipsis">修改…</string>
     <string name="tip_booklist_style_defaults">使用此界面设置所有样式的默认特征。所有内置样式都会使用这些特征，您自己定义的任何样式也会以这些特征为起点。</string>
-    <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并记录新问题。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
+    <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并报告新问题了。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
     <string name="action_report">报告</string>
     <string name="action_export">导出</string>
     <string name="X_action_update">更新</string>
@@ -527,7 +528,7 @@
     <string name="option_cover_rotate_ccw">逆时针</string>
     <string name="option_fab_add_book_manually">手动添加</string>
     <string name="option_fab_add_book_by_external_id">网站书籍编号</string>
-    <string name="option_isbn_strict">严格 ISBN</string>
+    <string name="option_isbn_strict">严格 ISBN 匹配</string>
     <string name="lbl_group_1st_char_book_title">书籍标题的首字符</string>
     <string name="bookshelf_my_books">我的书籍</string>
     <string name="lbl_edition_limited">限量版</string>
@@ -605,4 +606,190 @@
     <string name="confirm_continue">你确定要继续吗？</string>
     <string name="lbl_percentage_read">% 已读</string>
     <string name="lbl_track_progress_long">跟踪你的进度</string>
+    <string name="pc_image_cache">图像缓存</string>
+    <string name="pt_allow_editing_external_id">允许编辑网站图书编号</string>
+    <string name="pe_ui_theme_light">浅色</string>
+    <string name="pe_bob_cover_click_zoom">将放大封面图像。</string>
+    <string name="ps_bob_books_under_multiple_each_author">在每位作者下</string>
+    <string name="option_level_reset">偏好展开级别</string>
+    <string name="lbl_author_pseudonym">作者笔名</string>
+    <string name="lbl_author_pseudonym_of_X">笔名 %1$s</string>
+    <string name="lbl_edition">版本</string>
+    <string name="lbl_date_acquired">获得日期</string>
+    <string name="info_export_books_option_since_last_full_backup">自上次完整备份后添加或更新的图书。</string>
+    <string name="lbl_archive_format">格式</string>
+    <string name="info_books_deleted">删除的图书：%1$d</string>
+    <string name="pt_cover_undo_enabled">撤销图书封面操作</string>
+    <string name="pt_thumbnails_cache_resized">缓存尺寸改变的图像</string>
+    <string name="pt_edit_book_isbn_checks">ISBN 有效性检查</string>
+    <string name="pt_search_show_shopping_options">显示商店菜单</string>
+    <string name="option_bob_filter_signed_no">未签名书籍</string>
+    <string name="lbl_book_type_anthology">选集（如诗集）</string>
+    <string name="lbl_date_acquired_year">获得年份</string>
+    <string name="info_export_report">已在所选文件夹中创建了名为“%2$s”的%1$s文件，您应将其手动复制到别处，保护数据以防设备损坏、丢失或被盗。</string>
+    <string name="lbl_date_published">出版日期</string>
+    <string name="lbl_date_published_year">出版年份</string>
+    <string name="option_info_import_books_option_new_and_updated">导入新图书，并基于最近修改日期同步已有图书。</string>
+    <string name="option_info_import_books_option_all">导入新图书并覆盖已有图书。用此选项恢复备份。</string>
+    <string name="pt_storage_volume">储存位置</string>
+    <string name="ps_manage_fields">选中的字段在添加/编辑图书界面中可见。未选中的字段则会被隐藏。</string>
+    <string name="ps_show_author_name_family_first">优先显示姓氏，
+\n如“Willis, Connie”</string>
+    <string name="pt_bob_books_under_multiple_series">显示多个系列中的图书</string>
+    <string name="ps_show_author_name_given_first">优先显示名字，
+\n如“Connie Willis”</string>
+    <string name="ps_bob_books_under_multiple_primary_series_only">仅在其主要系列中</string>
+    <string name="menu_update_fields">更新字段</string>
+    <string name="ps_bob_books_under_multiple_primary_publisher_only">仅在其主要出版商下</string>
+    <string name="ps_bob_books_under_multiple_each_publisher">在每个出版商下</string>
+    <string name="lbl_select_fields">选择字段</string>
+    <string name="lbl_table_of_content_entry">目录条目</string>
+    <string name="info_maintenance_sync_deleted_book_records">这将检查从另一设备导入文件中的已删除图书历史。换句话说，在那台设备上删除的图书，也会将其在本设备上删除。</string>
+    <string name="lbl_login_to_search">登录以搜索</string>
+    <string name="lbl_sync_date">自从</string>
+    <string name="pt_show_title_reordered">将标题显示为…</string>
+    <string name="option_info_lbl_archive_is_export_only">仅用于数据导出；不支持导入。</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">仅导入此日期后修改的图书</string>
+    <string name="pt_bob_cover_show">显示封面</string>
+    <string name="pe_bob_cover_click_details">将打开图书详情页。</string>
+    <string name="ps_sort_author_name_given_first">优先按名字排序，
+\n如“Connie Willis”</string>
+    <string name="option_set_complete">设置为“完成”</string>
+    <string name="option_set_incomplete">设置为“未完成”</string>
+    <string name="confirm_remove_toc_entry">从本图书中删除作者 %2$s 的标题“%1$s”吗？</string>
+    <string name="confirm_overwrite_cover">这将按所示方式更新选中的字段，但可以选择为*所有*图书下载图像。
+\n
+\n您想覆盖所有已有图像吗？注意，这可能会花较长时间。</string>
+    <string name="lbl_book_type_collection">选集（如故事集）</string>
+    <string name="lbl_cover_back">封底</string>
+    <string name="lbl_genre">题材</string>
+    <string name="lbl_date_published_month">出版月份</string>
+    <string name="title_backup_and_export">备份 &amp; 导出</string>
+    <string name="option_archive_type_csv">图书 (.csv)</string>
+    <string name="option_archive_type_json">JSON 导出 (.json)</string>
+    <string name="option_archive_type_db">数据库文件 (.db)</string>
+    <string name="option_info_lbl_archive_type_backup">完整备份/恢复压缩文件</string>
+    <string name="option_info_archive_format_json">以 JSON 格式导出所有数据。</string>
+    <string name="option_info_archive_type_csv">将图书导出到 CSV 文件</string>
+    <string name="pc_formatting">格式</string>
+    <string name="pt_website_search_order_and_enable">优先级，启用 &amp; 禁用</string>
+    <string name="ps_cover_undo_disabled">封面编辑/替换操作无法撤销（使用较少存储空间）</string>
+    <string name="ps_cover_undo_enabled">可撤销封面编辑/替换操作（使用较多存储空间）</string>
+    <string name="pe_thumbnails_cache_resized_stored">缓存尺寸改变的图像（滚动操作更快，使用较多存储空间）</string>
+    <string name="pt_search_reformat_format">标准化“图书格式”名称</string>
+    <string name="pt_search_reformat_color">标准化“图书颜色”名称</string>
+    <string name="pt_search_uses_publisher">搜索时使用出版商</string>
+    <string name="pt_search_prefer_isbn10">可用时使用 ISBN-10</string>
+    <string name="pt_primary_author_type">主要作者类型</string>
+    <string name="pt_collect_series_info_from_toc">从目录收集系列信息</string>
+    <string name="pt_bedetheque_search_resolve_formats">保留 Bedetheque（法语）格式命名</string>
+    <string name="pe_ui_theme_dark">深色</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">启动时总收起</string>
+    <string name="pe_bob_row_menu_button_when_space">若有空间则显示按钮，否则使用长按。</string>
+    <string name="pt_fast_scroller_overlay">滚动时的文本气泡。</string>
+    <string name="pt_bob_list_rebuild_state">图书列表启动时状态</string>
+    <string name="pt_thumbnails_rotate_auto">旋转照片</string>
+    <string name="camera_next_action">拍照后选择操作</string>
+    <string name="option_purge_files">清理文件</string>
+    <string name="option_rebuild_fts">重建全文搜索数据</string>
+    <string name="option_purge_bedetheque_authors_cache">清除 Bedetheque 作者缓存</string>
+    <string name="info_purge_blns_all">清除所有列表的节点状态</string>
+    <string name="option_bug_report_database_upgrade">数据库更新文件</string>
+    <string name="lbl_read_timeout">读取超时（秒）</string>
+    <string name="lbl_website_address">网站地址（URL）</string>
+    <string name="pv_bob_header_style_name">样式名称</string>
+    <string name="pt_bob_show_details">在列表中显示的图书详情</string>
+    <string name="pt_bob_header">在头栏中显示细节概要</string>
+    <string name="ps_sort_author_name_family_first">优先按姓氏排序，
+\n如“Willis, Connie”</string>
+    <string name="ps_bob_books_under_multiple_each_series">在每个系列中</string>
+    <string name="lbl_lending">租借</string>
+    <string name="info_select_fields_to_update">将从互联网更新选中的字段。将不会更改未选中字段。</string>
+    <string name="lbl_tab_alternative_editions">备选版</string>
+    <string name="lbl_duplicate_book">复制此书</string>
+    <string name="info_backup_successful">备份成功</string>
+    <string name="pt_sort_title_reordered">标题排序方式</string>
+    <string name="lbl_date_acquired_day">获得日</string>
+    <string name="option_field_usage_append">添加额外数据</string>
+    <string name="option_book_sync_list_with_details">同步/定位列表</string>
+    <string name="confirm_delete_book">这将完全删除作者 %2$s 名为“%1$s”的图书。
+\n
+\n您确定要继续吗？</string>
+    <string name="confirm_rebuild_index">这将在应用重启时重建索引。您确定要继续吗？</string>
+    <string name="confirm_registration_required">此功能需要用 %1$s 注册。您想查看更多信息吗？</string>
+    <string name="info_export_successful">导出成功</string>
+    <string name="option_info_delete_removed_books">另一设备上删除的图书也会在此设备上被删除。</string>
+    <string name="option_bug_report_logfiles">日志文件</string>
+    <string name="pt_bob_list_state_expansion_level">默认图书列表展开设置</string>
+    <string name="option_field_usage_copy_if_blank">若为空则复制</string>
+    <string name="lbl_dust_cover">防尘套</string>
+    <string name="lbl_date_first_publication_year">首次出版年份</string>
+    <string name="pt_scanning_beep_on_valid">扫描的 ISBN 有效时发出蜂鸣</string>
+    <string name="pt_scanning_beep_on_barcode_found">找到条形码时发出蜂鸣</string>
+    <string name="pe_thumbnails_cache_resized_each_time">每次都按需改变图像尺寸（使用较少存储空间，滚动操作会更慢）</string>
+    <string name="pt_search_resolve_authors_bedetheque">用 Bedetheque 网站解析作者笔名</string>
+    <string name="pe_bob_list_rebuild_state_expanded">启动时总展开</string>
+    <string name="pe_bob_list_rebuild_state_preferred">使用偏好展开设置</string>
+    <string name="pe_bob_list_rebuild_state_preserve">保持当前状态</string>
+    <string name="pt_bob_row_menu">行上下文菜单</string>
+    <string name="pe_bob_row_menu_long_click">总使用长按。</string>
+    <string name="lbl_sql_query">SQL 查询</string>
+    <string name="lbl_connection_timeout">连接超时（秒）</string>
+    <string name="pt_bob_books_under_multiple_authors">显示多作者图书</string>
+    <string name="ps_bob_books_under_multiple_primary_author_only">仅在其主要作者下</string>
+    <string name="lbl_owned">已拥有</string>
+    <string name="option_clear_deleted_book_records">清除已删除图书历史</string>
+    <string name="lbl_scope_of_change">变更范围</string>
+    <string name="lbl_date_acquired_month">获得月份</string>
+    <string name="lbl_date_first_publication">首次出版日期</string>
+    <string name="lbl_date_first_publication_month">首次出版月份</string>
+    <string name="option_info_import_books_option_new_only">仅导入新图书。将忽略已有图书更新。</string>
+    <string name="pt_ui_theme">界面主题</string>
+    <string name="pe_ui_theme_day_night">白天/夜晚</string>
+    <string name="pe_fast_scroller_overlay_static">静态</string>
+    <string name="option_rebuild_index">重建索引</string>
+    <string name="info_purge_blns_item_name">要清除 %1$s “%2$s”的节点状态吗？</string>
+    <string name="info_rebuild_scheduled">已计划重建</string>
+    <string name="lbl_purge_blns">清除节点状态</string>
+    <string name="info_maintenance_clear_deleted_book_records">这将清除已删除图书的历史。实际不会删除图书。</string>
+    <string name="pc_book_detail_screen">图书详情页</string>
+    <string name="lbl_tab_publication">出版信息</string>
+    <string name="confirm_scope_for_delete">删除作者 %2$s 的标题“%1$s”
+\n
+\n您想如何应用更改？
+\n注意：选项“%3$s”无法撤销！</string>
+    <string name="confirm_scope_for_change">您已将：
+\n “%1$s”
+\n 更改为
+\n “%2$s”
+\n
+\n您想如何应用更改？
+\n注意：选择“%3$s”将立即应用。如果您选择“%4$s”，则将创建新的%5$s。</string>
+    <string name="confirm_rebuild_orderby_columns">这将在应用重启时重建排序数据。您确定要继续吗？</string>
+    <string name="confirm_delete_publisher">删除出版商“%1$s”吗？
+\n
+\n将不会删除图书本身。
+\n
+\n若要保留此数据，请考虑编辑出版商，将其名称改为另一出版商的名称。</string>
+    <string name="confirm_rebuild_fts">这将在应用重启时重建搜索索引数据。您确定要继续吗？</string>
+    <string name="confirm_delete_bookshelf">删除书架“%1$s”吗？将不会删除图书本身。它们仍会位于其他书架，或是“%2$s”书架上。</string>
+    <string name="confirm_delete_toc_entry_everywhere">真的要删除 %2$s 的标题“%1$s”吗？它将会从将其列出的所有图书中被删除。将不会删除图书本身。</string>
+    <string name="option_sync_deleted_book_records">同步已删除图书</string>
+    <string name="info_import_partially_complete">部分导入完成</string>
+    <string name="pc_ui">用户界面</string>
+    <string name="pt_field_visibility">字段可见性</string>
+    <string name="pt_scanning_beep_on_invalid">扫描的 ISBN 无效时发出蜂鸣</string>
+    <string name="pt_bob_cover_click">点击封面图像时。</string>
+    <string name="confirm_registration_benefits">此功能得益于 %1$s 的注册。您想要查看更多信息，还是禁用此消息？
+\n 您稍后可在设置中的“%2$s”部分找到此信息。</string>
+    <string name="pt_barcode_scanner">条形码扫描器</string>
+    <string name="option_purge_image_cache">清除图像缓存</string>
+    <string name="info_cleanup_files">可删除文件目前占用 SD 卡 %1$s 空间。在您备份数据库或应用崩溃时，会将日志与其他数据文件保存在 SD 卡上。点击下方按钮以从 SD 卡删除这些文件。如果您遇到了崩溃或其他问题，请考虑先使用“%2$s”按钮。</string>
+    <string name="confirm_delete_series">删除系列“%1$s”吗？
+\n
+\n将不会删除图书本身。
+\n
+\n若要保留此数据，请考虑编辑系列，将其名称改为另一系列的名称。</string>
+    <string name="option_isfdb_menu_populate_toc">填入标题（仅 ISFDB）</string>
+    <string name="pt_maintenance">维护</string>
 </resources>
