@@ -2,7 +2,7 @@ Supported Android versions:
 
 * v2.1.0 requires Android 8.0 (API 26)
 
-ttps://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
+https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
 
 2024-04-12:
 14.0     16.22
