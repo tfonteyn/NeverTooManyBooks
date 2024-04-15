@@ -216,7 +216,7 @@
     <string name="pt_line_spacing">行距</string>
     <string name="lbl_filters">过滤器</string>
     <string name="pe_bob_row_menu_button">始终显示一个按钮。</string>
-    <string name="pe_fast_scroller_overlay_dynamic">动态的</string>
+    <string name="pe_fast_scroller_overlay_dynamic">动态</string>
     <string name="pe_camera_front">前置摄像头</string>
     <string name="pe_camera_other">其他</string>
     <string name="preference_not_set">未设置</string>
@@ -236,8 +236,8 @@
     <string name="size_x_small">极小</string>
     <string name="book_format_hardcover">精装</string>
     <string name="style_type_user_defined">用户自定义</string>
-    <string name="lbl_styles">风格</string>
-    <string name="lbl_style">风格</string>
+    <string name="lbl_styles">样式</string>
+    <string name="lbl_style">样式</string>
     <string name="lbl_date_added">收藏日期</string>
     <string name="lbl_date_last_updated">最后更新日期</string>
     <string name="lbl_date_last_updated_year">最后更新的年</string>
@@ -255,9 +255,9 @@
     <string name="book_format_hardcover_oblong">精装本 - 长方形</string>
     <string name="book_color_support_color">双色</string>
     <string name="style_builtin_author_year">作者，年</string>
-    <string name="lbl_styles_long">书单风格</string>
+    <string name="lbl_styles_long">书单样式</string>
     <string name="lbl_defaults">默认操作</string>
-    <string name="style_type_builtin">内装式</string>
+    <string name="style_type_builtin">自带</string>
     <string name="tip_reset_all">重置提示</string>
     <string name="info_isfdb_warning_limited_to">(仅支持ISFDB)</string>
     <string name="tip_dialog_title">提示</string>
@@ -690,7 +690,7 @@
     <string name="pe_bob_list_rebuild_state_collapsed">启动时总收起</string>
     <string name="pe_bob_row_menu_button_when_space">若有空间则显示按钮，否则使用长按。</string>
     <string name="pt_fast_scroller_overlay">滚动时的文本气泡。</string>
-    <string name="pt_bob_list_rebuild_state">图书列表启动时状态</string>
+    <string name="pt_bob_list_rebuild_state">书单启动时状态</string>
     <string name="pt_thumbnails_rotate_auto">旋转照片</string>
     <string name="camera_next_action">拍照后选择操作</string>
     <string name="option_purge_files">清理文件</string>
@@ -723,7 +723,7 @@
     <string name="info_export_successful">导出成功</string>
     <string name="option_info_delete_removed_books">另一设备上删除的图书也会在此设备上被删除。</string>
     <string name="option_bug_report_logfiles">日志文件</string>
-    <string name="pt_bob_list_state_expansion_level">默认图书列表展开设置</string>
+    <string name="pt_bob_list_state_expansion_level">书单默认展开设置</string>
     <string name="option_field_usage_copy_if_blank">若为空则复制</string>
     <string name="lbl_dust_cover">防尘套</string>
     <string name="lbl_date_first_publication_year">首次出版年份</string>
