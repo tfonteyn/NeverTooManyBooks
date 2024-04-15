@@ -637,10 +637,10 @@
     <string name="pt_storage_volume">储存位置</string>
     <string name="ps_manage_fields">选中的字段在添加/编辑图书界面中可见。未选中的字段则会被隐藏。</string>
     <string name="ps_show_author_name_family_first">优先显示姓氏，
-\n如“Willis, Connie”</string>
+\n如“Liu, Cixin”</string>
     <string name="pt_bob_books_under_multiple_series">显示多个系列中的图书</string>
     <string name="ps_show_author_name_given_first">优先显示名字，
-\n如“Connie Willis”</string>
+\n如“Cixin Liu”</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">仅在其主要系列中</string>
     <string name="menu_update_fields">更新字段</string>
     <string name="ps_bob_books_under_multiple_primary_publisher_only">仅在其主要出版商下</string>
@@ -656,7 +656,7 @@
     <string name="pt_bob_cover_show">显示封面</string>
     <string name="pe_bob_cover_click_details">将打开图书详情页。</string>
     <string name="ps_sort_author_name_given_first">优先按名字排序，
-\n如“Connie Willis”</string>
+\n如“Cixin Liu”</string>
     <string name="option_set_complete">设置为“完成”</string>
     <string name="option_set_incomplete">设置为“未完成”</string>
     <string name="confirm_remove_toc_entry">从本图书中删除作者 %2$s 的标题“%1$s”吗？</string>
@@ -704,7 +704,7 @@
     <string name="pt_bob_show_details">在列表中显示的图书详情</string>
     <string name="pt_bob_header">在头栏中显示细节概要</string>
     <string name="ps_sort_author_name_family_first">优先按姓氏排序，
-\n如“Willis, Connie”</string>
+\n如“Liu, Cixin”</string>
     <string name="ps_bob_books_under_multiple_each_series">在每个系列中</string>
     <string name="lbl_lending">租借</string>
     <string name="info_select_fields_to_update">将从互联网更新选中的字段。将不会更改未选中字段。</string>
