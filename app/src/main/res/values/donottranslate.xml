@@ -150,7 +150,11 @@
         <item translatable="false">Italiano</item>
         <item translatable="false">Nederlands</item>
         <item translatable="false">Português</item>
+        <!-- Vietnamese -->
         <item translatable="false">Tiếng Việt</item>
+        <!-- Chinese -->
+        <item translatable="false">中文</item>
+        <!-- NEWTHINGS: add app language: add the native string -->
 
         <!-- Secondary translations - These really need checking by a native speaker -->
         <!-- Czech -->
@@ -178,6 +182,8 @@
         <item translatable="false">nl</item>
         <item translatable="false">pt</item>
         <item translatable="false">vi</item>
+        <item translatable="false">zh_CN</item>
+        <!-- NEWTHINGS: add app language: add the iso code -->
 
         <!-- Secondary translations -->
         <item translatable="false">cs</item>

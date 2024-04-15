@@ -75,7 +75,9 @@ android {
 
         signingConfig(signingConfigs.release)
 
-        resourceConfigurations += ["de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "vi",
+        // NEWTHINGS: add app language
+        resourceConfigurations += ["de", "en", "en_GB", "es", "fr", "it", "nl",
+                                   "pt", "vi", "zh_CN",
                                    "cs", "el", "pl", "ru", "tr"]
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -385,7 +388,7 @@
     <string name="action_show_options">选项</string>
     <string name="X_lbl_general">常规</string>
     <string name="X_action_use_default_setting">使用默认设置</string>
-    <string name="pt_ui_system_locale">N系统语言</string>
+    <string name="pt_ui_system_locale">系统语言</string>
     <string name="error_invalid_url">无效地址（URL）</string>
     <string name="option_fab_add_book_by_isbn">按国际标准书号搜索</string>
     <string name="option_fab_add_book_by_internet_search">按标题搜索</string>
