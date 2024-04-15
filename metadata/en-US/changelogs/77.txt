@@ -1,0 +1,1 @@
+fix #43 : doing a multi-version upgrade could result in a crash related to the Styles table. Fixed now.

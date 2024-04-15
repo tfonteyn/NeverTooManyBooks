@@ -1,3 +1,10 @@
+### 5.5.1
+
+- fix #43 : doing a multi-version upgrade could result in a crash related to the Styles table. Fixed
+  now.
+
+---
+
 ### 5.5.0
 
 NEW:
@@ -11,6 +18,8 @@ FIXES:
 
 - Calibre synchronization: fixes a database lock preventing imports sometimes.
 - LastDodo site: better handling of duplicate authors
+
+---
 
 ### 5.4.0
 
