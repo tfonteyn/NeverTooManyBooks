@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
@@ -85,6 +86,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
@@ -106,10 +109,11 @@ public class DBHelper
      * v5.3.0: 31
      * v5.5.0: 32
      * v5.5.1: 33
+     * v5.5.4: 34
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 33;
+    public static final int DATABASE_VERSION = 34;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -352,6 +356,28 @@ public class DBHelper
             } catch (@NonNull final SQLException e) {
                 LoggerFactory.getLogger().e(TAG, e);
             }
+        }
+    }
+
+    private static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
+                                                      @NonNull final SQLiteDatabase db) {
+
+        final boolean install;
+        try (SQLiteStatement stmt = db.compileStatement(
+                "SELECT COUNT(" + DBKey.STYLE_TYPE + ") FROM " + TBL_BOOKLIST_STYLES
+                + " WHERE " + DBKey.STYLE_TYPE + "=2")) {
+            install = 0 == stmt.simpleQueryForLong();
+        }
+
+        if (install) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final GlobalStyle style = new GlobalStyle();
+            style.setSortAuthorByGivenName(
+                    prefs.getBoolean(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST, false));
+            style.setShowAuthorByGivenName(
+                    prefs.getBoolean(LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
+
+            StyleDaoImpl.insertGlobalDefaults(db, style);
         }
     }
 
@@ -771,18 +797,40 @@ public class DBHelper
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db, DBDefinitions.DOM_STYLE_READ_STATUS_WITH_PROGRESS);
         }
-//        if (oldVersion < 33) {
-//          nothing, we moved insertGlobalStyleIfNotYetDone to ALWAYS execute
-//        }
+        if (oldVersion < 34) {
+            // recreate tables due to some columns having their COLLATION changed
 
-        // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN
-        // SqLite 3.25.0 from 2018-09-15 added ALTER TABLE RENAME COLUMN
-        // but... https://developer.android.com/reference/android/database/sqlite/package-summary
-        // i.e. Android 8.0 == API 26 == SqLite 3.18
+            // THIS WILL COMMIT ALL PREVIOUS UPDATES
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            // This method must not be called while a transaction is in progress.
+            db.setForeignKeyConstraintsEnabled(false);
+            db.beginTransaction();
 
-        //TODO: the books table MIGHT contain columns "clb_uuid" and "last_goodreads_sync_date"
-        // If at a future time we make a change that requires to copy/reload
-        // the books table those columns should be removed.
+            // DBDefinitions.DOM_STYLE_NAME
+            TBL_BOOKLIST_STYLES.recreate(db);
+
+            // DBDefinitions.DOM_BOOKSHELF_NAME
+            TBL_BOOKSHELF.recreate(db);
+
+            // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
+            TBL_AUTHORS.recreate(db);
+
+            // DBDefinitions.DOM_SERIES_TITLE_OB
+            TBL_SERIES.recreate(db);
+
+            // DBDefinitions.DOM_PUBLISHER_NAME_OB
+            TBL_PUBLISHERS.recreate(db);
+
+            // DBDefinitions.DOM_TITLE_OB
+            TBL_BOOKS.recreate(db);
+
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            // This method must not be called while a transaction is in progress.
+            db.setForeignKeyConstraintsEnabled(true);
+            db.beginTransaction();
+        }
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);
@@ -801,28 +849,6 @@ public class DBHelper
 
         // Rebuild all triggers
         Triggers.create(db);
-    }
-
-    private static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
-                                                      @NonNull final SQLiteDatabase db) {
-
-        final boolean install;
-        try (SQLiteStatement stmt = db.compileStatement(
-                "SELECT COUNT(" + DBKey.STYLE_TYPE + ") FROM " + TBL_BOOKLIST_STYLES
-                + " WHERE " + DBKey.STYLE_TYPE + "=2")) {
-            install = 0 == stmt.simpleQueryForLong();
-        }
-
-        if (install) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final GlobalStyle style = new GlobalStyle();
-            style.setSortAuthorByGivenName(
-                    prefs.getBoolean(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST, false));
-            style.setShowAuthorByGivenName(
-                    prefs.getBoolean(LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
-
-            StyleDaoImpl.insertGlobalDefaults(db, style);
-        }
     }
 
     @Override
