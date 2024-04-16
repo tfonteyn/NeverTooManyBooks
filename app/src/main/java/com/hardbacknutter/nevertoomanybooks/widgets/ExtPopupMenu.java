@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,29 +22,24 @@ package com.hardbacknutter.nevertoomanybooks.widgets;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.MenuItemListAdapter;
 
 /**
  * Show a context menu on a view - will show icons if present.
@@ -52,27 +47,32 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public class ExtPopupMenu {
 
     @NonNull
-    private final VBLite vb;
+    private final PopupMenuBinding vb;
 
+    @Dimension
     private final int xOffset;
+    @Dimension
     private final int paddingBottom;
 
     @NonNull
     private final PopupWindow popupWindow;
-    private final MenuCallback menuCallback = new MenuCallback() {
-        @Override
-        public void update(@NonNull final String title) {
-            vb.title.setText(title);
-            vb.title.setVisibility(View.VISIBLE);
-            final int[] wh = calculatePopupWindowWidthAndHeight();
-            popupWindow.update(wh[0], wh[1]);
-        }
 
-        @Override
-        public void dismiss() {
-            popupWindow.dismiss();
-        }
-    };
+    private final MenuItemListAdapter.MenuCallback menuCallback =
+            new MenuItemListAdapter.MenuCallback() {
+                @Override
+                public void update(@NonNull final String title) {
+                    vb.title.setText(title);
+                    vb.title.setVisibility(View.VISIBLE);
+                    final int[] wh = calculatePopupWindowWidthAndHeight();
+                    popupWindow.update(wh[0], wh[1]);
+                }
+
+                @Override
+                public void dismiss() {
+                    popupWindow.dismiss();
+                }
+            };
+
     @NonNull
     private Menu menu;
     private boolean groupDividerEnabled;
@@ -96,11 +96,11 @@ public class ExtPopupMenu {
         paddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
         xOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
 
-        vb = new VBLite(LayoutInflater.from(context).inflate(R.layout.popup_menu, null, false));
+        vb = PopupMenuBinding.inflate(LayoutInflater.from(context), null, false);
 
         popupWindow = new PopupWindow(context);
         popupWindow.setFocusable(true);
-        popupWindow.setContentView(vb.rootView);
+        popupWindow.setContentView(vb.getRoot());
 
         popupWindow.setBackgroundDrawable(AttrUtils.getDrawable(
                 context, com.google.android.material.R.attr.popupMenuBackground));
@@ -117,7 +117,8 @@ public class ExtPopupMenu {
      */
     @NonNull
     public ExtPopupMenu inflate(@MenuRes final int menuResId) {
-        getMenuInflater().inflate(menuResId, menu);
+        new MenuInflater(popupWindow.getContentView().getContext())
+                .inflate(menuResId, menu);
         return this;
     }
 
@@ -172,25 +173,13 @@ public class ExtPopupMenu {
     }
 
     /**
-     * @return a {@link MenuInflater} that can be used to inflate menu items
-     *         from XML into the menu returned by {@link #getMenu()}
-     *
-     * @see #getMenu()
-     */
-    @NonNull
-    public MenuInflater getMenuInflater() {
-        return new MenuInflater(popupWindow.getContentView().getContext());
-    }
-
-    /**
      * Returns the {@link Menu} associated with this popup. Populate the
      * returned Menu with items before calling one of the {@code show} methods.
      *
      * @return the {@link Menu} associated with this popup
      *
-     * @see #showAsDropDown(View, OnMenuItemClickListener)
-     * @see #show(View, int, OnMenuItemClickListener)
-     * @see #getMenuInflater()
+     * @see #showAsDropDown(View, MenuItem.OnMenuItemClickListener)
+     * @see #show(View, int, MenuItem.OnMenuItemClickListener)
      */
     @NonNull
     public Menu getMenu() {
@@ -219,7 +208,7 @@ public class ExtPopupMenu {
      * @param listener callback with the selected menu item
      */
     public void showAsDropDown(@NonNull final View anchor,
-                               @NonNull final OnMenuItemClickListener listener) {
+                               @NonNull final MenuItem.OnMenuItemClickListener listener) {
 
         initAdapter(anchor.getContext(), listener);
 
@@ -265,7 +254,7 @@ public class ExtPopupMenu {
         final View contentView = popupWindow.getContentView();
         contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         return new int[]{contentView.getMeasuredWidth(),
-                         contentView.getMeasuredHeight() + paddingBottom};
+                contentView.getMeasuredHeight() + paddingBottom};
     }
 
     /**
@@ -281,7 +270,7 @@ public class ExtPopupMenu {
      */
     public void show(@NonNull final View view,
                      final int gravity,
-                     @NonNull final OnMenuItemClickListener listener) {
+                     @NonNull final MenuItem.OnMenuItemClickListener listener) {
 
         initAdapter(view.getContext(), listener);
 
@@ -295,212 +284,9 @@ public class ExtPopupMenu {
     }
 
     private void initAdapter(@NonNull final Context context,
-                             @NonNull final OnMenuItemClickListener listener) {
+                             @NonNull final MenuItem.OnMenuItemClickListener listener) {
         adapter = new MenuItemListAdapter(context, menu, groupDividerEnabled,
                                           menuCallback, listener);
         vb.itemList.setAdapter(adapter);
-    }
-
-    /**
-     * Interface responsible for receiving menu item click events if the items
-     * themselves do not have individual item click listeners.
-     */
-    @FunctionalInterface
-    public interface OnMenuItemClickListener {
-
-        /**
-         * This method will be invoked when a menu item is clicked if the item
-         * itself did not already handle the event.
-         *
-         * @param item the menu item that was clicked
-         *
-         * @return {@code true} if the event was handled, {@code false} otherwise
-         */
-        @SuppressWarnings("UnusedReturnValue")
-        boolean onMenuItemClick(@NonNull MenuItem item);
-    }
-
-    private interface MenuCallback {
-
-        void update(@NonNull String title);
-
-        void dismiss();
-    }
-
-    private static class VBLite {
-
-        @NonNull
-        final RecyclerView itemList;
-        @NonNull
-        final TextView message;
-        @NonNull
-        final TextView title;
-        @NonNull
-        private final View rootView;
-
-        VBLite(@NonNull final View rootView) {
-            this.rootView = rootView;
-            itemList = Objects.requireNonNull(rootView.findViewById(R.id.item_list));
-            message = Objects.requireNonNull(rootView.findViewById(R.id.message));
-            title = Objects.requireNonNull(rootView.findViewById(R.id.title));
-        }
-    }
-
-    /**
-     * Row ViewHolder for {@link MenuItemListAdapter}.
-     */
-    private static class Holder
-            extends RecyclerView.ViewHolder {
-
-        @Nullable
-        final TextView textView;
-
-        Holder(final int viewType,
-               @NonNull final View itemView) {
-            super(itemView);
-
-            if (viewType == R.layout.row_simple_list_item) {
-                textView = itemView.findViewById(R.id.menu_item);
-            } else {
-                textView = null;
-            }
-        }
-    }
-
-    private static class MenuItemListAdapter
-            extends RecyclerView.Adapter<Holder> {
-
-        @NonNull
-        private final Drawable subMenuPointer;
-        @NonNull
-        private final List<MenuItem> list = new ArrayList<>();
-        /** Cached inflater. */
-        @NonNull
-        private final LayoutInflater inflater;
-
-        private final boolean groupDividerEnabled;
-        @NonNull
-        private final MenuCallback menuCallback;
-        /** Listener for the result. */
-        @NonNull
-        private final OnMenuItemClickListener menuItemClickListener;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         * @param menu    Menu (list of items) to display
-         */
-        @SuppressLint("UseCompatLoadingForDrawables")
-        MenuItemListAdapter(@NonNull final Context context,
-                            @NonNull final Menu menu,
-                            final boolean groupDividerEnabled,
-                            @NonNull final MenuCallback menuCallback,
-                            @NonNull final OnMenuItemClickListener listener) {
-
-            inflater = LayoutInflater.from(context);
-            this.groupDividerEnabled = groupDividerEnabled;
-            this.menuCallback = menuCallback;
-            menuItemClickListener = listener;
-
-            //noinspection DataFlowIssue
-            subMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
-
-            setMenu(menu);
-        }
-
-        /**
-         * Add all menu items to the adapter list.
-         * Invisible items are <strong>not added</strong>,
-         * disabled items are added and will be shown disabled.
-         *
-         * @param menu to add.
-         */
-        private void setMenu(@NonNull final Menu menu) {
-            list.clear();
-            int previousGroupId = menu.size() > 0 ? menu.getItem(0).getGroupId() : 0;
-
-            for (int i = 0; i < menu.size(); i++) {
-                final MenuItem item = menu.getItem(i);
-                final int groupId = item.getGroupId();
-                if (item.isVisible()) {
-                    if (groupDividerEnabled && groupId != previousGroupId) {
-                        previousGroupId = groupId;
-                        // this is silly... but the only way we can create a MenuItem directly
-                        final MenuItem divider = new PopupMenu(inflater.getContext(), null)
-                                .getMenu()
-                                .add(Menu.NONE, R.id.MENU_DIVIDER, item.getOrder(), "")
-                                .setEnabled(false);
-                        list.add(divider);
-                    }
-                    list.add(item);
-                }
-            }
-        }
-
-        @Override
-        public int getItemViewType(final int position) {
-            if (list.get(position).getItemId() == R.id.MENU_DIVIDER) {
-                return R.layout.row_simple_list_divider;
-            } else {
-                return R.layout.row_simple_list_item;
-            }
-        }
-
-        @NonNull
-        @Override
-        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                         final int viewType) {
-            final View root = inflater.inflate(viewType, parent, false);
-
-            final Holder holder = new Holder(viewType, root);
-            if (holder.textView != null) {
-                holder.textView.setOnClickListener(v -> onItemClicked(holder));
-            }
-            return holder;
-        }
-
-        @SuppressLint("NotifyDataSetChanged")
-        void onItemClicked(@NonNull final Holder holder) {
-            final MenuItem item = list.get(holder.getBindingAdapterPosition());
-            if (item.isEnabled()) {
-                if (item.hasSubMenu()) {
-                    //noinspection DataFlowIssue
-                    setMenu(item.getSubMenu());
-                    notifyDataSetChanged();
-                    //noinspection DataFlowIssue
-                    menuCallback.update(item.getTitle().toString());
-
-                } else {
-                    menuCallback.dismiss();
-                    menuItemClickListener.onMenuItemClick(item);
-                }
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-            if (holder.textView != null) {
-                final MenuItem item = list.get(position);
-                holder.textView.setEnabled(item.isEnabled());
-
-                holder.textView.setText(item.getTitle());
-
-                // add a little arrow to indicate sub-menus.
-                if (item.hasSubMenu()) {
-                    holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            item.getIcon(), null, subMenuPointer, null);
-                } else {
-                    holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            item.getIcon(), null, null, null);
-                }
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
     }
 }
