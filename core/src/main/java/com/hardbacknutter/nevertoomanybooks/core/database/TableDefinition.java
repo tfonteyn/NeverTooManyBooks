@@ -566,11 +566,22 @@ public class TableDefinition {
     }
 
     /**
+     * <strong>THIS IS A DANGEROUS METHOD - USE WITH CARE</strong>.
+     * <p>
      * Alter the physical table in the database.
-     * Takes care of newly added (based on TableDefinition),
-     * removes obsolete, and renames columns. The latter based on a list/map passed in.
+     * Takes care of newly added columns, removes obsolete, and renames columns.
      * <p>
      * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
+     * <p>
+     * <a href="https://www.sqlite.org/releaselog/3_35_0.html">
+     *     SQLite 3.35 ALTER TABLE DROP COLUMN</a>
+     * <p>
+     * <a href="https://www.sqlite.org/releaselog/3_25_0.html">
+     *     SQLite 3.25 ALTER TABLE RENAME COLUMN</a>
+     * <p>
+     * but...
+     * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
+     *     Android 8.0 == API 26 == SqLite 3.18</a>
      * <p>
      * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
      * SQLite - making_other_kinds_of_table_schema_changes</a>
@@ -581,9 +592,9 @@ public class TableDefinition {
      *      disable them using PRAGMA foreign_keys=OFF.</li>
      *   <li>Start transaction</li
      *  <li>Create new table</li>
-     *  <li>Copy data</li>
-     *  <li>Drop old table</li>
-     *  <li>Rename new into old</li>
+     *          <li>Copy data</li>
+     *          <li>Drop old table</li>
+     *          <li>Rename new into old</li>
      *  <li>commit transaction</li>
      *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
      * </ol>
@@ -602,7 +613,7 @@ public class TableDefinition {
         db.execSQL(getCreateStatement(dstTableName, true));
 
         // This handles re-ordered fields etc.
-        copyTableSafely(db, dstTableName, toRemove, toRename);
+        copyTableSafely(db, dstTableName, toRename, toRemove);
 
         db.execSQL("DROP TABLE " + name);
         db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
@@ -621,22 +632,24 @@ public class TableDefinition {
      *     <li>toRemove: columns already gone are ignored</li>
      *     <li>toRename: columns already renamed are ignored</li>
      * </ul>
+     *  @param db          Database Access
      *
-     * @param db          Database Access
      * @param destination to table
-     * @param toRemove    (optional) List of fields to be removed
      * @param toRename    (optional) Map of fields to be renamed
+     * @param toRemove    (optional) List of fields to be removed
      */
     private void copyTableSafely(@NonNull final SQLiteDatabase db,
                                  @NonNull final String destination,
-                                 @Nullable final Collection<String> toRemove,
-                                 @Nullable final Map<String, String> toRename) {
+                                 @Nullable final Map<String, String> toRename,
+                                 @Nullable final Collection<String> toRemove) {
         final Collection<String> removals = toRemove != null ? toRemove : new ArrayList<>();
         final Map<String, String> renames = toRename != null ? toRename : new HashMap<>();
 
-        // Note: don't use the 'domains' to check for columns no longer there,
+        // Note: do NOT use the 'domains' to check for columns no longer there,
         // we'd be removing columns that need to be renamed as well.
+        //
         // Build the source column list, removing columns we no longer want.
+        //
         // We build this from the CURRENT/LIVE table, and NOT from the DBDefinition
         // as the latter IS ALREADY CHANGED AT THIS POINT
         final TableInfo sourceTable = getTableInfo(db);
