@@ -1,0 +1,23 @@
+{
+  "ISBN:9780734418227": {
+    "url": "https://openlibrary.org/books/OL47304760M/Wundersmith", "key": "/books/OL47304760M",
+    "title": "Wundersmith", "subtitle": "The Calling of Morrigan Crow", "number_of_pages": 473,
+    "identifiers": {
+      "isbn_10": [
+        "0734418221"
+      ], "isbn_13": [
+        "9780734418227"
+      ], "openlibrary": [
+        "OL47304760M"
+      ]
+    }, "publishers": [
+      {"name": "Lothian Children's Books"}
+    ], "publish_places": [
+      {"name": "Australia"}
+    ], "notes": "Source title: Wundersmith: The Calling of Morrigan Crow", "cover": {
+      "small": "https://covers.openlibrary.org/b/id/13769253-S.jpg",
+      "medium": "https://covers.openlibrary.org/b/id/13769253-M.jpg",
+      "large": "https://covers.openlibrary.org/b/id/13769253-L.jpg"
+    }
+  }
+}

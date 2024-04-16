@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -45,6 +46,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
 public class ParseTest
@@ -72,7 +74,7 @@ public class ParseTest
                                                      .getResources().openRawResource(resId)) {
             assertNotNull(is);
             final String response = searchEngine.readResponseStream(is);
-            searchEngine.handleResponse(context, response, new boolean[]{false, false}, book);
+            searchEngine.handleResponse(context, response, new boolean[]{true, true}, book);
         }
         return book;
     }
@@ -81,7 +83,7 @@ public class ParseTest
     public void parse()
             throws IOException, SearchException, StorageException {
 
-        // https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780980200447
+        // wget -O openlibrary_9780980200447 https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780980200447
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
                                           .R.raw.openlibrary_9780980200447);
@@ -130,5 +132,49 @@ public class ParseTest
         assertEquals("Miedema", tocs.get(0).getPrimaryAuthor().getFamilyName());
         assertEquals("John", tocs.get(0).getPrimaryAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.OpenLibrary.getPreferenceKey()
+                                          + "_9780980200447_0_.jpg"));
+
+    }
+
+    @Test
+    public void parse2()
+            throws IOException, SearchException, StorageException {
+
+        // wget -O openlibrary_9780734418227.json https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780734418227
+
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.openlibrary_9780734418227);
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        assertEquals("Wundersmith", book.getString(DBKey.TITLE, null));
+        assertEquals("9780734418227", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("OL47304760M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("Source title: Wundersmith: The Calling of Morrigan Crow",
+                     book.getString(DBKey.DESCRIPTION, null));
+        assertEquals("473", book.getString(DBKey.PAGE_COUNT, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Lothian Children's Books", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(0, authors.size());
+
+        // "cover": {"small": "https://covers.openlibrary.org/b/id/13769253-S.jpg", "medium": "https://covers.openlibrary.org/b/id/13769253-M.jpg", "large": "https://covers.openlibrary.org/b/id/13769253-L.jpg"}}}
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.OpenLibrary.getPreferenceKey()
+                                          + "_9780734418227_0_.jpg"));
     }
 }
