@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -110,6 +110,11 @@ public class Domain {
         return name;
     }
 
+    /**
+     * Get the collation clause.
+     *
+     * @return either " COLLATE LOCALIZED", or the empty String but never {@code null}
+     */
     @NonNull
     public String getCollationClause() {
         return collationClause;
@@ -118,7 +123,7 @@ public class Domain {
     /**
      * Create the {@code ORDER BY} clause for this domain.
      *
-     * @param sort                   flag
+     * @param sort                   flag (ascending, descending, not-set)
      * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      *
      * @return column sort SQL fragment
@@ -180,6 +185,11 @@ public class Domain {
         return defaultClause != null;
     }
 
+    /**
+     * Get the default value for this domain.
+     *
+     * @return default
+     */
     @Nullable
     public String getDefault() {
         if (defaultClause == null) {
@@ -227,6 +237,9 @@ public class Domain {
             if (defaultClause != null) {
                 sql.append(" DEFAULT ").append(defaultClause);
             }
+
+            sql.append(collationClause);
+
             if (references != null) {
                 sql.append(" REFERENCES ").append(references);
             }
