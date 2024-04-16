@@ -1,2 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<!--
+  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  --><!--
+    Reference sites:
+    https://www.abbreviations.com/
+
+     Some linguists, especially in British English, believe that "loan" should only
+     be used as a noun, while the correct verb is only "lend."
+
+
+    ENTITY:
+    Define entities that can be used inside of other string (not possible with standard Android
+    resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
+    cannot put these into an external file: https://issuetracker.google.com/issues/68434088
+
+    Each language string.xml file uses localized quotes as per
+    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
+    See top of each language resource file for the "quotes" comment.
+
+    Plurals:
+    http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+        cardinal
+
+    en-rGB: https://issuetracker.google.com/issues/142590628
+    fixed in Studio 4.1
+--><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<resources>
+    <plurals name="n_stars">
+        <item quantity="one">%1$s oar</item>
+        <item quantity="other">%1$s oars</item>
+    </plurals>
+    <string name="list_element">🔱%s</string>
+    <string name="notification_channel_error">Anchor!</string>
+    <string name="notification_channel_warn">Aye Matey!</string>
+    <string name="notification_channel_info">Mappings</string>
+    <string name="debug_select_items">Chose ta stuff ya wanta include:</string>
+    <string name="acra_report_saved">Aye there! Now sail to th\' Never Too Many Books GitHub sail, an log a new issue. If you ain\'t got a GitHub account, ya need to make one.</string>
+    <string name="X_httpErrorIO">Couldn\'t sail to the server, try again when ta storm ends or check ya network connection.</string>
+    <string name="httpErrorFailedSslHandshake">Couldn\'t sail securely.</string>
+    <string name="httpErrorFile">Couldn\'t sail to the file.</string>
+    <string name="httpErrorFileNotFound">Couldn\'t sail to the file ya wanted.</string>
+    <string name="error_invalid_url">Yer coordinates (URL) be invalid, matey</string>
+    <string name="error_unexpected">Yer ship ran into an error it didn\'t expect!</string>
+    <string name="error_unexpected_long">Yer ship ran into an unexpected error! If this happens often, call for help via\" %1$s\" ship at te bottom o\' te settings page.</string>
+    <plurals name="displaying_n_books">
+        <item quantity="one">%1$d bound sail</item>
+        <item quantity="other">%1$d bound sails</item>
+    </plurals>
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d bound sail located</item>
+        <item quantity="other">%1$d bound sails located</item>
+    </plurals>
+    <string name="acra_dialog_message">Aye Matey! Looks like yer &amp;APP_NAME has sunken! Hit \"%1$s\" ta save a memory of ta crash t\' ya chosen coordinates. Ya use it to report a linkage on the website.</string>
+    <string name="httpErrorTimeout">Th\' connection ta ya server didn\'t respond in time.</string>
+    <string name="httpError">Aye! A network error stopped the ship, check your connection.</string>
+</resources>
