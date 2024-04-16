@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -525,6 +525,8 @@ public class OpenLibrarySearchEngine
             book.putString(DBKey.TITLE, s);
         }
 
+        // ENHANCE: add a preference switch to optionally fetch the subtitle
+        //  and concatenate it with the title
         // s = document.optString("subtitle");
 
         a = document.optJSONArray("authors");
