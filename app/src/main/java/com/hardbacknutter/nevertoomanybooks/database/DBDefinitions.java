@@ -640,6 +640,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .localized()
                         .build();
 
         DOM_TITLE_ORIGINAL_LANG =
@@ -668,8 +669,10 @@ public final class DBDefinitions {
         DOM_BOOKSHELF_NAME =
                 new Domain.Builder(DBKey.BOOKSHELF_NAME, SqLiteDataType.Text)
                         .notNull()
+                        .localized()
                         .build();
 
+        // Virtual, display only, unsorted
         DOM_BOOKSHELF_NAME_CSV =
                 new Domain.Builder(DBKey.BOOKSHELF_NAME_CSV, SqLiteDataType.Text)
                         .notNull()
@@ -709,6 +712,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .localized()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES =
@@ -722,6 +726,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .localized()
                         .build();
 
         DOM_AUTHOR_IS_COMPLETE =
@@ -761,6 +766,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.SERIES_TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .localized()
                         .build();
 
         DOM_SERIES_IS_COMPLETE =
@@ -782,6 +788,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.PUBLISHER_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .localized()
                         .build();
 
         DOM_PUBLISHER_NAME_CSV =
@@ -1185,6 +1192,7 @@ public final class DBDefinitions {
 
         DOM_STYLE_NAME =
                 new Domain.Builder(DBKey.STYLE_NAME, SqLiteDataType.Text)
+                        .localized()
                         .build();
 
         DOM_STYLE_GROUPS =
