@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -554,9 +554,66 @@ public class TableDefinition {
     }
 
     /**
+     * Convenience method to use when table columns have changed definitions,
+     * but no removals or renames.
+     *
+     * @param db Database Access
+     *
+     * @see #recreate(SQLiteDatabase, Map, Collection)
+     */
+    public void recreate(@NonNull final SQLiteDatabase db) {
+        recreate(db, null, null);
+    }
+
+    /**
+     * Alter the physical table in the database.
+     * Takes care of newly added (based on TableDefinition),
+     * removes obsolete, and renames columns. The latter based on a list/map passed in.
+     * <p>
+     * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
+     * <p>
+     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
+     * SQLite - making_other_kinds_of_table_schema_changes</a>
+     * <p>
+     * The 12 steps in summary:
+     * <ol>
+     *  <li>If foreign key constraints are enabled,
+     *      disable them using PRAGMA foreign_keys=OFF.</li>
+     *   <li>Start transaction</li
+     *  <li>Create new table</li>
+     *  <li>Copy data</li>
+     *  <li>Drop old table</li>
+     *  <li>Rename new into old</li>
+     *  <li>commit transaction</li>
+     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
+     * </ol>
+     *
+     * @param db       Database Access
+     * @param toRename (optional) Map of fields to be renamed
+     * @param toRemove (optional) List of fields to be removed
+     */
+    public void recreate(@NonNull final SQLiteDatabase db,
+                         @Nullable final Map<String, String> toRename,
+                         @Nullable final Collection<String> toRemove) {
+
+        final String dstTableName = "copyOf" + name;
+        // With constraints... sqlite does not allow to add constraints later.
+        // Without indexes.
+        db.execSQL(getCreateStatement(dstTableName, true));
+
+        // This handles re-ordered fields etc.
+        copyTableSafely(db, dstTableName, toRemove, toRename);
+
+        db.execSQL("DROP TABLE " + name);
+        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
+    }
+
+    /**
      * Provide a safe table copy method that is insulated from risks associated with
-     * column order. This method will copy all columns from the source to the destination;
-     * if columns do not exist in the destination, an error will occur. Columns in the
+     * column order. This method will copy all columns from the source (this table)
+     * to the destination table as given.
+     * <p>
+     * If columns do not exist in the destination, an error will occur. Columns in the
      * destination that are not in the source will be defaulted or set to {@code null}
      * if no default is defined.
      *
@@ -571,15 +628,17 @@ public class TableDefinition {
      * @param toRename    (optional) Map of fields to be renamed
      */
     private void copyTableSafely(@NonNull final SQLiteDatabase db,
-                                 @SuppressWarnings("SameParameterValue")
                                  @NonNull final String destination,
                                  @Nullable final Collection<String> toRemove,
                                  @Nullable final Map<String, String> toRename) {
+        final Collection<String> removals = toRemove != null ? toRemove : new ArrayList<>();
+        final Map<String, String> renames = toRename != null ? toRename : new HashMap<>();
 
         // Note: don't use the 'domains' to check for columns no longer there,
         // we'd be removing columns that need to be renamed as well.
         // Build the source column list, removing columns we no longer want.
-        final Collection<String> removals = toRemove != null ? toRemove : new ArrayList<>();
+        // We build this from the CURRENT/LIVE table, and NOT from the DBDefinition
+        // as the latter IS ALREADY CHANGED AT THIS POINT
         final TableInfo sourceTable = getTableInfo(db);
         final List<String> srcColumns = sourceTable
                 .getColumns()
@@ -589,7 +648,6 @@ public class TableDefinition {
                 .collect(Collectors.toList());
 
         // Build the destination column list, renaming columns as needed
-        final Map<String, String> renames = toRename != null ? toRename : new HashMap<>();
         final List<String> dstColumns = srcColumns
                 .stream()
                 .map(column -> renames.getOrDefault(column, column))
@@ -600,53 +658,6 @@ public class TableDefinition {
                 + " SELECT " + String.join(",", srcColumns) + " FROM " + name;
         db.execSQL(sql);
     }
-
-//    /**
-//     * The use of recreateAndReload is dangerous right now and can break updates.
-//     *
-//     * More specifically: the recreateAndReload routine can only be used ONCE per table.
-//     * We'll need to keep previous table definitions as BC used to do.
-//     * <p>
-//     * Alter the physical table in the database.
-//     * Takes care of newly added (based on TableDefinition),
-//     * removes obsolete, and renames columns. The latter based on a list/map passed in.
-//     *
-//     * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
-//     *
-//     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
-//     * SQLite - making_other_kinds_of_table_schema_changes</a>
-//     * <p>
-//     * The 12 steps in summary:
-//     * <ol>
-//     *  <li>If foreign key constraints are enabled,
-//     *      disable them using PRAGMA foreign_keys=OFF.</li>
-//     *  <li>Create new table</li>
-//     *  <li>Copy data</li>
-//     *  <li>Drop old table</li>
-//     *  <li>Rename new into old</li>
-//     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
-//     * </ol>
-//     *
-//     * @param db       Database Access
-//     * @param toRename (optional) Map of fields to be renamed
-//     * @param toRemove (optional) List of fields to be removed
-//     */
-//    public void recreateAndReload(@NonNull final SQLiteDatabase db,
-//                                  @SuppressWarnings("SameParameterValue")
-//                                  @Nullable final Map<String, String> toRename,
-//                                  @Nullable final Collection<String> toRemove) {
-//
-//        final String dstTableName = "copyOf" + name;
-//        // With constraints... sqlite does not allow to add constraints later.
-//        // Without indexes.
-//        db.execSQL(def(dstTableName, true));
-//
-//        // This handles re-ordered fields etc.
-//        copyTableSafely(db, dstTableName, toRemove, toRename);
-//
-//        db.execSQL("DROP TABLE " + name);
-//        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
-//    }
 
     /**
      * Return the SQL that can be used to define this table.
