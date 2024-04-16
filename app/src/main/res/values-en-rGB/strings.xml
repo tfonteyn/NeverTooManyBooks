@@ -17,14 +17,15 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<resources>
+  --><resources>
     <string name="book_color_full_color">Coloured</string>
     <string name="book_color_support_color">Bicoloured</string>
     <string name="lbl_author_type_colorist">Colourist</string>
     <string name="lbl_author_type_cover_colorist">Cover colourist</string>
     <string name="lbl_color">Colour</string>
     <string name="pt_search_reformat_color">Standardize “book colour” names</string>
-
+    <plurals name="displaying_n_books">
+        <item quantity="one">%1$d book</item>
+        <item quantity="other">%1$d books</item>
+    </plurals>
 </resources>
