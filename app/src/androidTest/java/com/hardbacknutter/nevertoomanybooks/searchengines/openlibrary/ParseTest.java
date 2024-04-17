@@ -177,4 +177,9 @@ public class ParseTest
         assertTrue(covers.get(0).endsWith(EngineId.OpenLibrary.getPreferenceKey()
                                           + "_9780734418227_0_.jpg"));
     }
+
+    public void parse3() {
+        // TODO: github issue #48: user says they added a back cover.
+        // https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780141346830
+    }
 }
