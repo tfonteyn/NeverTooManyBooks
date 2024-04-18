@@ -166,7 +166,8 @@ public class EditBookSeriesListDialogFragment
         adapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(context),
                 (v, position) -> contextMenu
-                        .showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position)));
+                        .show(v, ExtPopupMenu.Location.Anchored,
+                              menuItem -> onMenuItemSelected(menuItem, position)));
 
 
         adapter.registerAdapterDataObserver(adapterDataObserver);

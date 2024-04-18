@@ -178,8 +178,7 @@ public class ExtPopupMenu {
      *
      * @return the {@link Menu} associated with this popup
      *
-     * @see #showAsDropDown(View, MenuItem.OnMenuItemClickListener)
-     * @see #show(View, int, MenuItem.OnMenuItemClickListener)
+     * @see #show(View, Location, MenuItem.OnMenuItemClickListener)
      */
     @NonNull
     public Menu getMenu() {
@@ -199,24 +198,6 @@ public class ExtPopupMenu {
             adapter.setMenu(this.menu);
             adapter.notifyDataSetChanged();
         }
-    }
-
-    /**
-     * Show the menu popup anchored to the given view.
-     *
-     * @param anchor   the view on which to anchor the popup window
-     * @param listener callback with the selected menu item
-     */
-    public void showAsDropDown(@NonNull final View anchor,
-                               @NonNull final MenuItem.OnMenuItemClickListener listener) {
-
-        initAdapter(anchor.getContext(), listener);
-
-        final int[] wh = calculatePopupWindowWidthAndHeight();
-        popupWindow.setWidth(wh[0]);
-        popupWindow.setHeight(wh[1]);
-        // preferred location: halfway on top of the anchor, and indented by mXOffset
-        popupWindow.showAsDropDown(anchor, xOffset, -anchor.getHeight() / 2);
     }
 
     /**
@@ -260,26 +241,39 @@ public class ExtPopupMenu {
     /**
      * Display the menu.
      *
-     * @param view     a view from which the window token can be used
-     * @param gravity  the gravity which controls the placement of the popup window
-     *                 One of {@link Gravity#START}, {@link Gravity#END}
-     *                 or {@link Gravity#CENTER}.
+     * @param view     the anchor for {@link Location#Anchored},
+     *                 or a view from which the window token can be used
+     * @param location the gravity which controls the placement of the popup window
      * @param listener callback with the selected menu item
      *
      * @throws IllegalArgumentException when an invalid gravity value is passed in
      */
     public void show(@NonNull final View view,
-                     final int gravity,
+                     @NonNull final Location location,
                      @NonNull final MenuItem.OnMenuItemClickListener listener) {
 
         initAdapter(view.getContext(), listener);
 
-        if (gravity == Gravity.START || gravity == Gravity.END) {
-            popupWindow.showAtLocation(view, gravity, xOffset, 0);
-        } else if (gravity == Gravity.CENTER) {
-            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-        } else {
-            throw new IllegalArgumentException(String.valueOf(gravity));
+        switch (location) {
+            case Start:
+                popupWindow.showAtLocation(view, Gravity.START, xOffset, 0);
+                break;
+            case End:
+                popupWindow.showAtLocation(view, Gravity.END, xOffset, 0);
+                break;
+            case Center:
+                popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+                break;
+            case Anchored: {
+                final int[] wh = calculatePopupWindowWidthAndHeight();
+                popupWindow.setWidth(wh[0]);
+                popupWindow.setHeight(wh[1]);
+                // preferred location: halfway on top of the anchor, and indented by mXOffset
+                popupWindow.showAsDropDown(view, xOffset, -view.getHeight() / 2);
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(String.valueOf(location));
         }
     }
 
@@ -288,5 +282,16 @@ public class ExtPopupMenu {
         adapter = new MenuItemListAdapter(context, menu, groupDividerEnabled,
                                           menuCallback, listener);
         vb.itemList.setAdapter(adapter);
+    }
+
+    public enum Location {
+        /** Show at the Start of a specific offset. */
+        Start,
+        /** Show at the End of a specific offset. */
+        End,
+        /** Show at the Center of a specific offset. */
+        Center,
+        /** Show Anchored to the given view. */
+        Anchored
     }
 }

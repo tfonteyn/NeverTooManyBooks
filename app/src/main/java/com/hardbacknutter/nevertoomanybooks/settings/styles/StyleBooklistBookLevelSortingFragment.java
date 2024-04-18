@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -214,7 +214,7 @@ public class StyleBooklistBookLevelSortingFragment
                         .inflate(R.menu.sorting_options)
                         .setGroupDividerEnabled();
 
-                popupMenu.showAsDropDown(anchor, menuItem -> {
+                popupMenu.show(anchor, ExtPopupMenu.Location.Anchored, menuItem -> {
                     final int itemId = menuItem.getItemId();
                     final Sort nextValue;
                     if (itemId == R.id.MENU_SORT_UNSORTED) {

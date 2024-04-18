@@ -332,7 +332,7 @@ public class CoverHandler {
                      .add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        popupMenu.showAsDropDown(anchor, this::onMenuItemSelected);
+        popupMenu.show(anchor, ExtPopupMenu.Location.Anchored, this::onMenuItemSelected);
 
         return true;
     }

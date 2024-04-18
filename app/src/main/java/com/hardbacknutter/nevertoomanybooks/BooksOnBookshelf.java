@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -1086,15 +1085,14 @@ public class BooksOnBookshelf
             contextMenu.setTitle(adapter.getLevelText(level, adapterPosition));
 
             if (menu.size() < 5 || WindowSizeClass.getWidth(this) == WindowSizeClass.Medium) {
-                // show it anchored
-                contextMenu.showAsDropDown(v, menuItem ->
+                contextMenu.show(v, ExtPopupMenu.Location.Anchored, menuItem ->
                         onRowContextMenuItemSelected(v, adapterPosition, menuItem));
 
             } else if (hasEmbeddedDetailsFrame()) {
-                contextMenu.show(v, Gravity.START, menuItem ->
+                contextMenu.show(v, ExtPopupMenu.Location.Start, menuItem ->
                         onRowContextMenuItemSelected(v, adapterPosition, menuItem));
             } else {
-                contextMenu.show(v, Gravity.CENTER, menuItem ->
+                contextMenu.show(v, ExtPopupMenu.Location.Center, menuItem ->
                         onRowContextMenuItemSelected(v, adapterPosition, menuItem));
             }
         }
@@ -1716,8 +1714,8 @@ public class BooksOnBookshelf
                 .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
         }
 
-        popupMenu.setTitle(menuItem.getTitle())
-                 .showAsDropDown(anchor, this::onNavigationItemSelected);
+        popupMenu.setTitle(menuItem.getTitle());
+        popupMenu.show(anchor, ExtPopupMenu.Location.Anchored, this::onNavigationItemSelected);
     }
 
     /**
@@ -1735,7 +1733,7 @@ public class BooksOnBookshelf
                 .inflate(R.menu.update_books)
                 .setTitle(dialogTitle)
                 .setMessage(getString(R.string.menu_update_books))
-                .showAsDropDown(anchor, menuItem -> {
+                .show(anchor, ExtPopupMenu.Location.Anchored, menuItem -> {
                     final int itemId = menuItem.getItemId();
                     Boolean onlyThisShelf = null;
 

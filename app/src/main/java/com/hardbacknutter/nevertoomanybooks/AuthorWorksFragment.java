@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -209,8 +209,9 @@ public class AuthorWorksFragment
                         vm.isAllBookshelves()));
         final ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(context);
         adapter.setOnRowShowMenuListener(
-                preferredMode, (anchor, position) -> contextMenu.showAsDropDown(anchor, menuItem ->
-                        onMenuItemSelected(menuItem, position))
+                preferredMode, (anchor, position) -> contextMenu
+                        .show(anchor, ExtPopupMenu.Location.Anchored,
+                              menuItem -> onMenuItemSelected(menuItem, position))
         );
 
         worksListView.setAdapter(adapter);

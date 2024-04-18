@@ -123,7 +123,9 @@ public class EditBookshelvesFragment
             final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
                     .inflate(R.menu.editing_bookshelves);
             prepareMenu(popupMenu.getMenu(), position);
-            popupMenu.showAsDropDown(anchor, menuItem -> onMenuItemSelected(menuItem, listIndex));
+
+            popupMenu.show(anchor, ExtPopupMenu.Location.Anchored,
+                           menuItem -> onMenuItemSelected(menuItem, listIndex));
         }
     };
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -201,7 +201,7 @@ public class PreferredStylesFragment
                             .setGroupDividerEnabled();
                     prepareMenu(popupMenu.getMenu(), position);
 
-                    popupMenu.showAsDropDown(anchor, menuItem ->
+                    popupMenu.show(anchor, ExtPopupMenu.Location.Anchored, menuItem ->
                             onMenuItemSelected(menuItem, position));
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
