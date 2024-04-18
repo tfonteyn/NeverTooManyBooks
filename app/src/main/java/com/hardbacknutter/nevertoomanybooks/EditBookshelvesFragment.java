@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -120,12 +121,14 @@ public class EditBookshelvesFragment
         public void showContextMenu(@NonNull final View anchor,
                                     final int position,
                                     final int listIndex) {
-            final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                    .inflate(R.menu.editing_bookshelves);
-            prepareMenu(popupMenu.getMenu(), position);
+            final Context context = anchor.getContext();
+            final Menu menu = MenuUtils.create(context, R.menu.editing_bookshelves);
+            prepareMenu(menu, position);
 
-            popupMenu.show(anchor, ExtPopupMenu.Location.Anchored,
-                           menuItem -> onMenuItemSelected(menuItem, listIndex));
+            new ExtPopupMenu(context)
+                    .initAdapter(anchor.getContext(), menu,
+                                 menuItem -> onMenuItemSelected(menuItem, listIndex))
+                    .show(anchor, ExtPopupMenu.Location.Anchored);
         }
     };
 

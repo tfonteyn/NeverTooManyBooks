@@ -25,21 +25,18 @@ import android.content.res.Resources;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 
 import androidx.annotation.Dimension;
-import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.MenuItemListAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MenuItemListAdapter;
 
 /**
  * Show a context menu on a view - will show icons if present.
@@ -60,7 +57,7 @@ public class ExtPopupMenu {
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
-                public void update(@NonNull final String title) {
+                public void onNewMenuTitle(@NonNull final CharSequence title) {
                     vb.title.setText(title);
                     vb.title.setVisibility(View.VISIBLE);
                     final int[] wh = calculatePopupWindowWidthAndHeight();
@@ -73,25 +70,16 @@ public class ExtPopupMenu {
                 }
             };
 
-    @NonNull
-    private Menu menu;
-    private boolean groupDividerEnabled;
+    private boolean groupDividerEnabled = true;
     private MenuItemListAdapter adapter;
 
     /**
      * Constructor.
      *
      * @param context Current context
-     *
-     * @see #getMenu()
-     * @see #inflate(int)
      */
     @SuppressLint("InflateParams")
     public ExtPopupMenu(@NonNull final Context context) {
-        // legal trick to get an instance of Menu.
-        // We leave the anchor 'null' as we're not actually going to display this object.
-        menu = new PopupMenu(context, null).getMenu();
-
         final Resources res = context.getResources();
         paddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
         xOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
@@ -108,21 +96,6 @@ public class ExtPopupMenu {
     }
 
     /**
-     * Inflate a menu resource into this PopupMenu. This is equivalent to
-     * calling {@code popupMenu.getMenuInflater().inflate(menuRes, popupMenu.getMenu())}.
-     *
-     * @param menuResId Menu resource to inflate
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public ExtPopupMenu inflate(@MenuRes final int menuResId) {
-        new MenuInflater(popupWindow.getContentView().getContext())
-                .inflate(menuResId, menu);
-        return this;
-    }
-
-    /**
      * The {@link Menu} builtin API for group dividers is only available in API 28,
      * and even there it's not possible to read the value back.
      * <p>
@@ -131,8 +104,8 @@ public class ExtPopupMenu {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtPopupMenu setGroupDividerEnabled() {
-        groupDividerEnabled = true;
+    public ExtPopupMenu setGroupDividerEnabled(final boolean enabled) {
+        groupDividerEnabled = enabled;
         return this;
     }
 
@@ -173,34 +146,6 @@ public class ExtPopupMenu {
     }
 
     /**
-     * Returns the {@link Menu} associated with this popup. Populate the
-     * returned Menu with items before calling one of the {@code show} methods.
-     *
-     * @return the {@link Menu} associated with this popup
-     *
-     * @see #show(View, Location, MenuItem.OnMenuItemClickListener)
-     */
-    @NonNull
-    public Menu getMenu() {
-        return menu;
-    }
-
-    /**
-     * Replace the existing menu with the given one.
-     * This method can be called at any time.
-     *
-     * @param menu to use
-     */
-    @SuppressLint("NotifyDataSetChanged")
-    public void setMenu(@NonNull final Menu menu) {
-        this.menu = menu;
-        if (adapter != null) {
-            adapter.setMenu(this.menu);
-            adapter.notifyDataSetChanged();
-        }
-    }
-
-    /**
      * A more or less accurate way of setting the width/height...
      * <p>
      * So why are we doing the measuring and setting width/height manually?
@@ -238,22 +183,28 @@ public class ExtPopupMenu {
                 contentView.getMeasuredHeight() + paddingBottom};
     }
 
+    @NonNull
+    public ExtPopupMenu initAdapter(@NonNull final Context context,
+                                    @NonNull final Menu menu,
+                                    @NonNull final MenuItem.OnMenuItemClickListener listener) {
+        adapter = new MenuItemListAdapter(context, menu, groupDividerEnabled,
+                                          menuCallback, listener);
+        vb.itemList.setAdapter(adapter);
+
+        return this;
+    }
+
     /**
      * Display the menu.
      *
      * @param view     the anchor for {@link Location#Anchored},
      *                 or a view from which the window token can be used
      * @param location the gravity which controls the placement of the popup window
-     * @param listener callback with the selected menu item
      *
      * @throws IllegalArgumentException when an invalid gravity value is passed in
      */
     public void show(@NonNull final View view,
-                     @NonNull final Location location,
-                     @NonNull final MenuItem.OnMenuItemClickListener listener) {
-
-        initAdapter(view.getContext(), listener);
-
+                     @NonNull final Location location) {
         switch (location) {
             case Start:
                 popupWindow.showAtLocation(view, Gravity.START, xOffset, 0);
@@ -277,12 +228,6 @@ public class ExtPopupMenu {
         }
     }
 
-    private void initAdapter(@NonNull final Context context,
-                             @NonNull final MenuItem.OnMenuItemClickListener listener) {
-        adapter = new MenuItemListAdapter(context, menu, groupDividerEnabled,
-                                          menuCallback, listener);
-        vb.itemList.setAdapter(adapter);
-    }
 
     public enum Location {
         /** Show at the Start of a specific offset. */
@@ -294,4 +239,5 @@ public class ExtPopupMenu {
         /** Show Anchored to the given view. */
         Anchored
     }
+
 }

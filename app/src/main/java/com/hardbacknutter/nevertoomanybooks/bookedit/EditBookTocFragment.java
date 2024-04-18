@@ -140,8 +140,6 @@ public class EditBookTocFragment
             new ConfirmTocDialogFragment.Launcher(
                     RK_CONFIRM_TOC, this::onIsfdbDataConfirmed, this::searchIsfdb);
 
-    private ExtPopupMenu contextMenu;
-
     @NonNull
     @Override
     public FragmentId getFragmentId() {
@@ -186,7 +184,6 @@ public class EditBookTocFragment
 
         initEditTocViewModel();
 
-        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
         initListView();
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
@@ -225,6 +222,8 @@ public class EditBookTocFragment
         tocEntryList = vm.getBook().getToc();
 
         //noinspection DataFlowIssue
+
+
         adapter = new TocListEditAdapter(context, tocEntryList,
                                          vh -> itemTouchHelper.startDrag(vh));
 
@@ -232,9 +231,13 @@ public class EditBookTocFragment
                 (v, position) -> editEntry(tocEntryList.get(position), position));
         adapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(context),
-                (v, position) -> contextMenu
-                        .show(v, ExtPopupMenu.Location.Anchored,
-                              menuItem -> onMenuItemSelected(menuItem, position)));
+                (v, position) -> {
+                    final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+                    new ExtPopupMenu(context)
+                            .initAdapter(v.getContext(), rowMenu,
+                                         menuItem -> onMenuItemSelected(menuItem, position))
+                            .show(v, ExtPopupMenu.Location.Anchored);
+                });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.tocList.setAdapter(adapter);

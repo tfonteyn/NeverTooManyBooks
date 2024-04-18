@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -50,6 +51,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -74,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
@@ -301,12 +304,14 @@ public class CoverHandler {
      */
     private boolean onCreateContextMenu(@NonNull final View anchor) {
 
-        final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                .inflate(R.menu.image);
+        final Context context = anchor.getContext();
+
+        @NonNull
+        Menu menu = MenuUtils.create(context, R.menu.image);
 
         final Book book = bookSupplier.get();
-
         final Optional<File> coverFile = book.getCover(cIdx);
+
         if (coverFile.isPresent()) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
@@ -316,23 +321,23 @@ public class CoverHandler {
             }
         } else {
             // there is no current image; only show the replace menu
-            final MenuItem menuItem = popupMenu.getMenu().findItem(R.id.SUBMENU_THUMB_REPLACE);
-            //noinspection DataFlowIssue
-            popupMenu.setMenu(menuItem.getSubMenu());
+            final MenuItem menuItem = Objects.requireNonNull(
+                    menu.findItem(R.id.SUBMENU_THUMB_REPLACE), "R.id.SUBMENU_THUMB_REPLACE");
+            menu = Objects.requireNonNull(menuItem.getSubMenu(), "getSubMenu");
         }
 
         // we only support alternative edition covers for the front cover.
-        popupMenu.getMenu().findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(cIdx == 0);
+        menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(cIdx == 0);
 
         // Add the potential undo-menu
         if (ServiceLocator.getInstance().getCoverStorage()
                           .isUndoEnabled(book.getString(DBKey.BOOK_UUID), cIdx)) {
-            popupMenu.setGroupDividerEnabled();
-            popupMenu.getMenu()
-                     .add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
+            menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        popupMenu.show(anchor, ExtPopupMenu.Location.Anchored, this::onMenuItemSelected);
+        new ExtPopupMenu(context)
+                .initAdapter(anchor.getContext(), menu, this::onMenuItemSelected)
+                .show(anchor, ExtPopupMenu.Location.Anchored);
 
         return true;
     }

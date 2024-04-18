@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,7 +95,6 @@ public class EditBookAuthorListDialogFragment
             new ParcelableDialogLauncher<>(RK_EDIT_AUTHOR, EditBookAuthorDialogFragment::new,
                                            this::add, this::processChanges);
 
-    private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -151,7 +151,6 @@ public class EditBookAuthorListDialogFragment
             return false;
         });
 
-        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
         initListView();
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
@@ -171,9 +170,13 @@ public class EditBookAuthorListDialogFragment
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
         adapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(context),
-                (v, position) -> contextMenu
-                        .show(v, ExtPopupMenu.Location.Anchored,
-                              menuItem -> onMenuItemSelected(menuItem, position)));
+                (v, position) -> {
+                    final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+                    new ExtPopupMenu(v.getContext())
+                            .initAdapter(v.getContext(), rowMenu,
+                                         menuItem -> onMenuItemSelected(menuItem, position))
+                            .show(v, ExtPopupMenu.Location.Anchored);
+                });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.authorList.setAdapter(adapter);

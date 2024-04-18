@@ -975,9 +975,7 @@ public class BooksOnBookshelf
             return;
         }
 
-        final ExtPopupMenu contextMenu = new ExtPopupMenu(this)
-                .setGroupDividerEnabled();
-        final Menu menu = contextMenu.getMenu();
+        final Menu menu = MenuUtils.create(this);
 
         @BooklistGroup.Id
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
@@ -1081,19 +1079,20 @@ public class BooksOnBookshelf
         // If we actually have a menu, show it.
         if (menu.size() > 0) {
             // we have a menu to show, set the title according to the level.
-            final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
-            contextMenu.setTitle(adapter.getLevelText(level, adapterPosition));
+            final CharSequence menuTitle = adapter
+                    .getLevelText(rowData.getInt(DBKey.BL_NODE_LEVEL), adapterPosition);
+
+            final ExtPopupMenu contextMenu = new ExtPopupMenu(this)
+                    .setTitle(menuTitle)
+                    .initAdapter(v.getContext(), menu, menuItem ->
+                            onRowContextMenuItemSelected(v, adapterPosition, menuItem));
 
             if (menu.size() < 5 || WindowSizeClass.getWidth(this) == WindowSizeClass.Medium) {
-                contextMenu.show(v, ExtPopupMenu.Location.Anchored, menuItem ->
-                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
-
+                contextMenu.show(v, ExtPopupMenu.Location.Anchored);
             } else if (hasEmbeddedDetailsFrame()) {
-                contextMenu.show(v, ExtPopupMenu.Location.Start, menuItem ->
-                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
+                contextMenu.show(v, ExtPopupMenu.Location.Start);
             } else {
-                contextMenu.show(v, ExtPopupMenu.Location.Center, menuItem ->
-                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
+                contextMenu.show(v, ExtPopupMenu.Location.Center);
             }
         }
     }
@@ -1703,9 +1702,8 @@ public class BooksOnBookshelf
 
         final View anchor = navDrawer.getMenuItemView(subMenuId);
 
-        final ExtPopupMenu popupMenu = new ExtPopupMenu(this)
-                .inflate(menuRes);
-        final Menu menu = popupMenu.getMenu();
+        final Menu menu = MenuUtils.create(this, menuRes);
+
         if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
             menu.findItem(R.id.MENU_SYNC_CALIBRE)
                 .setVisible(SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null);
@@ -1714,8 +1712,10 @@ public class BooksOnBookshelf
                 .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
         }
 
-        popupMenu.setTitle(menuItem.getTitle());
-        popupMenu.show(anchor, ExtPopupMenu.Location.Anchored, this::onNavigationItemSelected);
+        new ExtPopupMenu(this)
+                .setTitle(menuItem.getTitle())
+                .initAdapter(anchor.getContext(), menu, this::onNavigationItemSelected)
+                .show(anchor, ExtPopupMenu.Location.Anchored);
     }
 
     /**
@@ -1729,11 +1729,13 @@ public class BooksOnBookshelf
     private void updateBooksFromInternetData(@NonNull final View anchor,
                                              @NonNull final DataHolder rowData,
                                              @NonNull final CharSequence dialogTitle) {
+
+        final Menu menu = MenuUtils.create(this, R.menu.update_books);
+
         new ExtPopupMenu(this)
-                .inflate(R.menu.update_books)
                 .setTitle(dialogTitle)
                 .setMessage(getString(R.string.menu_update_books))
-                .show(anchor, ExtPopupMenu.Location.Anchored, menuItem -> {
+                .initAdapter(this, menu, menuItem -> {
                     final int itemId = menuItem.getItemId();
                     Boolean onlyThisShelf = null;
 
@@ -1748,7 +1750,8 @@ public class BooksOnBookshelf
                         return true;
                     }
                     return false;
-                });
+                })
+                .show(anchor, ExtPopupMenu.Location.Anchored);
     }
 
     /**

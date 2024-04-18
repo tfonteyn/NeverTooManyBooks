@@ -95,7 +95,7 @@ public class AuthorWorksFragment
     private TocAdapter adapter;
     /** View Binding. */
     private RecyclerView worksListView;
-    private ExtPopupMenu contextMenu;
+    private Menu rowMenu;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -207,21 +207,24 @@ public class AuthorWorksFragment
                         vm.getWorks().get(position),
                         vm.getStyle(),
                         vm.isAllBookshelves()));
-        final ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(context);
+
+        final Resources res = getResources();
+        rowMenu = MenuUtils.create(context);
+        rowMenu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                    R.string.action_delete)
+               .setIcon(R.drawable.ic_baseline_delete_24);
+
         adapter.setOnRowShowMenuListener(
-                preferredMode, (anchor, position) -> contextMenu
-                        .show(anchor, ExtPopupMenu.Location.Anchored,
-                              menuItem -> onMenuItemSelected(menuItem, position))
+                ShowContextMenu.getPreferredMode(context),
+                (anchor, position) -> {
+                    new ExtPopupMenu(context)
+                            .initAdapter(anchor.getContext(), rowMenu,
+                                         menuItem -> onMenuItemSelected(menuItem, position))
+                            .show(anchor, ExtPopupMenu.Location.Anchored);
+                }
         );
 
         worksListView.setAdapter(adapter);
-
-        contextMenu = new ExtPopupMenu(context);
-        final Menu menu = contextMenu.getMenu();
-        final Resources res = getResources();
-        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.action_delete)
-            .setIcon(R.drawable.ic_baseline_delete_24);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(context, R.string.tip_authors_works, null);

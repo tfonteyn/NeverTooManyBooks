@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
+package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -28,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 
 public class MenuItemListAdapter
         extends RecyclerView.Adapter<MenuItemListAdapter.Holder> {
@@ -100,10 +100,10 @@ public class MenuItemListAdapter
                 if (groupDividerEnabled && groupId != previousGroupId) {
                     previousGroupId = groupId;
                     // this is silly... but the only way we can create a MenuItem directly
-                    final MenuItem divider = new PopupMenu(inflater.getContext(), null)
-                            .getMenu()
-                            .add(Menu.NONE, R.id.MENU_DIVIDER, item.getOrder(), "")
-                            .setEnabled(false);
+                    final MenuItem divider =
+                            MenuUtils.create(inflater.getContext())
+                                     .add(Menu.NONE, R.id.MENU_DIVIDER, item.getOrder(), "")
+                                     .setEnabled(false);
                     list.add(divider);
                 }
                 list.add(item);
@@ -142,7 +142,7 @@ public class MenuItemListAdapter
                 setMenu(item.getSubMenu());
                 notifyDataSetChanged();
                 //noinspection DataFlowIssue
-                menuCallback.update(item.getTitle().toString());
+                menuCallback.onNewMenuTitle(item.getTitle());
 
             } else {
                 menuCallback.dismiss();
@@ -183,7 +183,7 @@ public class MenuItemListAdapter
          *
          * @param title to set
          */
-        void update(@NonNull String title);
+        void onNewMenuTitle(@NonNull CharSequence title);
 
         /**
          * Dismiss the menu.

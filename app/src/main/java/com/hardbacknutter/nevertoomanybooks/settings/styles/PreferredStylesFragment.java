@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBindin
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -196,13 +197,15 @@ public class PreferredStylesFragment
         listAdapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(getContext()),
                 (anchor, position) -> {
-                    final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                            .inflate(R.menu.editing_styles)
-                            .setGroupDividerEnabled();
-                    prepareMenu(popupMenu.getMenu(), position);
+                    final Context context = anchor.getContext();
 
-                    popupMenu.show(anchor, ExtPopupMenu.Location.Anchored, menuItem ->
-                            onMenuItemSelected(menuItem, position));
+                    final Menu menu = MenuUtils.create(context, R.menu.editing_styles);
+                    prepareMenu(menu, position);
+
+                    new ExtPopupMenu(context)
+                            .initAdapter(anchor.getContext(), menu, menuItem ->
+                                    onMenuItemSelected(menuItem, position))
+                            .show(anchor, ExtPopupMenu.Location.Anchored);
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
 
