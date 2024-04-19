@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 public class StripInfoBePreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "StripInfoBePrefFrag";
     // category
     private static final String PSK_SYNC_OPTIONS = "psk_sync_options";

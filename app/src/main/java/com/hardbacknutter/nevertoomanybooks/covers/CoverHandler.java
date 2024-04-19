@@ -345,7 +345,7 @@ public class CoverHandler {
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */

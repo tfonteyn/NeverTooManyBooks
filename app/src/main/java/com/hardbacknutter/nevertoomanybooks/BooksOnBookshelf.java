@@ -176,6 +176,7 @@ public class BooksOnBookshelf
     /** Make a backup. */
     private final ActivityResultLauncher<Void> exportLauncher =
             registerForActivityResult(new ExportContract(), success -> {
+                // Nothing to do
             });
 
     /** Bring up the synchronization options. */
@@ -1298,7 +1299,7 @@ public class BooksOnBookshelf
      *
      * @param adapterPosition the row where the menu item was selected
      * @param rowData         the row data
-     * @param menuItemId      selected menu item
+     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1387,7 +1388,7 @@ public class BooksOnBookshelf
      *
      * @param v          View clicked; the anchor for a potential popup menu
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1459,7 +1460,7 @@ public class BooksOnBookshelf
      *
      * @param v          View clicked; the anchor for a potential popup menu
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1520,7 +1521,7 @@ public class BooksOnBookshelf
      *
      * @param v          View clicked; the anchor for a potential popup menu
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1568,7 +1569,7 @@ public class BooksOnBookshelf
      * Handle the row/context menu for a {@link Bookshelf}.
      *
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1616,7 +1617,7 @@ public class BooksOnBookshelf
      * Handle the row/context menu for a {@link BooklistGroup#LANGUAGE}.
      *
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -2190,32 +2191,32 @@ public class BooksOnBookshelf
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             fabMenu.hideMenu();
 
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_FILTERS) {
+            if (menuItemId == R.id.MENU_FILTERS) {
                 bookshelfFiltersLauncher.launch(vm.getBookshelf());
                 return true;
 
-            } else if (itemId == R.id.MENU_STYLE_PICKER) {
+            } else if (menuItemId == R.id.MENU_STYLE_PICKER) {
                 stylePickerLauncher.launch(vm.getStyle(), false);
                 return true;
 
-            } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
+            } else if (menuItemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
                 // URGENT: if we use last-saved position we're totally off from where we need to be
                 expandAllNodes(vm.getStyle().getExpansionLevel(), false);
                 return true;
 
-            } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
+            } else if (menuItemId == R.id.MENU_LEVEL_EXPAND) {
                 // position on the last-saved node
                 expandAllNodes(1, true);
                 return true;
 
-            } else if (itemId == R.id.MENU_LEVEL_COLLAPSE) {
+            } else if (menuItemId == R.id.MENU_LEVEL_COLLAPSE) {
                 // position on the last-saved node
                 expandAllNodes(1, false);
                 return true;
 
-            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
                 updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
                         BooksOnBookshelf.this));
                 return true;

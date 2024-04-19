@@ -185,7 +185,7 @@ public class EditBookSeriesListDialogFragment
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
+     * @param menuItemId The menu item that was invoked.
      * @param position in the list
      *
      * @return {@code true} if handled.

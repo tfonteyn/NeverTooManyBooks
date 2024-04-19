@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -424,7 +424,7 @@ public abstract class FFBaseDialogFragment
      * Called when the user selects a menu item from the toolbar menu.
      * The default action ignores the selection.
      *
-     * @param menuItem {@link MenuItem} that was clicked
+     * @param menuItem The menu item that was invoked.
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */

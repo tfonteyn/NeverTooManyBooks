@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -296,21 +296,21 @@ public class EditBookFieldsFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_ISBN_VALIDITY_NONE) {
+            if (menuItemId == R.id.MENU_ISBN_VALIDITY_NONE) {
                 isbnValidityCheck = ISBN.Validity.None;
                 isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.None);
                 isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.None);
                 return true;
 
-            } else if (itemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
+            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
                 isbnValidityCheck = ISBN.Validity.Loose;
                 isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Loose);
                 isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Loose);
                 return true;
 
-            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 isbnValidityCheck = ISBN.Validity.Strict;
                 isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Strict);
                 isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Strict);

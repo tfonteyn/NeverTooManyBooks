@@ -411,22 +411,22 @@ public class SearchBookUpdatesFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
+            if (menuItemId == R.id.MENU_PREFS_SEARCH_SITES) {
                 editSitesLauncher.launch(vm.getSiteList());
                 return true;
 
-            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
                 vm.setStrictIsbn(checked);
 
-            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
+            } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
                 vm.setAll(SyncAction.Skip);
                 initAdapter();
                 return true;
 
-            } else if (itemId == R.id.MENU_RESET) {
+            } else if (menuItemId == R.id.MENU_RESET) {
                 vm.resetAll();
                 initAdapter();
                 return true;

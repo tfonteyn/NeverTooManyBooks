@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public class SearchBookByTextFragment
         extends SearchBookBaseFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "SearchBookByTextFragment";
 
     /** adapter for the AutoCompleteTextView. */

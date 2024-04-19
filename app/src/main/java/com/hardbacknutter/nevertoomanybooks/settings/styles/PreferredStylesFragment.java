@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataOb
 public class PreferredStylesFragment
         extends BaseFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "PreferredStylesFragment";
     private PreferredStylesViewModel vm;
     /** Set the hosting Activity result, and close it. */
@@ -272,7 +272,7 @@ public class PreferredStylesFragment
     /**
      * Called for toolbar and list adapter context menu.
      *
-     * @param menuItem that was selected
+     * @param menuItemId The menu item that was invoked.
      * @param position in the list
      *
      * @return {@code true} if handled.

@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {
 
+    /** Fragment/Log tag. */
     public static final String TAG = "BookshelfFiltersDlg";
 
     private PFilterListAdapter listAdapter;

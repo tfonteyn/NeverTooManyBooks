@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -200,8 +200,8 @@ public class SearchAdminFragment
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
-            if (itemId == R.id.MENU_SETTINGS) {
+            final int menuItemId = menuItem.getItemId();
+            if (menuItemId == R.id.MENU_SETTINGS) {
                 final SiteConfigPreferenceFragment fragment =
                         new SiteConfigPreferenceFragment();
 
@@ -215,7 +215,7 @@ public class SearchAdminFragment
                         .commit();
                 return true;
 
-            } else if (itemId == R.id.MENU_RESET) {
+            } else if (menuItemId == R.id.MENU_RESET) {
                 // See TabAdapter: the position will always match the index of the type
                 final int position = vb.pager.getCurrentItem();
                 //noinspection DataFlowIssue

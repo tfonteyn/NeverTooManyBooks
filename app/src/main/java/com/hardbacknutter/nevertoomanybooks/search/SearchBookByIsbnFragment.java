@@ -579,26 +579,26 @@ public class SearchBookByIsbnFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_BARCODE_SCAN) {
+            if (menuItemId == R.id.MENU_BARCODE_SCAN) {
                 vm.setScannerMode(ScanMode.getSingleScanMode(requireContext()));
                 startScanner();
                 return true;
 
-            } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
+            } else if (menuItemId == R.id.MENU_BARCODE_SCAN_BATCH) {
                 vm.setScannerMode(ScanMode.Batch);
                 startScanner();
                 return true;
 
-            } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
+            } else if (menuItemId == R.id.MENU_BARCODE_IMPORT) {
                 // Using "*/*": see remarks in
                 // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
                 TipManager.getInstance().display(requireContext(), R.string.tip_import_isbn_list,
                                                  () -> openUriLauncher.launch(ANY_URI));
                 return true;
 
-            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
                 coordinator.setStrictIsbn(checked);
 

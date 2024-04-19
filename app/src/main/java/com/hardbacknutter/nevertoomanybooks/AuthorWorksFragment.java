@@ -259,44 +259,44 @@ public class AuthorWorksFragment
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
+            if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
                 menuItem.setChecked(true);
                 vm.setOrderByColumn(DBKey.TITLE_OB);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
                 menuItem.setChecked(true);
                 vm.setOrderByColumn(DBKey.FIRST_PUBLICATION__DATE);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_ALL) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_ALL) {
                 menuItem.setChecked(true);
                 vm.setFilter(true, true);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_TOC) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_TOC) {
                 menuItem.setChecked(true);
                 vm.setFilter(true, false);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS) {
                 menuItem.setChecked(true);
                 vm.setFilter(false, true);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
                 final boolean checked = !menuItem.isChecked();
                 menuItem.setChecked(checked);
                 vm.setAllBookshelves(checked);

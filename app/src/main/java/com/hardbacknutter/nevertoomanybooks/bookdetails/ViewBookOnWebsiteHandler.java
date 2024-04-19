@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import java.util.Objects;
@@ -115,10 +116,10 @@ public class ViewBookOnWebsiteHandler
 
     @Override
     public boolean onMenuItemSelected(@NonNull final Context context,
-                                      @NonNull final MenuItem menuItem,
+                                      @IdRes final int menuItemId,
                                       @NonNull final DataHolder rowData) {
-        final Optional<SearchEngineConfig> oConfig =
-                SearchEngineConfig.getByMenuId(menuItem.getItemId());
+
+        final Optional<SearchEngineConfig> oConfig = SearchEngineConfig.getByMenuId(menuItemId);
         if (oConfig.isPresent()) {
             final SearchEngineConfig config = oConfig.get();
             final Domain domain = config.getExternalIdDomain();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 public class CalibrePreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
+    /** Fragment/Log tag. */
     public static final String TAG = "CalibrePreferencesFrag";
 
     private static final String PSK_CA_FROM_FILE = "psk_ca_from_file";

@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 public class CoverBrowserDialogFragment
         extends FFBaseDialogFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "CoverBrowserFragment";
 
     private static final String ERROR_GALLERY_ADAPTER = "galleryAdapter";

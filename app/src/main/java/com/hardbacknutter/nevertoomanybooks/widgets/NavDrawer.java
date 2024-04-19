@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,28 +79,28 @@ public final class NavDrawer {
     /**
      * Get the {@link MenuItem} for the given id.
      *
-     * @param itemId to get
+     * @param menuItemId to get
      *
      * @return item
      */
     @Nullable
-    public MenuItem getMenuItem(@IdRes final int itemId) {
-        return navigationView.getMenu().findItem(itemId);
+    public MenuItem getMenuItem(@IdRes final int menuItemId) {
+        return navigationView.getMenu().findItem(menuItemId);
     }
 
     /**
      * Get the <strong>View</strong> of the {@link MenuItem} for the given id.
      * Note this is NOT the 'action-view'.
      *
-     * @param itemId to get
+     * @param menuItemId to get
      *
      * @return view
      */
     @NonNull
-    public View getMenuItemView(@IdRes final int itemId) {
-        final View anchor = navigationView.findViewById(itemId);
+    public View getMenuItemView(@IdRes final int menuItemId) {
+        final View anchor = navigationView.findViewById(menuItemId);
         // Not 100% we are using a legal way of getting the View...
-        Objects.requireNonNull(anchor, () -> "navigationView.findViewById(" + itemId + ")");
+        Objects.requireNonNull(anchor, () -> "navigationView.findViewById(" + menuItemId + ")");
         return anchor;
     }
 

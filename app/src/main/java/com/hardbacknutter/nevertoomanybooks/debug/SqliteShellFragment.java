@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public class SqliteShellFragment
         extends BaseFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "SqliteShellFragment";
 
     private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
@@ -234,17 +234,17 @@ public class SqliteShellFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_DEBUG_SQ_SHELL_RUN) {
+            if (menuItemId == R.id.MENU_DEBUG_SQ_SHELL_RUN) {
                 execute();
                 return true;
 
-            } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES) {
+            } else if (menuItemId == R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES) {
                 executeSql(SQL_LIST_TABLES);
                 return true;
 
-            } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES) {
+            } else if (menuItemId == R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES) {
                 //noinspection DataFlowIssue
                 final Intent intent = FragmentHostActivity
                         .createIntent(getContext(), SqlitePreferenceFragment.class);

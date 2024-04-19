@@ -378,9 +378,9 @@ public class EditBookFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_ACTION_CONFIRM) {
+            if (menuItemId == R.id.MENU_ACTION_CONFIRM) {
                 prepareSave(true);
                 return true;
             }
