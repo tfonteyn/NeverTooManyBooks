@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -214,23 +215,22 @@ public class EditBookshelvesFragment
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
+     * @param menuItemId The menu item that was invoked.
      * @param index    in the list
      *
      * @return {@code true} if handled.
      */
     @SuppressLint("NotifyDataSetChanged")
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int index) {
-        final int itemId = menuItem.getItemId();
 
         final Bookshelf bookshelf = vm.getBookshelf(index);
 
-        if (itemId == R.id.MENU_EDIT) {
+        if (menuItemId == R.id.MENU_EDIT) {
             editLauncher.launch(EditAction.EditInPlace, bookshelf);
             return true;
 
-        } else if (itemId == R.id.MENU_DELETE) {
+        } else if (menuItemId == R.id.MENU_DELETE) {
             if (bookshelf.getId() > Bookshelf.HARD_DEFAULT) {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
@@ -251,7 +251,7 @@ public class EditBookshelvesFragment
             }
             return true;
 
-        } else if (itemId == R.id.MENU_PURGE_BLNS) {
+        } else if (menuItemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
             //noinspection DataFlowIssue
             StandardDialogs.purgeNodeStates(context, R.string.lbl_bookshelf,
@@ -398,7 +398,7 @@ public class EditBookshelvesFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem,
+            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem.getItemId(),
                                                                    vm.getSelectedPosition());
         }
     }

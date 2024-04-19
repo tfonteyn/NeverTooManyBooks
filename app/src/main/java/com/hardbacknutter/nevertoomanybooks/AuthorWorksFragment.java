@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -123,18 +124,17 @@ public class AuthorWorksFragment
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
+     * @param menuItemId The menu item that was invoked.
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int position) {
-        final int itemId = menuItem.getItemId();
 
         final AuthorWork work = vm.getWorks().get(position);
 
-        if (itemId == R.id.MENU_DELETE) {
+        if (menuItemId == R.id.MENU_DELETE) {
             deleteWork(position, work);
             return true;
         }

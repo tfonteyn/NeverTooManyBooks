@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -277,21 +278,20 @@ public class PreferredStylesFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int position) {
-        final int itemId = menuItem.getItemId();
 
         final Style style = vm.getStyle(position);
 
-        if (itemId == R.id.MENU_EDIT) {
+        if (menuItemId == R.id.MENU_EDIT) {
             editStyleContract.launch(EditStyleContract.edit(style));
             return true;
 
-        } else if (itemId == R.id.MENU_DUPLICATE) {
+        } else if (menuItemId == R.id.MENU_DUPLICATE) {
             editStyleContract.launch(EditStyleContract.duplicate(style));
             return true;
 
-        } else if (itemId == R.id.MENU_DELETE) {
+        } else if (menuItemId == R.id.MENU_DELETE) {
             //noinspection DataFlowIssue
             StandardDialogs.deleteStyle(getContext(), style, () -> {
                 vm.deleteStyle(style);
@@ -300,7 +300,7 @@ public class PreferredStylesFragment
             });
             return true;
 
-        } else if (itemId == R.id.MENU_EDIT_DEFAULT) {
+        } else if (menuItemId == R.id.MENU_EDIT_DEFAULT) {
             getParentFragmentManager()
                     .beginTransaction()
                     .setReorderingAllowed(true)
@@ -310,7 +310,7 @@ public class PreferredStylesFragment
                              StyleDefaultsFragment.TAG)
                     .commit();
 
-        } else if (itemId == R.id.MENU_PURGE_BLNS) {
+        } else if (menuItemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
             //noinspection DataFlowIssue
             StandardDialogs.purgeNodeStates(context, R.string.lbl_style, style.getLabel(context),
@@ -461,7 +461,7 @@ public class PreferredStylesFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return PreferredStylesFragment.this.onMenuItemSelected(menuItem,
+            return PreferredStylesFragment.this.onMenuItemSelected(menuItem.getItemId(),
                                                                    vm.getSelectedPosition());
         }
     }

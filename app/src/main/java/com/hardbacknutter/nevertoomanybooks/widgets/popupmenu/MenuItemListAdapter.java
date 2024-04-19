@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,8 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 
+/**
+ * NOTE: sub-menus are handled automatically.
+ */
 public class MenuItemListAdapter
         extends RecyclerView.Adapter<MenuItemListAdapter.Holder> {
 
@@ -185,10 +188,7 @@ public class MenuItemListAdapter
          */
         void onNewMenuTitle(@NonNull CharSequence title);
 
-        /**
-         * Dismiss the menu.
-         */
-        void dismiss();
+        void onMenuItemClick(@IdRes int menuItemId);
     }
 
     /**

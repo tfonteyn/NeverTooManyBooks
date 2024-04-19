@@ -240,4 +240,18 @@ public class ExtPopupMenu {
         Anchored
     }
 
+    /**
+     * Interface definition for a callback to be invoked when a menu item is clicked.
+     */
+    public interface OnMenuItemClickListener {
+        /**
+         * Called when a menu item has been invoked.  This is the first code that
+         * is executed; if it returns true, no other callbacks will be executed.
+         *
+         * @param menuItemId The menu item that was invoked.
+         *
+         * @return Return true to consume this click and prevent others from executing.
+         */
+        public boolean onMenuItemClick(@IdRes int menuItemId);
+    }
 }

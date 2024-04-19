@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -349,18 +350,17 @@ public class CoverHandler {
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-        final int itemId = menuItem.getItemId();
+    private boolean onMenuItemSelected(@IdRes final int menuItemId) {
 
         final Book book = bookSupplier.get();
         final Context context = fragmentView.getContext();
 
-        if (itemId == R.id.MENU_DELETE) {
+        if (menuItemId == R.id.MENU_DELETE) {
             book.removeCover(cIdx);
             coverLoader.accept(cIdx);
             return true;
 
-        } else if (itemId == R.id.SUBMENU_THUMB_ROTATE) {
+        } else if (menuItemId == R.id.SUBMENU_THUMB_ROTATE) {
             // Just a submenu; skip, but display a hint if user is rotating a camera image
             if (vm.isShowTipAboutRotating()) {
                 TipManager.getInstance()
@@ -369,19 +369,19 @@ public class CoverHandler {
             }
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ROTATE_CW) {
+        } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
             startRotation(90);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ROTATE_CCW) {
+        } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CCW) {
             startRotation(-90);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ROTATE_180) {
+        } else if (menuItemId == R.id.MENU_THUMB_ROTATE_180) {
             startRotation(180);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_CROP) {
+        } else if (menuItemId == R.id.MENU_THUMB_CROP) {
             try {
                 cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
                         createTempCoverFile(book),
@@ -394,7 +394,7 @@ public class CoverHandler {
             }
             return true;
 
-        } else if (itemId == R.id.MENU_EDIT) {
+        } else if (menuItemId == R.id.MENU_EDIT) {
             try {
                 editPicture(createTempCoverFile(book));
 
@@ -405,19 +405,19 @@ public class CoverHandler {
             }
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
+        } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
             takePicture(false);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
+        } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
             getFromFileLauncher.launch(IMAGE_MIME_TYPE);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS) {
+        } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS) {
             startCoverBrowser();
             return true;
 
-        } else if (itemId == R.id.MENU_UNDO) {
+        } else if (menuItemId == R.id.MENU_UNDO) {
             try {
                 if (ServiceLocator.getInstance().getCoverStorage()
                                   .restore(book.getString(DBKey.BOOK_UUID), cIdx)) {

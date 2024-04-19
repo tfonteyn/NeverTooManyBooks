@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,8 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -56,12 +56,12 @@ public interface MenuHandler {
      * Called after the user selected a menu item.
      *
      * @param context  Current context
-     * @param menuItem item which was selected
+     * @param menuItemId The menu item that was invoked.
      * @param rowData  the row data
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
     boolean onMenuItemSelected(@NonNull Context context,
-                               @NonNull MenuItem menuItem,
+                               @IdRes int menuItemId,
                                @NonNull DataHolder rowData);
 }

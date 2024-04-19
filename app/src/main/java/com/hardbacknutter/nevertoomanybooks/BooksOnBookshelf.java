@@ -747,17 +747,16 @@ public class BooksOnBookshelf
     /**
      * Handle the {@link NavigationView} menu.
      *
-     * @param menuItem the menu item that was clicked
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if the menuItem was handled.
      */
-    private boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+    private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
         saveListPosition();
 
-        final int menuItemId = menuItem.getItemId();
-
         if (menuItemId == R.id.SUBMENU_SYNC) {
-            showNavigationSubMenu(R.id.SUBMENU_SYNC, menuItem, R.menu.sync);
+            showNavigationSubMenu(R.id.SUBMENU_SYNC, R.string.action_synchronize,
+                                  menuItemId, R.menu.sync);
             return false;
         }
 
@@ -880,8 +879,8 @@ public class BooksOnBookshelf
      * This should be called each time the user starts a potentially list-changing action.
      * Examples:
      * {@link #onRowClicked(View, int)},
-     * {@link #onRowContextMenuItemSelected(View, int, MenuItem)}
-     * {@link #onNavigationItemSelected(MenuItem)}
+     * {@link #onRowContextMenuItemSelected(View, int, int)}
+     * {@link #onNavigationItemSelected(int)}
      */
     private void saveListPosition() {
         if (!isDestroyed() && !vm.isBuilding()) {
@@ -1107,13 +1106,13 @@ public class BooksOnBookshelf
      *
      * @param v               View clicked; the anchor for a potential popup menu
      * @param adapterPosition The booklist adapter position
-     * @param menuItem        that was selected
+     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
     private boolean onRowContextMenuItemSelected(@NonNull final View v,
                                                  final int adapterPosition,
-                                                 @NonNull final MenuItem menuItem) {
+                                                 @IdRes final int menuItemId) {
         saveListPosition();
 
         //noinspection DataFlowIssue
@@ -1122,9 +1121,6 @@ public class BooksOnBookshelf
         if (rowData == null) {
             return false;
         }
-
-        @IdRes
-        final int menuItemId = menuItem.getItemId();
 
         // Check for row-group independent options first.
 
@@ -1242,14 +1238,14 @@ public class BooksOnBookshelf
         // other handlers.
         if (calibreHandler != null) {
             final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
-            if (calibreHandler.onMenuItemSelected(this, menuItem, book)) {
+            if (calibreHandler.onMenuItemSelected(this, menuItemId, book)) {
                 return true;
             }
         }
 
         return vm.getMenuHandlers()
                  .stream()
-                 .anyMatch(h -> h.onMenuItemSelected(this, menuItem, rowData));
+                 .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
     }
 
     /**
@@ -1698,14 +1694,15 @@ public class BooksOnBookshelf
 
     @SuppressWarnings("SameParameterValue")
     private void showNavigationSubMenu(@IdRes final int subMenuId,
-                                       @NonNull final MenuItem menuItem,
+                                       @StringRes final int subMenuTitleId,
+                                       @IdRes final int menuItemId,
                                        @MenuRes final int menuRes) {
 
         final View anchor = navDrawer.getMenuItemView(subMenuId);
 
         final Menu menu = MenuUtils.create(this, menuRes);
 
-        if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
+        if (menuItemId == R.id.SUBMENU_SYNC) {
             menu.findItem(R.id.MENU_SYNC_CALIBRE)
                 .setVisible(SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null);
 

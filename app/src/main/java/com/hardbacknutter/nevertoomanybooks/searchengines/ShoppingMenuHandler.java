@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,24 +118,22 @@ public abstract class ShoppingMenuHandler
 
     @Override
     public boolean onMenuItemSelected(@NonNull final Context context,
-                                      @NonNull final MenuItem menuItem,
+                                      @IdRes final int menuItemId,
                                       @NonNull final DataHolder rowData) {
 
-        final int itemId = menuItem.getItemId();
-
-        if (itemId == midByAuthor) {
+        if (menuItemId == midByAuthor) {
             if (DataHolderUtils.hasAuthor(rowData)) {
                 final Author author = DataHolderUtils.requireAuthor(rowData);
                 startSearchActivity(context, author, null);
                 return true;
             }
-        } else if (itemId == midByAuthorInSeries) {
+        } else if (menuItemId == midByAuthorInSeries) {
             if (DataHolderUtils.hasSeries(rowData)) {
                 final Series series = DataHolderUtils.requireSeries(rowData);
                 startSearchActivity(context, null, series);
                 return true;
             }
-        } else if (itemId == midBySeries) {
+        } else if (menuItemId == midBySeries) {
             if (DataHolderUtils.hasAuthor(rowData)
                 && DataHolderUtils.hasSeries(rowData)) {
                 final Author author = DataHolderUtils.requireAuthor(rowData);

@@ -396,7 +396,7 @@ public abstract class EditBookBaseFragment
 
             //noinspection DataFlowIssue
             return vm.getMenuHandlers().stream()
-                     .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
+                     .anyMatch(h -> h.onMenuItemSelected(context, menuItem.getItemId(), book));
         }
     }
 }
