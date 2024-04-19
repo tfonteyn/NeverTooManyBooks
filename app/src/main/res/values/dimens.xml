@@ -222,10 +222,11 @@
     <dimen name="toolbar_button_start_margin_last_button">8dp</dimen>
 
     <!-- the scaleX/scaleY scaling factor for the "3-dot" context menu button on a row. -->
-    <item name="btn_context_menu_scale"
+    <item name="context_menu_button_scale"
           format="float"
           type="dimen">0.6
     </item>
+    <dimen name="context_menu_padding">16dp</dimen>
 
 
     <integer name="span_count_edit_bookshelves">1</integer>

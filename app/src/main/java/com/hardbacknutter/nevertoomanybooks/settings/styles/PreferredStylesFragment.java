@@ -203,9 +203,9 @@ public class PreferredStylesFragment
                     final Menu menu = MenuUtils.create(context, R.menu.editing_styles);
                     prepareMenu(menu, position);
 
-                    new ExtPopupMenu(context, true)
+                    new ExtPopupMenu(context)
                             .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
-                            .setMenu(menu)
+                            .setMenu(menu, true)
                             .show(anchor, ExtPopupMenu.Location.Anchored);
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
@@ -274,7 +274,7 @@ public class PreferredStylesFragment
      * Called for toolbar and list adapter context menu.
      *
      * @param menuItemId The menu item that was invoked.
-     * @param position in the list
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */

@@ -336,9 +336,9 @@ public class CoverHandler {
             menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        new ExtPopupMenu(context, true)
+        new ExtPopupMenu(context)
                 .setListener(this::onMenuItemSelected)
-                .setMenu(menu)
+                .setMenu(menu, true)
                 .show(anchor, ExtPopupMenu.Location.Anchored);
 
         return true;

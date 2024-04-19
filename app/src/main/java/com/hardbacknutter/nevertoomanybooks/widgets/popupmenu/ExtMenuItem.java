@@ -32,6 +32,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+
 public class ExtMenuItem
         implements Parcelable {
 
@@ -66,25 +68,10 @@ public class ExtMenuItem
     @Nullable
     private ExtMenu subMenu;
 
+    /**
+     * Constructor.
+     */
     public ExtMenuItem() {
-    }
-
-    public ExtMenuItem(@NonNull final MenuItem menuItem,
-                       final boolean groupDividerEnabled) {
-        groupId = menuItem.getGroupId();
-        id = menuItem.getItemId();
-        icon = menuItem.getIcon();
-        orderInCategory = menuItem.getOrder();
-        final CharSequence tmpTitle = menuItem.getTitle();
-        title = tmpTitle != null ? tmpTitle.toString() : "";
-        visible = menuItem.isVisible();
-        enabled = menuItem.isEnabled();
-
-        if (menuItem.hasSubMenu()) {
-            subMenu = new ExtMenu();
-            //noinspection DataFlowIssue
-            subMenu.addAll(ExtMenu.convert(menuItem.getSubMenu(), groupDividerEnabled));
-        }
     }
 
     private ExtMenuItem(@NonNull final Parcel in) {
@@ -98,22 +85,55 @@ public class ExtMenuItem
         subMenu = in.readParcelable(getClass().getClassLoader());
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        //URGENT: the icon??
-        dest.writeInt(groupId);
-        dest.writeInt(id);
-        dest.writeInt(orderInCategory);
-        dest.writeString(title);
-        dest.writeByte((byte) (visible ? 1 : 0));
-        dest.writeByte((byte) (enabled ? 1 : 0));
-        dest.writeParcelable(subMenu, flags);
+    /**
+     * Convert a {@link MenuItem}.
+     *
+     * @param menuItem            to convert
+     * @param groupDividerEnabled flag
+     *
+     * @return new list
+     */
+    @NonNull
+    public static ExtMenuItem convert(@NonNull final MenuItem menuItem,
+                                      final boolean groupDividerEnabled) {
+        final CharSequence tmpTitle = menuItem.getTitle();
+        final String title = tmpTitle != null ? tmpTitle.toString() : "";
+
+        final ExtMenuItem item = new ExtMenuItem();
+        item.setGroup(menuItem.getGroupId())
+            .setId(menuItem.getItemId())
+            .setOrderInCategory(menuItem.getOrder())
+            .setTitle(title)
+            .setVisible(menuItem.isVisible())
+            .setEnabled(menuItem.isEnabled());
+
+        item.setIcon(menuItem.getIcon());
+
+        if (menuItem.hasSubMenu()) {
+            final ExtMenu subMenu = new ExtMenu();
+            //noinspection DataFlowIssue
+            subMenu.addAll(ExtMenu.convert(menuItem.getSubMenu(), groupDividerEnabled));
+        }
+
+        return item;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    @NonNull
+    public static ExtMenuItem createDivider(final int order) {
+        return new ExtMenuItem()
+                .setId(R.id.MENU_DIVIDER)
+                .setOrderInCategory(order)
+                .setTitle("")
+                .setEnabled(false);
+    }
+
+    /**
+     * Check if this item is a divider.
+     *
+     * @return {@code true} if it is
+     */
+    public boolean isDivider() {
+        return id == R.id.MENU_DIVIDER;
     }
 
     @IdRes
@@ -137,6 +157,7 @@ public class ExtMenuItem
         this.id = id;
         return this;
     }
+
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @NonNull
@@ -215,21 +236,21 @@ public class ExtMenuItem
         return this;
     }
 
-    /**
-     * Interface definition for a callback to be invoked when a menu item is clicked.
-     */
-    @FunctionalInterface
-    public interface OnMenuItemClickListener {
-        /**
-         * Called when a menu item has been invoked.  This is the first code
-         * that is executed; if it returns true, no other callbacks will be
-         * executed.
-         *
-         * @param item The menu item that was invoked.
-         *
-         * @return Return true to consume this click and prevent others from
-         *         executing.
-         */
-        boolean onMenuItemClick(@NonNull ExtMenuItem item);
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        //URGENT: the icon??
+        dest.writeInt(groupId);
+        dest.writeInt(id);
+        dest.writeInt(orderInCategory);
+        dest.writeString(title);
+        dest.writeByte((byte) (visible ? 1 : 0));
+        dest.writeByte((byte) (enabled ? 1 : 0));
+        dest.writeParcelable(subMenu, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

@@ -234,9 +234,9 @@ public class EditBookTocFragment
                 ShowContextMenu.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    new ExtPopupMenu(context, true)
+                    new ExtPopupMenu(context)
                             .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
-                            .setMenu(rowMenu)
+                            .setMenu(rowMenu, true)
                             .show(v, ExtPopupMenu.Location.Anchored);
                 });
 
@@ -302,7 +302,7 @@ public class EditBookTocFragment
      * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItemId The menu item that was invoked.
-     * @param position in the list
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */

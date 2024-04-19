@@ -126,9 +126,9 @@ public class EditBookshelvesFragment
             final Menu menu = MenuUtils.create(context, R.menu.editing_bookshelves);
             prepareMenu(menu, position);
 
-            new ExtPopupMenu(context, true)
+            new ExtPopupMenu(context)
                     .setListener(menuItemId -> onMenuItemSelected(menuItemId, listIndex))
-                    .setMenu(menu)
+                    .setMenu(menu, true)
                     .show(anchor, ExtPopupMenu.Location.Anchored);
         }
     };
@@ -216,7 +216,7 @@ public class EditBookshelvesFragment
      * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItemId The menu item that was invoked.
-     * @param index    in the list
+     * @param index      in the list
      *
      * @return {@code true} if handled.
      */

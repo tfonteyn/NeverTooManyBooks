@@ -214,7 +214,7 @@ public class StyleBooklistBookLevelSortingFragment
             setOnRowLongClickListener(ShowContextMenu.Button, (anchor, position) -> {
                 final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
 
-                new ExtPopupMenu(anchor.getContext(), true)
+                new ExtPopupMenu(anchor.getContext())
                         .setListener(menuItemId -> {
                             final Sort nextValue;
                             if (menuItemId == R.id.MENU_SORT_UNSORTED) {
@@ -232,7 +232,7 @@ public class StyleBooklistBookLevelSortingFragment
                             setRowMenuButtonIconResource(StyleViewModel.getIconResId(nextValue));
                             return true;
                         })
-                        .setMenu(menu)
+                        .setMenu(menu, true)
                         .show(anchor, ExtPopupMenu.Location.Anchored);
             });
         }

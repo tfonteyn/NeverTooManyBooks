@@ -38,8 +38,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-
 public class ExtMenu
         implements Parcelable {
 
@@ -57,23 +55,20 @@ public class ExtMenu
             return new ExtMenu[size];
         }
     };
+
     @NonNull
     private final List<ExtMenuItem> items;
-    private boolean groupDividerEnabled;
 
+    /**
+     * Constructor.
+     */
     public ExtMenu() {
         items = new ArrayList<>();
-    }
-
-    public ExtMenu(@NonNull final Menu menu) {
-        items = new ArrayList<>();
-        items.addAll(convert(menu, true));
     }
 
     private ExtMenu(@NonNull final Parcel in) {
         //noinspection DataFlowIssue
         items = in.createTypedArrayList(ExtMenuItem.CREATOR);
-        groupDividerEnabled = in.readByte() != 0;
     }
 
     /**
@@ -96,57 +91,42 @@ public class ExtMenu
             if (menuItem.isVisible()) {
                 if (groupDividerEnabled && groupId != previousGroupId) {
                     previousGroupId = groupId;
-                    final ExtMenuItem divider = new ExtMenuItem()
-                            .setId(R.id.MENU_DIVIDER)
-                            .setOrderInCategory(menuItem.getOrder())
-                            .setTitle("")
-                            .setEnabled(false);
-                    list.add(divider);
+                    list.add(ExtMenuItem.createDivider(menuItem.getOrder()));
                 }
-                list.add(new ExtMenuItem(menuItem, groupDividerEnabled));
+                list.add(ExtMenuItem.convert(menuItem, groupDividerEnabled));
             }
         }
         return list;
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeTypedList(items);
-        dest.writeByte((byte) (groupDividerEnabled ? 1 : 0));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     /**
-     * Inflate a menu resource into this PopupMenu.
+     * Inflate a menu resource into this menu.
      *
-     * @param menuResId Menu resource to inflate
+     * @param context             Current context
+     * @param inflater            to use
+     * @param menuResId           Menu resource to inflate
+     * @param groupDividerEnabled flag
      */
     public void inflate(@NonNull final Context context,
                         @NonNull final MenuInflater inflater,
-                        @MenuRes final int menuResId) {
+                        @MenuRes final int menuResId,
+                        final boolean groupDividerEnabled) {
         final Menu tmpMenu = new PopupMenu(context, null).getMenu();
         inflater.inflate(menuResId, tmpMenu);
         items.addAll(convert(tmpMenu, groupDividerEnabled));
     }
 
+    /**
+     * Inflate a menu resource into this menu.
+     *
+     * @param context             Current context
+     * @param menuResId           Menu resource to inflate
+     * @param groupDividerEnabled flag
+     */
     public void inflate(@NonNull final Context context,
-                        @MenuRes final int menuResId) {
-        inflate(context, new MenuInflater(context), menuResId);
-    }
-
-    public boolean isGroupDividerEnabled() {
-        return groupDividerEnabled;
-    }
-
-    @NonNull
-    public ExtMenu setGroupDividerEnabled(final boolean groupDividerEnabled) {
-        this.groupDividerEnabled = groupDividerEnabled;
-        return this;
+                        @MenuRes final int menuResId,
+                        final boolean groupDividerEnabled) {
+        inflate(context, new MenuInflater(context), menuResId, groupDividerEnabled);
     }
 
     @NonNull
@@ -188,11 +168,21 @@ public class ExtMenu
                     .orElse(null);
     }
 
+    /**
+     * Get the ordered list of items for displaying.
+     *
+     * @return list
+     */
     @NonNull
     public List<ExtMenuItem> getOrderedItems() {
-        return items.stream()
-                    .sorted(Comparator.comparingInt(ExtMenuItem::getOrder))
-                    .collect(Collectors.toList());
+        return items
+                // List by group
+                .stream().map(ExtMenuItem::getGroup)
+                // Sort items in each group
+                .flatMap(group -> items.stream().filter(item -> item.getGroup() == group)
+                                       .sorted(Comparator.comparingInt(ExtMenuItem::getOrder)))
+                .collect(Collectors.toList());
+
     }
 
     public int size() {
@@ -203,4 +193,16 @@ public class ExtMenu
     public ExtMenuItem getItem(final int i) {
         return items.get(i);
     }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeTypedList(items);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
 }

@@ -55,9 +55,9 @@ public interface MenuHandler {
     /**
      * Called after the user selected a menu item.
      *
-     * @param context  Current context
+     * @param context    Current context
      * @param menuItemId The menu item that was invoked.
-     * @param rowData  the row data
+     * @param rowData    the row data
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */

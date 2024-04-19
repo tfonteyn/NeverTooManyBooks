@@ -1133,7 +1133,10 @@ public class SearchCoordinator
      * and what the SearchCoordinator needs.
      * <p>
      * Dev. Note: and it's an inner class because if we simply create it as an anonymous class
-     * as we normally would/should, then Android Studio source formatting will go silly...
+     * as we normally would/should, or ...
+     * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
+     * Each time we format the code, methods and variables jump around.
+     * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
      */
     private class SearchTaskListener
             implements TaskListener<Book> {

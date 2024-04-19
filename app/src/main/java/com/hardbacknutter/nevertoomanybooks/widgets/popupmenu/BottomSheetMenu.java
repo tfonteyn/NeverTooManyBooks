@@ -112,9 +112,7 @@ public class BottomSheetMenu
         }
 
         //noinspection DataFlowIssue
-        final MenuItemListAdapter adapter =
-                new MenuItemListAdapter(getContext(), groupDividerEnabled, menuCallback);
-
+        final MenuItemListAdapter adapter = new MenuItemListAdapter(getContext(), menuCallback);
         adapter.setMenu(menuList);
         vb.itemList.setAdapter(adapter);
     }
@@ -162,17 +160,17 @@ public class BottomSheetMenu
         /**
          * Launch the dialog.
          *
+         * @param adapterPosition     the position where the menu originates from
          * @param menuTitle           optional menu title
          * @param message             optional message
-         * @param groupDividerEnabled flag
          * @param menu                to display
-         * @param adapterPosition     the position where the menu originates from
+         * @param groupDividerEnabled flag
          */
-        public void launch(@Nullable final CharSequence menuTitle,
+        public void launch(final int adapterPosition,
+                           @Nullable final CharSequence menuTitle,
                            @Nullable final CharSequence message,
-                           final boolean groupDividerEnabled,
                            @NonNull final Menu menu,
-                           final int adapterPosition) {
+                           final boolean groupDividerEnabled) {
 
             final Bundle args = new Bundle(5);
             if (menuTitle != null) {

@@ -24,8 +24,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -43,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 /**
  * NOTE: sub-menus are handled automatically.
  */
-public class MenuItemListAdapter
+class MenuItemListAdapter
         extends RecyclerView.Adapter<MenuItemListAdapter.Holder> {
 
     @NonNull
@@ -54,7 +52,6 @@ public class MenuItemListAdapter
     @NonNull
     private final LayoutInflater inflater;
 
-    private final boolean groupDividerEnabled;
     @NonNull
     private final MenuCallback menuCallback;
 
@@ -62,16 +59,13 @@ public class MenuItemListAdapter
      * Constructor.
      *
      * @param context             Current context
-     * @param groupDividerEnabled flag
      * @param menuCallback        callback for title change requests and dismiss/item selection
      */
     @SuppressLint("UseCompatLoadingForDrawables")
-    public MenuItemListAdapter(@NonNull final Context context,
-                               final boolean groupDividerEnabled,
-                               @NonNull final MenuCallback menuCallback) {
+    MenuItemListAdapter(@NonNull final Context context,
+                        @NonNull final MenuCallback menuCallback) {
 
         inflater = LayoutInflater.from(context);
-        this.groupDividerEnabled = groupDividerEnabled;
         this.menuCallback = menuCallback;
 
         //noinspection DataFlowIssue
@@ -85,38 +79,15 @@ public class MenuItemListAdapter
      *
      * @param menu to add.
      */
-    public void setMenu(@NonNull final Menu menu) {
+    public void setMenu(@NonNull final List<ExtMenuItem> menu) {
         list.clear();
-        int previousGroupId = menu.size() > 0 ? menu.getItem(0).getGroupId() : 0;
-
-        for (int i = 0; i < menu.size(); i++) {
-            final MenuItem item = menu.getItem(i);
-            final int groupId = item.getGroupId();
-            if (item.isVisible()) {
-                if (groupDividerEnabled && groupId != previousGroupId) {
-                    previousGroupId = groupId;
-                    // this is silly... but the only way we can create a MenuItem directly
-                    final ExtMenuItem divider = new ExtMenuItem()
-                            .setId(R.id.MENU_DIVIDER)
-                            .setOrderInCategory(item.getOrder())
-                            .setTitle("")
-                            .setEnabled(false);
-                    list.add(divider);
-                }
-                list.add(new ExtMenuItem(item, groupDividerEnabled));
-            }
-        }
-    }
-
-    public void setMenu(@NonNull final List<ExtMenuItem> menuList) {
-        list.clear();
-        list.addAll(menuList);
+        list.addAll(menu);
     }
 
 
     @Override
     public int getItemViewType(final int position) {
-        if (list.get(position).getItemId() == R.id.MENU_DIVIDER) {
+        if (list.get(position).isDivider()) {
             return R.layout.row_simple_list_divider;
         } else {
             return R.layout.row_simple_list_item;
@@ -187,6 +158,11 @@ public class MenuItemListAdapter
          */
         void onNewMenuTitle(@NonNull CharSequence title);
 
+        /**
+         * The user clicked a menu item.
+         *
+         * @param menuItemId The menu item that was invoked.
+         */
         void onMenuItemClick(@IdRes int menuItemId);
     }
 

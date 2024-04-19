@@ -166,9 +166,9 @@ public class EditBookPublisherListDialogFragment
                 ShowContextMenu.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    new ExtPopupMenu(v.getContext(), true)
+                    new ExtPopupMenu(v.getContext())
                             .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
-                            .setMenu(rowMenu)
+                            .setMenu(rowMenu, true)
                             .show(v, ExtPopupMenu.Location.Anchored);
                 });
 
@@ -186,7 +186,7 @@ public class EditBookPublisherListDialogFragment
      * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItemId The menu item that was invoked.
-     * @param position in the list
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */

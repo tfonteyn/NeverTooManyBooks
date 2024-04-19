@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -211,8 +211,8 @@
         <item name="iconTint">?attr/colorOnPrimaryContainer</item>
         <item name="icon">@drawable/ic_baseline_more_vert_24</item>
         <item name="android:contentDescription">@string/action_show_options</item>
-        <item name="android:scaleX">@dimen/btn_context_menu_scale</item>
-        <item name="android:scaleY">@dimen/btn_context_menu_scale</item>
+        <item name="android:scaleX">@dimen/context_menu_button_scale</item>
+        <item name="android:scaleY">@dimen/context_menu_button_scale</item>
     </style>
 
     <style name="Base.Button.Grid"
@@ -230,8 +230,8 @@
         <item name="android:insetBottom">0dp</item>
         <item name="android:backgroundTint">?attr/colorSurfaceContainer</item>
         <item name="iconTint">?attr/colorOnPrimaryContainer</item>
-        <item name="android:scaleX">@dimen/btn_context_menu_scale</item>
-        <item name="android:scaleY">@dimen/btn_context_menu_scale</item>
+        <item name="android:scaleX">@dimen/context_menu_button_scale</item>
+        <item name="android:scaleY">@dimen/context_menu_button_scale</item>
     </style>
 
     <style name="Button.Grid.Details"

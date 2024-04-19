@@ -78,11 +78,9 @@ public class ExtPopupMenu {
      * Constructor.
      *
      * @param context             Current context
-     * @param groupDividerEnabled flag
      */
     @SuppressLint("InflateParams")
-    public ExtPopupMenu(@NonNull final Context context,
-                        final boolean groupDividerEnabled) {
+    public ExtPopupMenu(@NonNull final Context context) {
         final Resources res = context.getResources();
         paddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
         xOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
@@ -97,7 +95,7 @@ public class ExtPopupMenu {
                 context, com.google.android.material.R.attr.popupMenuBackground));
         popupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
 
-        adapter = new MenuItemListAdapter(context, groupDividerEnabled, menuCallback);
+        adapter = new MenuItemListAdapter(context, menuCallback);
         vb.itemList.setAdapter(adapter);
     }
 
@@ -183,8 +181,9 @@ public class ExtPopupMenu {
     }
 
     @NonNull
-    public ExtPopupMenu setMenu(@NonNull final Menu menu) {
-        adapter.setMenu(menu);
+    public ExtPopupMenu setMenu(@NonNull final Menu menu,
+                                final boolean groupDividerEnabled) {
+        adapter.setMenu(ExtMenu.convert(menu, groupDividerEnabled));
         return this;
     }
 

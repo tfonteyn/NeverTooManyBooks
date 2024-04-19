@@ -125,7 +125,7 @@ public class AuthorWorksFragment
      * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItemId The menu item that was invoked.
-     * @param position in the list
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */
@@ -217,9 +217,9 @@ public class AuthorWorksFragment
         adapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(context),
                 (anchor, position) -> {
-                    new ExtPopupMenu(context, true)
+                    new ExtPopupMenu(context)
                             .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
-                            .setMenu(rowMenu)
+                            .setMenu(rowMenu, true)
                             .show(anchor, ExtPopupMenu.Location.Anchored);
                 }
         );
