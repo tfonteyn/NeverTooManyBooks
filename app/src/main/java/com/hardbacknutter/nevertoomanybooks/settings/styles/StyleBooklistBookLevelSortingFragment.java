@@ -51,9 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Editor for the book-level field sorting of a single style.
@@ -214,15 +214,14 @@ public class StyleBooklistBookLevelSortingFragment
             setOnRowLongClickListener(ShowContextMenu.Button, (anchor, position) -> {
                 final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
 
-                new ExtPopupMenu(anchor.getContext())
-                        .initAdapter(anchor.getContext(), menu, menuItem -> {
-                            final int itemId = menuItem.getItemId();
+                new ExtPopupMenu(anchor.getContext(), true)
+                        .setListener(menuItemId -> {
                             final Sort nextValue;
-                            if (itemId == R.id.MENU_SORT_UNSORTED) {
+                            if (menuItemId == R.id.MENU_SORT_UNSORTED) {
                                 nextValue = Sort.Unsorted;
-                            } else if (itemId == R.id.MENU_SORT_ASC) {
+                            } else if (menuItemId == R.id.MENU_SORT_ASC) {
                                 nextValue = Sort.Asc;
-                            } else if (itemId == R.id.MENU_SORT_DESC) {
+                            } else if (menuItemId == R.id.MENU_SORT_DESC) {
                                 nextValue = Sort.Desc;
                             } else {
                                 // Should never get here... flw
@@ -233,6 +232,7 @@ public class StyleBooklistBookLevelSortingFragment
                             setRowMenuButtonIconResource(StyleViewModel.getIconResId(nextValue));
                             return true;
                         })
+                        .setMenu(menu)
                         .show(anchor, ExtPopupMenu.Location.Anchored);
             });
         }

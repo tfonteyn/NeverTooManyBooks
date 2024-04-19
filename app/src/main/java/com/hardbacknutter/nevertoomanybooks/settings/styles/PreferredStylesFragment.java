@@ -61,10 +61,10 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBi
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Editor for the list of all styles.
@@ -203,9 +203,9 @@ public class PreferredStylesFragment
                     final Menu menu = MenuUtils.create(context, R.menu.editing_styles);
                     prepareMenu(menu, position);
 
-                    new ExtPopupMenu(context)
-                            .initAdapter(anchor.getContext(), menu, menuItem ->
-                                    onMenuItemSelected(menuItem, position))
+                    new ExtPopupMenu(context, true)
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(menu)
                             .show(anchor, ExtPopupMenu.Location.Anchored);
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);

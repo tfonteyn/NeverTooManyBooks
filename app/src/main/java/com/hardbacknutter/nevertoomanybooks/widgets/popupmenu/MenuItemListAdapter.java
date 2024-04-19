@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
+package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -49,7 +49,7 @@ public class MenuItemListAdapter
     @NonNull
     private final Drawable subMenuPointer;
     @NonNull
-    private final List<MenuItem> list = new ArrayList<>();
+    private final List<ExtMenuItem> list = new ArrayList<>();
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
@@ -57,32 +57,25 @@ public class MenuItemListAdapter
     private final boolean groupDividerEnabled;
     @NonNull
     private final MenuCallback menuCallback;
-    /** Listener for the result. */
-    @NonNull
-    private final MenuItem.OnMenuItemClickListener menuItemClickListener;
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param menu    Menu (list of items) to display
+     * @param context             Current context
+     * @param groupDividerEnabled flag
+     * @param menuCallback        callback for title change requests and dismiss/item selection
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public MenuItemListAdapter(@NonNull final Context context,
-                               @NonNull final Menu menu,
                                final boolean groupDividerEnabled,
-                               @NonNull final MenuCallback menuCallback,
-                               @NonNull final MenuItem.OnMenuItemClickListener listener) {
+                               @NonNull final MenuCallback menuCallback) {
 
         inflater = LayoutInflater.from(context);
         this.groupDividerEnabled = groupDividerEnabled;
         this.menuCallback = menuCallback;
-        menuItemClickListener = listener;
 
         //noinspection DataFlowIssue
         subMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
-
-        setMenu(menu);
     }
 
     /**
@@ -103,16 +96,23 @@ public class MenuItemListAdapter
                 if (groupDividerEnabled && groupId != previousGroupId) {
                     previousGroupId = groupId;
                     // this is silly... but the only way we can create a MenuItem directly
-                    final MenuItem divider =
-                            MenuUtils.create(inflater.getContext())
-                                     .add(Menu.NONE, R.id.MENU_DIVIDER, item.getOrder(), "")
-                                     .setEnabled(false);
+                    final ExtMenuItem divider = new ExtMenuItem()
+                            .setId(R.id.MENU_DIVIDER)
+                            .setOrderInCategory(item.getOrder())
+                            .setTitle("")
+                            .setEnabled(false);
                     list.add(divider);
                 }
-                list.add(item);
+                list.add(new ExtMenuItem(item, groupDividerEnabled));
             }
         }
     }
+
+    public void setMenu(@NonNull final List<ExtMenuItem> menuList) {
+        list.clear();
+        list.addAll(menuList);
+    }
+
 
     @Override
     public int getItemViewType(final int position) {
@@ -138,18 +138,17 @@ public class MenuItemListAdapter
 
     @SuppressLint("NotifyDataSetChanged")
     private void onItemClicked(@NonNull final Holder holder) {
-        final MenuItem item = list.get(holder.getBindingAdapterPosition());
+        final ExtMenuItem item = list.get(holder.getBindingAdapterPosition());
         if (item.isEnabled()) {
             if (item.hasSubMenu()) {
                 //noinspection DataFlowIssue
-                setMenu(item.getSubMenu());
+                setMenu(item.getSubMenu().getOrderedItems());
                 notifyDataSetChanged();
                 //noinspection DataFlowIssue
                 menuCallback.onNewMenuTitle(item.getTitle());
 
             } else {
-                menuCallback.dismiss();
-                menuItemClickListener.onMenuItemClick(item);
+                menuCallback.onMenuItemClick(item.getItemId());
             }
         }
     }
@@ -158,7 +157,7 @@ public class MenuItemListAdapter
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
         if (holder.textView != null) {
-            final MenuItem item = list.get(position);
+            final ExtMenuItem item = list.get(position);
             holder.textView.setEnabled(item.isEnabled());
 
             holder.textView.setText(item.getTitle());

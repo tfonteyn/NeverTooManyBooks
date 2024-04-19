@@ -76,11 +76,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * The ISFDB direct interaction should be seen as temporary as this class
@@ -234,9 +234,9 @@ public class EditBookTocFragment
                 ShowContextMenu.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    new ExtPopupMenu(context)
-                            .initAdapter(v.getContext(), rowMenu,
-                                         menuItem -> onMenuItemSelected(menuItem, position))
+                    new ExtPopupMenu(context, true)
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(rowMenu)
                             .show(v, ExtPopupMenu.Location.Anchored);
                 });
 

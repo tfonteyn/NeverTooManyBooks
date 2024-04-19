@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Display all {@link TocEntry}'s for an Author.
@@ -217,9 +217,9 @@ public class AuthorWorksFragment
         adapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(context),
                 (anchor, position) -> {
-                    new ExtPopupMenu(context)
-                            .initAdapter(anchor.getContext(), rowMenu,
-                                         menuItem -> onMenuItemSelected(menuItem, position))
+                    new ExtPopupMenu(context, true)
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(rowMenu)
                             .show(anchor, ExtPopupMenu.Location.Anchored);
                 }
         );

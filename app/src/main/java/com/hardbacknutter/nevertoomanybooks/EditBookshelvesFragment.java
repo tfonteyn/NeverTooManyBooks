@@ -59,10 +59,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * {@link Bookshelf} maintenance.
@@ -126,9 +126,9 @@ public class EditBookshelvesFragment
             final Menu menu = MenuUtils.create(context, R.menu.editing_bookshelves);
             prepareMenu(menu, position);
 
-            new ExtPopupMenu(context)
-                    .initAdapter(anchor.getContext(), menu,
-                                 menuItem -> onMenuItemSelected(menuItem, listIndex))
+            new ExtPopupMenu(context, true)
+                    .setListener(menuItemId -> onMenuItemSelected(menuItemId, listIndex))
+                    .setMenu(menu)
                     .show(anchor, ExtPopupMenu.Location.Anchored);
         }
     };

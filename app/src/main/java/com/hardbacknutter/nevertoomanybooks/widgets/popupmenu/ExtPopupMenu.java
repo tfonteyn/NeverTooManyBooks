@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,18 +25,17 @@ import android.content.res.Resources;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupWindow;
 
 import androidx.annotation.Dimension;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MenuItemListAdapter;
 
 /**
  * Show a context menu on a view - will show icons if present.
@@ -53,6 +52,10 @@ public class ExtPopupMenu {
 
     @NonNull
     private final PopupWindow popupWindow;
+    @NonNull
+    private final MenuItemListAdapter adapter;
+
+    private OnMenuItemClickListener listener;
 
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
@@ -65,21 +68,21 @@ public class ExtPopupMenu {
                 }
 
                 @Override
-                public void dismiss() {
+                public void onMenuItemClick(@IdRes final int menuItemId) {
                     popupWindow.dismiss();
+                    listener.onMenuItemClick(menuItemId);
                 }
             };
-
-    private boolean groupDividerEnabled = true;
-    private MenuItemListAdapter adapter;
 
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context             Current context
+     * @param groupDividerEnabled flag
      */
     @SuppressLint("InflateParams")
-    public ExtPopupMenu(@NonNull final Context context) {
+    public ExtPopupMenu(@NonNull final Context context,
+                        final boolean groupDividerEnabled) {
         final Resources res = context.getResources();
         paddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
         xOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
@@ -93,20 +96,9 @@ public class ExtPopupMenu {
         popupWindow.setBackgroundDrawable(AttrUtils.getDrawable(
                 context, com.google.android.material.R.attr.popupMenuBackground));
         popupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
-    }
 
-    /**
-     * The {@link Menu} builtin API for group dividers is only available in API 28,
-     * and even there it's not possible to read the value back.
-     * <p>
-     * Call this method to enable the dividers.
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public ExtPopupMenu setGroupDividerEnabled(final boolean enabled) {
-        groupDividerEnabled = enabled;
-        return this;
+        adapter = new MenuItemListAdapter(context, groupDividerEnabled, menuCallback);
+        vb.itemList.setAdapter(adapter);
     }
 
     /**
@@ -184,13 +176,15 @@ public class ExtPopupMenu {
     }
 
     @NonNull
-    public ExtPopupMenu initAdapter(@NonNull final Context context,
-                                    @NonNull final Menu menu,
-                                    @NonNull final MenuItem.OnMenuItemClickListener listener) {
-        adapter = new MenuItemListAdapter(context, menu, groupDividerEnabled,
-                                          menuCallback, listener);
-        vb.itemList.setAdapter(adapter);
+    public ExtPopupMenu setListener(@NonNull final OnMenuItemClickListener listener) {
+        this.listener = listener;
 
+        return this;
+    }
+
+    @NonNull
+    public ExtPopupMenu setMenu(@NonNull final Menu menu) {
+        adapter.setMenu(menu);
         return this;
     }
 

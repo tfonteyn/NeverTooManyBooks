@@ -55,11 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Edit the list of Authors of a Book.
@@ -172,9 +172,9 @@ public class EditBookAuthorListDialogFragment
                 ShowContextMenu.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    new ExtPopupMenu(v.getContext())
-                            .initAdapter(v.getContext(), rowMenu,
-                                         menuItem -> onMenuItemSelected(menuItem, position))
+                    new ExtPopupMenu(v.getContext(), true)
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(rowMenu)
                             .show(v, ExtPopupMenu.Location.Anchored);
                 });
 

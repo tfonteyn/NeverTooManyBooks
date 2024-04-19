@@ -38,6 +38,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -58,6 +59,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
@@ -122,9 +124,10 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.BottomSheetMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -169,6 +172,7 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
+    private static final String RK_MENU = TAG + ":rk" + BottomSheetMenu.TAG;
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
     private static final int OFFSCREEN_CACHE_SIZE = 20;
@@ -178,6 +182,16 @@ public class BooksOnBookshelf
             registerForActivityResult(new ExportContract(), success -> {
                 // Nothing to do
             });
+
+    /** Multi-type adapter to manage list connection to cursor. */
+    @Nullable
+    private BooklistAdapter adapter;
+
+    /** View Binding. */
+    private BooksonbookshelfBinding vb;
+
+    /** Delegate which will handle all positioning/scrolling. */
+    private PositioningHelper positioningHelper;
 
     /** Bring up the synchronization options. */
     @Nullable
@@ -190,10 +204,6 @@ public class BooksOnBookshelf
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler calibreHandler;
-
-    /** Multi-type adapter to manage list connection to cursor. */
-    @Nullable
-    private BooklistAdapter adapter;
 
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel vm;
@@ -304,11 +314,6 @@ public class BooksOnBookshelf
             new ParcelableDialogLauncher<>(
                     DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new,
                     publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
-    /** Encapsulates the FAB button/menu. */
-    private FabMenu fabMenu;
-
-    /** View Binding. */
-    private BooksonbookshelfBinding vb;
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
             new BookshelfFiltersDialogFragment.Launcher(
                     RK_FILTERS, modified -> {
@@ -318,17 +323,20 @@ public class BooksOnBookshelf
                     buildBookList();
                 }
             });
+    /** Encapsulates the FAB button/menu. */
+    private FabMenu fabMenu;
 
-    /** Delegate which will handle all positioning/scrolling. */
-    private PositioningHelper positioningHelper;
     /**
      * The adapter used to fill the Bookshelf selector.
      */
     private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
+
     private HeaderAdapter headerAdapter;
+
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener bookshelfSelectionChangedListener =
             new SpinnerInteractionListener(this::onBookshelfSelected);
+
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -338,6 +346,7 @@ public class BooksOnBookshelf
      */
     private final StylePickerDialogFragment.Launcher stylePickerLauncher =
             new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER, this::onStyleSelected);
+
     private NavDrawer navDrawer;
     /**
      * The single back-press handler.
@@ -403,7 +412,8 @@ public class BooksOnBookshelf
         createHandlers();
 
         // Always present
-        navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
+        navDrawer = NavDrawer.create(this, menuItem ->
+                onNavigationItemSelected(menuItem.getItemId()));
 
         initToolbar();
 
@@ -1710,9 +1720,10 @@ public class BooksOnBookshelf
                 .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
         }
 
-        new ExtPopupMenu(this)
-                .setTitle(menuItem.getTitle())
-                .initAdapter(anchor.getContext(), menu, this::onNavigationItemSelected)
+        new ExtPopupMenu(this, true)
+                .setTitle(getString(subMenuTitleId))
+                .setListener(this::onNavigationItemSelected)
+                .setMenu(menu)
                 .show(anchor, ExtPopupMenu.Location.Anchored);
     }
 
@@ -1730,16 +1741,15 @@ public class BooksOnBookshelf
 
         final Menu menu = MenuUtils.create(this, R.menu.update_books);
 
-        new ExtPopupMenu(this)
+        new ExtPopupMenu(this, true)
                 .setTitle(dialogTitle)
                 .setMessage(getString(R.string.menu_update_books))
-                .initAdapter(this, menu, menuItem -> {
-                    final int itemId = menuItem.getItemId();
+                .setListener(menuItemId -> {
                     Boolean onlyThisShelf = null;
 
-                    if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
+                    if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
                         onlyThisShelf = true;
-                    } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
+                    } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
                         onlyThisShelf = false;
                     }
                     if (onlyThisShelf != null) {
@@ -1749,6 +1759,7 @@ public class BooksOnBookshelf
                     }
                     return false;
                 })
+                .setMenu(menu)
                 .show(anchor, ExtPopupMenu.Location.Anchored);
     }
 
