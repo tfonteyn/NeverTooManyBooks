@@ -225,6 +225,13 @@ public class BooksOnBookshelf
             registerForActivityResult(new PreferredStylesContract(), o -> o.ifPresent(
                     data -> vm.onEditStylesFinished(this, data)));
 
+    private final BottomSheetMenu.Launcher menuLauncher =
+            new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
+                final View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
+                Objects.requireNonNull(view, "No view");
+                onRowContextMenuItemSelected(view, adapterPosition, menuItemId);
+            });
+
     /** Edit an individual style. */
     private final ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher =
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(
@@ -468,7 +475,7 @@ public class BooksOnBookshelf
         editSeriesLauncher.registerForFragmentResult(fm, this);
         editPublisherLauncher.registerForFragmentResult(fm, this);
 
-
+        menuLauncher.registerForFragmentResult(fm, this);
         stylePickerLauncher.registerForFragmentResult(fm, this);
         editLenderLauncher.registerForFragmentResult(fm, this);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
@@ -1092,17 +1099,31 @@ public class BooksOnBookshelf
             final CharSequence menuTitle = adapter
                     .getLevelText(rowData.getInt(DBKey.BL_NODE_LEVEL), adapterPosition);
 
-            final ExtPopupMenu contextMenu = new ExtPopupMenu(this)
-                    .setTitle(menuTitle)
-                    .initAdapter(v.getContext(), menu, menuItem ->
-                            onRowContextMenuItemSelected(v, adapterPosition, menuItem));
 
             if (menu.size() < 5 || WindowSizeClass.getWidth(this) == WindowSizeClass.Medium) {
-                contextMenu.show(v, ExtPopupMenu.Location.Anchored);
+                new ExtPopupMenu(this, true)
+                        .setTitle(menuTitle)
+                        .setListener(menuItemId -> onRowContextMenuItemSelected(v, adapterPosition,
+                                                                                menuItemId))
+                        .setMenu(menu)
+                        .show(v, ExtPopupMenu.Location.Anchored);
+
             } else if (hasEmbeddedDetailsFrame()) {
-                contextMenu.show(v, ExtPopupMenu.Location.Start);
+                new ExtPopupMenu(this, true)
+                        .setTitle(menuTitle)
+                        .setListener(menuItemId -> onRowContextMenuItemSelected(v, adapterPosition,
+                                                                                menuItemId))
+                        .setMenu(menu)
+                        .show(v, ExtPopupMenu.Location.Start);
             } else {
-                contextMenu.show(v, ExtPopupMenu.Location.Center);
+//                new ExtPopupMenu(this, true)
+//                        .setTitle(menuTitle)
+//                        .setListener(menuItemId -> onRowContextMenuItemSelected(v, adapterPosition,
+//                                                                                menuItemId))
+//                        .setMenu(menu)
+//                        .show(v, ExtPopupMenu.Location.Center);
+
+                menuLauncher.launch(menuTitle, null, true, menu, adapterPosition);
             }
         }
     }
