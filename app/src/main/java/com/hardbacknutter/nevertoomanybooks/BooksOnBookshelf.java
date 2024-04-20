@@ -59,7 +59,6 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
@@ -329,8 +328,12 @@ public class BooksOnBookshelf
     /** Row menu launcher displaying the menu as a BottomSheet. */
     private final BottomSheetMenu.Launcher menuLauncher =
             new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
-                final View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
-                Objects.requireNonNull(view, "No view");
+                View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
+                if (view == null) {
+                    // URGENT: check if we ever could get a null view
+                    //  and what happens if we use the list as the view
+                    view = vb.content.list;
+                }
                 onRowMenuItemSelected(view, adapterPosition, menuItemId);
             });
 
@@ -353,7 +356,7 @@ public class BooksOnBookshelf
     private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
     private HeaderAdapter headerAdapter;
     /** Listener for the Bookshelf Spinner. */
-    private final SpinnerInteractionListener bookshelfSelectionChangedListener =
+    private final SpinnerInteractionListener bookshelfSpinnerListener =
             new SpinnerInteractionListener(this::onBookshelfSelected);
     /**
      * React to the user selecting a style to apply.
@@ -631,7 +634,7 @@ public class BooksOnBookshelf
         bookshelfAdapter = new EntityArrayAdapter<>(this, vm.getBookshelfList());
 
         vb.bookshelfSpinner.setAdapter(bookshelfAdapter);
-        bookshelfSelectionChangedListener.attach(vb.bookshelfSpinner);
+        bookshelfSpinnerListener.attach(vb.bookshelfSpinner);
     }
 
     private void createFabMenu() {
