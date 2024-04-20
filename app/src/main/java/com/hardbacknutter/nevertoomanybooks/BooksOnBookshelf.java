@@ -1913,7 +1913,8 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
-            // Scroll to the previously stored position
+            //URGENT: Scroll to the previously stored position - this seems to be
+            // getting incorrect results when using GRID mode.
             final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
             positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
                                        topRowPos.getViewOffset(),
