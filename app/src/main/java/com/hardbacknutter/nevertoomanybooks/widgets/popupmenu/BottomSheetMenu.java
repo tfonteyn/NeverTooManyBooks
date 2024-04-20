@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -172,17 +173,20 @@ public class BottomSheetMenu
                            @NonNull final Menu menu,
                            final boolean groupDividerEnabled) {
 
+            final ArrayList<ExtMenuItem> items = ExtMenu.convert(menu, true);
+
             final Bundle args = new Bundle(5);
+            args.putInt(BottomSheetMenu.BKEY_MENU_OWNER, adapterPosition);
+
             if (menuTitle != null) {
                 args.putString(BottomSheetMenu.BKEY_TITLE, menuTitle.toString());
             }
             if (message != null) {
                 args.putString(BottomSheetMenu.BKEY_MESSAGE, message.toString());
             }
+            args.putParcelableArrayList(BottomSheetMenu.BKEY_MENU, items);
             args.putBoolean(BottomSheetMenu.BKEY_GROUP_DIVIDER, groupDividerEnabled);
-            args.putParcelableArrayList(BottomSheetMenu.BKEY_MENU,
-                                        ExtMenu.convert(menu, true));
-            args.putInt(BottomSheetMenu.BKEY_MENU_OWNER, adapterPosition);
+
             createDialog(args);
         }
 

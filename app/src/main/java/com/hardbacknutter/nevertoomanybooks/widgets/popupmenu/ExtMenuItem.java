@@ -57,6 +57,8 @@ public class ExtMenuItem
     @IdRes
     private int id;
 
+    @DrawableRes
+    private int iconResId;
     @Nullable
     private Drawable icon;
 
@@ -75,7 +77,6 @@ public class ExtMenuItem
     }
 
     private ExtMenuItem(@NonNull final Parcel in) {
-        //URGENT: the icon??
         groupId = in.readInt();
         id = in.readInt();
         orderInCategory = in.readInt();
@@ -83,6 +84,9 @@ public class ExtMenuItem
         visible = in.readByte() != 0;
         enabled = in.readByte() != 0;
         subMenu = in.readParcelable(getClass().getClassLoader());
+
+        // see writeToParcel()
+        iconResId = in.readInt();
     }
 
     /**
@@ -107,6 +111,10 @@ public class ExtMenuItem
             .setVisible(menuItem.isVisible())
             .setEnabled(menuItem.isEnabled());
 
+        // Try to work around that the MenuItem class does not
+        // preserve/expose the resId for an icon
+        item.setIcon(IconMapper.getIconResId(menuItem.getItemId()));
+        // Either way, copy the icon itself as well
         item.setIcon(menuItem.getIcon());
 
         if (menuItem.hasSubMenu()) {
@@ -161,18 +169,17 @@ public class ExtMenuItem
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @NonNull
-    public ExtMenuItem setIcon(@NonNull final Context context,
-                               @DrawableRes final int iconResId) {
-        if (iconResId != 0) {
-            this.icon = context.getResources().getDrawable(iconResId, context.getTheme());
-        } else {
-            this.icon = null;
-        }
+    public ExtMenuItem setIcon(@DrawableRes final int iconResId) {
+        this.iconResId = iconResId;
         return this;
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Nullable
-    public Drawable getIcon() {
+    public Drawable getIcon(@NonNull final Context context) {
+        if (icon == null && iconResId != 0) {
+            icon = context.getResources().getDrawable(iconResId, context.getTheme());
+        }
         return icon;
     }
 
@@ -239,7 +246,6 @@ public class ExtMenuItem
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        //URGENT: the icon??
         dest.writeInt(groupId);
         dest.writeInt(id);
         dest.writeInt(orderInCategory);
@@ -247,6 +253,15 @@ public class ExtMenuItem
         dest.writeByte((byte) (visible ? 1 : 0));
         dest.writeByte((byte) (enabled ? 1 : 0));
         dest.writeParcelable(subMenu, flags);
+
+        //URGENT: we cannot write the icon itself, and some menu items
+        // might not have an iconRedId set.... not much we can do about that.
+        // See {@link IconMapper}
+        // However, it's been seen that Parcelling this class
+        // does not actually (ever?) calls the Parcelable interface?
+        // Instead it seems Android proxies back to the original
+        // and the icon Drawable IS FOUND AND USED anyhow.
+        dest.writeInt(iconResId);
     }
 
     @Override

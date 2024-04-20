@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,8 +44,6 @@ class MenuItemListAdapter
         extends RecyclerView.Adapter<MenuItemListAdapter.Holder> {
 
     @NonNull
-    private final Drawable subMenuPointer;
-    @NonNull
     private final List<ExtMenuItem> list = new ArrayList<>();
     /** Cached inflater. */
     @NonNull
@@ -58,8 +55,8 @@ class MenuItemListAdapter
     /**
      * Constructor.
      *
-     * @param context             Current context
-     * @param menuCallback        callback for title change requests and dismiss/item selection
+     * @param context      Current context
+     * @param menuCallback callback for title change requests and dismiss/item selection
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     MenuItemListAdapter(@NonNull final Context context,
@@ -67,9 +64,6 @@ class MenuItemListAdapter
 
         inflater = LayoutInflater.from(context);
         this.menuCallback = menuCallback;
-
-        //noinspection DataFlowIssue
-        subMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
     }
 
     /**
@@ -127,21 +121,7 @@ class MenuItemListAdapter
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        if (holder.textView != null) {
-            final ExtMenuItem item = list.get(position);
-            holder.textView.setEnabled(item.isEnabled());
-
-            holder.textView.setText(item.getTitle());
-
-            // add a little arrow to indicate sub-menus.
-            if (item.hasSubMenu()) {
-                holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        item.getIcon(), null, subMenuPointer, null);
-            } else {
-                holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        item.getIcon(), null, null, null);
-            }
-        }
+        holder.onBind(list.get(position));
     }
 
     @Override
@@ -182,7 +162,30 @@ class MenuItemListAdapter
             if (viewType == R.layout.row_simple_list_item) {
                 textView = itemView.findViewById(R.id.menu_item);
             } else {
+                // It's a divider
                 textView = null;
+            }
+        }
+
+        @SuppressLint("UseCompatLoadingForDrawables")
+        void onBind(@NonNull final ExtMenuItem item) {
+            if (textView != null) {
+                textView.setEnabled(item.isEnabled());
+
+                textView.setText(item.getTitle());
+
+                final Context context = textView.getContext();
+                if (item.hasSubMenu()) {
+                    // add a little arrow to indicate sub-menus.
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            item.getIcon(context),
+                            null,
+                            context.getDrawable(R.drawable.ic_baseline_arrow_right_24),
+                            null);
+                } else {
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            item.getIcon(context), null, null, null);
+                }
             }
         }
     }
