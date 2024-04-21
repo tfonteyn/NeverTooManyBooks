@@ -57,6 +57,7 @@ public class ExtPopupMenu {
 
     private OnMenuItemClickListener listener;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
@@ -77,7 +78,7 @@ public class ExtPopupMenu {
     /**
      * Constructor.
      *
-     * @param context             Current context
+     * @param context Current context
      */
     @SuppressLint("InflateParams")
     public ExtPopupMenu(@NonNull final Context context) {
@@ -173,6 +174,13 @@ public class ExtPopupMenu {
                 contentView.getMeasuredHeight() + paddingBottom};
     }
 
+    /**
+     * Set the listener which will received the selected menu-item-id.
+     *
+     * @param listener to set
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ExtPopupMenu setListener(@NonNull final OnMenuItemClickListener listener) {
         this.listener = listener;
@@ -180,6 +188,14 @@ public class ExtPopupMenu {
         return this;
     }
 
+    /**
+     * Set the menu which will be displayed when {@link #show(View, Location)} is called.
+     *
+     * @param menu                to set
+     * @param groupDividerEnabled flag
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ExtPopupMenu setMenu(@NonNull final Menu menu,
                                 final boolean groupDividerEnabled) {
@@ -236,6 +252,7 @@ public class ExtPopupMenu {
     /**
      * Interface definition for a callback to be invoked when a menu item is clicked.
      */
+    @FunctionalInterface
     public interface OnMenuItemClickListener {
         /**
          * Called when a menu item has been invoked.  This is the first code that
@@ -245,6 +262,6 @@ public class ExtPopupMenu {
          *
          * @return Return true to consume this click and prevent others from executing.
          */
-        public boolean onMenuItemClick(@IdRes int menuItemId);
+        boolean onMenuItemClick(@IdRes int menuItemId);
     }
 }

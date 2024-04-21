@@ -47,7 +47,6 @@ public class BottomSheetMenu
     public static final String TAG = "BottomSheetMenu";
     private static final String BKEY_TITLE = TAG + ":t";
     private static final String BKEY_MESSAGE = TAG + ":msg";
-    private static final String BKEY_GROUP_DIVIDER = TAG + ":gd";
     private static final String BKEY_MENU = TAG + ":menu";
     private static final String BKEY_MENU_OWNER = TAG + ":owner";
 
@@ -55,7 +54,6 @@ public class BottomSheetMenu
     private List<ExtMenuItem> menuList;
     private String title;
     private String message;
-    private boolean groupDividerEnabled;
     private String requestKey;
     private int menuOwner;
     private final MenuItemListAdapter.MenuCallback menuCallback =
@@ -83,7 +81,6 @@ public class BottomSheetMenu
 
         title = args.getString(BKEY_TITLE);
         message = args.getString(BKEY_MESSAGE);
-        groupDividerEnabled = args.getBoolean(BKEY_GROUP_DIVIDER, true);
         menuList = args.getParcelableArrayList(BKEY_MENU);
         menuOwner = args.getInt(BKEY_MENU_OWNER);
     }
@@ -173,7 +170,7 @@ public class BottomSheetMenu
                            @NonNull final Menu menu,
                            final boolean groupDividerEnabled) {
 
-            final ArrayList<ExtMenuItem> items = ExtMenu.convert(menu, true);
+            final ArrayList<ExtMenuItem> items = ExtMenu.convert(menu, groupDividerEnabled);
 
             final Bundle args = new Bundle(5);
             args.putInt(BottomSheetMenu.BKEY_MENU_OWNER, adapterPosition);
@@ -185,7 +182,6 @@ public class BottomSheetMenu
                 args.putString(BottomSheetMenu.BKEY_MESSAGE, message.toString());
             }
             args.putParcelableArrayList(BottomSheetMenu.BKEY_MENU, items);
-            args.putBoolean(BottomSheetMenu.BKEY_GROUP_DIVIDER, groupDividerEnabled);
 
             createDialog(args);
         }
