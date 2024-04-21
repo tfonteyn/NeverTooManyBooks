@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.5.1 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.5.1/NeverTooManyBooks-5.5.1.apk)
+## Download the latest release: [5.6.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.6.0/NeverTooManyBooks-5.6.0.apk)
 
 Also available
 on [IzzySoft](https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks).
@@ -31,9 +31,8 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 
 ## User Interface languages:
 
-- Dutch, English, French, German, Italian, Portuguese, Spanish.
-- Turkish, Vietnamese.
-- Czech, Greek, Polish, Russian: mostly machine translated, no guarantees for quality.
+- Chinese, Dutch, English, French, German, Italian, Portuguese, Spanish, Turkish, Vietnamese.
+- Machine translated, no guarantees for quality: Czech, Greek, Polish, Russian.
 
 Translations are now integrated and editable
 on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
@@ -42,7 +41,7 @@ on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
 - Contact me by logging an [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) if you want
   to provide translations in another way.
 - Please log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
-  if you want to be credited by name with your help.
+  if you want to be credited by name (instead of github alias) with your help.
 
 <a href="https://hosted.weblate.org/engage/nevertoomanybooks/">
 <img src="https://hosted.weblate.org/widget/nevertoomanybooks/multi-auto.svg"
@@ -100,8 +99,10 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
-- Vietnamese translation contributed by [ngocanhtve](https://github.com/ngocanhtve).
-- Portugese translation contributed by [maverick74](https://github.com/maverick74).
+- Chinese translation: [CloneWith](https://github.com/CloneWith)
+  and [evoke322](https://github.com/evoke322)
+- Vietnamese translation: [ngocanhtve](https://github.com/ngocanhtve).
+- Portuguese translation: by [maverick74](https://github.com/maverick74).
 - All other volunteers on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
 
 In August 2018, this project was forked from:

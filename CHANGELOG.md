@@ -1,3 +1,9 @@
+### 5.6.0
+
+- Chinese translation completed.
+
+---
+
 ### 5.5.1
 
 - fix #43 : doing a multi-version upgrade could result in a crash related to the Styles table. Fixed
