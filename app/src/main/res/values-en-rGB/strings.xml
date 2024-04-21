@@ -24,8 +24,4 @@
     <string name="lbl_author_type_cover_colorist">Cover colourist</string>
     <string name="lbl_color">Colour</string>
     <string name="pt_search_reformat_color">Standardize “book colour” names</string>
-    <plurals name="displaying_n_books">
-        <item quantity="one"></item>
-        <item quantity="other"></item>
-    </plurals>
 </resources>
