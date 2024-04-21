@@ -47,7 +47,6 @@ import java.util.List;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.TocAdapter;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Display all {@link TocEntry}'s for an Author.
@@ -215,13 +215,11 @@ public class AuthorWorksFragment
                .setIcon(R.drawable.ic_baseline_delete_24);
 
         adapter.setOnRowShowMenuListener(
-                ShowContextMenu.getPreferredMode(context),
-                (anchor, position) -> {
-                    new ExtPopupMenu(context)
-                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
-                            .setMenu(rowMenu, true)
-                            .show(anchor, ExtPopupMenu.Location.Anchored);
-                }
+                PopupMenuButton.getPreferredMode(context),
+                (anchor, position) -> new ExtPopupMenu(context)
+                        .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                        .setMenu(rowMenu, true)
+                        .show(anchor, ExtPopupMenu.Location.Anchored)
         );
 
         worksListView.setAdapter(adapter);

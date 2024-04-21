@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
@@ -48,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 public class TocAdapter
         extends RecyclerView.Adapter<TocAdapter.AuthorWorkHolder>
@@ -71,7 +71,7 @@ public class TocAdapter
     @Nullable
     private OnRowClickListener rowShowMenuListener;
     @Nullable
-    private ShowContextMenu contextMenuMode;
+    private PopupMenuButton contextMenuMode;
 
     /**
      * Constructor.
@@ -87,7 +87,7 @@ public class TocAdapter
                       @NonNull final List<Author> authors,
                       @NonNull final List<AuthorWork> works) {
         inflater = LayoutInflater.from(context);
-        this.contextMenuMode = ShowContextMenu.getPreferredMode(context);
+        this.contextMenuMode = PopupMenuButton.getPreferredMode(context);
         this.style = style;
         this.authors = authors;
         this.works = works;
@@ -108,7 +108,7 @@ public class TocAdapter
      * @param contextMenuMode how to show context menus
      * @param listener        to receive clicks
      */
-    public void setOnRowShowMenuListener(@NonNull final ShowContextMenu contextMenuMode,
+    public void setOnRowShowMenuListener(@NonNull final PopupMenuButton contextMenuMode,
                                          @Nullable final OnRowClickListener listener) {
         this.rowShowMenuListener = listener;
         this.contextMenuMode = contextMenuMode;

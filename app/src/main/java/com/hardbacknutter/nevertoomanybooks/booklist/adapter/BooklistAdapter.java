@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,6 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
@@ -61,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 public class BooklistAdapter
         extends RecyclerView.Adapter<RowViewHolder>
@@ -103,7 +103,7 @@ public class BooklistAdapter
     @Nullable
     private OnRowClickListener rowShowMenuListener;
     @Nullable
-    private ShowContextMenu contextMenuMode;
+    private PopupMenuButton contextMenuMode;
 
     /**
      * Constructor.
@@ -177,7 +177,7 @@ public class BooklistAdapter
      * @param contextMenuMode how to show context menus
      * @param listener        to receive clicks
      */
-    public void setOnRowShowMenuListener(@NonNull final ShowContextMenu contextMenuMode,
+    public void setOnRowShowMenuListener(@NonNull final PopupMenuButton contextMenuMode,
                                          @Nullable final OnRowClickListener listener) {
         this.rowShowMenuListener = listener;
         this.contextMenuMode = contextMenuMode;

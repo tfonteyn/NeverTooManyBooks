@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
@@ -65,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Editor for the list of all styles.
@@ -196,7 +196,7 @@ public class PreferredStylesFragment
             listAdapter.notifyItemChanged(position);
         });
         listAdapter.setOnRowShowMenuListener(
-                ShowContextMenu.getPreferredMode(getContext()),
+                PopupMenuButton.getPreferredMode(getContext()),
                 (anchor, position) -> {
                     final Context context = anchor.getContext();
 

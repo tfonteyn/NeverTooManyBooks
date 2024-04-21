@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,9 +32,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Collections;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.ItemTouchHelperAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.
@@ -62,7 +62,7 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
     @Nullable
     protected OnRowClickListener rowShowMenuListener;
     @Nullable
-    protected ShowContextMenu contextMenuMode;
+    protected PopupMenuButton contextMenuMode;
 
     /**
      * Constructor.
@@ -94,7 +94,7 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
      * @param contextMenuMode how to show context menus
      * @param listener        to receive clicks
      */
-    public void setOnRowShowMenuListener(@NonNull final ShowContextMenu contextMenuMode,
+    public void setOnRowShowMenuListener(@NonNull final PopupMenuButton contextMenuMode,
                                          @Nullable final OnRowClickListener listener) {
         this.rowShowMenuListener = listener;
         this.contextMenuMode = contextMenuMode;

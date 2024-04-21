@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
@@ -79,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 public class BooksOnBookshelfViewModel
         extends ViewModel {
@@ -586,11 +586,11 @@ public class BooksOnBookshelfViewModel
      * @return the mode to use
      */
     @NonNull
-    ShowContextMenu getShowContextMenuMode(@NonNull final Context context,
+    PopupMenuButton getShowContextMenuMode(@NonNull final Context context,
                                            final boolean hasEmbeddedDetailsFrame) {
-        final ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(context);
-        if (preferredMode == ShowContextMenu.ButtonIfSpace && hasEmbeddedDetailsFrame) {
-            return ShowContextMenu.NoButton;
+        final PopupMenuButton preferredMode = PopupMenuButton.getPreferredMode(context);
+        if (preferredMode == PopupMenuButton.IfRoom && hasEmbeddedDetailsFrame) {
+            return PopupMenuButton.None;
         } else {
             return preferredMode;
         }

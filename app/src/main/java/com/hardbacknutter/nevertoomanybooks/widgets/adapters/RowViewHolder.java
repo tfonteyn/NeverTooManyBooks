@@ -32,8 +32,8 @@ import com.google.android.material.button.MaterialButton;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Base for all ViewHolder classes.
@@ -115,7 +115,7 @@ public class RowViewHolder
      * @param contextMenuMode user preferred context menu mode
      * @param listener        to receive clicks
      */
-    public void setOnRowLongClickListener(@Nullable final ShowContextMenu contextMenuMode,
+    public void setOnRowLongClickListener(@Nullable final PopupMenuButton contextMenuMode,
                                           @Nullable final OnRowClickListener listener) {
         if (listener != null && contextMenuMode != null) {
             // long-click on the background
@@ -148,14 +148,14 @@ public class RowViewHolder
      *
      * @return visibility
      */
-    protected int getButtonVisibility(@NonNull final ShowContextMenu contextMenuMode) {
+    protected int getButtonVisibility(@NonNull final PopupMenuButton contextMenuMode) {
         final int visibility;
         switch (contextMenuMode) {
-            case Button: {
+            case Always: {
                 visibility = View.VISIBLE;
                 break;
             }
-            case ButtonIfSpace: {
+            case IfRoom: {
                 final WindowSizeClass size = WindowSizeClass.getWidth(itemView.getContext());
                 if (size == WindowSizeClass.Medium
                     || size == WindowSizeClass.Expanded) {
@@ -165,7 +165,7 @@ public class RowViewHolder
                 }
                 break;
             }
-            case NoButton: {
+            case None: {
                 visibility = View.GONE;
                 break;
             }

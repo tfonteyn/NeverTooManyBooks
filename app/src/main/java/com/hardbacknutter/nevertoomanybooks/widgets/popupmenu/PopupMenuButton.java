@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist;
+package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -28,31 +28,41 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-public enum ShowContextMenu
+public enum PopupMenuButton
         implements Parcelable {
 
-    Button(0),
-    ButtonIfSpace(1),
-    NoButton(2);
+    /**
+     * Always show a button through which the user can access the context/row menu.
+     */
+    Always(0),
+    /**
+     * As above and below depending on screen space.
+     * The decision is mainly based on phone versus tablet.
+     */
+    IfRoom(1),
+    /**
+     * Never show a button. The user will need to use long-click instead.
+     */
+    None(2);
 
     /** {@link Parcelable}. */
-    public static final Creator<ShowContextMenu> CREATOR = new Creator<>() {
+    public static final Creator<PopupMenuButton> CREATOR = new Creator<>() {
         @Override
         @NonNull
-        public ShowContextMenu createFromParcel(@NonNull final Parcel in) {
+        public PopupMenuButton createFromParcel(@NonNull final Parcel in) {
             return values()[in.readInt()];
         }
 
         @Override
         @NonNull
-        public ShowContextMenu[] newArray(final int size) {
-            return new ShowContextMenu[size];
+        public PopupMenuButton[] newArray(final int size) {
+            return new PopupMenuButton[size];
         }
     };
 
     private final int value;
 
-    ShowContextMenu(final int value) {
+    PopupMenuButton(final int value) {
         this.value = value;
     }
 
@@ -64,17 +74,17 @@ public enum ShowContextMenu
      * @return Mode
      */
     @NonNull
-    public static ShowContextMenu getPreferredMode(@NonNull final Context context) {
+    public static PopupMenuButton getPreferredMode(@NonNull final Context context) {
         final int value = IntListPref.getInt(context, Prefs.pk_booklist_context_menu,
-                                             Button.value);
+                                             Always.value);
         switch (value) {
             case 2:
-                return NoButton;
+                return None;
             case 1:
-                return ButtonIfSpace;
+                return IfRoom;
             case 0:
             default:
-                return Button;
+                return Always;
         }
     }
 

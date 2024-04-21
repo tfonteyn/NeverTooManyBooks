@@ -38,7 +38,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
@@ -60,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Edit the list of Authors of a Book.
@@ -169,7 +169,7 @@ public class EditBookAuthorListDialogFragment
                                         vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
         adapter.setOnRowShowMenuListener(
-                ShowContextMenu.getPreferredMode(context),
+                PopupMenuButton.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
                     new ExtPopupMenu(v.getContext())

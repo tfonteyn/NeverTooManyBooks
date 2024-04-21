@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -40,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * ViewHolder for a {@link BooklistGroup#BOOK} row.
@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
  * This holder will disregard the cover visibility setting
  * and simply show either the frontcover, or a title-placeholder (and optional author).
  * <p>
- * Detail and context menu buttons are always shown regardless of user ShowContextMenu preference.
+ * Detail and context menu buttons are always shown regardless of user PopupMenuButton preference.
  */
 public class BookGridHolder
         extends RowViewHolder
@@ -141,7 +141,7 @@ public class BookGridHolder
     }
 
     @Override
-    public void setOnRowLongClickListener(@Nullable final ShowContextMenu contextMenuMode,
+    public void setOnRowLongClickListener(@Nullable final PopupMenuButton contextMenuMode,
                                           @Nullable final OnRowClickListener listener) {
         if (listener != null) {
             switch (style.getCoverLongClickAction()) {
@@ -153,13 +153,13 @@ public class BookGridHolder
                         return true;
                     });
                     // Force-hide the context menu button.
-                    super.setOnRowLongClickListener(ShowContextMenu.NoButton, listener);
+                    super.setOnRowLongClickListener(PopupMenuButton.None, listener);
                     break;
                 }
                 case Ignore:
                     // Force-show the context menu button,
                     // as long-clicking the background is not easy/possible in grid=mode.
-                    super.setOnRowLongClickListener(ShowContextMenu.Button, listener);
+                    super.setOnRowLongClickListener(PopupMenuButton.Always, listener);
                     break;
             }
         } else {

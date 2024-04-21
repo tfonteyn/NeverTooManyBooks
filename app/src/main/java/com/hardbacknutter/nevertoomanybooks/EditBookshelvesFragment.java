@@ -49,7 +49,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
@@ -63,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecycler
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * {@link Bookshelf} maintenance.
@@ -349,7 +349,7 @@ public class EditBookshelvesFragment
 
             // long-click -> context menu
             holder.setOnRowLongClickListener(
-                    ShowContextMenu.getPreferredMode(parent.getContext()), (v, position) -> {
+                    PopupMenuButton.getPreferredMode(parent.getContext()), (v, position) -> {
                         final int listIndex = transpose(position);
                         if (listIndex == RecyclerView.NO_POSITION) {
                             // Should never get here

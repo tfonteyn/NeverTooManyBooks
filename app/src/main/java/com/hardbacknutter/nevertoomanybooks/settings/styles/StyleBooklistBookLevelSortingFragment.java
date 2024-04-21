@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Editor for the book-level field sorting of a single style.
@@ -211,7 +211,7 @@ public class StyleBooklistBookLevelSortingFragment
 
             setRowMenuButtonIconResource(StyleViewModel.getIconResId(wrappedColumn.getSort()));
 
-            setOnRowLongClickListener(ShowContextMenu.Button, (anchor, position) -> {
+            setOnRowLongClickListener(PopupMenuButton.Always, (anchor, position) -> {
                 final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
 
                 new ExtPopupMenu(anchor.getContext())
