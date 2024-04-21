@@ -39,9 +39,6 @@
     Plurals:
     http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
         cardinal
-
-    en-rGB: https://issuetracker.google.com/issues/142590628
-    fixed in Studio 4.1
 -->
 <!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">

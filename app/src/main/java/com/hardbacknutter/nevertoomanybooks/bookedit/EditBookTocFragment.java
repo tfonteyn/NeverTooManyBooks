@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -75,11 +76,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * The ISFDB direct interaction should be seen as temporary as this class
@@ -140,8 +141,6 @@ public class EditBookTocFragment
             new ConfirmTocDialogFragment.Launcher(
                     RK_CONFIRM_TOC, this::onIsfdbDataConfirmed, this::searchIsfdb);
 
-    private ExtPopupMenu contextMenu;
-
     @NonNull
     @Override
     public FragmentId getFragmentId() {
@@ -186,7 +185,6 @@ public class EditBookTocFragment
 
         initEditTocViewModel();
 
-        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
         initListView();
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
@@ -225,6 +223,8 @@ public class EditBookTocFragment
         tocEntryList = vm.getBook().getToc();
 
         //noinspection DataFlowIssue
+
+
         adapter = new TocListEditAdapter(context, tocEntryList,
                                          vh -> itemTouchHelper.startDrag(vh));
 
@@ -232,8 +232,13 @@ public class EditBookTocFragment
                 (v, position) -> editEntry(tocEntryList.get(position), position));
         adapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(context),
-                (v, position) -> contextMenu
-                        .showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position)));
+                (v, position) -> {
+                    final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+                    new ExtPopupMenu(context)
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(rowMenu, true)
+                            .show(v, ExtPopupMenu.Location.Anchored);
+                });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.tocList.setAdapter(adapter);
@@ -296,20 +301,19 @@ public class EditBookTocFragment
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
-     * @param position in the list
+     * @param menuItemId The menu item that was invoked.
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int position) {
-        final int itemId = menuItem.getItemId();
 
-        if (itemId == R.id.MENU_EDIT) {
+        if (menuItemId == R.id.MENU_EDIT) {
             editEntry(tocEntryList.get(position), position);
             return true;
 
-        } else if (itemId == R.id.MENU_DELETE) {
+        } else if (menuItemId == R.id.MENU_DELETE) {
             deleteEntry(position);
             return true;
         }

@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -34,6 +35,7 @@ import android.widget.ImageView;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +52,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -74,7 +77,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * A delegate class for handling a displayed Cover.
@@ -301,12 +305,14 @@ public class CoverHandler {
      */
     private boolean onCreateContextMenu(@NonNull final View anchor) {
 
-        final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                .inflate(R.menu.image);
+        final Context context = anchor.getContext();
+
+        @NonNull
+        Menu menu = MenuUtils.create(context, R.menu.image);
 
         final Book book = bookSupplier.get();
-
         final Optional<File> coverFile = book.getCover(cIdx);
+
         if (coverFile.isPresent()) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
@@ -316,23 +322,24 @@ public class CoverHandler {
             }
         } else {
             // there is no current image; only show the replace menu
-            final MenuItem menuItem = popupMenu.getMenu().findItem(R.id.SUBMENU_THUMB_REPLACE);
-            //noinspection DataFlowIssue
-            popupMenu.setMenu(menuItem.getSubMenu());
+            final MenuItem menuItem = Objects.requireNonNull(
+                    menu.findItem(R.id.SUBMENU_THUMB_REPLACE), "R.id.SUBMENU_THUMB_REPLACE");
+            menu = Objects.requireNonNull(menuItem.getSubMenu(), "getSubMenu");
         }
 
         // we only support alternative edition covers for the front cover.
-        popupMenu.getMenu().findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(cIdx == 0);
+        menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(cIdx == 0);
 
         // Add the potential undo-menu
         if (ServiceLocator.getInstance().getCoverStorage()
                           .isUndoEnabled(book.getString(DBKey.BOOK_UUID), cIdx)) {
-            popupMenu.setGroupDividerEnabled();
-            popupMenu.getMenu()
-                     .add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
+            menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        popupMenu.showAsDropDown(anchor, this::onMenuItemSelected);
+        new ExtPopupMenu(context)
+                .setListener(this::onMenuItemSelected)
+                .setMenu(menu, true)
+                .show(anchor, ExtPopupMenu.Location.Anchored);
 
         return true;
     }
@@ -340,22 +347,21 @@ public class CoverHandler {
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-        final int itemId = menuItem.getItemId();
+    private boolean onMenuItemSelected(@IdRes final int menuItemId) {
 
         final Book book = bookSupplier.get();
         final Context context = fragmentView.getContext();
 
-        if (itemId == R.id.MENU_DELETE) {
+        if (menuItemId == R.id.MENU_DELETE) {
             book.removeCover(cIdx);
             coverLoader.accept(cIdx);
             return true;
 
-        } else if (itemId == R.id.SUBMENU_THUMB_ROTATE) {
+        } else if (menuItemId == R.id.SUBMENU_THUMB_ROTATE) {
             // Just a submenu; skip, but display a hint if user is rotating a camera image
             if (vm.isShowTipAboutRotating()) {
                 TipManager.getInstance()
@@ -364,19 +370,19 @@ public class CoverHandler {
             }
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ROTATE_CW) {
+        } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
             startRotation(90);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ROTATE_CCW) {
+        } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CCW) {
             startRotation(-90);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ROTATE_180) {
+        } else if (menuItemId == R.id.MENU_THUMB_ROTATE_180) {
             startRotation(180);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_CROP) {
+        } else if (menuItemId == R.id.MENU_THUMB_CROP) {
             try {
                 cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
                         createTempCoverFile(book),
@@ -389,7 +395,7 @@ public class CoverHandler {
             }
             return true;
 
-        } else if (itemId == R.id.MENU_EDIT) {
+        } else if (menuItemId == R.id.MENU_EDIT) {
             try {
                 editPicture(createTempCoverFile(book));
 
@@ -400,19 +406,19 @@ public class CoverHandler {
             }
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
+        } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
             takePicture(false);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
+        } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
             getFromFileLauncher.launch(IMAGE_MIME_TYPE);
             return true;
 
-        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS) {
+        } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS) {
             startCoverBrowser();
             return true;
 
-        } else if (itemId == R.id.MENU_UNDO) {
+        } else if (menuItemId == R.id.MENU_UNDO) {
             try {
                 if (ServiceLocator.getInstance().getCoverStorage()
                                   .restore(book.getString(DBKey.BOOK_UUID), cIdx)) {

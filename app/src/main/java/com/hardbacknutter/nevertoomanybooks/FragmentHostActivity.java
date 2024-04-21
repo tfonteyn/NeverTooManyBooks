@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -211,7 +211,7 @@ public class FragmentHostActivity
     /**
      * Handle the {@link NavigationView} menu.
      *
-     * @param menuItem the menu item that was clicked
+     * @param menuItem The menu item that was invoked.
      *
      * @return {@code true} if the menuItem was handled.
      */

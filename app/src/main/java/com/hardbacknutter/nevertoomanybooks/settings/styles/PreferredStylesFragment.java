@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -59,10 +60,11 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBindin
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Editor for the list of all styles.
@@ -70,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataOb
 public class PreferredStylesFragment
         extends BaseFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "PreferredStylesFragment";
     private PreferredStylesViewModel vm;
     /** Set the hosting Activity result, and close it. */
@@ -196,13 +198,15 @@ public class PreferredStylesFragment
         listAdapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(getContext()),
                 (anchor, position) -> {
-                    final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                            .inflate(R.menu.editing_styles)
-                            .setGroupDividerEnabled();
-                    prepareMenu(popupMenu.getMenu(), position);
+                    final Context context = anchor.getContext();
 
-                    popupMenu.showAsDropDown(anchor, menuItem ->
-                            onMenuItemSelected(menuItem, position));
+                    final Menu menu = MenuUtils.create(context, R.menu.editing_styles);
+                    prepareMenu(menu, position);
+
+                    new ExtPopupMenu(context)
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(menu, true)
+                            .show(anchor, ExtPopupMenu.Location.Anchored);
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
 
@@ -269,26 +273,25 @@ public class PreferredStylesFragment
     /**
      * Called for toolbar and list adapter context menu.
      *
-     * @param menuItem that was selected
-     * @param position in the list
+     * @param menuItemId The menu item that was invoked.
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int position) {
-        final int itemId = menuItem.getItemId();
 
         final Style style = vm.getStyle(position);
 
-        if (itemId == R.id.MENU_EDIT) {
+        if (menuItemId == R.id.MENU_EDIT) {
             editStyleContract.launch(EditStyleContract.edit(style));
             return true;
 
-        } else if (itemId == R.id.MENU_DUPLICATE) {
+        } else if (menuItemId == R.id.MENU_DUPLICATE) {
             editStyleContract.launch(EditStyleContract.duplicate(style));
             return true;
 
-        } else if (itemId == R.id.MENU_DELETE) {
+        } else if (menuItemId == R.id.MENU_DELETE) {
             //noinspection DataFlowIssue
             StandardDialogs.deleteStyle(getContext(), style, () -> {
                 vm.deleteStyle(style);
@@ -297,7 +300,7 @@ public class PreferredStylesFragment
             });
             return true;
 
-        } else if (itemId == R.id.MENU_EDIT_DEFAULT) {
+        } else if (menuItemId == R.id.MENU_EDIT_DEFAULT) {
             getParentFragmentManager()
                     .beginTransaction()
                     .setReorderingAllowed(true)
@@ -307,7 +310,7 @@ public class PreferredStylesFragment
                              StyleDefaultsFragment.TAG)
                     .commit();
 
-        } else if (itemId == R.id.MENU_PURGE_BLNS) {
+        } else if (menuItemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
             //noinspection DataFlowIssue
             StandardDialogs.purgeNodeStates(context, R.string.lbl_style, style.getLabel(context),
@@ -458,7 +461,7 @@ public class PreferredStylesFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return PreferredStylesFragment.this.onMenuItemSelected(menuItem,
+            return PreferredStylesFragment.this.onMenuItemSelected(menuItem.getItemId(),
                                                                    vm.getSelectedPosition());
         }
     }

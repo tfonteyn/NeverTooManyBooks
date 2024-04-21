@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -56,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Display all {@link TocEntry}'s for an Author.
@@ -95,7 +96,7 @@ public class AuthorWorksFragment
     private TocAdapter adapter;
     /** View Binding. */
     private RecyclerView worksListView;
-    private ExtPopupMenu contextMenu;
+    private Menu rowMenu;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -123,18 +124,17 @@ public class AuthorWorksFragment
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
-     * @param position in the list
+     * @param menuItemId The menu item that was invoked.
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int position) {
-        final int itemId = menuItem.getItemId();
 
         final AuthorWork work = vm.getWorks().get(position);
 
-        if (itemId == R.id.MENU_DELETE) {
+        if (menuItemId == R.id.MENU_DELETE) {
             deleteWork(position, work);
             return true;
         }
@@ -207,20 +207,24 @@ public class AuthorWorksFragment
                         vm.getWorks().get(position),
                         vm.getStyle(),
                         vm.isAllBookshelves()));
-        final ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(context);
+
+        final Resources res = getResources();
+        rowMenu = MenuUtils.create(context);
+        rowMenu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                    R.string.action_delete)
+               .setIcon(R.drawable.ic_baseline_delete_24);
+
         adapter.setOnRowShowMenuListener(
-                preferredMode, (anchor, position) -> contextMenu.showAsDropDown(anchor, menuItem ->
-                        onMenuItemSelected(menuItem, position))
+                ShowContextMenu.getPreferredMode(context),
+                (anchor, position) -> {
+                    new ExtPopupMenu(context)
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(rowMenu, true)
+                            .show(anchor, ExtPopupMenu.Location.Anchored);
+                }
         );
 
         worksListView.setAdapter(adapter);
-
-        contextMenu = new ExtPopupMenu(context);
-        final Menu menu = contextMenu.getMenu();
-        final Resources res = getResources();
-        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.action_delete)
-            .setIcon(R.drawable.ic_baseline_delete_24);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(context, R.string.tip_authors_works, null);
@@ -255,44 +259,44 @@ public class AuthorWorksFragment
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
+            if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
                 menuItem.setChecked(true);
                 vm.setOrderByColumn(DBKey.TITLE_OB);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
                 menuItem.setChecked(true);
                 vm.setOrderByColumn(DBKey.FIRST_PUBLICATION__DATE);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_ALL) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_ALL) {
                 menuItem.setChecked(true);
                 vm.setFilter(true, true);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_TOC) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_TOC) {
                 menuItem.setChecked(true);
                 vm.setFilter(true, false);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS) {
                 menuItem.setChecked(true);
                 vm.setFilter(false, true);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
                 final boolean checked = !menuItem.isChecked();
                 menuItem.setChecked(checked);
                 vm.setAllBookshelves(checked);

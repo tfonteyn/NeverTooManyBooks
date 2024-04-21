@@ -1,5 +1,8 @@
 * Use Android Studio Jellyfish or whichever later non-broken version of Studio that works at all...
+  Be aware of this bug: https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
+
 * Use Java 17 to run Studio, and set Gradle to the same.
+
 * Coding is in Java 11 with desugaring as per Android needs.
 
 * Tags used; always followed with a colon

@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -57,10 +58,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * {@link Bookshelf} maintenance.
@@ -120,10 +122,14 @@ public class EditBookshelvesFragment
         public void showContextMenu(@NonNull final View anchor,
                                     final int position,
                                     final int listIndex) {
-            final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                    .inflate(R.menu.editing_bookshelves);
-            prepareMenu(popupMenu.getMenu(), position);
-            popupMenu.showAsDropDown(anchor, menuItem -> onMenuItemSelected(menuItem, listIndex));
+            final Context context = anchor.getContext();
+            final Menu menu = MenuUtils.create(context, R.menu.editing_bookshelves);
+            prepareMenu(menu, position);
+
+            new ExtPopupMenu(context)
+                    .setListener(menuItemId -> onMenuItemSelected(menuItemId, listIndex))
+                    .setMenu(menu, true)
+                    .show(anchor, ExtPopupMenu.Location.Anchored);
         }
     };
 
@@ -209,23 +215,22 @@ public class EditBookshelvesFragment
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
-     * @param index    in the list
+     * @param menuItemId The menu item that was invoked.
+     * @param index      in the list
      *
      * @return {@code true} if handled.
      */
     @SuppressLint("NotifyDataSetChanged")
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int index) {
-        final int itemId = menuItem.getItemId();
 
         final Bookshelf bookshelf = vm.getBookshelf(index);
 
-        if (itemId == R.id.MENU_EDIT) {
+        if (menuItemId == R.id.MENU_EDIT) {
             editLauncher.launch(EditAction.EditInPlace, bookshelf);
             return true;
 
-        } else if (itemId == R.id.MENU_DELETE) {
+        } else if (menuItemId == R.id.MENU_DELETE) {
             if (bookshelf.getId() > Bookshelf.HARD_DEFAULT) {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
@@ -246,7 +251,7 @@ public class EditBookshelvesFragment
             }
             return true;
 
-        } else if (itemId == R.id.MENU_PURGE_BLNS) {
+        } else if (menuItemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
             //noinspection DataFlowIssue
             StandardDialogs.purgeNodeStates(context, R.string.lbl_bookshelf,
@@ -393,7 +398,7 @@ public class EditBookshelvesFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem,
+            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem.getItemId(),
                                                                    vm.getSelectedPosition());
         }
     }

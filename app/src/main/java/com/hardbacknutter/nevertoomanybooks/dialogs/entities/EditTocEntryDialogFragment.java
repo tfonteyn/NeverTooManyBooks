@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class EditTocEntryDialogFragment
         extends FFBaseDialogFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
     private static final String BKEY_ANTHOLOGY = TAG + ":anthology";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@
     <dimen name="til_margin">4dp</dimen>
 
     <dimen name="container_margin">8dp</dimen>
+
     <dimen name="container_above_bottom_appbar_margin_bottom">88dp</dimen>
 
     <dimen name="camera_preview_width">480dp</dimen>
@@ -34,7 +35,7 @@
     <dimen name="toolbar_button_start_margin">8dp</dimen>
     <dimen name="toolbar_button_start_margin_last_button">16dp</dimen>
 
-    <item name="btn_context_menu_scale"
+    <item name="context_menu_button_scale"
           format="float"
           type="dimen">0.85
     </item>

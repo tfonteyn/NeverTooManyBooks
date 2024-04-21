@@ -98,7 +98,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 public class ShowBookDetailsFragment
         extends BaseFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "ShowBookDetailsFragment";
 
     /**
@@ -651,36 +651,37 @@ public class ShowBookDetailsFragment
             final Context context = getContext();
             final Book book = vm.getBook();
 
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_BOOK_EDIT) {
+            if (menuItemId == R.id.MENU_BOOK_EDIT) {
                 editBookLauncher.launch(new EditBookContract.Input(book.getId(),
                                                                    aVm.getStyle()));
                 return true;
 
-            } else if (itemId == R.id.MENU_BOOK_DELETE) {
+            } else if (menuItemId == R.id.MENU_BOOK_DELETE) {
                 deleteBook(book);
                 return true;
 
-            } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
+            } else if (menuItemId == R.id.MENU_BOOK_SET_READ
+                       || menuItemId == R.id.MENU_BOOK_SET_UNREAD) {
                 // toggle the status
                 vm.setRead(!book.isRead());
                 return true;
 
-            } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
+            } else if (menuItemId == R.id.MENU_BOOK_LOAN_ADD) {
                 editLenderLauncher.launch(book);
                 return true;
 
-            } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
+            } else if (menuItemId == R.id.MENU_BOOK_LOAN_DELETE) {
                 deleteLoanee(book);
                 return true;
 
-            } else if (itemId == R.id.MENU_SHARE) {
+            } else if (menuItemId == R.id.MENU_SHARE) {
                 //noinspection DataFlowIssue
                 startActivity(book.getShareIntent(context, aVm.getStyle()));
                 return true;
 
-            } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+            } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {
                 // Must use the Activity fm as the current fragment could be hosted by
                 // ShowBookPagerFragment or embedded inside the BoB
                 //noinspection DataFlowIssue
@@ -694,11 +695,11 @@ public class ShowBookDetailsFragment
                              .commit();
                 return true;
 
-            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
+            } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
                 updateBookLauncher.launch(book);
                 return true;
 
-            } else if (itemId == R.id.MENU_SYNC_LIST_WITH_DETAILS) {
+            } else if (menuItemId == R.id.MENU_SYNC_LIST_WITH_DETAILS) {
                 if (bookChangedListener != null) {
                     bookChangedListener.onSyncBook(book.getId());
                 }
@@ -707,14 +708,14 @@ public class ShowBookDetailsFragment
 
             //noinspection DataFlowIssue
             if (calibreHandler != null
-                && calibreHandler.onMenuItemSelected(context, menuItem, book)) {
+                && calibreHandler.onMenuItemSelected(context, menuItemId, book)) {
                 return true;
             }
 
             //noinspection DataFlowIssue
             return aVm.getMenuHandlers()
                       .stream()
-                      .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
+                      .anyMatch(h -> h.onMenuItemSelected(context, menuItemId, book));
         }
 
         private void deleteLoanee(@NonNull final Book book) {

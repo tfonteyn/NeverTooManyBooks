@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
-    <!-- Used by the ExtPopupMenu. -->
+    <!-- Used by the ExtMenuItem. -->
     <item name="MENU_DIVIDER"
           type="id" />
 

@@ -79,7 +79,7 @@ public class SettingsFragment
         extends BasePreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    /** Fragment manager tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "SettingsFragment";
     /** Passed in by the startup routines, indicating the storage device was not found. */
     public static final String BKEY_STORAGE_WAS_MISSING = TAG + ":swm";

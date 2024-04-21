@@ -103,8 +103,9 @@ public class Author
     /**
      * WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1;
      * <p>
-     * <strong>Dev. note:</strong> do NOT set "= TYPE_WRITER"
-     * as Android Studio formatting will be [censored]
+     * <strong>Dev. note:</strong> do NOT set "= TYPE_WRITER" or...
+     * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
+     * Each time we format the code, methods and variables jump around.
      * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
      */
     public static final int TYPE_ORIGINAL_SCRIPT_WRITER = 1;

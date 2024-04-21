@@ -22,12 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
@@ -50,11 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Edit the list of Series of a Book.
@@ -89,7 +90,6 @@ public class EditBookSeriesListDialogFragment
             new ParcelableDialogLauncher<>(RK_EDIT_SERIES, EditBookSeriesDialogFragment::new,
                                            this::add, this::processChanges);
 
-    private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -145,7 +145,6 @@ public class EditBookSeriesListDialogFragment
             return false;
         });
 
-        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
         initListView();
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
@@ -165,9 +164,13 @@ public class EditBookSeriesListDialogFragment
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
         adapter.setOnRowShowMenuListener(
                 ShowContextMenu.getPreferredMode(context),
-                (v, position) -> contextMenu
-                        .showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position)));
-
+                (v, position) -> {
+                    final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+                    new ExtPopupMenu(v.getContext())
+                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                            .setMenu(rowMenu, true)
+                            .show(v, ExtPopupMenu.Location.Anchored);
+                });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.seriesList.setAdapter(adapter);
@@ -182,20 +185,19 @@ public class EditBookSeriesListDialogFragment
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param menuItem that was selected
-     * @param position in the list
+     * @param menuItemId The menu item that was invoked.
+     * @param position   in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onMenuItemSelected(@IdRes final int menuItemId,
                                        final int position) {
-        final int itemId = menuItem.getItemId();
 
-        if (itemId == R.id.MENU_EDIT) {
+        if (menuItemId == R.id.MENU_EDIT) {
             editEntry(position);
             return true;
 
-        } else if (itemId == R.id.MENU_DELETE) {
+        } else if (menuItemId == R.id.MENU_DELETE) {
             // simply remove and refresh
             seriesList.remove(position);
             adapter.notifyItemRemoved(position);

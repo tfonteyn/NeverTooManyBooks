@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerA
 public class StylePickerDialogFragment
         extends FFBaseDialogFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
 
@@ -130,12 +130,12 @@ public class StylePickerDialogFragment
             return false;
         }
 
-        final int itemId = menuItem.getItemId();
-        if (itemId == R.id.MENU_EDIT) {
+        final int menuItemId = menuItem.getItemId();
+        if (menuItemId == R.id.MENU_EDIT) {
             onEditStyle();
             return true;
 
-        } else if (itemId == R.id.MENU_STYLE_LIST_TOGGLE) {
+        } else if (menuItemId == R.id.MENU_STYLE_LIST_TOGGLE) {
             showAllStyles = !showAllStyles;
             if (showAllStyles) {
                 menuItem.setTitle(R.string.action_less_ellipsis);

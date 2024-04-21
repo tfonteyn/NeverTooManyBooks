@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,16 +31,18 @@ import android.text.style.RelativeSizeSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.PopupMenu;
 import android.widget.SearchView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuCompat;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 public final class MenuUtils {
 
@@ -95,14 +97,14 @@ public final class MenuUtils {
      * Customize the given menu item title to give it the same look as preference categories.
      * The color is set to 'colorAccent' + the text is scaled 0.88 (16sp versus default 18sp).
      *
-     * @param context Current context
-     * @param menu    hosting menu
-     * @param itemId  menu item id
+     * @param context    Current context
+     * @param menu       hosting menu
+     * @param menuItemId The menu item to customize.
      */
     public static void customizeMenuGroupTitle(@NonNull final Context context,
                                                @NonNull final Menu menu,
-                                               @IdRes final int itemId) {
-        final MenuItem item = menu.findItem(itemId);
+                                               @IdRes final int menuItemId) {
+        final MenuItem item = menu.findItem(menuItemId);
         final SpannableString title = new SpannableString(item.getTitle());
         final int color = AttrUtils
                 .getColorInt(context, com.google.android.material.R.attr.colorSecondary);
@@ -116,24 +118,38 @@ public final class MenuUtils {
     }
 
     /**
-     * Create a popup menu with {@code Edit} and {@code Delete} options.
+     * Create a menu with {@code Edit} and {@code Delete} options.
      *
      * @param context Current context
      *
      * @return menu
      */
     @NonNull
-    public static ExtPopupMenu createEditDeleteContextMenu(@NonNull final Context context) {
-        final ExtPopupMenu contextMenu = new ExtPopupMenu(context);
+    public static Menu createEditDeleteContextMenu(@NonNull final Context context) {
+        final Menu menu = create(context);
         final Resources res = context.getResources();
-        final Menu menu = contextMenu.getMenu();
         menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                  R.string.action_edit_ellipsis)
             .setIcon(R.drawable.ic_baseline_edit_24);
         menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.action_delete)
             .setIcon(R.drawable.ic_baseline_delete_24);
+        return menu;
+    }
 
-        return contextMenu;
+    @NonNull
+    public static Menu create(@NonNull final Context context) {
+        final Menu menu = new PopupMenu(context, null).getMenu();
+        MenuCompat.setGroupDividerEnabled(menu, true);
+        return menu;
+    }
+
+    @NonNull
+    public static Menu create(@NonNull final Context context,
+                              @MenuRes final int menuResId) {
+        final Menu menu = new PopupMenu(context, null).getMenu();
+        new MenuInflater(context).inflate(menuResId, menu);
+        MenuCompat.setGroupDividerEnabled(menu, true);
+        return menu;
     }
 }

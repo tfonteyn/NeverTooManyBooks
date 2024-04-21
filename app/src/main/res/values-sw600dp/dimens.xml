@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@
 
     <dimen name="scrollbar_padding">10dp</dimen>
 
-    <item name="btn_context_menu_scale"
+    <item name="context_menu_button_scale"
           format="float"
           type="dimen">0.75
     </item>

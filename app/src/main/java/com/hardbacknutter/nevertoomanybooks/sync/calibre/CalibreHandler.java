@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,13 +24,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AnyThread;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -242,18 +242,17 @@ public class CalibreHandler {
     /**
      * Handle the menu item selected.
      *
-     * @param context  Current context
-     * @param menuItem the user selected
-     * @param book     data to use
+     * @param context    Current context
+     * @param menuItemId The menu item that was invoked.
+     * @param book       data to use
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
     public boolean onMenuItemSelected(@NonNull final Context context,
-                                      @NonNull final MenuItem menuItem,
+                                      @IdRes final int menuItemId,
                                       @NonNull final Book book) {
-        final int itemId = menuItem.getItemId();
 
-        if (itemId == R.id.MENU_CALIBRE_READ) {
+        if (menuItemId == R.id.MENU_CALIBRE_READ) {
             // Open the given book for reading.
             // This only works if the user has not renamed the file outside of this app.
             try {
@@ -265,7 +264,7 @@ public class CalibreHandler {
             }
             return true;
 
-        } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
+        } else if (menuItemId == R.id.MENU_CALIBRE_DOWNLOAD) {
             final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(context);
             if (optionalUri.isPresent()) {
                 vm.startDownload(book, optionalUri.get());

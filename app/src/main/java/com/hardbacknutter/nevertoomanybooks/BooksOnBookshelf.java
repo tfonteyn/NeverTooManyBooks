@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,6 +38,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -123,16 +123,20 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.BottomSheetMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
  * <p>
  * TODO: This class is littered with ActivityResultLauncher and *DialogFragment.Launcher
  * objects etc... Refactor to sharing the VM is becoming VERY urgent.
- *
+ * <p>
+ * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
+ * Each time we format the code, methods and variables jump around.
+ * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
  * <p>
  * Notes on the local-search:
  * <ol>Advanced:
@@ -170,6 +174,7 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
+    private static final String RK_MENU = TAG + ":rk" + BottomSheetMenu.TAG;
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
     private static final int OFFSCREEN_CACHE_SIZE = 20;
@@ -177,7 +182,18 @@ public class BooksOnBookshelf
     /** Make a backup. */
     private final ActivityResultLauncher<Void> exportLauncher =
             registerForActivityResult(new ExportContract(), success -> {
+                // Nothing to do
             });
+
+    /** Multi-type adapter to manage list connection to cursor. */
+    @Nullable
+    private BooklistAdapter adapter;
+
+    /** View Binding. */
+    private BooksonbookshelfBinding vb;
+
+    /** Delegate which will handle all positioning/scrolling. */
+    private PositioningHelper positioningHelper;
 
     /** Bring up the synchronization options. */
     @Nullable
@@ -190,10 +206,6 @@ public class BooksOnBookshelf
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler calibreHandler;
-
-    /** Multi-type adapter to manage list connection to cursor. */
-    @Nullable
-    private BooklistAdapter adapter;
 
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel vm;
@@ -263,52 +275,68 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
                     bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
-
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
             new EditLenderDialogFragment.Launcher(
                     DBKey.LOANEE_NAME,
                     (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
+
     private final EditStringDialogFragment.Launcher editColorLauncher =
             new EditStringDialogFragment.Launcher(
                     DBKey.COLOR, EditColorDialogFragment::new, (original, modified)
                     -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
+
     private final EditStringDialogFragment.Launcher editFormatLauncher =
             new EditStringDialogFragment.Launcher(
                     DBKey.FORMAT, EditFormatDialogFragment::new, (original, modified)
                     -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
+
     private final EditStringDialogFragment.Launcher editGenreLauncher =
             new EditStringDialogFragment.Launcher(
                     DBKey.GENRE, EditGenreDialogFragment::new, (original, modified)
                     -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
+
     private final EditStringDialogFragment.Launcher editLanguageLauncher =
             new EditStringDialogFragment.Launcher(
                     DBKey.LANGUAGE, EditLanguageDialogFragment::new, (original, modified)
                     -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
+
     private final EditStringDialogFragment.Launcher editLocationLauncher =
             new EditStringDialogFragment.Launcher(
                     DBKey.LOCATION, EditLocationDialogFragment::new, (original, modified)
                     -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
+
     private final ParcelableDialogLauncher<Bookshelf> editBookshelfLauncher =
             new ParcelableDialogLauncher<>(
                     DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new,
                     bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
+
     private final ParcelableDialogLauncher<Author> editAuthorLauncher =
             new ParcelableDialogLauncher<>(
                     DBKey.FK_AUTHOR, EditAuthorDialogFragment::new,
                     author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
+
     private final ParcelableDialogLauncher<Series> editSeriesLauncher =
             new ParcelableDialogLauncher<>(
                     DBKey.FK_SERIES, EditSeriesDialogFragment::new,
                     series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
+
     private final ParcelableDialogLauncher<Publisher> editPublisherLauncher =
             new ParcelableDialogLauncher<>(
                     DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new,
                     publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
-    /** Encapsulates the FAB button/menu. */
-    private FabMenu fabMenu;
 
-    /** View Binding. */
-    private BooksonbookshelfBinding vb;
+    /** Row menu launcher displaying the menu as a BottomSheet. */
+    private final BottomSheetMenu.Launcher menuLauncher =
+            new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
+                View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
+                if (view == null) {
+                    // URGENT: check if we ever could get a null view
+                    //  and what happens if we use the list as the view
+                    view = vb.content.list;
+                }
+                onRowMenuItemSelected(view, adapterPosition, menuItemId);
+            });
+
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
             new BookshelfFiltersDialogFragment.Launcher(
                     RK_FILTERS, modified -> {
@@ -319,15 +347,16 @@ public class BooksOnBookshelf
                 }
             });
 
-    /** Delegate which will handle all positioning/scrolling. */
-    private PositioningHelper positioningHelper;
+    /** Encapsulates the FAB button/menu. */
+    private FabMenu fabMenu;
+
     /**
      * The adapter used to fill the Bookshelf selector.
      */
     private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
     private HeaderAdapter headerAdapter;
     /** Listener for the Bookshelf Spinner. */
-    private final SpinnerInteractionListener bookshelfSelectionChangedListener =
+    private final SpinnerInteractionListener bookshelfSpinnerListener =
             new SpinnerInteractionListener(this::onBookshelfSelected);
     /**
      * React to the user selecting a style to apply.
@@ -403,7 +432,8 @@ public class BooksOnBookshelf
         createHandlers();
 
         // Always present
-        navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
+        navDrawer = NavDrawer.create(this, menuItem ->
+                onNavigationItemSelected(menuItem.getItemId()));
 
         initToolbar();
 
@@ -458,7 +488,7 @@ public class BooksOnBookshelf
         editSeriesLauncher.registerForFragmentResult(fm, this);
         editPublisherLauncher.registerForFragmentResult(fm, this);
 
-
+        menuLauncher.registerForFragmentResult(fm, this);
         stylePickerLauncher.registerForFragmentResult(fm, this);
         editLenderLauncher.registerForFragmentResult(fm, this);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
@@ -604,7 +634,7 @@ public class BooksOnBookshelf
         bookshelfAdapter = new EntityArrayAdapter<>(this, vm.getBookshelfList());
 
         vb.bookshelfSpinner.setAdapter(bookshelfAdapter);
-        bookshelfSelectionChangedListener.attach(vb.bookshelfSpinner);
+        bookshelfSpinnerListener.attach(vb.bookshelfSpinner);
     }
 
     private void createFabMenu() {
@@ -747,17 +777,16 @@ public class BooksOnBookshelf
     /**
      * Handle the {@link NavigationView} menu.
      *
-     * @param menuItem the menu item that was clicked
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if the menuItem was handled.
      */
-    private boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+    private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
         saveListPosition();
 
-        final int menuItemId = menuItem.getItemId();
-
         if (menuItemId == R.id.SUBMENU_SYNC) {
-            showNavigationSubMenu(R.id.SUBMENU_SYNC, menuItem, R.menu.sync);
+            showNavigationSubMenu(R.id.SUBMENU_SYNC, R.string.action_synchronize,
+                                  menuItemId, R.menu.sync);
             return false;
         }
 
@@ -880,8 +909,8 @@ public class BooksOnBookshelf
      * This should be called each time the user starts a potentially list-changing action.
      * Examples:
      * {@link #onRowClicked(View, int)},
-     * {@link #onRowContextMenuItemSelected(View, int, MenuItem)}
-     * {@link #onNavigationItemSelected(MenuItem)}
+     * {@link #onRowMenuItemSelected(View, int, int)}
+     * {@link #onNavigationItemSelected(int)}
      */
     private void saveListPosition() {
         if (!isDestroyed() && !vm.isBuilding()) {
@@ -976,9 +1005,7 @@ public class BooksOnBookshelf
             return;
         }
 
-        final ExtPopupMenu contextMenu = new ExtPopupMenu(this)
-                .setGroupDividerEnabled();
-        final Menu menu = contextMenu.getMenu();
+        final Menu menu = MenuUtils.create(this);
 
         @BooklistGroup.Id
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
@@ -1082,22 +1109,43 @@ public class BooksOnBookshelf
         // If we actually have a menu, show it.
         if (menu.size() > 0) {
             // we have a menu to show, set the title according to the level.
-            final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
-            contextMenu.setTitle(adapter.getLevelText(level, adapterPosition));
+            final CharSequence menuTitle = adapter
+                    .getLevelText(rowData.getInt(DBKey.BL_NODE_LEVEL), adapterPosition);
 
             if (menu.size() < 5 || WindowSizeClass.getWidth(this) == WindowSizeClass.Medium) {
-                // show it anchored
-                contextMenu.showAsDropDown(v, menuItem ->
-                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
+                // Small menus are best served as actual popup menus
+                // to minimalize eye-movement.
+                showPopupMenu(v, adapterPosition, menuTitle, menu,
+                              ExtPopupMenu.Location.Anchored);
 
             } else if (hasEmbeddedDetailsFrame()) {
-                contextMenu.show(v, Gravity.START, menuItem ->
-                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
+                // Tablet in landscape with split screen list/details,
+                // always use a popup.
+                showPopupMenu(v, adapterPosition, menuTitle, menu,
+                              ExtPopupMenu.Location.Start);
+
+            } else if (WindowSizeClass.getWidth(this) == WindowSizeClass.Expanded) {
+                // Tablet in portrait mode or landscape without split screen,
+                // always use a popup.
+                showPopupMenu(v, adapterPosition, menuTitle, menu,
+                              ExtPopupMenu.Location.Center);
             } else {
-                contextMenu.show(v, Gravity.CENTER, menuItem ->
-                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
+                // typical phone and a large menu
+                menuLauncher.launch(adapterPosition, menuTitle, null, menu, true);
             }
         }
+    }
+
+    private void showPopupMenu(@NonNull final View v,
+                               final int adapterPosition,
+                               @Nullable final CharSequence menuTitle,
+                               @NonNull final Menu menu,
+                               @NonNull final ExtPopupMenu.Location location) {
+        new ExtPopupMenu(this)
+                .setTitle(menuTitle)
+                .setListener(menuItemId -> onRowMenuItemSelected(v, adapterPosition, menuItemId))
+                .setMenu(menu, true)
+                .show(v, location);
     }
 
     /**
@@ -1109,13 +1157,13 @@ public class BooksOnBookshelf
      *
      * @param v               View clicked; the anchor for a potential popup menu
      * @param adapterPosition The booklist adapter position
-     * @param menuItem        that was selected
+     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onRowContextMenuItemSelected(@NonNull final View v,
-                                                 final int adapterPosition,
-                                                 @NonNull final MenuItem menuItem) {
+    private boolean onRowMenuItemSelected(@NonNull final View v,
+                                          final int adapterPosition,
+                                          @IdRes final int menuItemId) {
         saveListPosition();
 
         //noinspection DataFlowIssue
@@ -1124,9 +1172,6 @@ public class BooksOnBookshelf
         if (rowData == null) {
             return false;
         }
-
-        @IdRes
-        final int menuItemId = menuItem.getItemId();
 
         // Check for row-group independent options first.
 
@@ -1244,14 +1289,14 @@ public class BooksOnBookshelf
         // other handlers.
         if (calibreHandler != null) {
             final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
-            if (calibreHandler.onMenuItemSelected(this, menuItem, book)) {
+            if (calibreHandler.onMenuItemSelected(this, menuItemId, book)) {
                 return true;
             }
         }
 
         return vm.getMenuHandlers()
                  .stream()
-                 .anyMatch(h -> h.onMenuItemSelected(this, menuItem, rowData));
+                 .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
     }
 
     /**
@@ -1301,7 +1346,7 @@ public class BooksOnBookshelf
      *
      * @param adapterPosition the row where the menu item was selected
      * @param rowData         the row data
-     * @param menuItemId      selected menu item
+     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1390,7 +1435,7 @@ public class BooksOnBookshelf
      *
      * @param v          View clicked; the anchor for a potential popup menu
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1462,7 +1507,7 @@ public class BooksOnBookshelf
      *
      * @param v          View clicked; the anchor for a potential popup menu
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1523,7 +1568,7 @@ public class BooksOnBookshelf
      *
      * @param v          View clicked; the anchor for a potential popup menu
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1571,7 +1616,7 @@ public class BooksOnBookshelf
      * Handle the row/context menu for a {@link Bookshelf}.
      *
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1619,7 +1664,7 @@ public class BooksOnBookshelf
      * Handle the row/context menu for a {@link BooklistGroup#LANGUAGE}.
      *
      * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1700,15 +1745,15 @@ public class BooksOnBookshelf
 
     @SuppressWarnings("SameParameterValue")
     private void showNavigationSubMenu(@IdRes final int subMenuId,
-                                       @NonNull final MenuItem menuItem,
+                                       @StringRes final int subMenuTitleId,
+                                       @IdRes final int menuItemId,
                                        @MenuRes final int menuRes) {
 
         final View anchor = navDrawer.getMenuItemView(subMenuId);
 
-        final ExtPopupMenu popupMenu = new ExtPopupMenu(this)
-                .inflate(menuRes);
-        final Menu menu = popupMenu.getMenu();
-        if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
+        final Menu menu = MenuUtils.create(this, menuRes);
+
+        if (menuItemId == R.id.SUBMENU_SYNC) {
             menu.findItem(R.id.MENU_SYNC_CALIBRE)
                 .setVisible(SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null);
 
@@ -1716,8 +1761,11 @@ public class BooksOnBookshelf
                 .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
         }
 
-        popupMenu.setTitle(menuItem.getTitle())
-                 .showAsDropDown(anchor, this::onNavigationItemSelected);
+        new ExtPopupMenu(this)
+                .setTitle(getString(subMenuTitleId))
+                .setListener(this::onNavigationItemSelected)
+                .setMenu(menu, true)
+                .show(anchor, ExtPopupMenu.Location.Anchored);
     }
 
     /**
@@ -1731,17 +1779,18 @@ public class BooksOnBookshelf
     private void updateBooksFromInternetData(@NonNull final View anchor,
                                              @NonNull final DataHolder rowData,
                                              @NonNull final CharSequence dialogTitle) {
+
+        final Menu menu = MenuUtils.create(this, R.menu.update_books);
+
         new ExtPopupMenu(this)
-                .inflate(R.menu.update_books)
                 .setTitle(dialogTitle)
                 .setMessage(getString(R.string.menu_update_books))
-                .showAsDropDown(anchor, menuItem -> {
-                    final int itemId = menuItem.getItemId();
+                .setListener(menuItemId -> {
                     Boolean onlyThisShelf = null;
 
-                    if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
+                    if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
                         onlyThisShelf = true;
-                    } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
+                    } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
                         onlyThisShelf = false;
                     }
                     if (onlyThisShelf != null) {
@@ -1750,7 +1799,9 @@ public class BooksOnBookshelf
                         return true;
                     }
                     return false;
-                });
+                })
+                .setMenu(menu, true)
+                .show(anchor, ExtPopupMenu.Location.Anchored);
     }
 
     /**
@@ -1862,7 +1913,8 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
-            // Scroll to the previously stored position
+            //URGENT: Scroll to the previously stored position - this seems to be
+            // getting incorrect results when using GRID mode.
             final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
             positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
                                        topRowPos.getViewOffset(),
@@ -2189,32 +2241,32 @@ public class BooksOnBookshelf
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             fabMenu.hideMenu();
 
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_FILTERS) {
+            if (menuItemId == R.id.MENU_FILTERS) {
                 bookshelfFiltersLauncher.launch(vm.getBookshelf());
                 return true;
 
-            } else if (itemId == R.id.MENU_STYLE_PICKER) {
+            } else if (menuItemId == R.id.MENU_STYLE_PICKER) {
                 stylePickerLauncher.launch(vm.getStyle(), false);
                 return true;
 
-            } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
+            } else if (menuItemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
                 // URGENT: if we use last-saved position we're totally off from where we need to be
                 expandAllNodes(vm.getStyle().getExpansionLevel(), false);
                 return true;
 
-            } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
+            } else if (menuItemId == R.id.MENU_LEVEL_EXPAND) {
                 // position on the last-saved node
                 expandAllNodes(1, true);
                 return true;
 
-            } else if (itemId == R.id.MENU_LEVEL_COLLAPSE) {
+            } else if (menuItemId == R.id.MENU_LEVEL_COLLAPSE) {
                 // position on the last-saved node
                 expandAllNodes(1, false);
                 return true;
 
-            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
                 updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
                         BooksOnBookshelf.this));
                 return true;

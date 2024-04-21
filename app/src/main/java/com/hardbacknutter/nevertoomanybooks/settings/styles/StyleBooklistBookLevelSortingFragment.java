@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -49,9 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
 
 /**
  * Editor for the book-level field sorting of a single style.
@@ -210,28 +212,28 @@ public class StyleBooklistBookLevelSortingFragment
             setRowMenuButtonIconResource(StyleViewModel.getIconResId(wrappedColumn.getSort()));
 
             setOnRowLongClickListener(ShowContextMenu.Button, (anchor, position) -> {
-                final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                        .inflate(R.menu.sorting_options)
-                        .setGroupDividerEnabled();
+                final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
 
-                popupMenu.showAsDropDown(anchor, menuItem -> {
-                    final int itemId = menuItem.getItemId();
-                    final Sort nextValue;
-                    if (itemId == R.id.MENU_SORT_UNSORTED) {
-                        nextValue = Sort.Unsorted;
-                    } else if (itemId == R.id.MENU_SORT_ASC) {
-                        nextValue = Sort.Asc;
-                    } else if (itemId == R.id.MENU_SORT_DESC) {
-                        nextValue = Sort.Desc;
-                    } else {
-                        // Should never get here... flw
-                        return false;
-                    }
+                new ExtPopupMenu(anchor.getContext())
+                        .setListener(menuItemId -> {
+                            final Sort nextValue;
+                            if (menuItemId == R.id.MENU_SORT_UNSORTED) {
+                                nextValue = Sort.Unsorted;
+                            } else if (menuItemId == R.id.MENU_SORT_ASC) {
+                                nextValue = Sort.Asc;
+                            } else if (menuItemId == R.id.MENU_SORT_DESC) {
+                                nextValue = Sort.Desc;
+                            } else {
+                                // Should never get here... flw
+                                return false;
+                            }
 
-                    wrappedColumn.setSort(nextValue);
-                    setRowMenuButtonIconResource(StyleViewModel.getIconResId(nextValue));
-                    return true;
-                });
+                            wrappedColumn.setSort(nextValue);
+                            setRowMenuButtonIconResource(StyleViewModel.getIconResId(nextValue));
+                            return true;
+                        })
+                        .setMenu(menu, true)
+                        .show(anchor, ExtPopupMenu.Location.Anchored);
             });
         }
     }

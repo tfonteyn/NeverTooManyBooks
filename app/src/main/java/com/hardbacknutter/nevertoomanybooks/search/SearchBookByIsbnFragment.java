@@ -74,7 +74,7 @@ import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
  * - need to double check the stop-logic: when is scanner.stop() needed?
  * -> see the DecoderResultListener#onResult in the library.
  * <p>
- * 2023-05-29: Android Studio is completely [censored] up the code formatting in this class!
+ * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
  * Each time we format the code, methods and variables jump around.
  * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
  */
@@ -579,26 +579,26 @@ public class SearchBookByIsbnFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
+            final int menuItemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_BARCODE_SCAN) {
+            if (menuItemId == R.id.MENU_BARCODE_SCAN) {
                 vm.setScannerMode(ScanMode.getSingleScanMode(requireContext()));
                 startScanner();
                 return true;
 
-            } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
+            } else if (menuItemId == R.id.MENU_BARCODE_SCAN_BATCH) {
                 vm.setScannerMode(ScanMode.Batch);
                 startScanner();
                 return true;
 
-            } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
+            } else if (menuItemId == R.id.MENU_BARCODE_IMPORT) {
                 // Using "*/*": see remarks in
                 // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
                 TipManager.getInstance().display(requireContext(), R.string.tip_import_isbn_list,
                                                  () -> openUriLauncher.launch(ANY_URI));
                 return true;
 
-            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
                 coordinator.setStrictIsbn(checked);
 
