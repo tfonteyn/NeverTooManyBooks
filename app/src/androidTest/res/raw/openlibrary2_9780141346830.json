@@ -1,0 +1,68 @@
+{
+  "publishers": [
+    "Puffin"
+  ],
+  "source_records": [
+    "bwb:9780141346830",
+    "promise:bwb_daily_pallets_2020-06-24"
+  ],
+  "title": "Percy Jackson and the Battle of the Labyrinth",
+  "number_of_pages": 352,
+  "languages": [
+    {
+      "key": "/languages/eng"
+    }
+  ],
+  "full_title": "Percy Jackson and the Battle of the Labyrinth",
+  "publish_date": "2013",
+  "key": "/books/OL28508809M",
+  "authors": [
+    {
+      "key": "/authors/OL30765A"
+    }
+  ],
+  "works": [
+    {
+      "key": "/works/OL492640W"
+    }
+  ],
+  "type": {
+    "key": "/type/edition"
+  },
+  "subjects": [
+    "Children's fiction",
+    "Gods, fiction",
+    "Fantasy fiction"
+  ],
+  "identifiers": {
+    "amazon": [
+      ""
+    ]
+  },
+  "isbn_13": [
+    "9780141346830"
+  ],
+  "ocaid": "percyjacksonbatt0000rior",
+  "classifications": {},
+  "lc_classifications": [
+    "PZ7.R4829BAT 2013"
+  ],
+  "covers": [
+    14615097,
+    14615096,
+    13011694
+  ],
+  "local_id": [
+    "urn:bwbsku:KN-636-106"
+  ],
+  "latest_revision": 8,
+  "revision": 8,
+  "created": {
+    "type": "/type/datetime",
+    "value": "2020-08-03T12:39:39.700071"
+  },
+  "last_modified": {
+    "type": "/type/datetime",
+    "value": "2024-04-17T11:55:51.747713"
+  }
+}

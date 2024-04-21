@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngin
 import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrary2SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -232,7 +232,7 @@ public enum EngineId
                 R.string.site_info_open_library,
                 "https://openlibrary.org",
                 Locale.US,
-                OpenLibrarySearchEngine.class,
+                OpenLibrary2SearchEngine.class,
                 BuildConfig.ENABLE_OPEN_LIBRARY),
 
     /** Dutch language (and to some extend other languages) comics. */

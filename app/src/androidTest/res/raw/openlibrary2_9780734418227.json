@@ -1,0 +1,25 @@
+{
+  "type": {"key": "/type/edition"}, "title": "Wundersmith", "source_records": [
+  "amazon:0734418221"
+], "publishers": [
+  "Lothian Children's Books"
+], "physical_format": "paperback", "full_title": "Wundersmith The Calling of Morrigan Crow",
+  "subtitle": "The Calling of Morrigan Crow",
+  "notes": "Source title: Wundersmith: The Calling of Morrigan Crow", "covers": [
+  13769253
+], "works": [
+  {"key": "/works/OL34944836W"}
+], "key": "/books/OL47304760M", "identifiers": {}, "isbn_10": [
+  "0734418221"
+], "isbn_13": [
+  "9780734418227"
+], "classifications": {}, "publish_places": [
+  "Australia"
+], "series": [
+  "Nevermoor"
+], "languages": [
+  {"key": "/languages/eng"}
+], "number_of_pages": 473, "latest_revision": 2, "revision": 2,
+  "created": {"type": "/type/datetime", "value": "2023-03-24T02:57:48.100424"},
+  "last_modified": {"type": "/type/datetime", "value": "2024-04-16T14:53:22.442763"}
+}
