@@ -25,7 +25,7 @@
     <string name="lbl_color">Colour</string>
     <string name="pt_search_reformat_color">Standardize “book colour” names</string>
     <plurals name="displaying_n_books">
-        <item quantity="one">%1$d book</item>
-        <item quantity="other">%1$d books</item>
+        <item quantity="one"></item>
+        <item quantity="other"></item>
     </plurals>
 </resources>
