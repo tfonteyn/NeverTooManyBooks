@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,6 +50,17 @@ public class Throttler {
         this.delayInMillis = delayInMillis;
     }
 
+
+    /**
+     * The default wait as used by the network code.
+     *
+     * @see #waitUntilRequestAllowed(int)
+     */
+    @SuppressWarnings("WeakerAccess")
+    public void waitUntilRequestAllowed() {
+        waitUntilRequestAllowed(delayInMillis);
+    }
+
     /**
      * Uses {@link #lastRequestTime} to determine how long until the next request is allowed;
      * and update {@link #lastRequestTime}; this needs to be synchronized across threads.
@@ -60,9 +71,13 @@ public class Throttler {
      * This method will sleep() until it can make a request; if 10 threads call this
      * simultaneously, one will return immediately, one will return 1 second later,
      * another two seconds etc.
+     *
+     * This method may be called in special circumstances if the site needs
+     * extra throttling for certain APIs.
+     *
+     * @param delayInMillis Thread delay time
      */
-    @SuppressWarnings("WeakerAccess")
-    public void waitUntilRequestAllowed() {
+    public void waitUntilRequestAllowed(final int delayInMillis) {
         long wait;
         synchronized (this) {
             final long now = System.currentTimeMillis();
