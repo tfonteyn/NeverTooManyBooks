@@ -17,7 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!--
+  -->
+
+<!--
     Reference sites:
     https://www.abbreviations.com/
 
@@ -53,7 +55,7 @@
     <string name="notification_channel_warn">Aye Matey!</string>
     <string name="notification_channel_info">Mappings</string>
     <string name="debug_select_items">Chose ta stuff ya wanta include:</string>
-    <string name="acra_report_saved">Aye there! Now sail to th\' Never Too Many Books GitHub sail, an log a new issue. If you ain\'t got a GitHub account, ya need to make one.</string>
+    <string name="acra_report_saved">Aye there! Now sail to th\' GitHub project sail, an log a new issue. If you ain\'t got a GitHub account, ya need to make one.</string>
     <string name="X_httpErrorIO">Couldn\'t sail to the server, try again when ta storm ends or check ya network connection.</string>
     <string name="httpErrorFailedSslHandshake">Couldn\'t sail securely.</string>
     <string name="httpErrorFile">Couldn\'t sail to the file.</string>
