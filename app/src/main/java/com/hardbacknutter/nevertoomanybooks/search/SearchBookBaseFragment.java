@@ -270,7 +270,7 @@ public abstract class SearchBookBaseFragment
      *
      * @param book results of the search
      */
-    abstract void onSearchResults(@NonNull final Book book);
+    abstract void onSearchResults(@NonNull Book book);
 
     /**
      * Add the needed listeners to automatically remove any error text from

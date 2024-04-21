@@ -193,7 +193,7 @@ public class ParcelableDialogLauncher<T extends Parcelable>
          *
          * @param item the new item
          */
-        void onAdd(@NonNull final T item);
+        void onAdd(@NonNull T item);
     }
 
     @FunctionalInterface
