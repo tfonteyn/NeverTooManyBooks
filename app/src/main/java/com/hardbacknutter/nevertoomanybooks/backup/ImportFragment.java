@@ -155,6 +155,7 @@ public class ImportFragment
         vb.infNewOnly.setOnClickListener(StandardDialogs::infoPopup);
         vb.infNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
         vb.infAll.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infRemovedBooks.setOnClickListener(StandardDialogs::infoPopup);
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             vm.setRecordType(isChecked, RecordType.Books);
@@ -335,6 +336,8 @@ public class ImportFragment
                 break;
             }
         }
+
+        vb.infRemovedBooks.setVisibility(vb.cbxDeleteRemovedBooks.getVisibility());
 
         vb.getRoot().setVisibility(View.VISIBLE);
     }
