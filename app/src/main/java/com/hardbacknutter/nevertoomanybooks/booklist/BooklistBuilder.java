@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -703,18 +703,23 @@ class BooklistBuilder {
                 triggerHelperLevelTriggerName[index] = listTable.getName() + "_TG_LEVEL_" + level;
                 db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperLevelTriggerName[index]);
                 final String levelTgSql =
-                        "\nCREATE TEMPORARY TRIGGER " + triggerHelperLevelTriggerName[index]
+                        "CREATE TEMPORARY TRIGGER " + triggerHelperLevelTriggerName[index]
                         + " BEFORE INSERT ON " + listTable.getName() + " FOR EACH ROW"
-                        + "\n WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + (level + 1)
+                        + " WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
                         + /* */ "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
-                        + "\n BEGIN"
-                        + "\n  INSERT INTO "
-                        + listTable.getName() + ' ' + listColumns + " VALUES " + listValues + ';'
-                        + "\n END";
+                        + " BEGIN"
+                        + /* */ " INSERT INTO " + listTable.getName() + ' ' + listColumns
+                        + /*        */ " VALUES " + listValues + ';'
+                        + " END";
 
                 db.execSQL(levelTgSql);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+                    LoggerFactory.getLogger()
+                                 .d(TAG, "build", "level=" + level
+                                                  + "|TgSql=" + levelTgSql);
+                }
                 // for references, these look somewhat like this:
                 // Level 2 is a "Series", level 1 uses "Title 1st letter"
                 //
@@ -758,16 +763,19 @@ class BooklistBuilder {
             db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperCurrentValueTriggerName);
             // This is a single row only, so delete the previous value, and insert the current one
             final String currentValueTgSql =
-                    "\nCREATE TEMPORARY TRIGGER " + triggerHelperCurrentValueTriggerName
+                    "CREATE TEMPORARY TRIGGER " + triggerHelperCurrentValueTriggerName
                     + " AFTER INSERT ON " + listTable.getName() + " FOR EACH ROW"
-                    + "\n WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + groupCount
-                    + "\n BEGIN"
-                    + "\n  DELETE FROM " + triggerHelperTable.getName() + ';'
-                    + "\n  INSERT INTO "
-                    + triggerHelperTable.getName() + " VALUES " + currentValues + ";"
-                    + "\n END";
-
+                    + " WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + groupCount
+                    + " BEGIN"
+                    + "  DELETE FROM " + triggerHelperTable.getName() + ';'
+                    + "  INSERT INTO " + triggerHelperTable.getName()
+                    + /*   */ " VALUES " + currentValues + ";"
+                    + " END";
             db.execSQL(currentValueTgSql);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "build", "currentValueTgSql=" + currentValueTgSql);
+            }
         }
 
         /**
