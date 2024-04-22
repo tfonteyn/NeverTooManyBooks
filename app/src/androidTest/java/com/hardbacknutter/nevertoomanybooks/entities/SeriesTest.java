@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -192,5 +193,54 @@ public class SeriesTest
 
         assertTrue("Failed to prune", modified);
         assertEquals(1, list.size());
+    }
+
+    @Test
+    public void checkForSeriesNameInTitle01() {
+        final Book book = new Book();
+        book.putString(DBKey.TITLE, "Isle of the Dead");
+        Series.checkForSeriesNameInTitle(book);
+        assertEquals("Isle of the Dead", book.getTitle());
+        final List<Series> allSeries = book.getSeries();
+        assertTrue(allSeries.isEmpty());
+    }
+
+    @Test
+    public void checkForSeriesNameInTitle02() {
+        final Book book = new Book();
+        book.putString(DBKey.TITLE, "The Last Colony (Old Man's War, #3)");
+        Series.checkForSeriesNameInTitle(book);
+        assertEquals("The Last Colony", book.getTitle());
+        final List<Series> allSeries = book.getSeries();
+        assertEquals(1, allSeries.size());
+        final Series series = allSeries.get(0);
+        assertEquals("Old Man's War", series.getTitle());
+        assertEquals("3", series.getNumber());
+    }
+
+    @Test
+    public void checkForSeriesNameInTitle03() {
+        final Book book = new Book();
+        book.putString(DBKey.TITLE, "Kip,Koek en Ei (Agent 212, #12)");
+        Series.checkForSeriesNameInTitle(book);
+        assertEquals("Kip,Koek en Ei", book.getTitle());
+        final List<Series> allSeries = book.getSeries();
+        assertEquals(1, allSeries.size());
+        final Series series = allSeries.get(0);
+        assertEquals("Agent 212", series.getTitle());
+        assertEquals("12", series.getNumber());
+    }
+
+    @Test
+    public void checkForSeriesNameInTitle04() {
+        final Book book = new Book();
+        book.putString(DBKey.TITLE, "Behind the Walls of Terra (World of Tiers 4)");
+        Series.checkForSeriesNameInTitle(book);
+        assertEquals("Behind the Walls of Terra", book.getTitle());
+        final List<Series> allSeries = book.getSeries();
+        assertEquals(1, allSeries.size());
+        final Series series = allSeries.get(0);
+        assertEquals("World of Tiers", series.getTitle());
+        assertEquals("4", series.getNumber());
     }
 }
