@@ -16,13 +16,20 @@ https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwi
 ----------------------------------------------------------------------------------------------------
 Draft notes for next version:
 
-### 5.6.0
+### 5.7.0
 
 NEW:
-
+- Migrated from the older OpenLibrary API to their current one.
+  We can now get a number of additional fields including back-cover images.
+- Large Context (popup) menus in the book list will now be shown as a bottom-sheet
+  on phones. Small menus are kept as popups. On tablets, all menus are kept as popups.
 
 FIXES:
+- fix the issue with duplicate "(Year not set)" headers.
 
+KNOWN ISSUES:
+- Fetching alternative editions from LibraryThing is no longer working.
+  LT has now completely blocked all API access.
 
 REMOVED:
 
