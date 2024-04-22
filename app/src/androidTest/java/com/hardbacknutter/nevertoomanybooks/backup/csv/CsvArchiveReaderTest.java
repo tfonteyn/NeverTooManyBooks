@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -84,12 +82,21 @@ public class CsvArchiveReaderTest
             throws DataReaderException, DataWriterException, DaoWriteException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
+        File file;
+        Locale locale;
         ImportHelper importHelper;
         ImportResults importResults;
         TypedCursor bookCursor;
         Book book;
 
-        importHelper = createImportHelper();
+        file = TestUtils.createFile(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
+                new File(context.getCacheDir(), "testdata.csv"));
+
+        locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+        importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
         importResults = importHelper.read(context, new TestProgressListener(TAG));
 
@@ -109,7 +116,14 @@ public class CsvArchiveReaderTest
         bookDao.delete(666000002);
         assertFalse(bookDao.bookExistsById(666000002));
 
-        importHelper = createImportHelper();
+        file = TestUtils.createFile(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
+                new File(context.getCacheDir(), "testdata.csv"));
+
+        locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+        importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
         importResults = importHelper.read(context, new TestProgressListener(TAG));
 
@@ -133,7 +147,14 @@ public class CsvArchiveReaderTest
         book = Book.from(bookCursor);
         bookDao.setRead(book, true);
 
-        importHelper = createImportHelper();
+        file = TestUtils.createFile(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
+                new File(context.getCacheDir(), "testdata.csv"));
+
+        locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+        importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.OnlyNewer);
         importResults = importHelper.read(context, new TestProgressListener(TAG));
 
@@ -149,9 +170,15 @@ public class CsvArchiveReaderTest
         book = Book.from(bookCursor);
         assertTrue(book.isRead());
 
-        // same import, but using
+        // same import, but using DataReader.Updates.Overwrite
+        file = TestUtils.createFile(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
+                new File(context.getCacheDir(), "testdata.csv"));
 
-        importHelper = createImportHelper();
+        locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+        importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
         importResults = importHelper.read(context, new TestProgressListener(TAG));
 
@@ -166,19 +193,5 @@ public class CsvArchiveReaderTest
         assertTrue(bookCursor.moveToFirst());
         book = Book.from(bookCursor);
         assertFalse(book.isRead());
-    }
-
-    @NonNull
-    private ImportHelper createImportHelper()
-            throws IOException, DataReaderException {
-        final File file = TestUtils.createFile(
-                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv_archive,
-                new File(context.getCacheDir(), "testdata.csv"));
-
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
-        final ImportHelper importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
-        importHelper.addRecordType(RecordType.Books);
-        return importHelper;
     }
 }
