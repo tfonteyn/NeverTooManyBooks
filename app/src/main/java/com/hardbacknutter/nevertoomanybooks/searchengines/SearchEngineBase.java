@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -57,10 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 public abstract class SearchEngineBase
         implements SearchEngine {
@@ -93,39 +90,6 @@ public abstract class SearchEngineBase
         this.config = config;
 
         random = new Random();
-    }
-
-    /**
-     * Helper method.
-     * <p>
-     * Look for a book title; if present try to get a Series from it and clean the book title.
-     * <p>
-     * This default implementation is fine for most engines but not always needed.
-     * TODO: we probably call checkForSeriesNameInTitle for sites that don't need it.
-     *
-     * @param book Bundle to update
-     */
-    protected static void checkForSeriesNameInTitle(@NonNull final Book book) {
-        final String fullTitle = book.getString(DBKey.TITLE, null);
-        if (fullTitle != null && !fullTitle.isEmpty()) {
-            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
-            if (matcher.find()) {
-                // the cleansed title
-                final String bookTitle = matcher.group(1);
-                if (bookTitle != null) {
-                    // the series title/number
-                    final String seriesTitleWithNumber = matcher.group(2);
-
-                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                        // add to the TOP of the list.
-                        book.add(0, Series.from(seriesTitleWithNumber));
-
-                        // and store cleansed book title back
-                        book.putString(DBKey.TITLE, bookTitle);
-                    }
-                }
-            }
-        }
     }
 
     @NonNull

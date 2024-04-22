@@ -328,7 +328,7 @@ public class OpenLibrary2SearchEngine
 
             parse(context, new JSONObject(response), fetchCovers, book);
 
-            checkForSeriesNameInTitle(book);
+            Series.checkForSeriesNameInTitle(book);
 
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);

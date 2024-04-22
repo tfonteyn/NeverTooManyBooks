@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1057,7 +1057,7 @@ public class IsfdbSearchEngine
             }
         }
 
-        checkForSeriesNameInTitle(book);
+        Series.checkForSeriesNameInTitle(book);
 
         // try to deduce the first publication date from the TOC
         if (toc.size() == 1) {

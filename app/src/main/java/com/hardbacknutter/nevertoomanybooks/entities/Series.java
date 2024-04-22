@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,7 +78,7 @@ public class Series
      * <p>
      * We want a "some text" that does not START with a bracket!
      */
-    public static final Pattern TEXT1_BR_TEXT2_BR_PATTERN =
+    private static final Pattern TEXT1_BR_TEXT2_BR_PATTERN =
             Pattern.compile("([^(]+.*)\\s*\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
@@ -371,6 +371,38 @@ public class Series
         }
 
         return newSeries;
+    }
+
+    /**
+     * Helper method.
+     * <p>
+     * Look for a book title; if present try to get a Series from it and clean the book title.
+     * <p>
+     * TODO: we probably call this from some SearchEngine's that don't need it.
+     *
+     * @param book to process
+     */
+    public static void checkForSeriesNameInTitle(@NonNull final Book book) {
+        final String fullTitle = book.getString(DBKey.TITLE, null);
+        if (fullTitle != null && !fullTitle.isEmpty()) {
+            final Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                // the cleansed title
+                final String bookTitle = matcher.group(1);
+                if (bookTitle != null) {
+                    // the series title/number
+                    final String seriesTitleWithNumber = matcher.group(2);
+
+                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                        // add to the TOP of the list.
+                        book.add(0, from(seriesTitleWithNumber));
+
+                        // and store cleansed book title back
+                        book.putString(DBKey.TITLE, bookTitle);
+                    }
+                }
+            }
+        }
     }
 
     @Override

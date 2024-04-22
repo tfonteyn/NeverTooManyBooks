@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -366,7 +366,7 @@ public class AmazonSearchEngine
         parseDetails(context, siteLocale, document, book);
         parseASIN(document, book);
 
-        checkForSeriesNameInTitle(book);
+        Series.checkForSeriesNameInTitle(book);
 
         if (isCancelled()) {
             return;

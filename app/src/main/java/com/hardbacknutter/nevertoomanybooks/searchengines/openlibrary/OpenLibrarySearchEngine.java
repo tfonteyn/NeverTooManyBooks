@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -296,7 +297,7 @@ public class OpenLibrarySearchEngine
                     readResponseStream(is));
 
             if (handleResponse(context, json, fetchCovers, book)) {
-                checkForSeriesNameInTitle(book);
+                Series.checkForSeriesNameInTitle(book);
             }
 
         } catch (@NonNull final IOException e) {
