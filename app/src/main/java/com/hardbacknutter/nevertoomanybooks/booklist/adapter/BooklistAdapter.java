@@ -336,6 +336,12 @@ public class BooklistAdapter
                 holder = new RatingHolder(itemView, style);
                 break;
 
+            case BooklistGroup.DATE_READ_YEAR:
+            case BooklistGroup.DATE_READ_MONTH:
+            case BooklistGroup.DATE_READ_DAY:
+                holder = new DateReadHolder(itemView, style, groupId, level, formatter);
+                break;
+
             default:
                 holder = new GenericStringHolder(itemView, style, groupId, level, formatter);
                 break;

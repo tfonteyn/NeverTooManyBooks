@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,18 +71,18 @@ public class GenericStringHolder
      * It's ok to store this as it's intrinsically linked with the ViewType.
      */
     @BooklistGroup.Id
-    private final int groupId;
+    protected final int groupId;
     /*** View to populate. */
     @NonNull
-    private final TextView textView;
+    protected final TextView textView;
     @NonNull
-    private final FormatFunction formatter;
+    protected final FormatFunction formatter;
     /**
      * Key of the related data column.
      * It's ok to store this as it's intrinsically linked with the BooklistGroup.
      */
     @NonNull
-    private final String key;
+    protected final String key;
 
     /** Only set/used when running in BuildConfig.DEBUG. */
     @Nullable
@@ -164,7 +164,7 @@ public class GenericStringHolder
         }
     }
 
-    private void dbgPosition(@NonNull final DataHolder rowData) {
+    protected void dbgPosition(@NonNull final DataHolder rowData) {
         // Debugger help: color the row according to state
         if (DEBUG_SWITCHES.BOB_NODE_STATE) {
             //noinspection DataFlowIssue

@@ -836,6 +836,21 @@ class BooklistBuilder {
                 orderByDomainExpressions.add(domainExpression);
                 orderByDupCheck.add(domain.getName());
             }
+
+            // TODO: We experimented with this replacing the above code
+            //  when fixing the issue described in {@link DateReadHolder}
+            // If required, add the domainExpression to the order-by domains
+//            if (domainExpression.getSort() != Sort.Unsorted) {
+//                if (orderByDupCheck.contains(domain.getName())) {
+//                    // remove any previous copy
+//                    orderByDomainExpressions.removeIf(
+//                            de -> de.getDomain().getName().equals(domain.getName()));
+//                } else {
+//                    // remember we added it
+//                    orderByDupCheck.add(domain.getName());
+//                }
+//                orderByDomainExpressions.add(domainExpression);
+//            }
         }
 
         /**
