@@ -110,6 +110,9 @@
     <string name="option_bol_ellipsis"
             translatable="false">BOL…</string>
 
+    <!-- The project which inspired us. -->
+    <string name="lbl_book_catalogue"
+            translatable="false">Book Catalogue</string>
     <string name="brackets"
             translatable="false">(%1$s)</string>
 
