@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -39,6 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -50,6 +53,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
@@ -85,7 +89,10 @@ public class CsvArchiveReaderTest
         File file;
         Locale locale;
         ImportHelper importHelper;
+        Optional<ArchiveMetaData> oMetaData;
+        ArchiveMetaData metaData;
         ImportResults importResults;
+
         TypedCursor bookCursor;
         Book book;
 
@@ -96,6 +103,19 @@ public class CsvArchiveReaderTest
         locale = context.getResources().getConfiguration().getLocales().get(0);
 
         importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+
+        oMetaData = importHelper.readMetaData(context);
+        assertTrue(oMetaData.isPresent());
+        metaData = oMetaData.get();
+        assertNotNull(metaData);
+        assertTrue(metaData.getData().containsKey(CsvRecordReader.Origin.BKEY));
+
+        assertEquals(CsvRecordReader.Origin.BC,
+                     metaData.getData().getParcelable(CsvRecordReader.Origin.BKEY));
+
+        // "testdata.csv" does contain such a field
+        assertTrue(metaData.getData().getBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
+
         importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
         importResults = importHelper.read(context, new TestProgressListener(TAG));
@@ -193,5 +213,47 @@ public class CsvArchiveReaderTest
         assertTrue(bookCursor.moveToFirst());
         book = Book.from(bookCursor);
         assertFalse(book.isRead());
+    }
+
+    @Test
+    public void goodreads()
+            throws DataReaderException, IOException,
+                   StorageException, CredentialsException, CertificateException {
+
+        File file;
+        Locale locale;
+        ImportHelper importHelper;
+        Optional<ArchiveMetaData> oMetaData;
+        ArchiveMetaData metaData;
+        ImportResults importResults;
+
+        file = TestUtils.createFile(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.goodreads_library_export_csv,
+                new File(context.getCacheDir(), "goodreads_library_export.csv"));
+
+        locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+
+        oMetaData = importHelper.readMetaData(context);
+        assertTrue(oMetaData.isPresent());
+        metaData = oMetaData.get();
+        assertNotNull(metaData);
+        assertEquals(CsvRecordReader.Origin.Goodreads,
+                     metaData.getData().getParcelable(CsvRecordReader.Origin.BKEY));
+        assertTrue(metaData.getData().containsKey(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
+        // "goodreads_library_export.csv" does NOT contain such a field
+        assertFalse(metaData.getData().getBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
+
+        importHelper.addRecordType(RecordType.Books);
+        importHelper.setUpdateOption(DataReader.Updates.Overwrite);
+        importResults = importHelper.read(context, new TestProgressListener(TAG));
+
+        assertEquals(21, importResults.booksProcessed);
+        assertEquals(21, importResults.booksCreated);
+        assertEquals(0, importResults.booksUpdated);
+        assertEquals(0, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
+        assertEquals(booksPresent + 21, bookDao.count());
     }
 }
