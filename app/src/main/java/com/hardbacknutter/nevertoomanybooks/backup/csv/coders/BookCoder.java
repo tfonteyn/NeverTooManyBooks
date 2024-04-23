@@ -59,28 +59,44 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  */
 public class BookCoder {
 
-    // It's overkill to prefix some of these, but makes debugging easier
+    /**
+     * The Goodreads Author field will be mapped to {@link DBKey#AUTHOR_FORMATTED}.
+     * Any additional authors come in this key and will need to be added.
+     */
     public static final String GOODREADS_ADDITIONAL_AUTHORS = "goodreads_additional_authors";
+    /**
+     * Data will have the Isbn13 field mapped to {@link DBKey#BOOK_ISBN}.
+     * If empty, we get the Isbn10 code from this key.
+     */
     public static final String GOODREADS_ISBN10 = "goodreads_isbn10";
+    /** Goodreads bookshelves need special decoding. */
     public static final String GOODREADS_BOOKSHELVES = "goodreads_bookshelves";
+    /**
+     * An {@code int} 1..5; can be missing.
+     * Decoded in combination with {@link #GOODREADS_AVERAGE_RATING}.
+     */
     public static final String GOODREADS_MY_RATING = "goodreads_my_rating";
+    /**
+     * A {@code float} 0..5; can be missing.
+     * Decoded in combination with {@link #GOODREADS_MY_RATING}.
+     */
     public static final String GOODREADS_AVERAGE_RATING = "goodreads_average_rating";
 
-    /** column in CSV file - string-encoded - used in import/export, never change this string. */
+    /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
     private static final String CSV_COLUMN_TOC = "anthology_titles";
-    /** column in CSV file - string-encoded - used in import/export, never change this string. */
+    /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
     private static final String CSV_COLUMN_SERIES = "series_details";
-    /** column in CSV file - string-encoded - used in import/export, never change this string. */
+    /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
     private static final String CSV_COLUMN_AUTHORS = "author_details";
-    /** column in CSV file - string-encoded - used in import/export, never change this string. */
+    /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
     private static final String CSV_COLUMN_PUBLISHERS = "publisher";
-    /** Obsolete/alternative header: full given+family author name. */
+    /** Obsolete/alternative header as used in BC: full given+family author name. */
     private static final String LEGACY_AUTHOR_NAME = "author_name";
-    /** Obsolete/alternative header: bookshelf name. */
+    /** Obsolete/alternative header as used in BC: bookshelf name. */
     private static final String LEGACY_BOOKSHELF_TEXT = "bookshelf_text";
-    /** Obsolete, not used. */
+    /** Obsolete as used in BC, not used/needed, skipped. */
     private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
-    /** Obsolete/alternative header: bookshelf name. Used by pre-1.2 versions. */
+    /** Obsolete/alternative header only used by NTMB pre-1.2 versions: bookshelf name. */
     private static final String LEGACY_BOOKSHELF_1_1 = "bookshelf";
 
     private final StringList<Author> authorCoder = new StringList<>(new AuthorCoder());
@@ -90,14 +106,13 @@ public class BookCoder {
     /** This is a COMMA separated string list. */
     @NonNull
     private final StringList<Bookshelf> bookshelfCoder;
-    /** This is a SPACE separated string list. */
-    @Nullable
-    private StringList<Bookshelf> goodreadsBookshelfCoder;
     @NonNull
     private final Author unknownAuthor;
     @NonNull
     private final Style defaultStyle;
-
+    /** This is a SPACE separated string list. */
+    @Nullable
+    private StringList<Bookshelf> goodreadsBookshelfCoder;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
 
@@ -341,6 +356,8 @@ public class BookCoder {
             if (goodreadsBookshelfCoder == null) {
                 goodreadsBookshelfCoder = new StringList<>(new BookshelfCoder(' ', defaultStyle));
             }
+            //ENHANCE: provide mapping for the Goodreads "read", "to-read" and "currently-reading"
+            // fixed shelves. For now we just create those 3 when not there yet.
             processBookshelf(book, goodreadsBookshelfCoder, GOODREADS_BOOKSHELVES, bookshelves);
             if (bookshelves.stream().anyMatch(bookshelf -> "read".equals(bookshelf.getName()))) {
                 // DO NOT use book.setRead(true) as that will set related fields
