@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,9 +53,6 @@ public final class ConstraintRadioGroup
     /** All radio buttons in this group. */
     @NonNull
     private final SparseArray<RadioButton> mRadioButtons = new SparseArray<>();
-
-    /** Group enable/disable. */
-    private boolean mEnabled = true;
 
     /** User listener. */
     @Nullable
@@ -125,22 +122,11 @@ public final class ConstraintRadioGroup
             if (view instanceof RadioButton) {
                 final RadioButton radioButton = (RadioButton) view;
                 mRadioButtons.put(id, radioButton);
-                radioButton.setEnabled(mEnabled);
                 radioButton.setOnCheckedChangeListener(mChildOnCheckedChangeListener);
                 if (radioButton.isChecked()) {
                     mCheckedId = id;
                 }
             }
-        }
-    }
-
-    @Override
-    public void setEnabled(final boolean enabled) {
-        // Keep the status for (re)applying during layout phase
-        mEnabled = enabled;
-
-        for (int i = 0; i < mRadioButtons.size(); i++) {
-            mRadioButtons.valueAt(i).setEnabled(enabled);
         }
     }
 

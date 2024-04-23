@@ -149,7 +149,9 @@ public class SyncReaderFragment
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             vm.setRecordType(isChecked, RecordType.Books);
-            vb.rbBooksGroup.setEnabled(isChecked);
+            vb.rbImportNewOnly.setEnabled(isChecked);
+            vb.rbImportAll.setEnabled(isChecked);
+            vb.rbImportNewAndUpdated.setEnabled(isChecked);
         });
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .setRecordType(isChecked, RecordType.Cover));

@@ -123,7 +123,8 @@ public class ExportFragment
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             vm.setRecordType(isChecked, RecordType.Books);
-            vb.rbBooksGroup.setEnabled(isChecked);
+            vb.rbExportAll.setEnabled(isChecked);
+            vb.rbExportNewAndUpdated.setEnabled(isChecked);
         });
 
         vb.archiveFormat.setOnItemClickListener(
@@ -188,7 +189,8 @@ public class ExportFragment
                 vb.cbxBooks.setChecked(true);
                 vb.cbxBooks.setEnabled(true);
 
-                vb.rbBooksGroup.setEnabled(true);
+                vb.rbExportAll.setEnabled(true);
+                vb.rbExportNewAndUpdated.setEnabled(true);
                 vb.rbExportAll.setChecked(true);
                 vb.rbExportNewAndUpdated.setChecked(false);
 
@@ -207,7 +209,8 @@ public class ExportFragment
                 vb.cbxBooks.setChecked(true);
                 vb.cbxBooks.setEnabled(false);
 
-                vb.rbBooksGroup.setEnabled(true);
+                vb.rbExportAll.setEnabled(true);
+                vb.rbExportNewAndUpdated.setEnabled(true);
                 vb.rbExportAll.setChecked(true);
                 vb.rbExportNewAndUpdated.setChecked(false);
 
@@ -226,7 +229,8 @@ public class ExportFragment
                 vb.cbxBooks.setChecked(true);
                 vb.cbxBooks.setEnabled(false);
 
-                vb.rbBooksGroup.setEnabled(false);
+                vb.rbExportAll.setEnabled(false);
+                vb.rbExportNewAndUpdated.setEnabled(false);
                 vb.rbExportAll.setChecked(true);
                 vb.rbExportNewAndUpdated.setChecked(false);
 
