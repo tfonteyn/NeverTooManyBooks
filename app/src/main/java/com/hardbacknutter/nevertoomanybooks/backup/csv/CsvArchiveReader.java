@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,10 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Optional;
@@ -43,8 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
@@ -86,8 +92,27 @@ public class CsvArchiveReader
     @Override
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws DataReaderException, CredentialsException, StorageException, IOException {
-        // return an minimal but valid object
+
+        // Sample the first line to get the (raw/lowercase) column names
+        final String columnHeader;
+        try (InputStream is = context.getContentResolver().openInputStream(uri);
+             final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+             final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE)) {
+            columnHeader = reader.readLine();
+        }
+
+        final CsvRecordReader.Origin origin = CsvRecordReader.Origin.guess(columnHeader);
+
+        final boolean supportsUpdates = CsvRecordReader
+                .parse(context, 0, columnHeader)
+                .stream()
+                .map(name -> name.toLowerCase(Locale.ENGLISH))
+                .map(origin::mapColumnName)
+                .anyMatch(DBKey.DATE_LAST_UPDATED__UTC::equals);
+
         final Bundle bundle = ServiceLocator.getInstance().newBundle();
+        bundle.putParcelable(CsvRecordReader.Origin.BKEY, origin);
+        bundle.putBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED, supportsUpdates);
         return Optional.of(new ArchiveMetaData(0, bundle));
     }
 

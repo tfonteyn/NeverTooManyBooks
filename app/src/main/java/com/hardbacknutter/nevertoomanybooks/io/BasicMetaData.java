@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,29 @@ import java.util.Optional;
 
 public class BasicMetaData {
 
+    /**
+     * <strong>Optional</strong> flag set while probing an import.
+     * We'll attempt to determine if the data has a field suitable to
+     * support {@link DataReader.Updates#OnlyNewer} imports.
+     * <p>
+     * type:boolean
+     * <p>
+     * If absent, should be considered {@code true}.
+     */
+    public static final String SUPPORTS_DATE_LAST_UPDATED = "SUPPORTS_DATE_LAST_UPDATED";
+
+    /**
+     * <strong>Optional</strong> information.
+     * <p>
+     * type: int
+     */
     static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
+
+    /**
+     * <strong>Optional</strong> information.
+     * <p>
+     * type: int
+     */
     static final String INFO_NUMBER_OF_COVERS = "NumCovers";
 
     /** Bundle retrieved from the archive for this instance. */

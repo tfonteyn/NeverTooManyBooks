@@ -485,4 +485,161 @@ public class CsvRecordReader
         throw new DataReaderException(context.getString(
                 R.string.error_import_csv_missing_columns_x, String.join(",", names)));
     }
+
+    public enum Origin
+            implements Parcelable {
+        /** A Goodreads export. */
+        Goodreads(R.string.site_goodreads) {
+            @NonNull
+            public String mapColumnName(@NonNull final String name) {
+                // From a test export on 2024-04-22:
+                // Book Id,Title,
+                // Author,Author l-f,Additional Authors,
+                // ISBN,ISBN13,
+                // My Rating,Average Rating,
+                // Publisher,Binding,Number of Pages,
+                // Year Published,Original Publication Year,Date Read,Date Added,
+                // Bookshelves,Bookshelves with positions,Exclusive Shelf,
+                // My Review, Spoiler,
+                // Private Notes,
+                // Read Count,Owned Copies
+                switch (name) {
+                    case "book id":
+                        return DBKey.SID_GOODREADS_BOOK;
+                    case "title":
+                        return DBKey.TITLE;
+                    case "author l-f":
+                        // Will be decoded during import
+                        return DBKey.AUTHOR_FORMATTED;
+                    case "additional authors":
+                        // Added in addition to the one above
+                        return BookCoder.GOODREADS_ADDITIONAL_AUTHORS;
+                    case "isbn":
+                        // ISBN-10; will be used if the "isbn13" field is empty
+                        return BookCoder.GOODREADS_ISBN10;
+                    case "isbn13":
+                        return DBKey.BOOK_ISBN;
+                    case "my rating":
+                        return BookCoder.GOODREADS_MY_RATING;
+                    case "average rating":
+                        return BookCoder.GOODREADS_AVERAGE_RATING;
+                    case "publisher":
+                        return DBKey.PUBLISHER_NAME;
+                    case "binding":
+                        return DBKey.FORMAT;
+                    case "number of pages":
+                        return DBKey.PAGE_COUNT;
+                    case "year published":
+                        return DBKey.BOOK_PUBLICATION__DATE;
+                    case "original publication year":
+                        return DBKey.FIRST_PUBLICATION__DATE;
+                    case "date read":
+                        return DBKey.READ_END__DATE;
+                    case "date added":
+                        return DBKey.DATE_ADDED__UTC;
+                    case "bookshelves":
+                        return BookCoder.GOODREADS_BOOKSHELVES;
+                    case "private notes":
+                        return DBKey.PERSONAL_NOTES;
+
+                    // The next set are simply ignored for now
+                    case "author":
+                    case "bookshelves with positions":
+                    case "exclusive shelf":
+                    case "my review":
+                    case "spoiler":
+                    case "read count":
+                    case "owned copies":
+                        return GOODREADS_ + name;
+
+                    default:
+                        // Unknown on 2024-04-22
+                        LoggerFactory.getLogger().w(TAG, "Unknown Goodreads csv column=" + name);
+                        return GOODREADS_ + name;
+                }
+            }
+        },
+        /** The original BC format, or the extended but obsolete NTMB 1.x .. 3.x format. */
+        BC(R.string.lbl_book_catalogue) {
+            @NonNull
+            public String mapColumnName(@NonNull final String name) {
+                return name;
+            }
+        },
+        /** No idea... */
+        Unknown(R.string.unknown) {
+            @NonNull
+            public String mapColumnName(@NonNull final String name) {
+                return name;
+            }
+        };
+
+        /** Bundle key if we get passed around. */
+        public static final String BKEY = "Origin:bk";
+
+        /** {@link Parcelable}. */
+        public static final Creator<Origin> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public Origin createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public Origin[] newArray(final int size) {
+                return new Origin[size];
+            }
+        };
+
+        @StringRes
+        private final int labelId;
+
+        Origin(@StringRes final int labelId) {
+            this.labelId = labelId;
+        }
+
+        @NonNull
+        static Origin guess(@NonNull final String columnHeader) {
+            // RELEASE: check the latest Goodreads CSV export file header.
+            // A download on 2024-04-22 showed a header starting like this:
+            if (columnHeader.startsWith(
+                    "Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,")) {
+                return Origin.Goodreads;
+
+            } else if (columnHeader.startsWith("\"_id\",")) {
+                return Origin.BC;
+
+            }
+
+            return Origin.Unknown;
+        }
+
+        /**
+         * Map a column name as found in the input file to a {@link DBKey} if possible.
+         * Columns that need more processing <strong>MUST NOT</strong> use a {@link DBKey}.
+         *
+         * @param name to map
+         *
+         * @return mapped name
+         */
+        @NonNull
+        public abstract String mapColumnName(@NonNull String name);
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(ordinal());
+        }
+
+        @NonNull
+        public CharSequence getLabel(@NonNull final Context context) {
+            return context.getString(labelId);
+        }
+    }
 }
