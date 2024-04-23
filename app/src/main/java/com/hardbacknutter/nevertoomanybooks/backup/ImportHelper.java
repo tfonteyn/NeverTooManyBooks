@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,7 +65,7 @@ public final class ImportHelper
      * @param uri          to read from
      *
      * @throws DataReaderException   on failure to recognise a supported archive
-     * @throws FileNotFoundException on...
+     * @throws FileNotFoundException if the uri cannot be resolved
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public ImportHelper(@NonNull final Context context,

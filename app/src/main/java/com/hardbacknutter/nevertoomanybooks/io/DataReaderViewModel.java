@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -164,6 +164,11 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         return getDataReaderHelper().getUpdateOption();
     }
 
+    /**
+     * Called <strong>after</strong> the radiobutton is changed either by the user or by code.
+     *
+     * @param updateOption to set
+     */
     public void setUpdateOption(@NonNull final DataReader.Updates updateOption) {
         getDataReaderHelper().setUpdateOption(updateOption);
     }
