@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,6 +80,7 @@ public class BookCoder {
     private final StringList<Series> seriesCoder = new StringList<>(new SeriesCoder());
     private final StringList<Publisher> publisherCoder = new StringList<>(new PublisherCoder());
     private final StringList<TocEntry> tocCoder = new StringList<>(new TocEntryCoder());
+    /** This is a COMMA separated string list. */
     @NonNull
     private final StringList<Bookshelf> bookshelfCoder;
 
@@ -96,7 +97,8 @@ public class BookCoder {
      */
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle) {
-        this.bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
+        // Backwards compatibility: use the ',' separator
+        this.bookshelfCoder = new StringList<>(new BookshelfCoder(',', defaultStyle));
 
         unknownAuthor = Author.createUnknownAuthor(context);
     }

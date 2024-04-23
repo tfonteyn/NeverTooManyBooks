@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,21 +41,23 @@ public class BookshelfCoder
     @NonNull
     private final Style defaultStyle;
 
+    private final char elementSeparator;
+
     /**
      * Constructor.
      *
-     * @param defaultStyle the default style to use
+     * @param elementSeparator custom separator
+     * @param defaultStyle     the default style to use
      */
-    BookshelfCoder(@NonNull final Style defaultStyle) {
+    BookshelfCoder(final char elementSeparator,
+                   @NonNull final Style defaultStyle) {
+        this.elementSeparator = elementSeparator;
         this.defaultStyle = defaultStyle;
     }
 
-    /**
-     * Backwards compatibility rules ',' (not using the default '|').
-     */
     @Override
     public char getElementSeparator() {
-        return ',';
+        return elementSeparator;
     }
 
     @Override
