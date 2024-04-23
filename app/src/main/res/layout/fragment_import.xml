@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@
 
         <!--suppress LongLine -->
         <com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup
-            android:id="@+id/rb_books_group"
+            android:id="@+id/rbg_books"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="rb_import_new_only,rb_import_all,rb_import_new_and_updated"

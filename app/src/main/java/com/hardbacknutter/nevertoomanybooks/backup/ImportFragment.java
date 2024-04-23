@@ -176,7 +176,7 @@ public class ImportFragment
         vb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .setRecordType(isChecked, RecordType.Preferences, RecordType.Certificates));
 
-        vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
+        vb.rbgBooks.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == vb.rbImportNewOnly.getId()) {
                 vm.setUpdateOption(DataReader.Updates.Skip);
             } else if (checkedId == vb.rbImportNewAndUpdated.getId()) {

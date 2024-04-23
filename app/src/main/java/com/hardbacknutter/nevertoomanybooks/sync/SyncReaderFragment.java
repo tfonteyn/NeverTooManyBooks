@@ -160,7 +160,7 @@ public class SyncReaderFragment
         vb.infImportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
         vb.infImportAll.setOnClickListener(StandardDialogs::infoPopup);
 
-        vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
+        vb.rbgBooks.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == vb.rbImportNewOnly.getId()) {
                 vm.setUpdateOption(DataReader.Updates.Skip);
             } else if (checkedId == vb.rbImportNewAndUpdated.getId()) {

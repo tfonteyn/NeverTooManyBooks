@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,7 +118,7 @@ public class ExportFragment
 
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .setRecordType(isChecked, RecordType.Cover));
-        vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
+        vb.rbgBooks.setOnCheckedChangeListener((group, checkedId) -> vm
                 .setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {

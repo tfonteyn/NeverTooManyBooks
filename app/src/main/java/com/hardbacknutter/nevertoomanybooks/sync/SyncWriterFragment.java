@@ -119,7 +119,7 @@ public class SyncWriterFragment
 
         vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
-        vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
+        vb.rbgBooks.setOnCheckedChangeListener((group, checkedId) -> vm
                 .setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));
 
         vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> vm
