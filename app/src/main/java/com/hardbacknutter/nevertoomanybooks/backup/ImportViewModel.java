@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -45,6 +46,16 @@ public class ImportViewModel
     private ImportHelper importHelper;
     private boolean removeDeletedBooksAfterImport = true;
 
+    /**
+     * Store the source uri the user picked and create the {@link ImportHelper}.
+     *
+     * @param context      Current context
+     * @param uri          as picked by the user
+     * @param systemLocale to use
+     *
+     * @throws DataReaderException   on failure to recognise a supported archive
+     * @throws FileNotFoundException if the uri cannot be resolved
+     */
     void setSource(@NonNull final Context context,
                    @NonNull final Uri uri,
                    final Locale systemLocale)
@@ -53,6 +64,13 @@ public class ImportViewModel
         importHelper = new ImportHelper(context, systemLocale, uri);
     }
 
+    /**
+     * Get a user-displayable name for the picked uri.
+     *
+     * @param context Current context
+     *
+     * @return name
+     */
     @Override
     @NonNull
     public String getSourceDisplayName(@NonNull final Context context) {
@@ -124,5 +142,21 @@ public class ImportViewModel
             // Resort the styles menu as per their (new) order.
             ServiceLocator.getInstance().getStyles().updateMenuOrder(context);
         }
+    }
+
+    /**
+     * Check the meta-data to see if the archive contains the necessary date information
+     * to support doing updates using {@code DataReader.Updates#OnlyNewer}
+     * <p>
+     * Note that we assume all archives support this unless individual implementations
+     * explicitly state they do not!
+     *
+     * @return {@code true} if it does
+     */
+    boolean sourceSupportsUpdates() {
+        return getMetaData()
+                .map(BasicMetaData::getData)
+                .map(data -> data.getBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED, true))
+                .orElse(true);
     }
 }

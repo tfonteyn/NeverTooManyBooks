@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -50,11 +51,13 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -152,6 +155,7 @@ public class ImportFragment
 
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
+        // Hookup the [I] information icons with their popup text
         vb.infNewOnly.setOnClickListener(StandardDialogs::infoPopup);
         vb.infNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
         vb.infAll.setOnClickListener(StandardDialogs::infoPopup);
@@ -159,7 +163,13 @@ public class ImportFragment
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             vm.setRecordType(isChecked, RecordType.Books);
-            vb.rbBooksGroup.setEnabled(isChecked);
+
+            vb.rbImportNewOnly.setEnabled(isChecked);
+            vb.rbImportAll.setEnabled(isChecked);
+            vb.rbImportNewAndUpdated.setEnabled(isChecked);
+
+            updateUpdateOptionRadioButtons();
+
             // follow the cbxBooks status
             vb.cbxDeleteRemovedBooks.setEnabled(isChecked);
         });
@@ -189,12 +199,12 @@ public class ImportFragment
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_import);
         fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> startImport());
+        fab.setOnClickListener(v -> onStartImport());
 
         if (!vm.isRunning()) {
             if (vm.hasSource()) {
-                // e.g. after a screen rotation, just show the screen/options again
-                showOptions();
+                // e.g. after a screen rotation
+                updateUI();
             } else {
                 // start the import process by asking the user for a source Uri
                 openUriLauncher.launch(MIME_TYPES);
@@ -202,10 +212,9 @@ public class ImportFragment
         }
     }
 
-
     /**
      * Called when the user selected a uri to read from.
-     * Prepares the options suited for the selected import file.
+     * When the uri is supported, the screen will be show and meta-data will be read.
      *
      * @param uri file to read from
      */
@@ -213,9 +222,25 @@ public class ImportFragment
 
         try {
             //noinspection DataFlowIssue
-            vm.setSource(getContext(),
-                         uri,
+            vm.setSource(getContext(), uri,
                          ServiceLocator.getInstance().getSystemLocaleList().get(0));
+
+            // FIRST show the screen for better user feedback
+            updateUI();
+
+            // There will be no progress messages as reading the data itself is very fast, but
+            // connection can take a long time, so bring up the progress dialog now
+            closeProgressDialog();
+            //noinspection DataFlowIssue
+            progressDelegate = new ProgressDelegate(getProgressFrame())
+                    .setTitle(R.string.lbl_importing)
+                    .setMessage(R.string.progress_msg_please_wait)
+                    .setPreventSleep(true)
+                    .setIndeterminate(true)
+                    .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA))
+                    .show(() -> getActivity().getWindow());
+            // The screen will refresh after meta-data has been read
+            vm.readMetaData();
 
         } catch (@NonNull final DataReaderException e) {
             //noinspection DataFlowIssue
@@ -226,8 +251,6 @@ public class ImportFragment
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
-            return;
-
         } catch (@NonNull final FileNotFoundException e) {
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
@@ -237,72 +260,21 @@ public class ImportFragment
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
-            return;
-        }
-
-        switch (vm.getEncoding()) {
-            case Csv:
-                // CsvArchiveReader will make a database backup before importing.
-                //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(R.string.lbl_import_books)
-                        .setMessage(R.string.warning_import_csv)
-                        .setNegativeButton(android.R.string.cancel,
-                                           (d, w) -> getActivity().finish())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> showOptions())
-                        .create()
-                        .show();
-                break;
-
-            case Zip:
-            case SqLiteDb:
-            case Json:
-                showOptions();
-                break;
-
-            default:
-                //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_error_24)
-                        .setTitle(R.string.error_import_failed)
-                        .setMessage(R.string.error_import_file_not_supported)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                        .create()
-                        .show();
-                break;
         }
     }
 
-    /**
-     * Update the screen with archive specific options and values.
-     */
-    private void showOptions() {
-        //noinspection DataFlowIssue
-        vb.archiveName.setText(vm.getSourceDisplayName(getContext()));
+    private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<ArchiveMetaData>> message) {
+        closeProgressDialog();
+        message.process(optMetaData -> optMetaData.ifPresent(md -> updateUI()));
+    }
 
-        final Optional<ArchiveMetaData> metaData = vm.getMetaData();
-        if (metaData.isPresent()) {
-            showMetaData(metaData.get());
-        } else {
-            readMetaData();
-            // Hide anything which might be there. Once readMetaData()'s task
-            // is done it will call showMetaData again with the results.
-            showMetaData(null);
-        }
+    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<ArchiveMetaData>>
+                                             message) {
+        closeProgressDialog();
+        message.process(ignored -> showMessageAndFinishActivity(getString(R.string.cancelled)));
+    }
 
-        final Set<RecordType> recordTypes = vm.getRecordTypes();
-        vb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
-        vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
-        vb.cbxStyles.setChecked(recordTypes.contains(RecordType.Styles));
-        vb.cbxPrefs.setChecked(recordTypes.contains(RecordType.Preferences));
-
-        final DataReader.Updates updateOption = vm.getUpdateOption();
-        vb.rbImportNewOnly.setChecked(updateOption == DataReader.Updates.Skip);
-        vb.rbImportNewAndUpdated.setChecked(updateOption == DataReader.Updates.OnlyNewer);
-        vb.rbImportAll.setChecked(updateOption == DataReader.Updates.Overwrite);
-
-        vb.cbxDeleteRemovedBooks.setChecked(vm.isRemoveDeletedBooksAfterImport());
+    private void updateUI() {
 
         // Set the visibility depending on the encoding
         switch (vm.getEncoding()) {
@@ -337,100 +309,124 @@ public class ImportFragment
             }
         }
 
+        final Set<RecordType> recordTypes = vm.getRecordTypes();
+        vb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
+        vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
+        vb.cbxStyles.setChecked(recordTypes.contains(RecordType.Styles));
+        vb.cbxPrefs.setChecked(recordTypes.contains(RecordType.Preferences));
+
+        final DataReader.Updates updateOption = vm.getUpdateOption();
+        vb.rbImportNewOnly.setChecked(updateOption == DataReader.Updates.Skip);
+        vb.rbImportNewAndUpdated.setChecked(updateOption == DataReader.Updates.OnlyNewer);
+        vb.rbImportAll.setChecked(updateOption == DataReader.Updates.Overwrite);
+
+        vb.cbxDeleteRemovedBooks.setChecked(vm.isRemoveDeletedBooksAfterImport());
         vb.infRemovedBooks.setVisibility(vb.cbxDeleteRemovedBooks.getVisibility());
+
+        //noinspection DataFlowIssue
+        vb.archiveName.setText(vm.getSourceDisplayName(getContext()));
+
+        vm.getMetaData().ifPresentOrElse(
+                metaData -> {
+                    final StringJoiner info = new StringJoiner("\n");
+                    final Context context = getContext();
+
+                    @Nullable
+                    final CsvRecordReader.Origin origin = metaData.getData().getParcelable(
+                            CsvRecordReader.Origin.BKEY);
+                    if (origin != null) {
+                        info.add(context.getString(R.string.name_colon_value,
+                                                   context.getString(R.string.lbl_archive_format)
+                                , origin.getLabel(context)));
+                    }
+
+                    final Locale systemLocale = ServiceLocator
+                            .getInstance().getSystemLocaleList().get(0);
+                    metaData.getCreatedLocalDate(systemLocale).ifPresent(date -> info
+                            .add(DateUtils.displayDateTime(context, date)));
+
+                    metaData.getBookCount().ifPresent(count -> info
+                            .add(getString(R.string.name_colon_value,
+                                           getString(R.string.lbl_books),
+                                           String.valueOf(count))));
+
+                    metaData.getCoverCount().ifPresent(count -> info
+                            .add(getString(R.string.name_colon_value,
+                                           getString(R.string.lbl_covers),
+                                           String.valueOf(count))));
+
+                    vb.archiveContent.setText(info.toString());
+                    vb.archiveContent.setVisibility(View.VISIBLE);
+
+                    updateUpdateOptionRadioButtons();
+                },
+                // Hide all meta-data
+                () -> vb.archiveContent.setVisibility(View.INVISIBLE)
+        );
 
         vb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void readMetaData() {
-        // There will be no progress messages as reading the data itself is very fast, but
-        // connection can take a long time, so bring up the progress dialog now
-        if (progressDelegate == null) {
-            progressDelegate = new ProgressDelegate(getProgressFrame())
-                    .setTitle(R.string.lbl_importing)
-                    .setMessage(R.string.progress_msg_please_wait)
-                    .setPreventSleep(true)
-                    .setIndeterminate(true)
-                    .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));
+    private void updateUpdateOptionRadioButtons() {
+        final boolean supportsUpdates = vm.sourceSupportsUpdates();
+        vb.rbImportNewAndUpdated.setEnabled(supportsUpdates);
+        if (!supportsUpdates) {
+            vb.rbImportNewOnly.setChecked(true);
         }
-        //noinspection DataFlowIssue
-        progressDelegate.show(() -> getActivity().getWindow());
-        vm.readMetaData();
-    }
-
-    private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<ArchiveMetaData>> message) {
-        closeProgressDialog();
-
-        message.process(optMetaData -> optMetaData.ifPresent(this::showMetaData));
-    }
-
-    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<ArchiveMetaData>>
-                                             message) {
-        closeProgressDialog();
-
-        message.process(ignored -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     /**
-     * Display any valid meta-data we can get from the archive.
-     *
-     * @param metaData as read from the import source (archive)
+     * Conditionally start the import.
      */
-    private void showMetaData(@Nullable final ArchiveMetaData metaData) {
-        if (metaData == null) {
-            vb.archiveContent.setVisibility(View.INVISIBLE);
-        } else {
-            // some stats of what's inside the archive
-            final StringJoiner stats = new StringJoiner("\n");
-
-            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            //noinspection DataFlowIssue
-            metaData.getCreatedLocalDate(systemLocale).ifPresent(date -> stats
-                    .add(DateUtils.displayDateTime(getContext(), date)));
-
-            metaData.getBookCount().ifPresent(count -> stats
-                    .add(getString(R.string.name_colon_value,
-                                   getString(R.string.lbl_books),
-                                   String.valueOf(count))));
-
-            metaData.getCoverCount().ifPresent(count -> stats
-                    .add(getString(R.string.name_colon_value,
-                                   getString(R.string.lbl_covers),
-                                   String.valueOf(count))));
-
-            vb.archiveContent.setText(stats.toString());
-            vb.archiveContent.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void startImport() {
-        if (vm.isReadyToGo()) {
-            if (progressDelegate == null) {
-                progressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.lbl_importing)
-                        .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
-            }
-            //noinspection DataFlowIssue
-            progressDelegate.show(() -> getActivity().getWindow());
-            vm.readData();
-        } else {
+    private void onStartImport() {
+        if (!vm.isReadyToGo()) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.warning_nothing_selected, Snackbar.LENGTH_SHORT)
                     .show();
+            return;
         }
+
+        if (vm.getEncoding() == ArchiveEncoding.Csv) {
+            // CsvArchiveReader will make a database backup before importing.
+            //noinspection DataFlowIssue
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(R.string.lbl_import_books)
+                    .setMessage(R.string.warning_import_csv)
+                    .setNegativeButton(android.R.string.cancel,
+                                       (d, w) -> getActivity().finish())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> startImport())
+                    .create()
+                    .show();
+        } else {
+            startImport();
+        }
+    }
+
+    /**
+     * @see #onStartImport()
+     */
+    private void startImport() {
+        closeProgressDialog();
+        //noinspection DataFlowIssue
+        progressDelegate = new ProgressDelegate(getProgressFrame())
+                .setTitle(R.string.lbl_importing)
+                .setPreventSleep(true)
+                .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT))
+                .show(() -> getActivity().getWindow());
+        vm.readData();
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
-            if (progressDelegate == null) {
-                //noinspection DataFlowIssue
-                progressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.lbl_importing)
-                        .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                        .show(() -> getActivity().getWindow());
-            }
+            closeProgressDialog();
+            //noinspection DataFlowIssue
+            progressDelegate = new ProgressDelegate(getProgressFrame())
+                    .setTitle(R.string.lbl_importing)
+                    .setPreventSleep(true)
+                    .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
+                    .show(() -> getActivity().getWindow());
+
             progressDelegate.onProgress(progress);
         });
     }
