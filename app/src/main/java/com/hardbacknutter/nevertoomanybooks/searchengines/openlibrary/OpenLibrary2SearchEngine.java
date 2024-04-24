@@ -182,9 +182,10 @@ public class OpenLibrary2SearchEngine
                                               @Nullable final Size size)
             throws StorageException {
         if (cIdx == 1) {
-            // ENHANCE: we cannot return a back-cover here, as we need to native OL cover-id
-            //  which we do not store locally. We'd basically need to do a new book search
-            //  (2 requests) here, extract the cover-id(s) and run 2 more requests.
+            // ENHANCE: we cannot return a back-cover here, as we need to native
+            //  OL cover-id ( != OLID book id) which we do not store locally.
+            //  We'd basically need to do a new book search (2 requests) here,
+            //  extract the cover-id(s) and run 2 more requests.
             //  For now, users can get the back-cover when doing an "Internet update"
             return Optional.empty();
         }
@@ -643,13 +644,13 @@ public class OpenLibrary2SearchEngine
     }
 
     private void parseCovers(@NonNull final Context context,
-                             @NonNull final JSONArray a,
+                             @NonNull final JSONArray coverIds,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            if (fetchCovers[cIdx] && a.length() > cIdx) {
-                final int coverId = a.optInt(cIdx);
+            if (fetchCovers[cIdx] && coverIds.length() > cIdx) {
+                final int coverId = coverIds.optInt(cIdx);
                 if (coverId > 0) {
                     final int finalCIdx = cIdx;
                     searchBestCoverByKey(context, "id", String.valueOf(coverId), cIdx).ifPresent(
