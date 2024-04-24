@@ -99,7 +99,9 @@ android {
         buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
 
         buildConfigField("boolean", "ENABLE_GOODREADS_BY_EXT_ID", "true")
-        buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
+        // 2024-04-24: LT has now completely blocked all API access.
+        // All related code will be removed at a later time.
+        buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "false")
     }
 
     buildTypes {
