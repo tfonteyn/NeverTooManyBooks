@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -165,6 +165,8 @@ public class StringList<E> {
     @FunctionalInterface
     public interface Coder<E> {
 
+        char DEFAULT_ELEMENT_SEPARATOR = '|';
+
         /**
          * Decode a <strong>SINGLE</strong> element.
          *
@@ -183,7 +185,7 @@ public class StringList<E> {
          * @return the char
          */
         default char getElementSeparator() {
-            return '|';
+            return DEFAULT_ELEMENT_SEPARATOR;
         }
 
         /**

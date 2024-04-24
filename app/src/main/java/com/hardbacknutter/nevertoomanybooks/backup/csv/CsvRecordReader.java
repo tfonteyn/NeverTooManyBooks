@@ -116,7 +116,6 @@ public class CsvRecordReader
 
     /** Log tag. */
     private static final String TAG = "CsvRecordReader";
-    private static final String GOODREADS_ = "goodreads_";
 
     /**
      * Constructor.
@@ -515,16 +514,16 @@ public class CsvRecordReader
                         return DBKey.AUTHOR_FORMATTED;
                     case "additional authors":
                         // Added in addition to the one above
-                        return BookCoder.GOODREADS_ADDITIONAL_AUTHORS;
+                        return BookCoder.Goodreads.ADDITIONAL_AUTHORS;
                     case "isbn":
                         // ISBN-10; will be used if the "isbn13" field is empty
-                        return BookCoder.GOODREADS_ISBN10;
+                        return BookCoder.Goodreads.ISBN10;
                     case "isbn13":
                         return DBKey.BOOK_ISBN;
                     case "my rating":
-                        return BookCoder.GOODREADS_MY_RATING;
+                        return BookCoder.Goodreads.MY_RATING;
                     case "average rating":
-                        return BookCoder.GOODREADS_AVERAGE_RATING;
+                        return BookCoder.Goodreads.AVERAGE_RATING;
                     case "publisher":
                         return DBKey.PUBLISHER_NAME;
                     case "binding":
@@ -540,24 +539,35 @@ public class CsvRecordReader
                     case "date added":
                         return DBKey.DATE_ADDED__UTC;
                     case "bookshelves":
-                        return BookCoder.GOODREADS_BOOKSHELVES;
+                        return BookCoder.Goodreads.BOOKSHELVES;
+                    case "exclusive shelf":
+                        return BookCoder.Goodreads.EXCLUSIVE_SHELF;
+                    case "my review":
+                        return BookCoder.Goodreads.MY_REVIEW;
                     case "private notes":
                         return DBKey.PERSONAL_NOTES;
 
-                    // The next set are simply ignored for now
+                    // The next set are ignored for now
                     case "author":
+                        // ignored in favour of the "author l-f" field
                     case "bookshelves with positions":
-                    case "exclusive shelf":
-                    case "my review":
+                        // we don't support positions for bookshelves
                     case "spoiler":
+                        // I believe this is a flag set when the "my review" field is
+                        // considered to contain spoilers - not supported.
                     case "read count":
+                        // We only support read == true/false
                     case "owned copies":
-                        return GOODREADS_ + name;
+                        // We do not have a concept of multiple copies
+                        // (although could be a valid enhancement as we support lending out books)
+
+                        // Just use a bogus name which will be ignored
+                        return BookCoder.Goodreads.PREFIX + name;
 
                     default:
-                        // Unknown on 2024-04-22
+                        // Unknown on 2024-04-22; log them for future support
                         LoggerFactory.getLogger().w(TAG, "Unknown Goodreads csv column=" + name);
-                        return GOODREADS_ + name;
+                        return BookCoder.Goodreads.PREFIX + name;
                 }
             }
         },
@@ -568,7 +578,7 @@ public class CsvRecordReader
                 return name;
             }
         },
-        /** No idea... */
+        /** Anything not explicitly recognized. */
         Unknown(R.string.unknown) {
             @NonNull
             public String mapColumnName(@NonNull final String name) {
@@ -610,6 +620,7 @@ public class CsvRecordReader
                 return Origin.Goodreads;
 
             } else if (columnHeader.startsWith("\"_id\",")) {
+                // The startsWith should really be longer to be on the safe side.
                 return Origin.BC;
 
             }

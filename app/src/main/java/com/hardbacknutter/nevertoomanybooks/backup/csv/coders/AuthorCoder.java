@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,29 @@ import com.hardbacknutter.org.json.JSONObject;
  */
 public class AuthorCoder
         implements StringList.Coder<Author> {
+
+    private final char elementSeparator;
+
+    /**
+     * Constructor.
+     */
+    public AuthorCoder() {
+        this.elementSeparator = StringList.Coder.DEFAULT_ELEMENT_SEPARATOR;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param elementSeparator custom separator
+     */
+    public AuthorCoder(final char elementSeparator) {
+        this.elementSeparator = elementSeparator;
+    }
+
+    @Override
+    public char getElementSeparator() {
+        return elementSeparator;
+    }
 
     @Override
     @NonNull

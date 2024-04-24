@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,30 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * <p>
  * In other words: this coder is NOT a full backup/restore!
  */
+@SuppressWarnings("SameParameterValue")
 public class BookCoder {
-
-    /**
-     * The Goodreads Author field will be mapped to {@link DBKey#AUTHOR_FORMATTED}.
-     * Any additional authors come in this key and will need to be added.
-     */
-    public static final String GOODREADS_ADDITIONAL_AUTHORS = "goodreads_additional_authors";
-    /**
-     * Data will have the Isbn13 field mapped to {@link DBKey#BOOK_ISBN}.
-     * If empty, we get the Isbn10 code from this key.
-     */
-    public static final String GOODREADS_ISBN10 = "goodreads_isbn10";
-    /** Goodreads bookshelves need special decoding. */
-    public static final String GOODREADS_BOOKSHELVES = "goodreads_bookshelves";
-    /**
-     * An {@code int} 1..5; can be missing.
-     * Decoded in combination with {@link #GOODREADS_AVERAGE_RATING}.
-     */
-    public static final String GOODREADS_MY_RATING = "goodreads_my_rating";
-    /**
-     * A {@code float} 0..5; can be missing.
-     * Decoded in combination with {@link #GOODREADS_MY_RATING}.
-     */
-    public static final String GOODREADS_AVERAGE_RATING = "goodreads_average_rating";
 
     /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
     private static final String CSV_COLUMN_TOC = "anthology_titles";
@@ -99,20 +76,23 @@ public class BookCoder {
     /** Obsolete/alternative header only used by NTMB pre-1.2 versions: bookshelf name. */
     private static final String LEGACY_BOOKSHELF_1_1 = "bookshelf";
 
-    private final StringList<Author> authorCoder = new StringList<>(new AuthorCoder());
-    private final StringList<Series> seriesCoder = new StringList<>(new SeriesCoder());
-    private final StringList<Publisher> publisherCoder = new StringList<>(new PublisherCoder());
-    private final StringList<TocEntry> tocCoder = new StringList<>(new TocEntryCoder());
-    /** This is a COMMA separated string list. */
+    @NonNull
+    private final StringList<Author> authorCoder;
     @NonNull
     private final StringList<Bookshelf> bookshelfCoder;
+    @NonNull
+    private final StringList<Publisher> publisherCoder;
+    @NonNull
+    private final StringList<Series> seriesCoder;
+    @NonNull
+    private final StringList<TocEntry> tocCoder;
+
     @NonNull
     private final Author unknownAuthor;
     @NonNull
     private final Style defaultStyle;
-    /** This is a SPACE separated string list. */
     @Nullable
-    private StringList<Bookshelf> goodreadsBookshelfCoder;
+    private Goodreads goodreads;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
 
@@ -124,8 +104,12 @@ public class BookCoder {
      */
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle) {
-        // Backwards compatibility: use the ',' separator
-        this.bookshelfCoder = new StringList<>(new BookshelfCoder(',', defaultStyle));
+        authorCoder = new StringList<>(new AuthorCoder());
+        // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
+        bookshelfCoder = new StringList<>(new BookshelfCoder(',', defaultStyle));
+        publisherCoder = new StringList<>(new PublisherCoder());
+        seriesCoder = new StringList<>(new SeriesCoder());
+        tocCoder = new StringList<>(new TocEntryCoder());
 
         unknownAuthor = Author.createUnknownAuthor(context);
         this.defaultStyle = defaultStyle;
@@ -157,6 +141,9 @@ public class BookCoder {
             }
         }
 
+        // never used, remove if present
+        book.remove(LEGACY_BOOKSHELF_ID);
+
         // we MUST have a title.
         if (book.getTitle().isEmpty()) {
             book.putString(DBKey.TITLE, context.getString(R.string.unknown_title));
@@ -165,20 +152,29 @@ public class BookCoder {
         // check/fix the language
         book.getAndUpdateLocale(context, true);
 
-        // Database access is strictly limited to fetching ID's for the list elements.
+        // Database access is strictly limited to fetching ID's for any list elements.
         processIsbn(book);
         processAuthors(book);
         processSeries(book);
         processPublishers(book);
         processToc(book);
-        processBookshelves(context, book);
+        processBookshelves(book);
         processCalibreData(book);
         processRating(book);
+        processDescriptionAndNotes(book);
 
         //FIXME: implement full parsing/formatting of incoming dates for validity
         //verifyDates(context, bookDao, book);
 
         return book;
+    }
+
+    @NonNull
+    private Goodreads getGoodreads() {
+        if (goodreads == null) {
+            goodreads = new Goodreads(defaultStyle);
+        }
+        return goodreads;
     }
 
     /**
@@ -187,9 +183,9 @@ public class BookCoder {
      * @param book to process
      */
     private void processIsbn(@NonNull final Book book) {
-        if (!book.contains(DBKey.BOOK_ISBN) && book.contains(GOODREADS_ISBN10)) {
-            book.putString(DBKey.BOOK_ISBN, book.getString(GOODREADS_ISBN10));
-            book.remove(GOODREADS_ISBN10);
+        if (!book.contains(DBKey.BOOK_ISBN) && book.contains(Goodreads.ISBN10)) {
+            book.putString(DBKey.BOOK_ISBN, book.getString(Goodreads.ISBN10));
+            book.remove(Goodreads.ISBN10);
         }
 
         // ALWAYS clean the ISBN here. We've seen Goodreads csv file with
@@ -205,6 +201,8 @@ public class BookCoder {
     }
 
     /**
+     * Process the list of Authors.
+     * <p>
      * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of authors from whatever source is available.
@@ -213,46 +211,75 @@ public class BookCoder {
      * @param book to process
      */
     private void processAuthors(@NonNull final Book book) {
+        final List<Author> list = book.getAuthors();
 
-        final String encodedList = book.getString(CSV_COLUMN_AUTHORS, null);
-        book.remove(CSV_COLUMN_AUTHORS);
+        processAuthor(book, authorCoder, CSV_COLUMN_AUTHORS, list);
+        processAuthor(book, authorCoder, DBKey.AUTHOR_FORMATTED, list);
+        processAuthor(book, authorCoder, LEGACY_AUTHOR_NAME, list);
+        processAuthor(book, getGoodreads().getAuthorCoder(), Goodreads.ADDITIONAL_AUTHORS, list);
 
-        final List<Author> list;
-        if (encodedList == null || encodedList.isEmpty()) {
-            // check for individual author (full/family/given) fields in the input
-            list = new ArrayList<>();
-            if (book.contains(DBKey.AUTHOR_FAMILY_NAME)) {
-                final String family = book.getString(DBKey.AUTHOR_FAMILY_NAME, null);
-                if (family != null && !family.isEmpty()) {
-                    final String given = book.getString(DBKey.AUTHOR_GIVEN_NAMES, null);
-                    list.add(new Author(family, given));
-                }
-                book.remove(DBKey.AUTHOR_FAMILY_NAME);
-                book.remove(DBKey.AUTHOR_GIVEN_NAMES);
+        // check for individual author family/given fields in the input
+        if (book.contains(DBKey.AUTHOR_FAMILY_NAME)) {
+            final String family = book.getString(DBKey.AUTHOR_FAMILY_NAME, null);
+            if (family != null && !family.isEmpty()) {
+                final String given = book.getString(DBKey.AUTHOR_GIVEN_NAMES, null);
+                list.add(new Author(family, given));
             }
-            processAuthor(book, DBKey.AUTHOR_FORMATTED, list);
-            processAuthor(book, LEGACY_AUTHOR_NAME, list);
-            processAuthor(book, GOODREADS_ADDITIONAL_AUTHORS, list);
-        } else {
-            list = authorCoder.decodeList(encodedList);
+            book.remove(DBKey.AUTHOR_FAMILY_NAME);
+            book.remove(DBKey.AUTHOR_GIVEN_NAMES);
         }
 
         // we MUST have an author.
         if (list.isEmpty()) {
             list.add(unknownAuthor);
         }
+
         book.setAuthors(list);
     }
 
     private void processAuthor(@NonNull final Book book,
+                               @NonNull final StringList<Author> coder,
                                @NonNull final String key,
                                @NonNull final List<Author> list) {
         if (book.contains(key)) {
-            final String a = book.getString(key, null);
-            if (a != null && !a.isEmpty()) {
-                list.add(Author.from(a));
-            }
+            final String encodedList = book.getString(key, null);
             book.remove(key);
+
+            if (encodedList != null && !encodedList.isEmpty()) {
+                // Do not add if already there.
+                // We need to do this here (before going to the database)
+                // so we can keep them in the exact order as they come in.
+                // This is particularly important for Goodreads imports
+                coder.decodeList(encodedList).forEach(author -> {
+                    if (list.stream().noneMatch(a -> a.isSameName(author))) {
+                        list.add(author);
+                    }
+                });
+                // In addition we can have the following duplicates:
+                //
+                // Author,Author l-f,Additional Authors
+                // Liu Cixin,"Cixin, Liu","Ken Liu, Cixin Liu"
+                // First field is skipped
+                // Second field is the primary Author in "Last, Firstname" format.
+                // Third fields is a comma sep. list
+                // PROBLEM: normally the 3rd field is e.g. "Isaac Asimov"
+                // in other words, "FIRSTNAME LASTNAME" and the decoding will work properly.
+                // For chinese names (which we want to test explicitly here) the
+                // notation is always "LASTNAME FIRSTNAME" and we end up with a duplicate
+                // in the wrong order.
+
+                // [Author{id=1, familyName=`Cixin`, givenNames=`Liu`, ...
+                // Author{id=2, familyName=`Liu`, givenNames=`Ken`, ...
+                // Author{id=3, familyName=`Liu`, givenNames=`Cixin`, ...
+
+                // FIXME: do NOT do this in the AuthorDao#prune method; do it HERE
+                //  AuthorDao#prune method is used in locations where the user supposedly
+                //  already cleaned Author names; so we might get false positives.
+                // But HERE, we already warned the user that a CSV import is not foolproof.
+                // and based on the currently supported sources:
+                // BC/NTMB: should not be an issue unless the data is simply bad.
+                // Goodreads: see above, doing it here WILL generate correct data.
+            }
         }
     }
 
@@ -264,31 +291,47 @@ public class BookCoder {
      * @param book to process
      */
     private void processSeries(@NonNull final Book book) {
+        final List<Series> list = book.getSeries();
 
-        final String encodedList = book.getString(CSV_COLUMN_SERIES, null);
-        book.remove(CSV_COLUMN_SERIES);
+        processSeries(book, seriesCoder, CSV_COLUMN_SERIES, list);
 
-        if (encodedList == null || encodedList.isEmpty()) {
-            // check for individual series title/number fields in the input
-            if (book.contains(DBKey.SERIES_TITLE)) {
-                final String title = book.getString(DBKey.SERIES_TITLE, null);
-                if (title != null && !title.isEmpty()) {
-                    final Series series = new Series(title);
-                    // number will be "" if it's not present
-                    series.setNumber(book.getString(DBKey.SERIES_BOOK_NUMBER, null));
-                    final List<Series> list = new ArrayList<>();
-                    list.add(series);
-                    book.setSeries(list);
-                }
-                book.remove(DBKey.SERIES_TITLE);
-                book.remove(DBKey.SERIES_BOOK_NUMBER);
-            } else {
-                Series.checkForSeriesNameInTitle(book);
+        // check for individual series title/number fields in the input
+        if (book.contains(DBKey.SERIES_TITLE)) {
+            final String title = book.getString(DBKey.SERIES_TITLE, null);
+            if (title != null && !title.isEmpty()) {
+                final Series series = new Series(title);
+                // number will be "" if it's not present
+                series.setNumber(book.getString(DBKey.SERIES_BOOK_NUMBER, null));
+                list.add(series);
             }
-        } else {
-            final List<Series> list = seriesCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                book.setSeries(list);
+            book.remove(DBKey.SERIES_TITLE);
+            book.remove(DBKey.SERIES_BOOK_NUMBER);
+        }
+
+        Series.checkForSeriesNameInTitle(book);
+
+        if (!list.isEmpty()) {
+            book.setSeries(list);
+        }
+    }
+
+    private void processSeries(@NonNull final Book book,
+                               @NonNull final StringList<Series> coder,
+                               @NonNull final String key,
+                               @NonNull final List<Series> list) {
+        if (book.contains(key)) {
+            final String encodedList = book.getString(key, null);
+            book.remove(key);
+
+            if (encodedList != null && !encodedList.isEmpty()) {
+                // Weeding out duplicates here is likely overkill but oh well.
+                coder.decodeList(encodedList).forEach(series -> {
+                    if (list.stream().noneMatch(bs -> bs.isSameName(series)
+                                                      && bs.getNumber()
+                                                           .equals(series.getNumber()))) {
+                        list.add(series);
+                    }
+                });
             }
         }
     }
@@ -301,14 +344,31 @@ public class BookCoder {
      * @param book to process
      */
     private void processPublishers(@NonNull final Book book) {
+        final List<Publisher> list = book.getPublishers();
 
-        final String encodedList = book.getString(CSV_COLUMN_PUBLISHERS, null);
-        book.remove(CSV_COLUMN_PUBLISHERS);
+        processPublisher(book, publisherCoder, CSV_COLUMN_PUBLISHERS, list);
+        processPublisher(book, publisherCoder, DBKey.PUBLISHER_NAME, list);
 
-        if (encodedList != null && !encodedList.isEmpty()) {
-            final List<Publisher> list = publisherCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                book.setPublishers(list);
+        if (!list.isEmpty()) {
+            book.setPublishers(list);
+        }
+    }
+
+    private void processPublisher(@NonNull final Book book,
+                                  @NonNull final StringList<Publisher> coder,
+                                  @NonNull final String key,
+                                  @NonNull final List<Publisher> list) {
+        if (book.contains(key)) {
+            final String encodedList = book.getString(key, null);
+            book.remove(key);
+
+            if (encodedList != null && !encodedList.isEmpty()) {
+                // Weeding out duplicates here is likely overkill but oh well.
+                coder.decodeList(encodedList).forEach(publisher -> {
+                    if (list.stream().noneMatch(bs -> bs.isSameName(publisher))) {
+                        list.add(publisher);
+                    }
+                });
             }
         }
     }
@@ -324,67 +384,89 @@ public class BookCoder {
      * @param book to process
      */
     private void processToc(@NonNull final Book book) {
+        final List<TocEntry> list = book.getToc();
 
-        final String encodedList = book.getString(CSV_COLUMN_TOC, null);
-        book.remove(CSV_COLUMN_TOC);
+        processToc(book, tocCoder, CSV_COLUMN_TOC, list);
 
-        if (encodedList != null && !encodedList.isEmpty()) {
-            final List<TocEntry> list = tocCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                book.setToc(list);
+        if (!list.isEmpty()) {
+            book.setToc(list);
+        }
+    }
+
+    private void processToc(@NonNull final Book book,
+                            @NonNull final StringList<TocEntry> coder,
+                            @NonNull final String key,
+                            @NonNull final List<TocEntry> list) {
+        if (book.contains(key)) {
+            final String encodedList = book.getString(key, null);
+            book.remove(key);
+
+            if (encodedList != null && !encodedList.isEmpty()) {
+                // Weeding out duplicates here is likely overkill but oh well.
+                coder.decodeList(encodedList).forEach(tocEntry -> {
+                    if (list.stream().noneMatch(bs -> bs.isSameName(tocEntry))) {
+                        list.add(tocEntry);
+                    }
+                });
             }
         }
     }
 
     /**
-     * Process the bookshelves.
+     * Process the list of Bookshelves.
+     *  <p>
      * Database access is strictly limited to fetching ID's.
      *
-     * @param context Current context
-     * @param book    to process
+     * @param book to process
      */
-    private void processBookshelves(@NonNull final Context context,
-                                    @NonNull final Book book) {
+    private void processBookshelves(@NonNull final Book book) {
+        final List<Bookshelf> list = book.getBookshelves();
 
-        final List<Bookshelf> bookshelves = new ArrayList<>();
+        processBookshelf(book, bookshelfCoder, DBKey.BOOKSHELF_NAME, list);
+        processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_1_1, list);
+        processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_TEXT, list);
 
-        processBookshelf(book, bookshelfCoder, DBKey.BOOKSHELF_NAME, bookshelves);
-        processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_1_1, bookshelves);
-        processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_TEXT, bookshelves);
-
-        if (book.contains(GOODREADS_BOOKSHELVES)) {
-            if (goodreadsBookshelfCoder == null) {
-                goodreadsBookshelfCoder = new StringList<>(new BookshelfCoder(' ', defaultStyle));
-            }
+        if (book.contains(Goodreads.BOOKSHELVES)
+            || book.contains(Goodreads.EXCLUSIVE_SHELF)) {
             //ENHANCE: provide mapping for the Goodreads "read", "to-read" and "currently-reading"
             // fixed shelves. For now we just create those 3 when not there yet.
-            processBookshelf(book, goodreadsBookshelfCoder, GOODREADS_BOOKSHELVES, bookshelves);
-            if (bookshelves.stream().anyMatch(bookshelf -> "read".equals(bookshelf.getName()))) {
+            // If 'read' is present, we also set our DBKey.READ__BOOL flag.
+            processBookshelf(book, getGoodreads().getBookshelfCoder(),
+                             Goodreads.BOOKSHELVES, list);
+            processBookshelf(book, getGoodreads().getBookshelfCoder(),
+                             Goodreads.EXCLUSIVE_SHELF, list);
+
+            if (list.stream().anyMatch(bookshelf -> "read".equals(bookshelf.getName()))) {
                 // DO NOT use book.setRead(true) as that will set related fields
                 // which is not desired here as this might overwrite incoming data
                 book.putBoolean(DBKey.READ__BOOL, true);
             }
         }
 
-        // never used, just remove
-        book.remove(LEGACY_BOOKSHELF_ID);
-
-        if (!bookshelves.isEmpty()) {
-            ServiceLocator.getInstance().getBookshelfDao().pruneList(context, bookshelves);
-            book.setBookshelves(bookshelves);
+        if (!list.isEmpty()) {
+            book.setBookshelves(list);
         }
     }
 
     private void processBookshelf(@NonNull final Book book,
-                                  @NonNull final StringList<Bookshelf> bookshelfCoder,
+                                  @NonNull final StringList<Bookshelf> coder,
                                   @NonNull final String key,
                                   @NonNull final List<Bookshelf> list) {
         if (book.contains(key)) {
             final String encodedList = book.getString(key, null);
-            if (encodedList != null && !encodedList.isEmpty()) {
-                list.addAll(bookshelfCoder.decodeList(encodedList));
-            }
             book.remove(key);
+
+            if (encodedList != null && !encodedList.isEmpty()) {
+                // Do not add if already there.
+                // We need to do this here (before going to the database)
+                // so we can keep them in the exact order as they come in.
+                // This is particularly important for Goodreads imports
+                coder.decodeList(encodedList).forEach(bookshelf -> {
+                    if (list.stream().noneMatch(bs -> bs.isSameName(bookshelf))) {
+                        list.add(bookshelf);
+                    }
+                });
+            }
         }
     }
 
@@ -414,30 +496,107 @@ public class BookCoder {
     }
 
     private void processRating(@NonNull final Book book) {
-        if (!book.contains(DBKey.RATING) && book.contains(GOODREADS_MY_RATING)) {
+        if (!book.contains(DBKey.RATING) && book.contains(Goodreads.MY_RATING)) {
             try {
                 final int rating = Integer.parseInt(
-                        book.getString(GOODREADS_MY_RATING));
+                        book.getString(Goodreads.MY_RATING));
                 if (rating > 0) {
-                    book.putInt(DBKey.RATING, MathUtils.clamp(rating, 1, 5));
+                    book.putFloat(DBKey.RATING, MathUtils.clamp(rating, 1, 5));
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }
-            book.remove(GOODREADS_MY_RATING);
+            book.remove(Goodreads.MY_RATING);
         }
 
-        if (!book.contains(DBKey.RATING) && book.contains(GOODREADS_AVERAGE_RATING)) {
+        if (!book.contains(DBKey.RATING) && book.contains(Goodreads.AVERAGE_RATING)) {
             try {
-                final int rating = Math.round(Float.parseFloat(
-                        book.getString(GOODREADS_AVERAGE_RATING)));
+                final float rating = (float) Math.round(2 * Float.parseFloat(
+                        book.getString(Goodreads.AVERAGE_RATING))) / 2;
                 if (rating > 0) {
-                    book.putInt(DBKey.RATING, MathUtils.clamp(rating, 1, 5));
+                    book.putFloat(DBKey.RATING, MathUtils.clamp(rating, (float) 0.5, (float) 5));
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }
-            book.remove(GOODREADS_AVERAGE_RATING);
+            book.remove(Goodreads.AVERAGE_RATING);
+        }
+    }
+
+    private void processDescriptionAndNotes(@NonNull final Book book) {
+        //ENHANCE: Create a new field for a personal review.
+        // For now, just concatenate with the private notes... we'll probably regret this later...
+        // .
+        // We don't want to use the DBKey.DESCRIPTION field!
+        // The description is supposed to be a generic description, the back cover text, etc...
+        final String review = book.getString(Goodreads.MY_REVIEW);
+        if (!review.isEmpty()) {
+            String notes = book.getString(DBKey.PERSONAL_NOTES);
+            if (!notes.isEmpty()) {
+                notes += "\n\n";
+            }
+            notes += review;
+            book.putString(DBKey.PERSONAL_NOTES, notes);
+        }
+    }
+
+    public static final class Goodreads {
+
+        public static final String PREFIX = "goodreads_";
+
+        /**
+         * The Goodreads Author field will be mapped to {@link DBKey#AUTHOR_FORMATTED}.
+         * Any additional authors come in this key and will need to be added.
+         */
+        public static final String ADDITIONAL_AUTHORS = PREFIX + "additional authors";
+        /**
+         * Data will have the Isbn13 field mapped to {@link DBKey#BOOK_ISBN}.
+         * If empty, we get the Isbn10 code from this key.
+         */
+        public static final String ISBN10 = PREFIX + "isbn10";
+        /** Goodreads bookshelves need special decoding. */
+        public static final String BOOKSHELVES = PREFIX + "bookshelves";
+        public static final String EXCLUSIVE_SHELF = PREFIX + "exclusive shelf";
+        /**
+         * An {@code int} 1..5; can be missing.
+         * Decoded in combination with {@link #AVERAGE_RATING}.
+         */
+        public static final String MY_RATING = PREFIX + "my rating";
+        /**
+         * A {@code float} 0..5; can be missing.
+         * Decoded in combination with {@link #MY_RATING}.
+         */
+        public static final String AVERAGE_RATING = PREFIX + "average rating";
+        public static final String MY_REVIEW = PREFIX + "my review";
+
+        @NonNull
+        private final Style defaultStyle;
+
+        /** This is a COMMA separated string list. */
+        @Nullable
+        private StringList<Author> authorCoder;
+        /** This is a SPACE separated string list. */
+        @Nullable
+        private StringList<Bookshelf> bookshelfCoder;
+
+        Goodreads(@NonNull final Style defaultStyle) {
+            this.defaultStyle = defaultStyle;
+        }
+
+        @NonNull
+        StringList<Author> getAuthorCoder() {
+            if (authorCoder == null) {
+                authorCoder = new StringList<>(new AuthorCoder(','));
+            }
+            return authorCoder;
+        }
+
+        @NonNull
+        StringList<Bookshelf> getBookshelfCoder() {
+            if (bookshelfCoder == null) {
+                bookshelfCoder = new StringList<>(new BookshelfCoder(',', defaultStyle));
+            }
+            return bookshelfCoder;
         }
     }
 }
