@@ -171,8 +171,6 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
-    private static final boolean TEMP_TEST_BOTTOM_SHEET = true;
-
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
@@ -480,13 +478,15 @@ public class BooksOnBookshelf
     private void createFragmentResultListeners() {
         final FragmentManager fm = getSupportFragmentManager();
 
-        if (TEMP_TEST_BOTTOM_SHEET) {
-            stylePickerLauncher = new StylePickerLauncher(RK_STYLE_PICKER,
-                                                          StylePickerBottomSheet::new,
-                                                          this::onStyleSelected);
-        } else {
+        if (WindowSizeClass.getWidth(this) == WindowSizeClass.Expanded) {
+            // Tablets use a Dialog
             stylePickerLauncher = new StylePickerLauncher(RK_STYLE_PICKER,
                                                           StylePickerDialogFragment::new,
+                                                          this::onStyleSelected);
+        } else {
+            // Phones use a BottomSheet
+            stylePickerLauncher = new StylePickerLauncher(RK_STYLE_PICKER,
+                                                          StylePickerBottomSheet::new,
                                                           this::onStyleSelected);
         }
 
