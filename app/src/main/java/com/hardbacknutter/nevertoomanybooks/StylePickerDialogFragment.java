@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,17 +27,14 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuContentBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
@@ -49,23 +45,11 @@ public class StylePickerDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
-    private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
 
-    /** The list of styles to display. */
-    private final List<String> styleUuids = new ArrayList<>();
-    private final List<String> styleLabels = new ArrayList<>();
-
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-    /** Show all styles, or only the preferred styles. */
-    private boolean showAllStyles;
-    /** Currently selected style. */
-    @Nullable
-    private String currentStyleUuid;
-    /** All styles as loaded from the database. */
-    private List<Style> styleList;
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<String, String> adapter;
+
+    private StylePickerViewModel vm;
 
     /**
      * No-arg constructor for OS use.
@@ -83,19 +67,9 @@ public class StylePickerDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-
-        if (savedInstanceState == null) {
-            // We MUST have a style
-            currentStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
-                                                        Style.BKEY_UUID);
-            showAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
-        } else {
-            currentStyleUuid = savedInstanceState.getString(Style.BKEY_UUID);
-            showAllStyles = savedInstanceState.getBoolean(BKEY_SHOW_ALL_STYLES);
-        }
+        vm = new ViewModelProvider(this).get(StylePickerViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), requireArguments());
     }
 
     @Override
@@ -105,22 +79,14 @@ public class StylePickerDialogFragment
         final DialogStylesMenuContentBinding vb = DialogStylesMenuContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
 
-        loadStyles();
-
         //noinspection DataFlowIssue
-        adapter = new RadioGroupRecyclerAdapter<>(getContext(), styleUuids, styleLabels,
-                                                  currentStyleUuid,
-                                                  uuid -> currentStyleUuid = uuid);
+        adapter = new RadioGroupRecyclerAdapter<>(getContext(),
+                                                  vm.getStyleUuids(), vm.getStyleLabels(),
+                                                  vm.getCurrentStyleUuid(),
+                                                  uuid -> vm.setCurrentStyleUuid(uuid));
         vb.stylesList.setAdapter(adapter);
 
         adjustWindowSize(vb.stylesList, 3);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(Style.BKEY_UUID, currentStyleUuid);
-        outState.putBoolean(BKEY_SHOW_ALL_STYLES, showAllStyles);
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -136,15 +102,16 @@ public class StylePickerDialogFragment
             return true;
 
         } else if (menuItemId == R.id.MENU_STYLE_LIST_TOGGLE) {
-            showAllStyles = !showAllStyles;
-            if (showAllStyles) {
+            if (vm.flipShowAllStyles()) {
                 menuItem.setTitle(R.string.action_less_ellipsis);
                 menuItem.setIcon(R.drawable.ic_baseline_unfold_less_24);
             } else {
                 menuItem.setTitle(R.string.action_more_ellipsis);
                 menuItem.setIcon(R.drawable.ic_baseline_unfold_more_24);
             }
-            loadStyles();
+
+            //noinspection DataFlowIssue
+            vm.loadStyles(getContext());
             adapter.notifyDataSetChanged();
             return true;
         }
@@ -165,71 +132,40 @@ public class StylePickerDialogFragment
     }
 
     /**
-     * Send the selected style id back. Silently returns if there was nothing selected.
+     * Send the selected style id back.
      */
     private void onStyleSelected() {
-        currentStyleUuid = adapter.getSelection();
-        if (currentStyleUuid == null) {
+        final String selectedStyleUuid = adapter.getSelection();
+        if (selectedStyleUuid == null) {
+            // We should never get here.
             return;
         }
-
-        Launcher.setResult(this, requestKey, currentStyleUuid);
-
         dismiss();
+
+        Launcher.setResult(this, vm.getRequestKey(), selectedStyleUuid);
     }
 
     /**
-     * Edit the selected style. Silently returns if there was nothing selected.
+     * Edit the selected style.
      */
     private void onEditStyle() {
-        currentStyleUuid = adapter.getSelection();
-        if (currentStyleUuid == null) {
+        final String selectedStyleUuid = adapter.getSelection();
+        if (selectedStyleUuid == null) {
+            // We should never get here.
             return;
         }
         dismiss();
-
-        final Style selectedStyle =
-                styleList.stream()
-                         .filter(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))
-                         .findFirst()
-                         .orElseThrow(() -> new IllegalStateException(currentStyleUuid));
 
         // use the activity so we get the results there.
         //noinspection DataFlowIssue
-        ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle);
-    }
-
-    /**
-     * Fetch the styles.
-     */
-    private void loadStyles() {
-        final Context context = getContext();
-
-        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-
-        styleList = stylesHelper.getStyles(showAllStyles);
-        if (!showAllStyles && currentStyleUuid != null) {
-            // make sure the currently selected style is in the list
-            if (styleList
-                    .stream()
-                    .noneMatch(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))) {
-
-                stylesHelper.getStyle(currentStyleUuid)
-                            .ifPresent(style -> styleList.add(style));
-            }
-        }
-
-        styleUuids.clear();
-        styleLabels.clear();
-        styleList.forEach(style -> {
-            styleUuids.add(style.getUuid());
-            //noinspection DataFlowIssue
-            styleLabels.add(style.getLabel(context));
-        });
+        ((BooksOnBookshelf) getActivity()).editStyle(vm.findStyle(selectedStyleUuid));
     }
 
     public static class Launcher
             extends DialogLauncher {
+
+        private static final String TAG = "Launcher";
+        static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
 
         @NonNull
         private final ResultListener resultListener;
