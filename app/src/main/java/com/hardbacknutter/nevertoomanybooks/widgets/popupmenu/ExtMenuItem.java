@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.MenuItem;
+import android.view.SubMenu;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -117,10 +118,11 @@ public class ExtMenuItem
         // Either way, copy the icon itself as well
         item.setIcon(menuItem.getIcon());
 
-        if (menuItem.hasSubMenu()) {
-            final ExtMenu subMenu = new ExtMenu();
-            //noinspection DataFlowIssue
-            subMenu.addAll(ExtMenu.convert(menuItem.getSubMenu(), groupDividerEnabled));
+        final SubMenu subMenu = menuItem.getSubMenu();
+        if (subMenu != null) {
+            final ExtMenu extSubMenu = new ExtMenu();
+            extSubMenu.addAll(ExtMenu.convert(subMenu, groupDividerEnabled));
+            item.setSubMenu(extSubMenu);
         }
 
         return item;
