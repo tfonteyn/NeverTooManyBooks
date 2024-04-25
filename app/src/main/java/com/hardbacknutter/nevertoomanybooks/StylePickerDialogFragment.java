@@ -21,6 +21,9 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.SuperscriptSpan;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -47,9 +50,10 @@ public class StylePickerDialogFragment
     public static final String TAG = "StylePickerDialogFrag";
 
     /** Adapter for the selection. */
-    private RadioGroupRecyclerAdapter<String, String> adapter;
+    private RadioGroupRecyclerAdapter<Style> adapter;
 
     private StylePickerViewModel vm;
+    private SpannableString builtinLabelSuffix;
 
     /**
      * No-arg constructor for OS use.
@@ -68,8 +72,10 @@ public class StylePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(StylePickerViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
+        vm.init(requireArguments());
+
+        builtinLabelSuffix = new SpannableString("*");
+        builtinLabelSuffix.setSpan(new SuperscriptSpan(), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     @Override
@@ -81,9 +87,10 @@ public class StylePickerDialogFragment
 
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(),
-                                                  vm.getStyleUuids(), vm.getStyleLabels(),
-                                                  vm.getCurrentStyleUuid(),
-                                                  uuid -> vm.setCurrentStyleUuid(uuid));
+                                                  vm.getStyles(),
+                                                  this::getLabel,
+                                                  vm.getCurrentStyle(),
+                                                  style -> vm.setCurrentStyle(style));
         vb.stylesList.setAdapter(adapter);
 
         adjustWindowSize(vb.stylesList, 3);
@@ -110,8 +117,6 @@ public class StylePickerDialogFragment
                 menuItem.setIcon(R.drawable.ic_baseline_unfold_more_24);
             }
 
-            //noinspection DataFlowIssue
-            vm.loadStyles(getContext());
             adapter.notifyDataSetChanged();
             return true;
         }
@@ -135,22 +140,22 @@ public class StylePickerDialogFragment
      * Send the selected style id back.
      */
     private void onStyleSelected() {
-        final String selectedStyleUuid = adapter.getSelection();
-        if (selectedStyleUuid == null) {
+        final Style selectedStyle = adapter.getSelection();
+        if (selectedStyle == null) {
             // We should never get here.
             return;
         }
         dismiss();
 
-        Launcher.setResult(this, vm.getRequestKey(), selectedStyleUuid);
+        Launcher.setResult(this, vm.getRequestKey(), selectedStyle);
     }
 
     /**
      * Edit the selected style.
      */
     private void onEditStyle() {
-        final String selectedStyleUuid = adapter.getSelection();
-        if (selectedStyleUuid == null) {
+        final Style selectedStyle = adapter.getSelection();
+        if (selectedStyle == null) {
             // We should never get here.
             return;
         }
@@ -158,7 +163,20 @@ public class StylePickerDialogFragment
 
         // use the activity so we get the results there.
         //noinspection DataFlowIssue
-        ((BooksOnBookshelf) getActivity()).editStyle(vm.findStyle(selectedStyleUuid));
+        ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle);
+    }
+
+    @NonNull
+    private CharSequence getLabel(final int position) {
+        final Style style = vm.getStyles().get(position);
+        if (style.isPreferred()) {
+            //noinspection DataFlowIssue
+            return style.getLabel(getContext());
+        } else {
+            //TODO: maybe move style '*' suffix logic to the style itself and use universally?
+            //noinspection DataFlowIssue
+            return getString(R.string.a_b, style.getLabel(getContext()), builtinLabelSuffix);
+        }
     }
 
     public static class Launcher
@@ -187,16 +205,16 @@ public class StylePickerDialogFragment
          *
          * @param fragment   the calling DialogFragment
          * @param requestKey to use
-         * @param uuid       the selected style
+         * @param style      the selected style
          *
          * @see #onFragmentResult(String, Bundle)
          */
         @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
-                              @NonNull final String uuid) {
+                              @NonNull final Style style) {
             final Bundle result = new Bundle(1);
-            result.putString(DBKey.FK_STYLE, uuid);
+            result.putString(DBKey.FK_STYLE, style.getUuid());
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 

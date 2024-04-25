@@ -1717,6 +1717,8 @@
          param2: y: total number of pages. -->
     <string name="info_progress_page_x_of_y">Page: %1$d of %2$d</string>
 
+    <string name="info_builtin_style_asterix">(*=default style)</string>
+
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
 </resources>

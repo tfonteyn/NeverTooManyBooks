@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -39,6 +39,8 @@
             style="@style/Toolbar.Dialog.Fullscreen"
             app:menu="@menu/toolbar_select_style"
             app:title="@string/lbl_style"
+            app:subtitle="@string/info_builtin_style_asterix"
+            app:subtitleTextAppearance="?attr/textAppearanceTitleSmall"
             />
 
     </com.google.android.material.appbar.AppBarLayout>

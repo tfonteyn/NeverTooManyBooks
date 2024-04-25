@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,67 +32,43 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 @SuppressWarnings("WeakerAccess")
 public class StylePickerViewModel
         extends ViewModel {
 
-    /** The list of styles to display. */
-    private final List<String> styleUuids = new ArrayList<>();
-    private final List<String> styleLabels = new ArrayList<>();
-
+    /** The list of styles to display; as loaded from the database. */
+    private final List<Style> styleList = new ArrayList<>();
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
-
     /** Show all styles, or only the preferred styles. */
     private boolean showAllStyles;
     /** Currently selected style. */
     @Nullable
-    private String currentStyleUuid;
-    /** All styles as loaded from the database. */
-    private List<Style> styleList;
+    private Style currentStyle;
 
-    void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+    /**
+     * Pseudo constructor.
+     *
+     * @param args Bundle with arguments
+     */
+    void init(@NonNull final Bundle args) {
         if (requestKey == null) {
             requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                                 DialogLauncher.BKEY_REQUEST_KEY);
             // We MUST have a style
-            currentStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
-                                                        Style.BKEY_UUID);
+            currentStyle = ServiceLocator
+                    .getInstance()
+                    .getStyles()
+                    .getStyle(args.getString(Style.BKEY_UUID))
+                    .orElseThrow(() -> new IllegalArgumentException(Style.BKEY_UUID));
+
             showAllStyles = args.getBoolean(
                     StylePickerDialogFragment.Launcher.BKEY_SHOW_ALL_STYLES, false);
         }
 
-        loadStyles(context);
-    }
-
-    /**
-     * Fetch the styles.
-     */
-    void loadStyles(@NonNull final Context context) {
-        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-
-        styleList = stylesHelper.getStyles(showAllStyles);
-        if (!showAllStyles && currentStyleUuid != null) {
-            // make sure the currently selected style is in the list
-            if (styleList
-                    .stream()
-                    .noneMatch(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))) {
-
-                stylesHelper.getStyle(currentStyleUuid)
-                            .ifPresent(style -> styleList.add(style));
-            }
-        }
-
-        styleUuids.clear();
-        styleLabels.clear();
-        styleList.forEach(style -> {
-            styleUuids.add(style.getUuid());
-            styleLabels.add(style.getLabel(context));
-        });
+        loadStyles();
     }
 
     @NonNull
@@ -101,41 +76,47 @@ public class StylePickerViewModel
         return requestKey;
     }
 
-    @NonNull
-    String getCurrentStyleUuid() {
-        Objects.requireNonNull(currentStyleUuid, "currentStyleUuid");
-        return currentStyleUuid;
-    }
+    private void loadStyles() {
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
 
-    void setCurrentStyleUuid(@NonNull final String currentStyleUuid) {
-        this.currentStyleUuid = currentStyleUuid;
-    }
-
-    @NonNull
-    List<String> getStyleUuids() {
-        return styleUuids;
-    }
-
-    @NonNull
-    List<String> getStyleLabels() {
-        return styleLabels;
+        styleList.clear();
+        styleList.addAll(stylesHelper.getStyles(showAllStyles));
+        if (!showAllStyles && currentStyle != null) {
+            // Make sure the currently selected style is in the list
+            // This can be the case where for example the selected style is a builtin
+            // while the list is set to show only the preferred styles.
+            if (styleList.stream().noneMatch(style -> currentStyle.equals(style))) {
+                stylesHelper.getStyle(currentStyle.getUuid()).ifPresent(styleList::add);
+            }
+        }
     }
 
     @NonNull
-    Style findStyle(@NonNull final String styleUuid) {
-        final Style selectedStyle =
-                styleList.stream()
-                         .filter(style -> styleUuid.equalsIgnoreCase(style.getUuid()))
-                         .findFirst()
-                         .orElseThrow(() -> new IllegalStateException(styleUuid));
-
-        setCurrentStyleUuid(styleUuid);
-
-        return selectedStyle;
+    List<Style> getStyles() {
+        return styleList;
     }
 
+    /**
+     * Check if all styles or just the preferred ones should be shown.
+     *
+     * @return {@code true} for all styles,
+     *         {@code false} for only the preferred styles.
+     */
     boolean flipShowAllStyles() {
         showAllStyles = !showAllStyles;
+
+        loadStyles();
+
         return showAllStyles;
+    }
+
+    @NonNull
+    Style getCurrentStyle() {
+        Objects.requireNonNull(currentStyle, "currentStyle");
+        return currentStyle;
+    }
+
+    void setCurrentStyle(@NonNull final Style style) {
+        this.currentStyle = style;
     }
 }
