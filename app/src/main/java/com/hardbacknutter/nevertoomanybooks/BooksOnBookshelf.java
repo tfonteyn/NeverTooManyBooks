@@ -330,8 +330,9 @@ public class BooksOnBookshelf
             new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
                 View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
                 if (view == null) {
-                    // URGENT: check if we ever could get a null view
-                    //  and what happens if we use the list as the view
+                    // While we never should get a null here, tests have shown that
+                    // using the list view as a substitute works ok,
+                    // as the bottom-sheet does not need that view as an anchor anyhow.
                     view = vb.content.list;
                 }
                 onRowMenuItemSelected(view, adapterPosition, menuItemId);
