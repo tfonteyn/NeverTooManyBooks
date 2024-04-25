@@ -118,8 +118,10 @@ public class SingleChoiceDialogFragment
         final Context context = getContext();
 
         //noinspection DataFlowIssue
-        final RadioGroupRecyclerAdapter<Long, String> adapter =
-                new RadioGroupRecyclerAdapter<>(context, itemIds, itemLabels, selectedItem,
+        final RadioGroupRecyclerAdapter<Long> adapter =
+                new RadioGroupRecyclerAdapter<>(context, itemIds,
+                                                position -> itemLabels.get(position),
+                                                selectedItem,
                                                 id -> selectedItem = id);
 
         final RecyclerView listView = view.findViewById(R.id.item_list);

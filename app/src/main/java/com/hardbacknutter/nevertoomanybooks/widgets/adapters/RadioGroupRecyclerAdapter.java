@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceSingleBinding;
 
@@ -37,44 +38,44 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceSingleBinding;
  * <p>
  * Row layout: {@code R.layout.row_choice_single}
  *
- * @param <ID> the id for the item
- * @param <CS> the CharSequence to display
+ * @param <T> type of the item
  */
-public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
+public class RadioGroupRecyclerAdapter<T>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
-    private final List<ID> itemIds;
+    private final List<T> items;
     @NonNull
-    private final List<CS> itemLabels;
+    private final Function<Integer, CharSequence> labelSupplier;
     @Nullable
-    private final SelectionListener<ID> selectionListener;
+    private final SelectionListener<T> selectionListener;
     /** The (pre-)selected item. */
     @Nullable
-    private ID selection;
+    private T selection;
 
     /**
      * Constructor.
      *
-     * @param context   Current context
-     * @param ids       List of items; their ids
-     * @param labels    List of items; their labels to display
-     * @param selection (optional) the pre-selected item
-     * @param listener  (optional) to send a selection to as the user changes them;
-     *                  alternatively use {@link #getSelection()} when done.
+     * @param context       Current context
+     * @param items         List of items
+     * @param labelSupplier given the position in the list, supply a label for the item
+     * @param selection     (optional) the pre-selected item
+     * @param listener      (optional) when provided, the user selection will be send
+     *                      to this listener each time it changes;
+     *                      Alternatively use {@link #getSelection()} when done.
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,
-                                     @NonNull final List<ID> ids,
-                                     @NonNull final List<CS> labels,
-                                     @Nullable final ID selection,
-                                     @Nullable final SelectionListener<ID> listener) {
+                                     @NonNull final List<T> items,
+                                     @NonNull final Function<Integer, CharSequence> labelSupplier,
+                                     @Nullable final T selection,
+                                     @Nullable final SelectionListener<T> listener) {
 
         inflater = LayoutInflater.from(context);
-        itemIds = ids;
-        itemLabels = labels;
+        this.items = items;
+        this.labelSupplier = labelSupplier;
         this.selection = selection;
         selectionListener = listener;
     }
@@ -92,16 +93,16 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        final boolean checked = selection != null && selection == itemIds.get(position);
+        final boolean checked = selection != null && selection.equals(items.get(position));
         holder.vb.btnOption.setChecked(checked);
-        holder.vb.btnOption.setText(itemLabels.get(position));
+        holder.vb.btnOption.setText(labelSupplier.apply(position));
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void onItemCheckChanged(@NonNull final Holder holder) {
         final int position = holder.getAbsoluteAdapterPosition();
 
-        selection = itemIds.get(position);
+        selection = items.get(position);
         // this triggers a bind call for all rows, which in turn (un)sets the checked row.
         notifyDataSetChanged();
 
@@ -114,22 +115,27 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     /**
      * Get the selected item.
      *
-     * @return item id, can be {@code null} if no item is selected.
+     * @return item selected, can be {@code null} if none selected.
      */
     @Nullable
-    public ID getSelection() {
+    public T getSelection() {
         return selection;
     }
 
     @Override
     public int getItemCount() {
-        return itemIds.size();
+        return items.size();
     }
 
     @FunctionalInterface
-    public interface SelectionListener<ID> {
+    public interface SelectionListener<T> {
 
-        void onSelected(@Nullable ID id);
+        /**
+         * Called after the user selected an item.
+         *
+         * @param item selected, can be {@code null} if none selected.
+         */
+        void onSelected(@Nullable T item);
     }
 
     /**
