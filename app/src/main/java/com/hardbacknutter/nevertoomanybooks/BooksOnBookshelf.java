@@ -326,17 +326,7 @@ public class BooksOnBookshelf
                     publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
 
     /** Row menu launcher displaying the menu as a BottomSheet. */
-    private final BottomSheetMenu.Launcher menuLauncher =
-            new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
-                View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
-                if (view == null) {
-                    // While we never should get a null here, tests have shown that
-                    // using the list view as a substitute works ok,
-                    // as the bottom-sheet does not need that view as an anchor anyhow.
-                    view = vb.content.list;
-                }
-                onRowMenuItemSelected(view, adapterPosition, menuItemId);
-            });
+    private BottomSheetMenu.Launcher menuLauncher;
 
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
             new BookshelfFiltersDialogFragment.Launcher(
@@ -490,6 +480,18 @@ public class BooksOnBookshelf
                                                           this::onStyleSelected);
         }
 
+        menuLauncher = new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
+            View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
+            if (view == null) {
+                // While we never should get a null here, tests have shown that
+                // using the list view as a substitute works ok,
+                // as the bottom-sheet does not need that view as an anchor anyhow.
+                view = vb.content.list;
+            }
+            onRowMenuItemSelected(view, adapterPosition, menuItemId);
+        });
+        menuLauncher.registerForFragmentResult(fm, this);
+
         editColorLauncher.registerForFragmentResult(fm, this);
         editFormatLauncher.registerForFragmentResult(fm, this);
         editGenreLauncher.registerForFragmentResult(fm, this);
@@ -501,7 +503,6 @@ public class BooksOnBookshelf
         editSeriesLauncher.registerForFragmentResult(fm, this);
         editPublisherLauncher.registerForFragmentResult(fm, this);
 
-        menuLauncher.registerForFragmentResult(fm, this);
         stylePickerLauncher.registerForFragmentResult(fm, this);
         editLenderLauncher.registerForFragmentResult(fm, this);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
@@ -1144,7 +1145,12 @@ public class BooksOnBookshelf
                               ExtPopupMenu.Location.Center);
             } else {
                 // typical phone and a large menu
-                menuLauncher.launch(adapterPosition, menuTitle, null, menu, true);
+                if (menuLauncher != null) {
+                    menuLauncher.launch(adapterPosition, menuTitle, null, menu, true);
+                } else {
+                    showPopupMenu(v, adapterPosition, menuTitle, menu,
+                                  ExtPopupMenu.Location.Center);
+                }
             }
         }
     }
