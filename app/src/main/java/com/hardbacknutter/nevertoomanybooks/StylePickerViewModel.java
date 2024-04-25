@@ -64,8 +64,7 @@ public class StylePickerViewModel
                     .getStyle(args.getString(Style.BKEY_UUID))
                     .orElseThrow(() -> new IllegalArgumentException(Style.BKEY_UUID));
 
-            showAllStyles = args.getBoolean(
-                    StylePickerDialogFragment.Launcher.BKEY_SHOW_ALL_STYLES, false);
+            showAllStyles = args.getBoolean(StylePickerLauncher.BKEY_SHOW_ALL_STYLES, false);
         }
 
         loadStyles();

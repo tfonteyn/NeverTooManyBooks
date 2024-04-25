@@ -171,6 +171,8 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
+    private static final boolean TEMP_TEST_BOTTOM_SHEET = true;
+
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
@@ -366,8 +368,8 @@ public class BooksOnBookshelf
      * We do NOT come here when the user decided to EDIT a style,
      * which is handled by {@link #editStyleLauncher}.
      */
-    private final StylePickerDialogFragment.Launcher stylePickerLauncher =
-            new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER, this::onStyleSelected);
+    private StylePickerLauncher stylePickerLauncher;
+
     private NavDrawer navDrawer;
     /**
      * The single back-press handler.
@@ -477,6 +479,16 @@ public class BooksOnBookshelf
 
     private void createFragmentResultListeners() {
         final FragmentManager fm = getSupportFragmentManager();
+
+        if (TEMP_TEST_BOTTOM_SHEET) {
+            stylePickerLauncher = new StylePickerLauncher(RK_STYLE_PICKER,
+                                                          StylePickerBottomSheet::new,
+                                                          this::onStyleSelected);
+        } else {
+            stylePickerLauncher = new StylePickerLauncher(RK_STYLE_PICKER,
+                                                          StylePickerDialogFragment::new,
+                                                          this::onStyleSelected);
+        }
 
         editColorLauncher.registerForFragmentResult(fm, this);
         editFormatLauncher.registerForFragmentResult(fm, this);

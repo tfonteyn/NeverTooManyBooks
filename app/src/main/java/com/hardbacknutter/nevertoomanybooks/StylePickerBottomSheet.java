@@ -24,23 +24,23 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.SuperscriptSpan;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.EnumSet;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetStylePickerBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
-public class StylePickerDialogFragment
-        extends FFBaseDialogFragment {
+public class StylePickerBottomSheet
+        extends BottomSheetDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
@@ -50,18 +50,6 @@ public class StylePickerDialogFragment
 
     private StylePickerViewModel vm;
     private SpannableString builtinLabelSuffix;
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public StylePickerDialogFragment() {
-        super(R.layout.dialog_styles_menu,
-              R.layout.dialog_styles_menu_content,
-              // Fullscreen on Medium screens
-              // for consistency with BookshelfFiltersDialogFragment
-              EnumSet.of(WindowSizeClass.Medium),
-              EnumSet.of(WindowSizeClass.Medium));
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -74,12 +62,31 @@ public class StylePickerDialogFragment
         builtinLabelSuffix.setSpan(new SuperscriptSpan(), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
+    private BottomSheetStylePickerBinding vb;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = BottomSheetStylePickerBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
+
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogStylesMenuContentBinding vb = DialogStylesMenuContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+
+        vb.dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
+        // Simple menu items; i.e. non-action view.
+        vb.dialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
+
+        // Hookup any/all buttons in the action-view to use #onToolbarButtonClick
+        final MenuItem menuItem = vb.dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+        final View actionView = menuItem.getActionView();
+        //noinspection DataFlowIssue
+        actionView.setOnClickListener(this::onToolbarButtonClick);
 
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(),
@@ -88,12 +95,19 @@ public class StylePickerDialogFragment
                                                   vm.getCurrentStyle(),
                                                   style -> vm.setCurrentStyle(style));
         vb.stylesList.setAdapter(adapter);
+    }
 
-        adjustWindowSize(vb.stylesList, 3);
+    /**
+     * Called when the user clicks the Navigation icon from the toolbar menu.
+     * The default action simply dismisses the dialog.
+     *
+     * @param v view
+     */
+    protected void onToolbarNavigationClick(@NonNull final View v) {
+        dismiss();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    @Override
     protected boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         if (menuItem == null) {
             return false;
@@ -119,7 +133,6 @@ public class StylePickerDialogFragment
         return false;
     }
 
-    @Override
     protected boolean onToolbarButtonClick(@Nullable final View button) {
 
         if (button != null) {
