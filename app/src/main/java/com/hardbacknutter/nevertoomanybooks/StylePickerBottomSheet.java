@@ -37,10 +37,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetStylePickerBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 public class StylePickerBottomSheet
-        extends BottomSheetDialogFragment {
+        extends BottomSheetDialogFragment
+        implements ExtToolbarActionMenu {
 
     /** Fragment/Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
@@ -78,15 +80,7 @@ public class StylePickerBottomSheet
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vb.dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-        // Simple menu items; i.e. non-action view.
-        vb.dialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
-
-        // Hookup any/all buttons in the action-view to use #onToolbarButtonClick
-        final MenuItem menuItem = vb.dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-        final View actionView = menuItem.getActionView();
-        //noinspection DataFlowIssue
-        actionView.setOnClickListener(this::onToolbarButtonClick);
+        initToolbarActionButtons(vb.dialogToolbar, this);
 
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(),
@@ -103,12 +97,14 @@ public class StylePickerBottomSheet
      *
      * @param v view
      */
-    protected void onToolbarNavigationClick(@NonNull final View v) {
+    @Override
+    public void onToolbarNavigationClick(@NonNull final View v) {
         dismiss();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    protected boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         if (menuItem == null) {
             return false;
         }
@@ -133,7 +129,8 @@ public class StylePickerBottomSheet
         return false;
     }
 
-    protected boolean onToolbarButtonClick(@Nullable final View button) {
+    @Override
+    public boolean onToolbarButtonClick(@Nullable final View button) {
 
         if (button != null) {
             final int id = button.getId();

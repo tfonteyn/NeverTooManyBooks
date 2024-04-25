@@ -167,7 +167,7 @@ public class ReadingProgressDialogFragment
     }
 
     @Override
-    protected boolean onToolbarButtonClick(@Nullable final View button) {
+    public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
             if (id == R.id.btn_neutral) {

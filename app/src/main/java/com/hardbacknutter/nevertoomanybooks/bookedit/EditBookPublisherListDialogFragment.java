@@ -213,14 +213,14 @@ public class EditBookPublisherListDialogFragment
     }
 
     @Override
-    protected void onToolbarNavigationClick(@NonNull final View v) {
+    public void onToolbarNavigationClick(@NonNull final View v) {
         if (saveChanges()) {
             dismiss();
         }
     }
 
     @Override
-    protected boolean onToolbarButtonClick(@Nullable final View button) {
+    public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             // Fullscreen only;
             // R.id.btn_add

@@ -94,7 +94,7 @@ public class StylePickerDialogFragment
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
-    protected boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         if (menuItem == null) {
             return false;
         }
@@ -120,7 +120,7 @@ public class StylePickerDialogFragment
     }
 
     @Override
-    protected boolean onToolbarButtonClick(@Nullable final View button) {
+    public boolean onToolbarButtonClick(@Nullable final View button) {
 
         if (button != null) {
             final int id = button.getId();

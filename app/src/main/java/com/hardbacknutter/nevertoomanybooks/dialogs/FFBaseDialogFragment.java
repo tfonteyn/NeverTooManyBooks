@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -85,7 +84,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * Special cases see {@link #adjustWindowSize} methods.
  */
 public abstract class FFBaseDialogFragment
-        extends DialogFragment {
+        extends DialogFragment
+        implements ExtToolbarActionMenu {
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
@@ -243,28 +243,7 @@ public abstract class FFBaseDialogFragment
         }
 
         if (dialogToolbar != null) {
-            dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-            // Simple menu items; i.e. non-action view.
-            dialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
-
-            // Hookup any/all buttons in the action-view to use #onToolbarButtonClick
-            final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-            if (menuItem != null) {
-                final View actionView = menuItem.getActionView();
-
-                if (actionView instanceof Button) {
-                    actionView.setOnClickListener(this::onToolbarButtonClick);
-
-                } else if (actionView instanceof ViewGroup) {
-                    final ViewGroup av = (ViewGroup) actionView;
-                    for (int c = 0; c < av.getChildCount(); c++) {
-                        final View child = av.getChildAt(c);
-                        if (child instanceof Button) {
-                            child.setOnClickListener(this::onToolbarButtonClick);
-                        }
-                    }
-                }
-            }
+            initToolbarActionButtons(dialogToolbar, this);
         }
     }
 
@@ -404,32 +383,8 @@ public abstract class FFBaseDialogFragment
      *
      * @param v view
      */
-    protected void onToolbarNavigationClick(@NonNull final View v) {
+    public void onToolbarNavigationClick(@NonNull final View v) {
         dismiss();
-    }
-
-    /**
-     * Called when the user clicks a button on the toolbar or the bottom button-bar.
-     * The default action ignores the selection.
-     *
-     * @param button the toolbar action-view-button or button-bar button
-     *
-     * @return {@code true} if the event was handled, {@code false} otherwise.
-     */
-    protected boolean onToolbarButtonClick(@Nullable final View button) {
-        return false;
-    }
-
-    /**
-     * Called when the user selects a menu item from the toolbar menu.
-     * The default action ignores the selection.
-     *
-     * @param menuItem The menu item that was invoked.
-     *
-     * @return {@code true} if the event was handled, {@code false} otherwise.
-     */
-    protected boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
-        return false;
     }
 
     @Override
