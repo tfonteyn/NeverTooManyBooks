@@ -344,7 +344,7 @@
     <string name="lbl_is_complete">Is volledig</string>
     <string name="lbl_keywords">Trefwoorden</string>
     <string name="lbl_language">Taal</string>
-    <string name="lbl_lend_book_to_colon">Leen dit boek aan:</string>
+    <string name="lbl_lend_book_to_colon">Leen dit boek uit aan:</string>
     <string name="lbl_lend_out">Uitgeleend</string>
     <string name="lbl_lend_out_to_name">Uitgeleend aan %1$s</string>
     <string name="lbl_lending">Uitlenen</string>
