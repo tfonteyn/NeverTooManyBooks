@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * Visibility of the {@link DBKey#AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
  * is based on <strong>global USAGE</strong>.
  */
+@SuppressWarnings("WeakerAccess")
 public class EditAuthorViewModel
         extends ViewModel {
 
@@ -66,6 +67,7 @@ public class EditAuthorViewModel
 
     private boolean useRealAuthorName;
     private boolean useAuthorType;
+    private AuthorDao dao;
 
     /**
      * Pseudo constructor.
@@ -74,6 +76,8 @@ public class EditAuthorViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (requestKey == null) {
+            dao = ServiceLocator.getInstance().getAuthorDao();
+
             requestKey = Objects.requireNonNull(
                     args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
                     ParcelableDialogLauncher.BKEY_REQUEST_KEY);
@@ -189,5 +193,42 @@ public class EditAuthorViewModel
         return !(author.isSameName(currentEdit)
                  && author.isComplete() == currentEdit.isComplete()
                  && Objects.equals(author.getRealAuthor(), currentEdit.getRealAuthor()));
+    }
+
+    @NonNull
+    Optional<Author> saveIfUnique(@NonNull final Context context)
+            throws DaoWriteException {
+        author.copyFrom(currentEdit, false);
+
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        // It's an existing one and the name was not changed;
+        // just update the other attributes
+        if (author.getId() != 0 && author.isSameName(currentEdit)) {
+            dao.update(context, author, locale);
+            return Optional.empty();
+        }
+
+        // Check if there is an another one with the same new name.
+        final Optional<Author> existingEntity = dao.findByName(context, author, locale);
+        if (existingEntity.isEmpty()) {
+            // Just insert or update as needed
+            if (author.getId() == 0) {
+                dao.insert(context, author, locale);
+            } else {
+                dao.update(context, author, locale);
+            }
+            return Optional.empty();
+        }
+
+        return existingEntity;
+    }
+
+    void move(@NonNull final Context context,
+              @NonNull final Author destination)
+            throws DaoWriteException {
+        // Note that we ONLY move the books. No other attributes from
+        // the source item are copied to the target item!
+        dao.moveBooks(context, author, destination);
     }
 }

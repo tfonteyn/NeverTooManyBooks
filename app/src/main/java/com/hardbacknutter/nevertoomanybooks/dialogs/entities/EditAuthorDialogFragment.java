@@ -31,7 +31,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -183,59 +181,31 @@ public class EditAuthorDialogFragment
             return true;
         }
 
-        // store changes
-        final Author author = vm.getAuthor();
-        author.copyFrom(currentEdit, false);
-
-        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-
-        final Consumer<Author> onSuccess = savedAuthor -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, vm.getRequestKey(), savedAuthor);
-
         try {
-            if (author.getId() == 0 || !author.isSameName(currentEdit)) {
-                // Check if there is an another one with the same new name.
-                final Optional<Author> existingEntity =
-                        dao.findByName(context, author, locale);
-
-                if (existingEntity.isPresent()) {
-                    // There is one with the same name; ask whether to merge the 2
-                    StandardDialogs.askToMerge(context, R.string.confirm_merge_authors,
-                                               author.getLabel(context), () -> {
-                                dismiss();
-                                try {
-                                    // Note that we ONLY move the books. No other attributes from
-                                    // the source item are copied to the target item!
-                                    dao.moveBooks(context, author, existingEntity.get());
-
-                                    // return the item which 'lost' it's books
-                                    onSuccess.accept(author);
-                                } catch (@NonNull final DaoWriteException e) {
-                                    ErrorDialog.show(context, TAG, e);
-                                }
-                            });
-                    return false;
-
-                } else {
-                    // Just insert or update as needed
-                    if (author.getId() == 0) {
-                        dao.insert(context, author, locale);
-                    } else {
-                        dao.update(context, author, locale);
-                    }
-                    onSuccess.accept(author);
-                    return true;
-                }
-            } else {
-                // It's an existing one and the name was not changed;
-                // just update the other attributes
-                dao.update(context, author, locale);
-                onSuccess.accept(author);
+            final Optional<Author> existingEntity = vm.saveIfUnique(context);
+            if (existingEntity.isEmpty()) {
+                sendResultBack(vm.getAuthor());
                 return true;
             }
+
+            // There is one with the same name; ask whether to merge the 2
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_authors,
+                                       vm.getAuthor().getLabel(context), () -> {
+                        dismiss();
+                        try {
+                            vm.move(context, existingEntity.get());
+                            // return the item which 'lost' it's books
+                            sendResultBack(vm.getAuthor());
+                        } catch (@NonNull final DaoWriteException e) {
+                            // log, but ignore - should never happen unless disk full
+                            LoggerFactory.getLogger().e(TAG, e, vm.getAuthor());
+                        }
+                    });
+            return false;
+
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, author);
+            LoggerFactory.getLogger().e(TAG, e, vm.getAuthor());
             return false;
         }
     }
@@ -274,5 +244,9 @@ public class EditAuthorDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
+    }
+
+    private void sendResultBack(@NonNull final Author author) {
+        ParcelableDialogLauncher.setEditInPlaceResult(this, vm.getRequestKey(), author);
     }
 }
