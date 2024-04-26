@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -323,6 +323,21 @@ public final class StandardDialogs {
                 .setMessage(msg)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .create()
+                .show();
+    }
+
+    public static void askToMerge(@NonNull final Context context,
+                                  @StringRes final int mergeMessageResId,
+                                  @NonNull final CharSequence title,
+                                  @NonNull final Runnable onMerge) {
+
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(title)
+                .setMessage(mergeMessageResId)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_merge, (d, w) -> onMerge.run())
                 .create()
                 .show();
     }

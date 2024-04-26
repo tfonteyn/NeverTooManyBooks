@@ -39,7 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
@@ -58,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * @see EditBookshelfDialogFragment
  */
 public class EditPublisherDialogFragment
-        extends EditMergeableDialogFragment<Publisher> {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditPublisherDialogFrag";
@@ -168,8 +170,21 @@ public class EditPublisherDialogFragment
 
                 if (existingEntity.isPresent()) {
                     // There is one with the same name; ask whether to merge the 2
-                    askToMerge(dao, R.string.confirm_merge_publishers,
-                               publisher, existingEntity.get(), onSuccess);
+                    StandardDialogs.askToMerge(context, R.string.confirm_merge_publishers,
+                                               publisher.getLabel(context), () -> {
+                                dismiss();
+                                try {
+                                    // Note that we ONLY move the books. No other attributes from
+                                    // the source item are copied to the target item!
+                                    dao.moveBooks(context, publisher, existingEntity.get());
+
+                                    // return the item which 'lost' it's books
+                                    onSuccess.accept(publisher);
+                                } catch (@NonNull final DaoWriteException e) {
+                                    // log, but ignore - should never happen unless disk full
+                                    LoggerFactory.getLogger().e(TAG, e, publisher);
+                                }
+                            });
                     return false;
                 } else {
                     // Just insert or update as needed

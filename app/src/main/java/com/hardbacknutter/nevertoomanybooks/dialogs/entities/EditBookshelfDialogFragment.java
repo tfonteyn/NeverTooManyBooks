@@ -38,7 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -57,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * @see EditBookshelfDialogFragment
  */
 public class EditBookshelfDialogFragment
-        extends EditMergeableDialogFragment<Bookshelf> {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
@@ -167,8 +169,21 @@ public class EditBookshelfDialogFragment
         try {
             if (existingEntity.isPresent()) {
                 // There is one with the same name; ask whether to merge the 2
-                askToMerge(dao, R.string.confirm_merge_bookshelves,
-                           bookshelf, existingEntity.get(), onSuccess);
+                StandardDialogs.askToMerge(context, R.string.confirm_merge_bookshelves,
+                                           bookshelf.getLabel(context), () -> {
+                            dismiss();
+                            try {
+                                // Note that we ONLY move the books. No other attributes from
+                                // the source item are copied to the target item!
+                                dao.moveBooks(context, bookshelf, existingEntity.get());
+
+                                // return the item which 'lost' it's books
+                                onSuccess.accept(bookshelf);
+                            } catch (@NonNull final DaoWriteException e) {
+                                // log, but ignore - should never happen unless disk full
+                                LoggerFactory.getLogger().e(TAG, e, bookshelf);
+                            }
+                        });
                 return false;
             } else {
                 // Just insert or update as needed

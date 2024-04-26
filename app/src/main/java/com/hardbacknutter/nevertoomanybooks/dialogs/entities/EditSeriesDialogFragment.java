@@ -39,7 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 /**
@@ -58,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * @see EditBookshelfDialogFragment
  */
 public class EditSeriesDialogFragment
-        extends EditMergeableDialogFragment<Series> {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
@@ -170,10 +172,23 @@ public class EditSeriesDialogFragment
                         dao.findByName(context, series, locale);
 
                 if (existingEntity.isPresent()) {
-                    // There is one with the same name; ask whether to merge the 2
-                    askToMerge(dao, R.string.confirm_merge_series,
-                               series, existingEntity.get(), onSuccess);
+                    // There is one with the same name; ask whether to merge the 2.
+                    StandardDialogs.askToMerge(context, R.string.confirm_merge_series,
+                                               series.getLabel(context), () -> {
+                                dismiss();
+                                try {
+                                    // Note that we ONLY move the books. No other attributes from
+                                    // the source item are copied to the target item!
+                                    dao.moveBooks(context, series, existingEntity.get());
+                                    // return the item which 'lost' it's books
+                                    onSuccess.accept(series);
+                                } catch (@NonNull final DaoWriteException e) {
+                                    // log, but ignore - should never happen unless disk full
+                                    LoggerFactory.getLogger().e(TAG, e, series);
+                                }
+                            });
                     return false;
+
                 } else {
                     // Just insert or update as needed
                     if (series.getId() == 0) {
