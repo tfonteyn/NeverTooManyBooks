@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBindi
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -128,8 +129,9 @@ public class EditBookTocFragment
     private TocListEditAdapter adapter;
 
     /** Listen for the results of the entry edit-dialog. */
-    private final EditTocEntryDialogFragment.Launcher editTocEntryLauncher =
-            new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC, this::onEntryUpdated);
+    private final EditTocEntryLauncher editTocEntryLauncher =
+            new EditTocEntryLauncher(RK_EDIT_TOC, EditTocEntryDialogFragment::new,
+                                     this::onEntryUpdated);
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;

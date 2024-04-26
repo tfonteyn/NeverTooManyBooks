@@ -24,9 +24,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import java.util.Objects;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -34,10 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
@@ -48,32 +43,11 @@ public class EditTocEntryDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
-    private static final String BKEY_ANTHOLOGY = TAG + ":anthology";
-    private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
-    private static final String BKEY_POSITION = TAG + ":pos";
 
-    private String requestKey;
 
     /** View Binding. */
     private DialogEditBookTocContentBinding vb;
-
-    @Nullable
-    private String bookTitle;
-
-    /** The one we're editing. */
-    private TocEntry tocEntry;
-    /** the position of the tocEntry in the TOC list. */
-    private int editPosition;
-
-    /** Current edit. FIXME: replace with TocEntry currentEdit ? what about the Author ? */
-    private String title;
-    /** Current edit. */
-    private PartialDate firstPublicationDate;
-    /** Current edit. */
-    private String authorName;
-
-    /** Helper to show/hide the author edit field. */
-    private boolean isAnthology;
+    private EditTocEntryViewModel vm;
 
     /**
      * No-arg constructor for OS use.
@@ -86,24 +60,9 @@ public class EditTocEntryDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        bookTitle = args.getString(DBKey.TITLE);
-        isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
-        tocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
-        editPosition = args.getInt(BKEY_POSITION, 0);
-
-        if (savedInstanceState == null) {
-            title = tocEntry.getTitle();
-            firstPublicationDate = tocEntry.getFirstPublicationDate();
-            //noinspection DataFlowIssue
-            authorName = tocEntry.getPrimaryAuthor().getLabel(getContext());
-        } else {
-            title = savedInstanceState.getString(DBKey.TITLE);
-            firstPublicationDate = savedInstanceState.getParcelable(DBKey.FIRST_PUBLICATION__DATE);
-            authorName = savedInstanceState.getString(DBKey.AUTHOR_FORMATTED);
-        }
+        vm = new ViewModelProvider(this).get(EditTocEntryViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), requireArguments());
     }
 
     @Override
@@ -112,18 +71,19 @@ public class EditTocEntryDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(bookTitle);
+        setTitle(vm.getBookTitle());
 
         //ENHANCE: should we provide a TocAdapter to aid manually adding TOC titles?
         // What about the publication year?
-        vb.title.setText(title);
+        vb.title.setText(vm.getCurrentEdit().getTitle());
         autoRemoveError(vb.title, vb.lblTitle);
 
+        final PartialDate firstPublicationDate = vm.getCurrentEdit().getFirstPublicationDate();
         if (firstPublicationDate.isPresent()) {
             vb.firstPublication.setText(String.valueOf(firstPublicationDate.getYearValue()));
         }
 
-        if (isAnthology) {
+        if (vm.isAnthology()) {
             //noinspection DataFlowIssue
             final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.popup_dropdown_menu_item,
@@ -131,7 +91,7 @@ public class EditTocEntryDialogFragment
                     ServiceLocator.getInstance().getAuthorDao()
                                   .getNames(DBKey.AUTHOR_FORMATTED));
             vb.author.setAdapter(authorAdapter);
-            vb.author.setText(authorName);
+            vb.author.setText(vm.getAuthorName());
             vb.author.selectAll();
             vb.author.requestFocus();
 
@@ -162,136 +122,40 @@ public class EditTocEntryDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (title.isEmpty()) {
+        if (vm.getCurrentEdit().getTitle().isEmpty()) {
             vb.lblTitle.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
         // anything actually changed ?
         //noinspection DataFlowIssue
-        if (tocEntry.getTitle().equals(title)
-            && tocEntry.getFirstPublicationDate().equals(firstPublicationDate)
-            && tocEntry.getPrimaryAuthor().getLabel(getContext()).equals(authorName)) {
+        if (!vm.isChanged(getContext())) {
             return true;
         }
 
-        // store changes
-        tocEntry.setTitle(title);
-        tocEntry.setFirstPublicationDate(firstPublicationDate);
-        if (isAnthology) {
-            tocEntry.setPrimaryAuthor(Author.from(authorName));
-        }
+        vm.copyChanges();
 
-        // We don't update/insert to the database here, but just send the data back.
-        // TOCs are updated in bulk/list per Book
-        Launcher.setResult(this, requestKey, tocEntry, editPosition);
+        EditTocEntryLauncher.setResult(this, vm.getRequestKey(), vm.getTocEntry(),
+                                       vm.getEditPosition());
         return true;
     }
 
     private void viewToModel() {
+        final TocEntry currentEdit = vm.getCurrentEdit();
         //noinspection DataFlowIssue
-        title = vb.title.getText().toString().trim();
+        currentEdit.setTitle(vb.title.getText().toString().trim());
         //noinspection DataFlowIssue
-        firstPublicationDate = new PartialDate(vb.firstPublication.getText().toString().trim());
-        if (isAnthology) {
-            authorName = vb.author.getText().toString().trim();
-        }
-    }
+        currentEdit.setFirstPublicationDate(new PartialDate(
+                vb.firstPublication.getText().toString().trim()));
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DBKey.TITLE, title);
-        outState.putParcelable(DBKey.FIRST_PUBLICATION__DATE, firstPublicationDate);
-        outState.putString(DBKey.AUTHOR_FORMATTED, authorName);
+        if (vm.isAnthology()) {
+            vm.setAuthorName(vb.author.getText().toString().trim());
+        }
     }
 
     @Override
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    public static class Launcher
-            extends DialogLauncher {
-
-        @NonNull
-        private final ResultListener resultListener;
-
-        /**
-         * Constructor.
-         *
-         * @param requestKey     FragmentResultListener request key to use for our response.
-         * @param resultListener listener
-         */
-        public Launcher(@NonNull final String requestKey,
-                        @NonNull final ResultListener resultListener) {
-            super(requestKey, EditTocEntryDialogFragment::new);
-            this.resultListener = resultListener;
-        }
-
-        /**
-         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-         *
-         * @param fragment   the calling DialogFragment
-         * @param requestKey to use
-         * @param tocEntry   the modified entry
-         * @param position   the position in the list we we're editing
-         *
-         * @see #onFragmentResult(String, Bundle)
-         */
-        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @NonNull final TocEntry tocEntry,
-                              final int position) {
-
-            final Bundle result = new Bundle(2);
-            result.putParcelable(BKEY_TOC_ENTRY, tocEntry);
-            result.putInt(BKEY_POSITION, position);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param book        the entry belongs to
-         * @param position    of the tocEntry in the list
-         * @param tocEntry    to edit.
-         * @param isAnthology Flag that will enable/disable the author edit field
-         */
-        public void launch(@NonNull final Book book,
-                           final int position,
-                           @NonNull final TocEntry tocEntry,
-                           final boolean isAnthology) {
-
-            final Bundle args = new Bundle(5);
-            args.putString(DBKey.TITLE, book.getTitle());
-            args.putBoolean(BKEY_ANTHOLOGY, isAnthology);
-            args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
-            args.putInt(BKEY_POSITION, position);
-
-            createDialog(args);
-        }
-
-        @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            resultListener.onResult(
-                    Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
-                    result.getInt(BKEY_POSITION));
-        }
-
-        @FunctionalInterface
-        public interface ResultListener {
-            /**
-             * Callback handler.
-             *
-             * @param tocEntry the modified entry
-             * @param position the position in the list we we're editing
-             */
-            void onResult(@NonNull TocEntry tocEntry,
-                          int position);
-        }
     }
 }
