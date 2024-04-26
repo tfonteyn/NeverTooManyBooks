@@ -27,18 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -133,61 +129,33 @@ public class EditSeriesDialogFragment
             return true;
         }
 
-        // store changes
-        final Series series = vm.getSeries();
-        series.copyFrom(currentEdit, false);
-
         final Context context = requireContext();
-        final SeriesDao dao = ServiceLocator.getInstance().getSeriesDao();
-        final Locale locale = series.getLocale(context).orElseGet(
-                () -> getResources().getConfiguration().getLocales().get(0));
-
-        final Consumer<Series> onSuccess = savedSeries -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, vm.getRequestKey(), savedSeries);
 
         try {
-            if (series.getId() == 0 || !series.isSameName(currentEdit)) {
-                // Check if there is an another one with the same new name.
-                final Optional<Series> existingEntity =
-                        dao.findByName(context, series, locale);
-
-                if (existingEntity.isPresent()) {
-                    // There is one with the same name; ask whether to merge the 2.
-                    StandardDialogs.askToMerge(context, R.string.confirm_merge_series,
-                                               series.getLabel(context), () -> {
-                                dismiss();
-                                try {
-                                    // Note that we ONLY move the books. No other attributes from
-                                    // the source item are copied to the target item!
-                                    dao.moveBooks(context, series, existingEntity.get());
-                                    // return the item which 'lost' it's books
-                                    onSuccess.accept(series);
-                                } catch (@NonNull final DaoWriteException e) {
-                                    ErrorDialog.show(context, TAG, e);
-                                }
-                            });
-                    return false;
-
-                } else {
-                    // Just insert or update as needed
-                    if (series.getId() == 0) {
-                        dao.insert(context, series, locale);
-                    } else {
-                        dao.update(context, series, locale);
-                    }
-                    onSuccess.accept(series);
-                    return true;
-                }
-            } else {
-                // It's an existing one and the name was not changed;
-                // just update the other attributes
-                dao.update(context, series, locale);
-                onSuccess.accept(series);
+            final Optional<Series> existingEntity = vm.saveIfUnique(context);
+            if (existingEntity.isEmpty()) {
+                sendResultBack(vm.getSeries());
                 return true;
             }
+
+            // There is one with the same name; ask whether to merge the 2.
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_series,
+                                       vm.getSeries().getLabel(context), () -> {
+                        dismiss();
+                        try {
+                            vm.move(context, existingEntity.get());
+                            // return the item which 'lost' it's books
+                            sendResultBack(vm.getSeries());
+                        } catch (@NonNull final DaoWriteException e) {
+                            // log, but ignore - should never happen unless disk full
+                            LoggerFactory.getLogger().e(TAG, e, vm.getSeries());
+                        }
+                    });
+            return false;
+
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, series);
+            LoggerFactory.getLogger().e(TAG, e, vm.getSeries());
             return false;
         }
     }
@@ -202,5 +170,9 @@ public class EditSeriesDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
+    }
+
+    private void sendResultBack(@NonNull final Series series) {
+        ParcelableDialogLauncher.setEditInPlaceResult(this, vm.getRequestKey(), series);
     }
 }

@@ -20,17 +20,24 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
+@SuppressWarnings("WeakerAccess")
 public class EditSeriesViewModel
         extends ViewModel {
 
@@ -42,6 +49,7 @@ public class EditSeriesViewModel
 
     /** Current edit. */
     private Series currentEdit;
+    private SeriesDao dao;
 
     /**
      * Pseudo constructor.
@@ -50,6 +58,8 @@ public class EditSeriesViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (requestKey == null) {
+            dao = ServiceLocator.getInstance().getSeriesDao();
+
             requestKey = Objects.requireNonNull(
                     args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
                     ParcelableDialogLauncher.BKEY_REQUEST_KEY);
@@ -58,6 +68,7 @@ public class EditSeriesViewModel
                     ParcelableDialogLauncher.BKEY_ITEM);
 
             currentEdit = new Series(series.getTitle(), series.isComplete());
+            currentEdit.setNumber(currentEdit.getNumber());
         }
     }
 
@@ -76,9 +87,48 @@ public class EditSeriesViewModel
         return series;
     }
 
-    public boolean isChanged() {
+    boolean isChanged() {
         // Case-sensitive! We must allow the user to correct case.
         return !(series.isSameName(currentEdit)
                  && series.isComplete() == currentEdit.isComplete());
+    }
+
+    @NonNull
+    Optional<Series> saveIfUnique(@NonNull final Context context)
+            throws DaoWriteException {
+
+        series.copyFrom(currentEdit, false);
+
+        final Locale locale = series.getLocale(context).orElseGet(
+                () -> context.getResources().getConfiguration().getLocales().get(0));
+
+        // It's an existing one and the name was not changed;
+        // just update the other attributes
+        if (series.getId() != 0 && series.isSameName(currentEdit)) {
+            dao.update(context, series, locale);
+            return Optional.empty();
+        }
+
+        // Check if there is an another one with the same new name.
+        final Optional<Series> existingEntity = dao.findByName(context, series, locale);
+        if (existingEntity.isEmpty()) {
+            // Just insert or update as needed
+            if (series.getId() == 0) {
+                dao.insert(context, series, locale);
+            } else {
+                dao.update(context, series, locale);
+            }
+            return Optional.empty();
+        }
+
+        return existingEntity;
+    }
+
+    void move(@NonNull final Context context,
+              @NonNull final Series destination)
+            throws DaoWriteException {
+        // Note that we ONLY move the books. No other attributes from
+        // the source item are copied to the target item!
+        dao.moveBooks(context, series, destination);
     }
 }
