@@ -33,11 +33,13 @@ import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 
 /**
  * Dialog to create a new loan, edit an existing one or remove it (book is returned).
@@ -45,8 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
  * Note the special treatment of the Book's current/original loanee.
  * This is done to minimize trips to the database.
  */
-public class EditLenderDialogFragment
-        extends FFBaseDialogFragment {
+public class EditLenderBottomSheet
+        extends BottomSheetDialogFragment
+        implements ExtToolbarActionMenu {
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
@@ -70,13 +73,6 @@ public class EditLenderDialogFragment
                         }
                     });
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditLenderDialogFragment() {
-        super(R.layout.dialog_edit_loan, R.layout.dialog_edit_loan_content);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +86,7 @@ public class EditLenderDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditLoanContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setSubtitle(vm.getBookTitle());
+        vb.dialogToolbar.setSubtitle(vm.getBookTitle());
 
         //noinspection DataFlowIssue
         adapter = new ExtArrayAdapter<>(getContext(), R.layout.popup_dropdown_menu_item,
@@ -112,11 +108,17 @@ public class EditLenderDialogFragment
         vb.lendTo.requestFocus();
     }
 
+
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     private void addContacts() {
         adapter.clear();
         //noinspection DataFlowIssue
         adapter.addAll(vm.getContacts(getContext()));
+    }
+
+    @Override
+    public void onToolbarNavigationClick(@NonNull final View v) {
+        dismiss();
     }
 
     @Override

@@ -74,7 +74,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -83,6 +85,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
  * This Fragment is always hosted inside another Fragment.
@@ -151,10 +154,7 @@ public class ShowBookDetailsFragment
                     }));
 
     /** Handle the edit-lender dialog. */
-    private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher(
-                    RK_EDIT_LENDER,
-                    (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
+    private EditLenderLauncher editLenderLauncher;
 
     /**
      * Constructor.
@@ -208,7 +208,27 @@ public class ShowBookDetailsFragment
             pagerVm.init(args);
         }
 
-        editLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        createFragmentResultListeners();
+    }
+
+    private void createFragmentResultListeners() {
+        final FragmentManager fm = getChildFragmentManager();
+
+        if (WindowSizeClass.getWidth(this.getActivity()) == WindowSizeClass.Expanded) {
+            // Tablets use a Dialog
+            editLenderLauncher = new EditLenderLauncher(
+                    RK_EDIT_LENDER,
+                    EditLenderDialogFragment::new,
+                    (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
+        } else {
+            // Phones use a BottomSheet
+            editLenderLauncher = new EditLenderLauncher(
+                    RK_EDIT_LENDER,
+                    EditLenderBottomSheet::new,
+                    (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
+        }
+
+        editLenderLauncher.registerForFragmentResult(fm, this);
     }
 
     @Override

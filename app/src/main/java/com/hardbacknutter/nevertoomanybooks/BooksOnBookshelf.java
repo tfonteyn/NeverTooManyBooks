@@ -104,7 +104,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFrag
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
@@ -275,11 +277,6 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
                     bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
-    private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher(
-                    DBKey.LOANEE_NAME,
-                    (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
-
     private final EditStringDialogFragment.Launcher editColorLauncher =
             new EditStringDialogFragment.Launcher(
                     DBKey.COLOR, EditColorDialogFragment::new, (original, modified)
@@ -327,6 +324,8 @@ public class BooksOnBookshelf
 
     /** Row menu launcher displaying the menu as a BottomSheet. */
     private BottomSheetMenu.Launcher menuLauncher;
+
+    private EditLenderLauncher editLenderLauncher;
 
     private BookshelfFiltersLauncher bookshelfFiltersLauncher;
 
@@ -468,6 +467,11 @@ public class BooksOnBookshelf
             bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
                     RK_FILTERS, BookshelfFiltersDialogFragment::new, this::onFiltersUpdate);
 
+            editLenderLauncher = new EditLenderLauncher(
+                    DBKey.LOANEE_NAME,
+                    EditLenderDialogFragment::new,
+                    (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
+
         } else {
             // Phones use a BottomSheet
             stylePickerLauncher = new StylePickerLauncher(
@@ -475,6 +479,11 @@ public class BooksOnBookshelf
 
             bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
                     RK_FILTERS, BookshelfFiltersBottomSheet::new, this::onFiltersUpdate);
+
+            editLenderLauncher = new EditLenderLauncher(
+                    DBKey.LOANEE_NAME,
+                    EditLenderBottomSheet::new,
+                    (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
         }
 
         menuLauncher = new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
