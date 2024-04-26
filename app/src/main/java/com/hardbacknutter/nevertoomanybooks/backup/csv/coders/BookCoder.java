@@ -25,14 +25,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -91,6 +98,7 @@ public class BookCoder {
     private final Author unknownAuthor;
     @NonNull
     private final Style defaultStyle;
+    private final FullDateParser dateParser;
     @Nullable
     private Goodreads goodreads;
     @Nullable
@@ -104,6 +112,8 @@ public class BookCoder {
      */
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle) {
+        this.defaultStyle = defaultStyle;
+
         authorCoder = new StringList<>(new AuthorCoder());
         // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
         bookshelfCoder = new StringList<>(new BookshelfCoder(',', defaultStyle));
@@ -112,7 +122,10 @@ public class BookCoder {
         tocCoder = new StringList<>(new TocEntryCoder());
 
         unknownAuthor = Author.createUnknownAuthor(context);
-        this.defaultStyle = defaultStyle;
+
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+        final List<Locale> locales = LocaleListUtils.asList(context);
+        dateParser = new FullDateParser(systemLocale, locales);
     }
 
     /**
@@ -163,8 +176,8 @@ public class BookCoder {
         processRating(book);
         processDescriptionAndNotes(book);
 
-        //FIXME: implement full parsing/formatting of incoming dates for validity
-        //verifyDates(context, bookDao, book);
+        verifyDates(book, DBKey.DATETIME_KEYS);
+        verifyDates(book, DBKey.DATE_KEYS);
 
         return book;
     }
@@ -538,6 +551,19 @@ public class BookCoder {
             notes += review;
             book.putString(DBKey.PERSONAL_NOTES, notes);
         }
+    }
+
+    private void verifyDates(@NonNull final Book book,
+                             @NonNull final Set<String> keys) {
+        keys.stream().filter(book::contains).forEach(key -> {
+            final String s = book.getString(key);
+            final Optional<LocalDateTime> date = dateParser.parse(s);
+            if (date.isPresent()) {
+                book.putString(key, SqlEncode.date(date.get()));
+            } else {
+                book.remove(key);
+            }
+        });
     }
 
     public static final class Goodreads {
