@@ -20,7 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.SuperscriptSpan;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +52,8 @@ public class StylePickerViewModel
     @Nullable
     private Style currentStyle;
 
+    private SpannableString builtinLabelSuffix;
+
     /**
      * Pseudo constructor.
      *
@@ -65,6 +71,10 @@ public class StylePickerViewModel
                     .orElseThrow(() -> new IllegalArgumentException(Style.BKEY_UUID));
 
             showAllStyles = args.getBoolean(StylePickerLauncher.BKEY_SHOW_ALL_STYLES, false);
+
+            builtinLabelSuffix = new SpannableString("*");
+            builtinLabelSuffix.setSpan(new SuperscriptSpan(), 0, 1,
+                                       Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         loadStyles();
@@ -93,6 +103,26 @@ public class StylePickerViewModel
     @NonNull
     List<Style> getStyles() {
         return styleList;
+    }
+
+    /**
+     * Get the label for the Style at the given position in the list.
+     *
+     * @param context  Current context
+     * @param position for the Style
+     *
+     * @return label
+     */
+    @NonNull
+    public CharSequence getLabel(@NonNull final Context context,
+                                 final int position) {
+        final Style style = styleList.get(position);
+        if (style.isPreferred()) {
+            return style.getLabel(context);
+        } else {
+            //TODO: maybe move style '*' suffix logic to the style itself and use universally?
+            return context.getString(R.string.a_b, style.getLabel(context), builtinLabelSuffix);
+        }
     }
 
     /**

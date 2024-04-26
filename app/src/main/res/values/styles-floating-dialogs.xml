@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,26 +20,29 @@
   -->
 
 <!--
-    These are workarounds and hacks for {@link FFBaseDialogFragment}.
+    These are workarounds and hacks for {@link FFBaseDialogFragment} and
+    {@link BottomSheetDialogFragment}.
     Android styles are an utter design mess.
 -->
 <resources>
-    <!-- Special style for RecyclerView's embedded in a FFBaseDialogFragment -->
+    <!-- Special style for RecyclerView's embedded in a FFBaseDialogFragment or BottomSheet -->
     <style name="Dialog.Body.RecyclerView"
            parent="">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- works in conjunction with layout_height=wrap_content -->
+        <item name="layout_constrainedHeight">true</item>
+        <item name="layout_constraintVertical_bias">0.0</item>
 
         <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
         <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
         <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
 
-        <item name="layout_constraintVertical_bias">0.0</item>
-
         <item name="android:fadeScrollbars">false</item>
         <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
         <item name="android:scrollbars">vertical</item>
+
         <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>

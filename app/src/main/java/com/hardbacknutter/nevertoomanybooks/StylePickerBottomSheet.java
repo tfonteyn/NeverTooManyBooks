@@ -21,9 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.SuperscriptSpan;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetStylePickerBi
 import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
+/**
+ * TODO: unify with {@link StylePickerDialogFragment}.
+ */
 public class StylePickerBottomSheet
         extends BottomSheetDialogFragment
         implements ExtToolbarActionMenu {
@@ -49,9 +49,10 @@ public class StylePickerBottomSheet
 
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<Style> adapter;
+    /** View Binding. */
+    private BottomSheetStylePickerBinding vb;
 
     private StylePickerViewModel vm;
-    private SpannableString builtinLabelSuffix;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -59,12 +60,7 @@ public class StylePickerBottomSheet
 
         vm = new ViewModelProvider(this).get(StylePickerViewModel.class);
         vm.init(requireArguments());
-
-        builtinLabelSuffix = new SpannableString("*");
-        builtinLabelSuffix.setSpan(new SuperscriptSpan(), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
-
-    private BottomSheetStylePickerBinding vb;
 
     @Nullable
     @Override
@@ -85,18 +81,12 @@ public class StylePickerBottomSheet
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(),
                                                   vm.getStyles(),
-                                                  this::getLabel,
+                                                  position -> vm.getLabel(getContext(), position),
                                                   vm.getCurrentStyle(),
                                                   style -> vm.setCurrentStyle(style));
         vb.stylesList.setAdapter(adapter);
     }
 
-    /**
-     * Called when the user clicks the Navigation icon from the toolbar menu.
-     * The default action simply dismisses the dialog.
-     *
-     * @param v view
-     */
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         dismiss();
@@ -135,25 +125,24 @@ public class StylePickerBottomSheet
         if (button != null) {
             final int id = button.getId();
             if (id == R.id.btn_select || id == R.id.btn_positive) {
-                onStyleSelected();
+                if (saveChanges()) {
+                    dismiss();
+                }
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Send the selected style id back.
-     */
-    private void onStyleSelected() {
+    private boolean saveChanges() {
         final Style selectedStyle = adapter.getSelection();
         if (selectedStyle == null) {
             // We should never get here.
-            return;
+            return false;
         }
-        dismiss();
 
         StylePickerLauncher.setResult(this, vm.getRequestKey(), selectedStyle);
+        return true;
     }
 
     /**
@@ -170,18 +159,5 @@ public class StylePickerBottomSheet
         // use the activity so we get the results there.
         //noinspection DataFlowIssue
         ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle);
-    }
-
-    @NonNull
-    private CharSequence getLabel(final int position) {
-        final Style style = vm.getStyles().get(position);
-        if (style.isPreferred()) {
-            //noinspection DataFlowIssue
-            return style.getLabel(getContext());
-        } else {
-            //TODO: maybe move style '*' suffix logic to the style itself and use universally?
-            //noinspection DataFlowIssue
-            return getString(R.string.a_b, style.getLabel(getContext()), builtinLabelSuffix);
-        }
     }
 }

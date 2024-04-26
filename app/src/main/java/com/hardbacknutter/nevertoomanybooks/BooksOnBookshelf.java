@@ -328,15 +328,7 @@ public class BooksOnBookshelf
     /** Row menu launcher displaying the menu as a BottomSheet. */
     private BottomSheetMenu.Launcher menuLauncher;
 
-    private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
-            new BookshelfFiltersDialogFragment.Launcher(
-                    RK_FILTERS, modified -> {
-                if (modified) {
-                    // After applying filters, we always start the list at the top.
-                    vm.setSelectedBook(0, RecyclerView.NO_POSITION);
-                    buildBookList();
-                }
-            });
+    private BookshelfFiltersLauncher bookshelfFiltersLauncher;
 
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
@@ -470,14 +462,19 @@ public class BooksOnBookshelf
 
         if (WindowSizeClass.getWidth(this) == WindowSizeClass.Expanded) {
             // Tablets use a Dialog
-            stylePickerLauncher = new StylePickerLauncher(RK_STYLE_PICKER,
-                                                          StylePickerDialogFragment::new,
-                                                          this::onStyleSelected);
+            stylePickerLauncher = new StylePickerLauncher(
+                    RK_STYLE_PICKER, StylePickerDialogFragment::new, this::onStyleSelected);
+
+            bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
+                    RK_FILTERS, BookshelfFiltersDialogFragment::new, this::onFiltersUpdate);
+
         } else {
             // Phones use a BottomSheet
-            stylePickerLauncher = new StylePickerLauncher(RK_STYLE_PICKER,
-                                                          StylePickerBottomSheet::new,
-                                                          this::onStyleSelected);
+            stylePickerLauncher = new StylePickerLauncher(
+                    RK_STYLE_PICKER, StylePickerBottomSheet::new, this::onStyleSelected);
+
+            bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
+                    RK_FILTERS, BookshelfFiltersBottomSheet::new, this::onFiltersUpdate);
         }
 
         menuLauncher = new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
@@ -2036,6 +2033,19 @@ public class BooksOnBookshelf
               .commit();
         } else {
             ((ShowBookDetailsFragment) fragment).displayBook(bookId);
+        }
+    }
+
+    /**
+     * Called after the user closed the filters dialog.
+     *
+     * @param modified {@code true} when the filters were updated
+     */
+    private void onFiltersUpdate(final boolean modified) {
+        if (modified) {
+            // After applying filters, we always start the list at the top.
+            vm.setSelectedBook(0, RecyclerView.NO_POSITION);
+            buildBookList();
         }
     }
 

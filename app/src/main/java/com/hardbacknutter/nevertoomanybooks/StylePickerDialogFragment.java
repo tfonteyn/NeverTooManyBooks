@@ -21,9 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.SuperscriptSpan;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -39,6 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
+/**
+ * TODO: unify with {@link StylePickerBottomSheet}.
+ */
 public class StylePickerDialogFragment
         extends FFBaseDialogFragment {
 
@@ -47,9 +47,11 @@ public class StylePickerDialogFragment
 
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<Style> adapter;
+    /** View Binding. */
+    @SuppressWarnings("FieldCanBeLocal")
+    private DialogStylesMenuContentBinding vb;
 
     private StylePickerViewModel vm;
-    private SpannableString builtinLabelSuffix;
 
     /**
      * No-arg constructor for OS use.
@@ -69,22 +71,18 @@ public class StylePickerDialogFragment
 
         vm = new ViewModelProvider(this).get(StylePickerViewModel.class);
         vm.init(requireArguments());
-
-        builtinLabelSuffix = new SpannableString("*");
-        builtinLabelSuffix.setSpan(new SuperscriptSpan(), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogStylesMenuContentBinding vb = DialogStylesMenuContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        vb = DialogStylesMenuContentBinding.bind(view.findViewById(R.id.dialog_content));
 
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(),
                                                   vm.getStyles(),
-                                                  this::getLabel,
+                                                  position -> vm.getLabel(getContext(), position),
                                                   vm.getCurrentStyle(),
                                                   style -> vm.setCurrentStyle(style));
         vb.stylesList.setAdapter(adapter);
@@ -125,25 +123,24 @@ public class StylePickerDialogFragment
         if (button != null) {
             final int id = button.getId();
             if (id == R.id.btn_select || id == R.id.btn_positive) {
-                onStyleSelected();
+                if (saveChanges()) {
+                    dismiss();
+                }
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Send the selected style id back.
-     */
-    private void onStyleSelected() {
+    private boolean saveChanges() {
         final Style selectedStyle = adapter.getSelection();
         if (selectedStyle == null) {
             // We should never get here.
-            return;
+            return false;
         }
-        dismiss();
 
         StylePickerLauncher.setResult(this, vm.getRequestKey(), selectedStyle);
+        return true;
     }
 
     /**
@@ -160,18 +157,5 @@ public class StylePickerDialogFragment
         // use the activity so we get the results there.
         //noinspection DataFlowIssue
         ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle);
-    }
-
-    @NonNull
-    private CharSequence getLabel(final int position) {
-        final Style style = vm.getStyles().get(position);
-        if (style.isPreferred()) {
-            //noinspection DataFlowIssue
-            return style.getLabel(getContext());
-        } else {
-            //TODO: maybe move style '*' suffix logic to the style itself and use universally?
-            //noinspection DataFlowIssue
-            return getString(R.string.a_b, style.getLabel(getContext()), builtinLabelSuffix);
-        }
     }
 }

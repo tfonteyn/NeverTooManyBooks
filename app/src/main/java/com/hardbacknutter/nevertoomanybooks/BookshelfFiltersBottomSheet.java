@@ -21,7 +21,9 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,32 +31,30 @@ import androidx.core.util.Pair;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
-
-import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetEditBookshelfFiltersBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 
 /**
- * TODO: unify with {@link BookshelfFiltersBottomSheet}.
+ * TODO: unify with {@link BookshelfFiltersDialogFragment}.
  */
-public class BookshelfFiltersDialogFragment
-        extends FFBaseDialogFragment {
+public class BookshelfFiltersBottomSheet
+        extends BottomSheetDialogFragment
+        implements ExtToolbarActionMenu {
 
     /** Fragment/Log tag. */
     public static final String TAG = "BookshelfFiltersDlg";
 
     private PFilterListAdapter adapter;
     /** View Binding. */
-    @SuppressWarnings("FieldCanBeLocal")
-    private DialogEditBookshelfFiltersContentBinding vb;
+    private BottomSheetEditBookshelfFiltersBinding vb;
 
     private BookshelfFiltersViewModel vm;
 
@@ -74,18 +74,6 @@ public class BookshelfFiltersDialogFragment
                 }
             };
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    public BookshelfFiltersDialogFragment() {
-        super(R.layout.dialog_edit_bookshelf_filters,
-              R.layout.dialog_edit_bookshelf_filters_content,
-              // Fullscreen on Medium screens
-              // to avoid 3 buttons overlapping text on a UI in e.g. german
-              EnumSet.of(WindowSizeClass.Medium),
-              EnumSet.of(WindowSizeClass.Medium));
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,21 +82,28 @@ public class BookshelfFiltersDialogFragment
         vm.init(requireArguments());
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = BottomSheetEditBookshelfFiltersBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
+
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vb = DialogEditBookshelfFiltersContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setSubtitle(vm.getBookshelf().getName());
+        initToolbarActionButtons(vb.dialogToolbar, this);
+        vb.dialogToolbar.setSubtitle(vm.getBookshelf().getName());
 
         //noinspection DataFlowIssue
         adapter = new PFilterListAdapter(getContext(), vm.getFilterList(), modificationListener);
         vb.filterList.setAdapter(adapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
-
-        adjustWindowSize(vb.filterList, 0.33f);
     }
 
     @Override
@@ -117,6 +112,11 @@ public class BookshelfFiltersDialogFragment
         if (vm.getFilterList().isEmpty()) {
             onAdd();
         }
+    }
+
+    @Override
+    public void onToolbarNavigationClick(@NonNull final View v) {
+        dismiss();
     }
 
     @Override

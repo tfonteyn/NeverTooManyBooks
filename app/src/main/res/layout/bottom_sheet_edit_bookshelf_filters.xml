@@ -40,21 +40,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle"
-        app:menu="@menu/toolbar_select_style_bottom_sheet"
-        app:subtitle="@string/info_builtin_style_asterix"
-        app:subtitleTextAppearance="?attr/textAppearanceTitleSmall"
-        app:title="@string/lbl_style"
+        app:menu="@menu/toolbar_action_edit_filters"
+        app:title="@string/lbl_filters"
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/styles_list"
+        android:id="@+id/filter_list"
         style="@style/Dialog.Body.RecyclerView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
-        tools:itemCount="14"
-        tools:listitem="@layout/row_choice_single"
+        tools:listitem="@layout/row_edit_bookshelf_filter_boolean"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
-
