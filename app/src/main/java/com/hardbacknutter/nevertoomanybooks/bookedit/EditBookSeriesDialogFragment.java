@@ -30,10 +30,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 /**
@@ -62,17 +62,13 @@ public class EditBookSeriesDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesForBookDialog";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
+    /** Series View model. Fragment scope. */
+    private EditSeriesViewModel seriesVm;
     /** View Binding. */
     private DialogEditBookSeriesContentBinding vb;
 
-    /** The Series we're editing. */
-    private Series series;
-    /** Current edit. */
-    private Series currentEdit;
     /** Adding or Editing. */
     private EditAction action;
 
@@ -87,25 +83,14 @@ public class EditBookSeriesDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(
                 args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-        series = Objects.requireNonNull(
-                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
-                ParcelableDialogLauncher.BKEY_ITEM);
 
-        if (savedInstanceState == null) {
-            currentEdit = new Series(series.getTitle(), series.isComplete());
-            currentEdit.setNumber(series.getNumber());
-        } else {
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
-        }
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        seriesVm = new ViewModelProvider(this).get(EditSeriesViewModel.class);
+        seriesVm.init(args);
     }
 
     @Override
@@ -114,6 +99,8 @@ public class EditBookSeriesDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(vm.getBook().getTitle());
+
+        final Series currentEdit = seriesVm.getCurrentEdit();
 
         //noinspection DataFlowIssue
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
@@ -146,28 +133,26 @@ public class EditBookSeriesDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
+        final Series currentEdit = seriesVm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getTitle().isEmpty()) {
             vb.lblSeriesTitle.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        ParcelableDialogLauncher.setResult(this, requestKey, action, series, currentEdit);
+        ParcelableDialogLauncher.setResult(this, seriesVm.getRequestKey(), action,
+                                           seriesVm.getSeries(), currentEdit);
         return true;
     }
 
     private void viewToModel() {
+        final Series currentEdit = seriesVm.getCurrentEdit();
+
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
         //noinspection DataFlowIssue
         currentEdit.setNumber(vb.seriesNum.getText().toString().trim());
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_SERIES, currentEdit);
     }
 
     @Override

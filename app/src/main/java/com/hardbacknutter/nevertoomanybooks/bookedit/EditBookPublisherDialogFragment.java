@@ -30,10 +30,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
@@ -62,17 +62,13 @@ public class EditBookPublisherDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditPublisherForBookDlg";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
+    /** Publisher View model. Fragment scope. */
+    private EditPublisherViewModel publisherVm;
     /** View Binding. */
     private DialogEditBookPublisherContentBinding vb;
 
-    /** The Publisher we're editing. */
-    private Publisher publisher;
-    /** Current edit. */
-    private Publisher currentEdit;
     /** Adding or Editing. */
     private EditAction action;
 
@@ -87,24 +83,14 @@ public class EditBookPublisherDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(
                 args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-        publisher = Objects.requireNonNull(
-                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
-                ParcelableDialogLauncher.BKEY_ITEM);
 
-        if (savedInstanceState == null) {
-            currentEdit = new Publisher(publisher.getName());
-        } else {
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
-        }
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        publisherVm = new ViewModelProvider(this).get(EditPublisherViewModel.class);
+        publisherVm.init(args);
     }
 
     @Override
@@ -119,7 +105,7 @@ public class EditBookPublisherDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
 
-        vb.publisherName.setText(currentEdit.getName());
+        vb.publisherName.setText(publisherVm.getCurrentEdit().getName());
         vb.publisherName.setAdapter(nameAdapter);
         autoRemoveError(vb.publisherName, vb.lblPublisherName);
 
@@ -143,24 +129,20 @@ public class EditBookPublisherDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
+        final Publisher currentEdit = publisherVm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getName().isEmpty()) {
             vb.lblPublisherName.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        ParcelableDialogLauncher.setResult(this, requestKey, action, publisher, currentEdit);
+        ParcelableDialogLauncher.setResult(this, publisherVm.getRequestKey(), action,
+                                           publisherVm.getPublisher(), currentEdit);
         return true;
     }
 
     private void viewToModel() {
-        currentEdit.setName(vb.publisherName.getText().toString().trim());
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_PUBLISHER, currentEdit);
+        publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
     }
 
     @Override
