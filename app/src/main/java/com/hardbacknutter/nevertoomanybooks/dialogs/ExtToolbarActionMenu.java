@@ -35,7 +35,7 @@ public interface ExtToolbarActionMenu {
 
     /**
      * Called when the user clicks the Navigation icon from the toolbar menu.
-     * The default action simply dismisses the dialog.
+     * The default action should dismiss the dialog.
      *
      * @param v view
      */
@@ -65,6 +65,12 @@ public interface ExtToolbarActionMenu {
         return false;
     }
 
+    /**
+     * Setup the Toolbar listeners.
+     *
+     * @param dialogToolbar to process
+     * @param listener      to set
+     */
     default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
                                           @NonNull final ExtToolbarActionMenu listener) {
         dialogToolbar.setNavigationOnClickListener(listener::onToolbarNavigationClick);
@@ -77,9 +83,11 @@ public interface ExtToolbarActionMenu {
             final View actionView = menuItem.getActionView();
 
             if (actionView instanceof Button) {
+                // Single button as top-level view
                 actionView.setOnClickListener(listener::onToolbarButtonClick);
 
             } else if (actionView instanceof ViewGroup) {
+                // A ViewGroup with multiple Buttons.
                 final ViewGroup av = (ViewGroup) actionView;
                 for (int c = 0; c < av.getChildCount(); c++) {
                     final View child = av.getChildAt(c);
