@@ -76,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  *         {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
  *     <li>
- *         Call {@link #adjustWindowSize(RecyclerView, int)}
+ *         Call {@link #adjustWindowSize(RecyclerView, float)}
  *         from {@link #onViewCreated(View, Bundle)}
  *     </li>
  * </ol>
@@ -255,12 +255,12 @@ public abstract class FFBaseDialogFragment
      * URGENT: RecyclerView in a dialog is cursed... we need to redo this whole floating
      *  dialog code
      *
-     * @param recyclerView  optional RecyclerView to adjust the height of
-     * @param heightDivider the absolute value to divide the screen height with;
-     *                      used to set the RecyclerView absolute height.
+     * @param recyclerView optional RecyclerView to adjust the height of
+     * @param heightRatio  the ratio to apply to the screen height;
+     *                     The resulting value is used to set the RecyclerView absolute height.
      */
     protected void adjustWindowSize(@Nullable final RecyclerView recyclerView,
-                                    final int heightDivider) {
+                                    final float heightRatio) {
         if (fullscreen) {
             return;
         }
@@ -308,9 +308,9 @@ public abstract class FFBaseDialogFragment
                             .computeCurrentWindowMetrics(activity)
                             .getBounds()
                             .height();
-                    // We're setting the height relative to the height
-                    // with a divider as per Dialog needs.
-                    rvLp.height = heightPx / heightDivider;
+                    // We're setting the height relative to the screen height
+                    // with a ratio as per Dialog needs.
+                    rvLp.height = (int) (heightPx * heightRatio);
                     recyclerView.setLayoutParams(rvLp);
                 }
             }

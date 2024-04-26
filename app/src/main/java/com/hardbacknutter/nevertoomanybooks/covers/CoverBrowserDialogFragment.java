@@ -202,7 +202,7 @@ public class CoverBrowserDialogFragment
         });
 
         // Don't give it the gallery! We're auto-adapting in this class already
-        adjustWindowSize(null, 0);
+        adjustWindowSize(null, /* ignored */ 0f);
     }
 
     @Override

@@ -89,7 +89,7 @@ public class StylePickerDialogFragment
                                                   style -> vm.setCurrentStyle(style));
         vb.stylesList.setAdapter(adapter);
 
-        adjustWindowSize(vb.stylesList, 3);
+        adjustWindowSize(vb.stylesList, 0.33f);
     }
 
     @SuppressLint("NotifyDataSetChanged")
