@@ -25,9 +25,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -36,9 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -65,17 +65,9 @@ public class EditPublisherDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditPublisherDialogFrag";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** View Binding. */
     private DialogEditPublisherContentBinding vb;
-
-    /** The Publisher we're editing. */
-    private Publisher publisher;
-
-    /** Current edit. */
-    private Publisher currentEdit;
+    private EditPublisherViewModel vm;
 
     /**
      * No-arg constructor for OS use.
@@ -88,19 +80,8 @@ public class EditPublisherDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
-        publisher = Objects.requireNonNull(
-                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
-                ParcelableDialogLauncher.BKEY_ITEM);
-
-        if (savedInstanceState == null) {
-            currentEdit = new Publisher(publisher.getName());
-        } else {
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
-        }
+        vm = new ViewModelProvider(this).get(EditPublisherViewModel.class);
+        vm.init(requireArguments());
     }
 
     @Override
@@ -115,7 +96,7 @@ public class EditPublisherDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getPublisherDao().getNames());
 
-        vb.publisherName.setText(currentEdit.getName());
+        vb.publisherName.setText(vm.getCurrentEdit().getName());
         vb.publisherName.setAdapter(nameAdapter);
         autoRemoveError(vb.publisherName, vb.lblPublisherName);
 
@@ -139,20 +120,19 @@ public class EditPublisherDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
+        final Publisher currentEdit = vm.getCurrentEdit();
         if (currentEdit.getName().isEmpty()) {
             vb.lblPublisherName.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        // Case-sensitive! We must allow the user to correct case.
-        final boolean nameChanged = !publisher.isSameName(currentEdit);
-
         // anything actually changed ? If not, we're done.
-        if (nameChanged) {
+        if (!vm.isChanged()) {
             return true;
         }
 
         // store changes
+        final Publisher publisher = vm.getPublisher();
         publisher.copyFrom(currentEdit);
 
         final Context context = requireContext();
@@ -160,10 +140,10 @@ public class EditPublisherDialogFragment
         final Locale locale = getResources().getConfiguration().getLocales().get(0);
 
         final Consumer<Publisher> onSuccess = savedPublisher -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, requestKey, savedPublisher);
+                .setEditInPlaceResult(this, vm.getRequestKey(), savedPublisher);
 
         try {
-            if (publisher.getId() == 0) {
+            if (publisher.getId() == 0 || !publisher.isSameName(currentEdit)) {
                 // Check if there is an another one with the same new name.
                 final Optional<Publisher> existingEntity =
                         dao.findByName(context, publisher, locale);
@@ -181,8 +161,7 @@ public class EditPublisherDialogFragment
                                     // return the item which 'lost' it's books
                                     onSuccess.accept(publisher);
                                 } catch (@NonNull final DaoWriteException e) {
-                                    // log, but ignore - should never happen unless disk full
-                                    LoggerFactory.getLogger().e(TAG, e, publisher);
+                                    ErrorDialog.show(context, TAG, e);
                                 }
                             });
                     return false;
@@ -211,13 +190,7 @@ public class EditPublisherDialogFragment
     }
 
     private void viewToModel() {
-        currentEdit.setName(vb.publisherName.getText().toString().trim());
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_PUBLISHER, currentEdit);
+        vm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
     }
 
     @Override

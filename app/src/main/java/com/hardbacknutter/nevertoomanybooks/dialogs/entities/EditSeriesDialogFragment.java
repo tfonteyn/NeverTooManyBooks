@@ -25,9 +25,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -36,9 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -65,17 +65,9 @@ public class EditSeriesDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** View Binding. */
     private DialogEditSeriesContentBinding vb;
-
-    /** The Series we're editing. */
-    private Series series;
-
-    /** Current edit. */
-    private Series currentEdit;
+    private EditSeriesViewModel vm;
 
     /**
      * No-arg constructor for OS use.
@@ -88,19 +80,8 @@ public class EditSeriesDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
-        series = Objects.requireNonNull(
-                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
-                ParcelableDialogLauncher.BKEY_ITEM);
-
-        if (savedInstanceState == null) {
-            currentEdit = new Series(series.getTitle(), series.isComplete());
-        } else {
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
-        }
+        vm = new ViewModelProvider(this).get(EditSeriesViewModel.class);
+        vm.init(requireArguments());
     }
 
     @Override
@@ -115,11 +96,11 @@ public class EditSeriesDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getSeriesDao().getNames());
 
-        vb.seriesTitle.setText(currentEdit.getTitle());
+        vb.seriesTitle.setText(vm.getCurrentEdit().getTitle());
         vb.seriesTitle.setAdapter(titleAdapter);
         autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
 
-        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
+        vb.cbxIsComplete.setChecked(vm.getCurrentEdit().isComplete());
 
         vb.seriesTitle.requestFocus();
     }
@@ -141,20 +122,19 @@ public class EditSeriesDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
+        final Series currentEdit = vm.getCurrentEdit();
         if (currentEdit.getTitle().isEmpty()) {
             vb.lblSeriesTitle.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        // Case-sensitive! We must allow the user to correct case.
-        final boolean nameChanged = !series.isSameName(currentEdit);
-
         // anything actually changed ? If not, we're done.
-        if (!nameChanged && series.isComplete() == currentEdit.isComplete()) {
+        if (!vm.isChanged()) {
             return true;
         }
 
         // store changes
+        final Series series = vm.getSeries();
         series.copyFrom(currentEdit, false);
 
         final Context context = requireContext();
@@ -163,10 +143,10 @@ public class EditSeriesDialogFragment
                 () -> getResources().getConfiguration().getLocales().get(0));
 
         final Consumer<Series> onSuccess = savedSeries -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, requestKey, savedSeries);
+                .setEditInPlaceResult(this, vm.getRequestKey(), savedSeries);
 
         try {
-            if (series.getId() == 0 || nameChanged) {
+            if (series.getId() == 0 || !series.isSameName(currentEdit)) {
                 // Check if there is an another one with the same new name.
                 final Optional<Series> existingEntity =
                         dao.findByName(context, series, locale);
@@ -183,8 +163,7 @@ public class EditSeriesDialogFragment
                                     // return the item which 'lost' it's books
                                     onSuccess.accept(series);
                                 } catch (@NonNull final DaoWriteException e) {
-                                    // log, but ignore - should never happen unless disk full
-                                    LoggerFactory.getLogger().e(TAG, e, series);
+                                    ErrorDialog.show(context, TAG, e);
                                 }
                             });
                     return false;
@@ -214,14 +193,9 @@ public class EditSeriesDialogFragment
     }
 
     private void viewToModel() {
+        final Series currentEdit = vm.getCurrentEdit();
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_SERIES, currentEdit);
     }
 
     @Override

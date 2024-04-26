@@ -49,17 +49,18 @@ public class EditAuthorViewModel
 
     private static final String TAG = "EditAuthorViewModel";
 
+    /** FragmentResultListener request key to use for our response. */
+    private String requestKey;
+
     /** The Author we're editing. */
     private Author author;
 
+    /** Current edit. */
+    private Author currentEdit;
     /**
      * Current edit. We don't use the real-author directly to avoid unneeded validation
      * at each key-stroke from the user.
-     *
-     * @see #currentRealAuthorName
      */
-    private Author currentEdit;
-    /** Current edit. */
     @Nullable
     private String currentRealAuthorName;
 
@@ -69,10 +70,14 @@ public class EditAuthorViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#getArguments()}
+     * @param args {@link Fragment#requireArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (author == null) {
+        if (requestKey == null) {
+            requestKey = Objects.requireNonNull(
+                    args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
+                    ParcelableDialogLauncher.BKEY_REQUEST_KEY);
+
             author = Objects.requireNonNull(
                     args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
                     ParcelableDialogLauncher.BKEY_ITEM);
@@ -85,6 +90,15 @@ public class EditAuthorViewModel
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
         }
+    }
+
+    @NonNull
+    public String getRequestKey() {
+        return requestKey;
+    }
+
+    public void setRequestKey(final String requestKey) {
+        this.requestKey = requestKey;
     }
 
     public boolean useRealAuthorName() {
@@ -168,5 +182,12 @@ public class EditAuthorViewModel
             LoggerFactory.getLogger().e(TAG, e, tmpRealAuthor);
             return false;
         }
+    }
+
+    public boolean isChanged() {
+        // Case-sensitive! We must allow the user to correct case.
+        return !(author.isSameName(currentEdit)
+                 && author.isComplete() == currentEdit.isComplete()
+                 && Objects.equals(author.getRealAuthor(), currentEdit.getRealAuthor()));
     }
 }

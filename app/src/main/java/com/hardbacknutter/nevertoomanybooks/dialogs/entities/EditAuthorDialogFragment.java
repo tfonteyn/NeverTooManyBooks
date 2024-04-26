@@ -30,7 +30,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -42,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -68,11 +68,8 @@ public class EditAuthorDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** Author View model. Fragment scope. */
-    private EditAuthorViewModel authorVm;
+    private EditAuthorViewModel vm;
 
     /** View Binding. */
     private DialogEditAuthorContentBinding vb;
@@ -88,13 +85,8 @@ public class EditAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
-
-        authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
-        authorVm.init(args);
+        vm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
+        vm.init(requireArguments());
     }
 
     @Override
@@ -104,7 +96,7 @@ public class EditAuthorDialogFragment
         vb = DialogEditAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
 
         final Context context = getContext();
-        final Author currentEdit = authorVm.getCurrentEdit();
+        final Author currentEdit = vm.getCurrentEdit();
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
@@ -133,7 +125,7 @@ public class EditAuthorDialogFragment
 
     private void setupRealAuthorField(@NonNull final Context context,
                                       @NonNull final AuthorDao authorDao) {
-        if (authorVm.useRealAuthorName()) {
+        if (vm.useRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);
 
@@ -141,7 +133,7 @@ public class EditAuthorDialogFragment
                     context, R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
                     authorDao.getNames(DBKey.AUTHOR_FORMATTED));
-            vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
+            vb.realAuthor.setText(vm.getCurrentRealAuthorName(), false);
             vb.realAuthor.setAdapter(realNameAdapter);
             autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
 
@@ -168,7 +160,7 @@ public class EditAuthorDialogFragment
     private boolean saveChanges(final boolean createRealAuthorIfNeeded) {
         viewToModel();
 
-        final Author currentEdit = authorVm.getCurrentEdit();
+        final Author currentEdit = vm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
             vb.lblFamilyName.setError(getString(R.string.vldt_non_blank_required));
@@ -178,37 +170,30 @@ public class EditAuthorDialogFragment
         final Context context = getContext();
         final Locale locale = getResources().getConfiguration().getLocales().get(0);
 
-        final Author author = authorVm.getAuthor();
-        final Author realAuthor = author.getRealAuthor();
-
         // We let this call go ahead even if real-author is switched off by the user
         // so we can clean up as needed.
         //noinspection DataFlowIssue
-        if (!authorVm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
+        if (!vm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
             warnThatRealAuthorMustBeValid();
             return false;
         }
 
-        // Case-sensitive! We must allow the user to correct case.
-        final boolean nameChanged = !author.isSameName(currentEdit);
-
         // anything actually changed ? If not, we're done.
-        if (!nameChanged
-            && author.isComplete() == currentEdit.isComplete()
-            && Objects.equals(realAuthor, currentEdit.getRealAuthor())) {
+        if (!vm.isChanged()) {
             return true;
         }
 
         // store changes
+        final Author author = vm.getAuthor();
         author.copyFrom(currentEdit, false);
 
         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
 
         final Consumer<Author> onSuccess = savedAuthor -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, requestKey, savedAuthor);
+                .setEditInPlaceResult(this, vm.getRequestKey(), savedAuthor);
 
         try {
-            if (author.getId() == 0 || nameChanged) {
+            if (author.getId() == 0 || !author.isSameName(currentEdit)) {
                 // Check if there is an another one with the same new name.
                 final Optional<Author> existingEntity =
                         dao.findByName(context, author, locale);
@@ -226,8 +211,7 @@ public class EditAuthorDialogFragment
                                     // return the item which 'lost' it's books
                                     onSuccess.accept(author);
                                 } catch (@NonNull final DaoWriteException e) {
-                                    // log, but ignore - should never happen unless disk full
-                                    LoggerFactory.getLogger().e(TAG, e, author);
+                                    ErrorDialog.show(context, TAG, e);
                                 }
                             });
                     return false;
@@ -262,7 +246,7 @@ public class EditAuthorDialogFragment
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.vldt_real_author_must_be_valid)
                 .setMessage(context.getString(R.string.confirm_create_real_author,
-                                              authorVm.getCurrentRealAuthorName()))
+                                              vm.getCurrentRealAuthorName()))
                 .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
                         getString(R.string.vldt_real_author_must_be_valid)))
                 .setPositiveButton(R.string.action_create, (d, w) -> {
@@ -276,13 +260,13 @@ public class EditAuthorDialogFragment
     }
 
     private void viewToModel() {
-        final Author currentEdit = authorVm.getCurrentEdit();
+        final Author currentEdit = vm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        if (authorVm.useRealAuthorName()) {
-            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
+        if (vm.useRealAuthorName()) {
+            vm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
         }
     }
 

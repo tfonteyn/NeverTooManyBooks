@@ -76,9 +76,6 @@ public class EditBookAuthorDialogFragment
      */
     private final SparseArray<CompoundButton> typeButtons = new SparseArray<>();
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** Book View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
     /** Author View model. Fragment scope. */
@@ -102,9 +99,6 @@ public class EditBookAuthorDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
 
         //noinspection DataFlowIssue
@@ -270,7 +264,8 @@ public class EditBookAuthorDialogFragment
         }
 
         ParcelableDialogLauncher
-                .setResult(this, requestKey, action, authorVm.getAuthor(), currentEdit);
+                .setResult(this, authorVm.getRequestKey(), action,
+                           authorVm.getAuthor(), currentEdit);
         return true;
     }
 

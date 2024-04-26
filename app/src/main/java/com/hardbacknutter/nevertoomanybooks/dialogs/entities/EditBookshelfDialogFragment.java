@@ -25,9 +25,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -35,9 +35,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -64,17 +64,9 @@ public class EditBookshelfDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** View Binding. */
     private DialogEditBookshelfContentBinding vb;
-
-    /** The Bookshelf we're editing. */
-    private Bookshelf bookshelf;
-
-    /** Current edit. Using the 'name' directly. */
-    private String currentEdit;
+    private EditBookshelfViewModel vm;
 
     /**
      * No-arg constructor for OS use.
@@ -87,19 +79,8 @@ public class EditBookshelfDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(
-                args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                ParcelableDialogLauncher.BKEY_REQUEST_KEY);
-        bookshelf = Objects.requireNonNull(
-                args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
-                ParcelableDialogLauncher.BKEY_ITEM);
-
-        if (savedInstanceState == null) {
-            currentEdit = bookshelf.getName();
-        } else {
-            currentEdit = savedInstanceState.getString(DBKey.FK_BOOKSHELF);
-        }
+        vm = new ViewModelProvider(this).get(EditBookshelfViewModel.class);
+        vm.init(requireArguments());
     }
 
     @Override
@@ -108,7 +89,7 @@ public class EditBookshelfDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookshelfContentBinding.bind(view.findViewById(R.id.dialog_content));
 
-        vb.bookshelf.setText(currentEdit);
+        vb.bookshelf.setText(vm.getCurrentEdit().getName());
         autoRemoveError(vb.bookshelf, vb.lblBookshelf);
 
         vb.bookshelf.requestFocus();
@@ -131,19 +112,19 @@ public class EditBookshelfDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
+        final String currentEdit = vm.getCurrentEdit().getName();
         if (currentEdit.isEmpty()) {
             vb.lblBookshelf.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        final boolean nameChanged = !bookshelf.getName().equals(currentEdit);
-
         // anything actually changed ? If not, we're done.
-        if (!nameChanged) {
+        if (!vm.isChanged()) {
             return true;
         }
 
         // store changes
+        final Bookshelf bookshelf = vm.getBookshelf();
         bookshelf.setName(currentEdit);
 
         final Context context = requireContext();
@@ -164,7 +145,7 @@ public class EditBookshelfDialogFragment
         }
 
         final Consumer<Bookshelf> onSuccess = savedBookshelf -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, requestKey, savedBookshelf);
+                .setEditInPlaceResult(this, vm.getRequestKey(), savedBookshelf);
 
         try {
             if (existingEntity.isPresent()) {
@@ -180,8 +161,7 @@ public class EditBookshelfDialogFragment
                                 // return the item which 'lost' it's books
                                 onSuccess.accept(bookshelf);
                             } catch (@NonNull final DaoWriteException e) {
-                                // log, but ignore - should never happen unless disk full
-                                LoggerFactory.getLogger().e(TAG, e, bookshelf);
+                                ErrorDialog.show(context, TAG, e);
                             }
                         });
                 return false;
@@ -204,13 +184,7 @@ public class EditBookshelfDialogFragment
 
     private void viewToModel() {
         //noinspection DataFlowIssue
-        currentEdit = vb.bookshelf.getText().toString().trim();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DBKey.FK_BOOKSHELF, currentEdit);
+        vm.getCurrentEdit().setName(vb.bookshelf.getText().toString().trim());
     }
 
     @Override
