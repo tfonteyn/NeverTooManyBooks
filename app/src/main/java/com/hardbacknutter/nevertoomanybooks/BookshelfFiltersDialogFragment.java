@@ -52,7 +52,7 @@ public class BookshelfFiltersDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "BookshelfFiltersDlg";
 
-    private PFilterListAdapter listAdapter;
+    private PFilterListAdapter adapter;
     /** View Binding. */
     @SuppressWarnings("FieldCanBeLocal")
     private DialogEditBookshelfFiltersContentBinding vb;
@@ -64,14 +64,14 @@ public class BookshelfFiltersDialogFragment
             new ModificationListener() {
                 @Override
                 public void onModified(final int pos) {
-                    listAdapter.notifyItemChanged(pos);
+                    adapter.notifyItemChanged(pos);
                     vm.setModified(true);
                 }
 
                 @Override
                 public void onDelete(final int pos) {
                     vm.getFilterList().remove(pos);
-                    listAdapter.notifyItemRemoved(pos);
+                    adapter.notifyItemRemoved(pos);
                     vm.setModified(true);
                 }
             };
@@ -105,9 +105,9 @@ public class BookshelfFiltersDialogFragment
         setSubtitle(vm.getBookshelf().getName());
 
         //noinspection DataFlowIssue
-        listAdapter = new PFilterListAdapter(getContext(), vm.getFilterList(),
-                                             modificationListener);
-        vb.filterList.setAdapter(listAdapter);
+        adapter = new PFilterListAdapter(getContext(), vm.getFilterList(),
+                                         modificationListener);
+        vb.filterList.setAdapter(adapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
 
@@ -162,7 +162,7 @@ public class BookshelfFiltersDialogFragment
                             vm.getFilterList().add(filter);
                             // We don't set the modified flag on adding a filter.
                             // The filter is NOT yet activated.
-                            listAdapter.notifyItemInserted(vm.getFilterList().size());
+                            adapter.notifyItemInserted(vm.getFilterList().size());
                         }
                     }
 
