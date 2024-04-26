@@ -27,18 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -131,60 +127,33 @@ public class EditPublisherDialogFragment
             return true;
         }
 
-        // store changes
-        final Publisher publisher = vm.getPublisher();
-        publisher.copyFrom(currentEdit);
-
         final Context context = requireContext();
-        final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
-        final Locale locale = getResources().getConfiguration().getLocales().get(0);
-
-        final Consumer<Publisher> onSuccess = savedPublisher -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, vm.getRequestKey(), savedPublisher);
 
         try {
-            if (publisher.getId() == 0 || !publisher.isSameName(currentEdit)) {
-                // Check if there is an another one with the same new name.
-                final Optional<Publisher> existingEntity =
-                        dao.findByName(context, publisher, locale);
-
-                if (existingEntity.isPresent()) {
-                    // There is one with the same name; ask whether to merge the 2
-                    StandardDialogs.askToMerge(context, R.string.confirm_merge_publishers,
-                                               publisher.getLabel(context), () -> {
-                                dismiss();
-                                try {
-                                    // Note that we ONLY move the books. No other attributes from
-                                    // the source item are copied to the target item!
-                                    dao.moveBooks(context, publisher, existingEntity.get());
-
-                                    // return the item which 'lost' it's books
-                                    onSuccess.accept(publisher);
-                                } catch (@NonNull final DaoWriteException e) {
-                                    ErrorDialog.show(context, TAG, e);
-                                }
-                            });
-                    return false;
-                } else {
-                    // Just insert or update as needed
-                    if (publisher.getId() == 0) {
-                        dao.insert(context, publisher, locale);
-                    } else {
-                        dao.update(context, publisher, locale);
-                    }
-                    onSuccess.accept(publisher);
-                    return true;
-                }
-            } else {
-                // It's an existing one and the name was not changed;
-                // just update the other attributes
-                dao.update(context, publisher, locale);
-                onSuccess.accept(publisher);
+            final Optional<Publisher> existingEntity = vm.saveIfUnique(context);
+            if (existingEntity.isEmpty()) {
+                sendResultBack(vm.getPublisher());
                 return true;
             }
+
+            // There is one with the same name; ask whether to merge the 2
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_publishers,
+                                       vm.getPublisher().getLabel(context), () -> {
+                        dismiss();
+                        try {
+                            vm.move(context, existingEntity.get());
+                            // return the item which 'lost' it's books
+                            sendResultBack(vm.getPublisher());
+                        } catch (@NonNull final DaoWriteException e) {
+                            // log, but ignore - should never happen unless disk full
+                            LoggerFactory.getLogger().e(TAG, e, vm.getPublisher());
+                        }
+                    });
+            return false;
+
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, publisher);
+            LoggerFactory.getLogger().e(TAG, e, vm.getPublisher());
             return false;
         }
     }
@@ -197,5 +166,9 @@ public class EditPublisherDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
+    }
+
+    private void sendResultBack(@NonNull final Publisher publisher) {
+        ParcelableDialogLauncher.setEditInPlaceResult(this, vm.getRequestKey(), publisher);
     }
 }
