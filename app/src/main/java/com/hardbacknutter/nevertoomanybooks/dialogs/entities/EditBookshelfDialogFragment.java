@@ -27,17 +27,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -112,8 +107,7 @@ public class EditBookshelfDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
-        final String currentEdit = vm.getCurrentEdit().getName();
-        if (currentEdit.isEmpty()) {
+        if (vm.getCurrentEdit().getName().isEmpty()) {
             vb.lblBookshelf.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
@@ -123,61 +117,41 @@ public class EditBookshelfDialogFragment
             return true;
         }
 
-        // store changes
-        final Bookshelf bookshelf = vm.getBookshelf();
-        bookshelf.setName(currentEdit);
-
         final Context context = requireContext();
-        final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
-        // The logic flow here is different from the default one as used for e.g. an Author.
-        // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
-
-        // Check if there is an existing one with the same name
-        final Optional<Bookshelf> existingEntity = dao.findByName(context, bookshelf, locale);
-
-        // Are we adding a new one but trying to use an existing name? -> REJECT
-        if (bookshelf.getId() == 0 && existingEntity.isPresent()) {
-            vb.lblBookshelf.setError(getString(R.string.warning_x_already_exists,
-                                               getString(R.string.lbl_bookshelf)));
-            return false;
-        }
-
-        final Consumer<Bookshelf> onSuccess = savedBookshelf -> ParcelableDialogLauncher
-                .setEditInPlaceResult(this, vm.getRequestKey(), savedBookshelf);
 
         try {
-            if (existingEntity.isPresent()) {
-                // There is one with the same name; ask whether to merge the 2
-                StandardDialogs.askToMerge(context, R.string.confirm_merge_bookshelves,
-                                           bookshelf.getLabel(context), () -> {
-                            dismiss();
-                            try {
-                                // Note that we ONLY move the books. No other attributes from
-                                // the source item are copied to the target item!
-                                dao.moveBooks(context, bookshelf, existingEntity.get());
-
-                                // return the item which 'lost' it's books
-                                onSuccess.accept(bookshelf);
-                            } catch (@NonNull final DaoWriteException e) {
-                                ErrorDialog.show(context, TAG, e);
-                            }
-                        });
+            final Optional<Bookshelf> existingEntity = vm.saveIfUnique(context);
+            // IF the user meant to create a NEW shelf
+            // REJECT an already existing Bookshelf with the same name.
+            if (vm.getBookshelf().getId() == 0 && existingEntity.isPresent()) {
+                vb.lblBookshelf.setError(getString(R.string.warning_x_already_exists,
+                                                   getString(R.string.lbl_bookshelf)));
                 return false;
-            } else {
-                // Just insert or update as needed
-                if (bookshelf.getId() == 0) {
-                    dao.insert(context, bookshelf, locale);
-                } else {
-                    dao.update(context, bookshelf, locale);
-                }
-                onSuccess.accept(bookshelf);
+            }
+
+            if (existingEntity.isEmpty()) {
+                sendResultBack(vm.getBookshelf());
                 return true;
             }
+
+            // There is one with the same name; ask whether to merge the 2
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_bookshelves,
+                                       vm.getBookshelf().getLabel(context), () -> {
+                        dismiss();
+                        try {
+                            vm.move(context, existingEntity.get());
+                            // return the item which 'lost' it's books
+                            sendResultBack(vm.getBookshelf());
+                        } catch (@NonNull final DaoWriteException e) {
+                            // log, but ignore - should never happen unless disk full
+                            LoggerFactory.getLogger().e(TAG, e, vm.getBookshelf());
+                        }
+                    });
+            return false;
+
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, bookshelf);
+            LoggerFactory.getLogger().e(TAG, e, vm.getBookshelf());
             return false;
         }
     }
@@ -191,5 +165,9 @@ public class EditBookshelfDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
+    }
+
+    private void sendResultBack(@NonNull final Bookshelf bookshelf) {
+        ParcelableDialogLauncher.setEditInPlaceResult(this, vm.getRequestKey(), bookshelf);
     }
 }

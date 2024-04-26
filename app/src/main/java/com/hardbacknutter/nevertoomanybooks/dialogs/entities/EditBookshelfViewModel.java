@@ -20,17 +20,24 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
+@SuppressWarnings("WeakerAccess")
 public class EditBookshelfViewModel
         extends ViewModel {
 
@@ -42,14 +49,17 @@ public class EditBookshelfViewModel
 
     /** Current edit. */
     private Bookshelf currentEdit;
+    private BookshelfDao dao;
 
     /**
      * Pseudo constructor.
      *
      * @param args {@link Fragment#requireArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (requestKey == null) {
+            dao = ServiceLocator.getInstance().getBookshelfDao();
+
             requestKey = Objects.requireNonNull(
                     args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
                     ParcelableDialogLauncher.BKEY_REQUEST_KEY);
@@ -62,23 +72,59 @@ public class EditBookshelfViewModel
     }
 
     @NonNull
-    public String getRequestKey() {
+    String getRequestKey() {
         return requestKey;
     }
 
     @NonNull
-    public Bookshelf getBookshelf() {
+    Bookshelf getBookshelf() {
         return bookshelf;
     }
 
     @NonNull
-    public Bookshelf getCurrentEdit() {
+    Bookshelf getCurrentEdit() {
         return currentEdit;
     }
 
 
-    public boolean isChanged() {
+    boolean isChanged() {
         // Case-sensitive! We must allow the user to correct case.
         return !bookshelf.isSameName(currentEdit);
+    }
+
+    @NonNull
+    Optional<Bookshelf> saveIfUnique(@NonNull final Context context)
+            throws DaoWriteException {
+        bookshelf.setName(currentEdit.getName());
+
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        // The logic flow here is different from the default one as used for e.g. an Author.
+        // IF the user meant to create a NEW shelf
+        // REJECT an already existing Bookshelf with the same name.
+        final Optional<Bookshelf> existingEntity = dao.findByName(context, bookshelf, locale);
+        if (bookshelf.getId() == 0) {
+            return existingEntity;
+        }
+
+        if (existingEntity.isEmpty()) {
+            // Just insert or update as needed
+            if (bookshelf.getId() == 0) {
+                dao.insert(context, bookshelf, locale);
+            } else {
+                dao.update(context, bookshelf, locale);
+            }
+            return Optional.empty();
+        }
+
+        return existingEntity;
+    }
+
+    void move(@NonNull final Context context,
+              @NonNull final Bookshelf destination)
+            throws DaoWriteException {
+        // Note that we ONLY move the books. No other attributes from
+        // the source item are copied to the target item!
+        dao.moveBooks(context, bookshelf, destination);
     }
 }
