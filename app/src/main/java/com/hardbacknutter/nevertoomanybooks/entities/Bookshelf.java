@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -106,6 +106,15 @@ public class Bookshelf
     /** The booklist adapter position of top row. */
     private TopRowListPosition topRowAdapterPosition = new TopRowListPosition(
             RecyclerView.NO_POSITION, 0);
+
+    /**
+     * Copy constructor.
+     *
+     * @param bookshelf to copy
+     */
+    public Bookshelf(@NonNull final Bookshelf bookshelf) {
+        copyFrom(bookshelf);
+    }
 
     /**
      * Constructor without ID.

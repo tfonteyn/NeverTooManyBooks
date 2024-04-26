@@ -67,8 +67,7 @@ public class EditSeriesViewModel
                     args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
                     ParcelableDialogLauncher.BKEY_ITEM);
 
-            currentEdit = new Series(series.getTitle(), series.isComplete());
-            currentEdit.setNumber(currentEdit.getNumber());
+            currentEdit = new Series(series, false);
         }
     }
 

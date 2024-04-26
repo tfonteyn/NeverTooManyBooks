@@ -177,6 +177,17 @@ public class Series
     private String number;
 
     /**
+     * Copy constructor.
+     *
+     * @param series            to copy
+     * @param includeBookFields Flag to force copying the Book related fields as well
+     */
+    public Series(@NonNull final Series series,
+                  final boolean includeBookFields) {
+        copyFrom(series, includeBookFields);
+    }
+
+    /**
      * Constructor.
      *
      * @param title of the Series

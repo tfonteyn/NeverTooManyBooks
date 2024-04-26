@@ -67,7 +67,7 @@ public class EditBookshelfViewModel
                     args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
                     ParcelableDialogLauncher.BKEY_ITEM);
 
-            currentEdit = bookshelf;
+            currentEdit = new Bookshelf(bookshelf);
         }
     }
 

@@ -66,7 +66,7 @@ public class EditPublisherViewModel
                     args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
                     ParcelableDialogLauncher.BKEY_ITEM);
 
-            currentEdit = new Publisher(publisher.getName());
+            currentEdit = new Publisher(publisher);
         }
     }
 
