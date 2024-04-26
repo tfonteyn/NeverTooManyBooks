@@ -26,7 +26,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,11 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class BookshelfFiltersDialogFragment
@@ -58,7 +54,6 @@ public class BookshelfFiltersDialogFragment
     private DialogEditBookshelfFiltersContentBinding vb;
 
     private BookshelfFiltersViewModel vm;
-
 
     private final ModificationListener modificationListener =
             new ModificationListener() {
@@ -176,75 +171,8 @@ public class BookshelfFiltersDialogFragment
         //noinspection DataFlowIssue
         final boolean success = vm.saveChanges(getContext());
         if (success) {
-            Launcher.setResult(this, vm.getRequestKey(), vm.isModified());
+            BookshelfFiltersLauncher.setResult(this, vm.getRequestKey(), vm.isModified());
         }
         return success;
-    }
-
-    public static class Launcher
-            extends DialogLauncher {
-
-        private static final String BKEY_MODIFIED = TAG + ":m";
-
-        @NonNull
-        private final ResultListener resultListener;
-
-        /**
-         * Constructor.
-         *
-         * @param requestKey     FragmentResultListener request key to use for our response.
-         * @param resultListener listener
-         */
-        public Launcher(@NonNull final String requestKey,
-                        @NonNull final ResultListener resultListener) {
-            super(requestKey, BookshelfFiltersDialogFragment::new);
-            this.resultListener = resultListener;
-        }
-
-        /**
-         * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
-         *
-         * @param fragment   the calling DialogFragment
-         * @param requestKey to use
-         * @param modified   flag to indicate whether the filters have changed
-         *
-         * @see #onFragmentResult(String, Bundle)
-         */
-        @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              final boolean modified) {
-            final Bundle result = new Bundle(1);
-            result.putBoolean(BKEY_MODIFIED, modified);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param bookshelf to edit
-         */
-        public void launch(@NonNull final Bookshelf bookshelf) {
-            final Bundle args = new Bundle(2);
-            args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
-
-            createDialog(args);
-        }
-
-        @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            resultListener.onResult(result.getBoolean(BKEY_MODIFIED));
-        }
-
-        @FunctionalInterface
-        public interface ResultListener {
-            /**
-             * Callback handler.
-             *
-             * @param modified flag to indicate whether the filters have changed
-             */
-            void onResult(boolean modified);
-        }
     }
 }
