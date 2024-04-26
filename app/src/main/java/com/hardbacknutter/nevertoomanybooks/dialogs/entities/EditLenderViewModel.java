@@ -28,6 +28,7 @@ import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -42,8 +43,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
+@SuppressWarnings("WeakerAccess")
 public class EditLenderViewModel
         extends ViewModel {
+
+    private final List<String> people = new ArrayList<>();
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
@@ -66,8 +70,11 @@ public class EditLenderViewModel
     @Nullable
     private String currentEdit;
 
-    private final List<String> people = new ArrayList<>();
-
+    /**
+     * Pseudo constructor.
+     *
+     * @param args {@link Fragment#requireArguments()}
+     */
     public void init(@NonNull final Bundle args) {
         if (requestKey == null) {
             requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
@@ -113,14 +120,42 @@ public class EditLenderViewModel
         this.currentEdit = currentEdit;
     }
 
+    /**
+     * Get the list of people whom we <strong>currently</strong> have books on loan to.
+     * <p>
+     * Used initially and/or if the user does not give us permission to access their contacts.
+     *
+     * @return list
+     */
     @NonNull
     public List<String> getPeople() {
         return people;
     }
 
+    /**
+     * Combine the list of people whom we <strong>currently</strong> have books on loan to,
+     * with the contacts from the user/device's contact list.
+     * <p>
+     * Used when the user have given us permission to access their contacts.
+     *
+     * @param context Current context
+     *
+     * @return list
+     */
     @NonNull
     List<String> getContacts(@NonNull final Context context) {
-        // LinkedHashSet to remove duplicates
+        // Dev note: We tried to:
+        //    people.clear();
+        //    people.addAll(sorted);
+        //
+        // and from the caller:
+        //    vm.loadContacts(getContext());
+        //    adapter.notifyDataSetChanged();
+        // but we ended up with the adapter not showing anything.
+        // It's like if the used ExtArrayAdapter looses the pointer to the people list?
+
+        // We'll combine the people/names we already have with the contacts.
+        // Use a LinkedHashSet to remove duplicates.
         final Set<String> contacts = new LinkedHashSet<>(people);
         final ContentResolver cr = context.getContentResolver();
         try (Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
@@ -140,5 +175,4 @@ public class EditLenderViewModel
         Collections.sort(sorted);
         return sorted;
     }
-
 }
