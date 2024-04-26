@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,6 +100,15 @@ class FullDateParserTest
         assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25,
                                                   0, 0, 0)),
                      parser.parse("06-25-1987"));
+    }
+
+    @Test
+    void goodreadsCsv() {
+        setLocale(Locale.ENGLISH);
+        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25,
+                                                  0, 0, 0)),
+                     parser.parse("1987/06/25"));
     }
 
     @Test
