@@ -19,37 +19,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import androidx.annotation.NonNull;
+import android.os.Bundle;
 
-import java.util.List;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
-/**
- * Dialog to edit an <strong>in-line in Books table</strong> Format.
- */
 public class EditFormatDialogFragment
         extends EditStringDialogFragment {
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditFormatDialogFragment() {
-        super(R.string.lbl_format, R.string.lbl_format);
-    }
-
-    @NonNull
     @Override
-    protected List<String> getList() {
-        return ServiceLocator.getInstance().getFormatDao().getList();
-    }
-
-    @Override
-    @NonNull
-    String onSave(@NonNull final String originalText,
-                  @NonNull final String currentText) {
-        ServiceLocator.getInstance().getFormatDao().rename(originalText, currentText);
-        return currentText;
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        delegate = new EditStringDelegate(this,
+                                          R.string.lbl_format, R.string.lbl_format,
+                                          ServiceLocator.getInstance()::getFormatDao,
+                                          requireArguments());
     }
 }

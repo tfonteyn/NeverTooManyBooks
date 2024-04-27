@@ -34,9 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFilte
 public class BookshelfFiltersBottomSheet
         extends BottomSheetDialogFragment {
 
-    /** View Binding. */
     private DialogEditBookshelfFiltersContentBinding vb;
-
     private BookshelfFiltersDelegate delegate;
 
     @Override

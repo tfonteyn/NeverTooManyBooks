@@ -19,9 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import androidx.annotation.NonNull;
+import android.os.Bundle;
 
-import java.util.List;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -32,24 +32,12 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 public class EditLocationDialogFragment
         extends EditStringDialogFragment {
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditLocationDialogFragment() {
-        super(R.string.lbl_location, R.string.lbl_location);
-    }
-
-    @NonNull
     @Override
-    protected List<String> getList() {
-        return ServiceLocator.getInstance().getLocationDao().getList();
-    }
-
-    @Override
-    @NonNull
-    String onSave(@NonNull final String originalText,
-                  @NonNull final String currentText) {
-        ServiceLocator.getInstance().getLocationDao().rename(originalText, currentText);
-        return currentText;
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        delegate = new EditStringDelegate(this,
+                                          R.string.lbl_location, R.string.lbl_location,
+                                          ServiceLocator.getInstance()::getLocationDao,
+                                          requireArguments());
     }
 }

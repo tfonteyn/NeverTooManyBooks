@@ -28,13 +28,26 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-public class EditTocEntryLauncher
+/**
+ * Launcher for one of the inline-string fields in the Books table.
+ * <ul>
+ * <li>used for direct/in-place editing of an inline field text; e.g. Book Color, Format...</li>
+ * <li>modifications ARE STORED in the database</li>
+ * <li>returns the original and the modified/stored text</li>
+ * </ul>
+ */
+public class EditStringLauncher
         extends DialogLauncher {
+
+    private static final String TAG = "Launcher";
+
+    /** Input value: the text (String) to edit. */
+    static final String BKEY_TEXT = TAG + ":text";
+
+    /** Return value: the modified text. */
+    private static final String MODIFIED = TAG + ":m";
 
     @NonNull
     private final ResultListener resultListener;
@@ -44,11 +57,12 @@ public class EditTocEntryLauncher
      *
      * @param activity       hosting Activity
      * @param requestKey     FragmentResultListener request key to use for our response.
-     * @param resultListener listener
+     *                       Typically the {@code DBKey} for the column we're editing.
+     * @param resultListener callback for results
      */
-    public EditTocEntryLauncher(@NonNull final FragmentActivity activity,
-                                @NonNull final String requestKey,
-                                @NonNull final ResultListener resultListener) {
+    public EditStringLauncher(@NonNull final FragmentActivity activity,
+                              @NonNull final String requestKey,
+                              @NonNull final ResultListener resultListener) {
         super(activity, requestKey);
         this.resultListener = resultListener;
     }
@@ -58,41 +72,30 @@ public class EditTocEntryLauncher
      *
      * @param fragment   the calling DialogFragment
      * @param requestKey to use
-     * @param tocEntry   the modified entry
-     * @param position   the position in the list we we're editing
+     * @param original   the original text which was passed in to be edited
+     * @param modified   the modified text
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final TocEntry tocEntry,
-                          final int position) {
-
+                          @NonNull final String original,
+                          @NonNull final String modified) {
         final Bundle result = new Bundle(2);
-        result.putParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY, tocEntry);
-        result.putInt(EditTocEntryViewModel.BKEY_POSITION, position);
+        result.putString(BKEY_TEXT, original);
+        result.putString(MODIFIED, modified);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     /**
-     * Constructor.
+     * Launch the dialog.
      *
-     * @param book        the entry belongs to
-     * @param position    of the tocEntry in the list
-     * @param tocEntry    to edit.
-     * @param isAnthology Flag that will enable/disable the author edit field
+     * @param text to edit.
      */
-    public void launch(@NonNull final Book book,
-                       final int position,
-                       @NonNull final TocEntry tocEntry,
-                       final boolean isAnthology) {
-
-        final Bundle args = new Bundle(5);
-        args.putString(DBKey.TITLE, book.getTitle());
-        args.putBoolean(EditTocEntryViewModel.BKEY_ANTHOLOGY, isAnthology);
-        args.putParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY, tocEntry);
-        args.putInt(EditTocEntryViewModel.BKEY_POSITION, position);
+    public void launch(@NonNull final String text) {
+        final Bundle args = new Bundle(2);
+        args.putString(BKEY_TEXT, text);
 
         createDialog(args);
     }
@@ -100,21 +103,19 @@ public class EditTocEntryLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(
-                Objects.requireNonNull(result.getParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY),
-                                       EditTocEntryViewModel.BKEY_TOC_ENTRY),
-                result.getInt(EditTocEntryViewModel.BKEY_POSITION));
+        resultListener.onResult(Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
+                                Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
     }
 
     @FunctionalInterface
     public interface ResultListener {
         /**
-         * Callback handler.
+         * Callback handler - modifying an existing item.
          *
-         * @param tocEntry the modified entry
-         * @param position the position in the list we we're editing
+         * @param original the original item
+         * @param modified the modified item
          */
-        void onResult(@NonNull TocEntry tocEntry,
-                      int position);
+        void onResult(@NonNull String original,
+                      @NonNull String modified);
     }
 }

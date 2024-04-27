@@ -100,7 +100,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditStringDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -266,11 +266,11 @@ public class BooksOnBookshelf
             registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
                     bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
 
-    private EditStringDialogFragment.Launcher editColorLauncher;
-    private EditStringDialogFragment.Launcher editFormatLauncher;
-    private EditStringDialogFragment.Launcher editGenreLauncher;
-    private EditStringDialogFragment.Launcher editLanguageLauncher;
-    private EditStringDialogFragment.Launcher editLocationLauncher;
+    private EditStringLauncher editColorLauncher;
+    private EditStringLauncher editFormatLauncher;
+    private EditStringLauncher editGenreLauncher;
+    private EditStringLauncher editLanguageLauncher;
+    private EditStringLauncher editLocationLauncher;
 
     private EditParcelableLauncher<Bookshelf> editBookshelfLauncher;
     private EditParcelableLauncher<Author> editAuthorLauncher;
@@ -441,27 +441,27 @@ public class BooksOnBookshelf
                 (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
         editLenderLauncher.registerForFragmentResult(fm, this);
 
-        editColorLauncher = new EditStringDialogFragment.Launcher(
+        editColorLauncher = new EditStringLauncher(
                 this, DBKey.COLOR, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
         editColorLauncher.registerForFragmentResult(fm, this);
 
-        editFormatLauncher = new EditStringDialogFragment.Launcher(
+        editFormatLauncher = new EditStringLauncher(
                 this, DBKey.FORMAT, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
         editFormatLauncher.registerForFragmentResult(fm, this);
 
-        editGenreLauncher = new EditStringDialogFragment.Launcher(
+        editGenreLauncher = new EditStringLauncher(
                 this, DBKey.GENRE, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
         editGenreLauncher.registerForFragmentResult(fm, this);
 
-        editLanguageLauncher = new EditStringDialogFragment.Launcher(
+        editLanguageLauncher = new EditStringLauncher(
                 this, DBKey.LANGUAGE, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
         editLanguageLauncher.registerForFragmentResult(fm, this);
 
-        editLocationLauncher = new EditStringDialogFragment.Launcher(
+        editLocationLauncher = new EditStringLauncher(
                 this, DBKey.LOCATION, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
         editLocationLauncher.registerForFragmentResult(fm, this);

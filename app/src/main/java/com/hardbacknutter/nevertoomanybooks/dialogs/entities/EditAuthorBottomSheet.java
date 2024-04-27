@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentB
 public class EditAuthorBottomSheet
         extends BottomSheetDialogFragment {
 
-    /** View Binding. */
     private DialogEditAuthorContentBinding vb;
     private EditAuthorDelegate delegate;
 

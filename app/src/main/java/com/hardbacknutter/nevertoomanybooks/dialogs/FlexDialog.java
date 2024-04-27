@@ -24,14 +24,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.google.android.material.textfield.TextInputLayout;
 
-public interface ExtToolbarActionMenu {
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
+
+public interface FlexDialog {
 
     /**
      * Called when the user clicks the Navigation icon from the toolbar menu.
@@ -65,14 +70,26 @@ public interface ExtToolbarActionMenu {
         return false;
     }
 
+
+    default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                          @NonNull final FlexDialog listener) {
+        initToolbarActionButtons(dialogToolbar, 0, listener);
+    }
+
     /**
      * Setup the Toolbar listeners.
      *
      * @param dialogToolbar to process
+     * @param menuResId     optional menu resource to inflate
      * @param listener      to set
      */
     default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                          @NonNull final ExtToolbarActionMenu listener) {
+                                          @MenuRes final int menuResId,
+                                          @NonNull final FlexDialog listener) {
+        if (menuResId != 0) {
+            dialogToolbar.inflateMenu(menuResId);
+        }
+
         dialogToolbar.setNavigationOnClickListener(listener::onToolbarNavigationClick);
         // Simple menu items; i.e. non-action view.
         dialogToolbar.setOnMenuItemClickListener(listener::onToolbarMenuItemClick);
@@ -97,5 +114,22 @@ public interface ExtToolbarActionMenu {
                 }
             }
         }
+    }
+
+    /**
+     * Add the needed listeners to automatically remove any error text from
+     * a {@link TextInputLayout} when the user changes the content.
+     *
+     * @param editText inner text edit view
+     * @param til      outer layout view
+     */
+    default void autoRemoveError(@NonNull final EditText editText,
+                                 @NonNull final TextInputLayout til) {
+        editText.addTextChangedListener((ExtTextWatcher) s -> til.setError(null));
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                til.setError(null);
+            }
+        });
     }
 }

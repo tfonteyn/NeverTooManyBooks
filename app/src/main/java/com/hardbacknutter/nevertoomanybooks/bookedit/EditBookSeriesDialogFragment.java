@@ -24,53 +24,19 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesViewModel;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-/**
- * Add/Edit a single Series from the book's series list.
- * <p>
- * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
- * <p>
- * {@link EditAction#Add}:
- * <ul>
- * <li>used for list-dialogs needing to add a NEW item to the list</li>
- * <li>the item is NOT stored in the database</li>
- * <li>returns the new item</li>
- * </ul>
- * <p>
- * {@link EditAction#Edit}:
- * <ul>
- * <li>used for list-dialogs needing to EDIT an existing item in the list</li>
- * <li>the modifications are NOT stored in the database</li>
- * <li>returns the original untouched + a new copy with the modifications</li>
- * </ul>
- * Must be a public static class to be properly recreated from instance state.
- */
 public class EditBookSeriesDialogFragment
         extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesForBookDialog";
 
-    /** View model. Must be in the Activity scope. */
-    private EditBookViewModel vm;
-    /** Series View model. Fragment scope. */
-    private EditSeriesViewModel seriesVm;
-    /** View Binding. */
     private DialogEditBookSeriesContentBinding vb;
-
-    /** Adding or Editing. */
-    private EditAction action;
+    private EditBookSeriesDelegate delegate;
 
     /**
      * No-arg constructor for OS use.
@@ -82,82 +48,25 @@ public class EditBookSeriesDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final Bundle args = requireArguments();
-        action = Objects.requireNonNull(
-                args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-
-        //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-        seriesVm = new ViewModelProvider(this).get(EditSeriesViewModel.class);
-        seriesVm.init(args);
+        delegate = new EditBookSeriesDelegate(this, requireArguments());
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getToolbar() != null) {
+            delegate.initToolbarActionButtons(getToolbar(), delegate);
+        }
         vb = DialogEditBookSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setSubtitle(vm.getBook().getTitle());
+        setSubtitle(delegate.getDialogSubtitle());
 
-        final Series currentEdit = seriesVm.getCurrentEdit();
-
-        //noinspection DataFlowIssue
-        final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
-
-        vb.seriesTitle.setText(currentEdit.getTitle());
-        vb.seriesTitle.setAdapter(titleAdapter);
-        autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
-
-        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-
-        vb.seriesNum.setText(currentEdit.getNumber());
-    }
-
-    @Override
-    public boolean onToolbarButtonClick(@Nullable final View button) {
-        if (button != null) {
-            final int id = button.getId();
-            if (id == R.id.btn_save || id == R.id.btn_positive) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean saveChanges() {
-        viewToModel();
-
-        final Series currentEdit = seriesVm.getCurrentEdit();
-        // basic check only, we're doing more extensive checks later on.
-        if (currentEdit.getTitle().isEmpty()) {
-            vb.lblSeriesTitle.setError(getString(R.string.vldt_non_blank_required));
-            return false;
-        }
-
-        EditParcelableLauncher.setResult(this, seriesVm.getRequestKey(), action,
-                                         seriesVm.getSeries(), currentEdit);
-        return true;
-    }
-
-    private void viewToModel() {
-        final Series currentEdit = seriesVm.getCurrentEdit();
-
-        currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
-        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
-
-        //noinspection DataFlowIssue
-        currentEdit.setNumber(vb.seriesNum.getText().toString().trim());
+        delegate.onViewCreated(vb);
     }
 
     @Override
     public void onPause() {
-        viewToModel();
+        delegate.viewToModel();
         super.onPause();
     }
 }

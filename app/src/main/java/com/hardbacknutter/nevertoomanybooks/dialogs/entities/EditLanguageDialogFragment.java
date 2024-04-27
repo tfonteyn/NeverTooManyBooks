@@ -19,70 +19,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.content.Context;
+import android.os.Bundle;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-
-/**
- * Dialog to edit an <strong>in-line in Books table</strong> Language.
- * <p>
- * Will hardly ever be needed now that we use ISO code.
- * However, if a language was misspelled, auto-translation will fail,
- * and a manual edit *will* be needed.
- */
 public class EditLanguageDialogFragment
         extends EditStringDialogFragment {
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditLanguageDialogFragment() {
-        super(R.string.lbl_language, R.string.lbl_language);
-    }
-
-    @NonNull
-    @Override
-    protected List<String> getList() {
-        final Languages languages = ServiceLocator.getInstance().getLanguages();
-        final LanguageDao languageDao = ServiceLocator.getInstance().getLanguageDao();
-        final Context context = getContext();
-
-        // Convert the list of ISO codes to user readable strings.
-        // We do NOT need a distinction here between different countries.
-        // The codes are always unique, but code to name conversion can create duplicates
-        // (e.g. en_GB and en_US both result in "English"); eliminate them using distinct()
-        //noinspection DataFlowIssue
-        return languageDao.getList()
-                          .stream()
-                          .filter(code -> code != null && !code.isEmpty())
-                          .map(code -> languages.getDisplayNameFromISO3(context, code))
-                          .distinct()
-                          .collect(Collectors.toList());
-    }
 
     @Override
-    @NonNull
-    String onSave(@NonNull final String originalText,
-                  @NonNull final String currentText) {
-
-        final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-
-        //noinspection DataFlowIssue
-        final String fromIso = serviceLocator
-                .getLanguages().getISO3FromDisplayName(getContext(), userLocale, originalText);
-        final String toIso = serviceLocator
-                .getLanguages().getISO3FromDisplayName(getContext(), userLocale, currentText);
-
-        serviceLocator.getLanguageDao().rename(fromIso, toIso);
-        return toIso;
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        delegate = new EditLanguageDelegate(this);
     }
 }

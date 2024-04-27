@@ -24,53 +24,16 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherViewModel;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
-/**
- * Add/Edit a single Publisher from the book's publisher list.
- * <p>
- * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
- * <p>
- * {@link EditAction#Add}:
- * <ul>
- * <li>used for list-dialogs needing to add a NEW item to the list</li>
- * <li>the item is NOT stored in the database</li>
- * <li>returns the new item</li>
- * </ul>
- * <p>
- * {@link EditAction#Edit}:
- * <ul>
- * <li>used for list-dialogs needing to EDIT an existing item in the list</li>
- * <li>the modifications are NOT stored in the database</li>
- * <li>returns the original untouched + a new copy with the modifications</li>
- * </ul>
- * Must be a public static class to be properly recreated from instance state.
- */
+
 public class EditBookPublisherDialogFragment
         extends FFBaseDialogFragment {
 
-    /** Fragment/Log tag. */
-    public static final String TAG = "EditPublisherForBookDlg";
-
-    /** View model. Must be in the Activity scope. */
-    private EditBookViewModel vm;
-    /** Publisher View model. Fragment scope. */
-    private EditPublisherViewModel publisherVm;
-    /** View Binding. */
-    private DialogEditBookPublisherContentBinding vb;
-
-    /** Adding or Editing. */
-    private EditAction action;
+    private EditBookPublisherDelegate delegate;
 
     /**
      * No-arg constructor for OS use.
@@ -82,72 +45,26 @@ public class EditBookPublisherDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final Bundle args = requireArguments();
-        action = Objects.requireNonNull(
-                args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-
-        //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-        publisherVm = new ViewModelProvider(this).get(EditPublisherViewModel.class);
-        publisherVm.init(args);
+        delegate = new EditBookPublisherDelegate(this, requireArguments());
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setSubtitle(vm.getBook().getTitle());
-
-        //noinspection DataFlowIssue
-        final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
-
-        vb.publisherName.setText(publisherVm.getCurrentEdit().getName());
-        vb.publisherName.setAdapter(nameAdapter);
-        autoRemoveError(vb.publisherName, vb.lblPublisherName);
-
-        vb.publisherName.requestFocus();
-    }
-
-    @Override
-    public boolean onToolbarButtonClick(@Nullable final View button) {
-        if (button != null) {
-            final int id = button.getId();
-            if (id == R.id.btn_save || id == R.id.btn_positive) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
+        if (getToolbar() != null) {
+            delegate.initToolbarActionButtons(getToolbar(), delegate);
         }
-        return false;
-    }
+        final DialogEditBookPublisherContentBinding vb = DialogEditBookPublisherContentBinding.bind(
+                view.findViewById(R.id.dialog_content));
+        setSubtitle(delegate.getDialogSubtitle());
 
-    private boolean saveChanges() {
-        viewToModel();
-
-        final Publisher currentEdit = publisherVm.getCurrentEdit();
-        // basic check only, we're doing more extensive checks later on.
-        if (currentEdit.getName().isEmpty()) {
-            vb.lblPublisherName.setError(getString(R.string.vldt_non_blank_required));
-            return false;
-        }
-
-        EditParcelableLauncher.setResult(this, publisherVm.getRequestKey(), action,
-                                         publisherVm.getPublisher(), currentEdit);
-        return true;
-    }
-
-    private void viewToModel() {
-        publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
+        delegate.onViewCreated(vb);
     }
 
     @Override
     public void onPause() {
-        viewToModel();
+        delegate.viewToModel();
         super.onPause();
     }
 }

@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -90,15 +89,15 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
  * This is still not obsolete as the standard search engines can only return a
  * single book, and hence a single TOC. The interaction here with ISFDB allows
  * the user to reject the first (book)TOC found, and get the next one (etc...).
+ * <p>
+ * 2024-04-27: not converting {@link ConfirmTocDialogFragment} to
+ * a BottomSheet or FFBaseDialogFragment.
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {
 
     /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
-
-    /** FragmentResultListener request key. */
-    private static final String RK_EDIT_TOC = TAG + ":rk:" + EditTocEntryDialogFragment.TAG;
     /** FragmentResultListener request key. */
     private static final String RK_CONFIRM_TOC = TAG + ":rk:" + ConfirmTocDialogFragment.TAG;
     private static final int POS_NEW_ENTRY = -1;
@@ -129,9 +128,7 @@ public class EditBookTocFragment
     private TocListEditAdapter adapter;
 
     /** Listen for the results of the entry edit-dialog. */
-    private final EditTocEntryLauncher editTocEntryLauncher =
-            new EditTocEntryLauncher(RK_EDIT_TOC, EditTocEntryDialogFragment::new,
-                                     this::onEntryUpdated);
+    private EditTocEntryLauncher editTocEntryLauncher;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -155,7 +152,11 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
+        //noinspection DataFlowIssue
+        editTocEntryLauncher = new EditTocEntryLauncher(
+                getActivity(), DialogLauncher.RK_EDIT_BOOK_TOC_ENTRY, this::onEntryUpdated);
         editTocEntryLauncher.registerForFragmentResult(fm, this);
+
         confirmTocResultsLauncher.registerForFragmentResult(fm, this);
     }
 

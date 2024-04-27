@@ -160,6 +160,9 @@ public class CoverBrowserDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getToolbar() != null) {
+            initToolbarActionButtons(getToolbar(), this);
+        }
         vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
 
         final String bookTitle = Objects.requireNonNull(

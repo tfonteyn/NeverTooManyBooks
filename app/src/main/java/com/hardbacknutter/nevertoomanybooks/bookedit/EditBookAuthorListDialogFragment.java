@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -70,10 +71,6 @@ public class EditBookAuthorListDialogFragment
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookAuthorListDlg";
 
-    /** FragmentResultListener request key. */
-    private static final String RK_EDIT_AUTHOR =
-            TAG + ":rk:" + EditBookAuthorDialogFragment.TAG;
-
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
@@ -91,9 +88,7 @@ public class EditBookAuthorListDialogFragment
             };
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
-    private final EditParcelableLauncher<Author> editLauncher =
-            new EditParcelableLauncher<>(RK_EDIT_AUTHOR, EditBookAuthorDialogFragment::new,
-                                         this::add, this::processChanges);
+    private EditParcelableLauncher<Author> editLauncher;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -122,6 +117,9 @@ public class EditBookAuthorListDialogFragment
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
+        editLauncher = new EditParcelableLauncher<>(
+                getActivity(), DialogLauncher.RK_EDIT_BOOK_AUTHOR,
+                this::add, this::processChanges);
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
@@ -129,7 +127,9 @@ public class EditBookAuthorListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        if (getToolbar() != null) {
+            initToolbarActionButtons(getToolbar(), this);
+        }
         vb = DialogEditBookAuthorListContentBinding.bind(view.findViewById(R.id.dialog_content));
         // always fullscreen; title is fixed, no buttonPanel
         setSubtitle(vm.getBook().getTitle());

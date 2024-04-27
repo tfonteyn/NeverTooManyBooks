@@ -36,8 +36,6 @@ public class EditLenderBottomSheet
         extends BottomSheetDialogFragment {
 
     private EditLenderDelegate delegate;
-
-    /** View Binding. */
     private DialogEditLoanContentBinding vb;
 
     @Override
@@ -61,7 +59,6 @@ public class EditLenderBottomSheet
         super.onViewCreated(view, savedInstanceState);
 
         delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.toolbar_action_save, delegate);
-
         vb.dragHandle.setVisibility(View.VISIBLE);
         vb.buttonPanelLayout.setVisibility(View.GONE);
 

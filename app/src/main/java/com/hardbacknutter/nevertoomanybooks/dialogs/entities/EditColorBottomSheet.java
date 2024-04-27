@@ -26,8 +26,8 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
-public class EditColorDialogFragment
-        extends EditStringDialogFragment {
+public class EditColorBottomSheet
+        extends EditStringBottomSheet {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

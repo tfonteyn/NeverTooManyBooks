@@ -23,18 +23,12 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-
-public class EditColorDialogFragment
-        extends EditStringDialogFragment {
+public class EditLanguageBottomSheet
+        extends EditStringBottomSheet {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditStringDelegate(this,
-                                          R.string.lbl_color, R.string.lbl_color,
-                                          ServiceLocator.getInstance()::getColorDao,
-                                          requireArguments());
+        delegate = new EditLanguageDelegate(this);
     }
 }

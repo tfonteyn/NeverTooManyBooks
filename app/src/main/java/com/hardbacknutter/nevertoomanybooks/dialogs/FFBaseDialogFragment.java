@@ -30,7 +30,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
@@ -43,8 +42,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.window.layout.WindowMetricsCalculator;
 
-import com.google.android.material.textfield.TextInputLayout;
-
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
@@ -53,7 +50,6 @@ import java.util.function.IntFunction;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
@@ -85,7 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  */
 public abstract class FFBaseDialogFragment
         extends DialogFragment
-        implements ExtToolbarActionMenu {
+        implements FlexDialog {
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
@@ -247,10 +243,11 @@ public abstract class FFBaseDialogFragment
                 }
             }
         }
+    }
 
-        if (toolbar != null) {
-            initToolbarActionButtons(toolbar, this);
-        }
+    @Nullable
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 
     /**
@@ -403,23 +400,6 @@ public abstract class FFBaseDialogFragment
             hideKeyboard(view);
         }
         super.onDismiss(dialog);
-    }
-
-    /**
-     * Add the needed listeners to automatically remove any error text from
-     * a {@link TextInputLayout} when the user changes the content.
-     *
-     * @param editText inner text edit view
-     * @param til      outer layout view
-     */
-    protected void autoRemoveError(@NonNull final EditText editText,
-                                   @NonNull final TextInputLayout til) {
-        editText.addTextChangedListener((ExtTextWatcher) s -> til.setError(null));
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                til.setError(null);
-            }
-        });
     }
 
     /**

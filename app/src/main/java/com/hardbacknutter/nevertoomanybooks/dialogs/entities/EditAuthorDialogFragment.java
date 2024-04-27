@@ -52,7 +52,7 @@ public class EditAuthorDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getToolbar() != null) {
-            initToolbarActionButtons(getToolbar(), this);
+            delegate.initToolbarActionButtons(getToolbar(), delegate);
         }
         final DialogEditAuthorContentBinding vb = DialogEditAuthorContentBinding.bind(
                 view.findViewById(R.id.dialog_content));

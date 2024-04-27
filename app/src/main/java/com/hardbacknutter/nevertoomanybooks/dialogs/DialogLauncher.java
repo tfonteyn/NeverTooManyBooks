@@ -40,21 +40,37 @@ import com.hardbacknutter.nevertoomanybooks.BookshelfFiltersBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.BookshelfFiltersDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.StylePickerBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.StylePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgressBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public abstract class DialogLauncher
@@ -63,19 +79,30 @@ public abstract class DialogLauncher
     public static final String RK_STYLE_PICKER = "RK_STYLE_PICKER";
     public static final String RK_FILTERS = "RK_FILTERS";
 
+    public static final String RK_EDIT_BOOK_AUTHOR = "RK_EDIT_BOOK_AUTHOR";
+    public static final String RK_EDIT_BOOK_PUBLISHER = "RK_EDIT_BOOK_PUBLISHER";
+    public static final String RK_EDIT_BOOK_SERIES = "RK_EDIT_BOOK_SERIES";
+    public static final String RK_EDIT_BOOK_TOC_ENTRY = "RK_EDIT_BOOK_TOC_ENTRY";
+
     private static final Map<String, Supplier<DialogFragment>> BOTTOM_SHEET =
             Map.ofEntries(
                     Map.entry(DBKey.FK_BOOKSHELF, EditBookshelfBottomSheet::new),
                     Map.entry(DBKey.FK_AUTHOR, EditAuthorBottomSheet::new),
                     Map.entry(DBKey.FK_SERIES, EditSeriesBottomSheet::new),
-                    Map.entry(DBKey.FK_PUBLISHER, EditBookshelfBottomSheet::new),
+                    Map.entry(DBKey.FK_PUBLISHER, EditPublisherBottomSheet::new),
+                    Map.entry(DBKey.READ_PROGRESS, ReadingProgressBottomSheet::new),
                     Map.entry(DBKey.LOANEE_NAME, EditLenderBottomSheet::new),
 
-                    Map.entry(DBKey.COLOR, EditColorDialogFragment::new),
-                    Map.entry(DBKey.FORMAT, EditFormatDialogFragment::new),
-                    Map.entry(DBKey.GENRE, EditGenreDialogFragment::new),
-                    Map.entry(DBKey.LANGUAGE, EditLanguageDialogFragment::new),
-                    Map.entry(DBKey.LOCATION, EditLocationDialogFragment::new),
+                    Map.entry(DBKey.COLOR, EditColorBottomSheet::new),
+                    Map.entry(DBKey.FORMAT, EditFormatBottomSheet::new),
+                    Map.entry(DBKey.GENRE, EditGenreBottomSheet::new),
+                    Map.entry(DBKey.LANGUAGE, EditLanguageBottomSheet::new),
+                    Map.entry(DBKey.LOCATION, EditLocationBottomSheet::new),
+
+                    Map.entry(RK_EDIT_BOOK_AUTHOR, EditBookAuthorBottomSheet::new),
+                    Map.entry(RK_EDIT_BOOK_PUBLISHER, EditBookPublisherBottomSheet::new),
+                    Map.entry(RK_EDIT_BOOK_SERIES, EditBookSeriesBottomSheet::new),
+                    Map.entry(RK_EDIT_BOOK_TOC_ENTRY, EditTocEntryBottomSheet::new),
 
                     Map.entry(RK_STYLE_PICKER, StylePickerBottomSheet::new),
                     Map.entry(RK_FILTERS, BookshelfFiltersBottomSheet::new)
@@ -86,6 +113,7 @@ public abstract class DialogLauncher
                     Map.entry(DBKey.FK_AUTHOR, EditAuthorDialogFragment::new),
                     Map.entry(DBKey.FK_SERIES, EditSeriesDialogFragment::new),
                     Map.entry(DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new),
+                    Map.entry(DBKey.READ_PROGRESS, ReadingProgressDialogFragment::new),
                     Map.entry(DBKey.LOANEE_NAME, EditLenderDialogFragment::new),
 
                     Map.entry(DBKey.COLOR, EditColorDialogFragment::new),
@@ -93,6 +121,11 @@ public abstract class DialogLauncher
                     Map.entry(DBKey.GENRE, EditGenreDialogFragment::new),
                     Map.entry(DBKey.LANGUAGE, EditLanguageDialogFragment::new),
                     Map.entry(DBKey.LOCATION, EditLocationDialogFragment::new),
+
+                    Map.entry(RK_EDIT_BOOK_AUTHOR, EditBookAuthorDialogFragment::new),
+                    Map.entry(RK_EDIT_BOOK_PUBLISHER, EditBookPublisherDialogFragment::new),
+                    Map.entry(RK_EDIT_BOOK_SERIES, EditBookSeriesDialogFragment::new),
+                    Map.entry(RK_EDIT_BOOK_TOC_ENTRY, EditTocEntryDialogFragment::new),
 
                     Map.entry(RK_STYLE_PICKER, StylePickerDialogFragment::new),
                     Map.entry(RK_FILTERS, BookshelfFiltersDialogFragment::new)
@@ -132,8 +165,8 @@ public abstract class DialogLauncher
     /**
      * Constructor.
      *
-     * @param activity       hosting Activity
-     * @param requestKey     FragmentResultListener request key to use for our response.
+     * @param activity   hosting Activity
+     * @param requestKey FragmentResultListener request key to use for our response.
      */
     protected DialogLauncher(@NonNull final FragmentActivity activity,
                              @NonNull final String requestKey) {

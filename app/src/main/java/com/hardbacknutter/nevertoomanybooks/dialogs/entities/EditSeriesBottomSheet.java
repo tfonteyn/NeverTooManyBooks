@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentB
 public class EditSeriesBottomSheet
         extends BottomSheetDialogFragment {
 
-    /** View Binding. */
     private DialogEditSeriesContentBinding vb;
     private EditSeriesDelegate delegate;
 

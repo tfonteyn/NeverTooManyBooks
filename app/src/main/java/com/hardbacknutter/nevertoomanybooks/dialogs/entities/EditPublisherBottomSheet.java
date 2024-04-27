@@ -36,8 +36,6 @@ public class EditPublisherBottomSheet
         extends BottomSheetDialogFragment {
 
     private EditPublisherDelegate delegate;
-
-    /** View Binding. */
     private DialogEditPublisherContentBinding vb;
 
     @Override

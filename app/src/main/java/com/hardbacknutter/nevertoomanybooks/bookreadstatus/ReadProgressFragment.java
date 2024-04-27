@@ -44,16 +44,18 @@ public class ReadProgressFragment
 
     private BookReadStatusViewModel vm;
 
-    private final ReadingProgressDialogFragment.Launcher editLauncher =
-            new ReadingProgressDialogFragment.Launcher(
-                    read -> vm.setRead(read),
-                    readingProgress -> vm.setReadingProgress(readingProgress));
+    private ReadingProgressLauncher editLauncher;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         vm = ReadStatusFragmentFactory.getViewModel(this, requireArguments());
 
+        //noinspection DataFlowIssue
+        editLauncher = new ReadingProgressLauncher(
+                getActivity(),
+                read -> vm.setRead(read),
+                readingProgress -> vm.setReadingProgress(readingProgress));
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 

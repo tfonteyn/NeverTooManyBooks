@@ -172,7 +172,9 @@ public class PartialDatePickerDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        if (getToolbar() != null) {
+            initToolbarActionButtons(getToolbar(), this);
+        }
         // Ensure components match current Locale order
         // Reminder: this is why we cannot use ViewBinding in this class!
         reorderPickers(view);

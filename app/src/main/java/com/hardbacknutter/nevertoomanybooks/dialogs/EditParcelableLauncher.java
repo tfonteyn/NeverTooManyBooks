@@ -25,12 +25,10 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
@@ -60,16 +58,16 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Constructor for doing {@link EditAction#Add} or {@link EditAction#Edit}.
      *
+     * @param activity       hosting Activity
      * @param requestKey     FragmentResultListener request key to use for our response.
-     * @param dialogSupplier a supplier for a new DialogFragment
      * @param onAddListener  results listener
      * @param onEditListener results listener
      */
-    public EditParcelableLauncher(@NonNull final String requestKey,
-                                  @NonNull final Supplier<DialogFragment> dialogSupplier,
+    public EditParcelableLauncher(@NonNull final FragmentActivity activity,
+                                  @NonNull final String requestKey,
                                   @NonNull final OnAddListener<T> onAddListener,
                                   @NonNull final OnEditListener<T> onEditListener) {
-        super(requestKey, dialogSupplier);
+        super(activity, requestKey);
         this.onAddListener = onAddListener;
         this.onEditListener = onEditListener;
         this.onEditInPlaceListener = null;
