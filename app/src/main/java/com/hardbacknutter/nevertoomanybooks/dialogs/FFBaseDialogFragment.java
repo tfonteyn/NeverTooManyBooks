@@ -97,9 +97,9 @@ public abstract class FFBaseDialogFragment
     @NonNull
     private final Set<WindowSizeClass> useFullscreenHeight = EnumSet.of(WindowSizeClass.Compact);
 
-    /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
+    /** Either the full-screen toolbar, or the floating dialog toolbar. */
     @Nullable
-    private Toolbar dialogToolbar;
+    private Toolbar toolbar;
 
     /**
      * Show the dialog fullscreen (default) or as a floating dialog.
@@ -220,9 +220,9 @@ public abstract class FFBaseDialogFragment
         }
 
         if (fullscreen) {
-            dialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
+            toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
         } else {
-            dialogToolbar = floatingToolbar;
+            toolbar = floatingToolbar;
 
             if (buttonPanel != null) {
                 Button button;
@@ -242,8 +242,8 @@ public abstract class FFBaseDialogFragment
             }
         }
 
-        if (dialogToolbar != null) {
-            initToolbarActionButtons(dialogToolbar, this);
+        if (toolbar != null) {
+            initToolbarActionButtons(toolbar, this);
         }
     }
 
@@ -350,8 +350,8 @@ public abstract class FFBaseDialogFragment
      * @param resId Resource ID of a string to set as the title
      */
     public void setTitle(@StringRes final int resId) {
-        if (dialogToolbar != null) {
-            dialogToolbar.setTitle(resId);
+        if (toolbar != null) {
+            toolbar.setTitle(resId);
         }
     }
 
@@ -361,8 +361,8 @@ public abstract class FFBaseDialogFragment
      * @param title a string to set as the title
      */
     public void setTitle(@Nullable final CharSequence title) {
-        if (dialogToolbar != null) {
-            dialogToolbar.setTitle(title);
+        if (toolbar != null) {
+            toolbar.setTitle(title);
         }
     }
 
@@ -372,8 +372,8 @@ public abstract class FFBaseDialogFragment
      * @param subtitle a string to set as the subtitle
      */
     public void setSubtitle(@Nullable final CharSequence subtitle) {
-        if (dialogToolbar != null) {
-            dialogToolbar.setSubtitle(subtitle);
+        if (toolbar != null) {
+            toolbar.setSubtitle(subtitle);
         }
     }
 
