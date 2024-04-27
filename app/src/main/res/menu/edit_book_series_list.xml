@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,13 +19,23 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    If we want an outline to be drawn AROUND the icon, then we seem forced to use an
+    "actionLayout" with an icon-Button using the outline style.
+
+    Only alternative is to use an icon with outline builtin...
+    which makes the actual icon to small.
+
+    Also: MENU_ACTION_CONFIRM must be used to have "FFBaseDialogFragment" handle
+    some mapping automatically.
+-->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
         android:title="x"
-        app:actionLayout="@layout/toolbar_menu_buttons_add2"
+        app:actionLayout="@layout/toolbar_menu_buttons_add"
         app:showAsAction="always"
         tools:ignore="HardcodedText" />
 </menu>

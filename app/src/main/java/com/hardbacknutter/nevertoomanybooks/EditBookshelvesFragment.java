@@ -119,7 +119,7 @@ public class EditBookshelvesFragment
                                     final int position,
                                     final int listIndex) {
             final Context context = anchor.getContext();
-            final Menu menu = MenuUtils.create(context, R.menu.editing_bookshelves);
+            final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
             prepareMenu(menu, position);
 
             new ExtPopupMenu(context)
@@ -397,7 +397,7 @@ public class EditBookshelvesFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.editing_bookshelves, menu);
+            menuInflater.inflate(R.menu.edit_bookshelves, menu);
             prepareMenu(menu, vm.getSelectedPosition());
         }
 

@@ -200,7 +200,7 @@ public class PreferredStylesFragment
                 (anchor, position) -> {
                     final Context context = anchor.getContext();
 
-                    final Menu menu = MenuUtils.create(context, R.menu.editing_styles);
+                    final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
                     prepareMenu(menu, position);
 
                     new ExtPopupMenu(context)
@@ -455,7 +455,7 @@ public class PreferredStylesFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.editing_styles, menu);
+            menuInflater.inflate(R.menu.preferred_styles, menu);
             prepareMenu(menu, vm.getSelectedPosition());
         }
 

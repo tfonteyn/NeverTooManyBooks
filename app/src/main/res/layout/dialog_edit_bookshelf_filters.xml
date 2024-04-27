@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog.Fullscreen"
-            app:menu="@menu/toolbar_action_edit_filters"
+            app:menu="@menu/edit_filters"
             app:title="@string/lbl_filters"
             />
 

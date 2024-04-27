@@ -37,7 +37,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog.Fullscreen"
-            app:menu="@menu/toolbar_select_style"
+            app:menu="@menu/style_picker_style"
             app:title="@string/lbl_style"
             app:subtitle="@string/info_builtin_style_asterix"
             app:subtitleTextAppearance="?attr/textAppearanceTitleSmall"
