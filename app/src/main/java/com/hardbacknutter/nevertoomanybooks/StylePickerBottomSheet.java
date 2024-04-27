@@ -33,7 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetStylePickerBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
@@ -50,7 +50,7 @@ public class StylePickerBottomSheet
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<Style> adapter;
     /** View Binding. */
-    private BottomSheetStylePickerBinding vb;
+    private DialogStylePickerContentBinding vb;
 
     private StylePickerViewModel vm;
 
@@ -67,7 +67,7 @@ public class StylePickerBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = BottomSheetStylePickerBinding.inflate(inflater, container, false);
+        vb = DialogStylePickerContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -77,6 +77,8 @@ public class StylePickerBottomSheet
         super.onViewCreated(view, savedInstanceState);
 
         initToolbarActionButtons(vb.dialogToolbar, this);
+        vb.dragHandle.setVisibility(View.VISIBLE);
+        vb.buttonPanelLayout.setVisibility(View.GONE);
 
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(),

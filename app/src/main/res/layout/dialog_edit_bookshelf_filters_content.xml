@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,12 +27,20 @@
     style="@style/Dialog.Content"
     android:minHeight="@dimen/floating_dialog_recycler_view_min_height">
 
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/dialog_toolbar"
         style="@style/Toolbar.Dialog.Content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/drag_handle"
         app:menu="@menu/toolbar_action_add"
         app:title="@string/lbl_filters"
         />

@@ -209,6 +209,12 @@ public abstract class FFBaseDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Layouts supporting BottomSheet have a drag-handle. Just hide it.
+        final View dragHandle = view.findViewById(R.id.drag_handle);
+        if (dragHandle != null) {
+            dragHandle.setVisibility(View.GONE);
+        }
+
         final View buttonPanel = view.findViewById(R.id.button_panel_layout);
         if (buttonPanel != null) {
             buttonPanel.setVisibility(fullscreen ? View.GONE : View.VISIBLE);

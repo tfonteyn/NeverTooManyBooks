@@ -39,7 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetEditLoanBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 
 /**
@@ -56,7 +56,7 @@ public class EditLenderBottomSheet
     public static final String TAG = "LendBookDialogFrag";
 
     /** View Binding. */
-    private BottomSheetEditLoanBinding vb;
+    private DialogEditLoanContentBinding vb;
 
     private ExtArrayAdapter<String> adapter;
     private EditLenderViewModel vm;
@@ -87,7 +87,7 @@ public class EditLenderBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = BottomSheetEditLoanBinding.inflate(inflater, container, false);
+        vb = DialogEditLoanContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -97,6 +97,9 @@ public class EditLenderBottomSheet
         super.onViewCreated(view, savedInstanceState);
 
         initToolbarActionButtons(vb.dialogToolbar, this);
+        vb.dragHandle.setVisibility(View.VISIBLE);
+        vb.buttonPanelLayout.setVisibility(View.GONE);
+
         vb.dialogToolbar.setSubtitle(vm.getBookTitle());
 
         //noinspection DataFlowIssue

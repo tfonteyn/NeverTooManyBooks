@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
-import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetEditBookshelfFiltersBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 
 /**
@@ -54,7 +54,7 @@ public class BookshelfFiltersBottomSheet
 
     private PFilterListAdapter adapter;
     /** View Binding. */
-    private BottomSheetEditBookshelfFiltersBinding vb;
+    private DialogEditBookshelfFiltersContentBinding vb;
 
     private BookshelfFiltersViewModel vm;
 
@@ -87,7 +87,7 @@ public class BookshelfFiltersBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = BottomSheetEditBookshelfFiltersBinding.inflate(inflater, container, false);
+        vb = DialogEditBookshelfFiltersContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -97,6 +97,9 @@ public class BookshelfFiltersBottomSheet
         super.onViewCreated(view, savedInstanceState);
 
         initToolbarActionButtons(vb.dialogToolbar, this);
+        vb.dragHandle.setVisibility(View.VISIBLE);
+        vb.buttonPanelLayout.setVisibility(View.GONE);
+
         vb.dialogToolbar.setSubtitle(vm.getBookshelf().getName());
 
         //noinspection DataFlowIssue

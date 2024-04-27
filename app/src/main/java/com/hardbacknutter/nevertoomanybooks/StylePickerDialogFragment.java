@@ -31,7 +31,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuContentBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
@@ -49,7 +49,7 @@ public class StylePickerDialogFragment
     private RadioGroupRecyclerAdapter<Style> adapter;
     /** View Binding. */
     @SuppressWarnings("FieldCanBeLocal")
-    private DialogStylesMenuContentBinding vb;
+    private DialogStylePickerContentBinding vb;
 
     private StylePickerViewModel vm;
 
@@ -57,8 +57,8 @@ public class StylePickerDialogFragment
      * No-arg constructor for OS use.
      */
     public StylePickerDialogFragment() {
-        super(R.layout.dialog_styles_menu,
-              R.layout.dialog_styles_menu_content,
+        super(R.layout.dialog_style_picker,
+              R.layout.dialog_style_picker_content,
               // Fullscreen on Medium screens
               // for consistency with BookshelfFiltersDialogFragment
               EnumSet.of(WindowSizeClass.Medium),
@@ -77,7 +77,7 @@ public class StylePickerDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogStylesMenuContentBinding.bind(view.findViewById(R.id.dialog_content));
+        vb = DialogStylePickerContentBinding.bind(view.findViewById(R.id.dialog_content));
 
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(),

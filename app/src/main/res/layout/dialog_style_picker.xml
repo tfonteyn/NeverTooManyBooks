@@ -46,5 +46,5 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
-        layout="@layout/dialog_styles_menu_content" />
+        layout="@layout/dialog_style_picker_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
