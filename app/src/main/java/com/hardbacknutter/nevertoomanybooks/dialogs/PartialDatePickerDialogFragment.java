@@ -174,6 +174,7 @@ public class PartialDatePickerDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         // Ensure components match current Locale order
+        // Reminder: this is why we cannot use ViewBinding in this class!
         reorderPickers(view);
 
         setTitle(dialogTitleId);
