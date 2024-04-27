@@ -26,13 +26,12 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
@@ -219,15 +218,15 @@ public abstract class EditStringDialogFragment
         /**
          * Constructor.
          *
+         * @param activity       hosting Activity
          * @param requestKey     FragmentResultListener request key to use for our response.
          *                       Typically the {@code DBKey} for the column we're editing.
-         * @param dialogSupplier a supplier for a new DialogFragment
          * @param resultListener callback for results
          */
-        public Launcher(@NonNull final String requestKey,
-                        @NonNull final Supplier<DialogFragment> dialogSupplier,
+        public Launcher(@NonNull final FragmentActivity activity,
+                        @NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
-            super(requestKey, dialogSupplier);
+            super(activity, requestKey);
             this.resultListener = resultListener;
         }
 

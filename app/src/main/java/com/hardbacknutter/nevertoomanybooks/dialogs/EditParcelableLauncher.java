@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -77,14 +78,14 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Constructor for doing {@link EditAction#EditInPlace}.
      *
+     * @param activity              hosting Activity
      * @param requestKey            FragmentResultListener request key to use for our response.
-     * @param dialogSupplier        a supplier for a new DialogFragment
      * @param onEditInPlaceListener results listener
      */
-    public EditParcelableLauncher(@NonNull final String requestKey,
-                                  @NonNull final Supplier<DialogFragment> dialogSupplier,
+    public EditParcelableLauncher(@NonNull final FragmentActivity activity,
+                                  @NonNull final String requestKey,
                                   @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
-        super(requestKey, dialogSupplier);
+        super(activity, requestKey);
         this.onAddListener = null;
         this.onEditListener = null;
         this.onEditInPlaceListener = onEditInPlaceListener;

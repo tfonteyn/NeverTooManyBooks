@@ -95,21 +95,11 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditStringDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -174,8 +164,6 @@ public class BooksOnBookshelf
     private static final String TAG = "BooksOnBookshelf";
 
     /** {@link FragmentResultListener} request key. */
-    private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
-    private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
     private static final String RK_MENU = TAG + ":rk" + BottomSheetMenu.TAG;
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
@@ -277,56 +265,23 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
                     bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
-    private final EditStringDialogFragment.Launcher editColorLauncher =
-            new EditStringDialogFragment.Launcher(
-                    DBKey.COLOR, EditColorDialogFragment::new, (original, modified)
-                    -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
 
-    private final EditStringDialogFragment.Launcher editFormatLauncher =
-            new EditStringDialogFragment.Launcher(
-                    DBKey.FORMAT, EditFormatDialogFragment::new, (original, modified)
-                    -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
+    private EditStringDialogFragment.Launcher editColorLauncher;
+    private EditStringDialogFragment.Launcher editFormatLauncher;
+    private EditStringDialogFragment.Launcher editGenreLauncher;
+    private EditStringDialogFragment.Launcher editLanguageLauncher;
+    private EditStringDialogFragment.Launcher editLocationLauncher;
 
-    private final EditStringDialogFragment.Launcher editGenreLauncher =
-            new EditStringDialogFragment.Launcher(
-                    DBKey.GENRE, EditGenreDialogFragment::new, (original, modified)
-                    -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
-
-    private final EditStringDialogFragment.Launcher editLanguageLauncher =
-            new EditStringDialogFragment.Launcher(
-                    DBKey.LANGUAGE, EditLanguageDialogFragment::new, (original, modified)
-                    -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
-
-    private final EditStringDialogFragment.Launcher editLocationLauncher =
-            new EditStringDialogFragment.Launcher(
-                    DBKey.LOCATION, EditLocationDialogFragment::new, (original, modified)
-                    -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
-
-    private final EditParcelableLauncher<Bookshelf> editBookshelfLauncher =
-            new EditParcelableLauncher<>(
-                    DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new,
-                    bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
-
-    private final EditParcelableLauncher<Author> editAuthorLauncher =
-            new EditParcelableLauncher<>(
-                    DBKey.FK_AUTHOR, EditAuthorDialogFragment::new,
-                    author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
-
-    private final EditParcelableLauncher<Series> editSeriesLauncher =
-            new EditParcelableLauncher<>(
-                    DBKey.FK_SERIES, EditSeriesDialogFragment::new,
-                    series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
-
-    private final EditParcelableLauncher<Publisher> editPublisherLauncher =
-            new EditParcelableLauncher<>(
-                    DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new,
-                    publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
+    private EditParcelableLauncher<Bookshelf> editBookshelfLauncher;
+    private EditParcelableLauncher<Author> editAuthorLauncher;
+    private EditParcelableLauncher<Series> editSeriesLauncher;
+    private EditParcelableLauncher<Publisher> editPublisherLauncher;
+    private EditLenderLauncher editLenderLauncher;
 
     /** Row menu launcher displaying the menu as a BottomSheet. */
     private BottomSheetMenu.Launcher menuLauncher;
 
-    private EditLenderLauncher editLenderLauncher;
-
+    private StylePickerLauncher stylePickerLauncher;
     private BookshelfFiltersLauncher bookshelfFiltersLauncher;
 
     /** Encapsulates the FAB button/menu. */
@@ -340,14 +295,6 @@ public class BooksOnBookshelf
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener bookshelfSpinnerListener =
             new SpinnerInteractionListener(this::onBookshelfSelected);
-    /**
-     * React to the user selecting a style to apply.
-     * <p>
-     * We get here after the user SELECTED a style on the {@link StylePickerDialogFragment}.
-     * We do NOT come here when the user decided to EDIT a style,
-     * which is handled by {@link #editStyleLauncher}.
-     */
-    private StylePickerLauncher stylePickerLauncher;
 
     private NavDrawer navDrawer;
     /**
@@ -459,32 +406,65 @@ public class BooksOnBookshelf
     private void createFragmentResultListeners() {
         final FragmentManager fm = getSupportFragmentManager();
 
-        if (WindowSizeClass.getWidth(this) == WindowSizeClass.Expanded) {
-            // Tablets use a Dialog
-            stylePickerLauncher = new StylePickerLauncher(
-                    RK_STYLE_PICKER, StylePickerDialogFragment::new, this::onStyleSelected);
+        stylePickerLauncher = new StylePickerLauncher(
+                this, DialogLauncher.RK_STYLE_PICKER,
+                this::onStyleSelected);
+        stylePickerLauncher.registerForFragmentResult(fm, this);
 
-            bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
-                    RK_FILTERS, BookshelfFiltersDialogFragment::new, this::onFiltersUpdate);
+        bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
+                this, DialogLauncher.RK_FILTERS,
+                this::onFiltersUpdate);
+        bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
 
-            editLenderLauncher = new EditLenderLauncher(
-                    DBKey.LOANEE_NAME,
-                    EditLenderDialogFragment::new,
-                    (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
+        editBookshelfLauncher = new EditParcelableLauncher<>(
+                this, DBKey.FK_BOOKSHELF,
+                bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
+        editBookshelfLauncher.registerForFragmentResult(fm, this);
 
-        } else {
-            // Phones use a BottomSheet
-            stylePickerLauncher = new StylePickerLauncher(
-                    RK_STYLE_PICKER, StylePickerBottomSheet::new, this::onStyleSelected);
+        editAuthorLauncher = new EditParcelableLauncher<>(
+                this, DBKey.FK_AUTHOR,
+                author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
+        editAuthorLauncher.registerForFragmentResult(fm, this);
 
-            bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
-                    RK_FILTERS, BookshelfFiltersBottomSheet::new, this::onFiltersUpdate);
+        editSeriesLauncher = new EditParcelableLauncher<>(
+                this, DBKey.FK_SERIES,
+                series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
+        editSeriesLauncher.registerForFragmentResult(fm, this);
 
-            editLenderLauncher = new EditLenderLauncher(
-                    DBKey.LOANEE_NAME,
-                    EditLenderBottomSheet::new,
-                    (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
-        }
+        editPublisherLauncher = new EditParcelableLauncher<>(
+                this, DBKey.FK_PUBLISHER,
+                publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
+        editPublisherLauncher.registerForFragmentResult(fm, this);
+
+        editLenderLauncher = new EditLenderLauncher(
+                this, DBKey.LOANEE_NAME,
+                (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
+        editLenderLauncher.registerForFragmentResult(fm, this);
+
+        editColorLauncher = new EditStringDialogFragment.Launcher(
+                this, DBKey.COLOR, (original, modified)
+                -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
+        editColorLauncher.registerForFragmentResult(fm, this);
+
+        editFormatLauncher = new EditStringDialogFragment.Launcher(
+                this, DBKey.FORMAT, (original, modified)
+                -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
+        editFormatLauncher.registerForFragmentResult(fm, this);
+
+        editGenreLauncher = new EditStringDialogFragment.Launcher(
+                this, DBKey.GENRE, (original, modified)
+                -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
+        editGenreLauncher.registerForFragmentResult(fm, this);
+
+        editLanguageLauncher = new EditStringDialogFragment.Launcher(
+                this, DBKey.LANGUAGE, (original, modified)
+                -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
+        editLanguageLauncher.registerForFragmentResult(fm, this);
+
+        editLocationLauncher = new EditStringDialogFragment.Launcher(
+                this, DBKey.LOCATION, (original, modified)
+                -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
+        editLocationLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
             View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
@@ -497,21 +477,6 @@ public class BooksOnBookshelf
             onRowMenuItemSelected(view, adapterPosition, menuItemId);
         });
         menuLauncher.registerForFragmentResult(fm, this);
-
-        editColorLauncher.registerForFragmentResult(fm, this);
-        editFormatLauncher.registerForFragmentResult(fm, this);
-        editGenreLauncher.registerForFragmentResult(fm, this);
-        editLanguageLauncher.registerForFragmentResult(fm, this);
-        editLocationLauncher.registerForFragmentResult(fm, this);
-
-        editBookshelfLauncher.registerForFragmentResult(fm, this);
-        editAuthorLauncher.registerForFragmentResult(fm, this);
-        editSeriesLauncher.registerForFragmentResult(fm, this);
-        editPublisherLauncher.registerForFragmentResult(fm, this);
-
-        stylePickerLauncher.registerForFragmentResult(fm, this);
-        editLenderLauncher.registerForFragmentResult(fm, this);
-        bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
     }
 
     private void createViewModel() {
@@ -1830,7 +1795,8 @@ public class BooksOnBookshelf
     }
 
     /**
-     * The user picked a different style from the {@link StylePickerDialogFragment}.
+     * Called from {@link StylePickerDialogFragment} when the user wants
+     * to <strong>apply</strong> the selected style.
      *
      * @param uuid of the style to apply
      */
@@ -1846,8 +1812,8 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called from {@link StylePickerDialogFragment} when the user wants to edit
-     * the selected style.
+     * Called from {@link StylePickerDialogFragment} when the user wants
+     * to <strong>edit</strong> the selected style.
      *
      * @param style to edit
      */

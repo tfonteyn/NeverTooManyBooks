@@ -51,11 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshel
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
@@ -73,8 +73,6 @@ public class EditBookshelvesFragment
     /** Log tag. */
     private static final String TAG = "EditBookshelvesFragment";
 
-    /** FragmentResultListener request key. */
-    private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     private EditBookshelvesViewModel vm;
 
     /** React to changes in the adapter. */
@@ -103,10 +101,8 @@ public class EditBookshelvesFragment
     private BookshelfAdapter adapter;
 
     /** Accept the result from the dialog. */
-    private final EditParcelableLauncher<Bookshelf> editLauncher =
-            new EditParcelableLauncher<>(RK_EDIT_BOOKSHELF,
-                                         EditBookshelfDialogFragment::new,
-                                         this::onModified);
+    private EditParcelableLauncher<Bookshelf> editLauncher;
+
     private final PositionHandler positionHandler = new PositionHandler() {
         @Override
         public int getSelectedPosition() {
@@ -142,6 +138,15 @@ public class EditBookshelvesFragment
 
         vm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
         vm.init(getArguments());
+
+        createFragmentResultListeners();
+    }
+
+    private void createFragmentResultListeners() {
+        //noinspection DataFlowIssue
+        editLauncher = new EditParcelableLauncher<>(
+                getActivity(), DBKey.FK_BOOKSHELF,
+                this::onModified);
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }

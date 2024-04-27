@@ -24,11 +24,10 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
@@ -43,14 +42,14 @@ public class EditLenderLauncher
     /**
      * Constructor.
      *
+     * @param activity       hosting Activity
      * @param requestKey     FragmentResultListener request key to use for our response.
-     * @param dialogSupplier a supplier for a new DialogFragment
      * @param resultListener listener
      */
-    public EditLenderLauncher(@NonNull final String requestKey,
-                              @NonNull final Supplier<DialogFragment> dialogSupplier,
+    public EditLenderLauncher(@NonNull final FragmentActivity activity,
+                              @NonNull final String requestKey,
                               @NonNull final ResultListener resultListener) {
-        super(requestKey, dialogSupplier);
+        super(activity, requestKey);
         this.resultListener = resultListener;
     }
 

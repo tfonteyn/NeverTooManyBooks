@@ -74,8 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -85,7 +83,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
  * This Fragment is always hosted inside another Fragment.
@@ -109,9 +106,6 @@ public class ShowBookDetailsFragment
      * We could (should?) use a boolean resource in "sw800-land" instead.
      */
     static final String BKEY_EMBEDDED = TAG + ":emb";
-
-    /** FragmentResultListener request key. */
-    private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] coverHandler = new CoverHandler[2];
@@ -214,19 +208,11 @@ public class ShowBookDetailsFragment
     private void createFragmentResultListeners() {
         final FragmentManager fm = getChildFragmentManager();
 
-        if (WindowSizeClass.getWidth(this.getActivity()) == WindowSizeClass.Expanded) {
-            // Tablets use a Dialog
-            editLenderLauncher = new EditLenderLauncher(
-                    RK_EDIT_LENDER,
-                    EditLenderDialogFragment::new,
-                    (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
-        } else {
-            // Phones use a BottomSheet
-            editLenderLauncher = new EditLenderLauncher(
-                    RK_EDIT_LENDER,
-                    EditLenderBottomSheet::new,
-                    (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
-        }
+        //noinspection DataFlowIssue
+        editLenderLauncher = new EditLenderLauncher(
+                getActivity(), DBKey.LOANEE_NAME,
+                (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
+
 
         editLenderLauncher.registerForFragmentResult(fm, this);
     }

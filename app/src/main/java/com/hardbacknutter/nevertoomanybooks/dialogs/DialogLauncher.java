@@ -27,17 +27,76 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-//URGENT: clean up this mess of subclasses
+import com.hardbacknutter.nevertoomanybooks.BookshelfFiltersBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.BookshelfFiltersDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.StylePickerBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.StylePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+
 public abstract class DialogLauncher
         implements FragmentResultListener {
 
+    public static final String RK_STYLE_PICKER = "RK_STYLE_PICKER";
+    public static final String RK_FILTERS = "RK_FILTERS";
+
+    private static final Map<String, Supplier<DialogFragment>> BOTTOM_SHEET =
+            Map.ofEntries(
+                    Map.entry(DBKey.FK_BOOKSHELF, EditBookshelfBottomSheet::new),
+                    Map.entry(DBKey.FK_AUTHOR, EditAuthorBottomSheet::new),
+                    Map.entry(DBKey.FK_SERIES, EditSeriesBottomSheet::new),
+                    Map.entry(DBKey.FK_PUBLISHER, EditBookshelfBottomSheet::new),
+                    Map.entry(DBKey.LOANEE_NAME, EditLenderBottomSheet::new),
+
+                    Map.entry(DBKey.COLOR, EditColorDialogFragment::new),
+                    Map.entry(DBKey.FORMAT, EditFormatDialogFragment::new),
+                    Map.entry(DBKey.GENRE, EditGenreDialogFragment::new),
+                    Map.entry(DBKey.LANGUAGE, EditLanguageDialogFragment::new),
+                    Map.entry(DBKey.LOCATION, EditLocationDialogFragment::new),
+
+                    Map.entry(RK_STYLE_PICKER, StylePickerBottomSheet::new),
+                    Map.entry(RK_FILTERS, BookshelfFiltersBottomSheet::new)
+            );
+    private static final Map<String, Supplier<DialogFragment>> DIALOG =
+            Map.ofEntries(
+                    Map.entry(DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new),
+                    Map.entry(DBKey.FK_AUTHOR, EditAuthorDialogFragment::new),
+                    Map.entry(DBKey.FK_SERIES, EditSeriesDialogFragment::new),
+                    Map.entry(DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new),
+                    Map.entry(DBKey.LOANEE_NAME, EditLenderDialogFragment::new),
+
+                    Map.entry(DBKey.COLOR, EditColorDialogFragment::new),
+                    Map.entry(DBKey.FORMAT, EditFormatDialogFragment::new),
+                    Map.entry(DBKey.GENRE, EditGenreDialogFragment::new),
+                    Map.entry(DBKey.LANGUAGE, EditLanguageDialogFragment::new),
+                    Map.entry(DBKey.LOCATION, EditLocationDialogFragment::new),
+
+                    Map.entry(RK_STYLE_PICKER, StylePickerDialogFragment::new),
+                    Map.entry(RK_FILTERS, BookshelfFiltersDialogFragment::new)
+            );
     private static final String TAG = "DialogLauncher";
     /**
      * The bundle key to pass the {@link #requestKey} around.
@@ -68,6 +127,33 @@ public abstract class DialogLauncher
                              @NonNull final Supplier<DialogFragment> dialogSupplier) {
         this.requestKey = requestKey;
         this.dialogFragmentSupplier = dialogSupplier;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param activity       hosting Activity
+     * @param requestKey     FragmentResultListener request key to use for our response.
+     */
+    protected DialogLauncher(@NonNull final FragmentActivity activity,
+                             @NonNull final String requestKey) {
+        this.requestKey = requestKey;
+        this.dialogFragmentSupplier = getDialogSupplier(activity, requestKey);
+    }
+
+    @NonNull
+    private Supplier<DialogFragment> getDialogSupplier(
+            @NonNull final FragmentActivity activity,
+            @NonNull final String requestKey) {
+
+        if (WindowSizeClass.getWidth(activity) == WindowSizeClass.Expanded) {
+            // Tablets use a Dialog
+            return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
+
+        } else {
+            // Phones use a BottomSheet
+            return Objects.requireNonNull(BOTTOM_SHEET.get(requestKey), requestKey);
+        }
     }
 
     /**
