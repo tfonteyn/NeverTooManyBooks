@@ -85,7 +85,7 @@ public class EditPublisherViewModel
         return currentEdit;
     }
 
-    boolean isChanged() {
+    boolean isModified() {
         // Case-sensitive! We must allow the user to correct case.
         return !publisher.isSameName(currentEdit);
     }

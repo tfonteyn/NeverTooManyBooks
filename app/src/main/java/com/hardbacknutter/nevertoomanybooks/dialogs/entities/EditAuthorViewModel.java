@@ -188,7 +188,7 @@ public class EditAuthorViewModel
         }
     }
 
-    public boolean isChanged() {
+    public boolean isModified() {
         // Case-sensitive! We must allow the user to correct case.
         return !(author.isSameName(currentEdit)
                  && author.isComplete() == currentEdit.isComplete()

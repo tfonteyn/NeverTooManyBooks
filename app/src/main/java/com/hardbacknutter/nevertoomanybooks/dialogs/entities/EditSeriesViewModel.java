@@ -86,7 +86,7 @@ public class EditSeriesViewModel
         return series;
     }
 
-    boolean isChanged() {
+    boolean isModified() {
         // Case-sensitive! We must allow the user to correct case.
         return !(series.isSameName(currentEdit)
                  && series.isComplete() == currentEdit.isComplete());

@@ -125,7 +125,7 @@ public class EditSeriesDialogFragment
         }
 
         // anything actually changed ? If not, we're done.
-        if (!vm.isChanged()) {
+        if (!vm.isModified()) {
             return true;
         }
 

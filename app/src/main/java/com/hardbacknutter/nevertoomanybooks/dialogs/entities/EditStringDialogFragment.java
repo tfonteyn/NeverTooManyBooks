@@ -155,7 +155,7 @@ public abstract class EditStringDialogFragment
             return false;
         }
 
-        // anything actually changed ?
+        // anything actually changed ? If not, we're done.
         if (currentText.equals(originalText)) {
             return true;
         }

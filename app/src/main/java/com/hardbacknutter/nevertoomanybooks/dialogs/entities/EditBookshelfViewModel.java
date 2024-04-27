@@ -87,7 +87,7 @@ public class EditBookshelfViewModel
     }
 
 
-    boolean isChanged() {
+    boolean isModified() {
         // Case-sensitive! We must allow the user to correct case.
         return !bookshelf.isSameName(currentEdit);
     }

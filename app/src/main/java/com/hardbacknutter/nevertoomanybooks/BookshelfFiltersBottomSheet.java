@@ -170,12 +170,12 @@ public class BookshelfFiltersBottomSheet
                 .show();
     }
 
-    protected boolean saveChanges() {
+    private boolean saveChanges() {
         //noinspection DataFlowIssue
-        final boolean success = vm.saveChanges(getContext());
-        if (success) {
+        if (vm.saveChanges(getContext())) {
             BookshelfFiltersLauncher.setResult(this, vm.getRequestKey(), vm.isModified());
+            return true;
         }
-        return success;
+        return false;
     }
 }

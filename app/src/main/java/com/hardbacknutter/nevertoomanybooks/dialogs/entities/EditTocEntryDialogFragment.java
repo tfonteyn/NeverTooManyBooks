@@ -127,9 +127,9 @@ public class EditTocEntryDialogFragment
             return false;
         }
 
-        // anything actually changed ?
+        // anything actually changed ? If not, we're done.
         //noinspection DataFlowIssue
-        if (!vm.isChanged(getContext())) {
+        if (!vm.isModified(getContext())) {
             return true;
         }
 

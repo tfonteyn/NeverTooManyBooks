@@ -127,7 +127,7 @@ public class EditTocEntryViewModel
         this.authorName = authorName;
     }
 
-    boolean isChanged(@NonNull final Context context) {
+    boolean isModified(@NonNull final Context context) {
         return !(tocEntry.getTitle().equals(currentEdit.getTitle())
                  && tocEntry.getFirstPublicationDate().equals(currentEdit.getFirstPublicationDate())
                  && tocEntry.getPrimaryAuthor().getLabel(context).equals(authorName));
