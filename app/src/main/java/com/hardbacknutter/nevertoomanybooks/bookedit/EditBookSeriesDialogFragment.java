@@ -31,8 +31,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -140,8 +140,8 @@ public class EditBookSeriesDialogFragment
             return false;
         }
 
-        ParcelableDialogLauncher.setResult(this, seriesVm.getRequestKey(), action,
-                                           seriesVm.getSeries(), currentEdit);
+        EditParcelableLauncher.setResult(this, seriesVm.getRequestKey(), action,
+                                         seriesVm.getSeries(), currentEdit);
         return true;
     }
 

@@ -34,7 +34,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 @SuppressWarnings("WeakerAccess")
@@ -60,11 +60,11 @@ public class EditPublisherViewModel
         if (requestKey == null) {
             dao = ServiceLocator.getInstance().getPublisherDao();
             requestKey = Objects.requireNonNull(
-                    args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                    ParcelableDialogLauncher.BKEY_REQUEST_KEY);
+                    args.getString(EditParcelableLauncher.BKEY_REQUEST_KEY),
+                    EditParcelableLauncher.BKEY_REQUEST_KEY);
             publisher = Objects.requireNonNull(
-                    args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
-                    ParcelableDialogLauncher.BKEY_ITEM);
+                    args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                    EditParcelableLauncher.BKEY_ITEM);
 
             currentEdit = new Publisher(publisher);
         }

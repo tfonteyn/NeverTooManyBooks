@@ -44,9 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -91,9 +91,9 @@ public class EditBookAuthorListDialogFragment
             };
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
-    private final ParcelableDialogLauncher<Author> editLauncher =
-            new ParcelableDialogLauncher<>(RK_EDIT_AUTHOR, EditBookAuthorDialogFragment::new,
-                                           this::add, this::processChanges);
+    private final EditParcelableLauncher<Author> editLauncher =
+            new EditParcelableLauncher<>(RK_EDIT_AUTHOR, EditBookAuthorDialogFragment::new,
+                                         this::add, this::processChanges);
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;

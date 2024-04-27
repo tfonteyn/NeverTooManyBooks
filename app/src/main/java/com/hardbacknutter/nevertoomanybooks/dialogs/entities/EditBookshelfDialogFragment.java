@@ -33,8 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -168,6 +168,6 @@ public class EditBookshelfDialogFragment
     }
 
     private void sendResultBack(@NonNull final Bookshelf bookshelf) {
-        ParcelableDialogLauncher.setEditInPlaceResult(this, vm.getRequestKey(), bookshelf);
+        EditParcelableLauncher.setEditInPlaceResult(this, vm.getRequestKey(), bookshelf);
     }
 }

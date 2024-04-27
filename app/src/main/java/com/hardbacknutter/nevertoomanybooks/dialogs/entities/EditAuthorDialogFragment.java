@@ -40,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -247,6 +247,6 @@ public class EditAuthorDialogFragment
     }
 
     private void sendResultBack(@NonNull final Author author) {
-        ParcelableDialogLauncher.setEditInPlaceResult(this, vm.getRequestKey(), author);
+        EditParcelableLauncher.setEditInPlaceResult(this, vm.getRequestKey(), author);
     }
 }

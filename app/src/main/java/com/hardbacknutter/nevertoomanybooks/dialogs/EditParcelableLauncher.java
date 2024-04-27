@@ -39,10 +39,10 @@ import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
  *
  * @param <T> type of editable object
  */
-public class ParcelableDialogLauncher<T extends Parcelable>
+public class EditParcelableLauncher<T extends Parcelable>
         extends DialogLauncher {
 
-    private static final String TAG = "AbstractParcelableDlg";
+    private static final String TAG = "EditParcelableLauncher";
 
     /** Input value: the item we're going to edit. */
     public static final String BKEY_ITEM = TAG + ":item";
@@ -64,10 +64,10 @@ public class ParcelableDialogLauncher<T extends Parcelable>
      * @param onAddListener  results listener
      * @param onEditListener results listener
      */
-    public ParcelableDialogLauncher(@NonNull final String requestKey,
-                                    @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                    @NonNull final OnAddListener<T> onAddListener,
-                                    @NonNull final OnEditListener<T> onEditListener) {
+    public EditParcelableLauncher(@NonNull final String requestKey,
+                                  @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                  @NonNull final OnAddListener<T> onAddListener,
+                                  @NonNull final OnEditListener<T> onEditListener) {
         super(requestKey, dialogSupplier);
         this.onAddListener = onAddListener;
         this.onEditListener = onEditListener;
@@ -81,9 +81,9 @@ public class ParcelableDialogLauncher<T extends Parcelable>
      * @param dialogSupplier        a supplier for a new DialogFragment
      * @param onEditInPlaceListener results listener
      */
-    public ParcelableDialogLauncher(@NonNull final String requestKey,
-                                    @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                    @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
+    public EditParcelableLauncher(@NonNull final String requestKey,
+                                  @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                  @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
         super(requestKey, dialogSupplier);
         this.onAddListener = null;
         this.onEditListener = null;

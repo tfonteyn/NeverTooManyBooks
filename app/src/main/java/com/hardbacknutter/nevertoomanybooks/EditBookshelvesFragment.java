@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -103,10 +103,10 @@ public class EditBookshelvesFragment
     private BookshelfAdapter adapter;
 
     /** Accept the result from the dialog. */
-    private final ParcelableDialogLauncher<Bookshelf> editLauncher =
-            new ParcelableDialogLauncher<>(RK_EDIT_BOOKSHELF,
-                                           EditBookshelfDialogFragment::new,
-                                           this::onModified);
+    private final EditParcelableLauncher<Bookshelf> editLauncher =
+            new EditParcelableLauncher<>(RK_EDIT_BOOKSHELF,
+                                         EditBookshelfDialogFragment::new,
+                                         this::onModified);
     private final PositionHandler positionHandler = new PositionHandler() {
         @Override
         public int getSelectedPosition() {

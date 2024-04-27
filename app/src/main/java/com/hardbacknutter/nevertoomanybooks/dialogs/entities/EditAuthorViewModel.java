@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
@@ -79,12 +79,12 @@ public class EditAuthorViewModel
             dao = ServiceLocator.getInstance().getAuthorDao();
 
             requestKey = Objects.requireNonNull(
-                    args.getString(ParcelableDialogLauncher.BKEY_REQUEST_KEY),
-                    ParcelableDialogLauncher.BKEY_REQUEST_KEY);
+                    args.getString(EditParcelableLauncher.BKEY_REQUEST_KEY),
+                    EditParcelableLauncher.BKEY_REQUEST_KEY);
 
             author = Objects.requireNonNull(
-                    args.getParcelable(ParcelableDialogLauncher.BKEY_ITEM),
-                    ParcelableDialogLauncher.BKEY_ITEM);
+                    args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                    EditParcelableLauncher.BKEY_ITEM);
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);

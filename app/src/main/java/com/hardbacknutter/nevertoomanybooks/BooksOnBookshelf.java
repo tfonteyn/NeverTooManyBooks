@@ -95,7 +95,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ParcelableDialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -302,23 +302,23 @@ public class BooksOnBookshelf
                     DBKey.LOCATION, EditLocationDialogFragment::new, (original, modified)
                     -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
 
-    private final ParcelableDialogLauncher<Bookshelf> editBookshelfLauncher =
-            new ParcelableDialogLauncher<>(
+    private final EditParcelableLauncher<Bookshelf> editBookshelfLauncher =
+            new EditParcelableLauncher<>(
                     DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new,
                     bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
 
-    private final ParcelableDialogLauncher<Author> editAuthorLauncher =
-            new ParcelableDialogLauncher<>(
+    private final EditParcelableLauncher<Author> editAuthorLauncher =
+            new EditParcelableLauncher<>(
                     DBKey.FK_AUTHOR, EditAuthorDialogFragment::new,
                     author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
 
-    private final ParcelableDialogLauncher<Series> editSeriesLauncher =
-            new ParcelableDialogLauncher<>(
+    private final EditParcelableLauncher<Series> editSeriesLauncher =
+            new EditParcelableLauncher<>(
                     DBKey.FK_SERIES, EditSeriesDialogFragment::new,
                     series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
 
-    private final ParcelableDialogLauncher<Publisher> editPublisherLauncher =
-            new ParcelableDialogLauncher<>(
+    private final EditParcelableLauncher<Publisher> editPublisherLauncher =
+            new EditParcelableLauncher<>(
                     DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new,
                     publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
 
