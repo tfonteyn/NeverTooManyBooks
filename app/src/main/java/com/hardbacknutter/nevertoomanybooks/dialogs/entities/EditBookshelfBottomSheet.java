@@ -20,27 +20,24 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 
+public class EditBookshelfBottomSheet
+        extends BottomSheetDialogFragment {
 
-public class EditBookshelfDialogFragment
-        extends FFBaseDialogFragment {
-
+    /** View Binding. */
+    private DialogEditBookshelfContentBinding vb;
     private EditBookshelfDelegate delegate;
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditBookshelfDialogFragment() {
-        super(R.layout.dialog_edit_bookshelf, R.layout.dialog_edit_bookshelf_content);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -48,15 +45,23 @@ public class EditBookshelfDialogFragment
         delegate = new EditBookshelfDelegate(this, requireArguments());
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditBookshelfContentBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
+
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
-        final DialogEditBookshelfContentBinding vb = DialogEditBookshelfContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+
+        delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.toolbar_action_save, delegate);
+        vb.dragHandle.setVisibility(View.VISIBLE);
+        vb.buttonPanelLayout.setVisibility(View.GONE);
 
         delegate.onViewCreated(vb);
     }
