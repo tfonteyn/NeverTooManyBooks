@@ -34,7 +34,6 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -136,17 +135,15 @@ public class EditLenderDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
-        // anything actually changed ?
-        //noinspection DataFlowIssue
-        if (vm.getCurrentEdit().equalsIgnoreCase(vm.getLoanee())) {
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified()) {
             return true;
         }
 
-        if (ServiceLocator.getInstance().getLoaneeDao()
-                          .setLoanee(vm.getBookId(), vm.getCurrentEdit())) {
+        if (vm.saveChanges()) {
+            //noinspection DataFlowIssue
             EditLenderLauncher.setResult(this, vm.getRequestKey(),
-                                         vm.getBookId(),
-                                         vm.getCurrentEdit());
+                                         vm.getBookId(), vm.getCurrentEdit());
             return true;
         }
         return false;

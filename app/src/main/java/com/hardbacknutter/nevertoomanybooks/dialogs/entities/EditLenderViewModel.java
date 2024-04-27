@@ -49,6 +49,8 @@ public class EditLenderViewModel
 
     private final List<String> people = new ArrayList<>();
 
+    private LoaneeDao dao;
+
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
 
@@ -77,17 +79,18 @@ public class EditLenderViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (requestKey == null) {
+            dao = ServiceLocator.getInstance().getLoaneeDao();
+
             requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                                 DialogLauncher.BKEY_REQUEST_KEY);
 
-            final LoaneeDao loaneeDao = ServiceLocator.getInstance().getLoaneeDao();
             // get previously used lender names
-            people.addAll(loaneeDao.getList());
+            people.addAll(dao.getList());
 
             bookId = args.getLong(DBKey.FK_BOOK);
             bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
 
-            loanee = loaneeDao.findLoaneeByBookId(bookId);
+            loanee = dao.findLoaneeByBookId(bookId);
             currentEdit = loanee;
         }
     }
@@ -174,5 +177,17 @@ public class EditLenderViewModel
         final List<String> sorted = new ArrayList<>(contacts);
         Collections.sort(sorted);
         return sorted;
+    }
+
+    boolean isModified() {
+        if (currentEdit != null) {
+            return !currentEdit.equalsIgnoreCase(loanee);
+        } else {
+            return loanee != null;
+        }
+    }
+
+    boolean saveChanges() {
+        return dao.setLoanee(bookId, currentEdit);
     }
 }

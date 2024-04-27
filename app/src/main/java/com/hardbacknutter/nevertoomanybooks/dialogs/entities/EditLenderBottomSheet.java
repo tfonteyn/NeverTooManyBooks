@@ -23,7 +23,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -36,9 +38,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.BottomSheetEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ExtToolbarActionMenu;
 
 /**
@@ -55,7 +56,7 @@ public class EditLenderBottomSheet
     public static final String TAG = "LendBookDialogFrag";
 
     /** View Binding. */
-    private DialogEditLoanContentBinding vb;
+    private BottomSheetEditLoanBinding vb;
 
     private ExtArrayAdapter<String> adapter;
     private EditLenderViewModel vm;
@@ -81,11 +82,21 @@ public class EditLenderBottomSheet
         vm.init(requireArguments());
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = BottomSheetEditLoanBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
+
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogEditLoanContentBinding.bind(view.findViewById(R.id.dialog_content));
+
+        initToolbarActionButtons(vb.dialogToolbar, this);
         vb.dialogToolbar.setSubtitle(vm.getBookTitle());
 
         //noinspection DataFlowIssue
@@ -138,17 +149,15 @@ public class EditLenderBottomSheet
     private boolean saveChanges() {
         viewToModel();
 
-        // anything actually changed ?
-        //noinspection DataFlowIssue
-        if (vm.getCurrentEdit().equalsIgnoreCase(vm.getLoanee())) {
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified()) {
             return true;
         }
 
-        if (ServiceLocator.getInstance().getLoaneeDao()
-                          .setLoanee(vm.getBookId(), vm.getCurrentEdit())) {
+        if (vm.saveChanges()) {
+            //noinspection DataFlowIssue
             EditLenderLauncher.setResult(this, vm.getRequestKey(),
-                                         vm.getBookId(),
-                                         vm.getCurrentEdit());
+                                         vm.getBookId(), vm.getCurrentEdit());
             return true;
         }
         return false;
