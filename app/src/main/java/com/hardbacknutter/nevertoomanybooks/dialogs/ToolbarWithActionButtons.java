@@ -36,7 +36,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 
-public interface FlexDialog {
+public interface ToolbarWithActionButtons {
 
     /**
      * Called when the user clicks the Navigation icon from the toolbar menu.
@@ -68,7 +68,7 @@ public interface FlexDialog {
 
 
     default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                          @NonNull final FlexDialog listener) {
+                                          @NonNull final ToolbarWithActionButtons listener) {
         initToolbarActionButtons(dialogToolbar, 0, listener);
     }
 
@@ -81,7 +81,7 @@ public interface FlexDialog {
      */
     default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
                                           @MenuRes final int menuResId,
-                                          @NonNull final FlexDialog listener) {
+                                          @NonNull final ToolbarWithActionButtons listener) {
         if (menuResId != 0) {
             dialogToolbar.inflateMenu(menuResId);
         }

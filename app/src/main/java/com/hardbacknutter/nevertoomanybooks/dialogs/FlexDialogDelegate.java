@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public interface FlexDialogDelegate<B>
-        extends FlexDialog {
+        extends ToolbarWithActionButtons {
 
     @Nullable
     default String getToolbarTitle() {

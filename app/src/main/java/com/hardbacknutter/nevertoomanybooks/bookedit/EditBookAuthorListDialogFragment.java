@@ -55,8 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorList
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
  */
 public class EditBookAuthorListDialogFragment
         extends DialogFragment
-        implements FlexDialog {
+        implements ToolbarWithActionButtons {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookAuthorListDlg";

@@ -54,8 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherL
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
  */
 public class EditBookPublisherListDialogFragment
         extends DialogFragment
-        implements FlexDialog {
+        implements ToolbarWithActionButtons {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookPubListDlg";
