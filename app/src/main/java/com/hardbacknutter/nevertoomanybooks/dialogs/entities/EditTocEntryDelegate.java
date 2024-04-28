@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class EditTocEntryDelegate
         implements FlexDialogDelegate<DialogEditBookTocContentBinding> {
 
-    private static final String TAG = "EditTocEntryDelegate";
     private final EditTocEntryViewModel vm;
     @NonNull
     private final DialogFragment owner;
@@ -81,7 +80,7 @@ public class EditTocEntryDelegate
                     ServiceLocator.getInstance().getAuthorDao()
                                   .getNames(DBKey.AUTHOR_FORMATTED));
             vb.author.setAdapter(authorAdapter);
-            vb.author.setText(vm.getAuthorName());
+            vb.author.setText(vm.getCurrentAuthorName());
             vb.author.selectAll();
             vb.author.requestFocus();
 
@@ -155,7 +154,7 @@ public class EditTocEntryDelegate
                 vb.firstPublication.getText().toString().trim()));
 
         if (vm.isAnthology()) {
-            vm.setAuthorName(vb.author.getText().toString().trim());
+            vm.setCurrentAuthorName(vb.author.getText().toString().trim());
         }
     }
 }

@@ -63,9 +63,11 @@ public class EditTocEntryViewModel
 
     /**
      * Current edit. Not handled in {@link #currentEdit} as we only
-     * want run our complex name parser {@link Author#from(String)} ONCE.
+     * want to run our name parser {@link Author#from(String)} ONCE.
+     *
+     * The original author name is simply read from the {@link #tocEntry}.
      */
-    private String authorName;
+    private String currentAuthorName;
 
     /**
      * Pseudo constructor.
@@ -87,7 +89,7 @@ public class EditTocEntryViewModel
                                        tocEntry.getTitle(),
                                        tocEntry.getFirstPublicationDate());
 
-            authorName = tocEntry.getPrimaryAuthor().getLabel(context);
+            currentAuthorName = tocEntry.getPrimaryAuthor().getLabel(context);
         }
     }
 
@@ -119,18 +121,18 @@ public class EditTocEntryViewModel
         return currentEdit;
     }
 
-    public String getAuthorName() {
-        return authorName;
+    public String getCurrentAuthorName() {
+        return currentAuthorName;
     }
 
-    public void setAuthorName(@NonNull final String authorName) {
-        this.authorName = authorName;
+    public void setCurrentAuthorName(@NonNull final String currentAuthorName) {
+        this.currentAuthorName = currentAuthorName;
     }
 
     boolean isModified(@NonNull final Context context) {
         return !(tocEntry.getTitle().equals(currentEdit.getTitle())
                  && tocEntry.getFirstPublicationDate().equals(currentEdit.getFirstPublicationDate())
-                 && tocEntry.getPrimaryAuthor().getLabel(context).equals(authorName));
+                 && tocEntry.getPrimaryAuthor().getLabel(context).equals(currentAuthorName));
     }
 
     /**
@@ -143,7 +145,7 @@ public class EditTocEntryViewModel
         tocEntry.setTitle(currentEdit.getTitle());
         tocEntry.setFirstPublicationDate(currentEdit.getFirstPublicationDate());
         if (isAnthology) {
-            tocEntry.setPrimaryAuthor(Author.from(authorName));
+            tocEntry.setPrimaryAuthor(Author.from(currentAuthorName));
         }
     }
 }
