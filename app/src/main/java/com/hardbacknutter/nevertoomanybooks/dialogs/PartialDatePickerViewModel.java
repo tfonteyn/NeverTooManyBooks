@@ -22,16 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModel;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 
 public class PartialDatePickerViewModel
@@ -39,12 +36,6 @@ public class PartialDatePickerViewModel
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
-
-    @StringRes
-    private int dialogTitleId;
-
-    @IdRes
-    private int fieldId;
 
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int year;
@@ -57,13 +48,10 @@ public class PartialDatePickerViewModel
     private int day;
 
 
-    public void init(@NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (requestKey == null) {
             requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                                 DialogLauncher.BKEY_REQUEST_KEY);
-            dialogTitleId = args.getInt(PartialDatePickerLauncher.BKEY_DIALOG_TITLE_ID,
-                                        R.string.action_edit);
-            fieldId = args.getInt(PartialDatePickerLauncher.BKEY_FIELD_ID);
             parseDate(args.getString(PartialDatePickerLauncher.BKEY_DATE));
         }
 
@@ -75,39 +63,31 @@ public class PartialDatePickerViewModel
     }
 
     @NonNull
-    public String getRequestKey() {
+    String getRequestKey() {
         return requestKey;
     }
 
-    public int getFieldId() {
-        return fieldId;
-    }
-
-    public int getDialogTitleId() {
-        return dialogTitleId;
-    }
-
-    public int getYear() {
+    int getYear() {
         return year;
     }
 
-    public void setYear(final int year) {
+    void setYear(final int year) {
         this.year = year;
     }
 
-    public int getMonth() {
+    int getMonth() {
         return month;
     }
 
-    public void setMonth(final int month) {
+    void setMonth(final int month) {
         this.month = month;
     }
 
-    public int getDay() {
+    int getDay() {
         return day;
     }
 
-    public void setDay(final int day) {
+    void setDay(final int day) {
         this.day = day;
     }
 

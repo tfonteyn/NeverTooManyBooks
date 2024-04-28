@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -64,12 +65,23 @@ public class PartialDatePickerDelegate
     private static final String UNKNOWN_MONTH = "---";
     /** Displayed to user: unset day. */
     private static final String UNKNOWN_DAY = "--";
+
+    /**
+     * Maximum number of months in a year. Kept as a constant as I'm reasonably sure
+     * this will not change in the foreseeable future. (⌐⊙_⊙)
+     */
+    private static final int MAX_MONTHS = 12;
+    /** Maximum number of days in a month. */
+    private static final int MAX_DAYS = 31;
+
     @NonNull
     private final DialogFragment owner;
-
+    @NonNull
+    private final String dialogTitle;
+    @IdRes
+    private final int fieldId;
     private PartialDatePickerViewModel vm;
     private DialogPartialDatePickerContentBinding vb;
-
     /** This listener is called after <strong>any change</strong> made to the pickers. */
     private final NumberPicker.OnValueChangeListener valueChangeListener =
             (picker, oldVal, newVal) -> {
@@ -100,9 +112,15 @@ public class PartialDatePickerDelegate
     PartialDatePickerDelegate(@NonNull final DialogFragment owner,
                               @NonNull final Bundle args) {
         this.owner = owner;
-
         vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
         vm.init(args);
+
+        //noinspection DataFlowIssue
+        dialogTitle = owner.getContext().getString(
+                args.getInt(PartialDatePickerLauncher.BKEY_DIALOG_TITLE_ID,
+                            R.string.action_edit));
+
+        fieldId = args.getInt(PartialDatePickerLauncher.BKEY_FIELD_ID);
     }
 
     /**
@@ -110,7 +128,7 @@ public class PartialDatePickerDelegate
      *
      * @param root Root view
      */
-    public void reorderPickers(@NonNull final View root) {
+    void reorderPickers(@NonNull final View root) {
         final char[] order;
         try {
             // This actually throws exception in some versions of Android, specifically when
@@ -163,7 +181,7 @@ public class PartialDatePickerDelegate
 
         // 0: 'not set' + 1..12 real months
         vb.month.setMinValue(0);
-        vb.month.setMaxValue(12);
+        vb.month.setMaxValue(MAX_MONTHS);
         vb.month.setDisplayedValues(getMonthAbbr());
         vb.month.setOnValueChangedListener(valueChangeListener);
 
@@ -172,7 +190,7 @@ public class PartialDatePickerDelegate
         // Make sure that the picker can initially take any 'day' value. Otherwise,
         // when a dialog is reconstructed after rotation, the 'day' field will not be
         // restored by Android.
-        vb.day.setMaxValue(31);
+        vb.day.setMaxValue(MAX_DAYS);
         vb.day.setFormatter(value -> value == 0 ? UNKNOWN_DAY : String.valueOf(value));
         vb.day.setOnValueChangedListener(valueChangeListener);
 
@@ -186,7 +204,7 @@ public class PartialDatePickerDelegate
     @Nullable
     @Override
     public String getToolbarTitle() {
-        return vb.getRoot().getContext().getString(vm.getDialogTitleId());
+        return dialogTitle;
     }
 
     @Override
@@ -224,7 +242,7 @@ public class PartialDatePickerDelegate
 
         } else {
             PartialDatePickerLauncher.setResult(owner, vm.getRequestKey(),
-                                                vm.getFieldId(),
+                                                fieldId,
                                                 new PartialDate(vm.getYear(),
                                                                 vm.getMonth(),
                                                                 vm.getDay()));
@@ -245,7 +263,7 @@ public class PartialDatePickerDelegate
                                     .get(0);
         final String[] monthNames = new String[13];
         monthNames[0] = UNKNOWN_MONTH;
-        for (int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= MAX_MONTHS; i++) {
             monthNames[i] = Month.of(i).getDisplayName(TextStyle.SHORT, userLocale);
         }
         return monthNames;
@@ -264,11 +282,11 @@ public class PartialDatePickerDelegate
                 // Should never throw here, but paranoia...
                 totalDays = LocalDate.of(vm.getYear(), vm.getMonth(), 1).lengthOfMonth();
             } catch (@NonNull final DateTimeException e) {
-                totalDays = 31;
+                totalDays = MAX_DAYS;
             }
         } else {
             // allow the user to start inputting with day first.
-            totalDays = 31;
+            totalDays = MAX_DAYS;
         }
 
         vb.day.setMaxValue(totalDays);
