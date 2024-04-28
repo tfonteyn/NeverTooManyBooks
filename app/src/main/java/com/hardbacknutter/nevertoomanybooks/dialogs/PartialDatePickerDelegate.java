@@ -134,7 +134,14 @@ public class PartialDatePickerDelegate
             // This actually throws exception in some versions of Android, specifically when
             // the Locale specific date format has the day name (EEE) in it. So we exit and
             // just use our default order in these cases.
-            // See BC Issue #712.
+            //   java.lang.IllegalArgumentException: Bad pattern character 'E' in E, d MMM yyyy
+            //   at libcore.icu.ICU.getDateFormatOrder(ICU.java:165)
+            //   at android.text.format.DateFormat.getDateFormatOrder(DateFormat.java:384)
+            //
+            // The underlying code relies on this code ONLY returning patterns with
+            // d,L,M,y,G characters.
+            // java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT, locale)
+            //     .toPattern();
             order = DateFormat.getDateFormatOrder(root.getContext());
         } catch (@NonNull final RuntimeException e) {
             return;
