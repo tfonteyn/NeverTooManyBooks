@@ -113,6 +113,7 @@ public interface FlexDialog {
     }
 
     /**
+     * FIXME: this does not belong here...
      * Add the needed listeners to automatically remove any error text from
      * a {@link TextInputLayout} when the user changes the content.
      *
