@@ -31,9 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 
 
 public class EditStringDialogFragment
-        extends FFBaseDialogFragment {
-
-    protected EditStringDelegate delegate;
+        extends FFBaseDialogFragment<DialogEditStringContentBinding> {
 
     /**
      * Constructor; only used by the child class no-args constructor.
@@ -46,9 +44,6 @@ public class EditStringDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
         final DialogEditStringContentBinding vb = DialogEditStringContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
         setTitle(delegate.getToolbarTitle());

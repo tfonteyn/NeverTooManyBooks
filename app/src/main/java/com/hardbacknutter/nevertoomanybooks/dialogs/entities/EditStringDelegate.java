@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
@@ -39,13 +40,13 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Color.
  */
 public class EditStringDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditStringContentBinding> {
 
     @NonNull
     private final String toolbarTitle;
@@ -84,7 +85,7 @@ public class EditStringDelegate
         vm.init(args);
     }
 
-    void onViewCreated(@NonNull final DialogEditStringContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditStringContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
 
@@ -112,7 +113,7 @@ public class EditStringDelegate
     }
 
     @Nullable
-    String getToolbarTitle() {
+    public String getToolbarTitle() {
         return toolbarTitle;
     }
 
@@ -121,6 +122,10 @@ public class EditStringDelegate
         owner.dismiss();
     }
 
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
     @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
@@ -185,7 +190,7 @@ public class EditStringDelegate
         return currentText;
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         vm.setCurrentText(vb.editString.getText().toString().trim());
     }
 }

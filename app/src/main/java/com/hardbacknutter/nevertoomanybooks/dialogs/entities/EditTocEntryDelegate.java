@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -35,14 +36,14 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
 public class EditTocEntryDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditBookTocContentBinding> {
 
     private static final String TAG = "EditTocEntryDelegate";
     private final EditTocEntryViewModel vm;
@@ -59,7 +60,7 @@ public class EditTocEntryDelegate
         vm.init(owner.getContext(), args);
     }
 
-    void onViewCreated(@NonNull final DialogEditBookTocContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditBookTocContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
 
@@ -96,10 +97,14 @@ public class EditTocEntryDelegate
     }
 
     @Nullable
-    String getToolbarTitle() {
+    public String getToolbarTitle() {
         return vm.getBookTitle();
     }
 
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
@@ -141,7 +146,7 @@ public class EditTocEntryDelegate
         return true;
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         final TocEntry currentEdit = vm.getCurrentEdit();
         //noinspection DataFlowIssue
         currentEdit.setTitle(vb.title.getText().toString().trim());

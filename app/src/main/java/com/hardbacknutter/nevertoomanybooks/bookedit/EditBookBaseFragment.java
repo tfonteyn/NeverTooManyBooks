@@ -57,7 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DateRangePic
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -70,23 +71,14 @@ public abstract class EditBookBaseFragment
     /** Log tag. */
     private static final String TAG = "EditBookBaseFragment";
 
-    /** FragmentResultListener request key. */
-    private static final String RK_DATE_PICKER_PARTIAL =
-            TAG + ":rk:" + PartialDatePickerDialogFragment.TAG;
-
     /** The view model. */
     EditBookViewModel vm;
 
     /** MUST keep a strong reference. */
     private final DatePickerListener datePickerListener = this::onDateSet;
-
-    private final PartialDatePickerDialogFragment.Launcher partialDatePickerLauncher =
-            new PartialDatePickerDialogFragment.Launcher(
-                    RK_DATE_PICKER_PARTIAL,
-                    (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
-
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
+    private PartialDatePickerLauncher partialDatePickerLauncher;
     private DateParser dateParser;
     private RealNumberParser realNumberParser;
 
@@ -112,6 +104,10 @@ public abstract class EditBookBaseFragment
         dateParser = new FullDateParser(systemLocale, locales);
         realNumberParser = new RealNumberParser(locales);
 
+        //noinspection DataFlowIssue
+        partialDatePickerLauncher = new PartialDatePickerLauncher(
+                getActivity(), DialogLauncher.RK_DATE_PICKER_PARTIAL,
+                (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
         partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 

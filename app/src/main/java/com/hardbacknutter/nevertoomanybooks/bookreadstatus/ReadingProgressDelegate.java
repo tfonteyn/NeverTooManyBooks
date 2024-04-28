@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -34,14 +35,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
 /**
  * Dialog for the user to update their progress.
  * Supports percentage and "page x of y".
  */
 class ReadingProgressDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogBookReadProgressContentBinding> {
 
     @NonNull
     private final DialogFragment owner;
@@ -84,7 +85,7 @@ class ReadingProgressDelegate
         return defValue;
     }
 
-    void onViewCreated(@NonNull final DialogBookReadProgressContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogBookReadProgressContentBinding vb) {
         this.vb = vb;
 
         updateUI();
@@ -152,6 +153,11 @@ class ReadingProgressDelegate
     }
 
     @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
+
+    @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
@@ -211,7 +217,7 @@ class ReadingProgressDelegate
         vb.sliderPages.setValue(currentPage);
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         vm.getReadingProgress().setPercentage(parseInt(vb.percentage.getText(), 0));
         vm.getReadingProgress().setPages(parseInt(vb.currentPage.getText(), 0),
                                          parseInt(vb.totalPages.getText(), 1));

@@ -32,9 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class BookshelfFiltersDialogFragment
-        extends FFBaseDialogFragment {
-
-    private BookshelfFiltersDelegate delegate;
+        extends FFBaseDialogFragment<DialogEditBookshelfFiltersContentBinding> {
 
     /**
      * No-arg constructor for OS use.
@@ -58,9 +56,6 @@ public class BookshelfFiltersDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
         final DialogEditBookshelfFiltersContentBinding vb = DialogEditBookshelfFiltersContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
         setSubtitle(delegate.getToolbarSubtitle());
@@ -73,6 +68,7 @@ public class BookshelfFiltersDialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        delegate.onStart();
+        // If there are no filters, immediately show the add-filter dialog
+        ((BookshelfFiltersDelegate) delegate).onStart();
     }
 }

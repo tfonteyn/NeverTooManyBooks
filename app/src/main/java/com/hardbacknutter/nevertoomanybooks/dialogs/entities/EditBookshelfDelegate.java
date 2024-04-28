@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -36,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -60,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * @see EditBookshelfBottomSheet
  */
 public class EditBookshelfDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditBookshelfContentBinding> {
 
     private static final String TAG = "EditBookshelfDelegate";
     @NonNull
@@ -77,7 +78,7 @@ public class EditBookshelfDelegate
         vm.init(args);
     }
 
-    void onViewCreated(@NonNull final DialogEditBookshelfContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditBookshelfContentBinding vb) {
         this.vb = vb;
 
         vb.bookshelf.setText(vm.getCurrentEdit().getName());
@@ -89,6 +90,11 @@ public class EditBookshelfDelegate
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
     }
 
     @Override
@@ -159,7 +165,7 @@ public class EditBookshelfDelegate
         }
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         //noinspection DataFlowIssue
         vm.getCurrentEdit().setName(vb.bookshelf.getText().toString().trim());
     }

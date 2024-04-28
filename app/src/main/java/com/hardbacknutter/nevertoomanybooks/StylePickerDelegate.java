@@ -33,17 +33,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 public class StylePickerDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogStylePickerContentBinding> {
 
     @NonNull
     private final DialogFragment owner;
+    private final StylePickerViewModel vm;
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<Style> adapter;
-    private final StylePickerViewModel vm;
 
 
     StylePickerDelegate(@NonNull final DialogFragment owner,
@@ -53,7 +53,7 @@ public class StylePickerDelegate
         vm.init(args);
     }
 
-    void onViewCreated(@NonNull final DialogStylePickerContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogStylePickerContentBinding vb) {
         final Context context = vb.getRoot().getContext();
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(context,

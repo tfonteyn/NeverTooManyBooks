@@ -34,9 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
 public class EditTocEntryDialogFragment
-        extends FFBaseDialogFragment {
-
-    private EditTocEntryDelegate delegate;
+        extends FFBaseDialogFragment<DialogEditBookTocContentBinding> {
 
     /**
      * No-arg constructor for OS use.
@@ -55,10 +53,6 @@ public class EditTocEntryDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
-
         final DialogEditBookTocContentBinding vb = DialogEditBookTocContentBinding
                 .bind(view.findViewById(R.id.dialog_content));
         setTitle(delegate.getToolbarTitle());

@@ -25,6 +25,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -39,7 +40,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
 /**
  * Dialog to create a new loan, edit an existing one or remove it (book is returned).
@@ -48,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
  * This is done to minimize trips to the database.
  */
 public class EditLenderDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditLoanContentBinding> {
 
     private final EditLenderViewModel vm;
     @NonNull
@@ -77,7 +78,7 @@ public class EditLenderDelegate
                 });
     }
 
-    void onViewCreated(@NonNull final DialogEditLoanContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditLoanContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
         adapter = new ExtArrayAdapter<>(context, R.layout.popup_dropdown_menu_item,
@@ -106,7 +107,7 @@ public class EditLenderDelegate
     }
 
     @Nullable
-    String getToolbarSubtitle() {
+    public String getToolbarSubtitle() {
         return vm.getBookTitle();
     }
 
@@ -115,6 +116,10 @@ public class EditLenderDelegate
         owner.dismiss();
     }
 
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
@@ -128,7 +133,7 @@ public class EditLenderDelegate
         return false;
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         vm.setCurrentEdit(vb.lendTo.getText().toString().trim());
     }
 

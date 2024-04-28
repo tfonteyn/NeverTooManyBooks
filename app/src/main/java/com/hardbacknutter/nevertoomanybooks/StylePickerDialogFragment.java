@@ -33,9 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 
 public class StylePickerDialogFragment
-        extends FFBaseDialogFragment {
-
-    private StylePickerDelegate delegate;
+        extends FFBaseDialogFragment<DialogStylePickerContentBinding> {
 
     /**
      * No-arg constructor for OS use.
@@ -59,9 +57,6 @@ public class StylePickerDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
         final DialogStylePickerContentBinding vb = DialogStylePickerContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
 

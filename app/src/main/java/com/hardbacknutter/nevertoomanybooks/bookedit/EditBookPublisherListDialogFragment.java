@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -47,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -65,7 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
  *  and change to a regular Fragment
  */
 public class EditBookPublisherListDialogFragment
-        extends FFBaseDialogFragment {
+        extends FFBaseDialogFragment<DialogEditBookPublisherListContentBinding>
+        implements FlexDialog {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookPubListDlg";
@@ -233,6 +236,11 @@ public class EditBookPublisherListDialogFragment
             onAdd(button.getId() == R.id.btn_add_details);
             return true;
         }
+        return false;
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         return false;
     }
 

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -39,10 +40,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
 public class BookshelfFiltersDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditBookshelfFiltersContentBinding> {
 
     @NonNull
     private final DialogFragment owner;
@@ -76,11 +77,11 @@ public class BookshelfFiltersDelegate
     }
 
     @NonNull
-    String getToolbarSubtitle() {
+    public String getToolbarSubtitle() {
         return vm.getBookshelf().getName();
     }
 
-    void onViewCreated(@NonNull final DialogEditBookshelfFiltersContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditBookshelfFiltersContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
 
@@ -100,6 +101,11 @@ public class BookshelfFiltersDelegate
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
     }
 
     @Override

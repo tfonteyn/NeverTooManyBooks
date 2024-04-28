@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -38,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -62,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * @see EditBookshelfBottomSheet
  */
 public class EditSeriesDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditSeriesContentBinding> {
 
     private static final String TAG = "EditSeriesDelegate";
 
@@ -80,7 +81,7 @@ public class EditSeriesDelegate
         vm.init(args);
     }
 
-    void onViewCreated(@NonNull final DialogEditSeriesContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditSeriesContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
 
@@ -101,6 +102,11 @@ public class EditSeriesDelegate
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
     }
 
     @Override
@@ -162,7 +168,7 @@ public class EditSeriesDelegate
         }
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         final Series currentEdit = vm.getCurrentEdit();
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -35,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -60,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * Must be a public static class to be properly recreated from instance state.
  */
 public class EditBookSeriesDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditBookSeriesContentBinding> {
 
     @NonNull
     private final DialogFragment owner;
@@ -88,11 +89,11 @@ public class EditBookSeriesDelegate
     }
 
     @Nullable
-    String getToolbarSubtitle() {
+    public String getToolbarSubtitle() {
         return vm.getBook().getTitle();
     }
 
-    void onViewCreated(@NonNull final DialogEditBookSeriesContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditBookSeriesContentBinding vb) {
         this.vb = vb;
 
         final Context context = vb.getRoot().getContext();
@@ -115,6 +116,11 @@ public class EditBookSeriesDelegate
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
     }
 
     @Override
@@ -148,7 +154,7 @@ public class EditBookSeriesDelegate
         return true;
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         final Series currentEdit = seriesVm.getCurrentEdit();
 
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());

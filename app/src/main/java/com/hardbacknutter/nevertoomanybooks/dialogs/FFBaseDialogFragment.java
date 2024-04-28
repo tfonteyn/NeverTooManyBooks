@@ -79,12 +79,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * <p>
  * Special cases see {@link #adjustWindowSize} methods.
  */
-public abstract class FFBaseDialogFragment
-        extends DialogFragment
-        implements FlexDialog {
+public abstract class FFBaseDialogFragment<B>
+        extends DialogFragment {
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
+
+    protected FlexDialogDelegate<B> delegate;
 
     /** Whether to force fullscreen - set in the constructor. */
     private final boolean forceFullscreen;
@@ -205,6 +206,9 @@ public abstract class FFBaseDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Sanity check
+        Objects.requireNonNull(delegate, "delegate not set");
+
         // Layouts supporting BottomSheet have a drag-handle. Just hide it.
         final View dragHandle = view.findViewById(R.id.drag_handle);
         if (dragHandle != null) {
@@ -235,13 +239,17 @@ public abstract class FFBaseDialogFragment
                 }
                 button = buttonPanel.findViewById(R.id.btn_positive);
                 if (button != null) {
-                    button.setOnClickListener(this::onToolbarButtonClick);
+                    button.setOnClickListener(delegate::onToolbarButtonClick);
                 }
                 button = buttonPanel.findViewById(R.id.btn_neutral);
                 if (button != null) {
-                    button.setOnClickListener(this::onToolbarButtonClick);
+                    button.setOnClickListener(delegate::onToolbarButtonClick);
                 }
             }
+        }
+
+        if (toolbar != null) {
+            delegate.initToolbarActionButtons(toolbar, delegate);
         }
     }
 

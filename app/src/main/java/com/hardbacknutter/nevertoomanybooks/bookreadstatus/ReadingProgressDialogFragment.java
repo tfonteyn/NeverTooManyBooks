@@ -32,9 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 
 
 public class ReadingProgressDialogFragment
-        extends FFBaseDialogFragment {
-
-    private ReadingProgressDelegate delegate;
+        extends FFBaseDialogFragment<DialogBookReadProgressContentBinding> {
 
     /**
      * No-arg constructor for OS use.
@@ -54,9 +52,6 @@ public class ReadingProgressDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
         final DialogBookReadProgressContentBinding vb = DialogBookReadProgressContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
 

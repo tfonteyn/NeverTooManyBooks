@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -35,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
@@ -59,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * </ul>
  */
 public class EditBookPublisherDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditBookPublisherContentBinding> {
 
     private static final String TAG = "EditBookPublisherDelega";
 
@@ -88,11 +89,11 @@ public class EditBookPublisherDelegate
     }
 
     @Nullable
-    String getToolbarSubtitle() {
+    public String getToolbarSubtitle() {
         return vm.getBook().getTitle();
     }
 
-    void onViewCreated(@NonNull final DialogEditBookPublisherContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditBookPublisherContentBinding vb) {
         this.vb = vb;
 
         final Context context = vb.getRoot().getContext();
@@ -113,6 +114,10 @@ public class EditBookPublisherDelegate
         owner.dismiss();
     }
 
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
 
     @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
@@ -145,7 +150,7 @@ public class EditBookPublisherDelegate
         return true;
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
     }
 

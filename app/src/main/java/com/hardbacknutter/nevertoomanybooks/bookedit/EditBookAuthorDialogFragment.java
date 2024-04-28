@@ -30,12 +30,10 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorCont
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 
 public class EditBookAuthorDialogFragment
-        extends FFBaseDialogFragment {
+        extends FFBaseDialogFragment<DialogEditBookAuthorContentBinding> {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorForBookDialog";
-
-    private EditBookAuthorDelegate delegate;
 
     /**
      * No-arg constructor for OS use.
@@ -54,9 +52,6 @@ public class EditBookAuthorDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
         final DialogEditBookAuthorContentBinding vb = DialogEditBookAuthorContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
         setSubtitle(delegate.getToolbarSubtitle());

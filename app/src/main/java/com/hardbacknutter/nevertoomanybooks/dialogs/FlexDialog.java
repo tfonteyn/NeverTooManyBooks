@@ -54,9 +54,7 @@ public interface FlexDialog {
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    default boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
-        return false;
-    }
+    boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem);
 
     /**
      * Called when the user clicks a button on the toolbar or the bottom button-bar.
@@ -66,9 +64,7 @@ public interface FlexDialog {
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    default boolean onToolbarButtonClick(@Nullable final View button) {
-        return false;
-    }
+    boolean onToolbarButtonClick(@Nullable final View button);
 
 
     default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,

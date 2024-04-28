@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -42,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -66,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * </ul>
  */
 public class EditBookAuthorDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditBookAuthorContentBinding> {
 
     private static final String TAG = "EditBookAuthorDelegate";
 
@@ -102,7 +103,7 @@ public class EditBookAuthorDelegate
         authorVm.init(args);
     }
 
-    void onViewCreated(@NonNull final DialogEditBookAuthorContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditBookAuthorContentBinding vb) {
         this.vb = vb;
 
         final Context context = vb.getRoot().getContext();
@@ -133,7 +134,7 @@ public class EditBookAuthorDelegate
     }
 
     @Nullable
-    String getToolbarSubtitle() {
+    public String getToolbarSubtitle() {
         return vm.getBook().getTitle();
     }
 
@@ -222,6 +223,11 @@ public class EditBookAuthorDelegate
     }
 
     @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
+
+    @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
@@ -288,7 +294,7 @@ public class EditBookAuthorDelegate
                 .show();
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         final Author currentEdit = authorVm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());

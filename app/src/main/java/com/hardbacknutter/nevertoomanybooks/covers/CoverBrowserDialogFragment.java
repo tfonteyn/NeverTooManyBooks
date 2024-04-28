@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserConten
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
@@ -73,7 +75,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * ENHANCE: allow configuring search-sites on the fly
  */
 public class CoverBrowserDialogFragment
-        extends FFBaseDialogFragment {
+        extends FFBaseDialogFragment<DialogCoverBrowserContentBinding>
+        implements FlexDialog {
 
     /** Fragment/Log tag. */
     public static final String TAG = "CoverBrowserFragment";
@@ -206,6 +209,11 @@ public class CoverBrowserDialogFragment
 
         // Don't give it the gallery! We're auto-adapting in this class already
         adjustWindowSize(null, /* ignored */ 0f);
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
     }
 
     @Override

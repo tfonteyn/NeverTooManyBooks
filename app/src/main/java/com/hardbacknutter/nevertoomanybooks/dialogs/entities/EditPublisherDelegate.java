@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -38,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
@@ -62,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * @see EditBookshelfBottomSheet
  */
 public class EditPublisherDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditPublisherContentBinding> {
 
     private static final String TAG = "EditPublisherDelegate";
 
@@ -79,7 +80,7 @@ public class EditPublisherDelegate
         vm.init(args);
     }
 
-    void onViewCreated(@NonNull final DialogEditPublisherContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditPublisherContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
 
@@ -98,6 +99,11 @@ public class EditPublisherDelegate
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
     }
 
     @Override
@@ -159,7 +165,7 @@ public class EditPublisherDelegate
         }
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         vm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
     }
 

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -43,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -67,18 +68,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * @see EditBookshelfBottomSheet
  */
 public class EditAuthorDelegate
-        implements FlexDialog {
+        implements FlexDialogDelegate<DialogEditAuthorContentBinding> {
 
     private static final String TAG = "EditAuthorDelegate";
 
     /** Author View model. Fragment scope. */
     private final EditAuthorViewModel vm;
-
-    /** View Binding. */
-    private DialogEditAuthorContentBinding vb;
-
     @NonNull
     private final DialogFragment owner;
+    /** View Binding. */
+    private DialogEditAuthorContentBinding vb;
 
     EditAuthorDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
@@ -87,7 +86,7 @@ public class EditAuthorDelegate
         vm.init(args);
     }
 
-    void onViewCreated(@NonNull final DialogEditAuthorContentBinding vb) {
+    public void onViewCreated(@NonNull final DialogEditAuthorContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
 
@@ -140,6 +139,11 @@ public class EditAuthorDelegate
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
     }
 
     @Override
@@ -229,7 +233,7 @@ public class EditAuthorDelegate
                 .show();
     }
 
-    void viewToModel() {
+    public void viewToModel() {
         final Author currentEdit = vm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());

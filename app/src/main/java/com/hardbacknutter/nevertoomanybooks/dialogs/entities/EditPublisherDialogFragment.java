@@ -31,9 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 
 
 public class EditPublisherDialogFragment
-        extends FFBaseDialogFragment {
-
-    private EditPublisherDelegate delegate;
+        extends FFBaseDialogFragment<DialogEditPublisherContentBinding> {
 
     /**
      * No-arg constructor for OS use.
@@ -52,9 +50,6 @@ public class EditPublisherDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            delegate.initToolbarActionButtons(getToolbar(), delegate);
-        }
         final DialogEditPublisherContentBinding vb = DialogEditPublisherContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
 
