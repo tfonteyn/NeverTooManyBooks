@@ -55,7 +55,7 @@ public final class MenuUtils {
      * Hookup, inflating if needed, the {@code R.id.MENU_SEARCH} menu item
      * with the system search service.
      *
-     * @param activity from which we can the search service
+     * @param activity from which we can get the search service
      * @param inflater to use
      * @param menu     which contains the {@code R.id.MENU_SEARCH} menu item
      */
@@ -74,7 +74,7 @@ public final class MenuUtils {
      * Hookup an <strong>existing</strong> {@code R.id.MENU_SEARCH} menu item
      * with the system search service.
      *
-     * @param activity from which we can the search service
+     * @param activity from which we can get the search service
      * @param menu     which contains the {@code R.id.MENU_SEARCH} menu item
      */
     public static void setupSearchActionView(@NonNull final Activity activity,
@@ -137,6 +137,13 @@ public final class MenuUtils {
         return menu;
     }
 
+    /**
+     * Create a new instance of a {@link Menu}.
+     *
+     * @param context Current context
+     *
+     * @return new, empty, menu instance
+     */
     @NonNull
     public static Menu create(@NonNull final Context context) {
         final Menu menu = new PopupMenu(context, null).getMenu();
@@ -144,6 +151,14 @@ public final class MenuUtils {
         return menu;
     }
 
+    /**
+     * Create a new instance of a {@link Menu} and inflate the given menu resource.
+     *
+     * @param context   Current context
+     * @param menuResId to inflate
+     *
+     * @return new menu instance
+     */
     @NonNull
     public static Menu create(@NonNull final Context context,
                               @MenuRes final int menuResId) {
