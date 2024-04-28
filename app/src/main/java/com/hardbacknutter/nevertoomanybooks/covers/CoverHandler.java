@@ -99,7 +99,7 @@ public class CoverHandler {
     private static final String TAG = "CoverHandler";
 
     /** FragmentResultListener request key. Append the cIdx value! */
-    private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
+    private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDelegate.TAG;
 
     private static final String IMAGE_MIME_TYPE = "image/*";
 
@@ -109,7 +109,7 @@ public class CoverHandler {
     @NonNull
     private final Consumer<Integer> coverLoader;
     @NonNull
-    private final CoverBrowserDialogFragment.Launcher coverBrowserLauncher;
+    private final CoverBrowserLauncher coverBrowserLauncher;
     /** Main used is to run transformation tasks. Shared among all current CoverHandlers. */
     @NonNull
     private final CoverHandlerViewModel vm;
@@ -161,8 +161,8 @@ public class CoverHandler {
                                           ImageViewLoader.MaxSize.Enforce,
                                           maxWidth, maxHeight);
 
-        coverBrowserLauncher = new CoverBrowserDialogFragment
-                .Launcher(RK_COVER_BROWSER + cIdx, this::onFileSelected);
+        coverBrowserLauncher = new CoverBrowserLauncher(RK_COVER_BROWSER + cIdx,
+                                                        this::onFileSelected);
     }
 
     /**
