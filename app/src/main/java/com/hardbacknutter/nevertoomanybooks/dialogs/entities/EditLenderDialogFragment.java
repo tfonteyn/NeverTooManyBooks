@@ -57,7 +57,7 @@ public class EditLenderDialogFragment
         }
         final DialogEditLoanContentBinding vb = DialogEditLoanContentBinding.bind(
                 view.findViewById(R.id.dialog_content));
-        setSubtitle(delegate.getVm().getBookTitle());
+        setSubtitle(delegate.getToolbarSubtitle());
 
         delegate.onViewCreated(vb);
     }

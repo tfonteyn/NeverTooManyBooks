@@ -47,10 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
 public class EditStringDelegate
         implements FlexDialog {
 
-    @StringRes
-    private final int dialogTitleId;
-    @StringRes
-    private final int labelResId;
+    @NonNull
+    private final String toolbarTitle;
+    @NonNull
+    private final String label;
     @NonNull
     private final Supplier<InlineStringDao> daoSupplier;
 
@@ -74,10 +74,13 @@ public class EditStringDelegate
                        @NonNull final Supplier<InlineStringDao> daoSupplier,
                        @NonNull final Bundle args) {
         this.owner = owner;
-        vm = new ViewModelProvider(owner).get(EditStringViewModel.class);
-        this.dialogTitleId = dialogTitleId;
-        this.labelResId = labelResId;
         this.daoSupplier = daoSupplier;
+        final Context context = owner.getContext();
+        //noinspection DataFlowIssue
+        this.toolbarTitle = context.getString(dialogTitleId);
+        this.label = context.getString(labelResId);
+
+        vm = new ViewModelProvider(owner).get(EditStringViewModel.class);
         vm.init(args);
     }
 
@@ -85,7 +88,7 @@ public class EditStringDelegate
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
 
-        vb.lblEditString.setHint(context.getString(labelResId));
+        vb.lblEditString.setHint(label);
         vb.editString.setText(vm.getCurrentText());
         autoRemoveError(vb.editString, vb.lblEditString);
 
@@ -108,9 +111,9 @@ public class EditStringDelegate
         vb.editString.requestFocus();
     }
 
-    @StringRes
-    int getDialogTitleId() {
-        return dialogTitleId;
+    @Nullable
+    String getToolbarTitle() {
+        return toolbarTitle;
     }
 
     @Override

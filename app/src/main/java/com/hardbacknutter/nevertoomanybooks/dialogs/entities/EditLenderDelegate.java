@@ -105,9 +105,9 @@ public class EditLenderDelegate
         adapter.addAll(vm.getContacts(adapter.getContext()));
     }
 
-    @NonNull
-    EditLenderViewModel getVm() {
-        return vm;
+    @Nullable
+    String getToolbarSubtitle() {
+        return vm.getBookTitle();
     }
 
     @Override

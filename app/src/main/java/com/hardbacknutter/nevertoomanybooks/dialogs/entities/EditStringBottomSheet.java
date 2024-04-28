@@ -57,7 +57,7 @@ public class EditStringBottomSheet
         vb.dragHandle.setVisibility(View.VISIBLE);
         vb.buttonPanelLayout.setVisibility(View.GONE);
 
-        vb.dialogToolbar.setTitle(delegate.getDialogTitleId());
+        vb.dialogToolbar.setTitle(delegate.getToolbarTitle());
 
         delegate.onViewCreated(vb);
     }

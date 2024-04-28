@@ -96,7 +96,7 @@ public class EditTocEntryDelegate
     }
 
     @Nullable
-    String getDialogTitle() {
+    String getToolbarTitle() {
         return vm.getBookTitle();
     }
 

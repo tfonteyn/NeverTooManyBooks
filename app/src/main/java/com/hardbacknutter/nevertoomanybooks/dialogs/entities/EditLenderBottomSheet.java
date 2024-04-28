@@ -62,7 +62,7 @@ public class EditLenderBottomSheet
         vb.dragHandle.setVisibility(View.VISIBLE);
         vb.buttonPanelLayout.setVisibility(View.GONE);
 
-        vb.dialogToolbar.setSubtitle(delegate.getVm().getBookTitle());
+        vb.dialogToolbar.setSubtitle(delegate.getToolbarSubtitle());
 
         delegate.onViewCreated(vb);
     }

@@ -61,7 +61,7 @@ public class EditTocEntryDialogFragment
 
         final DialogEditBookTocContentBinding vb = DialogEditBookTocContentBinding
                 .bind(view.findViewById(R.id.dialog_content));
-        setTitle(delegate.getDialogTitle());
+        setTitle(delegate.getToolbarTitle());
 
         delegate.onViewCreated(vb);
     }

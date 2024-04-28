@@ -87,8 +87,8 @@ public class EditBookPublisherDelegate
         publisherVm.init(args);
     }
 
-    @NonNull
-    String getDialogSubtitle() {
+    @Nullable
+    String getToolbarSubtitle() {
         return vm.getBook().getTitle();
     }
 

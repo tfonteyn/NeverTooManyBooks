@@ -61,7 +61,7 @@ public class EditBookSeriesBottomSheet
         vb.dragHandle.setVisibility(View.VISIBLE);
         vb.buttonPanelLayout.setVisibility(View.GONE);
 
-        vb.dialogToolbar.setSubtitle(delegate.getDialogSubtitle());
+        vb.dialogToolbar.setSubtitle(delegate.getToolbarSubtitle());
 
         delegate.onViewCreated(vb);
     }

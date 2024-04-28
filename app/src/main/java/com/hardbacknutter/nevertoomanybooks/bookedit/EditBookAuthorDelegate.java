@@ -132,8 +132,8 @@ public class EditBookAuthorDelegate
         vb.familyName.requestFocus();
     }
 
-    @NonNull
-    String getDialogSubtitle() {
+    @Nullable
+    String getToolbarSubtitle() {
         return vm.getBook().getTitle();
     }
 

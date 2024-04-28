@@ -59,7 +59,7 @@ public class EditBookSeriesDialogFragment
             delegate.initToolbarActionButtons(getToolbar(), delegate);
         }
         vb = DialogEditBookSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setSubtitle(delegate.getDialogSubtitle());
+        setSubtitle(delegate.getToolbarSubtitle());
 
         delegate.onViewCreated(vb);
     }
