@@ -235,7 +235,7 @@ public abstract class FFBaseDialogFragment<B>
                 // The cancel button is always hooked up with #onToolbarNavigationClick
                 button = buttonPanel.findViewById(R.id.btn_negative);
                 if (button != null) {
-                    button.setOnClickListener(this::onToolbarNavigationClick);
+                    button.setOnClickListener(delegate::onToolbarNavigationClick);
                 }
                 button = buttonPanel.findViewById(R.id.btn_positive);
                 if (button != null) {
@@ -386,16 +386,6 @@ public abstract class FFBaseDialogFragment<B>
         if (toolbar != null) {
             toolbar.setSubtitle(subtitle);
         }
-    }
-
-    /**
-     * Called when the user clicks the Navigation icon from the toolbar menu.
-     * The default action simply dismisses the dialog.
-     *
-     * @param v view
-     */
-    public void onToolbarNavigationClick(@NonNull final View v) {
-        dismiss();
     }
 
     @Override

@@ -212,6 +212,11 @@ public class CoverBrowserDialogFragment
     }
 
     @Override
+    public void onToolbarNavigationClick(@NonNull final View v) {
+        dismiss();
+    }
+
+    @Override
     public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         return false;
     }
