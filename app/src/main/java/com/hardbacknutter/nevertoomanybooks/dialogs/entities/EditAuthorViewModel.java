@@ -90,7 +90,7 @@ public class EditAuthorViewModel
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
             useAuthorType = serviceLocator.isFieldEnabled(DBKey.AUTHOR_TYPE__BITMASK);
 
-            currentEdit = new Author(author);
+            currentEdit = new Author(author, true);
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
         }

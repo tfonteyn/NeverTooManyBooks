@@ -83,7 +83,7 @@ public class EditTocEntryViewModel
             tocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
             editPosition = args.getInt(BKEY_POSITION, 0);
 
-            currentEdit = new TocEntry(new Author(tocEntry.getPrimaryAuthor()),
+            currentEdit = new TocEntry(new Author(tocEntry.getPrimaryAuthor(), true),
                                        tocEntry.getTitle(),
                                        tocEntry.getFirstPublicationDate());
 
