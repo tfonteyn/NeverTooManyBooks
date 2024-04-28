@@ -69,7 +69,7 @@ public class EditLenderBottomSheet
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

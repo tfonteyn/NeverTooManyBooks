@@ -59,7 +59,7 @@ public class EditLenderDialogFragment
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

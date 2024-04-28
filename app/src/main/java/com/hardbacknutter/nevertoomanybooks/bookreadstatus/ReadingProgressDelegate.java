@@ -217,7 +217,12 @@ class ReadingProgressDelegate
         vb.sliderPages.setValue(currentPage);
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         vm.getReadingProgress().setPercentage(parseInt(vb.percentage.getText(), 0));
         vm.getReadingProgress().setPages(parseInt(vb.currentPage.getText(), 0),
                                          parseInt(vb.totalPages.getText(), 1));

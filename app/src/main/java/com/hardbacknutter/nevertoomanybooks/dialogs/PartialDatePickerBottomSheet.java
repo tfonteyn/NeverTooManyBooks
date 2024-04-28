@@ -72,7 +72,7 @@ public class PartialDatePickerBottomSheet
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

@@ -133,7 +133,12 @@ public class EditLenderDelegate
         return false;
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         vm.setCurrentEdit(vb.lendTo.getText().toString().trim());
     }
 

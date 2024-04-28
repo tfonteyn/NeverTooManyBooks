@@ -58,7 +58,7 @@ public class EditBookshelfDialogFragment
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

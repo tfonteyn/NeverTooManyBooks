@@ -168,7 +168,12 @@ public class EditSeriesDelegate
         }
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         final Series currentEdit = vm.getCurrentEdit();
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());

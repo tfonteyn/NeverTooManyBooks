@@ -68,7 +68,7 @@ public class EditAuthorBottomSheet
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

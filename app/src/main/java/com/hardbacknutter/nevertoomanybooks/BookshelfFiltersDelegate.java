@@ -92,7 +92,7 @@ public class BookshelfFiltersDelegate
 
     }
 
-    void onStart() {
+    public void onStart() {
         if (vm.getFilterList().isEmpty()) {
             onAdd();
         }

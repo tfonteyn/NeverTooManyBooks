@@ -165,7 +165,12 @@ public class EditPublisherDelegate
         }
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         vm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
     }
 

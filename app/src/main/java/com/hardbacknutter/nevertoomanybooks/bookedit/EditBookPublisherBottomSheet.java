@@ -68,7 +68,7 @@ public class EditBookPublisherBottomSheet
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

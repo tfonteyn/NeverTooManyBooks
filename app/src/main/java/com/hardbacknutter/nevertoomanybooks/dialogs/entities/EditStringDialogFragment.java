@@ -53,7 +53,7 @@ public class EditStringDialogFragment
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

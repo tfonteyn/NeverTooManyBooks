@@ -20,11 +20,43 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public interface FlexDialogDelegate<B>
         extends ToolbarWithActionButtons {
+
+    /**
+     * To be called from {@link Fragment#onViewCreated(View, Bundle)}
+     *
+     * @param vb the view binding
+     */
+    void onViewCreated(@NonNull B vb);
+
+    /**
+     * To be called from {@link Fragment#onStart()}
+     */
+    default void onStart() {
+        // no action
+    }
+
+    /**
+     * To be called from {@link Fragment#onResume()}
+     */
+    default void onResume() {
+        // no action
+    }
+
+    /**
+     * To be called from {@link Fragment#onPause()}
+     */
+    default void onPause() {
+        // no action
+    }
 
     @Nullable
     default String getToolbarTitle() {
@@ -34,11 +66,5 @@ public interface FlexDialogDelegate<B>
     @Nullable
     default String getToolbarSubtitle() {
         return null;
-    }
-
-    void onViewCreated(@NonNull B vb);
-
-    default void viewToModel() {
-        // no action
     }
 }

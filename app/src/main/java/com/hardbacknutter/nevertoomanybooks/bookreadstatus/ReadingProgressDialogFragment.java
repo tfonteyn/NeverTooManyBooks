@@ -60,7 +60,7 @@ public class ReadingProgressDialogFragment
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

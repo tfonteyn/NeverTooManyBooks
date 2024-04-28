@@ -233,7 +233,12 @@ public class EditAuthorDelegate
                 .show();
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         final Author currentEdit = vm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());

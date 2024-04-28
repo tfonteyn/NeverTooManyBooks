@@ -72,7 +72,6 @@ public class EditBookshelfDelegate
 
     EditBookshelfDelegate(@NonNull final DialogFragment owner,
                           @NonNull final Bundle args) {
-
         this.owner = owner;
         vm = new ViewModelProvider(owner).get(EditBookshelfViewModel.class);
         vm.init(args);
@@ -165,7 +164,12 @@ public class EditBookshelfDelegate
         }
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         //noinspection DataFlowIssue
         vm.getCurrentEdit().setName(vb.bookshelf.getText().toString().trim());
     }

@@ -62,8 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 public class EditBookPublisherDelegate
         implements FlexDialogDelegate<DialogEditBookPublisherContentBinding> {
 
-    private static final String TAG = "EditBookPublisherDelega";
-
     @NonNull
     private final DialogFragment owner;
 
@@ -78,7 +76,6 @@ public class EditBookPublisherDelegate
 
     EditBookPublisherDelegate(@NonNull final DialogFragment owner,
                               @NonNull final Bundle args) {
-
         this.owner = owner;
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
 
@@ -150,7 +147,12 @@ public class EditBookPublisherDelegate
         return true;
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
     }
 

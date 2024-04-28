@@ -78,7 +78,6 @@ public class EditBookSeriesDelegate
 
     EditBookSeriesDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
-
         this.owner = owner;
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
 
@@ -154,7 +153,12 @@ public class EditBookSeriesDelegate
         return true;
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         final Series currentEdit = seriesVm.getCurrentEdit();
 
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());

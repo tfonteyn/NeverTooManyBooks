@@ -145,7 +145,12 @@ public class EditTocEntryDelegate
         return true;
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         final TocEntry currentEdit = vm.getCurrentEdit();
         //noinspection DataFlowIssue
         currentEdit.setTitle(vb.title.getText().toString().trim());

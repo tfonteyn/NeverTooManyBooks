@@ -61,7 +61,7 @@ public class EditBookAuthorDialogFragment
 
     @Override
     public void onPause() {
-        delegate.viewToModel();
+        delegate.onPause();
         super.onPause();
     }
 }

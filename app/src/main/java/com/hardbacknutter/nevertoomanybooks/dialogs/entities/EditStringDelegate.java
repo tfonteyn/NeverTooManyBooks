@@ -190,7 +190,12 @@ public class EditStringDelegate
         return currentText;
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         vm.setCurrentText(vb.editString.getText().toString().trim());
     }
 }

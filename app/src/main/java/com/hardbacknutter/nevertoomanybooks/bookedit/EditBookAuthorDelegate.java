@@ -69,8 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 public class EditBookAuthorDelegate
         implements FlexDialogDelegate<DialogEditBookAuthorContentBinding> {
 
-    private static final String TAG = "EditBookAuthorDelegate";
-
     /**
      * We create a list of all the Type checkboxes for easy handling.
      * The key is the Type.
@@ -93,7 +91,6 @@ public class EditBookAuthorDelegate
 
     EditBookAuthorDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
-
         this.owner = owner;
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
 
@@ -294,7 +291,12 @@ public class EditBookAuthorDelegate
                 .show();
     }
 
-    public void viewToModel() {
+    @Override
+    public void onPause() {
+        viewToModel();
+    }
+
+    private void viewToModel() {
         final Author currentEdit = authorVm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());
