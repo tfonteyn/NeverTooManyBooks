@@ -595,7 +595,7 @@ public class IsfdbSearchEngine
                 //TODO: like the year above, we could scan for
                 // "trans. of abc def 1976)" and use it as the DBKey.TITLE_ORIGINAL_LANG
 
-                toc.add(new TocEntry(author, title, year));
+                toc.add(new TocEntry(author, title, new PartialDate(year)));
             }
         }
         return toc;

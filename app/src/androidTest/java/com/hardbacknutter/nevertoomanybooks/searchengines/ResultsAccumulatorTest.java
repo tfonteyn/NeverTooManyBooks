@@ -30,6 +30,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -112,7 +113,7 @@ public class ResultsAccumulatorTest
         book.setToc(List.of(
                 new TocEntry(new Author("Pratchett", "Terry", false),
                              "The Shepherd's Crown",
-                             "2015-01-01")));
+                             new PartialDate("2015-01-01"))));
 
         book.putString(DBKey.FORMAT, "tp");
         book.putString(DBKey.FIRST_PUBLICATION__DATE, "2015");
@@ -351,7 +352,7 @@ public class ResultsAccumulatorTest
         book.setToc(List.of(
                 new TocEntry(new Author("Pratchett", "Terry", false),
                              "The Shepherd's Crown",
-                             "2015-01-01")));
+                             new PartialDate("2015-01-01"))));
 
         book.putString(DBKey.FORMAT, "Trade Paperback");
         book.putFloat(DBKey.RATING, 4.8f);

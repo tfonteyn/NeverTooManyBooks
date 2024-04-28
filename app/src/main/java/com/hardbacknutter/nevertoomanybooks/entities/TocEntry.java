@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,19 +94,6 @@ public class TocEntry
     public TocEntry(@NonNull final Author author,
                     @NonNull final String title) {
         this(author, title, new PartialDate(null));
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param author               Author of title
-     * @param title                Title
-     * @param firstPublicationDate year of first publication
-     */
-    public TocEntry(@NonNull final Author author,
-                    @NonNull final String title,
-                    @Nullable final String firstPublicationDate) {
-        this(author, title, new PartialDate(firstPublicationDate));
     }
 
     /**

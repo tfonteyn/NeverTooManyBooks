@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -78,11 +79,11 @@ public class TocEntryTest
         list.add(tocEntry);
 
         // keep, position 1
-        tocEntry = new TocEntry(author0, "title 2", "2019");
+        tocEntry = new TocEntry(author0, "title 2", new PartialDate("2019"));
         list.add(tocEntry);
 
         // discard after merging with position 0
-        tocEntry = new TocEntry(author0, "title 1", "1978");
+        tocEntry = new TocEntry(author0, "title 1", new PartialDate("1978"));
         list.add(tocEntry);
 
         // discard in favour of position 1

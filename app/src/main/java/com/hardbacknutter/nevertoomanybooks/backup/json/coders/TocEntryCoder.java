@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public class TocEntryCoder
         final TocEntry tocEntry = new TocEntry(
                 authorCoder.decode(data.getJSONObject(DBKey.FK_AUTHOR)),
                 data.getString(DBKey.TITLE),
-                data.optString(DBKey.FIRST_PUBLICATION__DATE));
+                new PartialDate(data.optString(DBKey.FIRST_PUBLICATION__DATE)));
 
         tocEntry.setId(data.getLong(DBKey.PK_ID));
 
