@@ -78,6 +78,7 @@ public abstract class DialogLauncher
 
     public static final String RK_STYLE_PICKER = "RK_STYLE_PICKER";
     public static final String RK_FILTERS = "RK_FILTERS";
+    public static final String RK_DATE_PICKER_PARTIAL = "RK_DATE_PICKER_PARTIAL";
 
     public static final String RK_EDIT_BOOK_AUTHOR = "RK_EDIT_BOOK_AUTHOR";
     public static final String RK_EDIT_BOOK_PUBLISHER = "RK_EDIT_BOOK_PUBLISHER";
@@ -105,7 +106,8 @@ public abstract class DialogLauncher
                     Map.entry(RK_EDIT_BOOK_TOC_ENTRY, EditTocEntryBottomSheet::new),
 
                     Map.entry(RK_STYLE_PICKER, StylePickerBottomSheet::new),
-                    Map.entry(RK_FILTERS, BookshelfFiltersBottomSheet::new)
+                    Map.entry(RK_FILTERS, BookshelfFiltersBottomSheet::new),
+                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerBottomSheet::new)
             );
     private static final Map<String, Supplier<DialogFragment>> DIALOG =
             Map.ofEntries(
@@ -128,7 +130,8 @@ public abstract class DialogLauncher
                     Map.entry(RK_EDIT_BOOK_TOC_ENTRY, EditTocEntryDialogFragment::new),
 
                     Map.entry(RK_STYLE_PICKER, StylePickerDialogFragment::new),
-                    Map.entry(RK_FILTERS, BookshelfFiltersDialogFragment::new)
+                    Map.entry(RK_FILTERS, BookshelfFiltersDialogFragment::new),
+                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerDialogFragment::new)
             );
     private static final String TAG = "DialogLauncher";
     /**

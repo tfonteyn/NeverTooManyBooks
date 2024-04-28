@@ -1,0 +1,287 @@
+/*
+ * @Copyright 2018-2024 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.dialogs;
+
+import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.NumberPicker;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
+
+/**
+ * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
+ * <p>
+ * Seems reasonable to disable relevant day/month pickers if one is invalid, but it's actually
+ * not very friendly when entering data for new books so we don't.
+ * So for instance, if a day/month/year are set, and the user select "--" (unset) the month,
+ * we leave the day setting unchanged.
+ * A final validity check is done when trying to accept the date.
+ */
+public class PartialDatePickerDelegate
+        implements FlexDialogDelegate<DialogPartialDatePickerContentBinding> {
+
+    private static final String TAG = "PartialDatePickerDelega";
+    /** Displayed to user: unset month. */
+    private static final String UNKNOWN_MONTH = "---";
+    /** Displayed to user: unset day. */
+    private static final String UNKNOWN_DAY = "--";
+    @NonNull
+    private final DialogFragment owner;
+
+    private PartialDatePickerViewModel vm;
+    private DialogPartialDatePickerContentBinding vb;
+
+    /** This listener is called after <strong>any change</strong> made to the pickers. */
+    private final NumberPicker.OnValueChangeListener valueChangeListener =
+            (picker, oldVal, newVal) -> {
+                final int pickerId = picker.getId();
+
+                if (pickerId == R.id.year) {
+                    vm.setYear(newVal);
+                    // only February can be different number of days
+                    if (vm.getMonth() == 2) {
+                        updateDaysInMonth();
+                    }
+
+                } else if (pickerId == R.id.month) {
+                    vm.setMonth(newVal);
+                    updateDaysInMonth();
+
+                } else if (pickerId == R.id.day) {
+                    vm.setDay(newVal);
+
+                } else {
+                    if (BuildConfig.DEBUG /* always */) {
+                        LoggerFactory.getLogger()
+                                     .d(TAG, "valueChangeListener", "id=" + picker.getId());
+                    }
+                }
+            };
+
+    PartialDatePickerDelegate(@NonNull final DialogFragment owner,
+                              @NonNull final Bundle args) {
+        this.owner = owner;
+
+        vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
+        vm.init(args);
+    }
+
+    /**
+     * Reorder the views in the dialog to suit the current Locale.
+     *
+     * @param root Root view
+     */
+    public void reorderPickers(@NonNull final View root) {
+        final char[] order;
+        try {
+            // This actually throws exception in some versions of Android, specifically when
+            // the Locale specific date format has the day name (EEE) in it. So we exit and
+            // just use our default order in these cases.
+            // See BC Issue #712.
+            order = DateFormat.getDateFormatOrder(root.getContext());
+        } catch (@NonNull final RuntimeException e) {
+            return;
+        }
+
+        // Default order is {year, month, day} so if that's the order do nothing.
+        if (order[0] == 'y' && order[1] == 'M') {
+            return;
+        }
+
+        // Remove the 3 pickers from their parent and add them back in the required order.
+        final ViewGroup parent = root.findViewById(R.id.dateSelector);
+        // Get the three views
+        final ConstraintLayout y = parent.findViewById(R.id.yearSelector);
+        final ConstraintLayout m = parent.findViewById(R.id.monthSelector);
+        final ConstraintLayout d = parent.findViewById(R.id.daySelector);
+        // Remove them
+        parent.removeAllViews();
+        // Re-add in the correct order.
+        for (final char c : order) {
+            switch (c) {
+                case 'd':
+                    parent.addView(d);
+                    break;
+                case 'M':
+                    parent.addView(m);
+                    break;
+                default:
+                    parent.addView(y);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final DialogPartialDatePickerContentBinding vb) {
+        this.vb = vb;
+
+        // 0: 'not set'
+        vb.year.setMinValue(0);
+        // we're optimistic...
+        vb.year.setMaxValue(2100);
+        vb.year.setOnValueChangedListener(valueChangeListener);
+
+        // 0: 'not set' + 1..12 real months
+        vb.month.setMinValue(0);
+        vb.month.setMaxValue(12);
+        vb.month.setDisplayedValues(getMonthAbbr());
+        vb.month.setOnValueChangedListener(valueChangeListener);
+
+        // 0: 'not set'
+        vb.day.setMinValue(0);
+        // Make sure that the picker can initially take any 'day' value. Otherwise,
+        // when a dialog is reconstructed after rotation, the 'day' field will not be
+        // restored by Android.
+        vb.day.setMaxValue(31);
+        vb.day.setFormatter(value -> value == 0 ? UNKNOWN_DAY : String.valueOf(value));
+        vb.day.setOnValueChangedListener(valueChangeListener);
+
+        // set the initial date
+        vb.year.setValue(vm.getYear() != 0 ? vm.getYear() : LocalDate.now().getYear());
+        vb.month.setValue(vm.getMonth());
+        vb.day.setValue(vm.getDay());
+        updateDaysInMonth();
+    }
+
+    @Nullable
+    @Override
+    public String getToolbarTitle() {
+        return vb.getRoot().getContext().getString(vm.getDialogTitleId());
+    }
+
+    @Override
+    public void onToolbarNavigationClick(@NonNull final View v) {
+        owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
+
+    @Override
+    public boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
+                if (saveChanges()) {
+                    owner.dismiss();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean saveChanges() {
+        if (vm.getDay() != 0 && vm.getMonth() == 0) {
+            Snackbar.make(vb.getRoot(), R.string.warning_if_day_set_month_and_year_must_be,
+                          Snackbar.LENGTH_LONG).show();
+
+        } else if (vm.getMonth() != 0 && vm.getYear() == 0) {
+            Snackbar.make(vb.getRoot(), R.string.warning_if_month_set_year_must_be,
+                          Snackbar.LENGTH_LONG).show();
+
+        } else {
+            PartialDatePickerLauncher.setResult(owner, vm.getRequestKey(),
+                                                vm.getFieldId(),
+                                                new PartialDate(vm.getYear(),
+                                                                vm.getMonth(),
+                                                                vm.getDay()));
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Generate the month names (abbreviated). There are 13: first entry being 'unknown'.
+     *
+     * @return short month names
+     */
+    @NonNull
+    private String[] getMonthAbbr() {
+        final Locale userLocale = vb.getRoot().getResources().getConfiguration().getLocales()
+                                    .get(0);
+        final String[] monthNames = new String[13];
+        monthNames[0] = UNKNOWN_MONTH;
+        for (int i = 1; i <= 12; i++) {
+            monthNames[i] = Month.of(i).getDisplayName(TextStyle.SHORT, userLocale);
+        }
+        return monthNames;
+    }
+
+    /**
+     * Depending on year/month selected, set the correct number of days.
+     */
+    private void updateDaysInMonth() {
+        int currentlySelectedDay = vm.getDay();
+
+        // Determine the total days if we have a valid month/year
+        int totalDays;
+        if (vm.getYear() != 0 && vm.getMonth() != 0) {
+            try {
+                // Should never throw here, but paranoia...
+                totalDays = LocalDate.of(vm.getYear(), vm.getMonth(), 1).lengthOfMonth();
+            } catch (@NonNull final DateTimeException e) {
+                totalDays = 31;
+            }
+        } else {
+            // allow the user to start inputting with day first.
+            totalDays = 31;
+        }
+
+        vb.day.setMaxValue(totalDays);
+
+        // Ensure selected day is valid
+        if (currentlySelectedDay == 0) {
+            vb.day.setValue(0);
+        } else {
+            if (currentlySelectedDay > totalDays) {
+                currentlySelectedDay = totalDays;
+            }
+            vb.day.setValue(currentlySelectedDay);
+        }
+    }
+
+}
