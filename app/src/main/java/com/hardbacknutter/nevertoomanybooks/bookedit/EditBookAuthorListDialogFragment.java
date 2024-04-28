@@ -64,6 +64,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Edit the list of Authors of a Book.
+ * FIXME: EditBook..ListDialogFragment is always forced fullscreen.
+ *  Remove the dependency on FFBaseDialogFragment/DialogFragment
+ *  and change to a regular Fragment
  */
 public class EditBookAuthorListDialogFragment
         extends FFBaseDialogFragment {

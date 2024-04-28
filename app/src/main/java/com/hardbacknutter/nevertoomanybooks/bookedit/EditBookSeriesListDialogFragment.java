@@ -60,6 +60,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Edit the list of Series of a Book.
+ * FIXME: EditBook..ListDialogFragment is always forced fullscreen.
+ *  Remove the dependency on FFBaseDialogFragment/DialogFragment
+ *  and change to a regular Fragment
  */
 public class EditBookSeriesListDialogFragment
         extends FFBaseDialogFragment {
