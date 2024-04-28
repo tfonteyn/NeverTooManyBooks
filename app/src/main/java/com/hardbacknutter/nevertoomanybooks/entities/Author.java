@@ -346,9 +346,11 @@ public class Author
      * Copy constructor.
      *
      * @param author to copy
+     * @param includeBookFields Flag to force copying the Book related fields as well
      */
-    public Author(@NonNull final Author author) {
-        copyFrom(author, true);
+    public Author(@NonNull final Author author,
+                  final boolean includeBookFields) {
+        copyFrom(author, includeBookFields);
     }
 
     /**
