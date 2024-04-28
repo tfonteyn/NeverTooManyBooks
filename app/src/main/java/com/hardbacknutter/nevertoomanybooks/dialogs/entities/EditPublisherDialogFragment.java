@@ -50,8 +50,8 @@ public class EditPublisherDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditPublisherContentBinding vb = DialogEditPublisherContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        final DialogEditPublisherContentBinding vb = DialogEditPublisherContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
 
         delegate.onViewCreated(vb);
     }

@@ -34,8 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
- * There is no matching BottomSheet class as we'll display
- * this component always fullscreen on small and medium size screens.
+ * There is no matching BottomSheet class as we're always displaying
+ * this component fullscreen on small and medium size screens.
  */
 public class CoverBrowserDialogFragment
         extends FFBaseDialogFragment<DialogCoverBrowserContentBinding> {
@@ -61,8 +61,8 @@ public class CoverBrowserDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogCoverBrowserContentBinding vb = DialogCoverBrowserContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        final DialogCoverBrowserContentBinding vb = DialogCoverBrowserContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
         setSubtitle(delegate.getToolbarSubtitle());
 
         delegate.onViewCreated(vb);

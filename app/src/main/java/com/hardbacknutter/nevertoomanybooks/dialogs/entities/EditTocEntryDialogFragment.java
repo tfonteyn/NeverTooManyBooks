@@ -28,11 +28,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-/**
- * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
- */
 public class EditTocEntryDialogFragment
         extends FFBaseDialogFragment<DialogEditBookTocContentBinding> {
 

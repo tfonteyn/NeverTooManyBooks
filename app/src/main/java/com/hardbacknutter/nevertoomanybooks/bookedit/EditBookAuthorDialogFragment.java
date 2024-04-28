@@ -52,8 +52,8 @@ public class EditBookAuthorDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditBookAuthorContentBinding vb = DialogEditBookAuthorContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        final DialogEditBookAuthorContentBinding vb = DialogEditBookAuthorContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
         setSubtitle(delegate.getToolbarSubtitle());
 
         delegate.onViewCreated(vb);

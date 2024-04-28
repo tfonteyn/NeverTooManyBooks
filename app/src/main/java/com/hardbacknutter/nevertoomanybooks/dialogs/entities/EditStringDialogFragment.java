@@ -44,8 +44,8 @@ public class EditStringDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditStringContentBinding vb = DialogEditStringContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        final DialogEditStringContentBinding vb = DialogEditStringContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
         setTitle(delegate.getToolbarTitle());
 
         delegate.onViewCreated(vb);

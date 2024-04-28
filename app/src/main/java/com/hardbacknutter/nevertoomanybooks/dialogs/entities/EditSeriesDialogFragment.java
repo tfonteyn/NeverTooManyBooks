@@ -50,8 +50,8 @@ public class EditSeriesDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditSeriesContentBinding vb = DialogEditSeriesContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        final DialogEditSeriesContentBinding vb = DialogEditSeriesContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
 
         delegate.onViewCreated(vb);
     }

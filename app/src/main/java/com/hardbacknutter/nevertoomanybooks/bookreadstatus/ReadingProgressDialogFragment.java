@@ -52,8 +52,8 @@ public class ReadingProgressDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogBookReadProgressContentBinding vb = DialogBookReadProgressContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        final DialogBookReadProgressContentBinding vb = DialogBookReadProgressContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
 
         delegate.onViewCreated(vb);
     }

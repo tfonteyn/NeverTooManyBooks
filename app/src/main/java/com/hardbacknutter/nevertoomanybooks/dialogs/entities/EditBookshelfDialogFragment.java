@@ -50,8 +50,8 @@ public class EditBookshelfDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditBookshelfContentBinding vb = DialogEditBookshelfContentBinding.bind(
-                view.findViewById(R.id.dialog_content));
+        final DialogEditBookshelfContentBinding vb = DialogEditBookshelfContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
 
         delegate.onViewCreated(vb);
     }
