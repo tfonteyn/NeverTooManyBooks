@@ -20,18 +20,25 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -44,11 +51,10 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListContentBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -66,12 +72,13 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 
 /**
  * Edit the list of Authors of a Book.
- * FIXME: EditBook..ListDialogFragment is always forced fullscreen.
- *  Remove the dependency on FFBaseDialogFragment/DialogFragment
- *  and change to a regular Fragment
+ * <p>
+ * DialogFragment: we need to display this on top of edit-book fragment(s)
+ * which run inside a ViewPager. It's just much easier to show this as a fullscreen dialog.
+ * We're going to show a Dialog/BottomSheet on top of it, so it should be fullscreen anyhow.
  */
 public class EditBookAuthorListDialogFragment
-        extends FFBaseDialogFragment<DialogEditBookAuthorListContentBinding>
+        extends DialogFragment
         implements FlexDialog {
 
     /** Fragment/Log tag. */
@@ -80,7 +87,7 @@ public class EditBookAuthorListDialogFragment
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
-    private DialogEditBookAuthorListContentBinding vb;
+    private DialogEditBookAuthorListBinding vb;
     /** the rows. */
     private List<Author> authorList;
     /** React to list changes. */
@@ -98,13 +105,6 @@ public class EditBookAuthorListDialogFragment
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditBookAuthorListDialogFragment() {
-        super(R.layout.dialog_edit_book_author_list, 0);
-    }
 
     /**
      * Constructor.
@@ -129,16 +129,31 @@ public class EditBookAuthorListDialogFragment
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditBookAuthorListBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        final Dialog dialog = new Dialog(requireContext(), R.style.Theme_App_FullScreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
+
+    @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getToolbar() != null) {
-            initToolbarActionButtons(getToolbar(), this);
-        }
-        vb = DialogEditBookAuthorListContentBinding.bind(view.findViewById(R.id.dialog_content));
-        // always fullscreen; title is fixed, no buttonPanel
-        setSubtitle(vm.getBook().getTitle());
+
+        initToolbarActionButtons(vb.toolbar, this);
+        vb.toolbar.setSubtitle(vm.getBook().getTitle());
 
         //noinspection DataFlowIssue
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
@@ -396,6 +411,29 @@ public class EditBookAuthorListDialogFragment
         // - just ASK the user with a "mod toc" or "no"
         // - don't bother, assume this won't be needed very often and
         //   have the user will do it manually
+    }
+
+    @Override
+    @CallSuper
+    public void onDismiss(@NonNull final DialogInterface dialog) {
+        // Depending on how we close the dialog, the onscreen keyboard sometimes stays up.
+        final View view = getView();
+        if (view != null) {
+            // dismiss it manually
+            hideKeyboard(view);
+        }
+        super.onDismiss(dialog);
+    }
+
+    /**
+     * Hide the keyboard.
+     *
+     * @param view a View from which we can get the window token.
+     */
+    private void hideKeyboard(@NonNull final View view) {
+        final InputMethodManager imm = (InputMethodManager)
+                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     /**
