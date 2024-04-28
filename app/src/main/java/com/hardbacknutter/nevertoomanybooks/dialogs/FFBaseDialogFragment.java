@@ -35,7 +35,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
@@ -253,11 +252,6 @@ public abstract class FFBaseDialogFragment<B>
         }
     }
 
-    @Nullable
-    public Toolbar getToolbar() {
-        return toolbar;
-    }
-
     /**
      * Fixes the dialog size for smaller screens when the dialog is not already full-screen.
      * <p>
@@ -358,17 +352,6 @@ public abstract class FFBaseDialogFragment<B>
     /**
      * Set the title of the toolbar.
      *
-     * @param resId Resource ID of a string to set as the title
-     */
-    public void setTitle(@StringRes final int resId) {
-        if (toolbar != null) {
-            toolbar.setTitle(resId);
-        }
-    }
-
-    /**
-     * Set the title of the toolbar.
-     *
      * @param title a string to set as the title
      */
     public void setTitle(@Nullable final CharSequence title) {
@@ -405,7 +388,7 @@ public abstract class FFBaseDialogFragment<B>
      *
      * @param view a View from which we can get the window token.
      */
-    protected void hideKeyboard(@NonNull final View view) {
+    private void hideKeyboard(@NonNull final View view) {
         final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
