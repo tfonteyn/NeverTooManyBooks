@@ -66,10 +66,15 @@ public interface ToolbarWithActionButtons {
      */
     boolean onToolbarButtonClick(@Nullable final View button);
 
-
-    default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+    /**
+     * Setup the Toolbar listeners.
+     *
+     * @param toolbar  to process
+     * @param listener to set
+     */
+    default void initToolbarActionButtons(@NonNull final Toolbar toolbar,
                                           @NonNull final ToolbarWithActionButtons listener) {
-        initToolbarActionButtons(dialogToolbar, 0, listener);
+        initToolbarActionButtons(toolbar, 0, listener);
     }
 
     /**
