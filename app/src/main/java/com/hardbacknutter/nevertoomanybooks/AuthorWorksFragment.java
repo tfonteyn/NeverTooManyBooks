@@ -40,7 +40,6 @@ import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +48,7 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.TocAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -99,7 +99,7 @@ public class AuthorWorksFragment
     /** The Adapter. */
     private TocAdapter adapter;
     /** View Binding. */
-    private RecyclerView worksListView;
+    private FragmentAuthorWorksBinding vb;
     private Menu rowMenu;
 
     @Override
@@ -119,14 +119,14 @@ public class AuthorWorksFragment
         menuLauncher.registerForFragmentResult(fm, this);
     }
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_author_works, container, false);
-        worksListView = view.findViewById(R.id.author_works);
-        return view;
+        vb = FragmentAuthorWorksBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     /**
@@ -200,11 +200,11 @@ public class AuthorWorksFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        worksListView.setHasFixedSize(true);
+        vb.authorWorks.setHasFixedSize(true);
 
         // Optional overlay
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
-        FastScroller.attach(worksListView, overlayType);
+        FastScroller.attach(vb.authorWorks, overlayType);
 
         adapter = new TocAdapter(context, vm.getStyle(), List.of(vm.getAuthor()), vm.getWorks());
 
@@ -238,7 +238,7 @@ public class AuthorWorksFragment
                 }
         );
 
-        worksListView.setAdapter(adapter);
+        vb.authorWorks.setAdapter(adapter);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(context, R.string.tip_authors_works, null);
