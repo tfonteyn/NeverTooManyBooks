@@ -17,24 +17,30 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditChecklistBinding;
 
-public class MultiChoiceDialogFragment
-        extends DialogFragment {
+/**
+ * Note that {@link #onDismiss(DialogInterface)} will <strong>save</strong> the selection.
+ */
+public class MultiChoiceBottomSheet
+        extends BottomSheetDialogFragment {
 
     private MultiChoiceDelegate delegate;
+    private DialogEditChecklistBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -42,24 +48,25 @@ public class MultiChoiceDialogFragment
         delegate = new MultiChoiceDelegate(this, requireArguments());
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditChecklistBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
 
-        final DialogEditChecklistBinding vb = DialogEditChecklistBinding.inflate(
-                getLayoutInflater(), null, false);
-        // Ensure the drag handle is visible.
-        vb.dragHandle.setVisibility(View.VISIBLE);
-
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         delegate.onViewCreated(vb);
+    }
 
-        //noinspection DataFlowIssue
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(vb.getRoot())
-                .setTitle(delegate.getDialogTitle())
-                .setIcon(null)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> delegate.saveChanges())
-                .create();
+    @Override
+    public void onDismiss(@NonNull final DialogInterface dialog) {
+        delegate.saveChanges();
+        super.onDismiss(dialog);
     }
 }
