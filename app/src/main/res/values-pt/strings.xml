@@ -792,4 +792,5 @@
     <string name="lbl_track_progress">Progresso</string>
     <string name="lbl_author_type_lettering">Letrista</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Deve ser maior ou igual à página atual</string>
+    <string name="info_builtin_style_asterix">(* estilos predefinidos)</string>
 </resources>

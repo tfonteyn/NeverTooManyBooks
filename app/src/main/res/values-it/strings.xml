@@ -766,4 +766,5 @@
     <string name="lbl_percentage_read">% lettura</string>
     <string name="lbl_track_progress">Progressi</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Deve essere maggiore o uguale alla pagina corrente</string>
+    <string name="info_builtin_style_asterix">(* stili predefiniti)</string>
 </resources>

@@ -795,4 +795,5 @@
 \n若要保留此数据，请考虑编辑系列，将其名称改为另一系列的名称。</string>
     <string name="option_isfdb_menu_populate_toc">填入标题（仅 ISFDB）</string>
     <string name="pt_maintenance">维护</string>
+    <string name="info_builtin_style_asterix">(默认样式）</string>
 </resources>

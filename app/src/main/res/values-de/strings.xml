@@ -762,4 +762,5 @@
     <string name="lbl_total_pages">Seiten insgesamt</string>
     <string name="lbl_track_progress">Fortschritt</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Muss größer oder gleich der aktuellen Seite sein</string>
+    <string name="info_builtin_style_asterix">(* Standardstile)</string>
 </resources>
