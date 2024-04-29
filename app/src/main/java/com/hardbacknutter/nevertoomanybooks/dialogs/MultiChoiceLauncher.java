@@ -50,14 +50,14 @@ public class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Constructor.
      *
-     * @param uiContext      Current context - this <strong>MUST</strong> be a UI context
+     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public MultiChoiceLauncher(@NonNull final Context uiContext,
+    public MultiChoiceLauncher(@NonNull final Context context,
                                @NonNull final String requestKey,
                                @NonNull final ResultListener resultListener) {
-        super(uiContext, requestKey);
+        super(context, requestKey);
         this.resultListener = resultListener;
     }
 
