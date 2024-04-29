@@ -48,6 +48,11 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerA
 
 /**
  * Replacement for the AlertDialog with radio button setup.
+ * <p>
+ * FIXME: not in use right now, but if we do use it, this needs
+ * ENHANCE: to be converted to dialog/bottom-sheet support
+ *
+ * @see MultiChoiceDelegate
  */
 public class SingleChoiceDialogFragment
         extends DialogFragment {
