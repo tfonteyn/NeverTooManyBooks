@@ -52,7 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -69,16 +70,6 @@ import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 public class EditBookFieldsFragment
         extends EditBookBaseFragment {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookFieldsFragment";
-
-    /** FragmentResultListener request key. */
-    private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + MultiChoiceDialogFragment.TAG;
-
-    private final MultiChoiceDialogFragment.Launcher<Bookshelf> editBookshelvesLauncher =
-            new MultiChoiceDialogFragment.Launcher<>(RK_EDIT_BOOKSHELVES,
-                                                     this::onBookshelvesSelection);
-
     /** The scanner. */
     private final ActivityResultLauncher<ScanOptions> scanLauncher =
             registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
@@ -87,10 +78,9 @@ public class EditBookFieldsFragment
                         //noinspection DataFlowIssue
                         SoundManager.beepOnBarcodeFound(getContext());
                     }));
-
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] coverHandler = new CoverHandler[2];
-
+    private MultiChoiceLauncher<Bookshelf> editBookshelvesLauncher;
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     /** Watch and clean the text entered in the ISBN field. */
@@ -111,6 +101,10 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //noinspection DataFlowIssue
+        editBookshelvesLauncher = new MultiChoiceLauncher<>(
+                getActivity(), DialogLauncher.RK_EDIT_BOOK_BOOKSHELVES,
+                this::onBookshelvesSelection);
         editBookshelvesLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 

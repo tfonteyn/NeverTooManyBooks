@@ -80,6 +80,7 @@ public abstract class DialogLauncher
     public static final String RK_FILTERS = "RK_FILTERS";
     public static final String RK_DATE_PICKER_PARTIAL = "RK_DATE_PICKER_PARTIAL";
 
+    public static final String RK_EDIT_BOOK_BOOKSHELVES = "RK_EDIT_BOOK_BOOKSHELVES";
     public static final String RK_EDIT_BOOK_AUTHOR = "RK_EDIT_BOOK_AUTHOR";
     public static final String RK_EDIT_BOOK_PUBLISHER = "RK_EDIT_BOOK_PUBLISHER";
     public static final String RK_EDIT_BOOK_SERIES = "RK_EDIT_BOOK_SERIES";
@@ -100,6 +101,7 @@ public abstract class DialogLauncher
                     Map.entry(DBKey.LANGUAGE, EditLanguageBottomSheet::new),
                     Map.entry(DBKey.LOCATION, EditLocationBottomSheet::new),
 
+                    Map.entry(RK_EDIT_BOOK_BOOKSHELVES, MultiChoiceBottomSheet::new),
                     Map.entry(RK_EDIT_BOOK_AUTHOR, EditBookAuthorBottomSheet::new),
                     Map.entry(RK_EDIT_BOOK_PUBLISHER, EditBookPublisherBottomSheet::new),
                     Map.entry(RK_EDIT_BOOK_SERIES, EditBookSeriesBottomSheet::new),
@@ -124,6 +126,7 @@ public abstract class DialogLauncher
                     Map.entry(DBKey.LANGUAGE, EditLanguageDialogFragment::new),
                     Map.entry(DBKey.LOCATION, EditLocationDialogFragment::new),
 
+                    Map.entry(RK_EDIT_BOOK_BOOKSHELVES, MultiChoiceDialogFragment::new),
                     Map.entry(RK_EDIT_BOOK_AUTHOR, EditBookAuthorDialogFragment::new),
                     Map.entry(RK_EDIT_BOOK_PUBLISHER, EditBookPublisherDialogFragment::new),
                     Map.entry(RK_EDIT_BOOK_SERIES, EditBookSeriesDialogFragment::new),
