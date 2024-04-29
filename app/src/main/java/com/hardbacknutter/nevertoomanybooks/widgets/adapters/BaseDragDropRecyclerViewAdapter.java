@@ -37,7 +37,29 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
- * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.
+ * This base class for implementing a RecyclerView supports the following features.
+ *
+ * <ul>
+ *     <li>
+ *         Drag&Drop support for re-arranging rows.
+ *         A {@link StartDragListener} must be passed into the constructor.</li>
+ *     <li>
+ *         Row-click events by setting a listener with
+ *         {@link #setOnRowClickListener(OnRowClickListener)}.
+ *         This listener will be propagated to all row ViewHolders.
+ *     </li>
+ *     <li>
+ *         A context menu which can be accessed via button at the end of a row,
+ *         or by long-clicking on the row, or both.
+ *         Set setting a listener with
+ *         {@link #setOnRowShowMenuListener(ExtMenuButton, OnRowClickListener)}.
+ *         This listener will be propagated to all row ViewHolders.
+ *     </li>
+ *     <li>
+ *         The listeners set on the adapter will receive the adapter position.
+ *         Use the latter to call {@link #getItem(int)} to get the row item.
+ *     </li>
+ * </ul>
  * <p>
  * See {@link CheckableDragDropViewHolder} for the matching base class for the ViewHolder.
  *
@@ -81,6 +103,7 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
 
     /**
      * Set the {@link OnRowClickListener} for a click on a row.
+     * This listener will be propagated to all row ViewHolders.
      *
      * @param listener to set
      */
@@ -90,6 +113,7 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
 
     /**
      * Set the {@link OnRowClickListener} for showing the context menu on a row.
+     * This listener will be propagated to all row ViewHolders.
      *
      * @param contextMenuMode how to show context menus
      * @param listener        to receive clicks
@@ -127,6 +151,13 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
         return items.size();
     }
 
+    /**
+     * Provides easy access for the listeners to access the row's item.
+     *
+     * @param position to fetch
+     *
+     * @return row item
+     */
     @NonNull
     public Item getItem(final int position) {
         return items.get(position);
