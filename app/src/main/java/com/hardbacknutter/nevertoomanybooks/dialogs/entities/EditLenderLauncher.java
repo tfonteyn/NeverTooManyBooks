@@ -20,12 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
 
@@ -42,14 +42,14 @@ public class EditLenderLauncher
     /**
      * Constructor.
      *
-     * @param activity       hosting Activity
+     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public EditLenderLauncher(@NonNull final FragmentActivity activity,
+    public EditLenderLauncher(@NonNull final Context context,
                               @NonNull final String requestKey,
                               @NonNull final ResultListener resultListener) {
-        super(activity, requestKey);
+        super(context, requestKey);
         this.resultListener = resultListener;
     }
 

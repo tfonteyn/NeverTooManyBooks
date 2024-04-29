@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
@@ -168,21 +168,20 @@ public abstract class DialogLauncher
     /**
      * Constructor.
      *
-     * @param activity   hosting Activity
+     * @param context    Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey FragmentResultListener request key to use for our response.
      */
-    protected DialogLauncher(@NonNull final FragmentActivity activity,
+    protected DialogLauncher(@NonNull final Context context,
                              @NonNull final String requestKey) {
         this.requestKey = requestKey;
-        this.dialogFragmentSupplier = getDialogSupplier(activity, requestKey);
+        this.dialogFragmentSupplier = getDialogSupplier(context, requestKey);
     }
 
     @NonNull
-    private Supplier<DialogFragment> getDialogSupplier(
-            @NonNull final FragmentActivity activity,
-            @NonNull final String requestKey) {
+    private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
+                                                       @NonNull final String requestKey) {
 
-        if (WindowSizeClass.getWidth(activity) == WindowSizeClass.Expanded) {
+        if (WindowSizeClass.getWidth(context) == WindowSizeClass.Expanded) {
             // Tablets use a Dialog
             return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
 

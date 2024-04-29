@@ -20,19 +20,19 @@
 
 package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
-public class ReadingProgressLauncher
+class ReadingProgressLauncher
         extends DialogLauncher {
 
     @NonNull
@@ -43,14 +43,14 @@ public class ReadingProgressLauncher
     /**
      * Constructor.
      *
-     * @param activity                  hosting Activity
+     * @param context                   Current context - this <strong>MUST</strong> be a UI context
      * @param onReadListener            listener for Read/Unread status updates
      * @param onReadingProgressListener listener for extended progress updates
      */
-    ReadingProgressLauncher(@NonNull final FragmentActivity activity,
+    ReadingProgressLauncher(@NonNull final Context context,
                             @NonNull final OnReadListener onReadListener,
                             @NonNull final OnReadingProgressListener onReadingProgressListener) {
-        super(activity, DBKey.READ_PROGRESS);
+        super(context, DBKey.READ_PROGRESS);
         this.onReadListener = onReadListener;
         this.onReadingProgressListener = onReadingProgressListener;
     }

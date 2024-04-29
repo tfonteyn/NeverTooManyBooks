@@ -20,17 +20,17 @@
 
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-public class BookshelfFiltersLauncher
+class BookshelfFiltersLauncher
         extends DialogLauncher {
 
     private static final String TAG = "BookshelfFiltersL";
@@ -42,14 +42,15 @@ public class BookshelfFiltersLauncher
 
     /**
      * Constructor.
-     * @param activity       hosting Activity
+     *
+     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    BookshelfFiltersLauncher(@NonNull final FragmentActivity activity,
+    BookshelfFiltersLauncher(@NonNull final Context context,
                              @NonNull final String requestKey,
                              @NonNull final ResultListener resultListener) {
-        super(activity, requestKey);
+        super(context, requestKey);
         this.resultListener = resultListener;
     }
 

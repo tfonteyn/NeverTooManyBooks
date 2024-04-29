@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.IdRes;
@@ -27,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -51,14 +51,14 @@ public class PartialDatePickerLauncher
     /**
      * Constructor.
      *
-     * @param activity       hosting Activity
+     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public PartialDatePickerLauncher(@NonNull final FragmentActivity activity,
+    public PartialDatePickerLauncher(@NonNull final Context context,
                                      @NonNull final String requestKey,
                                      @NonNull final ResultListener resultListener) {
-        super(activity, requestKey);
+        super(context, requestKey);
         this.resultListener = resultListener;
     }
 

@@ -20,11 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
 
@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
-public class StylePickerLauncher
+class StylePickerLauncher
         extends DialogLauncher {
 
     private static final String TAG = "StylePickerLauncher";
@@ -43,14 +43,15 @@ public class StylePickerLauncher
 
     /**
      * Constructor.
-     * @param activity       hosting Activity
+     *
+     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    StylePickerLauncher(@NonNull final FragmentActivity activity,
+    StylePickerLauncher(@NonNull final Context context,
                         @NonNull final String requestKey,
                         @NonNull final StylePickerLauncher.ResultListener resultListener) {
-        super(activity, requestKey);
+        super(context, requestKey);
         this.resultListener = resultListener;
     }
 

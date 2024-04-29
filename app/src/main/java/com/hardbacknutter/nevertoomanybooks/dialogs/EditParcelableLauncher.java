@@ -20,13 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
 
@@ -58,16 +58,16 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Constructor for doing {@link EditAction#Add} or {@link EditAction#Edit}.
      *
-     * @param activity       hosting Activity
+     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param onAddListener  results listener
      * @param onEditListener results listener
      */
-    public EditParcelableLauncher(@NonNull final FragmentActivity activity,
+    public EditParcelableLauncher(@NonNull final Context context,
                                   @NonNull final String requestKey,
                                   @NonNull final OnAddListener<T> onAddListener,
                                   @NonNull final OnEditListener<T> onEditListener) {
-        super(activity, requestKey);
+        super(context, requestKey);
         this.onAddListener = onAddListener;
         this.onEditListener = onEditListener;
         this.onEditInPlaceListener = null;
@@ -76,14 +76,14 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Constructor for doing {@link EditAction#EditInPlace}.
      *
-     * @param activity              hosting Activity
+     * @param context               Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey            FragmentResultListener request key to use for our response.
      * @param onEditInPlaceListener results listener
      */
-    public EditParcelableLauncher(@NonNull final FragmentActivity activity,
+    public EditParcelableLauncher(@NonNull final Context context,
                                   @NonNull final String requestKey,
                                   @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
-        super(activity, requestKey);
+        super(context, requestKey);
         this.onAddListener = null;
         this.onEditListener = null;
         this.onEditInPlaceListener = onEditInPlaceListener;
