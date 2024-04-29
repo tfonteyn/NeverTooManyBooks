@@ -396,13 +396,14 @@ public class PreferredStylesFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final Holder holder = new Holder(
-                    RowEditPreferredStylesBinding.inflate(getLayoutInflater(), parent, false));
+            final RowEditPreferredStylesBinding vb = RowEditPreferredStylesBinding.inflate(
+                    getLayoutInflater(), parent, false);
+            final Holder holder = new Holder(vb);
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
 
             holder.setOnItemCheckChangedListener(this::togglePreferredStatus);
 
-            holder.setOnRowClickListener(rowClickListener);
-            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 
