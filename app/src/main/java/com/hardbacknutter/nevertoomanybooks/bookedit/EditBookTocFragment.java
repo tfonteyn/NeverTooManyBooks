@@ -734,12 +734,11 @@ public class EditBookTocFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final Holder holder = new Holder(
-                    RowEditTocEntryBinding.inflate(getLayoutInflater(), parent, false));
-
+            final RowEditTocEntryBinding vb = RowEditTocEntryBinding.inflate(
+                    getLayoutInflater(), parent, false);
+            final Holder holder = new Holder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
-
             return holder;
         }
 
