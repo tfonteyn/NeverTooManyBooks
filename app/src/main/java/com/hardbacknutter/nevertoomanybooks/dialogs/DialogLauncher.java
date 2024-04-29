@@ -183,15 +183,15 @@ public abstract class DialogLauncher
     @NonNull
     private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
                                                        @NonNull final String requestKey) {
-
-        if (WindowSizeClass.getWidth(context) == WindowSizeClass.Expanded) {
-            // Tablets use a Dialog
-            return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
-
-        } else {
-            // Phones use a BottomSheet
-            return Objects.requireNonNull(BOTTOM_SHEET.get(requestKey), requestKey);
+        final Type type = Type.which(context);
+        switch (type) {
+            case Dialog:
+                return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
+            case BottomSheet:
+                return Objects.requireNonNull(BOTTOM_SHEET.get(requestKey), requestKey);
         }
+
+        throw new IllegalArgumentException("requestKey=" + requestKey + ", type=" + type);
     }
 
     /**
