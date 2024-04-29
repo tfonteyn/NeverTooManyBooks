@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
@@ -44,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleGroupsBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleGroupsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -155,16 +155,16 @@ public class StyleGroupsFragment
             extends CheckableDragDropViewHolder {
 
         @NonNull
-        private final TextView groupNameView;
+        private final RowEditStyleGroupsBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            groupNameView = itemView.findViewById(R.id.booklist_group_name);
+        Holder(@NonNull final RowEditStyleGroupsBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
 
         void onBind(@NonNull final StyleViewModel.WrappedGroup wrappedGroup) {
             final Context context = itemView.getContext();
-            groupNameView.setText(wrappedGroup.getGroup().getLabel(context));
+            vb.booklistGroupName.setText(wrappedGroup.getGroup().getLabel(context));
             setChecked(wrappedGroup.isPresent());
         }
     }
@@ -190,9 +190,9 @@ public class StyleGroupsFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_style_groups, parent, false);
-            final Holder holder = new Holder(view);
+            final RowEditStyleGroupsBinding vb = RowEditStyleGroupsBinding
+                    .inflate(getLayoutInflater(), parent, false);
+            final Holder holder = new Holder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
 
