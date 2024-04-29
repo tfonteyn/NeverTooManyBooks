@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -40,14 +39,12 @@ public class ExtMenuLauncher
     static final String BKEY_TITLE = TAG + ":t";
     static final String BKEY_MESSAGE = TAG + ":msg";
     static final String BKEY_MENU = TAG + ":menu";
-
-    private static final String RESULT_MENU_ITEM = TAG + ":mi";
-
     /**
      * Typically the adapter-position (includes {@code 0}) for the View/item which
      * owns the menu. But can also be a generic id.
      */
     static final String BKEY_MENU_OWNER = TAG + ":owner";
+    private static final String RESULT_MENU_ITEM = TAG + ":mi";
 
     @NonNull
     private final ExtMenuResultListener resultListener;
@@ -113,20 +110,6 @@ public class ExtMenuLauncher
         args.putParcelableArrayList(BKEY_MENU, items);
 
         createDialog(args);
-    }
-
-    public void launch(@NonNull final View v,
-                       @NonNull final ExtMenuPopupWindow.Location location,
-                       final int adapterPosition,
-                       @Nullable final CharSequence menuTitle,
-                       @NonNull final Menu menu,
-                       final boolean groupDividerEnabled) {
-        new ExtMenuPopupWindow(v.getContext())
-                .setTitle(menuTitle)
-                .setListener(resultListener)
-                .setPosition(adapterPosition)
-                .setMenu(menu, groupDividerEnabled)
-                .show(v, location);
     }
 
     @Override
