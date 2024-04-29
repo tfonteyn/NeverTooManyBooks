@@ -168,7 +168,7 @@
     <string name="vldt_integer_expected_for_x">应为“%1$s”的整数值</string>
     <string name="warning_x_already_exists">%1$s已存在。</string>
     <string name="warning_select_at_least_1_field">选择至少一个字段进行更新。</string>
-    <string name="warning_cannot_delete_1st_bs">无法删除第一个书架。</string>
+    <string name="warning_cannot_delete_1st_bs">第一个书架不能删除。</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s”不是有效代码</string>
     <string name="warning_no_editions">没有可用的附加版本信息。</string>
     <string name="warning_no_matching_book_found">找不到匹配的书</string>
@@ -255,7 +255,6 @@
     <string name="book_format_hardcover_oblong">精装本 - 长方形</string>
     <string name="book_color_support_color">双色</string>
     <string name="style_builtin_author_year">作者，年</string>
-    <string name="lbl_styles_long">书单样式</string>
     <string name="lbl_defaults">默认操作</string>
     <string name="style_type_builtin">自带</string>
     <string name="tip_reset_all">重置提示</string>
@@ -649,6 +648,7 @@
     <string name="lbl_table_of_content_entry">目录条目</string>
     <string name="info_maintenance_sync_deleted_book_records">这将检查从另一设备导入文件中的已删除图书历史。换句话说，在那台设备上删除的图书，也会将其在本设备上删除。</string>
     <string name="lbl_login_to_search">登录以搜索</string>
+    <string name="lbl_styles_long">书架造型</string>
     <string name="lbl_sync_date">自从</string>
     <string name="pt_show_title_reordered">将标题显示为…</string>
     <string name="option_info_lbl_archive_is_export_only">仅用于数据导出；不支持导入。</string>

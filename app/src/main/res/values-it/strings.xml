@@ -234,7 +234,7 @@
     <string name="lbl_date_added_year">Anno di inserimento</string>
     <string name="pc_lists">Liste</string>
     <string name="pc_advanced_options">Avanzate</string>
-    <string name="lbl_all_bookshelves">Tutte le biblioteche</string>
+    <string name="lbl_all_bookshelves">Tutte le librerie</string>
     <string name="lbl_book_type_anthology">Antologia</string>
     <string name="lbl_archive_format">Formato</string>
     <string name="option_info_archive_format_db">Il database SQLite.</string>
@@ -271,8 +271,8 @@
     <string name="pc_book_detail_screen">Pagina dei dettagli del libro</string>
     <string name="lbl_book_type">Tipo di libro</string>
     <string name="lbl_books">Libri</string>
-    <string name="lbl_bookshelf">Biblioteca</string>
-    <string name="lbl_bookshelves">Biblioteche</string>
+    <string name="lbl_bookshelf">Libreria</string>
+    <string name="lbl_bookshelves">Librerie</string>
     <string name="lbl_calibre_content_server">Server di contenuti Calibre</string>
     <string name="info_calibre_content_server_extension">L’estensione del server dei contenuti Calibre non è installata. Le biblioteche virtuali non saranno disponibili.</string>
     <string name="lbl_certificate_ca">Certificato CA</string>
@@ -410,7 +410,7 @@
     <string name="option_isbn_strict">ISBN rigoroso</string>
     <string name="lbl_style">Stile</string>
     <string name="lbl_styles">Stili</string>
-    <string name="lbl_styles_long">Stili elenco libri</string>
+    <string name="lbl_styles_long">Stile della libreria</string>
     <string name="lbl_sync_date">Da quando</string>
     <string name="lbl_tab_alternative_editions">Edizioni alt.</string>
     <string name="lbl_tab_details">Dettagli</string>
@@ -653,7 +653,7 @@
     <string name="warning_backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
     <string name="warning_book_not_always_found">Non tutti i siti hanno restituito dati validi.</string>
     <string name="warning_book_not_found">Impossibile trovare il libro specificato.</string>
-    <string name="warning_cannot_delete_1st_bs">Impossibile cancellare la prima libreria.</string>
+    <string name="warning_cannot_delete_1st_bs">La prima libreria non può essere eliminata.</string>
     <string name="warning_enable_at_least_1_website">Abilita almeno un sito Web per ogni categoria.</string>
     <string name="warning_export_contains_no_data">Non c’era niente da esportare.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>

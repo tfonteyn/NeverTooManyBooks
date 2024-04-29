@@ -408,7 +408,7 @@
     <string name="option_isbn_strict">Αυστηρό ISBN</string>
     <string name="lbl_style">Στυλ</string>
     <string name="lbl_styles">στυλ</string>
-    <string name="lbl_styles_long">Στυλ λίστας βιβλίων</string>
+    <string name="lbl_styles_long">Διαμόρφωση βιβλιοθήκης</string>
     <string name="lbl_sync_date">Από</string>
     <string name="lbl_tab_alternative_editions">Εναλλακτικές εκδόσεις</string>
     <string name="lbl_tab_details">Λεπτομέρειες</string>
@@ -650,7 +650,7 @@
     <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
     <string name="warning_book_not_always_found">Δεν επέστρεψαν όλοι οι ιστότοποι έγκυρα δεδομένα.</string>
     <string name="warning_book_not_found">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο.</string>
-    <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
+    <string name="warning_cannot_delete_1st_bs">Η πρώτη βιβλιοθήκη δεν μπορεί να διαγραφεί.</string>
     <string name="warning_enable_at_least_1_website">Ενεργοποιήστε τουλάχιστον έναν ιστότοπο για κάθε κατηγορία.</string>
     <string name="warning_export_contains_no_data">Δεν υπήρχε τίποτα για εξαγωγή.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Αν προσδιοριστεί ημέρα, τότε πρέπει να προσδιοριστεί επίσης μήνας και έτος.</string>

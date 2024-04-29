@@ -25,7 +25,6 @@
 ]>
 <!--suppress LongLine --><resources>
     <string name="lbl_styles">Stílar</string>
-    <string name="lbl_styles_long">Bóklistastílar</string>
     <string name="style_type_builtin">Innbygt</string>
     <string name="style_type_user_defined">Brúkaraskilmarkað</string>
     <string name="lbl_group_1st_char_series_title">1. stavur í bókaraðheitinum</string>

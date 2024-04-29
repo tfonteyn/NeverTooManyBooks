@@ -407,7 +407,7 @@
     <string name="option_isbn_strict">Strikte ISBN</string>
     <string name="lbl_style">Stil</string>
     <string name="lbl_styles">Stile</string>
-    <string name="lbl_styles_long">Stile der Bücherlisten</string>
+    <string name="lbl_styles_long">Bücherregal-Styling</string>
     <string name="lbl_sync_date">Seit</string>
     <string name="lbl_tab_alternative_editions">Alt. Editionen</string>
     <string name="lbl_tab_details">Details</string>

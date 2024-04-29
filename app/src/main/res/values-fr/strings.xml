@@ -411,7 +411,7 @@
     <string name="option_isbn_strict">ISBN strict</string>
     <string name="lbl_style">Style</string>
     <string name="lbl_styles">Les styles</string>
-    <string name="lbl_styles_long">Styles de liste de livres</string>
+    <string name="lbl_styles_long">Style d\'une bibliothèque</string>
     <string name="lbl_sync_date">Depuis</string>
     <string name="lbl_tab_alternative_editions">Éditions alt.</string>
     <string name="lbl_tab_details">Détails</string>
@@ -654,7 +654,7 @@
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
     <string name="warning_book_not_always_found">Pas tous les sites ont renvoyé de données valides.</string>
     <string name="warning_book_not_found">Impossible de trouver le livre demandé.</string>
-    <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque.</string>
+    <string name="warning_cannot_delete_1st_bs">La première bibliothèquene peut pas être supprimée.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
     <string name="warning_export_contains_no_data">Il n’y avait rien à exporter.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>

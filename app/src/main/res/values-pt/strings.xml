@@ -224,7 +224,7 @@
     <string name="warning_requires_isbn">Esta ação requer um ISBN válido.</string>
     <string name="warning_image_not_found">A imagem não pôde ser encontrada.</string>
     <string name="warning_no_editions">Nenhuma informação adicional de edição disponível.</string>
-    <string name="warning_cannot_delete_1st_bs">Não é possível excluir a 1ª prateleira.</string>
+    <string name="warning_cannot_delete_1st_bs">A primeira Prateleira não pode ser eliminada.</string>
     <string name="warning_if_month_set_year_must_be">Se um mês é especificado, então um ano também deve ser especificado.</string>
     <string name="warning_toc_confirm">Por favor, confirme que estes títulos estão (maioritariamente) corretos.</string>
     <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD?</string>
@@ -270,7 +270,6 @@
     <string name="book_format_other">Outro</string>
     <string name="book_format_ebook">livro eletrónico</string>
     <string name="lbl_style">Estilo</string>
-    <string name="lbl_styles_long">Estilos de lista de livros</string>
     <string name="lbl_group_1st_char_publisher_name">1º caracter do nome da Editora</string>
     <string name="lbl_edition_first_edition">Primeira Edição</string>
     <string name="lbl_edition_first_impression">Primeira impressão</string>
@@ -510,6 +509,7 @@
     <string name="lbl_library">Biblioteca</string>
     <string name="X_action_customize">Personalizar…</string>
     <string name="confirm_continue">Tem certeza de que deseja continuar\?</string>
+    <string name="lbl_styles_long">Estilo de prateleira</string>
     <string name="lbl_sync_date">Desde</string>
     <string name="size_x_large">Muito Grande</string>
     <string name="option_fab_add_book_manually">Adicionar manualmente</string>

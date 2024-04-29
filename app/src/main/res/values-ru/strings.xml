@@ -423,7 +423,7 @@
     <string name="option_isbn_strict">Строгий ISBN</string>
     <string name="lbl_style">стиль</string>
     <string name="lbl_styles">стили</string>
-    <string name="lbl_styles_long">Cтили списка книг</string>
+    <string name="lbl_styles_long">Стиль книжной полки</string>
     <string name="lbl_sync_date">C</string>
     <string name="lbl_tab_alternative_editions">Альтернативные издания</string>
     <string name="lbl_tab_details">Сведения</string>
@@ -661,7 +661,7 @@
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
     <string name="warning_book_not_always_found">Не все сайты вернули достоверные данные.</string>
     <string name="warning_book_not_found">Поиск указанной книги не удался.</string>
-    <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку.</string>
+    <string name="warning_cannot_delete_1st_bs">Первая книжная полка не может быть удалена.</string>
     <string name="warning_enable_at_least_1_website">Включите хотя бы один веб-сайт для каждой категории.</string>
     <string name="warning_export_contains_no_data">Экспортировать было нечего.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Если указан день, также необходимо указать месяц и год.</string>

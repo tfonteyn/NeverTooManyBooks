@@ -422,7 +422,7 @@
     <string name="option_isbn_strict">Přísné ISBN</string>
     <string name="lbl_style">Styl</string>
     <string name="lbl_styles">Styly</string>
-    <string name="lbl_styles_long">Styly pro seznam knih</string>
+    <string name="lbl_styles_long">Stylování knihovny</string>
     <string name="lbl_sync_date">Od té doby</string>
     <string name="lbl_tab_alternative_editions">Alt. vydání</string>
     <string name="lbl_tab_details">Podrobnosti</string>
@@ -660,7 +660,7 @@
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu?</string>
     <string name="warning_book_not_always_found">Ne všechny weby vrátily platná data.</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu.</string>
-    <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
+    <string name="warning_cannot_delete_1st_bs">První knihovnu nelze odstranit.</string>
     <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
     <string name="warning_export_contains_no_data">Nebylo co vyvážet.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>

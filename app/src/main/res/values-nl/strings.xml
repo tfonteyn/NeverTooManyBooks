@@ -391,7 +391,7 @@
     <string name="lbl_storage_settings">Opslagruimte</string>
     <string name="lbl_style">Stijl</string>
     <string name="lbl_styles">Stijl</string>
-    <string name="lbl_styles_long">Boekenlijst Stijlen</string>
+    <string name="lbl_styles_long">Boekenplank styling</string>
     <string name="lbl_sync_date">Sinds</string>
     <string name="lbl_system_default">(Systeemstandaard)</string>
     <string name="lbl_tab_alternative_editions">Alt. edities</string>
@@ -671,7 +671,7 @@
     <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken?</string>
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
     <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden.</string>
-    <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden.</string>
+    <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet worden verwijderd.</string>
     <string name="warning_enable_at_least_1_website">Schakel ten minste één website in voor elke categorie.</string>
     <string name="warning_export_contains_no_data">Er viel niets te exporteren.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Als de dag is gespecificeerd dan moet ook de maand en het jaar ingevuld worden.</string>

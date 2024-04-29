@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -332,7 +332,7 @@ public class ZipArchiveReader
             // Seek the styles record first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (recordTypes.contains(RecordType.Styles)) {
-                progressListener.publishProgress(1, context.getString(R.string.lbl_styles_long));
+                progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
                 final Optional<ArchiveReaderRecord> record = seek(RecordType.Styles);
                 if (record.isPresent()) {
                     readRecord(context, recordTypes, record.get(), progressListener);

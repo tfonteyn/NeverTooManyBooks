@@ -243,7 +243,7 @@
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <!-- Search using a websites native book-id -->
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
-    <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf.</string>
+    <string name="warning_cannot_delete_1st_bs">The first Bookshelf cannot be deleted.</string>
     <!-- When the user tries to add e.g. an Author which is already listed on the book -->
     <string name="warning_already_in_list">Already in the list!</string>
     <!-- result of a search -->
@@ -535,7 +535,7 @@
     <!-- Multiple Styles - Short label. -->
     <string name="lbl_styles">Styles</string>
     <!-- Multiple Styles - Long label. -->
-    <string name="lbl_styles_long">Booklist styles</string>
+    <string name="lbl_styles_long">Bookshelf styling</string>
     <!-- Style type -->
     <string name="style_type_builtin">Builtin</string>
     <!-- Style type -->

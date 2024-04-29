@@ -467,7 +467,7 @@
     <!-- Multiple Styles - Short label. -->
     <string name="lbl_styles">Đa phong cách</string>
     <!-- Multiple Styles - Long label. -->
-    <string name="lbl_styles_long">Kiểu danh mục sách</string>
+    <string name="lbl_styles_long">Kiểu dáng kệ sách</string>
     <!-- Style type -->
     <string name="style_type_builtin">Tích hợp</string>
     <!-- Style type -->

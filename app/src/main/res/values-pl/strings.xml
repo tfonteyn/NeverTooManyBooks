@@ -426,7 +426,7 @@
     <string name="option_isbn_strict">Ścisły ISBN</string>
     <string name="lbl_style">Styl</string>
     <string name="lbl_styles">Style</string>
-    <string name="lbl_styles_long">Style listy książek</string>
+    <string name="lbl_styles_long">Stylizacja półek</string>
     <string name="lbl_sync_date">Odkąd</string>
     <string name="lbl_tab_alternative_editions">Alt. wer.</string>
     <string name="lbl_tab_details">Szczegóły</string>
@@ -664,7 +664,7 @@
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
     <string name="warning_book_not_always_found">Nie wszystkie witryny zwróciły prawidłowe dane.</string>
     <string name="warning_book_not_found">Nie mogę znaleźć tej książki.</string>
-    <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki.</string>
+    <string name="warning_cannot_delete_1st_bs">Pierwszej półki nie można usunąć.</string>
     <string name="warning_enable_at_least_1_website">Włącz przynajmniej jedną stronę internetową dla każdej kategorii.</string>
     <string name="warning_export_contains_no_data">Nie było co eksportować.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Jeśli określono dzień, należy również określić miesiąc i rok.</string>

@@ -245,7 +245,7 @@
     <string name="lbl_date_added_year">Año de inclusión</string>
     <string name="pc_lists">Liza</string>
     <string name="pc_advanced_options">Ajustes avanzados</string>
-    <string name="lbl_all_bookshelves">Todas las bibliotecas</string>
+    <string name="lbl_all_bookshelves">Todas las estanterías</string>
     <string name="lbl_book_type_anthology">Antología</string>
     <string name="lbl_archive_format">Formato</string>
     <string name="option_info_archive_format_db">La base de datos SQLite.</string>
@@ -282,8 +282,8 @@
     <string name="pc_book_detail_screen">Página de detalles del libro</string>
     <string name="lbl_book_type">tipo de libro</string>
     <string name="lbl_books">Libros</string>
-    <string name="lbl_bookshelf">Biblioteca</string>
-    <string name="lbl_bookshelves">Bibliotecas</string>
+    <string name="lbl_bookshelf">Estantería</string>
+    <string name="lbl_bookshelves">Estanterías</string>
     <string name="lbl_calibre_content_server">Servidor de contenido de Calibre</string>
     <string name="info_calibre_content_server_extension">La extensión del servidor de contenido de Calibre no está instalada. Las bibliotecas virtuales no estarán disponibles.</string>
     <string name="lbl_certificate_ca">Certificado de CA</string>
@@ -421,7 +421,7 @@
     <string name="option_isbn_strict">ISBN estricto</string>
     <string name="lbl_style">Estilo</string>
     <string name="lbl_styles">Estilos</string>
-    <string name="lbl_styles_long">Estilos del listado de libros</string>
+    <string name="lbl_styles_long">Estilo estantería</string>
     <string name="lbl_sync_date">Ya que</string>
     <string name="lbl_tab_alternative_editions">Ediciones Alt.</string>
     <string name="lbl_tab_details">Detalles</string>
@@ -663,7 +663,7 @@
     <string name="warning_backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
     <string name="warning_book_not_always_found">No todos los sitios devolvieron datos válidos.</string>
     <string name="warning_book_not_found">No se ha encontrado el libro especificado.</string>
-    <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar.</string>
+    <string name="warning_cannot_delete_1st_bs">La primera estantería no se puede borrar.</string>
     <string name="warning_enable_at_least_1_website">Habilite al menos un sitio web para cada categoría.</string>
     <string name="warning_export_contains_no_data">No había nada que exportar.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Si se especifica un día, deben especificarse también el mes y el año.</string>
