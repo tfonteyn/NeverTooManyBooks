@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,14 +49,17 @@ import androidx.window.layout.WindowMetricsCalculator;
  * Never change the order!
  */
 public enum WindowSizeClass {
+    /** Small/older devices. */
     Compact,
+    /** Typical 5 or 6" phones. */
     Medium,
+    /** Tablets or other large screens. */
     Expanded;
 
     /**
      * Get the identifier for the current display.
      * <p>
-     * Based on the official Google boundaries of 600 and 840.
+     * Based on the official Google boundaries of {@code 600} and {@code 840}.
      *
      * @param activity to use
      *
@@ -78,6 +81,15 @@ public enum WindowSizeClass {
         }
     }
 
+    /**
+     * Get the identifier for the current display.
+     * <p>
+     * Based on the official Google boundaries of {@code 480} and {@code 900}.
+     *
+     * @param activity to use
+     *
+     * @return WindowSizeClass
+     */
     @NonNull
     public static WindowSizeClass getHeight(@NonNull final Activity activity) {
         final WindowMetrics metrics = WindowMetricsCalculator
@@ -96,11 +108,17 @@ public enum WindowSizeClass {
 
     @NonNull
     public static WindowSizeClass getWidth(@NonNull final Context context) {
+        if (context instanceof Activity) {
+            return getWidth((Activity) context);
+        }
         return getWidth(getActivity(context));
     }
 
     @NonNull
     public static WindowSizeClass getHeight(@NonNull final Context context) {
+        if (context instanceof Activity) {
+            return getWidth((Activity) context);
+        }
         return getHeight(getActivity(context));
     }
 
@@ -109,7 +127,7 @@ public enum WindowSizeClass {
      * <p>
      * This code is based on "androidx.window.layout.util.ContextUtils.unwrapUiContext"
      *
-     * @param context Current context
+     * @param context Current context - this <strong>MUST</strong> be a UI context
      *
      * @return Activity
      *
