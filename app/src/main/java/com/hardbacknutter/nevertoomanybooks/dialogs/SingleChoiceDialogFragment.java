@@ -25,7 +25,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -33,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -43,6 +41,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseOneBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
@@ -110,14 +109,14 @@ public class SingleChoiceDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressLint("InflateParams")
-        final View view = getLayoutInflater().inflate(R.layout.dialog_choose_one, null);
+        final DialogChooseOneBinding vb = DialogChooseOneBinding
+                .inflate(getLayoutInflater(), null, false);
 
-        final TextView messageView = view.findViewById(R.id.message);
         if (dialogMessage != null && !dialogMessage.isEmpty()) {
-            messageView.setText(dialogMessage);
-            messageView.setVisibility(View.VISIBLE);
+            vb.message.setText(dialogMessage);
+            vb.message.setVisibility(View.VISIBLE);
         } else {
-            messageView.setVisibility(View.GONE);
+            vb.message.setVisibility(View.GONE);
         }
 
         final Context context = getContext();
@@ -129,11 +128,10 @@ public class SingleChoiceDialogFragment
                                                 selectedItem,
                                                 id -> selectedItem = id);
 
-        final RecyclerView listView = view.findViewById(R.id.item_list);
-        listView.setAdapter(adapter);
+        vb.itemList.setAdapter(adapter);
 
         return new MaterialAlertDialogBuilder(context)
-                .setView(view)
+                .setView(vb.getRoot())
                 .setTitle(dialogTitle)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> saveChanges())
