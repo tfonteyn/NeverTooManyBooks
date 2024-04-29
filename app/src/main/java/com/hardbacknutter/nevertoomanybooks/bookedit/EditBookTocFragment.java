@@ -482,6 +482,8 @@ public class EditBookTocFragment
      * Dialog that shows the downloaded TOC titles for approval by the user.
      * <p>
      * Show with the {@link Fragment#getChildFragmentManager()}
+     *
+     * URGENT: needs converting to Dialog/BottomSheet
      */
     public static class ConfirmTocDialogFragment
             extends DialogFragment {
