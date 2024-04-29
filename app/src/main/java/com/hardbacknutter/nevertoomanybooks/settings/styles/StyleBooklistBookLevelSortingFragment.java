@@ -286,7 +286,10 @@ public class StyleBooklistBookLevelSortingFragment
 
             final RowEditStyleBookLevelColumnBinding vb = RowEditStyleBookLevelColumnBinding
                     .inflate(getLayoutInflater(), parent, false);
-            return new HeaderRowHolder(vb);
+            final HeaderRowHolder holder = new HeaderRowHolder(vb);
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
+            return holder;
         }
 
         @Override
@@ -322,7 +325,6 @@ public class StyleBooklistBookLevelSortingFragment
             final RowEditStyleBookLevelColumnBinding vb = RowEditStyleBookLevelColumnBinding
                     .inflate(getLayoutInflater(), parent, false);
             final Holder holder = new Holder(vb);
-
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
             return holder;
