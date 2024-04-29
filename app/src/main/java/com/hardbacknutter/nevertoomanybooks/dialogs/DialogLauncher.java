@@ -222,4 +222,21 @@ public abstract class DialogLauncher
         // using the requestKey as the fragment tag.
         dialogFragment.show(fragmentManager, requestKey);
     }
+
+    public enum Type {
+        Dialog,
+        BottomSheet,
+        PopupWindow;
+
+        @NonNull
+        public static Type which(@NonNull final Context context) {
+            if (WindowSizeClass.getWidth(context) == WindowSizeClass.Expanded) {
+                // Tablets use a Dialog
+                return Dialog;
+            } else {
+                // Phones use a BottomSheet
+                return BottomSheet;
+            }
+        }
+    }
 }

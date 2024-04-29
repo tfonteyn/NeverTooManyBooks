@@ -205,7 +205,7 @@ public class ExtMenuPopupWindow {
     }
 
     /**
-     * Set the menu which will be displayed when {@link #show(View, Location)} is called.
+     * Set the menu which will be displayed when {@link #show(View, ExtMenuLocation)} is called.
      *
      * @param menu                to set
      * @param groupDividerEnabled flag
@@ -222,14 +222,14 @@ public class ExtMenuPopupWindow {
     /**
      * Display the menu.
      *
-     * @param view     the anchor for {@link Location#Anchored},
+     * @param view     the anchor for {@link ExtMenuLocation#Anchored},
      *                 or a view from which the window token can be used
      * @param location the gravity which controls the placement of the popup window
      *
      * @throws IllegalArgumentException when an invalid gravity value is passed in
      */
     public void show(@NonNull final View view,
-                     @NonNull final Location location) {
+                     @NonNull final ExtMenuLocation location) {
         switch (location) {
             case Start:
                 popupWindow.showAtLocation(view, Gravity.START, xOffset, 0);
@@ -251,16 +251,5 @@ public class ExtMenuPopupWindow {
             default:
                 throw new IllegalArgumentException(String.valueOf(location));
         }
-    }
-
-    public enum Location {
-        /** Show at the Start of a specific offset. */
-        Start,
-        /** Show at the End of a specific offset. */
-        End,
-        /** Show at the Center of a specific offset. */
-        Center,
-        /** Show Anchored to the given view. */
-        Anchored
     }
 }
