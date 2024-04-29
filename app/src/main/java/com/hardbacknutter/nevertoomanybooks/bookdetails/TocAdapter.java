@@ -119,20 +119,18 @@ public class TocAdapter
     public AuthorWorkHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                final int viewType) {
         final AuthorWorkHolder holder;
+        final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(inflater, parent, false);
         switch (AuthorWork.Type.getType((char) viewType)) {
             case TocEntry: {
-                final View view = inflater.inflate(R.layout.row_author_work, parent, false);
-                holder = new TocEntryHolder(view, style);
+                holder = new TocEntryHolder(vb, style);
                 break;
             }
             case BookLight: {
-                final View view = inflater.inflate(R.layout.row_author_work, parent, false);
-                holder = new BookLightHolder(view, style);
+                holder = new BookLightHolder(vb, style);
                 break;
             }
             case Book: {
-                final View view = inflater.inflate(R.layout.row_author_work, parent, false);
-                holder = new BookHolder(view, style);
+                holder = new BookHolder(vb, style);
                 break;
             }
             default:
@@ -192,9 +190,9 @@ public class TocAdapter
         @NonNull
         private final Drawable multipleBooksIcon;
 
-        TocEntryHolder(@NonNull final View itemView,
+        TocEntryHolder(@NonNull final RowAuthorWorkBinding vb,
                        @NonNull final Style style) {
-            super(itemView, style);
+            super(vb, style);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -230,9 +228,9 @@ public class TocAdapter
         @NonNull
         private final Drawable typeIcon;
 
-        BookLightHolder(@NonNull final View itemView,
+        BookLightHolder(@NonNull final RowAuthorWorkBinding vb,
                         @NonNull final Style style) {
-            super(itemView, style);
+            super(vb, style);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -259,9 +257,9 @@ public class TocAdapter
         @NonNull
         private final Drawable typeIcon;
 
-        BookHolder(@NonNull final View itemView,
+        BookHolder(@NonNull final RowAuthorWorkBinding vb,
                    @NonNull final Style style) {
-            super(itemView, style);
+            super(vb, style);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -286,10 +284,10 @@ public class TocAdapter
         @NonNull
         private final Style style;
 
-        AuthorWorkHolder(@NonNull final View itemView,
+        AuthorWorkHolder(@NonNull final RowAuthorWorkBinding vb,
                          @NonNull final Style style) {
-            super(itemView);
-            vb = RowAuthorWorkBinding.bind(itemView);
+            super(vb.getRoot());
+            this.vb = vb;
             this.style = style;
         }
 
