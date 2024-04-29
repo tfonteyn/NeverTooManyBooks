@@ -217,6 +217,8 @@ public class SearchOrderFragment
             final RowEditSearchsiteBinding vb =
                     RowEditSearchsiteBinding.inflate(getLayoutInflater(), parent, false);
             final Holder holder = new Holder(vb);
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
             holder.setOnItemCheckChangedListener(position -> {
                 final Site site = getItem(position);
                 site.setActive(!site.isActive());
