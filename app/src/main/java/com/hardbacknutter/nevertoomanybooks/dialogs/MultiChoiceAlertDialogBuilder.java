@@ -22,14 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -39,7 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditChecklistBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 public class MultiChoiceAlertDialogBuilder<T extends Number> {
@@ -48,21 +46,18 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     private final LayoutInflater layoutInflater;
     @NonNull
     private final Context context;
-
+    @NonNull
+    private final Set<T> selectedItems = new HashSet<>();
     @DrawableRes
     private int iconId;
     @Nullable
     private CharSequence dialogTitle;
     @Nullable
     private CharSequence dialogMessage;
-
     @Nullable
     private List<T> itemIds;
     @Nullable
     private List<String> itemLabels;
-    @NonNull
-    private final Set<T> selectedItems = new HashSet<>();
-
     @StringRes
     private int positiveButtonTextId;
     @Nullable
@@ -83,16 +78,6 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     public MultiChoiceAlertDialogBuilder(@NonNull final Context context) {
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
-    }
-
-    /**
-     * Constructor - DialogFragment usage.
-     *
-     * @param layoutInflater to use
-     */
-    MultiChoiceAlertDialogBuilder(@NonNull final LayoutInflater layoutInflater) {
-        this.context = layoutInflater.getContext();
-        this.layoutInflater = layoutInflater;
     }
 
     @NonNull
@@ -167,18 +152,21 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     }
 
     @NonNull
-    public AlertDialog create() {
+    public AlertDialog build() {
         Objects.requireNonNull(itemIds);
         Objects.requireNonNull(itemLabels);
         Objects.requireNonNull(positiveButtonConsumer);
 
-        final View view = layoutInflater.inflate(R.layout.dialog_edit_checklist, null);
-        final TextView messageView = view.findViewById(R.id.message);
+        final DialogEditChecklistBinding vb = DialogEditChecklistBinding.inflate(
+                layoutInflater, null, false);
+        // Layouts supporting BottomSheet have a drag-handle. Just hide it.
+        vb.dragHandle.setVisibility(View.GONE);
+
         if (dialogMessage != null && dialogMessage.length() > 0) {
-            messageView.setText(dialogMessage);
-            messageView.setVisibility(View.VISIBLE);
+            vb.message.setText(dialogMessage);
+            vb.message.setVisibility(View.VISIBLE);
         } else {
-            messageView.setVisibility(View.GONE);
+            vb.message.setVisibility(View.GONE);
         }
 
         final ChecklistRecyclerAdapter<T, String> adapter =
@@ -190,12 +178,10 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
                                                        selectedItems.remove(id);
                                                    }
                                                });
-
-        final RecyclerView listView = view.findViewById(R.id.item_list);
-        listView.setAdapter(adapter);
+        vb.itemList.setAdapter(adapter);
 
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
-                .setView(view)
+                .setView(vb.getRoot())
                 .setTitle(dialogTitle)
                 .setIcon(iconId)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> {

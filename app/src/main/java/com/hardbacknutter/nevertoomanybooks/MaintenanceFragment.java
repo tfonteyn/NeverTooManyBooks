@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -302,6 +302,9 @@ public class MaintenanceFragment
     private void onCreateBugReport(@NonNull final View v) {
         final Context context = v.getContext();
 
+        // We're keeping this as a Dialog:
+        // - the user will/should very seldom need this (◔_◔)
+        // - It's more explicit in offering a textual OK/Cancel choice.
         new MultiChoiceAlertDialogBuilder<Integer>(context)
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.debug)
@@ -326,7 +329,7 @@ public class MaintenanceFragment
                     createDocumentLauncher.launch(new GetContentUriForWritingContract
                             .Input(mimeType, fileName));
                 })
-                .create()
+                .build()
                 .show();
     }
 

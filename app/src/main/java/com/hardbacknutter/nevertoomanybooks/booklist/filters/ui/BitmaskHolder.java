@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,8 +65,10 @@ public class BitmaskHolder
             final List<Integer> ids = new ArrayList<>(bitsAndLabels.keySet());
             final List<String> labels = new ArrayList<>(bitsAndLabels.values());
 
+            // This will potentially be called upon from inside a BottomSheet.
+            // Hence we stick with using a Dialog.
             new MultiChoiceAlertDialogBuilder<Integer>(context)
-                    .setTitle(context.getString(R.string.lbl_edition))
+                    .setTitle(R.string.lbl_edition)
                     .setItems(ids, labels)
                     .setSelectedItems(filter.getValue())
                     .setPositiveButton(android.R.string.ok, value -> {
@@ -74,7 +76,7 @@ public class BitmaskHolder
                         vb.filter.setText(filter.getValueText(context));
                         listener.onModified(getBindingAdapterPosition());
                     })
-                    .create()
+                    .build()
                     .show();
         });
     }
