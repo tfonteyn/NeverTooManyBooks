@@ -80,6 +80,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -98,6 +100,8 @@ public class EditBookTocFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
+    private static final String RK_MENU = TAG + ":menu";
+
     /** FragmentResultListener request key. */
     private static final String RK_CONFIRM_TOC = TAG + ":rk:" + ConfirmTocDialogFragment.TAG;
     private static final int POS_NEW_ENTRY = -1;
@@ -129,6 +133,7 @@ public class EditBookTocFragment
 
     /** Listen for the results of the entry edit-dialog. */
     private EditTocEntryLauncher editTocEntryLauncher;
+    private ExtMenuLauncher menuLauncher;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -159,6 +164,9 @@ public class EditBookTocFragment
                 RK_CONFIRM_TOC,
                 this::onIsfdbDataConfirmed, this::searchIsfdb);
         confirmTocResultsLauncher.registerForFragmentResult(fm, this);
+
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, this);
     }
 
     @Override
@@ -227,8 +235,6 @@ public class EditBookTocFragment
         tocEntryList = vm.getBook().getToc();
 
         //noinspection DataFlowIssue
-
-
         adapter = new TocListEditAdapter(context, tocEntryList,
                                          vh -> itemTouchHelper.startDrag(vh));
 
@@ -238,11 +244,16 @@ public class EditBookTocFragment
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    new ExtMenuPopupWindow(context)
-                            .setListener(this::onMenuItemSelected)
-                            .setPosition(position)
-                            .setMenu(rowMenu, true)
-                            .show(v, ExtMenuPopupWindow.Location.Anchored);
+                    if (DialogLauncher.Type.which(v.getContext())
+                        == DialogLauncher.Type.PopupWindow) {
+                        new ExtMenuPopupWindow(context)
+                                .setListener(this::onMenuItemSelected)
+                                .setPosition(position)
+                                .setMenu(rowMenu, true)
+                                .show(v, ExtMenuLocation.Anchored);
+                    } else {
+                        menuLauncher.launch(position, null, null, rowMenu, true);
+                    }
                 });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
@@ -304,7 +315,7 @@ public class EditBookTocFragment
     }
 
     /**
-     * Using {@link ExtMenuPopupWindow} for context menus.
+     * Menu selection listener.
      *
      * @param position   in the list
      * @param menuItemId The menu item that was invoked.

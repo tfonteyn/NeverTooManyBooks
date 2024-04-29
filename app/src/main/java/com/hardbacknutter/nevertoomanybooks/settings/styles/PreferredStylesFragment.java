@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -64,6 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -74,6 +78,8 @@ public class PreferredStylesFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "PreferredStylesFragment";
+    private static final String RK_MENU = TAG + ":menu";
+
     private PreferredStylesViewModel vm;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -150,6 +156,7 @@ public class PreferredStylesFragment
     private ItemTouchHelper itemTouchHelper;
     /** View Binding. */
     private FragmentEditStylesBinding vb;
+    private ExtMenuLauncher menuLauncher;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -157,6 +164,11 @@ public class PreferredStylesFragment
 
         vm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         vm.init(requireArguments());
+
+        final FragmentManager fm = getChildFragmentManager();
+
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, this);
     }
 
     @Nullable
@@ -203,11 +215,15 @@ public class PreferredStylesFragment
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
                     prepareMenu(menu, position);
 
-                    new ExtMenuPopupWindow(context)
-                            .setListener(this::onMenuItemSelected)
-                            .setPosition(position)
-                            .setMenu(menu, true)
-                            .show(anchor, ExtMenuPopupWindow.Location.Anchored);
+                    if (DialogLauncher.Type.which(context) == DialogLauncher.Type.PopupWindow) {
+                        new ExtMenuPopupWindow(context)
+                                .setListener(this::onMenuItemSelected)
+                                .setPosition(position)
+                                .setMenu(menu, true)
+                                .show(anchor, ExtMenuLocation.Anchored);
+                    } else {
+                        menuLauncher.launch(position, null, null, menu, true);
+                    }
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
 

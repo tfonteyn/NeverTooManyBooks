@@ -30,6 +30,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -49,11 +50,14 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * Editor for the book-level field sorting of a single style.
@@ -65,8 +69,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 public class StyleBooklistBookLevelSortingFragment
         extends BaseFragment {
 
+    private static final String TAG = "StyleBooklistBookLevelS";
+    private static final String RK_MENU = TAG + ":menu";
+
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
+    private ExtMenuLauncher menuLauncher;
 
     /** Style we are editing. */
     private StyleViewModel vm;
@@ -90,6 +98,34 @@ public class StyleBooklistBookLevelSortingFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+
+        final FragmentManager fm = getChildFragmentManager();
+
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemClick);
+        menuLauncher.registerForFragmentResult(fm, this);
+    }
+
+    private BookLevelColumnWrapperListAdapter listAdapter;
+
+
+    private boolean onMenuItemClick(final int positionOrId,
+                                    final int menuItemId) {
+
+        final Sort nextValue;
+        if (menuItemId == R.id.MENU_SORT_UNSORTED) {
+            nextValue = Sort.Unsorted;
+        } else if (menuItemId == R.id.MENU_SORT_ASC) {
+            nextValue = Sort.Asc;
+        } else if (menuItemId == R.id.MENU_SORT_DESC) {
+            nextValue = Sort.Desc;
+        } else {
+            // Should never get here... flw
+            return false;
+        }
+
+        vm.getWrappedBookLevelColumnList().get(positionOrId).setSort(nextValue);
+        listAdapter.notifyItemChanged(positionOrId);
+        return true;
     }
 
     @Nullable
@@ -149,10 +185,24 @@ public class StyleBooklistBookLevelSortingFragment
                 new HeaderAdapter(context, groupSortingFields);
 
         // The adapter for the list.
-        final BookLevelColumnWrapperListAdapter listAdapter =
-                new BookLevelColumnWrapperListAdapter(context,
+        listAdapter = new BookLevelColumnWrapperListAdapter(context,
                                                       vm.getWrappedBookLevelColumnList(),
                                                       vh -> itemTouchHelper.startDrag(vh));
+
+        listAdapter.setOnRowShowMenuListener(ExtMenuButton.Always, (anchor, position) -> {
+            final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
+            if (DialogLauncher.Type.which(context) == DialogLauncher.Type.PopupWindow) {
+                new ExtMenuPopupWindow(anchor.getContext())
+                        .setListener(this::onMenuItemClick)
+                        .setPosition(position)
+                        .setMenu(menu, true)
+                        .show(anchor, ExtMenuLocation.Anchored);
+            } else {
+                final String label = vm.getWrappedBookLevelColumnList().get(position)
+                                       .getLabel(anchor.getContext());
+                menuLauncher.launch(position, label, null, menu, true);
+            }
+        });
 
         // Combine the adapters for the list header and the actual list
         final ConcatAdapter concatAdapter = new ConcatAdapter(
@@ -210,32 +260,6 @@ public class StyleBooklistBookLevelSortingFragment
             vb.columnName.setText(wrappedColumn.getLabel(context));
 
             setRowMenuButtonIconResource(StyleViewModel.getIconResId(wrappedColumn.getSort()));
-
-            setOnRowLongClickListener(ExtMenuButton.Always, (anchor, position) -> {
-                final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
-
-                new ExtMenuPopupWindow(anchor.getContext())
-                        .setListener((p, menuItemId) -> {
-                            final Sort nextValue;
-                            if (menuItemId == R.id.MENU_SORT_UNSORTED) {
-                                nextValue = Sort.Unsorted;
-                            } else if (menuItemId == R.id.MENU_SORT_ASC) {
-                                nextValue = Sort.Asc;
-                            } else if (menuItemId == R.id.MENU_SORT_DESC) {
-                                nextValue = Sort.Desc;
-                            } else {
-                                // Should never get here... flw
-                                return false;
-                            }
-
-                            wrappedColumn.setSort(nextValue);
-                            setRowMenuButtonIconResource(StyleViewModel.getIconResId(nextValue));
-                            return true;
-                        })
-                        .setPosition(position)
-                        .setMenu(menu, true)
-                        .show(anchor, ExtMenuPopupWindow.Location.Anchored);
-            });
         }
     }
 
@@ -297,7 +321,11 @@ public class StyleBooklistBookLevelSortingFragment
 
             final RowEditStyleBookLevelColumnBinding vb = RowEditStyleBookLevelColumnBinding
                     .inflate(getLayoutInflater(), parent, false);
-            return new Holder(vb);
+            final Holder holder = new Holder(vb);
+
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
+            return holder;
         }
 
         @Override

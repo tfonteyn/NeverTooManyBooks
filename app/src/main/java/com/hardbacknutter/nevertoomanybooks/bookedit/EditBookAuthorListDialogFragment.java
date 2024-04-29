@@ -67,8 +67,10 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * Edit the list of Authors of a Book.
@@ -83,6 +85,7 @@ public class EditBookAuthorListDialogFragment
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookAuthorListDlg";
+    private static final String RK_MENU = TAG + ":menu";
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
@@ -102,6 +105,7 @@ public class EditBookAuthorListDialogFragment
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
     private EditParcelableLauncher<Author> editLauncher;
+    private ExtMenuLauncher menuLauncher;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -123,10 +127,15 @@ public class EditBookAuthorListDialogFragment
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
+        final FragmentManager fm = getChildFragmentManager();
+
         editLauncher = new EditParcelableLauncher<>(
                 getActivity(), DialogLauncher.RK_EDIT_BOOK_AUTHOR,
                 this::add, this::processChanges);
-        editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        editLauncher.registerForFragmentResult(fm, this);
+
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, this);
     }
 
     @Nullable
@@ -193,11 +202,16 @@ public class EditBookAuthorListDialogFragment
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    new ExtMenuPopupWindow(v.getContext())
-                            .setListener(this::onMenuItemSelected)
-                            .setMenu(rowMenu, true)
-                            .setPosition(position)
-                            .show(v, ExtMenuPopupWindow.Location.Anchored);
+                    if (DialogLauncher.Type.which(v.getContext())
+                        == DialogLauncher.Type.PopupWindow) {
+                        new ExtMenuPopupWindow(v.getContext())
+                                .setListener(this::onMenuItemSelected)
+                                .setMenu(rowMenu, true)
+                                .setPosition(position)
+                                .show(v, ExtMenuLocation.Anchored);
+                    } else {
+                        menuLauncher.launch(position, null, null, rowMenu, true);
+                    }
                 });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
@@ -211,7 +225,7 @@ public class EditBookAuthorListDialogFragment
     }
 
     /**
-     * Using {@link ExtMenuPopupWindow} for context menus.
+     * Menu selection listener.
      *
      * @param position   in the list
      * @param menuItemId The menu item that was invoked.

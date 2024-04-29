@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerIte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -62,6 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecycler
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -69,6 +73,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow
  */
 public class EditBookshelvesFragment
         extends BaseFragment {
+
+    private static final String TAG = "EditBookshelvesFragment";
+    private static final String RK_MENU = TAG + ":menu";
 
     private EditBookshelvesViewModel vm;
 
@@ -99,6 +106,7 @@ public class EditBookshelvesFragment
 
     /** Accept the result from the dialog. */
     private EditParcelableLauncher<Bookshelf> editLauncher;
+    private ExtMenuLauncher menuLauncher;
 
     private final PositionHandler positionHandler = new PositionHandler() {
         @Override
@@ -119,11 +127,15 @@ public class EditBookshelvesFragment
             final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
             prepareMenu(menu, gridPosition);
 
-            new ExtMenuPopupWindow(context)
-                    .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
-                    .setPosition(listIndex)
-                    .setMenu(menu, true)
-                    .show(anchor, ExtMenuPopupWindow.Location.Anchored);
+            if (DialogLauncher.Type.which(context) == DialogLauncher.Type.PopupWindow) {
+                new ExtMenuPopupWindow(context)
+                        .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
+                        .setPosition(listIndex)
+                        .setMenu(menu, true)
+                        .show(anchor, ExtMenuLocation.Anchored);
+            } else {
+                menuLauncher.launch(listIndex, null, null, menu, true);
+            }
         }
     };
 
@@ -137,16 +149,16 @@ public class EditBookshelvesFragment
         vm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
         vm.init(getArguments());
 
-        createFragmentResultListeners();
-    }
+        final FragmentManager fm = getChildFragmentManager();
 
-    private void createFragmentResultListeners() {
         //noinspection DataFlowIssue
         editLauncher = new EditParcelableLauncher<>(
                 getActivity(), DBKey.FK_BOOKSHELF,
                 this::onModified);
+        editLauncher.registerForFragmentResult(fm, this);
 
-        editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, this);
     }
 
     @Override
@@ -216,18 +228,18 @@ public class EditBookshelvesFragment
     }
 
     /**
-     * Using {@link ExtMenuPopupWindow} for context menus.
+     * Menu selection listener.
      *
-     * @param index      in the list
+     * @param listIndex  in the list
      * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
     @SuppressLint("NotifyDataSetChanged")
-    private boolean onMenuItemSelected(final int index,
+    private boolean onMenuItemSelected(final int listIndex,
                                        @IdRes final int menuItemId) {
 
-        final Bookshelf bookshelf = vm.getBookshelf(index);
+        final Bookshelf bookshelf = vm.getBookshelf(listIndex);
 
         if (menuItemId == R.id.MENU_EDIT) {
             editLauncher.launch(EditAction.EditInPlace, bookshelf);

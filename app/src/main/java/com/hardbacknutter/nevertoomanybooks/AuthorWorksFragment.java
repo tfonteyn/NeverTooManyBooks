@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,6 +49,7 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.TocAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -57,6 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -72,12 +76,11 @@ public class AuthorWorksFragment
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksFragment";
-
     /** Optional. Show the TOC. Defaults to {@code true}. */
     static final String BKEY_WITH_TOC = TAG + ":tocs";
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
-
+    private static final String RK_MENU = TAG + ":menu";
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel vm;
     /** Set the hosting Activity result, and close it. */
@@ -92,6 +95,7 @@ public class AuthorWorksFragment
             };
     /** Display a Book. */
     private DisplayBookLauncher displayBookLauncher;
+    private ExtMenuLauncher menuLauncher;
     /** The Adapter. */
     private TocAdapter adapter;
     /** View Binding. */
@@ -102,13 +106,17 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        displayBookLauncher = new DisplayBookLauncher(
-                this,
-                o -> o.ifPresent(data -> vm.setDataModified(data)));
-
         vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), requireArguments());
+
+        final FragmentManager fm = getChildFragmentManager();
+
+        displayBookLauncher = new DisplayBookLauncher(this, o ->
+                o.ifPresent(data -> vm.setDataModified(data)));
+
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, this);
     }
 
     @Nullable
@@ -122,7 +130,7 @@ public class AuthorWorksFragment
     }
 
     /**
-     * Using {@link ExtMenuPopupWindow} for context menus.
+     * Menu selection listener.
      *
      * @param position   in the list
      * @param menuItemId The menu item that was invoked.
@@ -216,11 +224,18 @@ public class AuthorWorksFragment
 
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
-                (anchor, position) -> new ExtMenuPopupWindow(context)
-                        .setListener(this::onMenuItemSelected)
-                        .setPosition(position)
-                        .setMenu(rowMenu, true)
-                        .show(anchor, ExtMenuPopupWindow.Location.Anchored)
+                (anchor, position) -> {
+                    if (DialogLauncher.Type.which(anchor.getContext())
+                        == DialogLauncher.Type.PopupWindow) {
+                        new ExtMenuPopupWindow(anchor.getContext())
+                                .setListener(this::onMenuItemSelected)
+                                .setPosition(position)
+                                .setMenu(rowMenu, true)
+                                .show(anchor, ExtMenuLocation.Anchored);
+                    } else {
+                        menuLauncher.launch(position, null, null, rowMenu, true);
+                    }
+                }
         );
 
         worksListView.setAdapter(adapter);

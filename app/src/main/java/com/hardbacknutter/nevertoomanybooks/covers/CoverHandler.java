@@ -44,7 +44,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -72,12 +71,15 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -97,6 +99,7 @@ public class CoverHandler {
 
     /** Log tag. */
     private static final String TAG = "CoverHandler";
+    private static final String RK_MENU = TAG + ":menu";
 
     /** FragmentResultListener request key. Append the cIdx value! */
     private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDelegate.TAG;
@@ -115,7 +118,7 @@ public class CoverHandler {
     private final CoverHandlerViewModel vm;
     @NonNull
     private final ImageViewLoader imageLoader;
-
+    private ExtMenuLauncher menuLauncher;
     /** The fragment root view; used for context, resources, Snackbar. */
     private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
@@ -138,13 +141,13 @@ public class CoverHandler {
      * Dev. note: the width/height values come from device dp-dependent resource values.
      * (and NOT from the style cover scaling factor)
      *
-     * @param viewModelStoreOwner the hosting component
-     * @param cIdx                0..n image index
-     * @param coverLoader         callback to reload the given cIdx
-     * @param maxWidth            Maximum width for a cover in pixels
-     * @param maxHeight           Maximum height for a cover in pixels
+     * @param fragment    the hosting component
+     * @param cIdx        0..n image index
+     * @param coverLoader callback to reload the given cIdx
+     * @param maxWidth    Maximum width for a cover in pixels
+     * @param maxHeight   Maximum height for a cover in pixels
      */
-    public CoverHandler(@NonNull final ViewModelStoreOwner viewModelStoreOwner,
+    public CoverHandler(@NonNull final Fragment fragment,
                         @IntRange(from = 0, to = 1) final int cIdx,
                         @NonNull final Consumer<Integer> coverLoader,
                         final int maxWidth,
@@ -153,7 +156,7 @@ public class CoverHandler {
         this.cIdx = cIdx;
 
         // We could store idx in the VM, but there really is no point
-        vm = new ViewModelProvider(viewModelStoreOwner)
+        vm = new ViewModelProvider(fragment)
                 .get(String.valueOf(this.cIdx), CoverHandlerViewModel.class);
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
@@ -163,6 +166,12 @@ public class CoverHandler {
 
         coverBrowserLauncher = new CoverBrowserLauncher(RK_COVER_BROWSER + cIdx,
                                                         this::onFileSelected);
+
+        final FragmentManager fm = fragment.getChildFragmentManager();
+
+        // concat the RK with the cIdx as we have more than CoverHandler
+        menuLauncher = new ExtMenuLauncher(RK_MENU + this.cIdx, this::onMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, fragment);
     }
 
     /**
@@ -336,23 +345,30 @@ public class CoverHandler {
             menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        new ExtMenuPopupWindow(context)
-                .setListener((p, menuItemId) -> onMenuItemSelected(menuItemId))
-                .setPosition(cIdx)
-                .setMenu(menu, true)
-                .show(anchor, ExtMenuPopupWindow.Location.Anchored);
+        if (DialogLauncher.Type.which(anchor.getContext())
+            == DialogLauncher.Type.PopupWindow) {
+            new ExtMenuPopupWindow(context)
+                    .setListener(this::onMenuItemSelected)
+                    .setPosition(cIdx)
+                    .setMenu(menu, true)
+                    .show(anchor, ExtMenuLocation.Anchored);
+        } else {
+            menuLauncher.launch(cIdx, null, null, menu, true);
+        }
 
         return true;
     }
 
     /**
-     * Using {@link ExtMenuPopupWindow} for context menus.
+     * Menu selection listener.
      *
+     * @param cIdx 0..n image index
      * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@IdRes final int menuItemId) {
+    private boolean onMenuItemSelected(@IntRange(from = 0, to = 1) final int cIdx,
+                                       @IdRes final int menuItemId) {
 
         final Book book = bookSupplier.get();
         final Context context = fragmentView.getContext();
