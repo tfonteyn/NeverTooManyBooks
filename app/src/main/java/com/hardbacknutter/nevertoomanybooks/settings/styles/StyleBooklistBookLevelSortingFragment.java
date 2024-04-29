@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelCol
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
  * Editor for the book-level field sorting of a single style.
@@ -211,11 +211,11 @@ public class StyleBooklistBookLevelSortingFragment
 
             setRowMenuButtonIconResource(StyleViewModel.getIconResId(wrappedColumn.getSort()));
 
-            setOnRowLongClickListener(PopupMenuButton.Always, (anchor, position) -> {
+            setOnRowLongClickListener(ExtMenuButton.Always, (anchor, position) -> {
                 final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
 
-                new ExtPopupMenu(anchor.getContext())
-                        .setListener(menuItemId -> {
+                new ExtMenuPopupWindow(anchor.getContext())
+                        .setListener((p, menuItemId) -> {
                             final Sort nextValue;
                             if (menuItemId == R.id.MENU_SORT_UNSORTED) {
                                 nextValue = Sort.Unsorted;
@@ -232,8 +232,9 @@ public class StyleBooklistBookLevelSortingFragment
                             setRowMenuButtonIconResource(StyleViewModel.getIconResId(nextValue));
                             return true;
                         })
+                        .setPosition(position)
                         .setMenu(menu, true)
-                        .show(anchor, ExtPopupMenu.Location.Anchored);
+                        .show(anchor, ExtMenuPopupWindow.Location.Anchored);
             });
         }
     }

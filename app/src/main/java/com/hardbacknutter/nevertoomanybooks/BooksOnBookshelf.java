@@ -117,8 +117,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.BottomSheetMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -164,7 +165,7 @@ public class BooksOnBookshelf
     private static final String TAG = "BooksOnBookshelf";
 
     /** {@link FragmentResultListener} request key. */
-    private static final String RK_MENU = TAG + ":rk" + BottomSheetMenu.TAG;
+    private static final String RK_MENU = TAG + ":rk" + ExtMenuBottomSheet.TAG;
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
     private static final int OFFSCREEN_CACHE_SIZE = 20;
@@ -279,7 +280,7 @@ public class BooksOnBookshelf
     private EditLenderLauncher editLenderLauncher;
 
     /** Row menu launcher displaying the menu as a BottomSheet. */
-    private BottomSheetMenu.Launcher menuLauncher;
+    private ExtMenuLauncher menuLauncher;
 
     private StylePickerLauncher stylePickerLauncher;
     private BookshelfFiltersLauncher bookshelfFiltersLauncher;
@@ -466,7 +467,7 @@ public class BooksOnBookshelf
                 -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
         editLocationLauncher.registerForFragmentResult(fm, this);
 
-        menuLauncher = new BottomSheetMenu.Launcher(RK_MENU, (adapterPosition, menuItemId) -> {
+        menuLauncher = new ExtMenuLauncher(RK_MENU, (adapterPosition, menuItemId) -> {
             View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
             if (view == null) {
                 // While we never should get a null here, tests have shown that
@@ -474,7 +475,7 @@ public class BooksOnBookshelf
                 // as the bottom-sheet does not need that view as an anchor anyhow.
                 view = vb.content.list;
             }
-            onRowMenuItemSelected(view, adapterPosition, menuItemId);
+            return onRowMenuItemSelected(view, adapterPosition, menuItemId);
         });
         menuLauncher.registerForFragmentResult(fm, this);
     }
@@ -1101,26 +1102,26 @@ public class BooksOnBookshelf
                 // Small menus are best served as actual popup menus
                 // to minimalize eye-movement.
                 showPopupMenu(v, adapterPosition, menuTitle, menu,
-                              ExtPopupMenu.Location.Anchored);
+                              ExtMenuPopupWindow.Location.Anchored);
 
             } else if (hasEmbeddedDetailsFrame()) {
                 // Tablet in landscape with split screen list/details,
                 // always use a popup.
                 showPopupMenu(v, adapterPosition, menuTitle, menu,
-                              ExtPopupMenu.Location.Start);
+                              ExtMenuPopupWindow.Location.Start);
 
             } else if (WindowSizeClass.getWidth(this) == WindowSizeClass.Expanded) {
                 // Tablet in portrait mode or landscape without split screen,
                 // always use a popup.
                 showPopupMenu(v, adapterPosition, menuTitle, menu,
-                              ExtPopupMenu.Location.Center);
+                              ExtMenuPopupWindow.Location.Center);
             } else {
                 // typical phone and a large menu
                 if (menuLauncher != null) {
                     menuLauncher.launch(adapterPosition, menuTitle, null, menu, true);
                 } else {
                     showPopupMenu(v, adapterPosition, menuTitle, menu,
-                                  ExtPopupMenu.Location.Center);
+                                  ExtMenuPopupWindow.Location.Center);
                 }
             }
         }
@@ -1130,10 +1131,11 @@ public class BooksOnBookshelf
                                final int adapterPosition,
                                @Nullable final CharSequence menuTitle,
                                @NonNull final Menu menu,
-                               @NonNull final ExtPopupMenu.Location location) {
-        new ExtPopupMenu(this)
+                               @NonNull final ExtMenuPopupWindow.Location location) {
+        new ExtMenuPopupWindow(this)
                 .setTitle(menuTitle)
-                .setListener(menuItemId -> onRowMenuItemSelected(v, adapterPosition, menuItemId))
+                .setListener((p, menuItemId) -> onRowMenuItemSelected(v, p, menuItemId))
+                .setPosition(adapterPosition)
                 .setMenu(menu, true)
                 .show(v, location);
     }
@@ -1751,11 +1753,11 @@ public class BooksOnBookshelf
                 .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
         }
 
-        new ExtPopupMenu(this)
+        new ExtMenuPopupWindow(this)
                 .setTitle(getString(subMenuTitleId))
-                .setListener(this::onNavigationItemSelected)
+                .setListener((p, mii) -> onNavigationItemSelected(mii))
                 .setMenu(menu, true)
-                .show(anchor, ExtPopupMenu.Location.Anchored);
+                .show(anchor, ExtMenuPopupWindow.Location.Anchored);
     }
 
     /**
@@ -1772,10 +1774,10 @@ public class BooksOnBookshelf
 
         final Menu menu = MenuUtils.create(this, R.menu.update_books);
 
-        new ExtPopupMenu(this)
+        new ExtMenuPopupWindow(this)
                 .setTitle(dialogTitle)
                 .setMessage(getString(R.string.menu_update_books))
-                .setListener(menuItemId -> {
+                .setListener((p, menuItemId) -> {
                     Boolean onlyThisShelf = null;
 
                     if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
@@ -1791,7 +1793,7 @@ public class BooksOnBookshelf
                     return false;
                 })
                 .setMenu(menu, true)
-                .show(anchor, ExtPopupMenu.Location.Anchored);
+                .show(anchor, ExtMenuPopupWindow.Location.Anchored);
     }
 
     /**

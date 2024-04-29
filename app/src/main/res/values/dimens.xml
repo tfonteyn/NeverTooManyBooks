@@ -79,9 +79,9 @@
     <dimen name="progress_padding">4dp</dimen>
 
 
-    <!-- ExtPopupMenu: the indentation for a dropdown -->
+    <!-- ExtMenuPopupWindow: the indentation for a dropdown -->
     <dimen name="popup_menu_x_offset">48dp</dimen>
-    <!-- ExtPopupMenu: the elevation was taken from the android materials options menu layout -->
+    <!-- ExtMenuPopupWindow: the elevation was taken from the android materials options menu layout -->
     <dimen name="popup_menu_elevation">8dp</dimen>
 
     <!-- Custom menus, e.g. list of radio buttons in a dialog: drawable padding. -->

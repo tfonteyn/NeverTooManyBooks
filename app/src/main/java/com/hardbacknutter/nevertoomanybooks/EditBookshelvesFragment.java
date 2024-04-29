@@ -61,8 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * {@link Bookshelf} maintenance.
@@ -113,16 +113,17 @@ public class EditBookshelvesFragment
 
         @Override
         public void showContextMenu(@NonNull final View anchor,
-                                    final int position,
+                                    final int gridPosition,
                                     final int listIndex) {
             final Context context = anchor.getContext();
             final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
-            prepareMenu(menu, position);
+            prepareMenu(menu, gridPosition);
 
-            new ExtPopupMenu(context)
-                    .setListener(menuItemId -> onMenuItemSelected(menuItemId, listIndex))
+            new ExtMenuPopupWindow(context)
+                    .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
+                    .setPosition(listIndex)
                     .setMenu(menu, true)
-                    .show(anchor, ExtPopupMenu.Location.Anchored);
+                    .show(anchor, ExtMenuPopupWindow.Location.Anchored);
         }
     };
 
@@ -215,16 +216,16 @@ public class EditBookshelvesFragment
     }
 
     /**
-     * Using {@link ExtPopupMenu} for context menus.
+     * Using {@link ExtMenuPopupWindow} for context menus.
      *
-     * @param menuItemId The menu item that was invoked.
      * @param index      in the list
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
     @SuppressLint("NotifyDataSetChanged")
-    private boolean onMenuItemSelected(@IdRes final int menuItemId,
-                                       final int index) {
+    private boolean onMenuItemSelected(final int index,
+                                       @IdRes final int menuItemId) {
 
         final Bookshelf bookshelf = vm.getBookshelf(index);
 
@@ -283,8 +284,17 @@ public class EditBookshelvesFragment
 
         void setSelectedPosition(int position);
 
+        /**
+         * Show the menu.
+         *
+         * @param anchor       view
+         * @param gridPosition the position in the adapter, this can/will be different
+         *                     from the listIndex as we're using a
+         *                     {@link GridLayoutManager}.
+         * @param listIndex    the actual index/position in the list of items.
+         */
         void showContextMenu(@NonNull View anchor,
-                             int position,
+                             int gridPosition,
                              int listIndex);
     }
 
@@ -351,14 +361,14 @@ public class EditBookshelvesFragment
 
             // long-click -> context menu
             holder.setOnRowLongClickListener(
-                    PopupMenuButton.getPreferredMode(parent.getContext()), (v, position) -> {
-                        final int listIndex = transpose(position);
+                    ExtMenuButton.getPreferredMode(parent.getContext()), (v, gridPosition) -> {
+                        final int listIndex = transpose(gridPosition);
                         if (listIndex == RecyclerView.NO_POSITION) {
                             // Should never get here
                             throw new IllegalStateException(
-                                    ERROR_NO_LIST_INDEX_FOR_POSITION + position);
+                                    ERROR_NO_LIST_INDEX_FOR_POSITION + gridPosition);
                         }
-                        positionHandler.showContextMenu(v, position, listIndex);
+                        positionHandler.showContextMenu(v, gridPosition, listIndex);
                     });
 
 
@@ -400,8 +410,9 @@ public class EditBookshelvesFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem.getItemId(),
-                                                                   vm.getSelectedPosition());
+            return EditBookshelvesFragment.this.onMenuItemSelected(vm.getSelectedPosition(),
+                                                                   menuItem.getItemId()
+            );
         }
     }
 }

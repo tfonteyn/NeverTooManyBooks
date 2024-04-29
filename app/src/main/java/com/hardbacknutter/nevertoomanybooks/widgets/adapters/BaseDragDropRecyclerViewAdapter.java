@@ -34,7 +34,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.ItemTouchHelperAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
  * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.
@@ -62,7 +62,7 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
     @Nullable
     protected OnRowClickListener rowShowMenuListener;
     @Nullable
-    protected PopupMenuButton contextMenuMode;
+    protected ExtMenuButton contextMenuMode;
 
     /**
      * Constructor.
@@ -94,7 +94,7 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
      * @param contextMenuMode how to show context menus
      * @param listener        to receive clicks
      */
-    public void setOnRowShowMenuListener(@NonNull final PopupMenuButton contextMenuMode,
+    public void setOnRowShowMenuListener(@NonNull final ExtMenuButton contextMenuMode,
                                          @Nullable final OnRowClickListener listener) {
         this.rowShowMenuListener = listener;
         this.contextMenuMode = contextMenuMode;

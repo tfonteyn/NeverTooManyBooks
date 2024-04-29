@@ -56,8 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * Display all {@link TocEntry}'s for an Author.
@@ -122,15 +122,15 @@ public class AuthorWorksFragment
     }
 
     /**
-     * Using {@link ExtPopupMenu} for context menus.
+     * Using {@link ExtMenuPopupWindow} for context menus.
      *
-     * @param menuItemId The menu item that was invoked.
      * @param position   in the list
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@IdRes final int menuItemId,
-                                       final int position) {
+    private boolean onMenuItemSelected(final int position,
+                                       @IdRes final int menuItemId) {
 
         final AuthorWork work = vm.getWorks().get(position);
 
@@ -215,11 +215,12 @@ public class AuthorWorksFragment
                .setIcon(R.drawable.ic_baseline_delete_24);
 
         adapter.setOnRowShowMenuListener(
-                PopupMenuButton.getPreferredMode(context),
-                (anchor, position) -> new ExtPopupMenu(context)
-                        .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                ExtMenuButton.getPreferredMode(context),
+                (anchor, position) -> new ExtMenuPopupWindow(context)
+                        .setListener(this::onMenuItemSelected)
+                        .setPosition(position)
                         .setMenu(rowMenu, true)
-                        .show(anchor, ExtPopupMenu.Location.Anchored)
+                        .show(anchor, ExtMenuPopupWindow.Location.Anchored)
         );
 
         worksListView.setAdapter(adapter);

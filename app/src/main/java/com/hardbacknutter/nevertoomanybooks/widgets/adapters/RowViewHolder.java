@@ -33,7 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
  * Base for all ViewHolder classes.
@@ -115,7 +115,7 @@ public class RowViewHolder
      * @param contextMenuMode user preferred context menu mode
      * @param listener        to receive clicks
      */
-    public void setOnRowLongClickListener(@Nullable final PopupMenuButton contextMenuMode,
+    public void setOnRowLongClickListener(@Nullable final ExtMenuButton contextMenuMode,
                                           @Nullable final OnRowClickListener listener) {
         if (listener != null && contextMenuMode != null) {
             // long-click on the background
@@ -148,7 +148,7 @@ public class RowViewHolder
      *
      * @return visibility
      */
-    protected int getButtonVisibility(@NonNull final PopupMenuButton contextMenuMode) {
+    protected int getButtonVisibility(@NonNull final ExtMenuButton contextMenuMode) {
         final int visibility;
         switch (contextMenuMode) {
             case Always: {

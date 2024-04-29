@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 public class BooklistAdapter
         extends RecyclerView.Adapter<RowViewHolder>
@@ -103,7 +103,7 @@ public class BooklistAdapter
     @Nullable
     private OnRowClickListener rowShowMenuListener;
     @Nullable
-    private PopupMenuButton contextMenuMode;
+    private ExtMenuButton contextMenuMode;
 
     /**
      * Constructor.
@@ -177,7 +177,7 @@ public class BooklistAdapter
      * @param contextMenuMode how to show context menus
      * @param listener        to receive clicks
      */
-    public void setOnRowShowMenuListener(@NonNull final PopupMenuButton contextMenuMode,
+    public void setOnRowShowMenuListener(@NonNull final ExtMenuButton contextMenuMode,
                                          @Nullable final OnRowClickListener listener) {
         this.rowShowMenuListener = listener;
         this.contextMenuMode = contextMenuMode;

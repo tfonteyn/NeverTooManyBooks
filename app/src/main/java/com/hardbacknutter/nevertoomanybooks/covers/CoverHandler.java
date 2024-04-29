@@ -78,7 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * A delegate class for handling a displayed Cover.
@@ -336,16 +336,17 @@ public class CoverHandler {
             menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        new ExtPopupMenu(context)
-                .setListener(this::onMenuItemSelected)
+        new ExtMenuPopupWindow(context)
+                .setListener((p, menuItemId) -> onMenuItemSelected(menuItemId))
+                .setPosition(cIdx)
                 .setMenu(menu, true)
-                .show(anchor, ExtPopupMenu.Location.Anchored);
+                .show(anchor, ExtMenuPopupWindow.Location.Anchored);
 
         return true;
     }
 
     /**
-     * Using {@link ExtPopupMenu} for context menus.
+     * Using {@link ExtMenuPopupWindow} for context menus.
      *
      * @param menuItemId The menu item that was invoked.
      *

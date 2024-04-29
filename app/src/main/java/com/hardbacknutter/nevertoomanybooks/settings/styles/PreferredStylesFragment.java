@@ -63,8 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * Editor for the list of all styles.
@@ -196,17 +196,18 @@ public class PreferredStylesFragment
             listAdapter.notifyItemChanged(position);
         });
         listAdapter.setOnRowShowMenuListener(
-                PopupMenuButton.getPreferredMode(getContext()),
+                ExtMenuButton.getPreferredMode(getContext()),
                 (anchor, position) -> {
                     final Context context = anchor.getContext();
 
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
                     prepareMenu(menu, position);
 
-                    new ExtPopupMenu(context)
-                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                    new ExtMenuPopupWindow(context)
+                            .setListener(this::onMenuItemSelected)
+                            .setPosition(position)
                             .setMenu(menu, true)
-                            .show(anchor, ExtPopupMenu.Location.Anchored);
+                            .show(anchor, ExtMenuPopupWindow.Location.Anchored);
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
 
@@ -273,13 +274,13 @@ public class PreferredStylesFragment
     /**
      * Called for toolbar and list adapter context menu.
      *
-     * @param menuItemId The menu item that was invoked.
      * @param position   in the list
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@IdRes final int menuItemId,
-                                       final int position) {
+    private boolean onMenuItemSelected(final int position,
+                                       @IdRes final int menuItemId) {
 
         final Style style = vm.getStyle(position);
 
@@ -461,8 +462,9 @@ public class PreferredStylesFragment
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return PreferredStylesFragment.this.onMenuItemSelected(menuItem.getItemId(),
-                                                                   vm.getSelectedPosition());
+            return PreferredStylesFragment.this.onMenuItemSelected(vm.getSelectedPosition(),
+                                                                   menuItem.getItemId()
+            );
         }
     }
 }

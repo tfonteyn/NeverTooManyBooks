@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
  * ViewHolder for a {@link BooklistGroup#BOOK} row.
@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
  * This holder will disregard the cover visibility setting
  * and simply show either the frontcover, or a title-placeholder (and optional author).
  * <p>
- * Detail and context menu buttons are always shown regardless of user PopupMenuButton preference.
+ * Detail and context menu buttons are always shown regardless of user ExtMenuButton preference.
  */
 public class BookGridHolder
         extends RowViewHolder
@@ -141,7 +141,7 @@ public class BookGridHolder
     }
 
     @Override
-    public void setOnRowLongClickListener(@Nullable final PopupMenuButton contextMenuMode,
+    public void setOnRowLongClickListener(@Nullable final ExtMenuButton contextMenuMode,
                                           @Nullable final OnRowClickListener listener) {
         if (listener != null) {
             switch (style.getCoverLongClickAction()) {
@@ -153,13 +153,13 @@ public class BookGridHolder
                         return true;
                     });
                     // Force-hide the context menu button.
-                    super.setOnRowLongClickListener(PopupMenuButton.None, listener);
+                    super.setOnRowLongClickListener(ExtMenuButton.None, listener);
                     break;
                 }
                 case Ignore:
                     // Force-show the context menu button,
                     // as long-clicking the background is not easy/possible in grid=mode.
-                    super.setOnRowLongClickListener(PopupMenuButton.Always, listener);
+                    super.setOnRowLongClickListener(ExtMenuButton.Always, listener);
                     break;
             }
         } else {

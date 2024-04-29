@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-public enum PopupMenuButton
+public enum ExtMenuButton
         implements Parcelable {
 
     /**
@@ -46,23 +46,23 @@ public enum PopupMenuButton
     None(2);
 
     /** {@link Parcelable}. */
-    public static final Creator<PopupMenuButton> CREATOR = new Creator<>() {
+    public static final Creator<ExtMenuButton> CREATOR = new Creator<>() {
         @Override
         @NonNull
-        public PopupMenuButton createFromParcel(@NonNull final Parcel in) {
+        public ExtMenuButton createFromParcel(@NonNull final Parcel in) {
             return values()[in.readInt()];
         }
 
         @Override
         @NonNull
-        public PopupMenuButton[] newArray(final int size) {
-            return new PopupMenuButton[size];
+        public ExtMenuButton[] newArray(final int size) {
+            return new ExtMenuButton[size];
         }
     };
 
     private final int value;
 
-    PopupMenuButton(final int value) {
+    ExtMenuButton(final int value) {
         this.value = value;
     }
 
@@ -74,7 +74,7 @@ public enum PopupMenuButton
      * @return Mode
      */
     @NonNull
-    public static PopupMenuButton getPreferredMode(@NonNull final Context context) {
+    public static ExtMenuButton getPreferredMode(@NonNull final Context context) {
         final int value = IntListPref.getInt(context, Prefs.pk_booklist_context_menu,
                                              Always.value);
         switch (value) {

@@ -78,7 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 public class BooksOnBookshelfViewModel
         extends ViewModel {
@@ -586,11 +586,11 @@ public class BooksOnBookshelfViewModel
      * @return the mode to use
      */
     @NonNull
-    PopupMenuButton getShowContextMenuMode(@NonNull final Context context,
-                                           final boolean hasEmbeddedDetailsFrame) {
-        final PopupMenuButton preferredMode = PopupMenuButton.getPreferredMode(context);
-        if (preferredMode == PopupMenuButton.IfRoom && hasEmbeddedDetailsFrame) {
-            return PopupMenuButton.None;
+    ExtMenuButton getShowContextMenuMode(@NonNull final Context context,
+                                         final boolean hasEmbeddedDetailsFrame) {
+        final ExtMenuButton preferredMode = ExtMenuButton.getPreferredMode(context);
+        if (preferredMode == ExtMenuButton.IfRoom && hasEmbeddedDetailsFrame) {
+            return ExtMenuButton.None;
         } else {
             return preferredMode;
         }

@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 /**
  * Show a context menu on a view - will show icons if present.
  */
-public class ExtPopupMenu {
+public class ExtMenuPopupWindow {
 
     @NonNull
     private final PopupMenuBinding vb;
@@ -55,8 +55,8 @@ public class ExtPopupMenu {
     @NonNull
     private final MenuItemListAdapter adapter;
 
-    private OnMenuItemClickListener listener;
-
+    private ExtMenuResultListener listener;
+    private int positionOrId;
     @SuppressWarnings("FieldCanBeLocal")
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
@@ -71,9 +71,10 @@ public class ExtPopupMenu {
                 @Override
                 public void onMenuItemClick(@IdRes final int menuItemId) {
                     popupWindow.dismiss();
-                    listener.onMenuItemClick(menuItemId);
+                    listener.onMenuItemClick(positionOrId, menuItemId);
                 }
             };
+
 
     /**
      * Constructor.
@@ -81,7 +82,7 @@ public class ExtPopupMenu {
      * @param context Current context
      */
     @SuppressLint("InflateParams")
-    public ExtPopupMenu(@NonNull final Context context) {
+    public ExtMenuPopupWindow(@NonNull final Context context) {
         final Resources res = context.getResources();
         paddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
         xOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
@@ -108,7 +109,7 @@ public class ExtPopupMenu {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtPopupMenu setTitle(@Nullable final CharSequence title) {
+    public ExtMenuPopupWindow setTitle(@Nullable final CharSequence title) {
         if (title != null && title.length() > 0) {
             vb.title.setVisibility(View.VISIBLE);
             vb.title.setText(title);
@@ -126,7 +127,7 @@ public class ExtPopupMenu {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtPopupMenu setMessage(@Nullable final CharSequence message) {
+    public ExtMenuPopupWindow setMessage(@Nullable final CharSequence message) {
         if (message != null && message.length() > 0) {
             vb.message.setVisibility(View.VISIBLE);
             vb.message.setText(message);
@@ -182,9 +183,24 @@ public class ExtPopupMenu {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtPopupMenu setListener(@NonNull final OnMenuItemClickListener listener) {
+    public ExtMenuPopupWindow setListener(@NonNull final ExtMenuResultListener listener) {
         this.listener = listener;
 
+        return this;
+    }
+
+    /**
+     * Set the position/id for whom this menu is meant. The value will
+     * be passed back in the {@link ExtMenuResultListener}.
+     *
+     * @param position The adapter-position for the View/item which
+     *                 owns the menu. But can also be a generic id.
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public ExtMenuPopupWindow setPosition(final int position) {
+        this.positionOrId = position;
         return this;
     }
 
@@ -197,8 +213,8 @@ public class ExtPopupMenu {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtPopupMenu setMenu(@NonNull final Menu menu,
-                                final boolean groupDividerEnabled) {
+    public ExtMenuPopupWindow setMenu(@NonNull final Menu menu,
+                                      final boolean groupDividerEnabled) {
         adapter.setMenu(ExtMenu.convert(menu, groupDividerEnabled));
         return this;
     }
@@ -237,7 +253,6 @@ public class ExtPopupMenu {
         }
     }
 
-
     public enum Location {
         /** Show at the Start of a specific offset. */
         Start,
@@ -247,21 +262,5 @@ public class ExtPopupMenu {
         Center,
         /** Show Anchored to the given view. */
         Anchored
-    }
-
-    /**
-     * Interface definition for a callback to be invoked when a menu item is clicked.
-     */
-    @FunctionalInterface
-    public interface OnMenuItemClickListener {
-        /**
-         * Called when a menu item has been invoked.  This is the first code that
-         * is executed; if it returns true, no other callbacks will be executed.
-         *
-         * @param menuItemId The menu item that was invoked.
-         *
-         * @return Return true to consume this click and prevent others from executing.
-         */
-        boolean onMenuItemClick(@IdRes int menuItemId);
     }
 }

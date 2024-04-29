@@ -67,8 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
  * Edit the list of Authors of a Book.
@@ -190,13 +190,14 @@ public class EditBookAuthorListDialogFragment
                                         vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
         adapter.setOnRowShowMenuListener(
-                PopupMenuButton.getPreferredMode(context),
+                ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
                     final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    new ExtPopupMenu(v.getContext())
-                            .setListener(menuItemId -> onMenuItemSelected(menuItemId, position))
+                    new ExtMenuPopupWindow(v.getContext())
+                            .setListener(this::onMenuItemSelected)
                             .setMenu(rowMenu, true)
-                            .show(v, ExtPopupMenu.Location.Anchored);
+                            .setPosition(position)
+                            .show(v, ExtMenuPopupWindow.Location.Anchored);
                 });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
@@ -210,15 +211,15 @@ public class EditBookAuthorListDialogFragment
     }
 
     /**
-     * Using {@link ExtPopupMenu} for context menus.
+     * Using {@link ExtMenuPopupWindow} for context menus.
      *
-     * @param menuItemId The menu item that was invoked.
      * @param position   in the list
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@IdRes final int menuItemId,
-                                       final int position) {
+    private boolean onMenuItemSelected(final int position,
+                                       @IdRes final int menuItemId) {
 
         if (menuItemId == R.id.MENU_EDIT) {
             editEntry(position);
