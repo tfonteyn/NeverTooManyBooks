@@ -79,8 +79,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
  * The ISFDB direct interaction should be seen as temporary as this class
@@ -136,9 +136,7 @@ public class EditBookTocFragment
     /** Handles the ISFDB lookup tasks. */
     private EditBookTocViewModel editTocVm;
 
-    private final ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher =
-            new ConfirmTocDialogFragment.Launcher(
-                    RK_CONFIRM_TOC, this::onIsfdbDataConfirmed, this::searchIsfdb);
+    private ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher;
 
     @NonNull
     @Override
@@ -154,9 +152,12 @@ public class EditBookTocFragment
 
         //noinspection DataFlowIssue
         editTocEntryLauncher = new EditTocEntryLauncher(
-                getActivity(), DialogLauncher.RK_EDIT_BOOK_TOC_ENTRY, this::onEntryUpdated);
+                getContext(), DialogLauncher.RK_EDIT_BOOK_TOC_ENTRY, this::onEntryUpdated);
         editTocEntryLauncher.registerForFragmentResult(fm, this);
 
+        confirmTocResultsLauncher = new ConfirmTocDialogFragment.Launcher(
+                RK_CONFIRM_TOC,
+                this::onIsfdbDataConfirmed, this::searchIsfdb);
         confirmTocResultsLauncher.registerForFragmentResult(fm, this);
     }
 
@@ -483,7 +484,7 @@ public class EditBookTocFragment
      * Dialog that shows the downloaded TOC titles for approval by the user.
      * <p>
      * Show with the {@link Fragment#getChildFragmentManager()}
-     *
+     * <p>
      * URGENT: needs converting to Dialog/BottomSheet
      */
     public static class ConfirmTocDialogFragment
