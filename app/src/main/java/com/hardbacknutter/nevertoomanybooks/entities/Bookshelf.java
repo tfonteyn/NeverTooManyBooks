@@ -361,7 +361,7 @@ public class Bookshelf
         styleUuid = source.styleUuid;
         filters.clear();
         filters.addAll(source.filters);
-        // don't copy the 'top' values.
+        // NEVER copy the id and topRowAdapterPosition values.
     }
 
     @Override

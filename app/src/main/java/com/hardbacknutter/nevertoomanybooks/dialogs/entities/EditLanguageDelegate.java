@@ -53,15 +53,14 @@ class EditLanguageDelegate
 
     @Override
     @NonNull
-    protected List<String> getList() {
+    List<String> getList(@NonNull final Context context) {
         final Languages languages = ServiceLocator.getInstance().getLanguages();
-        final Context context = vb.getRoot().getContext();
 
         // Convert the list of ISO codes to user readable strings.
         // We do NOT need a distinction here between different countries.
         // The codes are always unique, but code to name conversion can create duplicates
         // (e.g. en_GB and en_US both result in "English"); eliminate them using distinct()
-        return super.getList()
+        return super.getList(context)
                     .stream()
                     .filter(code -> code != null && !code.isEmpty())
                     .map(code -> languages.getDisplayNameFromISO3(context, code))
@@ -71,11 +70,11 @@ class EditLanguageDelegate
 
     @Override
     @NonNull
-    protected String onSave(@NonNull final String originalText,
-                            @NonNull final String currentText) {
+    String onSave(@NonNull final Context context,
+                  @NonNull final String originalText,
+                  @NonNull final String currentText) {
 
         final Languages languages = ServiceLocator.getInstance().getLanguages();
-        final Context context = vb.getRoot().getContext();
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final String fromIso = languages.getISO3FromDisplayName(
@@ -83,7 +82,7 @@ class EditLanguageDelegate
         final String toIso = languages.getISO3FromDisplayName(
                 context, userLocale, currentText);
 
-        super.onSave(fromIso, toIso);
+        super.onSave(context, fromIso, toIso);
         return toIso;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -110,7 +110,8 @@ public class SyncReaderViewModel
     public boolean isReadyToGo() {
         Objects.requireNonNull(syncReaderHelper, ERROR_SYNC_READER_HELPER);
 
-        switch (syncReaderHelper.getSyncServer()) {
+        final SyncServer syncServer = syncReaderHelper.getSyncServer();
+        switch (syncServer) {
             case CalibreCS: {
                 @Nullable
                 final CalibreLibrary selected = syncReaderHelper
@@ -121,7 +122,7 @@ public class SyncReaderViewModel
                 return true;
 
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(syncServer.toString());
         }
     }
 }

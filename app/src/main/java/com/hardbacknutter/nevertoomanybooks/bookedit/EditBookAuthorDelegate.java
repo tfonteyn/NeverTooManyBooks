@@ -247,7 +247,7 @@ class EditBookAuthorDelegate
         return false;
     }
 
-    protected boolean saveChanges(final boolean createRealAuthorIfNeeded) {
+    private boolean saveChanges(final boolean createRealAuthorIfNeeded) {
         viewToModel();
 
         final Context context = vb.getRoot().getContext();

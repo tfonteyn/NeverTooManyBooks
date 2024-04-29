@@ -65,8 +65,7 @@ class EditStringDelegate
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
-    /** View Binding. */
-    protected DialogEditStringContentBinding vb;
+    private DialogEditStringContentBinding vb;
 
     /**
      * Constructor.
@@ -118,7 +117,7 @@ class EditStringDelegate
 
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, getList());
+                ExtArrayAdapter.FilterType.Diacritic, getList(context));
         vb.editString.setAdapter(adapter);
 
         vb.editString.requestFocus();
@@ -171,7 +170,7 @@ class EditStringDelegate
             return true;
         }
 
-        final String storedText = onSave(vm.getOriginalText(), vm.getCurrentText());
+        final String storedText = onSave(context, vm.getOriginalText(), vm.getCurrentText());
         EditStringLauncher.setResult(owner, requestKey, vm.getOriginalText(), storedText);
         return true;
     }
@@ -181,10 +180,12 @@ class EditStringDelegate
      * <p>
      * Override if needed.
      *
+     * @param context Current context
+     *
      * @return list
      */
     @NonNull
-    protected List<String> getList() {
+    List<String> getList(@NonNull final Context context) {
         return daoSupplier.get().getList();
     }
 
@@ -193,6 +194,7 @@ class EditStringDelegate
      * <p>
      * Override if needed.
      *
+     * @param context      Current context
      * @param originalText the original text which was passed in to be edited
      * @param currentText  the modified text
      *
@@ -200,8 +202,9 @@ class EditStringDelegate
      *         the modified text passed in.
      */
     @NonNull
-    protected String onSave(@NonNull final String originalText,
-                            @NonNull final String currentText) {
+    String onSave(@NonNull final Context context,
+                  @NonNull final String originalText,
+                  @NonNull final String currentText) {
         daoSupplier.get().rename(originalText, currentText);
         return currentText;
     }

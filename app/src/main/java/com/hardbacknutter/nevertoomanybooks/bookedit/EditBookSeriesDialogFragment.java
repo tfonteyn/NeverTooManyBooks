@@ -32,9 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 public class EditBookSeriesDialogFragment
         extends FFBaseDialogFragment<DialogEditBookSeriesContentBinding> {
 
-    /** Fragment/Log tag. */
-    public static final String TAG = "EditSeriesForBookDialog";
-
     /**
      * No-arg constructor for OS use.
      */

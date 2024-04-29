@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -233,7 +233,8 @@ public abstract class StyleBaseFragment
      * @throws IllegalArgumentException when there is a bug with the enums
      */
     private void updateLayoutPrefs() {
-        switch (vm.getStyle().getLayout()) {
+        final Style.Layout layout = vm.getStyle().getLayout();
+        switch (layout) {
             case List: {
                 pShowCovers.setVisible(true);
                 // N/A in list-mode
@@ -249,7 +250,7 @@ public abstract class StyleBaseFragment
                 break;
             }
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(layout.toString());
         }
     }
 }

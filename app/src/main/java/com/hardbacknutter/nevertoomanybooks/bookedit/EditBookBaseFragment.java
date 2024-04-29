@@ -68,9 +68,6 @@ public abstract class EditBookBaseFragment
         extends BaseFragment
         implements DataEditor<Book> {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookBaseFragment";
-
     /** The view model. */
     EditBookViewModel vm;
 

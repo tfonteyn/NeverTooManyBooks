@@ -312,7 +312,7 @@ public class EditBookAuthorListDialogFragment
         }
     }
 
-    protected boolean saveChanges() {
+    private boolean saveChanges() {
         if (!vb.author.getText().toString().isEmpty()) {
             // Discarding applies to the edit field(s) only.
             //noinspection DataFlowIssue

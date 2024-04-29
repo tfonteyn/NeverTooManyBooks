@@ -71,7 +71,7 @@ public class Throttler {
      * This method will sleep() until it can make a request; if 10 threads call this
      * simultaneously, one will return immediately, one will return 1 second later,
      * another two seconds etc.
-     *
+     * <p>
      * This method may be called in special circumstances if the site needs
      * extra throttling for certain APIs.
      *

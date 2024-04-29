@@ -400,7 +400,7 @@ class CoverBrowserDelegate
         }
     }
 
-    public static class GalleryAdapter
+    private static class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
         /** A single image fixed width. */

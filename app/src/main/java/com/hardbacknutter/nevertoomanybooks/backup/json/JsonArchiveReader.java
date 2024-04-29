@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -141,22 +141,19 @@ public class JsonArchiveReader
                    StorageException,
                    IOException {
 
-        @Nullable
-        final InputStream is = context.getContentResolver().openInputStream(uri);
-        if (is == null) {
-            throw new FileNotFoundException(uri.toString());
-        }
+        try (final InputStream is = context.getContentResolver().openInputStream(uri);
+             final RecordReader recordReader = new JsonRecordReader(systemLocale,
+                                                                    recordTypes,
+                                                                    updateOption)) {
+            if (is == null) {
+                throw new FileNotFoundException(uri.toString());
+            }
 
-        try (RecordReader recordReader = new JsonRecordReader(systemLocale,
-                                                              recordTypes,
-                                                              updateOption)) {
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
                     new UriInfo(uri).getDisplayName(context), is);
 
             return recordReader.read(context, record, progressListener);
-        } finally {
-            is.close();
         }
     }
 

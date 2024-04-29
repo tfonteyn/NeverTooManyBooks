@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -282,7 +282,7 @@ public class SeriesDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Series> list,
                                @NonNull final Function<Series, Locale> localeSupplier)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {

@@ -320,7 +320,7 @@ public class BooklistAdapter
                         holder = new BookGridHolder(itemView, style, coverScale);
                         break;
                     default:
-                        throw new IllegalArgumentException();
+                        throw new IllegalArgumentException(layout.toString());
                 }
                 break;
 

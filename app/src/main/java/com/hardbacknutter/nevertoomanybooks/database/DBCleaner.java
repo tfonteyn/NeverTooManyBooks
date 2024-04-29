@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,6 +65,8 @@ public class DBCleaner {
     private static final String _SET_ = " SET ";
     private static final String DELETE_FROM_ = "DELETE FROM ";
 
+    private static final Pattern T = Pattern.compile("T");
+
     /** Database Access. */
     @NonNull
     private final SynchronizedDb db;
@@ -124,8 +126,6 @@ public class DBCleaner {
      * {@link FullDateParser}
      */
     private void datetimeFormat() {
-        final Pattern T = Pattern.compile("T");
-
         final Collection<Pair<Long, String>> rows = new ArrayList<>();
 
         for (final String key : DBKey.DATETIME_KEYS) {

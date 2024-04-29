@@ -32,9 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 public class EditBookAuthorDialogFragment
         extends FFBaseDialogFragment<DialogEditBookAuthorContentBinding> {
 
-    /** Fragment/Log tag. */
-    public static final String TAG = "EditAuthorForBookDialog";
-
     /**
      * No-arg constructor for OS use.
      */

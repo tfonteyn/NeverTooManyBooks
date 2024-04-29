@@ -98,11 +98,6 @@ public class EditLenderViewModel
     }
 
     @Nullable
-    public String getLoanee() {
-        return loanee;
-    }
-
-    @Nullable
     public String getCurrentEdit() {
         return currentEdit;
     }

@@ -70,9 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.PopupMenuButton;
 public class EditBookshelvesFragment
         extends BaseFragment {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookshelvesFragment";
-
     private EditBookshelvesViewModel vm;
 
     /** React to changes in the adapter. */

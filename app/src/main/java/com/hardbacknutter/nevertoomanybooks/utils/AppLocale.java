@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,17 +99,6 @@ public interface AppLocale {
     @NonNull
     Resources getLocalizedResources(@NonNull Context context,
                                     @NonNull Locale desiredLocale);
-
-    /**
-     * Get the user-preferred Locale as stored in the preferences.
-     *
-     * @param context Current context
-     *
-     * @return a Locale specification as used for Android resources;
-     *         or {@link #SYSTEM_LANGUAGE} to use the system settings
-     */
-    @NonNull
-    String getPersistedLocaleSpec(@NonNull Context context);
 
     /**
      * Add the specified listener. There is no protection against adding twice.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.util.Base64;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
@@ -63,6 +64,7 @@ public class ImageDownloader {
      * {@link CoverStorage#persist(InputStream, File)} operation will fail.
      * As that is independent from the JUnit test/purpose, we will fake success here.
      */
+    @VisibleForTesting
     public static boolean IGNORE_RENAME_FAILURE;
 
     @NonNull

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * Really dumb implementation that delegates everything to {@link #onChanged()}.
  */
-public abstract class SimpleAdapterDataObserver
+public class SimpleAdapterDataObserver
         extends RecyclerView.AdapterDataObserver {
 
     @Override

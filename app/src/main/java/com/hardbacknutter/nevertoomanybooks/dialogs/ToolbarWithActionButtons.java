@@ -54,7 +54,7 @@ public interface ToolbarWithActionButtons {
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem);
+    boolean onToolbarMenuItemClick(@Nullable MenuItem menuItem);
 
     /**
      * Called when the user clicks a button on the toolbar or the bottom button-bar.
@@ -64,7 +64,7 @@ public interface ToolbarWithActionButtons {
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    boolean onToolbarButtonClick(@Nullable final View button);
+    boolean onToolbarButtonClick(@Nullable View button);
 
     /**
      * Setup the Toolbar listeners.

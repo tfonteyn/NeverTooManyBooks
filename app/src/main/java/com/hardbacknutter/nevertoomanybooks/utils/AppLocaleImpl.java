@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -283,7 +283,14 @@ public final class AppLocaleImpl
         return context.createConfigurationContext(deltaConfig).getResources();
     }
 
-    @Override
+    /**
+     * Get the user-preferred Locale as stored in the preferences.
+     *
+     * @param context Current context
+     *
+     * @return a Locale specification as used for Android resources;
+     *         or {@link #SYSTEM_LANGUAGE} to use the system settings
+     */
     @NonNull
     public String getPersistedLocaleSpec(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)

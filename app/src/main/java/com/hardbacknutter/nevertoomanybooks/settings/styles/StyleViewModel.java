@@ -85,7 +85,7 @@ public class StyleViewModel
                 iconResId = R.drawable.ic_baseline_sort_descending;
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(sort.toString());
         }
         return iconResId;
     }
@@ -104,7 +104,7 @@ public class StyleViewModel
                 labelResId = R.string.lbl_sort_descending;
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(sort.toString());
         }
         return labelResId;
     }
