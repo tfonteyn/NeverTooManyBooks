@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -46,11 +45,11 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
+@SuppressWarnings("WeakerAccess")
 public class CoverBrowserViewModel
         extends ViewModel {
 
@@ -85,8 +84,7 @@ public class CoverBrowserViewModel
     /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
     @NonNull
     private final List<String> editions = new ArrayList<>();
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
+
     /** SelectedImage. */
     @Nullable
     private FetchImageTask selectedImageTask;
@@ -159,9 +157,7 @@ public class CoverBrowserViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
+        if (baseIsbn == null) {
             baseIsbn = SanityCheck.requireValue(args.getString(DBKey.BOOK_ISBN),
                                                 DBKey.BOOK_ISBN);
             cIdx = args.getInt(BKEY_FILE_INDEX);
@@ -178,11 +174,6 @@ public class CoverBrowserViewModel
                                                   .collect(Collectors.toList());
             fileManager = new FileManager(engineIds);
         }
-    }
-
-    @NonNull
-    public String getRequestKey() {
-        return requestKey;
     }
 
     public boolean isCancelled() {

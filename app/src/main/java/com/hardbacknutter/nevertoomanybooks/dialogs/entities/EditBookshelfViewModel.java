@@ -41,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public class EditBookshelfViewModel
         extends ViewModel {
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** The Bookshelf we're editing. */
     private Bookshelf bookshelf;
 
@@ -57,23 +54,14 @@ public class EditBookshelfViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
+        if (dao == null) {
             dao = ServiceLocator.getInstance().getBookshelfDao();
 
-            requestKey = Objects.requireNonNull(
-                    args.getString(EditParcelableLauncher.BKEY_REQUEST_KEY),
-                    EditParcelableLauncher.BKEY_REQUEST_KEY);
-            bookshelf = Objects.requireNonNull(
-                    args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                    EditParcelableLauncher.BKEY_ITEM);
+            bookshelf = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                                               EditParcelableLauncher.BKEY_ITEM);
 
             currentEdit = new Bookshelf(bookshelf);
         }
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return requestKey;
     }
 
     @NonNull

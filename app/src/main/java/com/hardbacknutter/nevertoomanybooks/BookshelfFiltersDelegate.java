@@ -36,11 +36,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 
@@ -49,6 +52,8 @@ class BookshelfFiltersDelegate
 
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
 
     private final BookshelfFiltersViewModel vm;
 
@@ -76,6 +81,8 @@ class BookshelfFiltersDelegate
     BookshelfFiltersDelegate(@NonNull final DialogFragment owner,
                              @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(BookshelfFiltersViewModel.class);
         vm.init(args);
     }
@@ -168,7 +175,7 @@ class BookshelfFiltersDelegate
 
     private boolean saveChanges() {
         if (vm.saveChanges(vb.getRoot().getContext())) {
-            BookshelfFiltersLauncher.setResult(owner, vm.getRequestKey(), vm.isModified());
+            BookshelfFiltersLauncher.setResult(owner, requestKey, vm.isModified());
             return true;
         }
         return false;

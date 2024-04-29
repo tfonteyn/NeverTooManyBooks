@@ -37,7 +37,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 @SuppressWarnings("WeakerAccess")
 public class StylePickerViewModel
@@ -45,8 +44,7 @@ public class StylePickerViewModel
 
     /** The list of styles to display; as loaded from the database. */
     private final List<Style> styleList = new ArrayList<>();
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
+
     /** Show all styles, or only the preferred styles. */
     private boolean showAllStyles;
     /** Currently selected style. */
@@ -61,9 +59,7 @@ public class StylePickerViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
+        if (currentStyle == null) {
             // We MUST have a style
             currentStyle = ServiceLocator
                     .getInstance()
@@ -79,11 +75,6 @@ public class StylePickerViewModel
         }
 
         loadStyles();
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return requestKey;
     }
 
     private void loadStyles() {

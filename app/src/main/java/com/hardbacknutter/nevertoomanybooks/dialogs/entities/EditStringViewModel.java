@@ -26,16 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-
 @SuppressWarnings("WeakerAccess")
 public class EditStringViewModel
         extends ViewModel {
-
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
 
     /** The text we're editing. */
     private String originalText;
@@ -48,18 +41,11 @@ public class EditStringViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
+        if (originalText == null) {
             originalText = args.getString(EditStringLauncher.BKEY_TEXT, "");
 
             currentText = originalText;
         }
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return requestKey;
     }
 
     @NonNull

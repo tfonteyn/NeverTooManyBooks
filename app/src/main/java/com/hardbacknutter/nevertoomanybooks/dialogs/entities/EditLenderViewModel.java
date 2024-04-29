@@ -41,7 +41,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 @SuppressWarnings("WeakerAccess")
 public class EditLenderViewModel
@@ -50,9 +49,6 @@ public class EditLenderViewModel
     private final List<String> people = new ArrayList<>();
 
     private LoaneeDao dao;
-
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
 
     /** The book we're lending. */
     private long bookId;
@@ -78,11 +74,8 @@ public class EditLenderViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
+        if (dao == null) {
             dao = ServiceLocator.getInstance().getLoaneeDao();
-
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
 
             // get previously used lender names
             people.addAll(dao.getList());
@@ -93,11 +86,6 @@ public class EditLenderViewModel
             loanee = dao.findLoaneeByBookId(bookId);
             currentEdit = loanee;
         }
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return requestKey;
     }
 
     public long getBookId() {

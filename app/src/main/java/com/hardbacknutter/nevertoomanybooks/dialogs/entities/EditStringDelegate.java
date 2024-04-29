@@ -35,12 +35,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 
@@ -61,6 +63,8 @@ class EditStringDelegate
     private final EditStringViewModel vm;
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
     /** View Binding. */
     protected DialogEditStringContentBinding vb;
 
@@ -79,6 +83,8 @@ class EditStringDelegate
                        @StringRes final int labelResId,
                        @NonNull final Supplier<InlineStringDao> daoSupplier) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         this.daoSupplier = daoSupplier;
 
         final Context context = owner.getContext();
@@ -166,7 +172,7 @@ class EditStringDelegate
         }
 
         final String storedText = onSave(vm.getOriginalText(), vm.getCurrentText());
-        EditStringLauncher.setResult(owner, vm.getRequestKey(), vm.getOriginalText(), storedText);
+        EditStringLauncher.setResult(owner, requestKey, vm.getOriginalText(), storedText);
         return true;
     }
 

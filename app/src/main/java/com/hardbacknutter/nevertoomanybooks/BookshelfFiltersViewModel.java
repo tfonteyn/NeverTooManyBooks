@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfFiltersViewModel
@@ -47,9 +46,6 @@ public class BookshelfFiltersViewModel
     private static final String TAG = "BookshelfFiltersVM";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
-
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
 
     /** The Bookshelf we're editing. */
     private Bookshelf bookshelf;
@@ -60,9 +56,7 @@ public class BookshelfFiltersViewModel
     private boolean modified;
 
     void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
+        if (bookshelf == null) {
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
             filterList = bookshelf.getFilters();
@@ -77,11 +71,6 @@ public class BookshelfFiltersViewModel
     @NonNull
     List<PFilter<?>> getFilterList() {
         return filterList;
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return requestKey;
     }
 
     public boolean isModified() {

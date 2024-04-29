@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
@@ -79,6 +80,8 @@ class EditBookAuthorDelegate
 
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
 
     /** Book View model. Must be in the Activity scope. */
     private final EditBookViewModel vm;
@@ -92,6 +95,8 @@ class EditBookAuthorDelegate
     EditBookAuthorDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
 
         //noinspection DataFlowIssue
@@ -271,9 +276,8 @@ class EditBookAuthorDelegate
             return false;
         }
 
-        EditParcelableLauncher
-                .setResult(owner, authorVm.getRequestKey(), action,
-                           authorVm.getAuthor(), currentEdit);
+        EditParcelableLauncher.setResult(owner, requestKey, action,
+                                         authorVm.getAuthor(), currentEdit);
         return true;
     }
 

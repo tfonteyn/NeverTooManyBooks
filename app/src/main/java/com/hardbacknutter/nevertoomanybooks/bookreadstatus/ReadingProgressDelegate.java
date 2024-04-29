@@ -32,9 +32,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
 /**
@@ -46,9 +49,10 @@ class ReadingProgressDelegate
 
     @NonNull
     private final DialogFragment owner;
-
+    @NonNull
+    private final String requestKey;
+    @NonNull
     private final ReadingProgressViewModel vm;
-
     private DialogBookReadProgressContentBinding vb;
 
     private final ExtTextWatcher percentageTextWatcher = this::percentageTextToSlider;
@@ -58,6 +62,8 @@ class ReadingProgressDelegate
     ReadingProgressDelegate(@NonNull final DialogFragment owner,
                             @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(ReadingProgressViewModel.class);
         vm.init(args);
     }
@@ -164,7 +170,7 @@ class ReadingProgressDelegate
             final int id = button.getId();
             if (id == R.id.btn_neutral) {
                 // Finished reading
-                ReadingProgressLauncher.setResult(owner, vm.getRequestKey(), true);
+                ReadingProgressLauncher.setResult(owner, requestKey, true);
                 owner.dismiss();
                 return true;
             } else if (id == R.id.btn_save || id == R.id.btn_positive) {
@@ -179,7 +185,7 @@ class ReadingProgressDelegate
 
     private boolean saveChanges() {
         viewToModel();
-        ReadingProgressLauncher.setResult(owner, vm.getRequestKey(), vm.getReadingProgress());
+        ReadingProgressLauncher.setResult(owner, requestKey, vm.getReadingProgress());
         return true;
     }
 
@@ -334,4 +340,6 @@ class ReadingProgressDelegate
 
         addTextWatchers();
     }
+
+
 }

@@ -41,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 public class EditSeriesViewModel
         extends ViewModel {
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** The Series we're editing. */
     private Series series;
 
@@ -57,15 +54,11 @@ public class EditSeriesViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
+        if (dao == null) {
             dao = ServiceLocator.getInstance().getSeriesDao();
 
-            requestKey = Objects.requireNonNull(
-                    args.getString(EditParcelableLauncher.BKEY_REQUEST_KEY),
-                    EditParcelableLauncher.BKEY_REQUEST_KEY);
-            series = Objects.requireNonNull(
-                    args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                    EditParcelableLauncher.BKEY_ITEM);
+            series = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                                            EditParcelableLauncher.BKEY_ITEM);
 
             currentEdit = new Series(series, true);
         }
@@ -74,11 +67,6 @@ public class EditSeriesViewModel
     @NonNull
     public Series getCurrentEdit() {
         return currentEdit;
-    }
-
-    @NonNull
-    public String getRequestKey() {
-        return requestKey;
     }
 
     @NonNull

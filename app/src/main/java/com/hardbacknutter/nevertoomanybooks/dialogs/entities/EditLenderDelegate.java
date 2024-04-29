@@ -38,9 +38,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 
@@ -56,11 +59,13 @@ class EditLenderDelegate
     private final EditLenderViewModel vm;
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
+
     /**
      * See <a href="https://developer.android.com/training/permissions/requesting">
      * developer.android.com</a>
      */
-
     private final ActivityResultLauncher<String> requestPermissionLauncher;
     private ExtArrayAdapter<String> adapter;
     private DialogEditLoanContentBinding vb;
@@ -69,6 +74,8 @@ class EditLenderDelegate
     EditLenderDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(EditLenderViewModel.class);
         vm.init(args);
 
@@ -160,8 +167,7 @@ class EditLenderDelegate
 
         if (vm.saveChanges()) {
             //noinspection DataFlowIssue
-            EditLenderLauncher.setResult(owner, vm.getRequestKey(),
-                                         vm.getBookId(), vm.getCurrentEdit());
+            EditLenderLauncher.setResult(owner, requestKey, vm.getBookId(), vm.getCurrentEdit());
             return true;
         }
         return false;

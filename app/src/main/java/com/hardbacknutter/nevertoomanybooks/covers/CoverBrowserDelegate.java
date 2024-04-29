@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -85,10 +86,13 @@ class CoverBrowserDelegate
     private final int previewMaxHeight;
     @NonNull
     private final String bookTitle;
-    /** The ViewModel. */
+    @NonNull
     private final CoverBrowserViewModel vm;
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
+
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
     private GalleryAdapter galleryAdapter;
@@ -127,7 +131,8 @@ class CoverBrowserDelegate
     CoverBrowserDelegate(@NonNull final DialogFragment owner,
                          @NonNull final Bundle args) {
         this.owner = owner;
-
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
 
         final Resources res = owner.getResources();
@@ -245,8 +250,7 @@ class CoverBrowserDelegate
         }
 
         if (vm.getSelectedFileAbsPath() != null) {
-            CoverBrowserLauncher.setResult(owner, vm.getRequestKey(),
-                                           vm.getSelectedFileAbsPath());
+            CoverBrowserLauncher.setResult(owner, requestKey, vm.getSelectedFileAbsPath());
             return true;
         }
         return false;

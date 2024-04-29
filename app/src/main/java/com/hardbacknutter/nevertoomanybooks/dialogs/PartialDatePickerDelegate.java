@@ -42,6 +42,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -78,6 +79,8 @@ class PartialDatePickerDelegate
     @NonNull
     private final DialogFragment owner;
     @NonNull
+    private final String requestKey;
+    @NonNull
     private final String dialogTitle;
     @IdRes
     private final int fieldId;
@@ -113,6 +116,8 @@ class PartialDatePickerDelegate
     PartialDatePickerDelegate(@NonNull final DialogFragment owner,
                               @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         //noinspection DataFlowIssue
         dialogTitle = owner.getContext().getString(
                 args.getInt(PartialDatePickerLauncher.BKEY_DIALOG_TITLE_ID, R.string.action_edit));
@@ -250,8 +255,7 @@ class PartialDatePickerDelegate
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            PartialDatePickerLauncher.setResult(owner, vm.getRequestKey(),
-                                                fieldId,
+            PartialDatePickerLauncher.setResult(owner, requestKey, fieldId,
                                                 new PartialDate(vm.getYear(),
                                                                 vm.getMonth(),
                                                                 vm.getDay()));

@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -38,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -70,6 +72,8 @@ class EditSeriesDelegate
     private final EditSeriesViewModel vm;
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
 
     /** View Binding. */
     private DialogEditSeriesContentBinding vb;
@@ -77,6 +81,8 @@ class EditSeriesDelegate
     EditSeriesDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(EditSeriesViewModel.class);
         vm.init(args);
     }
@@ -143,7 +149,7 @@ class EditSeriesDelegate
         try {
             final Optional<Series> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
-                sendResultBack(vm.getSeries());
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getSeries());
                 return true;
             }
 
@@ -154,7 +160,8 @@ class EditSeriesDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            sendResultBack(vm.getSeries());
+                            EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
+                                                                        vm.getSeries());
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getSeries());
@@ -178,9 +185,5 @@ class EditSeriesDelegate
         final Series currentEdit = vm.getCurrentEdit();
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
-    }
-
-    private void sendResultBack(@NonNull final Series series) {
-        EditParcelableLauncher.setEditInPlaceResult(owner, vm.getRequestKey(), series);
     }
 }

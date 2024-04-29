@@ -50,9 +50,6 @@ public class EditAuthorViewModel
 
     private static final String TAG = "EditAuthorViewModel";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** The Author we're editing. */
     private Author author;
 
@@ -75,16 +72,11 @@ public class EditAuthorViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
+        if (dao == null) {
             dao = ServiceLocator.getInstance().getAuthorDao();
 
-            requestKey = Objects.requireNonNull(
-                    args.getString(EditParcelableLauncher.BKEY_REQUEST_KEY),
-                    EditParcelableLauncher.BKEY_REQUEST_KEY);
-
-            author = Objects.requireNonNull(
-                    args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                    EditParcelableLauncher.BKEY_ITEM);
+            author = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                                            EditParcelableLauncher.BKEY_ITEM);
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
@@ -94,15 +86,6 @@ public class EditAuthorViewModel
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
         }
-    }
-
-    @NonNull
-    public String getRequestKey() {
-        return requestKey;
-    }
-
-    public void setRequestKey(final String requestKey) {
-        this.requestKey = requestKey;
     }
 
     public boolean useRealAuthorName() {

@@ -31,8 +31,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
@@ -41,6 +44,8 @@ class StylePickerDelegate
 
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
 
     private final StylePickerViewModel vm;
 
@@ -51,6 +56,8 @@ class StylePickerDelegate
     StylePickerDelegate(@NonNull final DialogFragment owner,
                         @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(StylePickerViewModel.class);
         vm.init(args);
     }
@@ -121,7 +128,7 @@ class StylePickerDelegate
             return false;
         }
 
-        StylePickerLauncher.setResult(owner, vm.getRequestKey(), selectedStyle);
+        StylePickerLauncher.setResult(owner, requestKey, selectedStyle);
         return true;
     }
 

@@ -28,26 +28,17 @@ import androidx.lifecycle.ViewModel;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
+@SuppressWarnings("WeakerAccess")
 public class ReadingProgressViewModel
         extends ViewModel {
 
-    private String requestKey;
     private ReadingProgress readingProgress;
 
     void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
-
+        if (readingProgress == null) {
             readingProgress = Objects.requireNonNull(args.getParcelable(DBKey.READ_PROGRESS));
         }
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return requestKey;
     }
 
     @NonNull

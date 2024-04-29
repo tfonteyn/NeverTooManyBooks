@@ -31,7 +31,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -43,8 +42,6 @@ public class EditTocEntryViewModel
     static final String BKEY_ANTHOLOGY = TAG + ":anthology";
     static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
     static final String BKEY_POSITION = TAG + ":pos";
-
-    private String requestKey;
 
     @Nullable
     private String bookTitle;
@@ -64,7 +61,7 @@ public class EditTocEntryViewModel
     /**
      * Current edit. Not handled in {@link #currentEdit} as we only
      * want to run our name parser {@link Author#from(String)} ONCE.
-     *
+     * <p>
      * The original author name is simply read from the {@link #tocEntry}.
      */
     private String currentAuthorName;
@@ -77,13 +74,11 @@ public class EditTocEntryViewModel
      */
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
-            bookTitle = args.getString(DBKey.TITLE);
-            isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
+        if (tocEntry == null) {
             tocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
             editPosition = args.getInt(BKEY_POSITION, 0);
+            isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
+            bookTitle = args.getString(DBKey.TITLE);
 
             currentEdit = new TocEntry(new Author(tocEntry.getPrimaryAuthor(), true),
                                        tocEntry.getTitle(),
@@ -91,11 +86,6 @@ public class EditTocEntryViewModel
 
             currentAuthorName = tocEntry.getPrimaryAuthor().getLabel(context);
         }
-    }
-
-    @NonNull
-    public String getRequestKey() {
-        return requestKey;
     }
 
     @Nullable

@@ -30,12 +30,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -60,12 +62,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * @see EditPublisherBottomSheet
  * @see EditBookshelfBottomSheet
  */
-public class EditBookshelfDelegate
+class EditBookshelfDelegate
         implements FlexDialogDelegate<DialogEditBookshelfContentBinding> {
 
     private static final String TAG = "EditBookshelfDelegate";
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
+
     private final EditBookshelfViewModel vm;
     /** View Binding. */
     private DialogEditBookshelfContentBinding vb;
@@ -73,6 +78,8 @@ public class EditBookshelfDelegate
     EditBookshelfDelegate(@NonNull final DialogFragment owner,
                           @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(EditBookshelfViewModel.class);
         vm.init(args);
     }
@@ -139,7 +146,7 @@ public class EditBookshelfDelegate
             }
 
             if (existingEntity.isEmpty()) {
-                sendResultBack(vm.getBookshelf());
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getBookshelf());
                 return true;
             }
 
@@ -150,7 +157,8 @@ public class EditBookshelfDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            sendResultBack(vm.getBookshelf());
+                            EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
+                                                                        vm.getBookshelf());
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getBookshelf());
@@ -173,9 +181,5 @@ public class EditBookshelfDelegate
     private void viewToModel() {
         //noinspection DataFlowIssue
         vm.getCurrentEdit().setName(vb.bookshelf.getText().toString().trim());
-    }
-
-    private void sendResultBack(@NonNull final Bookshelf bookshelf) {
-        EditParcelableLauncher.setEditInPlaceResult(owner, vm.getRequestKey(), bookshelf);
     }
 }

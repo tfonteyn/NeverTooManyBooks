@@ -27,15 +27,12 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 
+@SuppressWarnings("WeakerAccess")
 public class PartialDatePickerViewModel
         extends ViewModel {
-
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
 
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int year;
@@ -47,11 +44,11 @@ public class PartialDatePickerViewModel
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int day;
 
+    private boolean initDone;
 
     void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
+        if (!initDone) {
+            initDone = true;
             parseDate(args.getString(PartialDatePickerLauncher.BKEY_DATE));
         }
 
@@ -60,11 +57,6 @@ public class PartialDatePickerViewModel
         if (year == 0) {
             year = LocalDate.now().getYear();
         }
-    }
-
-    @NonNull
-    String getRequestKey() {
-        return requestKey;
     }
 
     int getYear() {

@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -67,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * @see EditPublisherBottomSheet
  * @see EditBookshelfBottomSheet
  */
-public class EditAuthorDelegate
+class EditAuthorDelegate
         implements FlexDialogDelegate<DialogEditAuthorContentBinding> {
 
     private static final String TAG = "EditAuthorDelegate";
@@ -76,12 +78,16 @@ public class EditAuthorDelegate
     private final EditAuthorViewModel vm;
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
     /** View Binding. */
     private DialogEditAuthorContentBinding vb;
 
     EditAuthorDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(EditAuthorViewModel.class);
         vm.init(args);
     }
@@ -190,7 +196,7 @@ public class EditAuthorDelegate
         try {
             final Optional<Author> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
-                sendResultBack(vm.getAuthor());
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getAuthor());
                 return true;
             }
 
@@ -201,7 +207,8 @@ public class EditAuthorDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            sendResultBack(vm.getAuthor());
+                            EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
+                                                                        vm.getAuthor());
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getAuthor());
@@ -248,9 +255,5 @@ public class EditAuthorDelegate
         if (vm.useRealAuthorName()) {
             vm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
         }
-    }
-
-    private void sendResultBack(@NonNull final Author author) {
-        EditParcelableLauncher.setEditInPlaceResult(owner, vm.getRequestKey(), author);
     }
 }

@@ -41,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 public class EditPublisherViewModel
         extends ViewModel {
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-
     /** The Publisher we're editing. */
     private Publisher publisher;
 
@@ -57,22 +54,14 @@ public class EditPublisherViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (requestKey == null) {
+        if (dao == null) {
             dao = ServiceLocator.getInstance().getPublisherDao();
-            requestKey = Objects.requireNonNull(
-                    args.getString(EditParcelableLauncher.BKEY_REQUEST_KEY),
-                    EditParcelableLauncher.BKEY_REQUEST_KEY);
-            publisher = Objects.requireNonNull(
-                    args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                    EditParcelableLauncher.BKEY_ITEM);
+
+            publisher = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                                               EditParcelableLauncher.BKEY_ITEM);
 
             currentEdit = new Publisher(publisher);
         }
-    }
-
-    @NonNull
-    public String getRequestKey() {
-        return requestKey;
     }
 
     @NonNull

@@ -31,12 +31,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -50,12 +53,16 @@ class EditTocEntryDelegate
     private final EditTocEntryViewModel vm;
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final String requestKey;
     /** View Binding. */
     private DialogEditBookTocContentBinding vb;
 
     EditTocEntryDelegate(@NonNull final DialogFragment owner,
                          @NonNull final Bundle args) {
         this.owner = owner;
+        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                                            DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(EditTocEntryViewModel.class);
         //noinspection DataFlowIssue
         vm.init(owner.getContext(), args);
@@ -150,8 +157,7 @@ class EditTocEntryDelegate
 
         vm.copyChanges();
 
-        EditTocEntryLauncher.setResult(owner, vm.getRequestKey(), vm.getTocEntry(),
-                                       vm.getEditPosition());
+        EditTocEntryLauncher.setResult(owner, requestKey, vm.getTocEntry(), vm.getEditPosition());
         return true;
     }
 
