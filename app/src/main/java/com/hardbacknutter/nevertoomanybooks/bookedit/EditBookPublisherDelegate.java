@@ -27,6 +27,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -37,11 +38,12 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
- * Add/Edit a single Publisher from the book's publisher list.
+ * Add/Edit a single {@link Publisher} from the book's publisher list.
  * <p>
  * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
  * <p>
@@ -59,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * <li>returns the original untouched + a new copy with the modifications</li>
  * </ul>
  */
-public class EditBookPublisherDelegate
+class EditBookPublisherDelegate
         implements FlexDialogDelegate<DialogEditBookPublisherContentBinding> {
 
     @NonNull
@@ -85,11 +87,15 @@ public class EditBookPublisherDelegate
         publisherVm.init(args);
     }
 
-    @Nullable
-    public String getToolbarSubtitle() {
-        return vm.getBook().getTitle();
+    @Override
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setSubtitle(vm.getBook().getTitle());
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditBookPublisherContentBinding vb) {
         this.vb = vb;
 
@@ -155,5 +161,4 @@ public class EditBookPublisherDelegate
     private void viewToModel() {
         publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
     }
-
 }

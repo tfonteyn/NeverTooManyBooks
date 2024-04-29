@@ -48,15 +48,7 @@ public class EditAuthorDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditAuthorContentBinding vb = DialogEditAuthorContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 }

@@ -49,16 +49,7 @@ public class EditBookshelfDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditBookshelfContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditBookshelfContentBinding vb = DialogEditBookshelfContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 }

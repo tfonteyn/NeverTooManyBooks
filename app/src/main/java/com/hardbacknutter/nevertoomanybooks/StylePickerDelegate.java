@@ -36,12 +36,14 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContent
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
-public class StylePickerDelegate
+class StylePickerDelegate
         implements FlexDialogDelegate<DialogStylePickerContentBinding> {
 
     @NonNull
     private final DialogFragment owner;
+
     private final StylePickerViewModel vm;
+
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<Style> adapter;
 
@@ -53,6 +55,7 @@ public class StylePickerDelegate
         vm.init(args);
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogStylePickerContentBinding vb) {
         final Context context = vb.getRoot().getContext();
         //noinspection DataFlowIssue

@@ -49,16 +49,7 @@ public class EditSeriesDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditSeriesContentBinding vb = DialogEditSeriesContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 }

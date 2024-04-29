@@ -33,8 +33,8 @@ public class EditFormatDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new EditStringDelegate(this,
-                                          R.string.lbl_format, R.string.lbl_format,
-                                          ServiceLocator.getInstance()::getFormatDao,
-                                          requireArguments());
+                                          requireArguments(), R.string.lbl_format, R.string.lbl_format,
+                                          ServiceLocator.getInstance()::getFormatDao
+        );
     }
 }

@@ -27,6 +27,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -37,11 +38,12 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 /**
- * Add/Edit a single Series from the book's series list.
+ * Add/Edit a single {@link Series} from the book's series list.
  * <p>
  * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
  * <p>
@@ -58,9 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * <li>the modifications are NOT stored in the database</li>
  * <li>returns the original untouched + a new copy with the modifications</li>
  * </ul>
- * Must be a public static class to be properly recreated from instance state.
  */
-public class EditBookSeriesDelegate
+class EditBookSeriesDelegate
         implements FlexDialogDelegate<DialogEditBookSeriesContentBinding> {
 
     @NonNull
@@ -70,11 +71,10 @@ public class EditBookSeriesDelegate
     private final EditBookViewModel vm;
     /** Series View model. Fragment scope. */
     private final EditSeriesViewModel seriesVm;
-    /** View Binding. */
-    private DialogEditBookSeriesContentBinding vb;
-
     /** Adding or Editing. */
     private final EditAction action;
+    /** View Binding. */
+    private DialogEditBookSeriesContentBinding vb;
 
     EditBookSeriesDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
@@ -87,11 +87,15 @@ public class EditBookSeriesDelegate
         seriesVm.init(args);
     }
 
-    @Nullable
-    public String getToolbarSubtitle() {
-        return vm.getBook().getTitle();
+    @Override
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setSubtitle(vm.getBook().getTitle());
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditBookSeriesContentBinding vb) {
         this.vb = vb;
 
@@ -167,5 +171,4 @@ public class EditBookSeriesDelegate
         //noinspection DataFlowIssue
         currentEdit.setNumber(vb.seriesNum.getText().toString().trim());
     }
-
 }

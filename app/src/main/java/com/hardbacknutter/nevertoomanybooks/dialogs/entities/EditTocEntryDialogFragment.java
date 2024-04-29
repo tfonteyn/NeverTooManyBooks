@@ -48,17 +48,7 @@ public class EditTocEntryDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditBookTocContentBinding vb = DialogEditBookTocContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-        setTitle(delegate.getToolbarTitle());
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 }

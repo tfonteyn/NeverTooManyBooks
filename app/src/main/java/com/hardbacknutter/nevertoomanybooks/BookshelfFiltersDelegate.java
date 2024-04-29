@@ -27,6 +27,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -41,17 +42,17 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationList
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 
-public class BookshelfFiltersDelegate
+class BookshelfFiltersDelegate
         implements FlexDialogDelegate<DialogEditBookshelfFiltersContentBinding> {
 
     @NonNull
     private final DialogFragment owner;
-    private PFilterListAdapter adapter;
-    /** View Binding. */
-    private DialogEditBookshelfFiltersContentBinding vb;
 
     private final BookshelfFiltersViewModel vm;
+
+    private PFilterListAdapter adapter;
 
     private final ModificationListener modificationListener =
             new ModificationListener() {
@@ -69,6 +70,9 @@ public class BookshelfFiltersDelegate
                 }
             };
 
+    /** View Binding. */
+    private DialogEditBookshelfFiltersContentBinding vb;
+
     BookshelfFiltersDelegate(@NonNull final DialogFragment owner,
                              @NonNull final Bundle args) {
         this.owner = owner;
@@ -76,11 +80,15 @@ public class BookshelfFiltersDelegate
         vm.init(args);
     }
 
-    @NonNull
-    public String getToolbarSubtitle() {
-        return vm.getBookshelf().getName();
+    @Override
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setSubtitle(vm.getBookshelf().getName());
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditBookshelfFiltersContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
@@ -89,9 +97,9 @@ public class BookshelfFiltersDelegate
         vb.filterList.setAdapter(adapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
-
     }
 
+    @Override
     public void onStart() {
         if (vm.getFilterList().isEmpty()) {
             onAdd();

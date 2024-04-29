@@ -28,16 +28,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class ReadingProgressBottomSheet
-        extends BottomSheetDialogFragment {
-
-    private DialogBookReadProgressContentBinding vb;
-    private ReadingProgressDelegate delegate;
+        extends BaseBottomSheetDialogFragment<DialogBookReadProgressContentBinding> {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -59,15 +55,5 @@ public class ReadingProgressBottomSheet
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.toolbar_action_save, delegate);
-        vb.dragHandle.setVisibility(View.VISIBLE);
-        vb.buttonPanelLayout.setVisibility(View.GONE);
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 }

@@ -27,15 +27,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class BookshelfFiltersBottomSheet
-        extends BottomSheetDialogFragment {
-
-    private DialogEditBookshelfFiltersContentBinding vb;
-    private BookshelfFiltersDelegate delegate;
+        extends BaseBottomSheetDialogFragment<DialogEditBookshelfFiltersContentBinding> {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -56,19 +52,6 @@ public class BookshelfFiltersBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.edit_filters, delegate);
-        vb.dragHandle.setVisibility(View.VISIBLE);
-        vb.buttonPanelLayout.setVisibility(View.GONE);
-
-        vb.dialogToolbar.setSubtitle(delegate.getToolbarSubtitle());
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        delegate.onStart();
     }
 }

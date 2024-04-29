@@ -27,16 +27,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
-
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class StylePickerBottomSheet
-        extends BottomSheetDialogFragment {
-
-    private StylePickerDelegate delegate;
-    private DialogStylePickerContentBinding vb;
+        extends BaseBottomSheetDialogFragment<DialogStylePickerContentBinding> {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -57,11 +52,6 @@ public class StylePickerBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.style_picker_style, delegate);
-        vb.dragHandle.setVisibility(View.VISIBLE);
-        vb.buttonPanelLayout.setVisibility(View.GONE);
-
-        delegate.onViewCreated(vb);
     }
 }

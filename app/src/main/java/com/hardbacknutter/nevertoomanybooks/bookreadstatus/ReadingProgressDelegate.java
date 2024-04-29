@@ -85,6 +85,7 @@ class ReadingProgressDelegate
         return defValue;
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogBookReadProgressContentBinding vb) {
         this.vb = vb;
 

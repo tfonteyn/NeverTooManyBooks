@@ -27,16 +27,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class EditBookAuthorBottomSheet
-        extends BottomSheetDialogFragment {
-
-    private DialogEditBookAuthorContentBinding vb;
-    private EditBookAuthorDelegate delegate;
+        extends BaseBottomSheetDialogFragment<DialogEditBookAuthorContentBinding> {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -58,17 +54,5 @@ public class EditBookAuthorBottomSheet
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.toolbar_action_save, delegate);
-        vb.dragHandle.setVisibility(View.VISIBLE);
-        vb.buttonPanelLayout.setVisibility(View.GONE);
-
-        vb.dialogToolbar.setSubtitle(delegate.getToolbarSubtitle());
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 }

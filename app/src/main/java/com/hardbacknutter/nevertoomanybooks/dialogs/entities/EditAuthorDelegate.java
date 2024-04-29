@@ -86,6 +86,7 @@ public class EditAuthorDelegate
         vm.init(args);
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditAuthorContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();

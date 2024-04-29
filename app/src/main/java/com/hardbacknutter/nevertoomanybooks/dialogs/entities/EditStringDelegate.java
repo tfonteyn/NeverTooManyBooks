@@ -29,6 +29,7 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -41,11 +42,13 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 
 /**
- * Dialog to edit an <strong>in-line in Books table</strong> Color.
+ * Dialog to edit an <strong>in-line in Books table</strong> {@code String}
+ * supported by an {@link InlineStringDao}.
  */
-public class EditStringDelegate
+class EditStringDelegate
         implements FlexDialogDelegate<DialogEditStringContentBinding> {
 
     @NonNull
@@ -65,17 +68,19 @@ public class EditStringDelegate
      * Constructor.
      *
      * @param owner         hosting DialogFragment
+     * @param args          {@link Fragment#requireArguments()}
      * @param dialogTitleId for the dialog (i.e. the toolbar)
      * @param labelResId    to use for the 'hint' of the input field
-     * @param args          {@link Fragment#requireArguments()}
+     * @param daoSupplier   the {@link InlineStringDao} supplier
      */
     EditStringDelegate(@NonNull final DialogFragment owner,
+                       @NonNull final Bundle args,
                        @StringRes final int dialogTitleId,
                        @StringRes final int labelResId,
-                       @NonNull final Supplier<InlineStringDao> daoSupplier,
-                       @NonNull final Bundle args) {
+                       @NonNull final Supplier<InlineStringDao> daoSupplier) {
         this.owner = owner;
         this.daoSupplier = daoSupplier;
+
         final Context context = owner.getContext();
         //noinspection DataFlowIssue
         this.toolbarTitle = context.getString(dialogTitleId);
@@ -85,6 +90,7 @@ public class EditStringDelegate
         vm.init(args);
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditStringContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
@@ -112,9 +118,12 @@ public class EditStringDelegate
         vb.editString.requestFocus();
     }
 
-    @Nullable
-    public String getToolbarTitle() {
-        return toolbarTitle;
+    @Override
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setTitle(toolbarTitle);
     }
 
     @Override
@@ -126,6 +135,7 @@ public class EditStringDelegate
     public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         return false;
     }
+
     @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {

@@ -28,15 +28,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
 
 public class PartialDatePickerBottomSheet
-        extends BottomSheetDialogFragment {
-
-    private PartialDatePickerDelegate delegate;
+        extends BaseBottomSheetDialogFragment<DialogPartialDatePickerContentBinding> {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -57,22 +53,9 @@ public class PartialDatePickerBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // Ensure components match current Locale order BEFORE we bind the views.
-        delegate.reorderPickers(view);
-        final DialogPartialDatePickerContentBinding vb = DialogPartialDatePickerContentBinding
-                .bind(view);
-
+        ((PartialDatePickerDelegate) delegate).reorderPickers(view);
+        vb = DialogPartialDatePickerContentBinding.bind(view);
         delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.toolbar_action_save, delegate);
-        vb.dragHandle.setVisibility(View.VISIBLE);
-        vb.buttonPanelLayout.setVisibility(View.GONE);
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 }

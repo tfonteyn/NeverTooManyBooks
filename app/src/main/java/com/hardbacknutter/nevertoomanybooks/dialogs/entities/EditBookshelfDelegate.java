@@ -77,6 +77,7 @@ public class EditBookshelfDelegate
         vm.init(args);
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditBookshelfContentBinding vb) {
         this.vb = vb;
 

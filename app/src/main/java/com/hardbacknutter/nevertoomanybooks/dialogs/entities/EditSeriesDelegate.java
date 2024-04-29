@@ -62,17 +62,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * @see EditPublisherBottomSheet
  * @see EditBookshelfBottomSheet
  */
-public class EditSeriesDelegate
+class EditSeriesDelegate
         implements FlexDialogDelegate<DialogEditSeriesContentBinding> {
 
     private static final String TAG = "EditSeriesDelegate";
 
-    /** View Binding. */
-    private DialogEditSeriesContentBinding vb;
     private final EditSeriesViewModel vm;
-
     @NonNull
     private final DialogFragment owner;
+
+    /** View Binding. */
+    private DialogEditSeriesContentBinding vb;
 
     EditSeriesDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
@@ -81,6 +81,7 @@ public class EditSeriesDelegate
         vm.init(args);
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditSeriesContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();

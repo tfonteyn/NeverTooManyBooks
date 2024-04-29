@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 
@@ -60,26 +59,10 @@ public class CoverBrowserDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-        final DialogCoverBrowserContentBinding vb = DialogCoverBrowserContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-        setSubtitle(delegate.getToolbarSubtitle());
-
-        delegate.onViewCreated(vb);
 
         // Don't give it the gallery! We're auto-adapting in the delegate already
         adjustWindowSize(null, /* ignored */ 0f);
-    }
-
-    @Override
-    public void onCancel(@NonNull final DialogInterface dialog) {
-        ((CoverBrowserDelegate) delegate).cancelAllTasks();
-        super.onCancel(dialog);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        delegate.onResume();
     }
 }

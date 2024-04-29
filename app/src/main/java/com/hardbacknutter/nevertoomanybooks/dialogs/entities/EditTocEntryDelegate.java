@@ -27,6 +27,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -37,12 +38,13 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
-public class EditTocEntryDelegate
+class EditTocEntryDelegate
         implements FlexDialogDelegate<DialogEditBookTocContentBinding> {
 
     private final EditTocEntryViewModel vm;
@@ -59,6 +61,7 @@ public class EditTocEntryDelegate
         vm.init(owner.getContext(), args);
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditBookTocContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
@@ -95,15 +98,22 @@ public class EditTocEntryDelegate
         }
     }
 
-    @Nullable
-    public String getToolbarTitle() {
-        return vm.getBookTitle();
+    @Override
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        final String toolbarTitle = vm.getBookTitle();
+        if (toolbarTitle != null) {
+            dialogToolbar.setTitle(toolbarTitle);
+        }
     }
 
     @Override
     public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         return false;
     }
+
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();

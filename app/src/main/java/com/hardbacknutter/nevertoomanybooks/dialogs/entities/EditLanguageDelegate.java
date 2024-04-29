@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -42,14 +43,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  */
 class EditLanguageDelegate
         extends EditStringDelegate {
-    EditLanguageDelegate(@NonNull final DialogFragment owner) {
-        super(owner, R.string.lbl_language, R.string.lbl_language,
-              ServiceLocator.getInstance()::getLanguageDao,
-              owner.requireArguments());
+
+    EditLanguageDelegate(@NonNull final DialogFragment owner,
+                         @NonNull final Bundle args) {
+        super(owner, args, R.string.lbl_language, R.string.lbl_language,
+              ServiceLocator.getInstance()::getLanguageDao
+        );
     }
 
-    @NonNull
     @Override
+    @NonNull
     protected List<String> getList() {
         final Languages languages = ServiceLocator.getInstance().getLanguages();
         final Context context = vb.getRoot().getContext();

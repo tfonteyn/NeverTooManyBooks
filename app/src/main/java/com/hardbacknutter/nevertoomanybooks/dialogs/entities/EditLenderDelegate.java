@@ -33,6 +33,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 
 /**
  * Dialog to create a new loan, edit an existing one or remove it (book is returned).
@@ -48,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
  * Note the special treatment of the Book's current/original loanee.
  * This is done to minimize trips to the database.
  */
-public class EditLenderDelegate
+class EditLenderDelegate
         implements FlexDialogDelegate<DialogEditLoanContentBinding> {
 
     private final EditLenderViewModel vm;
@@ -78,6 +80,7 @@ public class EditLenderDelegate
                 });
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditLoanContentBinding vb) {
         this.vb = vb;
         final Context context = vb.getRoot().getContext();
@@ -106,9 +109,12 @@ public class EditLenderDelegate
         adapter.addAll(vm.getContacts(adapter.getContext()));
     }
 
-    @Nullable
-    public String getToolbarSubtitle() {
-        return vm.getBookTitle();
+    @Override
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setSubtitle(vm.getBookTitle());
     }
 
     @Override
@@ -120,6 +126,8 @@ public class EditLenderDelegate
     public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
         return false;
     }
+
+    @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();

@@ -28,6 +28,7 @@ import android.text.style.SuperscriptSpan;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class StylePickerViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args Bundle with arguments
+     * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
         if (requestKey == null) {

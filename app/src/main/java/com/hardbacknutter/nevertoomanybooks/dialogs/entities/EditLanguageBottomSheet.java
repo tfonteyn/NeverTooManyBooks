@@ -29,6 +29,6 @@ public class EditLanguageBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditLanguageDelegate(this);
+        delegate = new EditLanguageDelegate(this, requireArguments());
     }
 }

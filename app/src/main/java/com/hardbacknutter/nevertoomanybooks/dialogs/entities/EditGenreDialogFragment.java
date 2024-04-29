@@ -33,8 +33,8 @@ public class EditGenreDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new EditStringDelegate(this,
-                                          R.string.lbl_genre, R.string.lbl_genre,
-                                          ServiceLocator.getInstance()::getGenreDao,
-                                          requireArguments());
+                                          requireArguments(), R.string.lbl_genre, R.string.lbl_genre,
+                                          ServiceLocator.getInstance()::getGenreDao
+        );
     }
 }

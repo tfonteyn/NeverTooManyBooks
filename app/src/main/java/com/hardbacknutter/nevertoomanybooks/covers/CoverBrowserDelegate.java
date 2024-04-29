@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 
@@ -69,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Delay;
  * <p>
  * ENHANCE: pass in a {@link Site.Type#Covers} list allow configuring search-sites on the fly
  */
-public class CoverBrowserDelegate
+class CoverBrowserDelegate
         implements FlexDialogDelegate<DialogCoverBrowserContentBinding> {
 
     /** Fragment/Log tag. */
@@ -178,10 +181,12 @@ public class CoverBrowserDelegate
         });
     }
 
-    void cancelAllTasks() {
+    @Override
+    public void onCancel(@NonNull final DialogInterface dialog) {
         vm.cancelAllTasks();
     }
 
+    @Override
     public void onResume() {
         // if the task is NOT already running and we have no editions loaded before
         if (!vm.isSearchEditionsTaskRunning() && vm.getEditions().isEmpty()) {
@@ -201,10 +206,12 @@ public class CoverBrowserDelegate
         }
     }
 
-    @Nullable
     @Override
-    public String getToolbarSubtitle() {
-        return bookTitle;
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setSubtitle(bookTitle);
     }
 
     @Override
@@ -266,7 +273,6 @@ public class CoverBrowserDelegate
             vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
         }
     }
-
 
     /**
      * Display the given image in the gallery View.

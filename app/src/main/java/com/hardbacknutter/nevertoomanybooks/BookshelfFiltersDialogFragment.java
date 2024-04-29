@@ -55,20 +55,9 @@ public class BookshelfFiltersDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        vb = DialogEditBookshelfFiltersContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-        final DialogEditBookshelfFiltersContentBinding vb = DialogEditBookshelfFiltersContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-        setSubtitle(delegate.getToolbarSubtitle());
-
-        delegate.onViewCreated(vb);
 
         adjustWindowSize(vb.filterList, 0.33f);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // If there are no filters, immediately show the add-filter dialog
-        delegate.onStart();
     }
 }

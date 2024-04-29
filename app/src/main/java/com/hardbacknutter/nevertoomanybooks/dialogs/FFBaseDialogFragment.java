@@ -77,26 +77,22 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * </ol>
  * <p>
  * Special cases see {@link #adjustWindowSize} methods.
+ *
+ * @param <B> ViewBinding class type.
  */
 public abstract class FFBaseDialogFragment<B>
         extends DialogFragment {
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
-
-    protected FlexDialogDelegate<B> delegate;
-
     /** Whether to force fullscreen - set in the constructor. */
     private final boolean forceFullscreen;
     @NonNull
     private final Set<WindowSizeClass> useFullscreenWidth = EnumSet.of(WindowSizeClass.Compact);
     @NonNull
     private final Set<WindowSizeClass> useFullscreenHeight = EnumSet.of(WindowSizeClass.Compact);
-
-    /** Either the full-screen toolbar, or the floating dialog toolbar. */
-    @Nullable
-    private Toolbar toolbar;
-
+    protected B vb;
+    protected FlexDialogDelegate<B> delegate;
     /**
      * Show the dialog fullscreen (default) or as a floating dialog.
      * Decided in {@link #onAttach(Context)}
@@ -206,6 +202,7 @@ public abstract class FFBaseDialogFragment<B>
         super.onViewCreated(view, savedInstanceState);
 
         // Sanity check
+        Objects.requireNonNull(vb, "vb not set");
         Objects.requireNonNull(delegate, "delegate not set");
 
         // Layouts supporting BottomSheet have a drag-handle. Just hide it.
@@ -224,6 +221,8 @@ public abstract class FFBaseDialogFragment<B>
             floatingToolbar.setVisibility(fullscreen ? View.GONE : View.VISIBLE);
         }
 
+        // Either the full-screen toolbar, or the floating dialog toolbar
+        final Toolbar toolbar;
         if (fullscreen) {
             toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
         } else {
@@ -248,8 +247,10 @@ public abstract class FFBaseDialogFragment<B>
         }
 
         if (toolbar != null) {
-            delegate.initToolbarActionButtons(toolbar, delegate);
+            delegate.initToolbarActionButtons(toolbar, 0, delegate);
         }
+
+        delegate.onViewCreated(vb);
     }
 
     /**
@@ -349,26 +350,28 @@ public abstract class FFBaseDialogFragment<B>
         window.setLayout(lpWidth, lpHeight);
     }
 
-    /**
-     * Set the title of the toolbar.
-     *
-     * @param title a string to set as the title
-     */
-    public void setTitle(@Nullable final CharSequence title) {
-        if (toolbar != null) {
-            toolbar.setTitle(title);
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
+        delegate.onStart();
     }
 
-    /**
-     * Set the subtitle of the toolbar.
-     *
-     * @param subtitle a string to set as the subtitle
-     */
-    public void setSubtitle(@Nullable final CharSequence subtitle) {
-        if (toolbar != null) {
-            toolbar.setSubtitle(subtitle);
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        delegate.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        delegate.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onCancel(@NonNull final DialogInterface dialog) {
+        delegate.onCancel(dialog);
+        super.onCancel(dialog);
     }
 
     @Override

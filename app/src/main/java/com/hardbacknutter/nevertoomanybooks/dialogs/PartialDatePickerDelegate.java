@@ -30,6 +30,7 @@ import android.widget.NumberPicker;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -57,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerC
  * we leave the day setting unchanged.
  * A final validity check is done when trying to accept the date.
  */
-public class PartialDatePickerDelegate
+class PartialDatePickerDelegate
         implements FlexDialogDelegate<DialogPartialDatePickerContentBinding> {
 
     private static final String TAG = "PartialDatePickerDelega";
@@ -112,15 +113,14 @@ public class PartialDatePickerDelegate
     PartialDatePickerDelegate(@NonNull final DialogFragment owner,
                               @NonNull final Bundle args) {
         this.owner = owner;
-        vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
-        vm.init(args);
-
         //noinspection DataFlowIssue
         dialogTitle = owner.getContext().getString(
-                args.getInt(PartialDatePickerLauncher.BKEY_DIALOG_TITLE_ID,
-                            R.string.action_edit));
+                args.getInt(PartialDatePickerLauncher.BKEY_DIALOG_TITLE_ID, R.string.action_edit));
 
         fieldId = args.getInt(PartialDatePickerLauncher.BKEY_FIELD_ID);
+
+        vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
+        vm.init(args);
     }
 
     /**
@@ -208,10 +208,12 @@ public class PartialDatePickerDelegate
         updateDaysInMonth();
     }
 
-    @Nullable
     @Override
-    public String getToolbarTitle() {
-        return dialogTitle;
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setTitle(dialogTitle);
     }
 
     @Override
@@ -308,5 +310,4 @@ public class PartialDatePickerDelegate
             vb.day.setValue(currentlySelectedDay);
         }
     }
-
 }

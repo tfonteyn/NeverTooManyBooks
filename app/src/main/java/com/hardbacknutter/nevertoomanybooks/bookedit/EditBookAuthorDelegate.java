@@ -29,6 +29,7 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -44,11 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
- * Add/Edit a single Author from the book's author list.
+ * Add/Edit a single {@link Author} from the book's author list.
  * <p>
  * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
  * <p>
@@ -66,12 +68,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * <li>Returns the original untouched + a new copy with the modifications</li>
  * </ul>
  */
-public class EditBookAuthorDelegate
+class EditBookAuthorDelegate
         implements FlexDialogDelegate<DialogEditBookAuthorContentBinding> {
 
     /**
-     * We create a list of all the Type checkboxes for easy handling.
-     * The key is the Type.
+     * We create a list of all the {@link Author.Type} checkboxes for easy handling.
+     * The key is the {@link Author.Type}.
      */
     private final SparseArray<CompoundButton> typeButtons = new SparseArray<>();
 
@@ -82,12 +84,10 @@ public class EditBookAuthorDelegate
     private final EditBookViewModel vm;
     /** Author View model. Fragment scope. */
     private final EditAuthorViewModel authorVm;
-
-    /** View Binding. */
-    private DialogEditBookAuthorContentBinding vb;
-
     /** Adding or Editing. */
     private final EditAction action;
+    /** View Binding. */
+    private DialogEditBookAuthorContentBinding vb;
 
     EditBookAuthorDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
@@ -100,6 +100,7 @@ public class EditBookAuthorDelegate
         authorVm.init(args);
     }
 
+    @Override
     public void onViewCreated(@NonNull final DialogEditBookAuthorContentBinding vb) {
         this.vb = vb;
 
@@ -130,9 +131,12 @@ public class EditBookAuthorDelegate
         vb.familyName.requestFocus();
     }
 
-    @Nullable
-    public String getToolbarSubtitle() {
-        return vm.getBook().getTitle();
+    @Override
+    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
+                                         final int menuResId,
+                                         @NonNull final ToolbarWithActionButtons listener) {
+        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+        dialogToolbar.setSubtitle(vm.getBook().getTitle());
     }
 
     private void setupRealAuthorField(final Context context) {
@@ -316,5 +320,4 @@ public class EditBookAuthorDelegate
             currentEdit.setType(type);
         }
     }
-
 }

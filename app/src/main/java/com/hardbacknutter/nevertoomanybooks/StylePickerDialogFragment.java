@@ -56,11 +56,8 @@ public class StylePickerDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        vb = DialogStylePickerContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-        final DialogStylePickerContentBinding vb = DialogStylePickerContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-
-        delegate.onViewCreated(vb);
 
         adjustWindowSize(vb.stylesList, 0.33f);
     }
