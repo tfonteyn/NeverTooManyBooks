@@ -71,7 +71,7 @@ public class ReadStatusFragment
         vb.read.setOnClickListener(v -> vm.setRead(!vm.isRead()));
     }
 
-    public void reload() {
+    private void reload() {
         vb.read.setChecked(vm.isRead());
     }
 }

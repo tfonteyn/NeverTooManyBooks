@@ -73,8 +73,6 @@ public final class ReadStatusFragmentFactory {
                   .setReorderingAllowed(true)
                   .replace(fragmentContainerViewId, fragment, ReadProgressFragment.TAG)
                   .commit();
-            } else {
-                ((ReadProgressFragment) fragment).reload();
             }
         } else {
             // Traditional Read/Unread.
@@ -88,8 +86,6 @@ public final class ReadStatusFragmentFactory {
                   .setReorderingAllowed(true)
                   .replace(fragmentContainerViewId, fragment, ReadStatusFragment.TAG)
                   .commit();
-            } else {
-                ((ReadStatusFragment) fragment).reload();
             }
         }
     }

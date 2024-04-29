@@ -79,7 +79,7 @@ public class ReadProgressFragment
         vb.btnReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getReadingProgress()));
     }
 
-    public void reload() {
+    private void reload() {
         final ReadingProgress readingProgress = vm.getReadingProgress();
 
         //noinspection DataFlowIssue
