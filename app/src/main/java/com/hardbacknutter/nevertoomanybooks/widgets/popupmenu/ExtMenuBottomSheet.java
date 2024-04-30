@@ -84,6 +84,7 @@ public class ExtMenuBottomSheet
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         vb = PopupMenuBinding.inflate(inflater, container, false);
+        vb.dragHandle.setVisibility(View.VISIBLE);
         return vb.getRoot();
     }
 

@@ -88,6 +88,7 @@ public class ExtMenuPopupWindow {
         xOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
 
         vb = PopupMenuBinding.inflate(LayoutInflater.from(context), null, false);
+        vb.dragHandle.setVisibility(View.GONE);
 
         popupWindow = new PopupWindow(context);
         popupWindow.setFocusable(true);

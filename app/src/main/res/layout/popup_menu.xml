@@ -28,6 +28,11 @@
     android:padding="@dimen/context_menu_padding"
     >
 
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
