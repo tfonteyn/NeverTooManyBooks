@@ -106,15 +106,14 @@ public enum ExtMenuLocation {
             return Dialog;
         }
 
-
         // Small menus are best served as popup menus
         // anchored to the view to minimalize eye-movement.
-        if (menu.size() < 5 || windowSize == WindowSizeClass.Medium) {
+        if (menu.size() < 5 && windowSize == WindowSizeClass.Medium) {
             return ExtMenuLocation.Anchored;
         }
 
-        // menu.size() >= 5  ||  windowSize == WindowSizeClass.Compact
-        return ExtMenuLocation.Center;
+        // We eiter have a Compact screen, or a menu with 5 or more items.
+        return ExtMenuLocation.BottomSheet;
     }
 
     public boolean isPopup() {
