@@ -36,7 +36,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Shared data between pager, details, Read and TOC fragments.
+ * <p>
+ * REMINDER: this is used by the ViewPager and MUST NOT contain Book information.
+ * The ViewPager handles multiple child fragments, each of which represents a Book.
  */
+@SuppressWarnings("WeakerAccess")
 public class ShowBookDetailsActivityViewModel
         extends ViewModel {
 

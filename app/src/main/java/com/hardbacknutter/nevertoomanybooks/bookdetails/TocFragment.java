@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -152,6 +152,10 @@ public class TocFragment
         vb.toc.setAdapter(adapter);
         vb.toc.setHasFixedSize(true);
 
+        //noinspection NotifyDataSetChanged
+        vm.onBookChanged().observe(getViewLifecycleOwner(),
+                                   bookId -> adapter.notifyDataSetChanged());
+
         if (!vm.isEmbedded()) {
             final Toolbar toolbar = getToolbar();
             vm.getScreenTitle(getContext()).ifPresent(toolbar::setTitle);
@@ -159,9 +163,8 @@ public class TocFragment
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    // See info in the code calling this.
     public void reload(@NonNull final Book book) {
         vm.reload(book);
-        adapter.notifyDataSetChanged();
     }
 }

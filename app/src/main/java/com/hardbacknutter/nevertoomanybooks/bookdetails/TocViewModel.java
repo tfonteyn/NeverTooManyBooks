@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class TocViewModel
         extends ViewModel {
+
+    private final MutableLiveData<Long> bookChanged = new MutableLiveData<>();
 
     /**
      * The list of TOC entries we're displaying.
@@ -89,6 +92,11 @@ public class TocViewModel
         }
     }
 
+    @NonNull
+    public MutableLiveData<Long> onBookChanged() {
+        return bookChanged;
+    }
+
     public boolean isEmbedded() {
         return embedded;
     }
@@ -103,6 +111,8 @@ public class TocViewModel
         final List<Author> authorList = book.getAuthors();
         authors.clear();
         authors.addAll(authorList);
+
+        bookChanged.setValue(bookId);
     }
 
     public long getBookId() {

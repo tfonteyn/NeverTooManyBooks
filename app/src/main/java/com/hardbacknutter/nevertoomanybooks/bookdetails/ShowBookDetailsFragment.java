@@ -535,6 +535,7 @@ public class ShowBookDetailsFragment
                 final Fragment fragment = TocFragment.create(book, false, aVm.getStyle());
                 // yes, it must be the Activity FragmentManager,
                 // as that is where the R.id.main_fragment View is located.
+                // This also means the TocFragment is replacing the ViewPager!
                 //noinspection DataFlowIssue
                 final FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction()
@@ -569,6 +570,7 @@ public class ShowBookDetailsFragment
                   .replace(R.id.toc_frame, fragment, TocFragment.TAG)
                   .commit();
             } else {
+                //URGENT: this is a hack.... it works but.... it's bound to break some day.
                 ((TocFragment) fragment).reload(book);
             }
         }
