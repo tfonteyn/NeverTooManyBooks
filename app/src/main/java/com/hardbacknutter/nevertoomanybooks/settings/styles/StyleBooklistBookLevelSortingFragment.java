@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -200,7 +199,7 @@ public class StyleBooklistBookLevelSortingFragment
             } else {
                 final String label = vm.getWrappedBookLevelColumnList().get(position)
                                        .getLabel(anchor.getContext());
-                menuLauncher.launch(position, label, null, menu, true);
+                menuLauncher.launch(getActivity(), position, label, null, menu, true);
             }
         });
 

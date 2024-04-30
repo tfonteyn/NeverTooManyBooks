@@ -51,14 +51,12 @@ public class PartialDatePickerLauncher
     /**
      * Constructor.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public PartialDatePickerLauncher(@NonNull final Context context,
-                                     @NonNull final String requestKey,
+    public PartialDatePickerLauncher(@NonNull final String requestKey,
                                      @NonNull final ResultListener resultListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 
@@ -86,14 +84,16 @@ public class PartialDatePickerLauncher
 
     /**
      * Launch the dialog.
-     *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param dialogTitleId resource id for the dialog title
      * @param fieldId       this dialog operates on
      *                      (one launcher can serve multiple fields)
      * @param currentValue  the current value of the field
      * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      */
-    public void launch(@StringRes final int dialogTitleId,
+    public void launch(@NonNull final Context context,
+                       @StringRes final int dialogTitleId,
                        @IdRes final int fieldId,
                        @Nullable final String currentValue,
                        final boolean todayIfNone) {
@@ -109,7 +109,7 @@ public class PartialDatePickerLauncher
         args.putInt(BKEY_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, dateStr);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

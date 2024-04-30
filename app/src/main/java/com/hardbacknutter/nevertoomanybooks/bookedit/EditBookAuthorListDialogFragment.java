@@ -130,7 +130,7 @@ public class EditBookAuthorListDialogFragment
         final FragmentManager fm = getChildFragmentManager();
 
         editLauncher = new EditParcelableLauncher<>(
-                getActivity(), DialogLauncher.RK_EDIT_BOOK_AUTHOR,
+                DialogLauncher.RK_EDIT_BOOK_AUTHOR,
                 this::add, this::processChanges);
         editLauncher.registerForFragmentResult(fm, this);
 
@@ -210,7 +210,9 @@ public class EditBookAuthorListDialogFragment
                                 .setPosition(position)
                                 .show(v, ExtMenuLocation.Anchored);
                     } else {
-                        menuLauncher.launch(position, null, null, rowMenu, true);
+                        //noinspection DataFlowIssue
+                        menuLauncher.launch(getActivity(), position, null, null,
+                                            menu, true);
                     }
                 });
 
@@ -221,7 +223,8 @@ public class EditBookAuthorListDialogFragment
     }
 
     private void editEntry(final int position) {
-        editLauncher.launch(EditAction.Edit, authorList.get(position));
+        //noinspection DataFlowIssue
+        editLauncher.launch(getActivity(), EditAction.Edit, authorList.get(position));
     }
 
     /**
@@ -296,7 +299,8 @@ public class EditBookAuthorListDialogFragment
 
         final Author author = Author.from(name);
         if (withDetails) {
-            editLauncher.launch(EditAction.Add, author);
+            //noinspection DataFlowIssue
+            editLauncher.launch(getActivity(), EditAction.Add, author);
         } else {
             add(author);
         }

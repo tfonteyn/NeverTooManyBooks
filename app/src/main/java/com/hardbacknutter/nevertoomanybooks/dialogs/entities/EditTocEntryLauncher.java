@@ -42,14 +42,12 @@ public class EditTocEntryLauncher
     /**
      * Constructor.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public EditTocEntryLauncher(@NonNull final Context context,
-                                @NonNull final String requestKey,
+    public EditTocEntryLauncher(@NonNull final String requestKey,
                                 @NonNull final ResultListener resultListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 
@@ -77,13 +75,15 @@ public class EditTocEntryLauncher
 
     /**
      * Constructor.
-     *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param book        the entry belongs to
      * @param position    of the tocEntry in the list
      * @param tocEntry    to edit.
      * @param isAnthology Flag that will enable/disable the author edit field
      */
-    public void launch(@NonNull final Book book,
+    public void launch(@NonNull final Context context,
+                       @NonNull final Book book,
                        final int position,
                        @NonNull final TocEntry tocEntry,
                        final boolean isAnthology) {
@@ -94,7 +94,7 @@ public class EditTocEntryLauncher
         args.putParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY, tocEntry);
         args.putInt(EditTocEntryViewModel.BKEY_POSITION, position);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerIte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -134,7 +133,8 @@ public class EditBookshelvesFragment
                         .setMenu(menu, true)
                         .show(anchor, ExtMenuLocation.Anchored);
             } else {
-                menuLauncher.launch(listIndex, null, null, menu, true);
+                //noinspection DataFlowIssue
+                menuLauncher.launch(getActivity(), listIndex, null, null, menu, true);
             }
         }
     };
@@ -151,10 +151,7 @@ public class EditBookshelvesFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        //noinspection DataFlowIssue
-        editLauncher = new EditParcelableLauncher<>(
-                getActivity(), DBKey.FK_BOOKSHELF,
-                this::onModified);
+        editLauncher = new EditParcelableLauncher<>(DBKey.FK_BOOKSHELF, this::onModified);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
@@ -212,7 +209,8 @@ public class EditBookshelvesFragment
     private void editNewBookshelf() {
         final Style style = ServiceLocator.getInstance().getStyles().getDefault();
         // Not as 'add' as we DO want this new shelf stored in the database when edited.
-        editLauncher.launch(EditAction.EditInPlace, new Bookshelf("", style));
+        //noinspection DataFlowIssue
+        editLauncher.launch(getActivity(), EditAction.EditInPlace, new Bookshelf("", style));
     }
 
     /**
@@ -242,7 +240,8 @@ public class EditBookshelvesFragment
         final Bookshelf bookshelf = vm.getBookshelf(listIndex);
 
         if (menuItemId == R.id.MENU_EDIT) {
-            editLauncher.launch(EditAction.EditInPlace, bookshelf);
+            //noinspection DataFlowIssue
+            editLauncher.launch(getActivity(), EditAction.EditInPlace, bookshelf);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {

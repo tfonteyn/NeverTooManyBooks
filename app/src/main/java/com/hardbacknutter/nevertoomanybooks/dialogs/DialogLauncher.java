@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomShe
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 
 public abstract class DialogLauncher
         implements FragmentResultListener {
@@ -151,10 +151,20 @@ public abstract class DialogLauncher
     @NonNull
     private final String requestKey;
 
-    @NonNull
+    @Nullable
     private final Supplier<DialogFragment> dialogFragmentSupplier;
     @Nullable
     private FragmentManager fragmentManager;
+
+    /**
+     * Constructor.
+     *
+     * @param requestKey FragmentResultListener request key to use for our response.
+     */
+    protected DialogLauncher(@NonNull final String requestKey) {
+        this.requestKey = requestKey;
+        this.dialogFragmentSupplier = null;
+    }
 
     /**
      * Constructor.
@@ -169,32 +179,6 @@ public abstract class DialogLauncher
     }
 
     /**
-     * Constructor.
-     *
-     * @param context    Current context - this <strong>MUST</strong> be a UI context
-     * @param requestKey FragmentResultListener request key to use for our response.
-     */
-    protected DialogLauncher(@NonNull final Context context,
-                             @NonNull final String requestKey) {
-        this.requestKey = requestKey;
-        this.dialogFragmentSupplier = getDialogSupplier(context, requestKey);
-    }
-
-    @NonNull
-    private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
-                                                       @NonNull final String requestKey) {
-        final Type type = Type.which(context);
-        switch (type) {
-            case Dialog:
-                return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
-            case BottomSheet:
-                return Objects.requireNonNull(BOTTOM_SHEET.get(requestKey), requestKey);
-        }
-
-        throw new IllegalArgumentException("requestKey=" + requestKey + ", type=" + type);
-    }
-
-    /**
      * Register this object for receiving Fragment results.
      *
      * @param fragmentManager typically the {@link Fragment#getChildFragmentManager()}
@@ -204,39 +188,45 @@ public abstract class DialogLauncher
     public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
         this.fragmentManager = fragmentManager;
+        // DO NOT MOVE THIS TO THE CONSTRUCTOR!
+        // the FragmentManager will use 'this' immediately!
         this.fragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);
     }
 
     /**
      * Create the dialog, setup the arguments adding the requestKey and show it.
      *
-     * @param args to pass
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
+     * @param args    to pass
      */
-    protected void createDialog(@NonNull final Bundle args) {
+    protected void createDialog(@NonNull final Context context,
+                                @NonNull final Bundle args) {
         Objects.requireNonNull(fragmentManager, "fragmentManager");
 
         args.putString(BKEY_REQUEST_KEY, requestKey);
 
-        final DialogFragment dialogFragment = dialogFragmentSupplier.get();
+        final DialogFragment dialogFragment;
+        dialogFragment = Objects
+                .requireNonNullElseGet(dialogFragmentSupplier,
+                                       () -> getDialogSupplier(context, requestKey))
+                .get();
         dialogFragment.setArguments(args);
         // using the requestKey as the fragment tag.
         dialogFragment.show(fragmentManager, requestKey);
     }
 
-    public enum Type {
-        Dialog,
-        BottomSheet,
-        PopupWindow;
-
-        @NonNull
-        public static Type which(@NonNull final Context context) {
-            if (WindowSizeClass.getWidth(context) == WindowSizeClass.Expanded) {
-                // Tablets use a Dialog
-                return Dialog;
-            } else {
-                // Phones use a BottomSheet
-                return BottomSheet;
-            }
+    @NonNull
+    private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
+                                                       @NonNull final String requestKey) {
+        final ExtMenuLocation type = ExtMenuLocation.getLocation(context, null);
+        switch (type) {
+            case Dialog:
+                return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
+            case BottomSheet:
+                return Objects.requireNonNull(BOTTOM_SHEET.get(requestKey), requestKey);
         }
+
+        throw new IllegalArgumentException("requestKey=" + requestKey + ", type=" + type);
     }
 }

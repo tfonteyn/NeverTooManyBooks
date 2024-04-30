@@ -42,14 +42,12 @@ public class EditLenderLauncher
     /**
      * Constructor.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public EditLenderLauncher(@NonNull final Context context,
-                              @NonNull final String requestKey,
+    public EditLenderLauncher(@NonNull final String requestKey,
                               @NonNull final ResultListener resultListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 
@@ -77,26 +75,31 @@ public class EditLenderLauncher
     /**
      * Launch the dialog.
      *
-     * @param book to lend
+     * @param context Current context
+     * @param book    to lend
      */
-    public void launch(@NonNull final Book book) {
-        launch(book.getId(), book.getTitle());
+    public void launch(@NonNull final Context context,
+                       @NonNull final Book book) {
+        launch(context, book.getId(), book.getTitle());
     }
 
     /**
      * Launch the dialog.
      *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param bookId    to lend
      * @param bookTitle displayed for info only
      */
-    public void launch(@IntRange(from = 1) final long bookId,
+    public void launch(@NonNull final Context context,
+                       @IntRange(from = 1) final long bookId,
                        @NonNull final String bookTitle) {
 
         final Bundle args = new Bundle(3);
         args.putLong(DBKey.FK_BOOK, bookId);
         args.putString(DBKey.TITLE, bookTitle);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

@@ -208,9 +208,8 @@ public class ShowBookDetailsFragment
     private void createFragmentResultListeners() {
         final FragmentManager fm = getChildFragmentManager();
 
-        //noinspection DataFlowIssue
         editLenderLauncher = new EditLenderLauncher(
-                getActivity(), DBKey.LOANEE_NAME,
+                DBKey.LOANEE_NAME,
                 (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
 
 
@@ -675,7 +674,8 @@ public class ShowBookDetailsFragment
                 return true;
 
             } else if (menuItemId == R.id.MENU_BOOK_LOAN_ADD) {
-                editLenderLauncher.launch(book);
+                //noinspection DataFlowIssue
+                editLenderLauncher.launch(getActivity(), book);
                 return true;
 
             } else if (menuItemId == R.id.MENU_BOOK_LOAN_DELETE) {

@@ -155,9 +155,9 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        //noinspection DataFlowIssue
         editTocEntryLauncher = new EditTocEntryLauncher(
-                getContext(), DialogLauncher.RK_EDIT_BOOK_TOC_ENTRY, this::onEntryUpdated);
+                DialogLauncher.RK_EDIT_BOOK_TOC_ENTRY,
+                this::onEntryUpdated);
         editTocEntryLauncher.registerForFragmentResult(fm, this);
 
         confirmTocResultsLauncher = new ConfirmTocDialogFragment.Launcher(
@@ -252,7 +252,9 @@ public class EditBookTocFragment
                                 .setMenu(rowMenu, true)
                                 .show(v, ExtMenuLocation.Anchored);
                     } else {
-                        menuLauncher.launch(position, null, null, rowMenu, true);
+                        //noinspection DataFlowIssue
+                        menuLauncher.launch(getActivity(), position,
+                                            null, null, menu, true);
                     }
                 });
 
@@ -411,7 +413,9 @@ public class EditBookTocFragment
      */
     private void editEntry(@NonNull final TocEntry tocEntry,
                            final int position) {
-        editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, vm.isAnthology());
+        //noinspection DataFlowIssue
+        editTocEntryLauncher.launch(getActivity(), vm.getBook(), position,
+                                    tocEntry, vm.isAnthology());
     }
 
     /**
@@ -458,7 +462,8 @@ public class EditBookTocFragment
 
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
-            confirmTocResultsLauncher.launch(bookData.getToc(),
+            //noinspection DataFlowIssue
+            confirmTocResultsLauncher.launch(getActivity(), bookData.getToc(),
                                              bookData.getLong(DBKey.BOOK_CONTENT_TYPE),
                                              !isfdbEditions.isEmpty());
         });
@@ -629,11 +634,14 @@ public class EditBookTocFragment
             /**
              * Launch the dialog.
              *
+             * @param context          preferably the {@code Activity}
+             *                         but another UI {@code Context} will also do.
              * @param toc              the list of TocEntry's
              * @param bookContentType  the {@link Book.ContentType} ordinal
              * @param hasOtherEditions flag
              */
-            public void launch(@NonNull final List<TocEntry> toc,
+            public void launch(@NonNull final Context context,
+                               @NonNull final List<TocEntry> toc,
                                final long bookContentType,
                                final boolean hasOtherEditions) {
 
@@ -642,7 +650,7 @@ public class EditBookTocFragment
                 args.putLong(DBKey.BOOK_CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
-                createDialog(args);
+                createDialog(context, args);
             }
 
             @Override

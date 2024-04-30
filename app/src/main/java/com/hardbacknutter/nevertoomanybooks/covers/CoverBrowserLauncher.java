@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -71,11 +72,14 @@ public class CoverBrowserLauncher
     /**
      * Launch the dialog.
      *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param bookTitle to display
      * @param isbn      ISBN of book
      * @param cIdx      0..n image index
      */
-    public void launch(@NonNull final String bookTitle,
+    public void launch(@NonNull final Context context,
+                       @NonNull final String bookTitle,
                        @NonNull final String isbn,
                        @IntRange(from = 0, to = 1) final int cIdx) {
 
@@ -84,7 +88,7 @@ public class CoverBrowserLauncher
         args.putString(DBKey.BOOK_ISBN, isbn);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
@@ -101,11 +102,12 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection DataFlowIssue
+        final FragmentManager fm = getChildFragmentManager();
+
         editBookshelvesLauncher = new MultiChoiceLauncher<>(
-                getActivity(), DialogLauncher.RK_EDIT_BOOK_BOOKSHELVES,
+                DialogLauncher.RK_EDIT_BOOK_BOOKSHELVES,
                 this::onBookshelvesSelection);
-        editBookshelvesLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        editBookshelvesLauncher.registerForFragmentResult(fm, this);
     }
 
     @Override
@@ -236,7 +238,7 @@ public class EditBookFieldsFragment
 
     private void editBookshelves() {
         //noinspection DataFlowIssue
-        editBookshelvesLauncher.launch(getContext(), getString(R.string.lbl_bookshelves),
+        editBookshelvesLauncher.launch(getActivity(), getString(R.string.lbl_bookshelves),
                                        vm.getAllBookshelves(),
                                        vm.getBook().getBookshelves());
     }

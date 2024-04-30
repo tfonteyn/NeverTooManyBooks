@@ -43,14 +43,12 @@ class BookshelfFiltersLauncher
     /**
      * Constructor.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    BookshelfFiltersLauncher(@NonNull final Context context,
-                             @NonNull final String requestKey,
+    BookshelfFiltersLauncher(@NonNull final String requestKey,
                              @NonNull final ResultListener resultListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 
@@ -74,14 +72,16 @@ class BookshelfFiltersLauncher
 
     /**
      * Launch the dialog.
-     *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param bookshelf to edit
      */
-    public void launch(@NonNull final Bookshelf bookshelf) {
+    public void launch(@NonNull final Context context,
+                       @NonNull final Bookshelf bookshelf) {
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

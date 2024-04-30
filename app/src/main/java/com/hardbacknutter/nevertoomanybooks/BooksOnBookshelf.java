@@ -114,7 +114,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuBottomSheet;
@@ -358,7 +357,7 @@ public class BooksOnBookshelf
         vb = BooksonbookshelfBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
-        createFragmentResultListeners();
+        createFragmentLaunchers();
         createViewModel();
         createSyncDelegates();
         createHandlers();
@@ -406,66 +405,66 @@ public class BooksOnBookshelf
         }
     }
 
-    private void createFragmentResultListeners() {
+    private void createFragmentLaunchers() {
         final FragmentManager fm = getSupportFragmentManager();
 
         stylePickerLauncher = new StylePickerLauncher(
-                this, DialogLauncher.RK_STYLE_PICKER,
+                DialogLauncher.RK_STYLE_PICKER,
                 this::onStyleSelected);
         stylePickerLauncher.registerForFragmentResult(fm, this);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
-                this, DialogLauncher.RK_FILTERS,
+                DialogLauncher.RK_FILTERS,
                 this::onFiltersUpdate);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
 
         editBookshelfLauncher = new EditParcelableLauncher<>(
-                this, DBKey.FK_BOOKSHELF,
+                DBKey.FK_BOOKSHELF,
                 bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
         editBookshelfLauncher.registerForFragmentResult(fm, this);
 
         editAuthorLauncher = new EditParcelableLauncher<>(
-                this, DBKey.FK_AUTHOR,
+                DBKey.FK_AUTHOR,
                 author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
         editAuthorLauncher.registerForFragmentResult(fm, this);
 
         editSeriesLauncher = new EditParcelableLauncher<>(
-                this, DBKey.FK_SERIES,
+                DBKey.FK_SERIES,
                 series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
         editSeriesLauncher.registerForFragmentResult(fm, this);
 
         editPublisherLauncher = new EditParcelableLauncher<>(
-                this, DBKey.FK_PUBLISHER,
+                DBKey.FK_PUBLISHER,
                 publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
         editPublisherLauncher.registerForFragmentResult(fm, this);
 
         editLenderLauncher = new EditLenderLauncher(
-                this, DBKey.LOANEE_NAME,
+                DBKey.LOANEE_NAME,
                 (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
         editLenderLauncher.registerForFragmentResult(fm, this);
 
         editColorLauncher = new EditStringLauncher(
-                this, DBKey.COLOR, (original, modified)
+                DBKey.COLOR, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
         editColorLauncher.registerForFragmentResult(fm, this);
 
         editFormatLauncher = new EditStringLauncher(
-                this, DBKey.FORMAT, (original, modified)
+                DBKey.FORMAT, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
         editFormatLauncher.registerForFragmentResult(fm, this);
 
         editGenreLauncher = new EditStringLauncher(
-                this, DBKey.GENRE, (original, modified)
+                DBKey.GENRE, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
         editGenreLauncher.registerForFragmentResult(fm, this);
 
         editLanguageLauncher = new EditStringLauncher(
-                this, DBKey.LANGUAGE, (original, modified)
+                DBKey.LANGUAGE, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
         editLanguageLauncher.registerForFragmentResult(fm, this);
 
         editLocationLauncher = new EditStringLauncher(
-                this, DBKey.LOCATION, (original, modified)
+                DBKey.LOCATION, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
         editLocationLauncher.registerForFragmentResult(fm, this);
 
@@ -1241,28 +1240,28 @@ public class BooksOnBookshelf
             }
             case BooklistGroup.LOCATION: {
                 if (menuItemId == R.id.MENU_LOCATION_EDIT) {
-                    editLocationLauncher.launch(rowData.getString(DBKey.LOCATION));
+                    editLocationLauncher.launch(this, rowData.getString(DBKey.LOCATION));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.GENRE: {
                 if (menuItemId == R.id.MENU_GENRE_EDIT) {
-                    editGenreLauncher.launch(rowData.getString(DBKey.GENRE));
+                    editGenreLauncher.launch(this, rowData.getString(DBKey.GENRE));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.FORMAT: {
                 if (menuItemId == R.id.MENU_FORMAT_EDIT) {
-                    editFormatLauncher.launch(rowData.getString(DBKey.FORMAT));
+                    editFormatLauncher.launch(this, rowData.getString(DBKey.FORMAT));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.COLOR: {
                 if (menuItemId == R.id.MENU_COLOR_EDIT) {
-                    editColorLauncher.launch(rowData.getString(DBKey.COLOR));
+                    editColorLauncher.launch(this, rowData.getString(DBKey.COLOR));
                     return true;
                 }
                 break;
@@ -1396,7 +1395,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_LOAN_ADD) {
-            editLenderLauncher.launch(bookId, rowData.getString(DBKey.TITLE));
+            editLenderLauncher.launch(this, bookId, rowData.getString(DBKey.TITLE));
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_LOAN_DELETE) {
@@ -1463,7 +1462,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
             final Author author = DataHolderUtils.requireAuthor(rowData);
-            editAuthorLauncher.launch(EditAction.EditInPlace, author);
+            editAuthorLauncher.launch(this, EditAction.EditInPlace, author);
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1528,7 +1527,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_SERIES_EDIT) {
             final Series series = DataHolderUtils.requireSeries(rowData);
-            editSeriesLauncher.launch(EditAction.EditInPlace, series);
+            editSeriesLauncher.launch(this, EditAction.EditInPlace, series);
             return true;
 
         } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
@@ -1581,7 +1580,7 @@ public class BooksOnBookshelf
                                           @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-            editPublisherLauncher.launch(EditAction.EditInPlace, publisher);
+            editPublisherLauncher.launch(this, EditAction.EditInPlace, publisher);
             return true;
 
         } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
@@ -1628,7 +1627,7 @@ public class BooksOnBookshelf
                                           @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_BOOKSHELF_EDIT) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-            editBookshelfLauncher.launch(EditAction.EditInPlace, bookshelf);
+            editBookshelfLauncher.launch(this, EditAction.EditInPlace, bookshelf);
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
@@ -1685,7 +1684,7 @@ public class BooksOnBookshelf
                                          .map(Locale::getDisplayLanguage)
                                          .orElse(text);
             }
-            editLanguageLauncher.launch(editLang);
+            editLanguageLauncher.launch(this, editLang);
             return true;
         }
         return false;
@@ -2256,11 +2255,11 @@ public class BooksOnBookshelf
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_FILTERS) {
-                bookshelfFiltersLauncher.launch(vm.getBookshelf());
+                bookshelfFiltersLauncher.launch(BooksOnBookshelf.this, vm.getBookshelf());
                 return true;
 
             } else if (menuItemId == R.id.MENU_STYLE_PICKER) {
-                stylePickerLauncher.launch(vm.getStyle(), false);
+                stylePickerLauncher.launch(BooksOnBookshelf.this, vm.getStyle(), false);
                 return true;
 
             } else if (menuItemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {

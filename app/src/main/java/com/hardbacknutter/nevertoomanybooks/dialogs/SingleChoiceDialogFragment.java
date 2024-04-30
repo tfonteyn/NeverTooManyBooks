@@ -191,7 +191,8 @@ public class SingleChoiceDialogFragment
         /**
          * Launch the dialog.
          *
-         * @param context      Current context
+         * @param context          preferably the {@code Activity}
+         *                         but another UI {@code Context} will also do.
          * @param dialogTitle  the dialog title
          * @param fieldId      this dialog operates on
          *                     (one launcher can serve multiple fields)
@@ -215,7 +216,7 @@ public class SingleChoiceDialogFragment
 
             args.putLong(BKEY_SELECTED, selectedItem.getId());
 
-            createDialog(args);
+            createDialog(context, args);
         }
 
         @Override

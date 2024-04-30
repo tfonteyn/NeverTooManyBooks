@@ -43,14 +43,12 @@ class ReadingProgressLauncher
     /**
      * Constructor.
      *
-     * @param context                   Current context - this <strong>MUST</strong> be a UI context
      * @param onReadListener            listener for Read/Unread status updates
      * @param onReadingProgressListener listener for extended progress updates
      */
-    ReadingProgressLauncher(@NonNull final Context context,
-                            @NonNull final OnReadListener onReadListener,
+    ReadingProgressLauncher(@NonNull final OnReadListener onReadListener,
                             @NonNull final OnReadingProgressListener onReadingProgressListener) {
-        super(context, DBKey.READ_PROGRESS);
+        super(DBKey.READ_PROGRESS);
         this.onReadListener = onReadListener;
         this.onReadingProgressListener = onReadingProgressListener;
     }
@@ -94,13 +92,16 @@ class ReadingProgressLauncher
     /**
      * Launch the dialog.
      *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param readingProgress to edit
      */
-    public void launch(@NonNull final ReadingProgress readingProgress) {
+    public void launch(@NonNull final Context context,
+                       @NonNull final ReadingProgress readingProgress) {
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.READ_PROGRESS, readingProgress);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

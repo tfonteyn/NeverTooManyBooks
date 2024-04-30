@@ -58,16 +58,14 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Constructor for doing {@link EditAction#Add} or {@link EditAction#Edit}.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param onAddListener  results listener
      * @param onEditListener results listener
      */
-    public EditParcelableLauncher(@NonNull final Context context,
-                                  @NonNull final String requestKey,
+    public EditParcelableLauncher(@NonNull final String requestKey,
                                   @NonNull final OnAddListener<T> onAddListener,
                                   @NonNull final OnEditListener<T> onEditListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.onAddListener = onAddListener;
         this.onEditListener = onEditListener;
         this.onEditInPlaceListener = null;
@@ -76,14 +74,12 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Constructor for doing {@link EditAction#EditInPlace}.
      *
-     * @param context               Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey            FragmentResultListener request key to use for our response.
      * @param onEditInPlaceListener results listener
      */
-    public EditParcelableLauncher(@NonNull final Context context,
-                                  @NonNull final String requestKey,
+    public EditParcelableLauncher(@NonNull final String requestKey,
                                   @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.onAddListener = null;
         this.onEditListener = null;
         this.onEditInPlaceListener = onEditInPlaceListener;
@@ -137,10 +133,13 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Launch the dialog.
      *
-     * @param action one of the {@link EditAction}s.
-     * @param item   to edit
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
+     * @param action  one of the {@link EditAction}s.
+     * @param item    to edit
      */
-    public void launch(@NonNull final EditAction action,
+    public void launch(@NonNull final Context context,
+                       @NonNull final EditAction action,
                        @NonNull final T item) {
         if (BuildConfig.DEBUG /* always */) {
             if (action == EditAction.EditInPlace && onEditInPlaceListener == null) {
@@ -156,7 +155,7 @@ public class EditParcelableLauncher<T extends Parcelable>
         args.putParcelable(EditAction.BKEY, action);
         args.putParcelable(BKEY_ITEM, item);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

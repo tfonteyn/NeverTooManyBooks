@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentReadProgressBinding;
 
@@ -51,12 +52,12 @@ public class ReadProgressFragment
         super.onCreate(savedInstanceState);
         vm = ReadStatusFragmentFactory.getViewModel(this, requireArguments());
 
-        //noinspection DataFlowIssue
+        final FragmentManager fm = getChildFragmentManager();
+
         editLauncher = new ReadingProgressLauncher(
-                getActivity(),
                 read -> vm.setRead(read),
                 readingProgress -> vm.setReadingProgress(readingProgress));
-        editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        editLauncher.registerForFragmentResult(fm, this);
     }
 
     @Nullable
@@ -76,7 +77,9 @@ public class ReadProgressFragment
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
 
         reload();
-        vb.btnReadProgress.setOnClickListener(v -> editLauncher.launch(vm.getReadingProgress()));
+        //noinspection DataFlowIssue
+        vb.btnReadProgress.setOnClickListener(v -> editLauncher.launch(getActivity(),
+                                                                       vm.getReadingProgress()));
     }
 
     private void reload() {

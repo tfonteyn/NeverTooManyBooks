@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -215,14 +214,15 @@ public class PreferredStylesFragment
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
                     prepareMenu(menu, position);
 
-                    if (DialogLauncher.Type.which(context) == DialogLauncher.Type.PopupWindow) {
+                    final ExtMenuLocation location = ExtMenuLocation.getLocation(context, menu);
+                    if (location.isPopup()) {
                         new ExtMenuPopupWindow(context)
                                 .setListener(this::onMenuItemSelected)
                                 .setPosition(position)
                                 .setMenu(menu, true)
-                                .show(anchor, ExtMenuLocation.Anchored);
+                                .show(anchor, location);
                     } else {
-                        menuLauncher.launch(position, null, null, menu, true);
+                        menuLauncher.launch(getActivity(), position, null, null, menu, true);
                     }
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);

@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookL
 import com.hardbacknutter.nevertoomanybooks.bookdetails.TocAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -233,7 +232,8 @@ public class AuthorWorksFragment
                                 .setMenu(rowMenu, true)
                                 .show(anchor, ExtMenuLocation.Anchored);
                     } else {
-                        menuLauncher.launch(position, null, null, rowMenu, true);
+                        menuLauncher.launch(getActivity(), position, null, null,
+                                            rowMenu, true);
                     }
                 }
         );

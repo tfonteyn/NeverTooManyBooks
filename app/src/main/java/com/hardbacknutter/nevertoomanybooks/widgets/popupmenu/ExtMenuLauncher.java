@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -84,13 +85,16 @@ public class ExtMenuLauncher
     /**
      * Launch the dialog.
      *
+     * @param context             preferably the {@code Activity}
+     *                            but another UI {@code Context} will also do.
      * @param adapterPosition     the position where the menu originates from
      * @param menuTitle           optional menu title
      * @param message             optional message
      * @param menu                to display
      * @param groupDividerEnabled flag
      */
-    public void launch(final int adapterPosition,
+    public void launch(@NonNull final Context context,
+                       final int adapterPosition,
                        @Nullable final CharSequence menuTitle,
                        @Nullable final CharSequence message,
                        @NonNull final Menu menu,
@@ -109,7 +113,7 @@ public class ExtMenuLauncher
         }
         args.putParcelableArrayList(BKEY_MENU, items);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

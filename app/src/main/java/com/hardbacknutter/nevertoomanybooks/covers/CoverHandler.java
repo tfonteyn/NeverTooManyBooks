@@ -71,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -164,10 +163,10 @@ public class CoverHandler {
                                           ImageViewLoader.MaxSize.Enforce,
                                           maxWidth, maxHeight);
 
+        final FragmentManager fm = fragment.getChildFragmentManager();
+
         coverBrowserLauncher = new CoverBrowserLauncher(RK_COVER_BROWSER + cIdx,
                                                         this::onFileSelected);
-
-        final FragmentManager fm = fragment.getChildFragmentManager();
 
         // concat the RK with the cIdx as we have more than CoverHandler
         menuLauncher = new ExtMenuLauncher(RK_MENU + this.cIdx, this::onMenuItemSelected);
@@ -353,7 +352,7 @@ public class CoverHandler {
                     .setMenu(menu, true)
                     .show(anchor, ExtMenuLocation.Anchored);
         } else {
-            menuLauncher.launch(cIdx, null, null, menu, true);
+            menuLauncher.launch(context, cIdx, null, null, menu, true);
         }
 
         return true;
@@ -515,7 +514,8 @@ public class CoverHandler {
                 } else {
                     bookTitle = book.getTitle();
                 }
-                coverBrowserLauncher.launch(bookTitle, isbn.asText(), cIdx);
+                coverBrowserLauncher.launch(fragmentView.getContext(),
+                                            bookTitle, isbn.asText(), cIdx);
                 return;
             }
         }

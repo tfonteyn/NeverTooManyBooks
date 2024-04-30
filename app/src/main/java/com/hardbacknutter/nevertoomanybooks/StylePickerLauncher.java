@@ -44,14 +44,12 @@ class StylePickerLauncher
     /**
      * Constructor.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    StylePickerLauncher(@NonNull final Context context,
-                        @NonNull final String requestKey,
+    StylePickerLauncher(@NonNull final String requestKey,
                         @NonNull final StylePickerLauncher.ResultListener resultListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 
@@ -75,18 +73,20 @@ class StylePickerLauncher
 
     /**
      * Launch the dialog.
-     *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param currentStyle the currently active style
      * @param all          if {@code true} show all styles, otherwise only the preferred ones.
      */
-    public void launch(@NonNull final Style currentStyle,
+    public void launch(@NonNull final Context context,
+                       @NonNull final Style currentStyle,
                        final boolean all) {
 
         final Bundle args = new Bundle(3);
         args.putString(Style.BKEY_UUID, currentStyle.getUuid());
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

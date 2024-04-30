@@ -125,7 +125,7 @@ public class EditBookSeriesListDialogFragment
         final FragmentManager fm = getChildFragmentManager();
 
         editLauncher = new EditParcelableLauncher<>(
-                getActivity(), DialogLauncher.RK_EDIT_BOOK_SERIES,
+                DialogLauncher.RK_EDIT_BOOK_SERIES,
                 this::add, this::processChanges);
         editLauncher.registerForFragmentResult(fm, this);
 
@@ -205,7 +205,9 @@ public class EditBookSeriesListDialogFragment
                                 .setMenu(rowMenu, true)
                                 .show(v, ExtMenuLocation.Anchored);
                     } else {
-                        menuLauncher.launch(position, null, null, rowMenu, true);
+                        //noinspection DataFlowIssue
+                        menuLauncher.launch(getActivity(), position, null, null,
+                                            menu, true);
                     }
                 });
 
@@ -216,7 +218,8 @@ public class EditBookSeriesListDialogFragment
     }
 
     private void editEntry(final int position) {
-        editLauncher.launch(EditAction.Edit, seriesList.get(position));
+        //noinspection DataFlowIssue
+        editLauncher.launch(getActivity(), EditAction.Edit, seriesList.get(position));
     }
 
     /**
@@ -293,7 +296,8 @@ public class EditBookSeriesListDialogFragment
         //noinspection DataFlowIssue
         series.setNumber(vb.seriesNum.getText().toString().trim());
         if (withDetails) {
-            editLauncher.launch(EditAction.Add, series);
+            //noinspection DataFlowIssue
+            editLauncher.launch(getActivity(), EditAction.Add, series);
         } else {
             add(series);
         }

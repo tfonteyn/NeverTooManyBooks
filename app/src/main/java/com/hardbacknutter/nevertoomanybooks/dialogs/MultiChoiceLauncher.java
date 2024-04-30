@@ -50,14 +50,12 @@ public class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Constructor.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public MultiChoiceLauncher(@NonNull final Context context,
-                               @NonNull final String requestKey,
+    public MultiChoiceLauncher(@NonNull final String requestKey,
                                @NonNull final ResultListener resultListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 
@@ -82,7 +80,8 @@ public class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Launch the dialog.
      *
-     * @param context       Current context
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param dialogTitle   the dialog title
      * @param allItems      list of all possible items
      * @param selectedItems list of item which are currently selected
@@ -103,7 +102,7 @@ public class MultiChoiceLauncher<T extends Parcelable & Entity>
         args.putLongArray(BKEY_SELECTED, selectedItems
                 .stream().mapToLong(Entity::getId).toArray());
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override

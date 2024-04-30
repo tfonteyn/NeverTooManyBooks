@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -101,11 +102,12 @@ public abstract class EditBookBaseFragment
         dateParser = new FullDateParser(systemLocale, locales);
         realNumberParser = new RealNumberParser(locales);
 
-        //noinspection DataFlowIssue
+        final FragmentManager fm = getChildFragmentManager();
+
         partialDatePickerLauncher = new PartialDatePickerLauncher(
-                getActivity(), DialogLauncher.RK_DATE_PICKER_PARTIAL,
+                DialogLauncher.RK_DATE_PICKER_PARTIAL,
                 (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
-        partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        partialDatePickerLauncher.registerForFragmentResult(fm, this);
     }
 
     @CallSuper
@@ -325,8 +327,10 @@ public abstract class EditBookBaseFragment
                                       @IdRes final int fieldId) {
         final Field<String, TextView> field = vm.requireField(fieldId);
         if (field.isUsed()) {
+            //noinspection DataFlowIssue
             field.requireView().setOnClickListener(v -> partialDatePickerLauncher
-                    .launch(pickerTitleId, field.getFieldViewId(), field.getValue(), false));
+                    .launch(getActivity(), pickerTitleId, field.getFieldViewId(),
+                            field.getValue(), false));
         }
     }
 

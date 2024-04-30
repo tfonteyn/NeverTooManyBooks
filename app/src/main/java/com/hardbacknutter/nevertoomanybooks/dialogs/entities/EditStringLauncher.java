@@ -55,15 +55,13 @@ public class EditStringLauncher
     /**
      * Constructor.
      *
-     * @param context        Current context - this <strong>MUST</strong> be a UI context
      * @param requestKey     FragmentResultListener request key to use for our response.
      *                       Typically the {@code DBKey} for the column we're editing.
      * @param resultListener callback for results
      */
-    public EditStringLauncher(@NonNull final Context context,
-                              @NonNull final String requestKey,
+    public EditStringLauncher(@NonNull final String requestKey,
                               @NonNull final ResultListener resultListener) {
-        super(context, requestKey);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 
@@ -90,14 +88,16 @@ public class EditStringLauncher
 
     /**
      * Launch the dialog.
-     *
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
      * @param text to edit.
      */
-    public void launch(@NonNull final String text) {
+    public void launch(@NonNull final Context context,
+                       @NonNull final String text) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_TEXT, text);
 
-        createDialog(args);
+        createDialog(context, args);
     }
 
     @Override
