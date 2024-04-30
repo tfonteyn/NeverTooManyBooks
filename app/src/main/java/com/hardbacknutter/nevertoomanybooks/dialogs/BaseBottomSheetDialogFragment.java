@@ -20,20 +20,24 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- *
  * @param <B> ViewBinding class type.
  */
 public class BaseBottomSheetDialogFragment<B>
@@ -42,11 +46,40 @@ public class BaseBottomSheetDialogFragment<B>
     protected B vb;
     protected FlexDialogDelegate<B> delegate;
 
+    @Override
+    public void onAttach(@NonNull final Context context) {
+
+        super.onAttach(context);
+    }
+
     @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final BottomSheetDialog dialog = (BottomSheetDialog) getDialog();
+
+        // Make it completely visible when started.
+        //noinspection DataFlowIssue
+        final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        // Due to multi-use of the layouts, we don't set these in xml:
+
+        // SOFT_INPUT_STATE_ALWAYS_VISIBLE
+        // This ensures that the first EditText field will be fully visible
+        // when the onscreen keyboard pops up.
+
+        // SOFT_INPUT_ADJUST_RESIZE
+        // Make sure the BottomSheet sits above the keyboard
+
+        //noinspection DataFlowIssue
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
+                | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+
         // Ensure the drag handle is visible.
         final View dragHandle = view.findViewById(R.id.drag_handle);
         if (dragHandle != null) {
