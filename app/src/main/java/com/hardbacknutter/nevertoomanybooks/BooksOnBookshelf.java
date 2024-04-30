@@ -1999,6 +1999,7 @@ public class BooksOnBookshelf
               .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
               .commit();
         } else {
+            //URGENT: this is a hack.... it works but.... it's bound to break some day.
             ((ShowBookDetailsFragment) fragment).displayBook(bookId);
         }
     }
