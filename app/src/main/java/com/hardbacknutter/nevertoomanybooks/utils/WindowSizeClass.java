@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
@@ -106,6 +107,7 @@ public enum WindowSizeClass {
         }
     }
 
+    @Discouraged(message = "use getWidth(Activity) if possible")
     @NonNull
     public static WindowSizeClass getWidth(@NonNull final Context context) {
         if (context instanceof Activity) {
@@ -114,6 +116,7 @@ public enum WindowSizeClass {
         return getWidth(getActivity(context));
     }
 
+    @Discouraged(message = "use getHeight(Activity) if possible")
     @NonNull
     public static WindowSizeClass getHeight(@NonNull final Context context) {
         if (context instanceof Activity) {

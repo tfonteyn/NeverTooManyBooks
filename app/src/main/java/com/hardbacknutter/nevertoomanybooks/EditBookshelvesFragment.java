@@ -126,14 +126,15 @@ public class EditBookshelvesFragment
             final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
             prepareMenu(menu, gridPosition);
 
-            if (DialogLauncher.Type.which(context) == DialogLauncher.Type.PopupWindow) {
+            //noinspection DataFlowIssue
+            final ExtMenuLocation location = ExtMenuLocation.getLocation(getActivity(), menu);
+            if (location.isPopup()) {
                 new ExtMenuPopupWindow(context)
                         .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
                         .setPosition(listIndex)
                         .setMenu(menu, true)
-                        .show(anchor, ExtMenuLocation.Anchored);
+                        .show(anchor, location);
             } else {
-                //noinspection DataFlowIssue
                 menuLauncher.launch(getActivity(), listIndex, null, null, menu, true);
             }
         }

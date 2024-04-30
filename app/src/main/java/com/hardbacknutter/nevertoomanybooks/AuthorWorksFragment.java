@@ -224,13 +224,14 @@ public class AuthorWorksFragment
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (anchor, position) -> {
-                    if (DialogLauncher.Type.which(anchor.getContext())
-                        == DialogLauncher.Type.PopupWindow) {
+                    final ExtMenuLocation location = ExtMenuLocation
+                            .getLocation(getActivity(), rowMenu);
+                    if (location.isPopup()) {
                         new ExtMenuPopupWindow(anchor.getContext())
                                 .setListener(this::onMenuItemSelected)
                                 .setPosition(position)
                                 .setMenu(rowMenu, true)
-                                .show(anchor, ExtMenuLocation.Anchored);
+                                .show(anchor, location);
                     } else {
                         menuLauncher.launch(getActivity(), position, null, null,
                                             rowMenu, true);

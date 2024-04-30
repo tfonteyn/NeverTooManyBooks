@@ -190,12 +190,13 @@ public class StyleBooklistBookLevelSortingFragment
 
         listAdapter.setOnRowShowMenuListener(ExtMenuButton.Always, (anchor, position) -> {
             final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
-            if (DialogLauncher.Type.which(context) == DialogLauncher.Type.PopupWindow) {
+            final ExtMenuLocation location = ExtMenuLocation.getLocation(getActivity(), menu);
+            if (location.isPopup()) {
                 new ExtMenuPopupWindow(anchor.getContext())
                         .setListener(this::onMenuItemClick)
                         .setPosition(position)
                         .setMenu(menu, true)
-                        .show(anchor, ExtMenuLocation.Anchored);
+                        .show(anchor, location);
             } else {
                 final String label = vm.getWrappedBookLevelColumnList().get(position)
                                        .getLabel(anchor.getContext());

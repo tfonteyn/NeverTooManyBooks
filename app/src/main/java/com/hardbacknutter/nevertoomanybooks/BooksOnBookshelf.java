@@ -1101,11 +1101,15 @@ public class BooksOnBookshelf
                              @NonNull final Menu menu,
                              @NonNull final ExtMenuResultListener listener) {
 
-        final ExtMenuLocation location = determineLocation(menu);
-
-        if (location == ExtMenuLocation.BottomSheet) {
-            menuLauncher.launch(adapterPosition, menuTitle, null, menu, true);
+        final ExtMenuLocation location;
+        // Tablet in landscape with split screen list/details, always use a popup.
+        if (hasEmbeddedDetailsFrame()) {
+            location = ExtMenuLocation.Start;
         } else {
+            location = ExtMenuLocation.getLocation(this, menu);
+        }
+
+        if (location.isPopup()) {
             new ExtMenuPopupWindow(this)
                     .setTitle(menuTitle)
                     .setMessage(message)
@@ -1113,28 +1117,9 @@ public class BooksOnBookshelf
                     .setPosition(adapterPosition)
                     .setMenu(menu, true)
                     .show(v, location);
-        }
-    }
-
-    @NonNull
-    private ExtMenuLocation determineLocation(@NonNull final Menu menu) {
-        @Nullable
-        final ExtMenuLocation location;
-
-        if (menu.size() < 5 || WindowSizeClass.getWidth(this) == WindowSizeClass.Medium) {
-            // Small menus are best served as actual popup menus
-            // to minimalize eye-movement.
-            location = ExtMenuLocation.Anchored;
-        } else if (hasEmbeddedDetailsFrame()) {
-            // Tablet in landscape with split screen list/details,
-            // always use a popup.
-            location = ExtMenuLocation.Start;
-        } else if (DialogLauncher.Type.which(this) == DialogLauncher.Type.PopupWindow) {
-            location = ExtMenuLocation.Center;
         } else {
-            location = ExtMenuLocation.BottomSheet;
+            menuLauncher.launch(this, adapterPosition, menuTitle, null, menu, true);
         }
-        return location;
     }
 
     private boolean onRowMenuItemSelected(final int adapterPosition,

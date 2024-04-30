@@ -214,7 +214,8 @@ public class PreferredStylesFragment
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
                     prepareMenu(menu, position);
 
-                    final ExtMenuLocation location = ExtMenuLocation.getLocation(context, menu);
+                    final ExtMenuLocation location =
+                            ExtMenuLocation.getLocation(getActivity(), menu);
                     if (location.isPopup()) {
                         new ExtMenuPopupWindow(context)
                                 .setListener(this::onMenuItemSelected)

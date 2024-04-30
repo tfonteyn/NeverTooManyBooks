@@ -20,14 +20,104 @@
 
 package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.Gravity;
+import android.view.Menu;
+
+import androidx.annotation.Discouraged;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+
 public enum ExtMenuLocation {
-    /** Show at the Start of a specific offset. */
+    /** Show a popup window with {@link Gravity#START}. */
     Start,
-    /** Show at the End of a specific offset. */
+    /** Show a popup window with {@link Gravity#END}. */
     End,
-    /** Show at the Center of a specific offset. */
+    /** Show a popup window with {@link Gravity#CENTER} */
     Center,
-    /** Show Anchored to the given view. */
+    /** Show a popup window anchored to a given view. */
     Anchored,
-    BottomSheet
+    /** Show a Dialog; Fullscreen or Floating. */
+    Dialog,
+    /** Show a BottomSheet. */
+    BottomSheet;
+
+    private static final Set<ExtMenuLocation> POPUPS = Set.of(Start, End, Center, Anchored);
+
+    /**
+     * Determine where to show menus.
+     *
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
+     * @param menu    to check
+     *
+     * @return menu location
+     */
+    @Discouraged(message = "use getLocation(Activity,Menu) if possible")
+    @NonNull
+    public static ExtMenuLocation getLocation(@NonNull final Context context,
+                                              @Nullable final Menu menu) {
+        return getLocation(WindowSizeClass.getWidth(context), menu);
+    }
+
+    /**
+     * Determine where to show menus.
+     *
+     * @param activity hosting Activity
+     * @param menu     to check
+     *
+     * @return menu location
+     */
+    @NonNull
+    public static ExtMenuLocation getLocation(@NonNull final Activity activity,
+                                              @Nullable final Menu menu) {
+        return getLocation(WindowSizeClass.getWidth(activity), menu);
+    }
+
+    @NonNull
+    private static ExtMenuLocation getLocation(@NonNull final WindowSizeClass windowSize,
+                                               @Nullable final Menu menu) {
+        // The decision process code is written for clarity, NOT for compactness or optimized
+
+        // If we have no menu, then we predetermined that we're using
+        // either a Dialog or a BottomSheet, and never a PopupWindow.
+        if (menu == null) {
+            switch (windowSize) {
+                case Expanded: {
+                    // Tablets always use a Dialog
+                    return Dialog;
+                }
+                case Medium:
+                case Compact: {
+                    return BottomSheet;
+                }
+                default:
+                    throw new IllegalArgumentException("menu==null, windowSize=" + windowSize);
+            }
+        }
+
+        // regardless of menu size, tablets always use a Dialog
+        if (windowSize == WindowSizeClass.Expanded) {
+            return Dialog;
+        }
+
+
+        // Small menus are best served as popup menus
+        // anchored to the view to minimalize eye-movement.
+        if (menu.size() < 5 || windowSize == WindowSizeClass.Medium) {
+            return ExtMenuLocation.Anchored;
+        }
+
+        // menu.size() >= 5  ||  windowSize == WindowSizeClass.Compact
+        return ExtMenuLocation.Center;
+    }
+
+    public boolean isPopup() {
+        return POPUPS.contains(this);
+    }
 }

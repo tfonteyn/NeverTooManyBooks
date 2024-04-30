@@ -344,13 +344,13 @@ public class CoverHandler {
             menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        if (DialogLauncher.Type.which(anchor.getContext())
-            == DialogLauncher.Type.PopupWindow) {
+        final ExtMenuLocation location = ExtMenuLocation.getLocation(context, menu);
+        if (location.isPopup()) {
             new ExtMenuPopupWindow(context)
                     .setListener(this::onMenuItemSelected)
                     .setPosition(cIdx)
                     .setMenu(menu, true)
-                    .show(anchor, ExtMenuLocation.Anchored);
+                    .show(anchor, location);
         } else {
             menuLauncher.launch(context, cIdx, null, null, menu, true);
         }

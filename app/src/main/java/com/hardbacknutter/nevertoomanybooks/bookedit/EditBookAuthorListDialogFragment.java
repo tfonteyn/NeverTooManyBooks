@@ -201,16 +201,17 @@ public class EditBookAuthorListDialogFragment
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
-                    final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    if (DialogLauncher.Type.which(v.getContext())
-                        == DialogLauncher.Type.PopupWindow) {
+                    final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+                    //noinspection DataFlowIssue
+                    final ExtMenuLocation location = ExtMenuLocation
+                            .getLocation(getActivity(), menu);
+                    if (location.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())
                                 .setListener(this::onMenuItemSelected)
-                                .setMenu(rowMenu, true)
+                                .setMenu(menu, true)
                                 .setPosition(position)
-                                .show(v, ExtMenuLocation.Anchored);
+                                .show(v, location);
                     } else {
-                        //noinspection DataFlowIssue
                         menuLauncher.launch(getActivity(), position, null, null,
                                             menu, true);
                     }

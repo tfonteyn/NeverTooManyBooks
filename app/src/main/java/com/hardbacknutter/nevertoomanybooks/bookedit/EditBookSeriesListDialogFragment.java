@@ -196,16 +196,17 @@ public class EditBookSeriesListDialogFragment
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
-                    final Menu rowMenu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    if (DialogLauncher.Type.which(v.getContext())
-                        == DialogLauncher.Type.PopupWindow) {
+                    final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+                    //noinspection DataFlowIssue
+                    final ExtMenuLocation location = ExtMenuLocation
+                            .getLocation(getActivity(), menu);
+                    if (location.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())
                                 .setListener(this::onMenuItemSelected)
                                 .setPosition(position)
-                                .setMenu(rowMenu, true)
-                                .show(v, ExtMenuLocation.Anchored);
+                                .setMenu(menu, true)
+                                .show(v, location);
                     } else {
-                        //noinspection DataFlowIssue
                         menuLauncher.launch(getActivity(), position, null, null,
                                             menu, true);
                     }
