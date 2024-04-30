@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@
     <dimen name="progress_width">340dp</dimen>
 
     <!-- fixed width TIL fields -->
-    <dimen name="til_fixed_width_personal_name">360dp</dimen>
+    <dimen name="til_fixed_width_personal_name">340dp</dimen>
     <dimen name="til_fixed_width_year">120dp</dimen>
     <dimen name="til_fixed_width_price">160dp</dimen>
     <dimen name="til_fixed_width_currency">140dp</dimen>
