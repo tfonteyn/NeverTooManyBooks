@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml"
@@ -37,6 +38,20 @@ public final class Prefs {
     public static final String pk_ui_locale = "ui.locale";
     /** Not the actual theme, but the day/night part only. */
     public static final String pk_ui_theme = "ui.theme";
+    /**
+     * How dialogs will be shown.
+     * int
+     *
+     * @see DialogAndMenuMode
+     */
+    public static final String PK_UI_DIALOGS_MODE = "ui.dialog.mode";
+    /**
+     * How context/row menus will be shown.
+     * int
+     *
+     * @see DialogAndMenuMode
+     */
+    public static final String PK_UI_CONTEXT_MENUS = "ui.menu.context.mode";
 
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";

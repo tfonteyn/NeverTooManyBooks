@@ -1531,6 +1531,50 @@
     <!-- [VERIFIED] - lending status for a book -->
     <string name="lbl_available">Available</string>
     <!-- endregion -->
+    <!-- region ========== Reading Progress -->
+    <!-- Preference category : "Reading Progress" options. -->
+    <string name="pc_reading"
+            translatable="false">@string/lbl_track_progress_long</string>
+    <!-- SwitchPreference : Reading Progress: use the traditional Read/Unread checkbox style. -->
+    <string name="ps_use_read_progress_off">Use a simple Read/Unread status.</string>
+    <!-- SwitchPreference : Reading Progress: use the extended progress options. -->
+    <string name="ps_use_read_progress_on">Track progress in percentage or page number.</string>
+
+    <!-- Reading progress:  Dialog title / preference option. -->
+    <string name="lbl_track_progress_long">Track your progress</string>
+    <!-- Reading progress: Field label. Short for "Track your progress" -->
+    <string name="lbl_track_progress">Progress</string>
+
+    <!-- Editing Reading progress: Radio button text: reading-progress is a percentage. -->
+    <string name="lbl_percentage">Percentage</string>
+
+    <!-- Editing Reading progress: Button label: the user finished reading a book. -->
+    <string name="btn_completed">Completed</string>
+
+    <!-- Editing Reading progress: Field label; reading-progress in percent. -->
+    <string name="lbl_percentage_read">% read</string>
+    <!-- Editing Reading progress: Field label; reading-progress: Current page. -->
+    <string name="lbl_current_page">Current page</string>
+    <!-- Editing Reading progress: Field label; reading-progress: Total number of pages. -->
+    <string name="lbl_total_pages">Total pages</string>
+
+    <!-- Editing Reading progress:
+         Error text displayed when the user enters a "total pages" number which
+         is smaller than the "current page"
+     -->
+    <string name="error_total_pages_must_be_larger_than_current_page">Must be larger or equal to the current page</string>
+
+    <!-- Reading progress as displayed on the book-details screen.
+         The user is reading this book, and their progress is at "x % read"
+         param1: percentage 0..100 displayed with a percentage sign "%%". -->
+    <string name="info_progress_x_percent">%1$d%% read</string>
+    <!-- Reading progress as displayed on the book-details screen.
+         The user is reading this book, and they are on page "x of y"
+         param1: x: current page;
+         param2: y: total number of pages. -->
+    <string name="info_progress_page_x_of_y">Page: %1$d of %2$d</string>
+
+    <!-- endregion -->
     <!-- region ========== TAB labels - need to be very short; 4 tabs should fit on a screen. Ideally 5. -->
     <!-- Edit book: Name of the 'Details' tab - need to be very short -->
     <string name="lbl_tab_details">Details</string>
@@ -1676,50 +1720,33 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="pt_normalize_publisher_name"
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="confirm_strip_info_import_collection"
+            translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
+    <!-- ListPreference title. Opens a new screen with the related settings. -->
+    <string name="pt_dialog_and_menu_popup_tuning">Dialog and Menu tuning</string>
 
-    <!-- Preference category : "Reading Progress" options. -->
-    <string name="pc_reading"
-            translatable="false">@string/lbl_track_progress_long</string>
-    <!-- SwitchPreference : Reading Progress: use the traditional Read/Unread checkbox style. -->
-    <string name="ps_use_read_progress_off">Use a simple Read/Unread status.</string>
-    <!-- SwitchPreference : Reading Progress: use the extended progress options. -->
-    <string name="ps_use_read_progress_on">Track progress in percentage or page number.</string>
+    <!-- ListPreference value: always display a dialog or context menu using a BottomSheet. -->
+    <string name="pe_option_bottom_sheet">Always at the bottom of the screen</string>
 
-    <!-- Reading progress:  Dialog title / preference option. -->
-    <string name="lbl_track_progress_long">Track your progress</string>
-    <!-- Reading progress: Field label. Short for "Track your progress" -->
-    <string name="lbl_track_progress">Progress</string>
+    <!-- ListPreference title: UI Dialog tuning. -->
+    <string name="pt_ui_dialogs_mode">Dialogs</string>
+    <!-- ListPreference value: UI Dialog tuning. -->
+    <string name="pe_ui_dialog_mode_classic">Always as a classic Dialog</string>
+    <!-- ListPreference value: UI Dialog tuning. -->
+    <string name="pe_ui_dialog_mode_bottom_sheet">@string/pe_option_bottom_sheet</string>
+    <!-- ListPreference value: UI Dialog tuning. -->
+    <string name="pe_ui_dialog_mode_by_screen_size">By device size: tablets use classic Dialogs, phones show them at the bottom of the screen</string>
 
-    <!-- Editing Reading progress: Radio button text: reading-progress is a percentage. -->
-    <string name="lbl_percentage">Percentage</string>
+    <!-- ListPreference title: UI context menu tuning. -->
+    <string name="pc_context_menus">Context and row menus</string>
+    <!-- ListPreference value: UI context menu tuning. -->
+    <string name="pe_context_menu_mode_classic">@string/pe_option_bottom_sheet</string>
+    <!-- ListPreference value: UI context menu tuning. -->
+    <string name="pe_context_menu_mode_bottom_sheet">Always at the bottom of the screen</string>
+    <!-- ListPreference value: UI context menu tuning. -->
+    <string name="pe_context_menu_mode_by_size">Large menus are shown at the bottom of the screen, small menus as classic context menus</string>
 
-    <!-- Editing Reading progress: Button label: the user finished reading a book. -->
-    <string name="btn_completed">Completed</string>
-
-    <!-- Editing Reading progress: Field label; reading-progress in percent. -->
-    <string name="lbl_percentage_read">% read</string>
-    <!-- Editing Reading progress: Field label; reading-progress: Current page. -->
-    <string name="lbl_current_page">Current page</string>
-    <!-- Editing Reading progress: Field label; reading-progress: Total number of pages. -->
-    <string name="lbl_total_pages">Total pages</string>
-
-    <!-- Editing Reading progress:
-         Error text displayed when the user enters a "total pages" number which
-         is smaller than the "current page"
-     -->
-    <string name="error_total_pages_must_be_larger_than_current_page">Must be larger or equal to the current page</string>
-
-    <!-- Reading progress as displayed on the book-details screen.
-         The user is reading this book, and their progress is at "x % read"
-         param1: percentage 0..100 displayed with a percentage sign "%%". -->
-    <string name="info_progress_x_percent">%1$d%% read</string>
-    <!-- Reading progress as displayed on the book-details screen.
-         The user is reading this book, and they are on page "x of y"
-         param1: x: current page;
-         param2: y: total number of pages. -->
-    <string name="info_progress_page_x_of_y">Page: %1$d of %2$d</string>
-
-    <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
 </resources>

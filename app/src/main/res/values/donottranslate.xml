@@ -202,13 +202,38 @@
         <item>2</item>
     </string-array>
 
-    <!-- ListPreference - How to show the row menu option menu. -->
+    <!-- ListPreference - How to ACCESS the row menu option menu. -->
     <string-array name="pe_bob_row_menu">
         <item>@string/pe_bob_row_menu_button</item>
         <item>@string/pe_bob_row_menu_button_when_space</item>
         <item>@string/pe_bob_row_menu_long_click</item>
     </string-array>
     <string-array name="pv_bob_row_menu">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <!-- ListPreference - How to display dialogs. -->
+    <string-array name="pe_ui_dialog_mode">
+        <item>@string/pe_ui_dialog_mode_classic</item>
+        <item>@string/pe_ui_dialog_mode_bottom_sheet</item>
+        <item>@string/pe_ui_dialog_mode_by_screen_size</item>
+    </string-array>
+    <string-array name="pv_ui_dialogs_mode">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+
+    <!-- ListPreference - How to display context/row menus. -->
+    <string-array name="pe_ui_context_menu_mode">
+        <item>@string/pe_context_menu_mode_classic</item>
+        <item>@string/pe_context_menu_mode_bottom_sheet</item>
+        <item>@string/pe_context_menu_mode_by_size</item>
+    </string-array>
+    <string-array name="pv_ui_menus_context">
         <item>0</item>
         <item>1</item>
         <item>2</item>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Default: by screen size. -->
+    <ListPreference
+        android:defaultValue="2"
+        android:entries="@array/pe_ui_dialog_mode"
+        android:entryValues="@array/pv_ui_dialogs_mode"
+        android:icon="@drawable/ic_baseline_article_24"
+        android:key="ui.dialog.mode"
+        android:title="@string/pt_ui_dialogs_mode" />
+
+    <!-- Default: by menu and screen size. -->
+    <ListPreference
+        android:defaultValue="2"
+        android:entries="@array/pe_ui_context_menu_mode"
+        android:entryValues="@array/pv_ui_menus_context"
+        android:icon="@drawable/ic_baseline_menu_24"
+        android:key="ui.menu.context.mode"
+        android:title="@string/pc_context_menus" />
+
+
+</androidx.preference.PreferenceScreen>
