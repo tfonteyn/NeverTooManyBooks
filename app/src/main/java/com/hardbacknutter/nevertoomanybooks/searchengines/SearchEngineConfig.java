@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -219,7 +219,7 @@ public final class SearchEngineConfig {
     @NonNull
     public String getHostUrl(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(
-                engineId.getPreferenceKey() + '.' + Prefs.pk_host_url,
+                engineId.getPreferenceKey() + '.' + Prefs.PK_HOST_URL,
                 engineId.getDefaultUrl());
     }
 
@@ -258,11 +258,11 @@ public final class SearchEngineConfig {
         final SharedPreferences preferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
 
-        final String key = engineId.getPreferenceKey() + "." + Prefs.pk_search_isbn_prefer_10;
+        final String key = engineId.getPreferenceKey() + "." + Prefs.PK_SEARCH_ISBN_PREFER_10;
         if (preferences.contains(key)) {
             return preferences.getBoolean(key, prefersIsbn10);
         } else {
-            return preferences.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
+            return preferences.getBoolean(Prefs.PK_SEARCH_ISBN_PREFER_10, false);
         }
     }
 
@@ -308,7 +308,7 @@ public final class SearchEngineConfig {
      */
     public int getConnectTimeoutInMs(@NonNull final Context context) {
         return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + Prefs.pk_timeout_connect_in_seconds,
+                                            + Prefs.PK_TIMEOUT_CONNECT_IN_SECONDS,
                                    connectTimeoutMs);
     }
 
@@ -321,7 +321,7 @@ public final class SearchEngineConfig {
      */
     public int getReadTimeoutInMs(@NonNull final Context context) {
         return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + Prefs.pk_timeout_read_in_seconds,
+                                            + Prefs.PK_TIMEOUT_READ_IN_SECONDS,
                                    readTimeoutMs);
     }
 

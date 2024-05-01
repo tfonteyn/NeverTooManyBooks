@@ -147,7 +147,7 @@ public class SettingsFragment
                 ListPreference.SimpleSummaryProvider.getInstance();
 
 
-        final ListPreference pUiLocale = findPreference(Prefs.pk_ui_locale);
+        final ListPreference pUiLocale = findPreference(Prefs.PK_UI_LOCALE);
         //noinspection DataFlowIssue
         pUiLocale.setEntries(vm.getUiLangNames());
         pUiLocale.setSummaryProvider(listSummaryProvider);
@@ -159,7 +159,7 @@ public class SettingsFragment
         });
 
 
-        final Preference pUiTheme = findPreference(Prefs.pk_ui_theme);
+        final Preference pUiTheme = findPreference(Prefs.PK_UI_THEME);
         //noinspection DataFlowIssue
         pUiTheme.setSummaryProvider(listSummaryProvider);
         pUiTheme.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -175,7 +175,7 @@ public class SettingsFragment
         });
 
 
-        final Preference pFastscroller = findPreference(Prefs.pk_booklist_fastscroller_overlay);
+        final Preference pFastscroller = findPreference(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY);
         //noinspection DataFlowIssue
         pFastscroller.setSummaryProvider(listSummaryProvider);
         pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -188,7 +188,7 @@ public class SettingsFragment
         //noinspection DataFlowIssue
         findPreference(Prefs.pk_booklist_rebuild_state).setSummaryProvider(listSummaryProvider);
         //noinspection DataFlowIssue
-        findPreference(Prefs.pk_booklist_context_menu).setSummaryProvider(listSummaryProvider);
+        findPreference(Prefs.PK_BOOKLIST_CONTEXT_MENU).setSummaryProvider(listSummaryProvider);
 
 
         //noinspection DataFlowIssue

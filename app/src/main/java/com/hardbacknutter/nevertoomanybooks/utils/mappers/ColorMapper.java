@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ public final class ColorMapper
     @NonNull
     public static Optional<Mapper> create(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_search_reformat_color, true)) {
+                             .getBoolean(Prefs.PK_SEARCH_REFORMAT_COLOR, true)) {
             return Optional.of(new ColorMapper());
         } else {
             return Optional.empty();

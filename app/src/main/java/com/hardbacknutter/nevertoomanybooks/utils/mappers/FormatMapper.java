@@ -128,7 +128,7 @@ public final class FormatMapper
     @NonNull
     public static Optional<Mapper> create(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_search_reformat_format, true)) {
+                             .getBoolean(Prefs.PK_SEARCH_REFORMAT_FORMAT, true)) {
             return Optional.of(new FormatMapper());
         } else {
             return Optional.empty();

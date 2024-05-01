@@ -100,7 +100,7 @@ public class AmazonSearchEngine
 
     /** Preferences - Type: {@code String}. */
     public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
-                                             + '.' + Prefs.pk_host_url;
+                                             + '.' + Prefs.PK_HOST_URL;
     /** Website character encoding. */
     static final String CHARSET = "UTF-8";
     /** Log tag. */

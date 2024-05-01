@@ -143,9 +143,9 @@ public final class CalibreContentServer
     static final String PREF_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    static final String PK_HOST_URL = PREF_KEY + '.' + Prefs.pk_host_url;
-    static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.pk_host_user;
-    static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.pk_host_password;
+    static final String PK_HOST_URL = PREF_KEY + '.' + Prefs.PK_HOST_URL;
+    static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
+    static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
     static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
@@ -251,10 +251,10 @@ public final class CalibreContentServer
         }
 
         connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + "." + Prefs.pk_timeout_connect_in_seconds,
+                context, PREF_KEY + "." + Prefs.PK_TIMEOUT_CONNECT_IN_SECONDS,
                 CONNECT_TIMEOUT_IN_MS);
         readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + "." + Prefs.pk_timeout_read_in_seconds,
+                context, PREF_KEY + "." + Prefs.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
         calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()

@@ -75,7 +75,7 @@ public enum ExtMenuButton
      */
     @NonNull
     public static ExtMenuButton getPreferredMode(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, Prefs.pk_booklist_context_menu,
+        final int value = IntListPref.getInt(context, Prefs.PK_BOOKLIST_CONTEXT_MENU,
                                              Always.value);
         switch (value) {
             case 2:

@@ -293,8 +293,8 @@ public class DBHelper
               .remove("ui.messages.use")
 
               // Editing the URL for these sites has been removed.
-              .remove(EngineId.Isfdb.getPreferenceKey() + '.' + Prefs.pk_host_url)
-              .remove(EngineId.LibraryThing.getPreferenceKey() + '.' + Prefs.pk_host_url)
+              .remove(EngineId.Isfdb.getPreferenceKey() + '.' + Prefs.PK_HOST_URL)
+              .remove(EngineId.LibraryThing.getPreferenceKey() + '.' + Prefs.PK_HOST_URL)
 
               .apply();
     }

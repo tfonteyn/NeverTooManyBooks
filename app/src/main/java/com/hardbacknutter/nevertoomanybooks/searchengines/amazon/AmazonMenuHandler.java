@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,7 +80,7 @@ public class AmazonMenuHandler
     public boolean isShowMenu(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(EngineId.Amazon.getPreferenceKey()
-                                            + '.' + Prefs.pk_search_show_shopping_menu,
+                                            + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU,
                                             true);
 
     }

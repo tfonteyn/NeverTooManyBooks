@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,7 +66,7 @@ public abstract class BaseDBTest {
         context = serviceLocator.getAppContext();
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(Prefs.pk_ui_locale, localeCode)
+                         .putString(Prefs.PK_UI_LOCALE, localeCode)
                          .apply();
         context = serviceLocator.getLocalizedAppContext();
 

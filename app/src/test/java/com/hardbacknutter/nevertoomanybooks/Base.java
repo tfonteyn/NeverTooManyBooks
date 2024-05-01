@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -212,7 +212,7 @@ public class Base {
 
     private void setupSearchEnginePreferences() {
         sharedPreferences.edit()
-                         .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
+                         .putString(Prefs.PK_UI_LOCALE, AppLocale.SYSTEM_LANGUAGE)
                          // random some at true, some at false.
                          .putBoolean("search.site.amazon.data.enabled", true)
                          .putBoolean("search.site.googlebooks.data.enabled", false)

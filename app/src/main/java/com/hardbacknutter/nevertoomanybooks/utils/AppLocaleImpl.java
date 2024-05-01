@@ -294,7 +294,7 @@ public final class AppLocaleImpl
     @NonNull
     public String getPersistedLocaleSpec(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
+                                .getString(Prefs.PK_UI_LOCALE, SYSTEM_LANGUAGE);
     }
 
     @Override

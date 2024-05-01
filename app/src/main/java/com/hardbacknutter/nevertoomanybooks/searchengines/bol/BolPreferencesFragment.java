@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,7 @@ public class BolPreferencesFragment
 
         // We need to set this manually, as the default depends on the user language.
         final SwitchPreference showShoppingMenu = findPreference(
-                EngineId.Bol.getPreferenceKey() + '.' + Prefs.pk_search_show_shopping_menu);
+                EngineId.Bol.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
         final ShoppingMenuHandler shoppingMenuHandler = new BolMenuHandler(
         );
         //noinspection DataFlowIssue

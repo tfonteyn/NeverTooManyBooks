@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,8 +58,8 @@ public class StripInfoAuth
     /** Preferences prefix. */
     private static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
 
-    public static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.pk_host_user;
-    public static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.pk_host_password;
+    public static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
+    public static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
 
     static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
 

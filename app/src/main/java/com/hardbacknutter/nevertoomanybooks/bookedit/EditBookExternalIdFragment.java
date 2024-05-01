@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ public class EditBookExternalIdFragment
      */
     public static boolean isShowTab(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
+                                .getBoolean(Prefs.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false);
     }
 
     @NonNull

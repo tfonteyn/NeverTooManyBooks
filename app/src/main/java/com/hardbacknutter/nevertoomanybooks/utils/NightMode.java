@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,7 @@ public final class NightMode {
      * @param context Current context
      */
     public static void apply(@NonNull final Context context) {
-        apply(IntListPref.getInt(context, Prefs.pk_ui_theme, 0));
+        apply(IntListPref.getInt(context, Prefs.PK_UI_THEME, 0));
     }
 
     /**

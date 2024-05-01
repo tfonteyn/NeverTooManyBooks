@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public class BolMenuHandler
     @Override
     public boolean isShowMenu(@NonNull final Context context) {
         final String key = EngineId.Bol.getPreferenceKey()
-                           + '.' + Prefs.pk_search_show_shopping_menu;
+                           + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {
