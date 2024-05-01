@@ -136,7 +136,8 @@ public class App
                 .withApplicationLogFileDir(Directory.FILES)
                 .withApplicationLogFile(APPLICATION_LOG_FILE)
                 .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
-                .withExcludeMatchingSharedPreferencesKeys(".*password.*", "*host.user*")
+                // regex's
+                .withExcludeMatchingSharedPreferencesKeys(".*password.*", ".*host\\.user.*")
                 .withReportContent(
                         // Device
                         ReportField.PHONE_MODEL,
