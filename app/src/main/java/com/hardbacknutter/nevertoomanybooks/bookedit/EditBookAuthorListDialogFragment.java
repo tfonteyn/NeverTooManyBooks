@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -69,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropVi
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -203,14 +203,14 @@ public class EditBookAuthorListDialogFragment
                 (v, position) -> {
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
                     //noinspection DataFlowIssue
-                    final ExtMenuLocation location = ExtMenuLocation
-                            .getLocation(getActivity(), menu);
-                    if (location.isPopup()) {
+                    final DialogAndMenuMode menuMode = DialogAndMenuMode
+                            .getMode(getActivity(), menu);
+                    if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())
                                 .setListener(this::onMenuItemSelected)
                                 .setMenu(menu, true)
                                 .setPosition(position)
-                                .show(v, location);
+                                .show(v, menuMode);
                     } else {
                         menuLauncher.launch(getActivity(), position, null, null,
                                             menu, true);

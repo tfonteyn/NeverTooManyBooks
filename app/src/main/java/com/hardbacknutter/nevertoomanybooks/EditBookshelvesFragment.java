@@ -58,13 +58,13 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -127,13 +127,13 @@ public class EditBookshelvesFragment
             prepareMenu(menu, gridPosition);
 
             //noinspection DataFlowIssue
-            final ExtMenuLocation location = ExtMenuLocation.getLocation(getActivity(), menu);
-            if (location.isPopup()) {
+            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMode(getActivity(), menu);
+            if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(context)
                         .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
                         .setPosition(listIndex)
                         .setMenu(menu, true)
-                        .show(anchor, location);
+                        .show(anchor, menuMode);
             } else {
                 menuLauncher.launch(getActivity(), listIndex, null, null, menu, true);
             }

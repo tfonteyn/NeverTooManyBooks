@@ -75,10 +75,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -117,7 +117,7 @@ public class CoverHandler {
     private final CoverHandlerViewModel vm;
     @NonNull
     private final ImageViewLoader imageLoader;
-    private ExtMenuLauncher menuLauncher;
+    private final ExtMenuLauncher menuLauncher;
     /** The fragment root view; used for context, resources, Snackbar. */
     private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
@@ -344,13 +344,13 @@ public class CoverHandler {
             menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
         }
 
-        final ExtMenuLocation location = ExtMenuLocation.getLocation(context, menu);
-        if (location.isPopup()) {
+        final DialogAndMenuMode menuMode = DialogAndMenuMode.getMode(context, menu);
+        if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(context)
                     .setListener(this::onMenuItemSelected)
                     .setPosition(cIdx)
                     .setMenu(menu, true)
-                    .show(anchor, location);
+                    .show(anchor, menuMode);
         } else {
             menuLauncher.launch(context, cIdx, null, null, menu, true);
         }

@@ -55,11 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -224,14 +224,14 @@ public class AuthorWorksFragment
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (anchor, position) -> {
-                    final ExtMenuLocation location = ExtMenuLocation
-                            .getLocation(getActivity(), rowMenu);
-                    if (location.isPopup()) {
+                    final DialogAndMenuMode menuMode = DialogAndMenuMode
+                            .getMode(getActivity(), rowMenu);
+                    if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(anchor.getContext())
                                 .setListener(this::onMenuItemSelected)
                                 .setPosition(position)
                                 .setMenu(rowMenu, true)
-                                .show(anchor, location);
+                                .show(anchor, menuMode);
                     } else {
                         menuLauncher.launch(getActivity(), position, null, null,
                                             rowMenu, true);

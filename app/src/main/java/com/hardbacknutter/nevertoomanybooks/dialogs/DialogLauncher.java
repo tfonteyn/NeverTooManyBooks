@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomShe
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 
 public abstract class DialogLauncher
         implements FragmentResultListener {
@@ -219,14 +219,15 @@ public abstract class DialogLauncher
     @NonNull
     private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
                                                        @NonNull final String requestKey) {
-        final ExtMenuLocation type = ExtMenuLocation.getLocation(context, null);
-        switch (type) {
+        final DialogAndMenuMode dialogMode = DialogAndMenuMode.getMode(context);
+        switch (dialogMode) {
             case Dialog:
                 return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
             case BottomSheet:
                 return Objects.requireNonNull(BOTTOM_SHEET.get(requestKey), requestKey);
+            default:
+                throw new IllegalArgumentException("requestKey=" + requestKey
+                                                   + ", type=" + dialogMode);
         }
-
-        throw new IllegalArgumentException("requestKey=" + requestKey + ", type=" + type);
     }
 }

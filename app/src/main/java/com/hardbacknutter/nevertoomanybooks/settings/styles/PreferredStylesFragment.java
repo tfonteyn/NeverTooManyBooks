@@ -60,13 +60,13 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBindin
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -214,14 +214,14 @@ public class PreferredStylesFragment
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
                     prepareMenu(menu, position);
 
-                    final ExtMenuLocation location =
-                            ExtMenuLocation.getLocation(getActivity(), menu);
-                    if (location.isPopup()) {
+                    final DialogAndMenuMode menuMode =
+                            DialogAndMenuMode.getMode(getActivity(), menu);
+                    if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(context)
                                 .setListener(this::onMenuItemSelected)
                                 .setPosition(position)
                                 .setMenu(menu, true)
-                                .show(anchor, location);
+                                .show(anchor, menuMode);
                     } else {
                         menuLauncher.launch(getActivity(), position, null, null, menu, true);
                     }

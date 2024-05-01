@@ -109,6 +109,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
@@ -118,7 +119,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuResultListener;
 
@@ -1101,22 +1101,24 @@ public class BooksOnBookshelf
                              @NonNull final Menu menu,
                              @NonNull final ExtMenuResultListener listener) {
 
-        final ExtMenuLocation location;
-        // Tablet in landscape with split screen list/details, always use a popup.
+        final DialogAndMenuMode menuMode;
+
         if (hasEmbeddedDetailsFrame()) {
-            location = ExtMenuLocation.Start;
+            // Tablet in landscape with split screen list/details, always use a popup
+            menuMode = DialogAndMenuMode.Start;
         } else {
-            location = ExtMenuLocation.getLocation(this, menu);
+            // otherwise follow the global logic
+            menuMode = DialogAndMenuMode.getMode(this, menu);
         }
 
-        if (location.isPopup()) {
+        if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(this)
                     .setTitle(menuTitle)
                     .setMessage(message)
                     .setListener(listener)
                     .setPosition(adapterPosition)
                     .setMenu(menu, true)
-                    .show(v, location);
+                    .show(v, menuMode);
         } else {
             menuLauncher.launch(this, adapterPosition, menuTitle, null, menu, true);
         }

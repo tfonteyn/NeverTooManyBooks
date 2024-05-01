@@ -50,12 +50,12 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLocation;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 
 /**
@@ -190,13 +190,13 @@ public class StyleBooklistBookLevelSortingFragment
 
         listAdapter.setOnRowShowMenuListener(ExtMenuButton.Always, (anchor, position) -> {
             final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
-            final ExtMenuLocation location = ExtMenuLocation.getLocation(getActivity(), menu);
-            if (location.isPopup()) {
+            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMode(getActivity(), menu);
+            if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(anchor.getContext())
                         .setListener(this::onMenuItemClick)
                         .setPosition(position)
                         .setMenu(menu, true)
-                        .show(anchor, location);
+                        .show(anchor, menuMode);
             } else {
                 final String label = vm.getWrappedBookLevelColumnList().get(position)
                                        .getLabel(anchor.getContext());

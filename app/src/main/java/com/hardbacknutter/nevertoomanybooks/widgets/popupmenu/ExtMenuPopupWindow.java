@@ -35,6 +35,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
@@ -206,7 +207,7 @@ public class ExtMenuPopupWindow {
     }
 
     /**
-     * Set the menu which will be displayed when {@link #show(View, ExtMenuLocation)} is called.
+     * Set the menu which will be displayed when {@link #show(View, DialogAndMenuMode)} is called.
      *
      * @param menu                to set
      * @param groupDividerEnabled flag
@@ -223,15 +224,15 @@ public class ExtMenuPopupWindow {
     /**
      * Display the menu.
      *
-     * @param view     the anchor for {@link ExtMenuLocation#Anchored},
-     *                 or a view from which the window token can be used
-     * @param location the gravity which controls the placement of the popup window
+     * @param view     the anchor for {@link DialogAndMenuMode#Anchored},
+     *                 or a view from which the window token can be used for the other modes
+     * @param menuMode the placement of the popup window
      *
-     * @throws IllegalArgumentException when an invalid gravity value is passed in
+     * @throws IllegalArgumentException when an invalid menuMode is passed in
      */
     public void show(@NonNull final View view,
-                     @NonNull final ExtMenuLocation location) {
-        switch (location) {
+                     @NonNull final DialogAndMenuMode menuMode) {
+        switch (menuMode) {
             case Start:
                 popupWindow.showAtLocation(view, Gravity.START, xOffset, 0);
                 break;
@@ -250,7 +251,7 @@ public class ExtMenuPopupWindow {
                 break;
             }
             default:
-                throw new IllegalArgumentException(String.valueOf(location));
+                throw new IllegalArgumentException(String.valueOf(menuMode));
         }
     }
 }
