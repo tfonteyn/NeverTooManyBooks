@@ -389,6 +389,11 @@ public abstract class BaseStyle
         return layout;
     }
 
+    @Override
+    public void setLayout(@NonNull final Layout layout) {
+        this.layout = layout;
+    }
+
     public void setLayout(final int layout) {
         this.layout = Style.Layout.byId(layout);
     }

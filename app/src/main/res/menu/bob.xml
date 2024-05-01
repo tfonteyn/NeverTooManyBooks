@@ -41,6 +41,22 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@id/MENU_STYLE_SHORTCUT_LAYOUT_LIST"
+        android:icon="@drawable/ic_baseline_view_list_24"
+        android:orderInCategory="@integer/MENU_ORDER_SHORTCUT_LIST_OR_GRID"
+        android:title="@string/pe_list"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@id/MENU_STYLE_SHORTCUT_LAYOUT_GRID"
+        android:icon="@drawable/baseline_grid_view_24"
+        android:orderInCategory="@integer/MENU_ORDER_SHORTCUT_LIST_OR_GRID"
+        android:title="@string/pe_grid"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
         android:id="@id/MENU_STYLE_PICKER"
         android:icon="@drawable/ic_baseline_style_24"
         android:orderInCategory="@integer/MENU_ORDER_SORT"

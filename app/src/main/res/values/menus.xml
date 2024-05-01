@@ -32,6 +32,9 @@
 
     <integer name="MENU_ORDER_FILTERS">200</integer>
 
+    <integer name="MENU_ORDER_SHORTCUT_LIST_OR_GRID">211</integer>
+    <integer name="MENU_ORDER_SORT">211</integer>
+
     <integer name="MENU_ORDER_LEVEL_EXPAND_PREFERRED_LEVEL">220</integer>
     <integer name="MENU_ORDER_LEVEL_COLLAPSE">221</integer>
     <integer name="MENU_ORDER_LEVEL_EXPAND">222</integer>
@@ -208,6 +211,11 @@
           type="id" />
 
     <item name="MENU_FILTERS"
+          type="id" />
+
+    <item name="MENU_STYLE_SHORTCUT_LAYOUT_LIST"
+          type="id" />
+    <item name="MENU_STYLE_SHORTCUT_LAYOUT_GRID"
           type="id" />
 
     <item name="MENU_STYLE_PICKER"

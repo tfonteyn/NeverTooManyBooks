@@ -2218,22 +2218,44 @@ public class BooksOnBookshelf
         }
     }
 
+    /**
+     * Dev note: once again we must combat the Android inconsistencies....
+     * When, as here, the menu offers an option with
+     * {@code showAsAction="ifRoom"} or {@code showAsAction="always"}
+     * then {@link #onPrepareMenu(Menu)} is useless... as it won't get called
+     * unless the user clicks the options menu overflow 3dot button....
+     * So we end up calling it manually from all locations which depend on it.
+     */
     private class ToolbarMenuProvider
             implements MenuProvider {
+
+        // reference to use in #onMenuItemSelected
+        private Menu menu;
 
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
+            this.menu = menu;
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.bob, menu);
             MenuUtils.setupSearchActionView(BooksOnBookshelf.this, menu);
+
+            onPrepareMenu(menu);
         }
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            final boolean showPreferredOption =
-                    vm.getStyle().getExpansionLevel() > 1;
-            menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showPreferredOption);
+            final boolean showPreferredExpansion = vm.getStyle().getExpansionLevel() > 1;
+            menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showPreferredExpansion);
+
+            if (hasEmbeddedDetailsFrame()) {
+                menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_LIST).setVisible(false);
+                menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_GRID).setVisible(false);
+            } else {
+                final boolean isListLayout = vm.getStyle().getLayout() == Style.Layout.List;
+                menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_LIST).setVisible(!isListLayout);
+                menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_GRID).setVisible(isListLayout);
+            }
         }
 
         @Override
@@ -2244,6 +2266,16 @@ public class BooksOnBookshelf
 
             if (menuItemId == R.id.MENU_FILTERS) {
                 bookshelfFiltersLauncher.launch(BooksOnBookshelf.this, vm.getBookshelf());
+                return true;
+
+            } else if (menuItemId == R.id.MENU_STYLE_SHORTCUT_LAYOUT_LIST) {
+                vm.setStyleLayout(BooksOnBookshelf.this, Style.Layout.List);
+                onPrepareMenu(menu);
+                return true;
+
+            } else if (menuItemId == R.id.MENU_STYLE_SHORTCUT_LAYOUT_GRID) {
+                vm.setStyleLayout(BooksOnBookshelf.this, Style.Layout.Grid);
+                onPrepareMenu(menu);
                 return true;
 
             } else if (menuItemId == R.id.MENU_STYLE_PICKER) {

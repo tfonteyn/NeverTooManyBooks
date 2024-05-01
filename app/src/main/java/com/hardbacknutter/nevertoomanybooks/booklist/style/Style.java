@@ -153,6 +153,13 @@ public interface Style {
     Layout getLayout();
 
     /**
+     * Set the layout.
+     *
+     * @param layout to set
+     */
+    void setLayout(@NonNull Layout layout);
+
+    /**
      * Get the layout as set on the style, potentially overriding it
      * depending on the given flag.
      * <p>

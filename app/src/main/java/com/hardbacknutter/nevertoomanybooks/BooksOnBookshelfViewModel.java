@@ -269,7 +269,7 @@ public class BooksOnBookshelfViewModel
     /**
      * Trigger a rebuild of the book list.
      *
-     * @return flag, whether the LayoutManager needs to be recreated or not.
+     * @return flag, whether the <strong>LayoutManager</strong> needs to be recreated or not.
      */
     @NonNull
     LiveData<LiveDataEvent<Boolean>> onTriggerRebuildList() {
@@ -1197,7 +1197,8 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * This method is called from an ActivityResultContract after the result intent is parsed.
+     * This method is called after the user used {@link PreferredStylesContract}
+     * to edit the list of styles.
      *
      * @param context Current context
      * @param data    returned from the view/edit contract
@@ -1214,7 +1215,8 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * This method is called from an ActivityResultContract after the result intent is parsed.
+     * This method is called after the user edited a style from
+     * the {@link StylePickerDialogFragment}.
      *
      * @param context Current context
      * @param data    returned from the view/edit contract
@@ -1327,6 +1329,22 @@ public class BooksOnBookshelfViewModel
     List<BooklistNode> getVisibleBookNodes(final long bookId) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         return booklist.getVisibleBookNodes(bookId);
+    }
+
+    /**
+     * Update the style to the given layout choice, and trigger a full rebuild of the BoB.
+     *
+     * @param context Current context
+     * @param layout  to set
+     */
+    void setStyleLayout(@NonNull final Context context,
+                        @NonNull final Style.Layout layout) {
+        final Style style = getStyle();
+        style.setLayout(layout);
+        ServiceLocator.getInstance().getStyles().update(context, style);
+
+        // rebuild with a LayoutManager rebuild
+        triggerRebuildList.setValue(LiveDataEvent.of(true));
     }
 
     private static class BLGDateRecord {
