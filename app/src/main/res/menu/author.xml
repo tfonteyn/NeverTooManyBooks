@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@
     <item
         android:id="@id/MENU_AUTHOR_SET_INCOMPLETE"
         android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
-        android:orderInCategory="@integer/MENU_ORDER_INCOMPLETE"
+        android:orderInCategory="@integer/MENU_ORDER_COMPLETE"
         android:title="@string/option_set_incomplete" />
 
     <item

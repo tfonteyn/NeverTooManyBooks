@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@
         <item
             android:id="@id/MENU_BOOK_SET_UNREAD"
             android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
-            android:orderInCategory="@integer/MENU_ORDER_UNREAD"
+            android:orderInCategory="@integer/MENU_ORDER_READ"
             android:title="@string/option_set_unread" />
 
         <item
