@@ -1725,7 +1725,7 @@
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
     <!-- ListPreference title. Opens a new screen with the related settings. -->
-    <string name="pt_dialog_and_menu_popup_tuning">Dialog and Menu tuning</string>
+    <string name="pt_dialog_and_menu_popup_tuning">Dialogs and Menus</string>
 
     <!-- ListPreference value: always display a dialog or context menu using a BottomSheet. -->
     <string name="pe_option_bottom_sheet">Always at the bottom of the screen</string>
@@ -1735,18 +1735,20 @@
     <!-- ListPreference value: UI Dialog tuning. -->
     <string name="pe_ui_dialog_mode_classic">Always as a classic Dialog</string>
     <!-- ListPreference value: UI Dialog tuning. -->
-    <string name="pe_ui_dialog_mode_bottom_sheet">@string/pe_option_bottom_sheet</string>
+    <string name="pe_ui_dialog_mode_bottom_sheet"
+            translatable="false">@string/pe_option_bottom_sheet</string>
     <!-- ListPreference value: UI Dialog tuning. -->
-    <string name="pe_ui_dialog_mode_by_screen_size">By device size: tablets use classic Dialogs, phones show them at the bottom of the screen</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Larger screens (such as tablets) use classic dialog boxes, while smaller screens display the dialog boxes at the bottom of the screen.</string>
 
     <!-- ListPreference title: UI context menu tuning. -->
     <string name="pc_context_menus">Context and row menus</string>
     <!-- ListPreference value: UI context menu tuning. -->
-    <string name="pe_context_menu_mode_classic">@string/pe_option_bottom_sheet</string>
+    <string name="pe_context_menu_mode_classic">Always as a classic context menu</string>
     <!-- ListPreference value: UI context menu tuning. -->
-    <string name="pe_context_menu_mode_bottom_sheet">Always at the bottom of the screen</string>
+    <string name="pe_context_menu_mode_bottom_sheet"
+            translatable="false">@string/pe_option_bottom_sheet</string>
     <!-- ListPreference value: UI context menu tuning. -->
-    <string name="pe_context_menu_mode_by_size">Large menus are shown at the bottom of the screen, small menus as classic context menus</string>
+    <string name="pe_context_menu_mode_by_size">Long menus are displayed at the bottom of the screen and short menus are classic context menus.</string>
 
 
 </resources>

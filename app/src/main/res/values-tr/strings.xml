@@ -774,4 +774,12 @@
     <string name="lbl_track_progress">İlerleme</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Geçerli sayfadan büyük veya eşit olmalıdır</string>
     <string name="info_builtin_style_asterix">(* varsayılan stiller)</string>
+    <string name="pt_dialog_and_menu_popup_tuning">Diyaloglar ve Menüler</string>
+    <string name="pe_option_bottom_sheet">Her zaman ekranın alt kısmında</string>
+    <string name="pt_ui_dialogs_mode">Diyaloglar</string>
+    <string name="pe_ui_dialog_mode_classic">Her zaman klasik bir Diyalog olarak</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Daha büyük ekranlarda (tabletler gibi) klasik iletişim kutuları kullanılırken, daha küçük ekranlarda iletişim kutuları ekranın altında görüntülenir.</string>
+    <string name="pc_context_menus">Bağlam ve satır menüleri</string>
+    <string name="pe_context_menu_mode_classic">Her zaman klasik bir içerik menüsü olarak</string>
+    <string name="pe_context_menu_mode_by_size">Uzun menüler ekranın altında görüntülenir ve kısa menüler klasik içerik menüleridir.</string>
 </resources>

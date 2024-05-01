@@ -796,4 +796,8 @@
     <string name="option_isfdb_menu_populate_toc">填入标题（仅 ISFDB）</string>
     <string name="pt_maintenance">维护</string>
     <string name="info_builtin_style_asterix">(默认样式）</string>
+    <string name="pt_dialog_and_menu_popup_tuning">对话框和菜单</string>
+    <string name="pt_ui_dialogs_mode">对话框</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">较大的屏幕（如平板电脑）使用传统的对话框，而较小的屏幕则在屏幕底部显示对话框。</string>
+    <string name="pe_context_menu_mode_by_size">长菜单显示在屏幕底部，短菜单则是经典的上下文菜单。</string>
 </resources>

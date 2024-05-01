@@ -764,4 +764,12 @@
     <string name="lbl_track_progress">Πρόοδος</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Πρέπει να είναι μεγαλύτερη ή ίση με την τρέχουσα σελίδα</string>
     <string name="info_builtin_style_asterix">(* προεπιλεγμένα στυλ)</string>
+    <string name="pt_dialog_and_menu_popup_tuning">Διάλογοι και μενού</string>
+    <string name="pe_option_bottom_sheet">Πάντα στο κάτω μέρος της οθόνης</string>
+    <string name="pt_ui_dialogs_mode">Διάλογοι</string>
+    <string name="pe_ui_dialog_mode_classic">Πάντα ως κλασικό παράθυρο διαλόγου</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Οι μεγαλύτερες οθόνες (όπως οι ταμπλέτες) χρησιμοποιούν τα κλασικά πλαίσια διαλόγου, ενώ οι μικρότερες οθόνες εμφανίζουν τα πλαίσια διαλόγου στο κάτω μέρος της οθόνης.</string>
+    <string name="pc_context_menus">Μενού περιβάλλοντος και γραμμής</string>
+    <string name="pe_context_menu_mode_classic">Πάντα ως κλασικό μενού περιβάλλοντος</string>
+    <string name="pe_context_menu_mode_by_size">Τα μακρά μενού εμφανίζονται στο κάτω μέρος της οθόνης και τα σύντομα μενού είναι τα κλασικά μενού περιβάλλοντος.</string>
 </resources>

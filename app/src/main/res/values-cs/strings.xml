@@ -783,4 +783,12 @@
     <string name="lbl_track_progress">Pokrok</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Musí být větší nebo stejná jako aktuální stránka</string>
     <string name="info_builtin_style_asterix">(* výchozí styly)</string>
+    <string name="pt_dialog_and_menu_popup_tuning">Dialogy a nabídky</string>
+    <string name="pe_option_bottom_sheet">Vždy v dolní části obrazovky</string>
+    <string name="pt_ui_dialogs_mode">Dialogy</string>
+    <string name="pe_ui_dialog_mode_classic">Vždy jako klasický dialog</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Na větších obrazovkách (například na tabletech) se používají klasická dialogová okna, zatímco na menších obrazovkách se dialogová okna zobrazují v dolní části obrazovky.</string>
+    <string name="pc_context_menus">Kontextové a řádkové nabídky</string>
+    <string name="pe_context_menu_mode_classic">Vždy jako klasická kontextová nabídka</string>
+    <string name="pe_context_menu_mode_by_size">Dlouhé nabídky se zobrazují ve spodní části obrazovky a krátké nabídky jsou klasické kontextové nabídky.</string>
 </resources>

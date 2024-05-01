@@ -793,4 +793,12 @@
     <string name="lbl_author_type_lettering">Letrista</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Deve ser maior ou igual à página atual</string>
     <string name="info_builtin_style_asterix">(* estilos predefinidos)</string>
+    <string name="pt_dialog_and_menu_popup_tuning">Diálogos e menus</string>
+    <string name="pe_option_bottom_sheet">Sempre na parte inferior do ecrã</string>
+    <string name="pt_ui_dialogs_mode">Diálogos</string>
+    <string name="pe_ui_dialog_mode_classic">Sempre como uma caixa de diálogo clássica</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Os ecrãs maiores (como os tablets) utilizam caixas de diálogo clássicas, enquanto os ecrãs mais pequenos apresentam as caixas de diálogo na parte inferior do ecrã.</string>
+    <string name="pc_context_menus">Menus de contexto e de linha</string>
+    <string name="pe_context_menu_mode_classic">Sempre como um menu de contexto clássico</string>
+    <string name="pe_context_menu_mode_by_size">Os menus longos são apresentados na parte inferior do ecrã e os menus curtos são menus de contexto clássicos.</string>
 </resources>
