@@ -766,7 +766,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Dialoge und Menüs</string>
     <string name="pe_option_bottom_sheet">Immer am unteren Rand des Bildschirms</string>
     <string name="pt_ui_dialogs_mode">Dialoge</string>
-    <string name="pe_ui_dialog_mode_classic">Immer als klassischer Dialog</string>
+    <string name="pe_ui_dialog_mode_classic">Immer als klassisches Dialogfenster</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Auf größeren Bildschirmen (z. B. Tablets) werden klassische Dialogfelder verwendet, während auf kleineren Bildschirmen die Dialogfelder am unteren Rand des Bildschirms angezeigt werden.</string>
     <string name="pc_context_menus">Kontext- und Zeilenmenüs</string>
     <string name="pe_context_menu_mode_classic">Immer als klassisches Kontextmenü</string>

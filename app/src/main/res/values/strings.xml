@@ -1733,7 +1733,7 @@
     <!-- ListPreference title: UI Dialog tuning. -->
     <string name="pt_ui_dialogs_mode">Dialogs</string>
     <!-- ListPreference value: UI Dialog tuning. -->
-    <string name="pe_ui_dialog_mode_classic">Always as a classic Dialog</string>
+    <string name="pe_ui_dialog_mode_classic">Always as a classic dialog box</string>
     <!-- ListPreference value: UI Dialog tuning. -->
     <string name="pe_ui_dialog_mode_bottom_sheet"
             translatable="false">@string/pe_option_bottom_sheet</string>

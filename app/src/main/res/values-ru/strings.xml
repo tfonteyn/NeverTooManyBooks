@@ -787,7 +787,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Диалоги и меню</string>
     <string name="pe_option_bottom_sheet">Всегда в нижней части экрана</string>
     <string name="pt_ui_dialogs_mode">Диалоги</string>
-    <string name="pe_ui_dialog_mode_classic">Всегда в виде классического диалога</string>
+    <string name="pe_ui_dialog_mode_classic">Всегда в виде классического диалогового окна</string>
     <string name="pe_ui_dialog_mode_by_screen_size">На больших экранах (например, на планшетах) используются классические диалоговые окна, а на маленьких экранах диалоговые окна отображаются в нижней части экрана.</string>
     <string name="pc_context_menus">Контекстное и строчное меню</string>
     <string name="pe_context_menu_mode_classic">Всегда в виде классического контекстного меню</string>

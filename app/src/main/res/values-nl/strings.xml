@@ -766,7 +766,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Dialogen en menu\'s</string>
     <string name="pe_option_bottom_sheet">Altijd onderaan het scherm</string>
     <string name="pt_ui_dialogs_mode">Dialogen</string>
-    <string name="pe_ui_dialog_mode_classic">Altijd als een klassieke dialoog</string>
+    <string name="pe_ui_dialog_mode_classic">Altijd als een klassiek dialoogvenster</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Grotere schermen (zoals tablets) gebruiken klassieke dialoogvensters, terwijl kleinere schermen de dialoogvensters onderaan het scherm weergeven.</string>
     <string name="pc_context_menus">Context- en rijmenu\'s</string>
     <string name="pe_context_menu_mode_classic">Altijd als een klassiek contextmenu</string>

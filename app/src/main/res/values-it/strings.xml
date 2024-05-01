@@ -770,7 +770,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Finestre di dialogo e menu</string>
     <string name="pe_option_bottom_sheet">Sempre nella parte inferiore dello schermo</string>
     <string name="pt_ui_dialogs_mode">Finestre di dialogo</string>
-    <string name="pe_ui_dialog_mode_classic">Sempre come una classica finestra di dialogo</string>
+    <string name="pe_ui_dialog_mode_classic">Sempre come finestra di dialogo classica</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Gli schermi più grandi (come i tablet) utilizzano le classiche finestre di dialogo, mentre gli schermi più piccoli visualizzano le finestre di dialogo nella parte inferiore dello schermo.</string>
     <string name="pc_context_menus">Menu contestuali e di riga</string>
     <string name="pe_context_menu_mode_classic">Sempre come un classico menu contestuale</string>

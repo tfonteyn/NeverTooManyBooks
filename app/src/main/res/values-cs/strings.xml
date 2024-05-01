@@ -786,7 +786,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Dialogy a nabídky</string>
     <string name="pe_option_bottom_sheet">Vždy v dolní části obrazovky</string>
     <string name="pt_ui_dialogs_mode">Dialogy</string>
-    <string name="pe_ui_dialog_mode_classic">Vždy jako klasický dialog</string>
+    <string name="pe_ui_dialog_mode_classic">Vždy jako klasické dialogové okno</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Na větších obrazovkách (například na tabletech) se používají klasická dialogová okna, zatímco na menších obrazovkách se dialogová okna zobrazují v dolní části obrazovky.</string>
     <string name="pc_context_menus">Kontextové a řádkové nabídky</string>
     <string name="pe_context_menu_mode_classic">Vždy jako klasická kontextová nabídka</string>

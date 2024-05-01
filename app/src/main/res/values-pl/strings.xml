@@ -789,7 +789,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Dialogi i menu</string>
     <string name="pe_option_bottom_sheet">Zawsze w dolnej części ekranu</string>
     <string name="pt_ui_dialogs_mode">Dialogi</string>
-    <string name="pe_ui_dialog_mode_classic">Zawsze jako klasyczny dialog</string>
+    <string name="pe_ui_dialog_mode_classic">Zawsze jako klasyczne okno dialogowe</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Większe ekrany (takie jak tablety) używają klasycznych okien dialogowych, podczas gdy mniejsze ekrany wyświetlają okna dialogowe na dole ekranu.</string>
     <string name="pc_context_menus">Menu kontekstowe i wierszowe</string>
     <string name="pe_context_menu_mode_classic">Zawsze jako klasyczne menu kontekstowe</string>

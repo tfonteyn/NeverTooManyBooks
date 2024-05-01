@@ -771,7 +771,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Dialogues et menus</string>
     <string name="pe_option_bottom_sheet">Toujours en bas de l\'écran</string>
     <string name="pt_ui_dialogs_mode">Dialogues</string>
-    <string name="pe_ui_dialog_mode_classic">Toujours sous forme de dialogue classique</string>
+    <string name="pe_ui_dialog_mode_classic">Toujours sous forme de boîte de dialogue classique</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Les écrans de grande taille (tels que les tablettes) utilisent des boîtes de dialogue classiques, tandis que les écrans plus petits affichent les boîtes de dialogue en bas de l\'écran.</string>
     <string name="pc_context_menus">Menu contextuel et menu de ligne</string>
     <string name="pe_context_menu_mode_classic">Toujours comme un menu contextuel classique</string>
