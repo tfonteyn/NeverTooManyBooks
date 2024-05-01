@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -136,7 +136,7 @@ public class App
                 .withApplicationLogFileDir(Directory.FILES)
                 .withApplicationLogFile(APPLICATION_LOG_FILE)
                 .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
-                .withExcludeMatchingSharedPreferencesKeys(".*password.*")
+                .withExcludeMatchingSharedPreferencesKeys(".*password.*", "*host.user*")
                 .withReportContent(
                         // Device
                         ReportField.PHONE_MODEL,

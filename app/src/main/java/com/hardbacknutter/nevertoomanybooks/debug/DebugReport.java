@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -159,7 +159,7 @@ public class DebugReport {
                          .stream()
                          .sorted()
                          .map(k -> {
-                             if (k.contains("password")) {
+                             if (k.contains("password") || k.contains("host.user")) {
                                  return k + "=********";
                              } else {
                                  return k + "=" + map.get(k);
