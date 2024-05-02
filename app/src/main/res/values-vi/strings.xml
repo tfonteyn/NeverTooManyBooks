@@ -1501,4 +1501,12 @@
     <string name="lbl_percentage">Tỷ lệ phần trăm</string>
     <string name="lbl_current_page">Trang hiện tại</string>
     <string name="info_builtin_style_asterix">(* kiểu mặc định)</string>
+    <string name="pe_ui_dialog_mode_classic">Luôn là hộp thoại cổ điển</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Màn hình lớn hơn (chẳng hạn như máy tính bảng) sử dụng hộp thoại cổ điển, trong khi màn hình nhỏ hơn hiển thị các hộp thoại ở cuối màn hình.</string>
+    <string name="pe_context_menu_mode_by_size">Thực đơn dài được hiển thị ở cuối màn hình và thực đơn ngắn là thực đơn ngữ cảnh cổ điển.</string>
+    <string name="pt_dialog_and_menu_popup_tuning">Hộp thoại và Thực đơn</string>
+    <string name="pe_option_bottom_sheet">Luôn ở cuối màn hình</string>
+    <string name="pt_ui_dialogs_mode">Hộp thoại</string>
+    <string name="pc_context_menus">Thực đơn ngữ cảnh và hàng</string>
+    <string name="pe_context_menu_mode_classic">Luôn là một thực đơn ngữ cảnh cổ điển</string>
 </resources>
