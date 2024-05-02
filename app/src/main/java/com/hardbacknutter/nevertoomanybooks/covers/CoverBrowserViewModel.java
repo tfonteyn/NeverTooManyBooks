@@ -254,17 +254,33 @@ public class CoverBrowserViewModel
      * Set the given list as the editions list.
      *
      * @param list editions
+     *
+     * @return {@code true} if we have at least one edition which <strong>might</strong>
+     *         have images.
      */
-    public void setEditions(@Nullable final Collection<AltEdition> list) {
+    public boolean setEditions(@Nullable final Collection<AltEdition> list) {
         editions.clear();
-        if (list != null && !list.isEmpty()) {
 
-            if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger().d(TAG, "list=" + list.size() + ", " + list);
-            }
-
-            editions.addAll(list);
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(
+                    TAG, "list=" + (list != null ? list.size() + ", " + list : "null"));
         }
+
+        if (list == null || list.isEmpty()) {
+            return false;
+        }
+
+        // Some AltEdition implementations know for certain whether they have / do not have images.
+        // Others *may* have images. Discard the ones we are sure NOT to have images.
+        final List<AltEdition> filtered = list.stream()
+                                              .filter(AltEdition::mayHaveCover)
+                                              .collect(Collectors.toList());
+        if (filtered.isEmpty()) {
+            return false;
+        }
+
+        editions.addAll(list);
+        return true;
     }
 
     @Nullable

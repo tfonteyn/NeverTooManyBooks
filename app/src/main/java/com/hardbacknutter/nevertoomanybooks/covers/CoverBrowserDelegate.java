@@ -266,16 +266,13 @@ class CoverBrowserDelegate
     private void showGallery(@Nullable final Collection<AltEdition> list) {
         Objects.requireNonNull(galleryAdapter, ERROR_GALLERY_ADAPTER);
 
-        if (list == null || list.isEmpty()) {
+        if (vm.setEditions(list)) {
+            galleryAdapter.notifyDataSetChanged();
+            vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
+        } else {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_no_editions);
             vb.statusMessage.postDelayed(owner::dismiss, Delay.LONG_MS);
-        } else {
-            // set the list and trigger the adapter
-            vm.setEditions(list);
-            galleryAdapter.notifyDataSetChanged();
-            // Show help message
-            vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
         }
     }
 
@@ -448,8 +445,9 @@ class CoverBrowserDelegate
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            return new Holder(RowCoverBrowserGalleryBinding.inflate(inflater, parent, false),
-                              maxWidth, maxHeight);
+            final RowCoverBrowserGalleryBinding vb = RowCoverBrowserGalleryBinding
+                    .inflate(inflater, parent, false);
+            return new Holder(vb, maxWidth, maxHeight);
         }
 
         @Override
@@ -461,16 +459,16 @@ class CoverBrowserDelegate
             final ImageFileInfo imageFileInfo = positionHandler.getFileInfo(altEdition);
 
             if (imageFileInfo == null) {
-                // not in the cache,; use a placeholder but preserve the available space
-                imageLoader.placeholder(holder.vb.coverImage0,
-                                        R.drawable.ic_baseline_image_24);
-                // and queue a request for it.
+                // not in the cache, queue a request for it.
                 positionHandler.fetchGalleryImage(altEdition);
+
+                // use a placeholder but preserve the available space
+                imageLoader.placeholder(holder.vb.coverImage0, R.drawable.ic_baseline_image_24);
                 holder.vb.lblSite.setText("");
                 holder.vb.coverImage0.setOnClickListener(null);
 
             } else {
-                // check if it's good
+                // We have file information; check if it's any good
                 final Optional<File> file = imageFileInfo.getFile();
                 if (file.isPresent()) {
                     // YES, load it into the view.
@@ -479,9 +477,10 @@ class CoverBrowserDelegate
                     holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
                     holder.vb.coverImage0.setOnClickListener(
                             v -> positionHandler.onGalleryImageSelected(imageFileInfo));
+
                 } else {
-                    // no file. Theoretically we should not get here,
-                    // as a failed search should have removed the isbn from the edition list,
+                    // NO file. Theoretically we should not get here,
+                    // as a failed search should have removed the edition from the list,
                     // but race-conditions + paranoia...
                     imageLoader.placeholder(holder.vb.coverImage0,
                                             R.drawable.ic_baseline_broken_image_24);
