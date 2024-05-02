@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -65,7 +66,7 @@ public class AltEditionIsbn
     @Override
     public Optional<String> searchCover(@NonNull final Context context,
                                         @NonNull final SearchEngine.CoverByIsbn searchEngine,
-                                        final int cIdx,
+                                        @IntRange(from = 0, to = 1) final int cIdx,
                                         @Nullable final Size size)
             throws SearchException, CredentialsException, StorageException {
 
@@ -80,18 +81,6 @@ public class AltEditionIsbn
     @Nullable
     public String getIsbn() {
         return isbn;
-    }
-
-    @Nullable
-    @Override
-    public String getPublisher() {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public String getLangIso3() {
-        return null;
     }
 
     @Override
