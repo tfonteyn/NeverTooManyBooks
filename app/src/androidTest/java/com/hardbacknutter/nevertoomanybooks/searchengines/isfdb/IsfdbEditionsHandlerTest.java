@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,7 +80,7 @@ public class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = searchEngine.parseEditions(context, document);
+        final List<AltEditionIsfdb> editions = searchEngine.parseEditions(context, document);
 
         assertEquals(27, editions.size());
         assertEquals("eng", editions.get(0).getLangIso3());
@@ -102,7 +102,7 @@ public class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = searchEngine.parseEditions(context, document);
+        final List<AltEditionIsfdb> editions = searchEngine.parseEditions(context, document);
 
         assertEquals(4, editions.size());
         assertEquals("nld", editions.get(0).getLangIso3());
