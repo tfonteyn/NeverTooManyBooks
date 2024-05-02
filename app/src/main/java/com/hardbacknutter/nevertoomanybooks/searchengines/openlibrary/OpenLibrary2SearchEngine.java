@@ -200,7 +200,7 @@ public class OpenLibrary2SearchEngine
     }
 
     @NonNull
-    private Optional<String> searchCoverByKey(@NonNull final Context context,
+    public Optional<String> searchCoverByKey(@NonNull final Context context,
                                               @NonNull final String key,
                                               @NonNull final String id,
                                               @IntRange(from = 0, to = 1) final int cIdx,

@@ -29,12 +29,11 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 /**
  * Edition data is returned by {@code https://openlibrary.org/works/OL5725956W/editions.json}
@@ -141,18 +140,15 @@ public class AltEditionOpenLibrary
                                         @NonNull final SearchEngine.CoverByIsbn searchEngine,
                                         final int cIdx,
                                         @Nullable final Size size)
-            throws SearchException, CredentialsException, StorageException {
+            throws StorageException {
 
-        if (isbn != null) {
-            return searchEngine.searchCoverByIsbn(context, isbn, cIdx, size);
-        } else {
-            return Optional.empty();
+        if (BuildConfig.DEBUG /* always */) {
+            if (!(searchEngine instanceof OpenLibrary2SearchEngine)) {
+                throw new IllegalArgumentException("Not an OpenLibrary2SearchEngine");
+            }
         }
-    }
-
-    @NonNull
-    public String getOlid() {
-        return olid;
+        return ((OpenLibrary2SearchEngine) searchEngine)
+                .searchCoverByKey(context, "olid", olid, cIdx, size);
     }
 
     @Override

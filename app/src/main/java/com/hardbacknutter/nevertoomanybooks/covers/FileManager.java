@@ -105,7 +105,7 @@ public class FileManager {
      *
      * @param context          Current context
      * @param progressListener to check for any cancellations
-     * @param edition             to search for
+     * @param edition          to search for
      * @param cIdx             0..n image index
      * @param sizes            a list of images sizes in order of preference
      *
@@ -172,37 +172,34 @@ public class FileManager {
                                             "size=" + size);
                         }
 
-                        final String isbn = edition.getIsbn();
-                        if (isbn != null) {
-                            try {
-                                final Optional<String> oFileSpec = edition
-                                        .searchCover(context, se, cIdx, size);
+                        try {
+                            final Optional<String> oFileSpec =
+                                    edition.searchCover(context, se, cIdx, size);
 
-                                if (oFileSpec.isPresent()) {
-                                    final ImageFileInfo imageFileInfo =
-                                            new ImageFileInfo(edition, oFileSpec.get(), size,
-                                                              engineId);
-                                    files.put(edition, imageFileInfo);
-
-                                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                                        LoggerFactory.getLogger()
-                                                     .d(TAG, "search|SUCCESS",
-                                                        "searchEngine=" + se.getName(context),
-                                                        "imageFileInfo=" + imageFileInfo);
-                                    }
-                                    // abort search, we got an image
-                                    return imageFileInfo;
-                                }
-                            } catch (@NonNull final SearchException e) {
-                                // ignore, don't let a single search break the loop.
-                                // but disable the engine for THIS search
-                                currentSearch.remove(engineId);
+                            if (oFileSpec.isPresent()) {
+                                final ImageFileInfo imageFileInfo =
+                                        new ImageFileInfo(edition, oFileSpec.get(), size,
+                                                          engineId);
+                                files.put(edition, imageFileInfo);
 
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                     LoggerFactory.getLogger()
-                                                 .d(TAG, "search|FAILED",
-                                                    "searchEngine=" + se.getName(context), e);
+                                                 .d(TAG, "search|SUCCESS",
+                                                    "searchEngine=" + se.getName(context),
+                                                    "imageFileInfo=" + imageFileInfo);
                                 }
+                                // abort search, we got an image
+                                return imageFileInfo;
+                            }
+                        } catch (@NonNull final SearchException e) {
+                            // ignore, don't let a single search break the loop.
+                            // but disable the engine for THIS search
+                            currentSearch.remove(engineId);
+
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                                LoggerFactory.getLogger()
+                                             .d(TAG, "search|FAILED",
+                                                "searchEngine=" + se.getName(context), e);
                             }
                         }
 

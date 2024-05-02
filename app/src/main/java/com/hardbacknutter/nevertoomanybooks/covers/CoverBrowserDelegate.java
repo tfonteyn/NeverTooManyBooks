@@ -458,10 +458,6 @@ class CoverBrowserDelegate
 
             final AltEdition altEdition = items.get(position);
 
-            //URGENT: can't cope with null ISBN's for now; but they should have been stripped
-            // by the time we get here
-            Objects.requireNonNull(altEdition.getIsbn(), "URGENT: ");
-
             final ImageFileInfo imageFileInfo = positionHandler.getFileInfo(altEdition);
 
             if (imageFileInfo == null) {

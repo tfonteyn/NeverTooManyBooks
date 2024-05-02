@@ -48,11 +48,16 @@ public interface AltEdition
     /**
      * Get a single cover image of the specified size.
      *
-     * @param context Current context
-     * @param cIdx    0..n image index
-     * @param size    of image to get.
+     * @param context      Current context
+     * @param searchEngine to use
+     * @param cIdx         0..n image index
+     * @param size         of image to get.
      *
      * @return fileSpec
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @NonNull
     Optional<String> searchCover(@NonNull Context context,

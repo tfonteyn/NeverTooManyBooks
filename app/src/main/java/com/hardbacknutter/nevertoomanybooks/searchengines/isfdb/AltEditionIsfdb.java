@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -128,7 +129,16 @@ public class AltEditionIsfdb
                                         @Nullable final Size size)
             throws SearchException, CredentialsException, StorageException {
 
-        if (isbn != null) {
+        // The id should always be valid, but paranoia...
+        if (isfdbId != 0) {
+            if (BuildConfig.DEBUG /* always */) {
+                if (!(searchEngine instanceof IsfdbSearchEngine)) {
+                    throw new IllegalArgumentException("Not an IsfdbSearchEngine");
+                }
+            }
+            return ((IsfdbSearchEngine) searchEngine).searchCoverByEdition(context, this);
+
+        } else if (isbn != null) {
             return searchEngine.searchCoverByIsbn(context, isbn, cIdx, size);
         } else {
             return Optional.empty();
@@ -141,7 +151,7 @@ public class AltEditionIsfdb
         return document;
     }
 
-    public void clearDocument() {
+    void clearDocument() {
         document = null;
     }
 

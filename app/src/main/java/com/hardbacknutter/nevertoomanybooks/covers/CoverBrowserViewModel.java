@@ -33,15 +33,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
@@ -258,23 +258,12 @@ public class CoverBrowserViewModel
     public void setEditions(@Nullable final Collection<AltEdition> list) {
         editions.clear();
         if (list != null && !list.isEmpty()) {
-            // URGENT: the adapter cannot cope with null and duplicate ISBN's, filter them out.
-            final List<AltEdition> filtered = new ArrayList<>();
-            final Set<String> isbns = new HashSet<>();
-            list.stream()
-                .filter(altEdition -> altEdition.getIsbn() != null)
-                .filter(altEdition -> !isbns.contains(altEdition.getIsbn()))
-                .forEach(altEdition -> {
-                    final String isbn = altEdition.getIsbn();
-                    isbns.add(isbn);
-                    filtered.add(altEdition);
-                });
 
-//            Log.d(TAG, "list=" + list.size() + ", " + list);
-//            Log.d(TAG, "filtered=" + filtered.size() + ", " + filtered);
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().d(TAG, "list=" + list.size() + ", " + list);
+            }
 
-
-            editions.addAll(filtered);
+            editions.addAll(list);
         }
     }
 

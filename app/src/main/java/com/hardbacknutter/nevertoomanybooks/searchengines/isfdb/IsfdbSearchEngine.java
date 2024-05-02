@@ -399,13 +399,19 @@ public class IsfdbSearchEngine
             return Optional.empty();
         }
 
-        final AltEditionIsfdb edition = editions.get(0);
+        return searchCoverByEdition(context, editions.get(0));
+    }
+
+    @NonNull
+    Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                          @NonNull final AltEditionIsfdb edition)
+            throws SearchException, CredentialsException, StorageException {
         final Document document = loadDocumentByEdition(context, edition);
         if (isCancelled()) {
             return Optional.empty();
         }
 
-        return parseCovers(context, document, edition.getIsbn(), 0)
+        return parseCovers(context, document, String.valueOf(edition.getIsfdbId()), 0)
                 // let the system resolve any path variations
                 .map(fileSpec -> new File(fileSpec).getAbsolutePath());
     }
@@ -1085,7 +1091,8 @@ public class IsfdbSearchEngine
      *
      * @param context  Current context
      * @param document to parse
-     * @param isbn     (optional) ISBN of the book, will be used for the cover filename
+     * @param bookId   (optional) isbn or native id of the book,
+     *                 will only be used for the temporary cover filename
      * @param cIdx     0..n image index
      *
      * @return fileSpec
@@ -1097,7 +1104,7 @@ public class IsfdbSearchEngine
     @NonNull
     private Optional<String> parseCovers(@NonNull final Context context,
                                          @NonNull final Document document,
-                                         @Nullable final String isbn,
+                                         @Nullable final String bookId,
                                          @SuppressWarnings("SameParameterValue")
                                          @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
@@ -1133,7 +1140,7 @@ public class IsfdbSearchEngine
             final Element img = contentBox.selectFirst("img");
             if (img != null) {
                 final String url = img.attr("src");
-                return saveImage(context, url, isbn, cIdx, null);
+                return saveImage(context, url, bookId, cIdx, null);
             }
         }
         return Optional.empty();
