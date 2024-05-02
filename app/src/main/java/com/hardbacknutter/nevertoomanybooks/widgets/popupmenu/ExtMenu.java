@@ -34,9 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ExtMenu
         implements Parcelable {
@@ -73,6 +71,8 @@ public class ExtMenu
 
     /**
      * Convert a {@link Menu} to a list of {@link ExtMenuItem}s.
+     *
+     * URGENT: check the 'orderInCategory'
      *
      * @param menu                to convert
      * @param groupDividerEnabled flag
@@ -168,23 +168,6 @@ public class ExtMenu
                     .orElse(null);
     }
 
-    /**
-     * Get the ordered list of items for displaying.
-     *
-     * @return list
-     */
-    @NonNull
-    public List<ExtMenuItem> getOrderedItems() {
-        return items
-                // List by group
-                .stream().map(ExtMenuItem::getGroup)
-                // Sort items in each group
-                .flatMap(group -> items.stream().filter(item -> item.getGroup() == group)
-                                       .sorted(Comparator.comparingInt(ExtMenuItem::getOrder)))
-                .collect(Collectors.toList());
-
-    }
-
     public int size() {
         return items.size();
     }
@@ -192,6 +175,11 @@ public class ExtMenu
     @Nullable
     public ExtMenuItem getItem(final int i) {
         return items.get(i);
+    }
+
+    @NonNull
+    public List<ExtMenuItem> getItems() {
+        return items;
     }
 
     @Override

@@ -107,7 +107,8 @@ class MenuItemListAdapter
         if (item.isEnabled()) {
             if (item.hasSubMenu()) {
                 //noinspection DataFlowIssue
-                setMenu(item.getSubMenu().getOrderedItems());
+                final List<ExtMenuItem> subMenuItems = item.getSubMenu().getItems();
+                setMenu(subMenuItems);
                 notifyDataSetChanged();
                 //noinspection DataFlowIssue
                 menuCallback.onNewMenuTitle(item.getTitle());
