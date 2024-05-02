@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -81,9 +82,9 @@ public class AltEditionIsfdb
     /**
      * Constructor: we found a link to a book.
      *
-     * @param isfdbId   of the book we found
-     * @param isbn      of the book we found (as read from the site)
-     * @param publisher of the book we found (as read from the site)
+     * @param isfdbId   of the edition we found
+     * @param isbn      of the edition we found (as read from the site)
+     * @param publisher of the edition we found (as read from the site)
      * @param langIso3  the iso3 code for the language of this edition
      */
     AltEditionIsfdb(final long isfdbId,
@@ -100,9 +101,9 @@ public class AltEditionIsfdb
     /**
      * Constructor: we found a single edition, the doc contains the book for further processing.
      *
-     * @param isfdbId  of the book we found
+     * @param isfdbId  of the edition we found
      * @param isbn     we <strong>searched on</strong>
-     * @param document the JSoup document of the book we found
+     * @param document the JSoup document of the edition we found
      */
     AltEditionIsfdb(final long isfdbId,
                     @Nullable final String isbn,
@@ -125,7 +126,7 @@ public class AltEditionIsfdb
     @Override
     public Optional<String> searchCover(@NonNull final Context context,
                                         @NonNull final SearchEngine.CoverByIsbn searchEngine,
-                                        final int cIdx,
+                                        @IntRange(from = 0, to = 1) final int cIdx,
                                         @Nullable final Size size)
             throws SearchException, CredentialsException, StorageException {
 
@@ -194,7 +195,7 @@ public class AltEditionIsfdb
     @Override
     @NonNull
     public String toString() {
-        return "Edition{"
+        return "AltEditionIsfdb{"
                + "isfdbId=" + isfdbId
                + ", isbn=`" + isbn + '`'
                + ", publisher=`" + publisher + '`'
