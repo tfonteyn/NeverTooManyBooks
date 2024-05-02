@@ -677,7 +677,7 @@
     <string name="warning_if_day_set_month_and_year_must_be">Als de dag is gespecificeerd dan moet ook de maand en het jaar ingevuld worden.</string>
     <string name="warning_if_month_set_year_must_be">Als de maand is gespecificeerd moet ook het jaar worden ingevuld.</string>
     <string name="warning_image_copy_failed">Afbeelding kon niet gekopieerd worden.</string>
-    <string name="warning_image_not_found">Afbeelding werdt niet gevonden.</string>
+    <string name="warning_image_not_found">Afbeelding werd niet gevonden.</string>
     <string name="warning_immediate_global_changes">WAARSCHUWING: Opgeslagen wijzigingen worden direct toegepast op alle boeken.</string>
     <string name="warning_import_csv">WAARSCHUWING: Het importeren van gegevens kan bestaande boekrecords bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de ID in het importbestand dezelfde is als een bestaande ID. Dit is meestal prima als je een veld in een geëxporteerd bestand hebt gewijzigd. Als je een nieuwe boekrecord hebt gemaakt of de boeken van iemand anders importeert, moet je ervoor zorgen dat het UUID-veld aanwezig is of dat het ID-veld leeg is.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
