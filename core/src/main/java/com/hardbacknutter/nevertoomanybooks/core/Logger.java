@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,10 +65,8 @@ public interface Logger {
      * DEBUG message.
      *
      * @param tag    log tag
-     * @param method the calling method (added to force the developer to log the method name)
      * @param params objects/text to log
      */
     void d(@NonNull String tag,
-           @NonNull String method,
            @Nullable Object... params);
 }

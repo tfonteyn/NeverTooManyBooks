@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,8 +76,7 @@ public class TestLogger
 
     @Override
     public void d(@NonNull final String tag,
-                  @NonNull final String method,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|DEBUG|" + tag + "|" + method + "|" + FileLogger.concat(params));
+        System.out.println("JUnit|DEBUG|" + tag + "|" + FileLogger.concat(params));
     }
 }

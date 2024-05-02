@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,6 +47,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
@@ -98,20 +99,21 @@ public class FileLogger
         if (params == null) {
             return "";
         }
-        final StringBuilder message = new StringBuilder();
+        final StringJoiner sj = new StringJoiner("|");
         Exception e = null;
         for (final Object parameter : params) {
             if (parameter instanceof Exception) {
                 e = (Exception) parameter;
             } else {
-                message.append(parameter).append('|');
+                sj.add(String.valueOf(parameter));
             }
         }
-        message.append('.');
-        if (e != null) {
-            message.append('\n').append(getStackTraceString(e));
+        final String message = sj.toString();
+        if (e == null) {
+            return message;
         }
-        return message.toString();
+
+        return message + '\n' + getStackTraceString(e);
     }
 
     /**
@@ -277,10 +279,9 @@ public class FileLogger
 
     @Override
     public void d(@NonNull final String tag,
-                  @NonNull final String method,
                   @Nullable final Object... params) {
 
-        final String msg = method + "|" + concat(params);
+        final String msg = concat(params);
         writeToLog(tag, DEBUG, msg, null);
 
         if (BuildConfig.DEBUG /* always */) {
