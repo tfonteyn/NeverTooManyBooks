@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
  * as in this particular circumstance it's faster.
  */
 public class IsfdbGetEditionsTask
-        extends MTask<List<Edition>> {
+        extends MTask<List<AltEditionIsfdb>> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetEditionsTask";
@@ -85,7 +85,7 @@ public class IsfdbGetEditionsTask
     @NonNull
     @Override
     @WorkerThread
-    protected List<Edition> doWork()
+    protected List<AltEditionIsfdb> doWork()
             throws StorageException, SearchException, CredentialsException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,12 +22,15 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+
 import org.jsoup.nodes.Document;
 
 /**
  * A value class for holding the ISFDB book id and its (optional) Document (web page).
  */
-public class Edition {
+public class AltEditionIsfdb
+        implements AltEdition {
 
     @Nullable
     private final String isbn;
@@ -41,7 +44,7 @@ public class Edition {
      * If we get (at least) 2 editions, then this will always be {@code null}.
      */
     @Nullable
-    private final Document document;
+    private Document document;
     @Nullable
     private final String langIso3;
 
@@ -52,9 +55,9 @@ public class Edition {
      * @param isbn     of the book we found (as read from the site)
      * @param langIso3 the iso3 code for the language of this edition
      */
-    Edition(final long isfdbId,
-            @Nullable final String isbn,
-            @Nullable final String langIso3) {
+    AltEditionIsfdb(final long isfdbId,
+                    @Nullable final String isbn,
+                    @Nullable final String langIso3) {
         this.isfdbId = isfdbId;
         this.isbn = isbn;
         this.langIso3 = langIso3;
@@ -69,10 +72,10 @@ public class Edition {
      * @param langIso3 the 3 character ISO language code of the book we found
      * @param document the JSoup document of the book we found
      */
-    Edition(final long isfdbId,
-            @Nullable final String isbn,
-            @Nullable final String langIso3,
-            @Nullable final Document document) {
+    AltEditionIsfdb(final long isfdbId,
+                    @Nullable final String isbn,
+                    @Nullable final String langIso3,
+                    @Nullable final Document document) {
         this.isfdbId = isfdbId;
         this.isbn = isbn;
         this.document = document;
@@ -82,6 +85,10 @@ public class Edition {
     @Nullable
     public Document getDocument() {
         return document;
+    }
+
+    public void clearDocument() {
+        document = null;
     }
 
     @Nullable

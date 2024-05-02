@@ -43,7 +43,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -93,7 +92,7 @@ public class IsfdbSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByIsbn,
-                   SearchEngine.AlternativeEditions {
+                   SearchEngine.AlternativeEditions<AltEditionIsfdb> {
 
     /** Preferences - Type: {@code boolean}. */
     public static final String PK_USE_PUBLISHER = EngineId.Isfdb.getPreferenceKey()
@@ -291,7 +290,7 @@ public class IsfdbSearchEngine
 
         final Book book = new Book();
 
-        final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
+        final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, validIsbn);
         if (!editions.isEmpty()) {
             fetchByEdition(context, editions.get(0), fetchCovers, book);
         }
@@ -355,7 +354,7 @@ public class IsfdbSearchEngine
 
             // sanity check: any data to search for?
             if (!args.isEmpty()) {
-                final List<Edition> editions = fetchEditions(context, url + args);
+                final List<AltEditionIsfdb> editions = fetchEditions(context, url + args);
                 if (!editions.isEmpty()) {
                     fetchByEdition(context, editions.get(0), fetchCovers, book);
                 }
@@ -376,16 +375,15 @@ public class IsfdbSearchEngine
      */
     @NonNull
     @Override
-    public List<String> searchAlternativeEditions(@NonNull final Context context,
-                                                  @NonNull final String validIsbn)
+    public List<AltEditionIsfdb> searchAlternativeEditions(@NonNull final Context context,
+                                                           @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
 
-        // transform the Edition list to a simple isbn list
-        return fetchEditionsByIsbn(context, validIsbn)
-                .stream()
-                .map(Edition::getIsbn)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        // We strip the potential document (which can be large) as the caller does not use it.
+        final List<AltEditionIsfdb> list = fetchEditionsByIsbn(context, validIsbn);
+        list.forEach(AltEditionIsfdb::clearDocument);
+
+        return list;
     }
 
     @NonNull
@@ -396,12 +394,12 @@ public class IsfdbSearchEngine
                                               @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
 
-        final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
+        final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, validIsbn);
         if (editions.isEmpty()) {
             return Optional.empty();
         }
 
-        final Edition edition = editions.get(0);
+        final AltEditionIsfdb edition = editions.get(0);
         final Document document = loadDocumentByEdition(context, edition);
         if (isCancelled()) {
             return Optional.empty();
@@ -1142,7 +1140,7 @@ public class IsfdbSearchEngine
     }
 
     /**
-     * Get the list with {@link Edition} information for the given isbn.
+     * Get the list with {@link AltEditionIsfdb}s for the given isbn.
      *
      * @param context   Current context
      * @param validIsbn to get editions for. MUST be valid.
@@ -1154,8 +1152,8 @@ public class IsfdbSearchEngine
      */
     @WorkerThread
     @NonNull
-    List<Edition> fetchEditionsByIsbn(@NonNull final Context context,
-                                      @NonNull final String validIsbn)
+    List<AltEditionIsfdb> fetchEditionsByIsbn(@NonNull final Context context,
+                                              @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
         searchForIsbn = validIsbn;
 
@@ -1173,16 +1171,17 @@ public class IsfdbSearchEngine
      */
     @NonNull
     @VisibleForTesting
-    List<Edition> parseEditions(@NonNull final Context context,
-                                @NonNull final Document document) {
+    List<AltEditionIsfdb> parseEditions(@NonNull final Context context,
+                                        @NonNull final Document document) {
 
-        final List<Edition> editions = new ArrayList<>();
+        final List<AltEditionIsfdb> editions = new ArrayList<>();
 
         final String pageUrl = document.location();
 
         if (pageUrl.contains(CGI_PL)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
-            editions.add(new Edition(stripNumber(pageUrl, '?'), searchForIsbn, null, document));
+            editions.add(
+                    new AltEditionIsfdb(stripNumber(pageUrl, '?'), searchForIsbn, null, document));
 
         } else if (pageUrl.contains(CGI_TITLE)
                    || pageUrl.contains(CGI_SE)
@@ -1245,7 +1244,7 @@ public class IsfdbSearchEngine
                                     isbnStr = isbn.asText();
                                 }
                             }
-                            editions.add(new Edition(stripNumber(url, '?'), isbnStr, lang));
+                            editions.add(new AltEditionIsfdb(stripNumber(url, '?'), isbnStr, lang));
                         }
                     }
                 }
@@ -1260,7 +1259,7 @@ public class IsfdbSearchEngine
     }
 
     /**
-     * Get the list with {@link Edition} information for the given url.
+     * Get the list with {@link AltEditionIsfdb}s for the given url.
      *
      * @param context Current context
      * @param url     A fully qualified ISFDB search url
@@ -1272,8 +1271,8 @@ public class IsfdbSearchEngine
      */
     @WorkerThread
     @NonNull
-    private List<Edition> fetchEditions(@NonNull final Context context,
-                                        @NonNull final String url)
+    private List<AltEditionIsfdb> fetchEditions(@NonNull final Context context,
+                                                @NonNull final String url)
             throws SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url, null);
@@ -1286,7 +1285,7 @@ public class IsfdbSearchEngine
 
     @NonNull
     private Document loadDocumentByEdition(@NonNull final Context context,
-                                           @NonNull final Edition edition)
+                                           @NonNull final AltEditionIsfdb edition)
             throws SearchException, CredentialsException {
 
         // check if we already got the page
@@ -1458,7 +1457,7 @@ public class IsfdbSearchEngine
      */
     @WorkerThread
     void fetchByEdition(@NonNull final Context context,
-                        @NonNull final Edition edition,
+                        @NonNull final AltEditionIsfdb edition,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {

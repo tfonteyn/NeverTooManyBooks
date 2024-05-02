@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ public class IsfdbGetBookTask
     private long isfdbId;
     /** ISFDB book edition to get. */
     @Nullable
-    private Edition edition;
+    private AltEditionIsfdb edition;
 
     @Nullable
     private IsfdbSearchEngine searchEngine;
@@ -67,7 +67,7 @@ public class IsfdbGetBookTask
      * @param edition to get
      */
     @UiThread
-    public void search(@NonNull final Edition edition) {
+    public void search(@NonNull final AltEditionIsfdb edition) {
         isfdbId = 0;
         this.edition = edition;
 
