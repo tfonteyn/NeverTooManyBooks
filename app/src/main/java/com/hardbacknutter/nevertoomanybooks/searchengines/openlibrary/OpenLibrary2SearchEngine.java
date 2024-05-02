@@ -955,7 +955,10 @@ public class OpenLibrary2SearchEngine
                 String isbn = null;
                 String langIso3 = null;
                 String publisher = null;
+                final long[] covers = new long[2];
+
                 JSONArray a;
+                JSONObject o;
 
                 olid = work.optString("key");
                 if (olid != null && olid.startsWith("/books/")) {
@@ -975,19 +978,28 @@ public class OpenLibrary2SearchEngine
 
                 a = work.optJSONArray("languages");
                 if (a != null && !a.isEmpty()) {
-                    langIso3 = a.optString(0);
-                    if (langIso3 != null && langIso3.startsWith("/languages/")) {
-                        langIso3 = langIso3.substring("/languages/".length());
+                    o = a.optJSONObject(0);
+                    if (o != null) {
+                        langIso3 = o.optString("key");
+                        if (langIso3 != null && langIso3.startsWith("/languages/")) {
+                            langIso3 = langIso3.substring("/languages/".length());
+                        }
                     }
                 }
                 a = work.optJSONArray("publishers");
                 if (a != null && !a.isEmpty()) {
                     publisher = a.optString(0);
                 }
-
-
+                a = work.optJSONArray("covers");
+                if (a != null && !a.isEmpty()) {
+                    covers[0] = a.optInt(0);
+                    if (a.length() > 1) {
+                        covers[1] = a.optInt(1);
+                    }
+                }
                 if (olid != null && !olid.isEmpty()) {
-                    editionList.add(new AltEditionOpenLibrary(olid, isbn, langIso3, publisher));
+                    editionList.add(new AltEditionOpenLibrary(olid, isbn, langIso3, publisher,
+                                                              covers));
                 }
             }
         }

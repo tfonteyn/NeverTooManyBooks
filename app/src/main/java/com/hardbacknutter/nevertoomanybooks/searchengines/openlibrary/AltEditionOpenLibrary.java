@@ -24,9 +24,11 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -115,15 +117,23 @@ public class AltEditionOpenLibrary
     private final String langIso3;
     @Nullable
     private final String publisher;
+    /** Guaranteed to be len=2. */
+    private final long[] covers;
 
     AltEditionOpenLibrary(@NonNull final String olid,
                           @Nullable final String isbn,
                           @Nullable final String langIso3,
-                          @Nullable final String publisher) {
+                          @Nullable final String publisher,
+                          @NonNull final long[] covers) {
+        if (covers.length != 2) {
+            throw new IllegalArgumentException("covers must be long[2]");
+        }
+
         this.olid = olid;
         this.isbn = isbn;
         this.langIso3 = langIso3;
         this.publisher = publisher;
+        this.covers = covers;
     }
 
     private AltEditionOpenLibrary(@NonNull final Parcel in) {
@@ -132,13 +142,15 @@ public class AltEditionOpenLibrary
         isbn = in.readString();
         langIso3 = in.readString();
         publisher = in.readString();
+        covers = new long[2];
+        in.readLongArray(covers);
     }
 
     @NonNull
     @Override
     public Optional<String> searchCover(@NonNull final Context context,
                                         @NonNull final SearchEngine.CoverByIsbn searchEngine,
-                                        final int cIdx,
+                                        @IntRange(from = 0, to = 1) final int cIdx,
                                         @Nullable final Size size)
             throws StorageException {
 
@@ -147,8 +159,17 @@ public class AltEditionOpenLibrary
                 throw new IllegalArgumentException("Not an OpenLibrary2SearchEngine");
             }
         }
-        return ((OpenLibrary2SearchEngine) searchEngine)
-                .searchCoverByKey(context, "olid", olid, cIdx, size);
+
+        if (covers[cIdx] != 0) {
+            return ((OpenLibrary2SearchEngine) searchEngine)
+                    .searchCoverByKey(context, "id", String.valueOf(covers[cIdx]), cIdx, size);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean mayHaveCover() {
+        return covers[0] != 0;
     }
 
     @Override
@@ -169,7 +190,6 @@ public class AltEditionOpenLibrary
         return publisher;
     }
 
-
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -177,6 +197,7 @@ public class AltEditionOpenLibrary
         dest.writeString(isbn);
         dest.writeString(langIso3);
         dest.writeString(publisher);
+        dest.writeLongArray(covers);
     }
 
     @Override
@@ -187,11 +208,12 @@ public class AltEditionOpenLibrary
     @Override
     @NonNull
     public String toString() {
-        return "Edition{"
+        return "AltEditionOpenLibrary{"
                + "olid=`" + olid + '`'
                + ", isbn=`" + isbn + '`'
                + ", langIso3=`" + langIso3 + '`'
                + ", publisher=`" + publisher + '`'
+               + ", covers=`" + Arrays.toString(covers) + '`'
                + '}';
     }
 }
