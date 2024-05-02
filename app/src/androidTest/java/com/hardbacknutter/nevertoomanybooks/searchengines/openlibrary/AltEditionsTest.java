@@ -27,7 +27,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -57,7 +56,7 @@ public class AltEditionsTest
 
     @Test
     public void fetchEditionsByIsbnTest()
-            throws SearchException, CredentialsException {
+            throws SearchException {
         final List<AltEditionOpenLibrary> isbnList = searchEngine
                 .fetchEditionsByIsbn(context, "9780141339092");
 
