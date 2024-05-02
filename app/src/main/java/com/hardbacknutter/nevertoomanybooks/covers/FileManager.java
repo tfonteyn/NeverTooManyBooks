@@ -175,9 +175,9 @@ public class FileManager {
                         final String isbn = edition.getIsbn();
                         if (isbn != null) {
                             try {
-                                @Nullable
-                                final Optional<String> oFileSpec =
-                                        se.searchCoverByIsbn(context, isbn, cIdx, size);
+                                final Optional<String> oFileSpec = edition
+                                        .searchCover(context, se, cIdx, size);
+
                                 if (oFileSpec.isPresent()) {
                                     final ImageFileInfo imageFileInfo =
                                             new ImageFileInfo(edition, oFileSpec.get(), size,

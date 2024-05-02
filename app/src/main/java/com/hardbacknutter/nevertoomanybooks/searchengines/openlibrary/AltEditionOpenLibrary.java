@@ -20,13 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Optional;
+
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 /**
  * Edition data is returned by {@code https://openlibrary.org/works/OL5725956W/editions.json}
@@ -127,18 +135,19 @@ public class AltEditionOpenLibrary
         publisher = in.readString();
     }
 
+    @NonNull
     @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(olid);
-        dest.writeString(isbn);
-        dest.writeString(langIso3);
-        dest.writeString(publisher);
-    }
+    public Optional<String> searchCover(@NonNull final Context context,
+                                        @NonNull final SearchEngine.CoverByIsbn searchEngine,
+                                        final int cIdx,
+                                        @Nullable final Size size)
+            throws SearchException, CredentialsException, StorageException {
 
-    @Override
-    public int describeContents() {
-        return 0;
+        if (isbn != null) {
+            return searchEngine.searchCoverByIsbn(context, isbn, cIdx, size);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @NonNull
@@ -162,6 +171,21 @@ public class AltEditionOpenLibrary
     @Nullable
     public String getPublisher() {
         return publisher;
+    }
+
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(olid);
+        dest.writeString(isbn);
+        dest.writeString(langIso3);
+        dest.writeString(publisher);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override

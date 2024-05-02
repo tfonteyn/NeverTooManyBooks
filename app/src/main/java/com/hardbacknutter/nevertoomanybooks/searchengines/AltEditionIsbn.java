@@ -20,11 +20,18 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Optional;
+
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 
 public class AltEditionIsbn
         implements AltEdition {
@@ -54,15 +61,19 @@ public class AltEditionIsbn
         isbn = in.readString();
     }
 
+    @NonNull
     @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(isbn);
-    }
+    public Optional<String> searchCover(@NonNull final Context context,
+                                        @NonNull final SearchEngine.CoverByIsbn searchEngine,
+                                        final int cIdx,
+                                        @Nullable final Size size)
+            throws SearchException, CredentialsException, StorageException {
 
-    @Override
-    public int describeContents() {
-        return 0;
+        if (isbn != null) {
+            return searchEngine.searchCoverByIsbn(context, isbn, cIdx, size);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -81,6 +92,17 @@ public class AltEditionIsbn
     @Override
     public String getLangIso3() {
         return null;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(isbn);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override

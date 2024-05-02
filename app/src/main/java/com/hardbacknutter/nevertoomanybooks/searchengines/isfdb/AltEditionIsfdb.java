@@ -19,19 +19,27 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Optional;
+
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
 
 /**
  * A value class for holding the ISFDB book id and its (optional) Document (web page).
- *
+ * <p>
  * IMPORTANT: {@link #document} is NOT parcelled. This is acceptable as all code
  * will assume the it's potentially {@code null} and (re)fetch it when needed.
  */
@@ -112,19 +120,21 @@ public class AltEditionIsfdb
         langIso3 = in.readString();
     }
 
+    @NonNull
     @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(isbn);
-        dest.writeLong(isfdbId);
-        dest.writeString(publisher);
-        dest.writeString(langIso3);
+    public Optional<String> searchCover(@NonNull final Context context,
+                                        @NonNull final SearchEngine.CoverByIsbn searchEngine,
+                                        final int cIdx,
+                                        @Nullable final Size size)
+            throws SearchException, CredentialsException, StorageException {
+
+        if (isbn != null) {
+            return searchEngine.searchCoverByIsbn(context, isbn, cIdx, size);
+        } else {
+            return Optional.empty();
+        }
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
     @Nullable
     public Document getDocument() {
@@ -155,6 +165,20 @@ public class AltEditionIsfdb
     @Nullable
     public String getLangIso3() {
         return langIso3;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(isbn);
+        dest.writeLong(isfdbId);
+        dest.writeString(publisher);
+        dest.writeString(langIso3);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override

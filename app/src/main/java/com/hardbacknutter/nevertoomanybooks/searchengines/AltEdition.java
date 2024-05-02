@@ -20,9 +20,18 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Optional;
+
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 
 public interface AltEdition
         extends Parcelable {
@@ -35,4 +44,20 @@ public interface AltEdition
 
     @Nullable
     String getLangIso3();
+
+    /**
+     * Get a single cover image of the specified size.
+     *
+     * @param context Current context
+     * @param cIdx    0..n image index
+     * @param size    of image to get.
+     *
+     * @return fileSpec
+     */
+    @NonNull
+    Optional<String> searchCover(@NonNull Context context,
+                                 @NonNull SearchEngine.CoverByIsbn searchEngine,
+                                 @IntRange(from = 0, to = 1) int cIdx,
+                                 @Nullable Size size)
+            throws SearchException, CredentialsException, StorageException;
 }
