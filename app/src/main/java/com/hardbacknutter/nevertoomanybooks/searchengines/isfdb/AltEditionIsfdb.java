@@ -19,6 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,22 +31,36 @@ import org.jsoup.nodes.Document;
 
 /**
  * A value class for holding the ISFDB book id and its (optional) Document (web page).
+ *
+ * IMPORTANT: {@link #document} is NOT parcelled. This is acceptable as all code
+ * will assume the it's potentially {@code null} and (re)fetch it when needed.
  */
 public class AltEditionIsfdb
         implements AltEdition {
 
+    /** {@link Parcelable}. */
+    public static final Creator<AltEditionIsfdb> CREATOR = new Creator<>() {
+        @Override
+        @NonNull
+        public AltEditionIsfdb createFromParcel(@NonNull final Parcel in) {
+            return new AltEditionIsfdb(in);
+        }
+
+        @Override
+        @NonNull
+        public AltEditionIsfdb[] newArray(final int size) {
+            return new AltEditionIsfdb[size];
+        }
+    };
+
     @Nullable
     private final String isbn;
-
     /** The ISFDB book ID. */
     private final long isfdbId;
-
     @Nullable
     private final String publisher;
-
     @Nullable
     private final String langIso3;
-
     /**
      * If a fetch of editions resulted in a single book returned (via redirects),
      * then the doc is kept here for immediate processing.
@@ -86,6 +103,27 @@ public class AltEditionIsfdb
         this.publisher = null;
         this.langIso3 = null;
         this.document = document;
+    }
+
+    private AltEditionIsfdb(@NonNull final Parcel in) {
+        isbn = in.readString();
+        isfdbId = in.readLong();
+        publisher = in.readString();
+        langIso3 = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(isbn);
+        dest.writeLong(isfdbId);
+        dest.writeString(publisher);
+        dest.writeString(langIso3);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Nullable

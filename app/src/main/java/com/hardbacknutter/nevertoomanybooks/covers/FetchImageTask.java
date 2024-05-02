@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,12 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 /**
  * Fetch an image from the {@link FileManager}.
@@ -43,10 +42,9 @@ class FetchImageTask
     private static final String TAG = "FetchImageTask";
 
     @NonNull
-    private final String isbn;
-
-    @NonNull
     private final FileManager fileManager;
+    @NonNull
+    private final AltEdition edition;
     /** Image index we're handling. */
     @IntRange(from = 0, to = 1)
     private final int cIdx;
@@ -57,7 +55,7 @@ class FetchImageTask
      * Constructor.
      *
      * @param taskId       a task identifier, will be returned in the task listener.
-     * @param validIsbn    to search for, <strong>must</strong> be valid.
+     * @param edition    to search for
      * @param cIdx         0..n image index
      * @param fileManager  for downloads
      * @param taskListener to send results to
@@ -66,21 +64,16 @@ class FetchImageTask
      */
     @UiThread
     FetchImageTask(final int taskId,
-                   @NonNull final String validIsbn,
+                   @NonNull final AltEdition edition,
                    @IntRange(from = 0, to = 1) final int cIdx,
                    @NonNull final FileManager fileManager,
                    @NonNull final TaskListener<ImageFileInfo> taskListener,
                    @NonNull final Size... sizes) {
         super(taskId, TAG, taskListener);
+        this.edition = edition;
         this.cIdx = cIdx;
         this.sizes = sizes;
 
-        // sanity check
-        if (BuildConfig.DEBUG /* always */) {
-            ISBN.requireValidIsbn(validIsbn);
-        }
-
-        isbn = validIsbn;
         this.fileManager = fileManager;
     }
 
@@ -98,14 +91,14 @@ class FetchImageTask
         // We need to catch the exceptions we really want to thrown, but catch all others.
         //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
-            return fileManager.search(context, this, isbn, cIdx, sizes);
+            return fileManager.search(context, this, edition, cIdx, sizes);
 
         } catch (@NonNull final StorageException e) {
             throw e;
 
         } catch (@NonNull final Exception ignore) {
             // failing is ok, but we need to return the isbn + null fileSpec
-            return new ImageFileInfo(isbn);
+            return new ImageFileInfo(edition);
         }
     }
 }

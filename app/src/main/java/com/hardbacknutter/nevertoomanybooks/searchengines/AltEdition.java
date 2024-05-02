@@ -20,9 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
-public interface AltEdition {
+public interface AltEdition
+        extends Parcelable {
 
     @Nullable
     String getIsbn();

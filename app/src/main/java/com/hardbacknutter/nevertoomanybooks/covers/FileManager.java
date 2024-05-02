@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -64,7 +65,8 @@ public class FileManager {
      * key = isbn
      */
     @NonNull
-    private final Map<String, ImageFileInfo> files = Collections.synchronizedMap(new HashMap<>());
+    private final Map<AltEdition, ImageFileInfo> files =
+            Collections.synchronizedMap(new HashMap<>());
 
     /** The sites the user wants to search for cover images. */
     private final List<EngineId> engineIds;
@@ -81,15 +83,15 @@ public class FileManager {
     /**
      * Get the requested ImageFileInfo.
      *
-     * @param isbn to search
+     * @param edition to search
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec,
      *         or {@code null} if there is no cached file at all
      */
     @Nullable
     @AnyThread
-    ImageFileInfo getFileInfo(@NonNull final String isbn) {
-        return files.get(isbn);
+    ImageFileInfo getFileInfo(@NonNull final AltEdition edition) {
+        return files.get(edition);
     }
 
     /**
@@ -103,7 +105,7 @@ public class FileManager {
      *
      * @param context          Current context
      * @param progressListener to check for any cancellations
-     * @param isbn             to search for, <strong>must</strong> be valid.
+     * @param edition             to search for
      * @param cIdx             0..n image index
      * @param sizes            a list of images sizes in order of preference
      *
@@ -116,7 +118,7 @@ public class FileManager {
     @WorkerThread
     public ImageFileInfo search(@NonNull final Context context,
                                 @NonNull final ProgressListener progressListener,
-                                @NonNull final String isbn,
+                                @NonNull final AltEdition edition,
                                 @IntRange(from = 0, to = 1) final int cIdx,
                                 @NonNull final Size... sizes)
             throws StorageException, CredentialsException {
@@ -132,11 +134,11 @@ public class FileManager {
         // If none respond with that size, try the next size inline.
         for (final Size size : sizes) {
             if (progressListener.isCancelled()) {
-                return new ImageFileInfo(isbn);
+                return new ImageFileInfo(edition);
             }
 
             // Do we already have a file previously downloaded?
-            final ImageFileInfo previous = files.get(isbn);
+            final ImageFileInfo previous = files.get(edition);
             if (previous != null && previous.isUsable(size)) {
                 return previous;
             }
@@ -146,7 +148,7 @@ public class FileManager {
                 if (currentSearch.contains(engineId)) {
 
                     if (progressListener.isCancelled()) {
-                        return new ImageFileInfo(isbn);
+                        return new ImageFileInfo(edition);
                     }
 
                     // Is this Site's SearchEngine available and suitable?
@@ -165,38 +167,42 @@ public class FileManager {
                             LoggerFactory.getLogger()
                                          .d(TAG, "search|SEARCHING",
                                             "searchEngine=" + se.getName(context),
-                                            "isbn=" + isbn,
+                                            "edition=" + edition,
                                             "cIdx=" + cIdx,
                                             "size=" + size);
                         }
 
-                        try {
-                            @Nullable
-                            final Optional<String> oFileSpec =
-                                    se.searchCoverByIsbn(context, isbn, cIdx, size);
-                            if (oFileSpec.isPresent()) {
-                                final ImageFileInfo imageFileInfo =
-                                        new ImageFileInfo(isbn, oFileSpec.get(), size, engineId);
-                                files.put(isbn, imageFileInfo);
+                        final String isbn = edition.getIsbn();
+                        if (isbn != null) {
+                            try {
+                                @Nullable
+                                final Optional<String> oFileSpec =
+                                        se.searchCoverByIsbn(context, isbn, cIdx, size);
+                                if (oFileSpec.isPresent()) {
+                                    final ImageFileInfo imageFileInfo =
+                                            new ImageFileInfo(edition, oFileSpec.get(), size,
+                                                              engineId);
+                                    files.put(edition, imageFileInfo);
+
+                                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                                        LoggerFactory.getLogger()
+                                                     .d(TAG, "search|SUCCESS",
+                                                        "searchEngine=" + se.getName(context),
+                                                        "imageFileInfo=" + imageFileInfo);
+                                    }
+                                    // abort search, we got an image
+                                    return imageFileInfo;
+                                }
+                            } catch (@NonNull final SearchException e) {
+                                // ignore, don't let a single search break the loop.
+                                // but disable the engine for THIS search
+                                currentSearch.remove(engineId);
 
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                     LoggerFactory.getLogger()
-                                                 .d(TAG, "search|SUCCESS",
-                                                    "searchEngine=" + se.getName(context),
-                                                    "imageFileInfo=" + imageFileInfo);
+                                                 .d(TAG, "search|FAILED",
+                                                    "searchEngine=" + se.getName(context), e);
                                 }
-                                // abort search, we got an image
-                                return imageFileInfo;
-                            }
-                        } catch (@NonNull final SearchException e) {
-                            // ignore, don't let a single search break the loop.
-                            // but disable the engine for THIS search
-                            currentSearch.remove(engineId);
-
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                                LoggerFactory.getLogger()
-                                             .d(TAG, "search|FAILED",
-                                                "searchEngine=" + se.getName(context), e);
                             }
                         }
 
@@ -204,7 +210,7 @@ public class FileManager {
                             LoggerFactory.getLogger()
                                          .d(TAG, "search|NO FILE",
                                             "searchEngine=" + se.getName(context),
-                                            "isbn=" + isbn,
+                                            "edition=" + edition,
                                             "cIdx=" + cIdx,
                                             "size=" + size);
                         }
@@ -226,12 +232,12 @@ public class FileManager {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            LoggerFactory.getLogger().d(TAG, "search|FAILED|isbn=" + isbn);
+            LoggerFactory.getLogger().d(TAG, "search|FAILED|edition=" + edition);
         }
 
         // Failed to find any size on all sites, record the failure to prevent future attempt
-        final ImageFileInfo failure = new ImageFileInfo(isbn);
-        files.put(isbn, failure);
+        final ImageFileInfo failure = new ImageFileInfo(edition);
+        files.put(edition, failure);
         return failure;
     }
 

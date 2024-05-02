@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 /**
@@ -56,7 +57,7 @@ public class ImageFileInfo
     };
     private static final String TAG = "ImageFileInfo";
     @NonNull
-    private final String isbn;
+    private final AltEdition edition;
     @Nullable
     private final Size size;
     @Nullable
@@ -67,10 +68,10 @@ public class ImageFileInfo
     /**
      * Constructor. No file.
      *
-     * @param isbn of the book for this cover
+     * @param edition of the book for this cover
      */
-    ImageFileInfo(@NonNull final String isbn) {
-        this.isbn = isbn;
+    ImageFileInfo(@NonNull final AltEdition edition) {
+        this.edition = edition;
         fileSpec = null;
         size = null;
         engineId = null;
@@ -79,16 +80,16 @@ public class ImageFileInfo
     /**
      * Constructor.
      *
-     * @param isbn     of the book for this cover
+     * @param edition of the book for this cover
      * @param fileSpec (optional) of the cover file
      * @param size     (optional) size
      * @param engineId the search engine id
      */
-    ImageFileInfo(@NonNull final String isbn,
+    ImageFileInfo(@NonNull final AltEdition edition,
                   @Nullable final String fileSpec,
                   @Nullable final Size size,
                   @NonNull final EngineId engineId) {
-        this.isbn = isbn;
+        this.edition = edition;
         this.fileSpec = fileSpec;
         this.size = size;
         this.engineId = engineId;
@@ -101,7 +102,7 @@ public class ImageFileInfo
      */
     private ImageFileInfo(@NonNull final Parcel in) {
         //noinspection DataFlowIssue
-        isbn = in.readString();
+        edition = in.readParcelable(getClass().getClassLoader());
         fileSpec = in.readString();
         engineId = in.readParcelable(getClass().getClassLoader());
         size = in.readParcelable(getClass().getClassLoader());
@@ -110,15 +111,15 @@ public class ImageFileInfo
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeString(isbn);
+        dest.writeParcelable(edition, flags);
         dest.writeString(fileSpec);
         dest.writeParcelable(engineId, flags);
         dest.writeParcelable(size, flags);
     }
 
     @NonNull
-    public String getIsbn() {
-        return isbn;
+    public AltEdition getEdition() {
+        return edition;
     }
 
     @Nullable
@@ -194,7 +195,7 @@ public class ImageFileInfo
     @Override
     public String toString() {
         return "ImageFileInfo{"
-               + "isbn=`" + isbn + '`'
+               + "isbn=`" + edition + '`'
                + ", size=" + size
                + ", engineId=" + engineId
                + ", fileSpec=`"

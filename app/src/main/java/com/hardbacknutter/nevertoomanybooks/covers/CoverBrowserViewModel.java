@@ -81,7 +81,7 @@ public class CoverBrowserViewModel
      * Holder for all active tasks, so we can cancel them if needed.
      * key: isbn.
      */
-    private final Map<String, FetchImageTask> galleryTasks = new HashMap<>();
+    private final Map<AltEdition, FetchImageTask> galleryTasks = new HashMap<>();
     /** Editions. */
     private final SearchEditionsTask searchEditionsTask = new SearchEditionsTask();
     /** List of alternative editions. The base list for the gallery adapter. */
@@ -294,31 +294,31 @@ public class CoverBrowserViewModel
     /**
      * wrapper for {@link FileManager#getFileInfo}.
      *
-     * @param isbn to search
+     * @param edition to search
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec,
      *         or {@code null} if there is no cached file at all
      */
     @Nullable
-    ImageFileInfo getFileInfo(@NonNull final String isbn) {
-        return fileManager.getFileInfo(isbn);
+    ImageFileInfo getFileInfo(@NonNull final AltEdition edition) {
+        return fileManager.getFileInfo(edition);
     }
 
     /**
      * Start a task to fetch a Gallery image.
      *
-     * @param isbn to search for, <strong>must</strong> be valid.
+     * @param edition to search
      */
-    void fetchGalleryImage(@NonNull final String isbn) {
+    void fetchGalleryImage(@NonNull final AltEdition edition) {
         synchronized (galleryTasks) {
-            if (!galleryTasks.containsKey(isbn)) {
+            if (!galleryTasks.containsKey(edition)) {
                 final FetchImageTask task =
-                        new FetchImageTask(taskIdCounter.getAndIncrement(), isbn, cIdx,
+                        new FetchImageTask(taskIdCounter.getAndIncrement(), edition, cIdx,
                                            fileManager, taskListener,
                                            Size.SMALL_FIRST);
                 task.setExecutor(galleryNetworkExecutor);
 
-                galleryTasks.put(isbn, task);
+                galleryTasks.put(edition, task);
                 task.start();
 
                 final Boolean isShowing = showGalleryProgress.getValue();
@@ -359,7 +359,7 @@ public class CoverBrowserViewModel
             selectedImageTask.cancel();
         }
         selectedImageTask = new FetchImageTask(R.id.TASK_ID_PREVIEW_IMAGE,
-                                               imageFileInfo.getIsbn(), cIdx,
+                                               imageFileInfo.getEdition(), cIdx,
                                                fileManager, taskListener,
                                                Size.LARGE_FIRST);
 

@@ -118,14 +118,14 @@ class CoverBrowserDelegate
         }
 
         @Override
-        public void fetchGalleryImage(@NonNull final String isbn) {
-            vm.fetchGalleryImage(isbn);
+        public void fetchGalleryImage(@NonNull final AltEdition edition) {
+            vm.fetchGalleryImage(edition);
         }
 
         @Nullable
         @Override
-        public ImageFileInfo getFileInfo(@NonNull final String isbn) {
-            return vm.getFileInfo(isbn);
+        public ImageFileInfo getFileInfo(@NonNull final AltEdition edition) {
+            return vm.getFileInfo(edition);
         }
     };
 
@@ -291,17 +291,11 @@ class CoverBrowserDelegate
     private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
         Objects.requireNonNull(galleryAdapter, ERROR_GALLERY_ADAPTER);
 
-        int editionIndex = -1;
+        final int editionIndex;
         if (imageFileInfo != null) {
-            final String isbn = imageFileInfo.getIsbn();
-
-            final List<AltEdition> editions = vm.getEditions();
-            for (int i = 0; i < editions.size(); i++) {
-                if (isbn.equals(editions.get(i).getIsbn())) {
-                    editionIndex = i;
-                    break;
-                }
-            }
+            editionIndex = vm.getEditions().indexOf(imageFileInfo.getEdition());
+        } else {
+            editionIndex = -1;
         }
 
         if (editionIndex >= 0) {
@@ -371,20 +365,20 @@ class CoverBrowserDelegate
         /**
          * Start a task to fetch a Gallery image.
          *
-         * @param isbn to search for, <strong>must</strong> be valid.
+         * @param edition to search
          */
-        void fetchGalleryImage(@NonNull String isbn);
+        void fetchGalleryImage(@NonNull AltEdition edition);
 
         /**
          * Get the requested ImageFileInfo.
          *
-         * @param isbn to search
+         * @param edition to search
          *
          * @return a {@link ImageFileInfo} object with or without a valid fileSpec,
          *         or {@code null} if there is no cached file at all
          */
         @Nullable
-        ImageFileInfo getFileInfo(@NonNull String isbn);
+        ImageFileInfo getFileInfo(@NonNull AltEdition edition);
     }
 
     /**
@@ -462,20 +456,20 @@ class CoverBrowserDelegate
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final String isbn = items.get(position).getIsbn();
+            final AltEdition altEdition = items.get(position);
 
             //URGENT: can't cope with null ISBN's for now; but they should have been stripped
             // by the time we get here
-            Objects.requireNonNull(isbn, "URGENT: ");
+            Objects.requireNonNull(altEdition.getIsbn(), "URGENT: ");
 
-            final ImageFileInfo imageFileInfo = positionHandler.getFileInfo(isbn);
+            final ImageFileInfo imageFileInfo = positionHandler.getFileInfo(altEdition);
 
             if (imageFileInfo == null) {
                 // not in the cache,; use a placeholder but preserve the available space
                 imageLoader.placeholder(holder.vb.coverImage0,
                                         R.drawable.ic_baseline_image_24);
                 // and queue a request for it.
-                positionHandler.fetchGalleryImage(isbn);
+                positionHandler.fetchGalleryImage(altEdition);
                 holder.vb.lblSite.setText("");
                 holder.vb.coverImage0.setOnClickListener(null);
 
