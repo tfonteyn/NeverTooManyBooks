@@ -115,11 +115,13 @@ public class AltEditionOpenLibrary
         return isbn;
     }
 
+    @Override
     @Nullable
     public String getLangIso3() {
         return langIso3;
     }
 
+    @Override
     @Nullable
     public String getPublisher() {
         return publisher;

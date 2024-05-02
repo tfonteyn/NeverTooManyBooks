@@ -33,10 +33,22 @@ public class AltEditionIsbn
         this.isbn = isbn;
     }
 
-    @Nullable
     @Override
+    @Nullable
     public String getIsbn() {
         return isbn;
+    }
+
+    @Nullable
+    @Override
+    public String getPublisher() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getLangIso3() {
+        return null;
     }
 
     @Override

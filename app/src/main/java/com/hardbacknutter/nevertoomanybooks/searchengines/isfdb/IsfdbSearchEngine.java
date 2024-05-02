@@ -1180,8 +1180,8 @@ public class IsfdbSearchEngine
 
         if (pageUrl.contains(CGI_PL)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
-            editions.add(
-                    new AltEditionIsfdb(stripNumber(pageUrl, '?'), searchForIsbn, null, document));
+            editions.add(new AltEditionIsfdb(stripNumber(pageUrl, '?'),
+                                             searchForIsbn, document));
 
         } else if (pageUrl.contains(CGI_TITLE)
                    || pageUrl.contains(CGI_SE)
@@ -1191,7 +1191,14 @@ public class IsfdbSearchEngine
             // - direct link to the "title" of the publication; i.e. 'show the editions'
             // - search or advanced-search for the title.
 
-            // Editions are shown by language; hence we can extract the language from the header.
+            // Editions are shown by language; hence we can extract the language from the header:
+            // Title: The Five Gold Bands Title Record # 11169 [Edit] [Edit History]
+            // Author: Jack Vance
+            // Date: 1953-00-00
+            // Type: NOVEL
+            // Webpages: Wikipedia-EN
+            // Language: English
+            // ...
             String lang = null;
             final Element header = document.selectFirst("div.ContentBox");
             if (header != null) {
@@ -1231,11 +1238,18 @@ public class IsfdbSearchEngine
 
                 for (final Element tr : entries) {
                     // 1st column: Title == the book link
-                    final Element edLink = tr.child(0).select("a").first();
+                    final Element edLink = tr.child(0).selectFirst("a");
                     if (edLink != null) {
                         final String url = edLink.attr("href");
                         if (!url.isEmpty()) {
+                            String publisher = null;
                             String isbnStr = null;
+
+                            // 3rd column: the publisher
+                            final Element pa = tr.child(3).selectFirst("a");
+                            if (pa != null) {
+                                publisher = pa.text();
+                            }
                             // 4th column: the ISBN/Catalog ID.
                             final String catNr = tr.child(4).text();
                             if (catNr.length() > 9) {
@@ -1244,7 +1258,8 @@ public class IsfdbSearchEngine
                                     isbnStr = isbn.asText();
                                 }
                             }
-                            editions.add(new AltEditionIsfdb(stripNumber(url, '?'), isbnStr, lang));
+                            editions.add(new AltEditionIsfdb(stripNumber(url, '?'),
+                                                             isbnStr, publisher, lang));
                         }
                     }
                 }

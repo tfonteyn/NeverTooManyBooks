@@ -38,6 +38,12 @@ public class AltEditionIsfdb
     /** The ISFDB book ID. */
     private final long isfdbId;
 
+    @Nullable
+    private final String publisher;
+
+    @Nullable
+    private final String langIso3;
+
     /**
      * If a fetch of editions resulted in a single book returned (via redirects),
      * then the doc is kept here for immediate processing.
@@ -45,21 +51,22 @@ public class AltEditionIsfdb
      */
     @Nullable
     private Document document;
-    @Nullable
-    private final String langIso3;
 
     /**
      * Constructor: we found a link to a book.
      *
-     * @param isfdbId  of the book we found
-     * @param isbn     of the book we found (as read from the site)
-     * @param langIso3 the iso3 code for the language of this edition
+     * @param isfdbId   of the book we found
+     * @param isbn      of the book we found (as read from the site)
+     * @param publisher of the book we found (as read from the site)
+     * @param langIso3  the iso3 code for the language of this edition
      */
     AltEditionIsfdb(final long isfdbId,
                     @Nullable final String isbn,
+                    @Nullable final String publisher,
                     @Nullable final String langIso3) {
         this.isfdbId = isfdbId;
         this.isbn = isbn;
+        this.publisher = publisher;
         this.langIso3 = langIso3;
         document = null;
     }
@@ -68,18 +75,17 @@ public class AltEditionIsfdb
      * Constructor: we found a single edition, the doc contains the book for further processing.
      *
      * @param isfdbId  of the book we found
-     * @param isbn     of the book we <strong>searched</strong>
-     * @param langIso3 the 3 character ISO language code of the book we found
+     * @param isbn     we <strong>searched on</strong>
      * @param document the JSoup document of the book we found
      */
     AltEditionIsfdb(final long isfdbId,
                     @Nullable final String isbn,
-                    @Nullable final String langIso3,
                     @Nullable final Document document) {
         this.isfdbId = isfdbId;
         this.isbn = isbn;
+        this.publisher = null;
+        this.langIso3 = null;
         this.document = document;
-        this.langIso3 = langIso3;
     }
 
     @Nullable
@@ -91,6 +97,7 @@ public class AltEditionIsfdb
         document = null;
     }
 
+    @Override
     @Nullable
     public String getIsbn() {
         return isbn;
@@ -100,6 +107,13 @@ public class AltEditionIsfdb
         return isfdbId;
     }
 
+    @Override
+    @Nullable
+    public String getPublisher() {
+        return publisher;
+    }
+
+    @Override
     @Nullable
     public String getLangIso3() {
         return langIso3;
@@ -111,6 +125,7 @@ public class AltEditionIsfdb
         return "Edition{"
                + "isfdbId=" + isfdbId
                + ", isbn=`" + isbn + '`'
+               + ", publisher=`" + publisher + '`'
                + ", langIso3=`" + langIso3 + '`'
                + ", document?=" + (document != null)
                + '}';

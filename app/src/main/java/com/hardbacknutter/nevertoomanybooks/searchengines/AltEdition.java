@@ -22,9 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.Nullable;
 
-@FunctionalInterface
 public interface AltEdition {
 
     @Nullable
     String getIsbn();
+
+    @Nullable
+    String getPublisher();
+
+    @Nullable
+    String getLangIso3();
 }
