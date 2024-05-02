@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
  * The sites are contacted one by one, in the order as set in user preferences.
  */
 public class SearchEditionsTask
-        extends MTask<Collection<String>> {
+        extends MTask<Collection<AltEdition>> {
 
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
@@ -78,15 +78,15 @@ public class SearchEditionsTask
     @NonNull
     @Override
     @WorkerThread
-    protected Collection<String> doWork()
+    protected Collection<AltEdition> doWork()
             throws NetworkUnavailableException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
 
         // keep the order, but eliminate duplicates.
-        final Collection<String> isbnList = new LinkedHashSet<>();
+        final Collection<AltEdition> editions = new LinkedHashSet<>();
         // Always add the original isbn!
-        isbnList.add(isbn);
+        editions.add(new AltEditionIsbn(isbn));
 
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             throw new NetworkUnavailableException(this.getClass().getName());
@@ -104,8 +104,8 @@ public class SearchEditionsTask
                         // can we reach the site ?
                         searchEngine.ping(context);
 
-                        isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                                .searchAlternativeEditions(context, isbn));
+                        editions.addAll(((SearchEngine.AlternativeEditions<? extends AltEdition>)
+                                searchEngine).searchAlternativeEditions(context, isbn));
 
                     } catch (@NonNull final IOException
                                             | CredentialsException
@@ -117,6 +117,6 @@ public class SearchEditionsTask
                                                             + searchEngine.getName(context));
                     }
                 });
-        return isbnList;
+        return editions;
     }
 }

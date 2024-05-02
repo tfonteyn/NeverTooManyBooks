@@ -490,15 +490,15 @@ public enum EngineId
                 // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
                 type.addSite(Amazon, true);
                 type.addSite(Isfdb, true);
+                type.addSite(OpenLibrary, true);
                 type.addSite(KbNl, activateIfDutch);
-                // Deactivated by default as this site lacks many covers.
-                type.addSite(OpenLibrary, false);
                 break;
             }
             case AltEditions: {
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
-                type.addSite(LibraryThing, true);
+                type.addSite(OpenLibrary, true);
                 type.addSite(Isfdb, true);
+                type.addSite(LibraryThing, true);
                 break;
             }
 

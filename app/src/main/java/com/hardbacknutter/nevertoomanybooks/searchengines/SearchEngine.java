@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -321,22 +321,22 @@ public interface SearchEngine
 
     /** Optional. */
     @FunctionalInterface
-    interface AlternativeEditions {
+    interface AlternativeEditions<T extends AltEdition> {
 
         /**
-         * Find alternative editions (their ISBN) for the given ISBN.
+         * Find alternative editions for the given ISBN.
          *
          * @param context   Current context
          * @param validIsbn to search for, <strong>must</strong> be valid.
          *
-         * @return a list of isbn numbers for alternative editions of the original, can be empty.
+         * @return a list of {@link T} alternative editions, can be empty.
          *
          * @throws CredentialsException on authentication/login failures
          * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @NonNull
-        List<String> searchAlternativeEditions(@NonNull Context context,
+        List<T> searchAlternativeEditions(@NonNull Context context,
                                                @NonNull String validIsbn)
                 throws SearchException,
                        CredentialsException;
