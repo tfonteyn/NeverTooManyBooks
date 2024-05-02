@@ -74,7 +74,8 @@ public class OpenLibrary2SearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
-                   SearchEngine.CoverByIsbn {
+                   SearchEngine.CoverByIsbn,
+                   SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
     private static final String BASE_BOOK_URL = "/search.json?q=%1$s" +
                                                 "&fields=key,editions";
@@ -808,5 +809,189 @@ public class OpenLibrary2SearchEngine
         if (a != null && !a.isEmpty()) {
             book.putString(DBKey.SID_OCLC, a.getString(0));
         }
+    }
+
+    /**
+     * {@code https://openlibrary.org/isbn/9780141339092.json}
+     * => redirects to: {@code https://openlibrary.org/books/OL27104332M.json}
+     * <pre>
+     *     {
+     *      ...
+     *      "works": [
+     *          {
+     *              "key": "/works/OL5725956W"
+     *          }
+     *      ],
+     *   ...
+     *   }
+     * </pre>
+     * Now issue: {@code https://openlibrary.org/works/OL5725956W/editions.json}
+     * and continue in {@link #parseWorks(JSONObject)}.
+     *
+     * @param context   Current context
+     * @param validIsbn to search for, <strong>must</strong> be valid.
+     */
+    @NonNull
+    @Override
+    public List<AltEditionOpenLibrary> searchAlternativeEditions(@NonNull final Context context,
+                                                                 @NonNull final String validIsbn)
+            throws SearchException, CredentialsException {
+
+        return fetchEditionsByIsbn(context, validIsbn);
+    }
+
+    @VisibleForTesting
+    @NonNull
+    List<AltEditionOpenLibrary> fetchEditionsByIsbn(@NonNull final Context context,
+                                                    @NonNull final String validIsbn)
+            throws SearchException {
+        futureHttpGet = createFutureGetRequest(context);
+
+        String url = getHostUrl(context) + "/isbn/" + validIsbn + ".json";
+
+        String response;
+        try {
+            // get and store the result into a string.
+            response = futureHttpGet.get(url, (con, is) -> readResponseStream(is));
+
+            final JSONObject jsonObject = new JSONObject(response);
+            final JSONArray works = jsonObject.optJSONArray("works");
+            if (works != null && !works.isEmpty()) {
+                final String worksKey = works.getJSONObject(0).optString("key");
+                url = getHostUrl(context) + worksKey + "/editions.json";
+                response = futureHttpGet.get(url, (con, is) -> readResponseStream(is));
+                return parseWorks(new JSONObject(response));
+            }
+        } catch (@NonNull final StorageException | IOException | JSONException e) {
+            throw new SearchException(getEngineId(), e);
+        } finally {
+            futureHttpGet = null;
+        }
+
+        return List.of();
+    }
+
+    /**
+     * <pre>
+     *     {
+     *         ...
+     *         "size": 87,
+     *          "entries": [
+     *     {
+     *       "works": [
+     *         {
+     *           "key": "/works/OL5725956W"
+     *         }
+     *       ],
+     *       "title": "Artemis Fowl",
+     *       "publishers": [
+     *         "Carlsen"
+     *       ],
+     *       "publish_date": "2009",
+     *       "key": "/books/OL49350279M",
+     *       "type": {
+     *         "key": "/type/edition"
+     *       },
+     *       "identifiers": {},
+     *       "covers": [
+     *         14414864
+     *       ],
+     *       "isbn_13": [
+     *         "9783551357793"
+     *       ],
+     *       "classifications": {},
+     *       "physical_format": "Taschenbuch",
+     *       "translation_of": "Artemis Fowl",
+     *       "languages": [
+     *         {
+     *           "key": "/languages/ger"
+     *         }
+     *       ],
+     *       "copyright_date": "2001; 2003, 2004",
+     *       "edition_name": "2. Auflage",
+     *       "translated_from": [
+     *         {
+     *           "key": "/languages/eng"
+     *         }
+     *       ],
+     *       "number_of_pages": 237,
+     *       "latest_revision": 3,
+     *       "revision": 3,
+     *       "created": {
+     *         "type": "/type/datetime",
+     *         "value": "2023-08-26T12:46:10.568538"
+     *       },
+     *       "last_modified": {
+     *         "type": "/type/datetime",
+     *         "value": "2023-08-26T12:48:34.820086"
+     *       }
+     *     },
+     *     .... and 86 more
+     *     }
+     * </pre>
+     *
+     * @param works object
+     *
+     * @return the list with Editions.
+     */
+    @NonNull
+    private List<AltEditionOpenLibrary> parseWorks(@NonNull final JSONObject works) {
+        final int size = works.optInt("size");
+        if (size <= 0) {
+            return List.of();
+        }
+
+        final JSONArray entries = works.optJSONArray("entries");
+        if (entries == null || entries.isEmpty()) {
+            return List.of();
+        }
+
+        final List<AltEditionOpenLibrary> editionList = new ArrayList<>();
+
+        for (int i = 0; i < entries.length(); i++) {
+            final JSONObject work = entries.optJSONObject(i);
+            if (work != null) {
+                String olid;
+                String isbn = null;
+                String langIso3 = null;
+                String publisher = null;
+                JSONArray a;
+
+                olid = work.optString("key");
+                if (olid != null && olid.startsWith("/books/")) {
+                    olid = olid.substring("/books/".length());
+                }
+
+                a = work.optJSONArray("isbn_13");
+                if (a != null && !a.isEmpty()) {
+                    isbn = a.optString(0);
+                }
+                if (isbn == null || isbn.isEmpty()) {
+                    a = work.optJSONArray("isbn_10");
+                    if (a != null && !a.isEmpty()) {
+                        isbn = a.optString(0);
+                    }
+                }
+
+                a = work.optJSONArray("languages");
+                if (a != null && !a.isEmpty()) {
+                    langIso3 = a.optString(0);
+                    if (langIso3 != null && langIso3.startsWith("/languages/")) {
+                        langIso3 = langIso3.substring("/languages/".length());
+                    }
+                }
+                a = work.optJSONArray("publishers");
+                if (a != null && !a.isEmpty()) {
+                    publisher = a.optString(0);
+                }
+
+
+                if (olid != null && !olid.isEmpty()) {
+                    editionList.add(new AltEditionOpenLibrary(olid, isbn, langIso3, publisher));
+                }
+            }
+        }
+
+        return editionList;
     }
 }
