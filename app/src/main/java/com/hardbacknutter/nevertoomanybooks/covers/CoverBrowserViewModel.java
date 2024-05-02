@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -81,9 +82,9 @@ public class CoverBrowserViewModel
     private final Map<String, FetchImageTask> galleryTasks = new HashMap<>();
     /** Editions. */
     private final SearchEditionsTask searchEditionsTask = new SearchEditionsTask();
-    /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
+    /** List of alternative editions. The base list for the gallery adapter. */
     @NonNull
-    private final List<String> editions = new ArrayList<>();
+    private final List<AltEdition> editions = new ArrayList<>();
 
     /** SelectedImage. */
     @Nullable
@@ -241,7 +242,7 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    public List<String> getEditions() {
+    public List<AltEdition> getEditions() {
         // used directly
         return editions;
     }
@@ -249,9 +250,9 @@ public class CoverBrowserViewModel
     /**
      * Set the given list as the editions list.
      *
-     * @param list with ISBN numbers
+     * @param list editions
      */
-    public void setEditions(@Nullable final Collection<String> list) {
+    public void setEditions(@Nullable final Collection<AltEdition> list) {
         editions.clear();
         if (list != null && !list.isEmpty()) {
             editions.addAll(list);
@@ -358,7 +359,7 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<Collection<String>>> onSearchEditionsTaskFinished() {
+    LiveData<LiveDataEvent<Collection<AltEdition>>> onSearchEditionsTaskFinished() {
         return searchEditionsTask.onFinished();
     }
 
@@ -373,7 +374,7 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<Collection<String>>> onSearchEditionsTaskCancelled() {
+    LiveData<LiveDataEvent<Collection<AltEdition>>> onSearchEditionsTaskCancelled() {
         return searchEditionsTask.onCancelled();
     }
 
