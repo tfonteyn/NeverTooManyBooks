@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -780,7 +777,7 @@
     <string name="pt_dialog_and_menu_popup_tuning">Diálogos y menús</string>
     <string name="pe_option_bottom_sheet">Siempre en la parte inferior de la pantalla</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
-    <string name="pe_ui_dialog_mode_classic">Siempre como un cuadro de diálogo clásico</string>
+    <string name="pe_ui_dialog_mode_classic">Siempre como un diálogo clásico</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Las pantallas más grandes (como las tabletas) utilizan cuadros de diálogo clásicos, mientras que las pantallas más pequeñas muestran los cuadros de diálogo en la parte inferior de la pantalla.</string>
     <string name="pc_context_menus">Menús contextuales y de filas</string>
     <string name="pe_context_menu_mode_classic">Siempre como un menú contextual clásico</string>
