@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -259,21 +258,21 @@ class CoverBrowserDelegate
     }
 
     /**
-     * Show the user a selection of other covers and allow selection of a replacement.
+     * Show the user a selection of alternative edition covers and allow selection of a replacement.
      *
-     * @param editionsList a list with ISBN numbers
+     * @param list editions
      */
     @SuppressLint("NotifyDataSetChanged")
-    private void showGallery(@Nullable final Collection<String> editionsList) {
+    private void showGallery(@Nullable final Collection<AltEdition> list) {
         Objects.requireNonNull(galleryAdapter, ERROR_GALLERY_ADAPTER);
 
-        if (editionsList == null || editionsList.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_no_editions);
             vb.statusMessage.postDelayed(owner::dismiss, Delay.LONG_MS);
         } else {
             // set the list and trigger the adapter
-            vm.setEditions(editionsList);
+            vm.setEditions(list);
             galleryAdapter.notifyDataSetChanged();
             // Show help message
             vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
@@ -292,11 +291,17 @@ class CoverBrowserDelegate
     private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
         Objects.requireNonNull(galleryAdapter, ERROR_GALLERY_ADAPTER);
 
-        final int editionIndex;
+        int editionIndex = -1;
         if (imageFileInfo != null) {
-            editionIndex = vm.getEditions().indexOf(imageFileInfo.getIsbn());
-        } else {
-            editionIndex = -1;
+            final String isbn = imageFileInfo.getIsbn();
+
+            final List<AltEdition> editions = vm.getEditions();
+            for (int i = 0; i < editions.size(); i++) {
+                if (isbn.equals(editions.get(i).getIsbn())) {
+                    editionIndex = i;
+                    break;
+                }
+            }
         }
 
         if (editionIndex >= 0) {
@@ -414,7 +419,7 @@ class CoverBrowserDelegate
         private final ImageViewLoader imageLoader;
         private final LayoutInflater inflater;
         @NonNull
-        private final List<String> editionsList;
+        private final List<AltEdition> items;
         @NonNull
         private final PositionHandler positionHandler;
 
@@ -422,17 +427,17 @@ class CoverBrowserDelegate
          * Constructor.
          *
          * @param context         Current context
-         * @param editionsList    a list with ISBN numbers
+         * @param items           editions
          * @param positionHandler Proxy between adapter and ViewModel
          * @param executor        to use for loading images
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@NonNull final Context context,
-                       @NonNull final List<String> editionsList,
+                       @NonNull final List<AltEdition> items,
                        @NonNull final PositionHandler positionHandler,
                        @NonNull final Executor executor) {
             inflater = LayoutInflater.from(context);
-            this.editionsList = editionsList;
+            this.items = items;
             this.positionHandler = positionHandler;
             final Resources res = context.getResources();
             maxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
@@ -457,7 +462,12 @@ class CoverBrowserDelegate
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final String isbn = editionsList.get(position);
+            final String isbn = items.get(position).getIsbn();
+
+            //URGENT: can't cope with null ISBN's for now; but they should have been stripped
+            // by the time we get here
+            Objects.requireNonNull(isbn, "URGENT: ");
+
             final ImageFileInfo imageFileInfo = positionHandler.getFileInfo(isbn);
 
             if (imageFileInfo == null) {
@@ -493,7 +503,7 @@ class CoverBrowserDelegate
 
         @Override
         public int getItemCount() {
-            return editionsList.size();
+            return items.size();
         }
     }
 }

@@ -33,8 +33,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -241,6 +243,7 @@ public class CoverBrowserViewModel
         return galleryDisplayExecutor;
     }
 
+    // TODO: if there is only a single edition, we should skip the displaying and just use it
     @NonNull
     public List<AltEdition> getEditions() {
         // used directly
@@ -255,7 +258,23 @@ public class CoverBrowserViewModel
     public void setEditions(@Nullable final Collection<AltEdition> list) {
         editions.clear();
         if (list != null && !list.isEmpty()) {
-            editions.addAll(list);
+            // URGENT: the adapter cannot cope with null and duplicate ISBN's, filter them out.
+            final List<AltEdition> filtered = new ArrayList<>();
+            final Set<String> isbns = new HashSet<>();
+            list.stream()
+                .filter(altEdition -> altEdition.getIsbn() != null)
+                .filter(altEdition -> !isbns.contains(altEdition.getIsbn()))
+                .forEach(altEdition -> {
+                    final String isbn = altEdition.getIsbn();
+                    isbns.add(isbn);
+                    filtered.add(altEdition);
+                });
+
+//            Log.d(TAG, "list=" + list.size() + ", " + list);
+//            Log.d(TAG, "filtered=" + filtered.size() + ", " + filtered);
+
+
+            editions.addAll(filtered);
         }
     }
 
