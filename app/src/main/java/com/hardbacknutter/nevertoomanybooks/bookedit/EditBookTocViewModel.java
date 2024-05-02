@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.AltEditionIsfdb;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetEditionsTask;
 
@@ -44,12 +44,12 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<List<Edition>>> onIsfdbEditions() {
+    LiveData<LiveDataEvent<List<AltEditionIsfdb>>> onIsfdbEditions() {
         return isfdbGetEditionsTask.onFinished();
     }
 
     @NonNull
-    LiveData<LiveDataEvent<List<Edition>>> onIsfdbEditionsCancelled() {
+    LiveData<LiveDataEvent<List<AltEditionIsfdb>>> onIsfdbEditionsCancelled() {
         return isfdbGetEditionsTask.onCancelled();
     }
 
@@ -88,7 +88,7 @@ public class EditBookTocViewModel
         return isfdbGetBookTask.onFailure();
     }
 
-    void searchEdition(@NonNull final Edition edition) {
+    void searchEdition(@NonNull final AltEditionIsfdb edition) {
         isfdbGetBookTask.search(edition);
     }
 }
