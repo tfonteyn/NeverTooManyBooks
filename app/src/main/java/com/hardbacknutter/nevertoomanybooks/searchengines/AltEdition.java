@@ -36,15 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 public interface AltEdition
         extends Parcelable {
 
-    @Nullable
-    String getIsbn();
-
-    @Nullable
-    String getPublisher();
-
-    @Nullable
-    String getLangIso3();
-
     /**
      * Get a single cover image of the specified size.
      *
@@ -65,4 +56,31 @@ public interface AltEdition
                                  @IntRange(from = 0, to = 1) int cIdx,
                                  @Nullable Size size)
             throws SearchException, CredentialsException, StorageException;
+
+    @Nullable
+    default String getIsbn() {
+        return null;
+    }
+
+    @Nullable
+    default String getPublisher() {
+        return null;
+    }
+
+    @Nullable
+    default String getLangIso3() {
+        return null;
+    }
+
+    /**
+     * This edition <strong>MAY</strong> have a cover.
+     * In other words, do NOT call {@link #searchCover} if this method returns {@code false}.
+     *
+     * @return {@code false} if we are certain this edition has no cover.
+     *         {@code true} if we need to call {@link #searchCover}
+     *         to find out whether there is a cover
+     */
+    default boolean mayHaveCover() {
+        return true;
+    }
 }
