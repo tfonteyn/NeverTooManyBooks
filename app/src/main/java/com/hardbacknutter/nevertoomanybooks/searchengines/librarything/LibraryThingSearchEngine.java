@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -61,7 +62,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class LibraryThingSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ViewBookByExternalId,
-                   SearchEngine.AlternativeEditions {
+                   SearchEngine.AlternativeEditions<AltEditionIsbn> {
 
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
@@ -115,8 +116,8 @@ public class LibraryThingSearchEngine
     @WorkerThread
     @NonNull
     @Override
-    public List<String> searchAlternativeEditions(@NonNull final Context context,
-                                                  @NonNull final String validIsbn)
+    public List<AltEditionIsbn> searchAlternativeEditions(@NonNull final Context context,
+                                                          @NonNull final String validIsbn)
             throws SearchException {
 
         futureHttpGet = createFutureGetRequest(context);
@@ -173,17 +174,17 @@ public class LibraryThingSearchEngine
         /** XML content. */
         @SuppressWarnings("StringBufferField")
         private final StringBuilder builder = new StringBuilder();
-        /** List of ISBN numbers for all found editions. */
-        private final List<String> isbnList = new ArrayList<>();
+        /** All editions we find. */
+        private final List<AltEditionIsbn> editions = new ArrayList<>();
 
         /**
          * Get the results.
          *
-         * @return the list with ISBN numbers.
+         * @return the list with editions.
          */
         @NonNull
-        public List<String> getResult() {
-            return isbnList;
+        public List<AltEditionIsbn> getResult() {
+            return editions;
         }
 
         @Override
@@ -193,7 +194,7 @@ public class LibraryThingSearchEngine
                                @NonNull final String qName) {
 
             if (localName.equalsIgnoreCase(XML_ISBN)) {
-                isbnList.add(builder.toString());
+                editions.add(new AltEditionIsbn(builder.toString()));
             }
 
             // Always reset the length. This is not entirely the right thing to do, but works
