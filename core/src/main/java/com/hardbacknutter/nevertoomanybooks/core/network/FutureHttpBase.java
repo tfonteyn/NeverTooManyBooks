@@ -94,6 +94,8 @@ public abstract class FutureHttpBase<T> {
     private int connectTimeoutInMs = -1;
     /** -1: use the static default. */
     private int readTimeoutInMs = -1;
+    /** Log {@code GET} and {@code HEAD} related url,responseCode and redirects. */
+    private boolean logHttpGetRequests;
 
     /**
      * Constructor.
@@ -127,7 +129,7 @@ public abstract class FutureHttpBase<T> {
 
         final int responseCode = request.getResponseCode();
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (isLoggingEnabled()) {
             LoggerFactory.getLogger().d(TAG, responseCode + " " + request.getURL().toString());
         }
 
@@ -447,5 +449,13 @@ public abstract class FutureHttpBase<T> {
                 futureHttp.cancel(true);
             }
         }
+    }
+
+    public void enableLogging(final boolean enable) {
+        this.logHttpGetRequests = enable;
+    }
+
+    public boolean isLoggingEnabled() {
+        return logHttpGetRequests;
     }
 }
