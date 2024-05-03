@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -56,4 +56,17 @@
             app:showSeekBarValue="true"
             />
     </PreferenceCategory>
+
+    <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory
+        android:title="@string/lbl_troubleshooting"
+        android:summary="@string/lbl_troubleshooting_warning">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_bug_report_24"
+            android:key="openlibrary.logging.http.get"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_enable_extra_logging" />
+
+    </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
 </PreferenceScreen>
