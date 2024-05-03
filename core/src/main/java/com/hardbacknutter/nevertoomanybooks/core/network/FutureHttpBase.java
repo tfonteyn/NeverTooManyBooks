@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,6 +45,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
@@ -61,6 +62,8 @@ public abstract class FutureHttpBase<T> {
      * Reminder: not all sites have/need a throttler.
      */
     static final int RETRY_AFTER_MS = 1_000;
+
+    private static final String TAG = "FutureHttpBase";
 
     /** timeout for opening a connection to a website. */
     private static final int CONNECT_TIMEOUT_MS = 10_000;
@@ -124,7 +127,11 @@ public abstract class FutureHttpBase<T> {
 
         final int responseCode = request.getResponseCode();
 
-        if (responseCode < 400) {
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, responseCode + " " + request.getURL().toString());
+        }
+
+        if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
             return;
         }
 
@@ -266,6 +273,71 @@ public abstract class FutureHttpBase<T> {
         return connectTimeoutInMs + readTimeoutInMs + 10;
     }
 
+    @NonNull
+    private HttpURLConnection createRequest(@NonNull final URL url,
+                                            @NonNull final String method,
+                                            final boolean doOutput)
+            throws IOException {
+
+        final HttpURLConnection request = (HttpURLConnection) url.openConnection();
+
+        request.setRequestMethod(method);
+        request.setDoOutput(doOutput);
+
+        // Don't trust the caches; they have proven to be cumbersome.
+        request.setUseCaches(false);
+
+        if (followRedirects != null) {
+            request.setInstanceFollowRedirects(followRedirects);
+        }
+
+        request.setRequestProperty(HttpConstants.HOST, url.getHost());
+        request.setRequestProperty(HttpConstants.USER_AGENT,
+                                   BuildConfig.BROWSER_USER_AGENT);
+
+        for (final Map.Entry<String, String> entry : requestProperties.entrySet()) {
+            request.setRequestProperty(entry.getKey(), entry.getValue());
+        }
+
+        if (connectTimeoutInMs >= 0) {
+            request.setConnectTimeout(connectTimeoutInMs);
+        } else {
+            request.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        }
+
+        if (readTimeoutInMs >= 0) {
+            request.setReadTimeout(readTimeoutInMs);
+        } else {
+            request.setReadTimeout(READ_TIMEOUT_MS);
+        }
+
+        if (sslContext != null) {
+            final HttpsURLConnection con = (HttpsURLConnection) request;
+            con.setSSLSocketFactory(sslContext.getSocketFactory());
+            if (hostnameVerifier != null) {
+                con.setHostnameVerifier(hostnameVerifier);
+            }
+        }
+
+        return request;
+    }
+
+    /**
+     * Create a request and execute it using a {@link Future} so we can use a timeout.
+     *
+     * @param urlStr   to connect to
+     * @param method   {@code GET}, {@code POST}, {@code HEAD}
+     * @param doOutput flag
+     * @param action   callback to give the request to
+     *
+     * @return result of the callback method
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       The covers directory is not available
+     */
     @Nullable
     T execute(@NonNull final String urlStr,
               @NonNull final String method,
@@ -281,44 +353,7 @@ public abstract class FutureHttpBase<T> {
                 try {
                     final URL url = new URL(urlStr);
 
-                    request = (HttpURLConnection) url.openConnection();
-                    request.setRequestMethod(method);
-                    request.setDoOutput(doOutput);
-
-                    // Don't trust the caches; they have proven to be cumbersome.
-                    request.setUseCaches(false);
-
-                    if (followRedirects != null) {
-                        request.setInstanceFollowRedirects(followRedirects);
-                    }
-
-                    request.setRequestProperty(HttpConstants.HOST, url.getHost());
-                    request.setRequestProperty(HttpConstants.USER_AGENT,
-                                               BuildConfig.BROWSER_USER_AGENT);
-
-                    for (final Map.Entry<String, String> entry : requestProperties.entrySet()) {
-                        request.setRequestProperty(entry.getKey(), entry.getValue());
-                    }
-
-                    if (connectTimeoutInMs >= 0) {
-                        request.setConnectTimeout(connectTimeoutInMs);
-                    } else {
-                        request.setConnectTimeout(CONNECT_TIMEOUT_MS);
-                    }
-
-                    if (readTimeoutInMs >= 0) {
-                        request.setReadTimeout(readTimeoutInMs);
-                    } else {
-                        request.setReadTimeout(READ_TIMEOUT_MS);
-                    }
-
-                    if (sslContext != null) {
-                        final HttpsURLConnection con = (HttpsURLConnection) request;
-                        con.setSSLSocketFactory(sslContext.getSocketFactory());
-                        if (hostnameVerifier != null) {
-                            con.setHostnameVerifier(hostnameVerifier);
-                        }
-                    }
+                    request = createRequest(url, method, doOutput);
 
                     // The request is now ready to be connected/used,
                     // pass control to the specific method
@@ -341,25 +376,23 @@ public abstract class FutureHttpBase<T> {
             if (cause instanceof UncheckedStorageException) {
                 //noinspection DataFlowIssue
                 throw (StorageException) cause.getCause();
-            }
-            if (cause instanceof StorageException) {
-                throw (StorageException) cause;
-            }
 
-            if (cause instanceof UncheckedIOException) {
+            } else if (cause instanceof StorageException) {
+                throw (StorageException) cause;
+
+            } else if (cause instanceof UncheckedIOException) {
                 //noinspection DataFlowIssue
                 throw (IOException) cause.getCause();
-            }
-            if (cause instanceof IOException) {
-                throw (IOException) cause;
-            }
 
-            if (cause instanceof UncheckedSAXException) {
+            } else if (cause instanceof IOException) {
+                throw (IOException) cause;
+
+            } else if (cause instanceof UncheckedSAXException) {
                 final SAXException saxException = Objects.requireNonNull(
                         ((UncheckedSAXException) cause).getCause());
                 rethrowSAXException(saxException);
-            }
-            if (cause instanceof SAXException) {
+
+            } else if (cause instanceof SAXException) {
                 final SAXException saxException = (SAXException) cause;
                 rethrowSAXException(saxException);
             }
@@ -398,8 +431,7 @@ public abstract class FutureHttpBase<T> {
         // The SAXException was caused by a wrapped exception. Unwrap if we can.
         if (saxCause instanceof IOException) {
             throw (IOException) saxCause;
-        }
-        if (saxCause instanceof StorageException) {
+        } else if (saxCause instanceof StorageException) {
             throw (StorageException) saxCause;
         }
         // Some other wrapped exception, re-wrap and let the caller deal with it.
