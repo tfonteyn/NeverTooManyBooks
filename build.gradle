@@ -57,22 +57,22 @@ ext {
     androidxConstraintlayoutCoreVersion = "1.0.4"
     androidxConstraintlayoutVersion = "2.1.4"
     androidxCoordinatorlayoutVersion = "1.2.0"
-    androidxCoreVersion = '1.13.0'
+    androidxCoreVersion = '1.13.1'
     androidxCustomviewVersion = "1.2.0-alpha02"
     androidxDocumentfileVersion = "1.1.0-alpha01"
     androidxDrawerlayoutVersion = "1.2.0"
     androidxExifinterfaceVersion = '1.3.7'
-    androidxFragmentVersion = '1.6.2'
+    androidxFragmentVersion = '1.7.0'
     androidxInterpolatorVersion = "1.0.0"
     androidxLifecycleVersion = '2.7.0'
     androidxPreferenceVersion = "1.2.1"
     androidxRecyclerviewVersion = '1.3.2'
 //        androidxSlidingpanelayoutVersion = "1.2.0"
-    androidxViewpager2Version = "1.1.0-beta02"
+    androidxViewpager2Version = "1.1.0-rc01"
     androidxWindowVersion = '1.2.0'
 
     // https://github.com/material-components/material-components-android/releases
-    googleMaterialVersion = '1.11.0'
+    googleMaterialVersion = '1.12.0'
 
     // https://jsoup.org/
     jsoupVersion = '1.17.2'
