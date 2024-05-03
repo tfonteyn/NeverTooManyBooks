@@ -16,21 +16,23 @@ https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwi
 ----------------------------------------------------------------------------------------------------
 Draft notes for next version:
 
-### 5.7.0
+### 6.0.0
 
 NEW:
-- Upgraded support for the new OpenLibrary Search-API.
+- Upgraded OpenLibrary support to their new Search-API.
   This gets additional fields including back-cover images.
+- Replaced the now defunct LibraryThing API for alternative-edition cover searches
+  with a new OpenLibrary version.
 - Support for CSV imports from Goodreads.
+- The main screen has a new menu-option (button) to quickly flip between list and grid-layout.
+- All dialogs are now shown as bottom-sheets.
+  The user can configure/reverse this behaviour in the advanced-settings.
 - Large Context (popup) menus in the book list are now shown as a bottom-sheet on phones.
   Small menus are kept as popups. On tablets, all menus are kept as popups.
+  The user can configure/reverse this behaviour in the advanced-settings.
 
 FIXES:
 - fix the issue with duplicate "(Year not set)" headers.
-
-KNOWN ISSUES:
-- Fetching alternative editions from LibraryThing is no longer working.
-  LT has now completely blocked all API access.
 
 REMOVED:
 
