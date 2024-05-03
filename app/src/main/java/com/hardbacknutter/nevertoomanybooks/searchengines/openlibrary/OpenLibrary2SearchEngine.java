@@ -225,6 +225,9 @@ public class OpenLibrary2SearchEngine
         }
 
         final String url = String.format(BASE_COVER_URL, key, id, sizeParam);
+
+        // see {@link FutureHttpGetBase#setEnable404Redirect(boolean)}
+        imageDownloader404redirect = true;
         return saveImage(context, url, id, cIdx, size);
     }
 
