@@ -244,7 +244,7 @@ public abstract class SearchEngineBase
     @NonNull
     public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
         final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getEngineId().getLabelResId());
-        httpGet.enableLogging(config.isLogHttpGetRequests());
+        httpGet.enableLogging(config.isLogHttpGetRequests(context));
 
         // Improve compatibility by sending standard headers.
         // Some headers are overridden in the ImageDownloader as needed.
@@ -375,7 +375,7 @@ public abstract class SearchEngineBase
     public <T> FutureHttpHead<T> createFutureHeadRequest(@NonNull final Context context) {
         final FutureHttpHead<T> httpHead = new FutureHttpHead<>(
                 config.getEngineId().getLabelResId());
-        httpHead.enableLogging(config.isLogHttpGetRequests());
+        httpHead.enableLogging(config.isLogHttpGetRequests(context));
 
         httpHead.setConnectTimeout(config.getConnectTimeoutInMs(context))
                      .setReadTimeout(config.getReadTimeoutInMs(context))

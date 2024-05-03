@@ -167,6 +167,13 @@ public final class Prefs {
      */
     public static final String PK_TIMEOUT_READ_IN_SECONDS = "timeout.read";
 
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * HTTP GET/HEAD requests will log urls, response-codes and manual redirects.
+     * boolean
+     */
+    public static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
+
 
     private Prefs() {
     }

@@ -68,9 +68,6 @@ public final class SearchEngineConfig {
     private final int domainMenuOrder;
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
-
-    private boolean logHttpGetRequests;
-
     /**
      * This is a reference to the <strong>static</strong> object created in the SearchEngine
      * implementation class.
@@ -202,12 +199,9 @@ public final class SearchEngineConfig {
         }
     }
 
-    public boolean isLogHttpGetRequests() {
-        return logHttpGetRequests;
-    }
-
-    public void setLogHttpGetRequests(final boolean logHttpGetRequests) {
-        this.logHttpGetRequests = logHttpGetRequests;
+    boolean isLogHttpGetRequests(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+                engineId.getPreferenceKey() + '.' + Prefs.PK_ENABLE_HTTP_LOGGING, false);
     }
 
     /**
