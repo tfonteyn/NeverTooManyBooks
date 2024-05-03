@@ -571,7 +571,7 @@
     <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe</string>
     <string name="pt_allow_metered_network_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>
-    <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Frans) naamgeving</string>
+    <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Franse) naamgeving</string>
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
     <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers</string>
     <string name="pt_bob_books_under_multiple_series">Boeken in meerdere reeksen</string>
