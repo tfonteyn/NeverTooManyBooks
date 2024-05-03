@@ -195,7 +195,6 @@ public enum EngineId
           IsfdbSearchEngine.class,
           BuildConfig.ENABLE_ISFDB),
 
-
     /** Dutch language books & comics. */
     KbNl("kbnl",
          R.string.site_kb_nl,
@@ -214,17 +213,14 @@ public enum EngineId
                LastDodoSearchEngine.class,
                BuildConfig.ENABLE_LAST_DODO),
 
-    /**
-     * Only used for {@link SearchEngine.ViewBookByExternalId}
-     * and {@link SearchEngine.AlternativeEditions}.
-     */
+    /** Only used for {@link SearchEngine.ViewBookByExternalId}. */
     LibraryThing("librarything",
                  R.string.site_library_thing,
                  R.string.site_info_library_thing,
                  "https://www.librarything.com",
                  Locale.US,
                  LibraryThingSearchEngine.class,
-                 BuildConfig.ENABLE_LIBRARY_THING_ALT_ED),
+                 BuildConfig.ENABLE_LIBRARY_THING_BY_EXT_ID),
 
     /** All genres. */
     OpenLibrary("openlibrary",

@@ -98,10 +98,11 @@ android {
         buildConfigField("boolean", "ENABLE_STRIP_INFO", "true")
         buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
 
+        // Both Goodreads and LibraryThing have completely disabled their API's
+        // But we need to keep them enabled due to how
+        // ViewBookOnWebsiteHandler handles external-id's.
         buildConfigField("boolean", "ENABLE_GOODREADS_BY_EXT_ID", "true")
-        // 2024-04-24: LT has now completely blocked all API access.
-        // All related code will be removed at a later time.
-        buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "false")
+        buildConfigField("boolean", "ENABLE_LIBRARY_THING_BY_EXT_ID", "true")
     }
 
     buildTypes {
