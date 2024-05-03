@@ -32,9 +32,12 @@ NEW:
   The user can configure/reverse this behaviour in the advanced-settings.
 
 FIXES:
-- fix the issue with duplicate "(Year not set)" headers.
+- fix the issue with duplicate "(Year not set)" headers when sorting according to read-status.
+- the multi-redirect issue with OpenLibrary covers download has been fixed
+  by implementing a manual-redirect routine.
 
 REMOVED:
+- LibraryThing alternative-edition search
 
 ----------------------------------------------------------------------------------------------------
 Amazon... or "why are these sites not supported?"
