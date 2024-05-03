@@ -60,7 +60,7 @@ public class ExtMenu
     /**
      * Constructor.
      */
-    public ExtMenu() {
+    ExtMenu() {
         items = new ArrayList<>();
     }
 
@@ -71,7 +71,7 @@ public class ExtMenu
 
     /**
      * Convert a {@link Menu} to a list of {@link ExtMenuItem}s.
-     *
+     * <p>
      * URGENT: check the 'orderInCategory'
      *
      * @param menu                to convert
