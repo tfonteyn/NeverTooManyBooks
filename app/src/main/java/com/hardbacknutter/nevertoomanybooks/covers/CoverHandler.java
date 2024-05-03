@@ -341,7 +341,8 @@ public class CoverHandler {
         // Add the potential undo-menu
         if (ServiceLocator.getInstance().getCoverStorage()
                           .isUndoEnabled(book.getString(DBKey.BOOK_UUID), cIdx)) {
-            menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
+            menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover)
+                .setIcon(R.drawable.ic_baseline_undo_24);
         }
 
         final DialogAndMenuMode menuMode = DialogAndMenuMode.getMode(context, menu);
