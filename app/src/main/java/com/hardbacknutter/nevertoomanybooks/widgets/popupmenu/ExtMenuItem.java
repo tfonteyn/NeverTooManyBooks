@@ -176,9 +176,25 @@ public class ExtMenuItem
         return this;
     }
 
+    /**
+     * Resolve and load the icon.
+     *
+     * @param context Current context
+     *
+     * @return icon
+     */
     @SuppressLint("UseCompatLoadingForDrawables")
     @Nullable
     public Drawable getIcon(@NonNull final Context context) {
+        // No icon at all, use a blank space.
+        // We did not set R.drawable.ic_blank_placeholder as the default on purpose
+        // to avoid any complications with the parceling/mapping of icons
+        // See {@link IconMapper}
+        if (icon == null && iconResId == 0) {
+            icon = context.getResources().getDrawable(R.drawable.ic_blank_placeholder,
+                                                      context.getTheme());
+        }
+        // Icon defined, but not loaded yet?
         if (icon == null && iconResId != 0) {
             icon = context.getResources().getDrawable(iconResId, context.getTheme());
         }

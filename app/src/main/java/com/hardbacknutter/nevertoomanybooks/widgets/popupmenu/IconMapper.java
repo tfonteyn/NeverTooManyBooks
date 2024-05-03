@@ -110,6 +110,13 @@ final class IconMapper {
     private IconMapper() {
     }
 
+    /**
+     * Map the given menu-item id to a suitable icon (Drawable) resource id.
+     *
+     * @param menuItemId to map
+     *
+     * @return drawable icon id; or {@code 0} if none found
+     */
     @DrawableRes
     public static int getIconResId(@IdRes final int menuItemId) {
         final Integer iconId = MAP.get(menuItemId);
