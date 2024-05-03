@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import androidx.annotation.StringRes;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
@@ -104,16 +105,16 @@ public final class FutureHttpGet<T>
 
         return Objects.requireNonNull(execute(url, "GET", false, request -> {
             try {
-                connect(request);
+                final HttpURLConnection connection = connect(request);
 
                 try (BufferedInputStream bis = new BufferedInputStream(
-                        request.getInputStream(), bufferSize)) {
-                    if (HttpConstants.isZipped(request)) {
+                        connection.getInputStream(), bufferSize)) {
+                    if (HttpConstants.isZipped(connection)) {
                         try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            return responseProcessor.parse(request, gzs);
+                            return responseProcessor.parse(connection, gzs);
                         }
                     } else {
-                        return responseProcessor.parse(request, bis);
+                        return responseProcessor.parse(connection, bis);
                     }
                 }
             } catch (@NonNull final IOException e) {

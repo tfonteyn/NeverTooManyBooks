@@ -276,7 +276,7 @@ public abstract class FutureHttpBase<T> {
     }
 
     @NonNull
-    private HttpURLConnection createRequest(@NonNull final URL url,
+    protected HttpURLConnection createRequest(@NonNull final URL url,
                                             @NonNull final String method,
                                             final boolean doOutput)
             throws IOException {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,6 +47,20 @@ public final class FutureHttpHead<T>
         super(siteResId);
     }
 
+    /**
+     * Send a {@code HEAD} request.
+     *
+     * @param url               to connect to
+     * @param responseProcessor which will receive the response InputStream
+     *
+     * @return the processed response
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       The covers directory is not available
+     */
     @NonNull
     public T send(@NonNull final String url,
                   @NonNull final Function<HttpURLConnection, T> responseProcessor)
@@ -57,8 +71,8 @@ public final class FutureHttpHead<T>
 
         return Objects.requireNonNull(execute(url, "HEAD", false, request -> {
             try {
-                connect(request);
-                return responseProcessor.apply(request);
+                final HttpURLConnection connection = connect(request);
+                return responseProcessor.apply(connection);
 
             } catch (@NonNull final IOException e) {
                 throw new UncheckedIOException(e);
