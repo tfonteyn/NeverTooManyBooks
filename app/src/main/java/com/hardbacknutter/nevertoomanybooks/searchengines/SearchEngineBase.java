@@ -75,6 +75,10 @@ public abstract class SearchEngineBase
     private final Random random;
     @Nullable
     private ImageDownloader imageDownloader;
+
+    /** Workaround for Android not always following 302's. */
+    protected boolean imageDownloader404redirect;
+
     @Nullable
     private Cancellable caller;
 
@@ -403,7 +407,9 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                imageDownloader = new ImageDownloader(createFutureGetRequest(context));
+                final FutureHttpGet<File> futureGetRequest = createFutureGetRequest(context);
+                futureGetRequest.setEnable404Redirect(imageDownloader404redirect);
+                imageDownloader = new ImageDownloader(futureGetRequest);
             }
         }
         final String tempFilename = ImageDownloader.getTempFilename(
