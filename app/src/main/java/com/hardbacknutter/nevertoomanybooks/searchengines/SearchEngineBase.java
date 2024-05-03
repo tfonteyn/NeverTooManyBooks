@@ -240,6 +240,7 @@ public abstract class SearchEngineBase
     @NonNull
     public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
         final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getEngineId().getLabelResId());
+        httpGet.enableLogging(config.isLogHttpGetRequests());
 
         // Improve compatibility by sending standard headers.
         // Some headers are overridden in the ImageDownloader as needed.
@@ -368,13 +369,14 @@ public abstract class SearchEngineBase
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public <T> FutureHttpHead<T> createFutureHeadRequest(@NonNull final Context context) {
-        final FutureHttpHead<T> futureRequest = new FutureHttpHead<>(
+        final FutureHttpHead<T> httpHead = new FutureHttpHead<>(
                 config.getEngineId().getLabelResId());
+        httpHead.enableLogging(config.isLogHttpGetRequests());
 
-        futureRequest.setConnectTimeout(config.getConnectTimeoutInMs(context))
+        httpHead.setConnectTimeout(config.getConnectTimeoutInMs(context))
                      .setReadTimeout(config.getReadTimeoutInMs(context))
                      .setThrottler(config.getThrottler());
-        return futureRequest;
+        return httpHead;
     }
 
     /**
