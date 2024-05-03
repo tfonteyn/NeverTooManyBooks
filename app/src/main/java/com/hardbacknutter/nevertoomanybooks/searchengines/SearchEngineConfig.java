@@ -240,7 +240,7 @@ public final class SearchEngineConfig {
      *
      * @return {@code true} if multiple sizes are supported.
      */
-    boolean supportsMultipleCoverSizes() {
+    public boolean supportsMultipleCoverSizes() {
         return supportsMultipleCoverSizes;
     }
 

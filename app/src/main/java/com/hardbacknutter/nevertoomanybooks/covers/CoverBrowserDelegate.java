@@ -105,14 +105,22 @@ class CoverBrowserDelegate
 
         @Override
         public void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
-            if (Size.Large == imageFileInfo.getSize()) {
-                // the gallery image IS a valid large image, so just display it
+
+            //noinspection DataFlowIssue
+            final boolean imageOk =
+                    //If the site only supports a single size
+                    !imageFileInfo.getEngineId().getConfig().supportsMultipleCoverSizes()
+                    // or the gallery image is already a large image
+                    || Size.Large == imageFileInfo.getSize();
+
+            if (imageOk) {
+                // just display it
                 setSelectedImage(imageFileInfo);
+
             } else {
+                // start a task to fetch a larger image
                 vb.preview.setVisibility(View.INVISIBLE);
                 vb.previewProgressBar.show();
-
-                // start a task to fetch a larger image
                 vm.fetchSelectedImage(imageFileInfo);
             }
         }
