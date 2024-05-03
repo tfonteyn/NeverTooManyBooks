@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -419,7 +418,7 @@ class GoogleBooksEntryHandler
                 break;
 
             default:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                if (BuildConfig.DEBUG /* always */) {
                     // see what we are missing.
                     LoggerFactory.getLogger()
                                  .d(TAG, "endElement|Skipping", localName + "->`" + builder + '`');

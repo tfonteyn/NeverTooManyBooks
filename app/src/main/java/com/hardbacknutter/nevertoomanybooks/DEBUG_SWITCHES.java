@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,10 +75,8 @@ public final class DEBUG_SWITCHES {
     /** all things related to cover image handling. */
     public static final boolean COVERS = false;
 
-    /** all things XML related. */
-    public static final boolean XML = false;
-    /** all things network related. */
-    public static final boolean NETWORK = false;
+    /** {@link com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker}. */
+    public static final boolean NETWORK_CHECKER = false;
 
     /** {@link com.hardbacknutter.nevertoomanybooks.network.JsoupLoader}. */
     public static final boolean JSOUP = false;

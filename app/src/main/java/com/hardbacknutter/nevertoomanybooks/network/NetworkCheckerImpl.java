@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -109,7 +109,7 @@ public class NetworkCheckerImpl
                         .getDefaultSharedPreferences(appContextSupplier.get())
                         .getBoolean(PK_NETWORK_ALLOW_METERED, true);
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK_CHECKER) {
                     LoggerFactory.getLogger()
                                  .d(TAG, "getNetworkCapabilities",
                                     "hasInternet=" + hasInternet
