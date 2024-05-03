@@ -1751,7 +1751,7 @@
     <string name="pe_context_menu_mode_by_size">Long menus are displayed at the bottom of the screen and short menus are classic context menus.</string>
 
     <string name="lbl_troubleshooting">Troubleshooting</string>
-    <string name="pt_enable_extra_logging">Enable extra logging</string>
+    <string name="pt_enable_extra_logging">Enable additional logging</string>
     <string name="lbl_troubleshooting_warning">Please do not enable the below options unless explicitly requested to do so by the app developer.</string>
 
 </resources>

@@ -791,4 +791,7 @@
     <string name="pc_context_menus">Kontextové a řádkové nabídky</string>
     <string name="pe_context_menu_mode_classic">Vždy jako klasická kontextová nabídka</string>
     <string name="pe_context_menu_mode_by_size">Dlouhé nabídky se zobrazují ve spodní části obrazovky a krátké nabídky jsou klasické kontextové nabídky.</string>
+    <string name="lbl_troubleshooting">Řešení problémů</string>
+    <string name="pt_enable_extra_logging">Povolení dalšího protokolování</string>
+    <string name="lbl_troubleshooting_warning">Níže uvedené možnosti nepovolujte, pokud o to vývojář aplikace výslovně nepožádá.</string>
 </resources>

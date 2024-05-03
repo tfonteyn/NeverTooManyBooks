@@ -771,4 +771,7 @@
     <string name="pc_context_menus">Context- en rijmenu\'s</string>
     <string name="pe_context_menu_mode_classic">Altijd als een klassiek contextmenu</string>
     <string name="pe_context_menu_mode_by_size">Lange menu\'s worden onderaan het scherm weergegeven en korte menu\'s zijn klassieke contextmenu\'s.</string>
+    <string name="lbl_troubleshooting">Problemen oplossen</string>
+    <string name="pt_enable_extra_logging">Extra logging inschakelen</string>
+    <string name="lbl_troubleshooting_warning">Schakel de onderstaande opties niet in, tenzij de ontwikkelaar van de app hier expliciet om vraagt.</string>
 </resources>

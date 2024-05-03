@@ -776,4 +776,7 @@
     <string name="pc_context_menus">Menu contextuel et menu de ligne</string>
     <string name="pe_context_menu_mode_classic">Toujours comme un menu contextuel classique</string>
     <string name="pe_context_menu_mode_by_size">Les menus longs sont affichés en bas de l\'écran et les menus courts sont des menus contextuels classiques.</string>
+    <string name="lbl_troubleshooting">Dépannage</string>
+    <string name="pt_enable_extra_logging">Activer la journalisation supplémentaire</string>
+    <string name="lbl_troubleshooting_warning">N\'activez pas les options ci-dessous à moins que le développeur de l\'application ne vous le demande explicitement.</string>
 </resources>

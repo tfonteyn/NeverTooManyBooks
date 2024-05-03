@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -798,4 +801,7 @@
     <string name="pc_context_menus">Menus de contexto e de linha</string>
     <string name="pe_context_menu_mode_classic">Sempre como um menu de contexto clássico</string>
     <string name="pe_context_menu_mode_by_size">Os menus longos são apresentados na parte inferior do ecrã e os menus curtos são menus de contexto clássicos.</string>
+    <string name="lbl_troubleshooting">Resolução de problemas</string>
+    <string name="pt_enable_extra_logging">Ativar o registo adicional</string>
+    <string name="lbl_troubleshooting_warning">Não active as opções abaixo, a menos que o programador da aplicação lho solicite explicitamente.</string>
 </resources>

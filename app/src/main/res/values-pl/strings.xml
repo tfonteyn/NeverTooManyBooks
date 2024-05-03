@@ -794,4 +794,7 @@
     <string name="pc_context_menus">Menu kontekstowe i wierszowe</string>
     <string name="pe_context_menu_mode_classic">Zawsze jako klasyczne menu kontekstowe</string>
     <string name="pe_context_menu_mode_by_size">Długie menu są wyświetlane na dole ekranu, a krótkie menu to klasyczne menu kontekstowe.</string>
+    <string name="lbl_troubleshooting">Rozwiązywanie problemów</string>
+    <string name="pt_enable_extra_logging">Włącz dodatkowe rejestrowanie</string>
+    <string name="lbl_troubleshooting_warning">Nie włączaj poniższych opcji, chyba że zostaniesz o to wyraźnie poproszony przez twórcę aplikacji.</string>
 </resources>

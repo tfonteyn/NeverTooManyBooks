@@ -782,4 +782,7 @@
     <string name="pc_context_menus">Bağlam ve satır menüleri</string>
     <string name="pe_context_menu_mode_classic">Her zaman klasik bir içerik menüsü olarak</string>
     <string name="pe_context_menu_mode_by_size">Uzun menüler ekranın altında görüntülenir ve kısa menüler klasik içerik menüleridir.</string>
+    <string name="lbl_troubleshooting">Sorun Giderme</string>
+    <string name="pt_enable_extra_logging">Ek günlük kaydını etkinleştirin</string>
+    <string name="lbl_troubleshooting_warning">Uygulama geliştiricisi tarafından açıkça talep edilmedikçe lütfen aşağıdaki seçenekleri etkinleştirmeyin.</string>
 </resources>

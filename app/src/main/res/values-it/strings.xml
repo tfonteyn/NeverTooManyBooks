@@ -775,4 +775,7 @@
     <string name="pc_context_menus">Menu contestuali e di riga</string>
     <string name="pe_context_menu_mode_classic">Sempre come un classico menu contestuale</string>
     <string name="pe_context_menu_mode_by_size">I menu lunghi sono visualizzati nella parte inferiore dello schermo, mentre i menu brevi sono i classici menu contestuali.</string>
+    <string name="lbl_troubleshooting">Risoluzione dei problemi</string>
+    <string name="pt_enable_extra_logging">Abilitare la registrazione aggiuntiva</string>
+    <string name="lbl_troubleshooting_warning">Non abilitare le opzioni seguenti, a meno che non siano state esplicitamente richieste dallo sviluppatore dell\'applicazione.</string>
 </resources>

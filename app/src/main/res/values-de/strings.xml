@@ -771,4 +771,7 @@
     <string name="pc_context_menus">Kontext- und Zeilenmenüs</string>
     <string name="pe_context_menu_mode_classic">Immer als klassisches Kontextmenü</string>
     <string name="pe_context_menu_mode_by_size">Lange Menüs werden am unteren Rand des Bildschirms angezeigt, kurze Menüs sind klassische Kontextmenüs.</string>
+    <string name="lbl_troubleshooting">Fehlersuche</string>
+    <string name="pt_enable_extra_logging">Zusätzliche Protokollierung einschalten</string>
+    <string name="lbl_troubleshooting_warning">Bitte aktivieren Sie die folgenden Optionen nur, wenn Sie vom Entwickler der Anwendung ausdrücklich dazu aufgefordert werden.</string>
 </resources>

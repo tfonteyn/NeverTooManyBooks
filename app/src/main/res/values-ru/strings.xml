@@ -792,4 +792,7 @@
     <string name="pc_context_menus">Контекстное и строчное меню</string>
     <string name="pe_context_menu_mode_classic">Всегда в виде классического контекстного меню</string>
     <string name="pe_context_menu_mode_by_size">Длинные меню отображаются в нижней части экрана, а короткие - это классические контекстные меню.</string>
+    <string name="lbl_troubleshooting">Устранение неполадок</string>
+    <string name="pt_enable_extra_logging">Включите дополнительную регистрацию</string>
+    <string name="lbl_troubleshooting_warning">Пожалуйста, не включайте перечисленные ниже опции, если разработчик приложения явно не попросил вас об этом.</string>
 </resources>
