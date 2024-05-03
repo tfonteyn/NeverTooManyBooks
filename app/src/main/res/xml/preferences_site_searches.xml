@@ -71,12 +71,6 @@
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingPreferencesFragment"
-            android:key="psk_search_site_librarything"
-            android:title="@string/site_library_thing">
-        </Preference>
-
-        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryPreferencesFragment"
             android:key="psk_search_site_openlibrary"
             android:title="@string/site_open_library">
