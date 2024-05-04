@@ -176,8 +176,8 @@ public class BookCoder {
         processRating(book);
         processDescriptionAndNotes(book);
 
-        verifyDates(book, DBKey.DATETIME_KEYS);
-        verifyDates(book, DBKey.DATE_KEYS);
+        verifyDates(book, DBKey.DATETIME_KEYS, false);
+        verifyDates(book, DBKey.DATE_KEYS, true);
 
         return book;
     }
@@ -554,12 +554,24 @@ public class BookCoder {
     }
 
     private void verifyDates(@NonNull final Book book,
-                             @NonNull final Set<String> keys) {
+                             @NonNull final Set<String> keys,
+                             final boolean shortDate) {
         keys.stream().filter(book::contains).forEach(key -> {
             final String s = book.getString(key);
             final Optional<LocalDateTime> date = dateParser.parse(s);
             if (date.isPresent()) {
-                book.putString(key, SqlEncode.date(date.get()));
+                String iso = SqlEncode.date(date.get());
+                if (shortDate) {
+                    if (iso.length() > 10) {
+                        // cut off the time
+                        iso = iso.substring(0, 10);
+                        // 'YYYY-MM-DD' cut down to month or year if possible
+                        while (iso.endsWith("-01")) {
+                            iso = iso.substring(0, iso.length() - 3);
+                        }
+                    }
+                }
+                book.putString(key, iso);
             } else {
                 book.remove(key);
             }

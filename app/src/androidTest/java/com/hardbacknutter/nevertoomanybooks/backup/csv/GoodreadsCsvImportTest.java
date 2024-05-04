@@ -147,7 +147,7 @@ public class GoodreadsCsvImportTest
             assertEquals("172", book.getString(DBKey.PAGE_COUNT));
             assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE));
             assertEquals("1972", book.getString(DBKey.FIRST_PUBLICATION__DATE));
-            assertEquals("2020/06/05", book.getString(DBKey.DATE_ADDED__UTC));
+            assertEquals("2020-06-05 00:00:00", book.getString(DBKey.DATE_ADDED__UTC));
 
             final List<Publisher> allPublishers = book.getPublishers();
             assertEquals(1, allPublishers.size());
@@ -190,7 +190,7 @@ public class GoodreadsCsvImportTest
             assertEquals("472", book.getString(DBKey.PAGE_COUNT));
             assertEquals("2014", book.getString(DBKey.BOOK_PUBLICATION__DATE));
             assertEquals("2006", book.getString(DBKey.FIRST_PUBLICATION__DATE));
-            assertEquals("2024/04/24", book.getString(DBKey.DATE_ADDED__UTC));
+            assertEquals("2024-04-24 00:00:00", book.getString(DBKey.DATE_ADDED__UTC));
 
             assertEquals("", book.getString(DBKey.DESCRIPTION));
             assertEquals("my own notes on this book\n\nOn my todo list",
