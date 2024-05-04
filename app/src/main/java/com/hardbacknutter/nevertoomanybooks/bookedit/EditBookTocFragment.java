@@ -439,7 +439,14 @@ public class EditBookTocFragment
 
             final Book book = vm.getBook();
 
-            // update the book with Series information (if any) that was gathered from the TOC
+            // Copy the native ISFDB id to the current book (just overwrite)
+            final long isfdbId = bookData.getLong(DBKey.SID_ISFDB);
+            // Sanity check
+            if (isfdbId != 0) {
+                book.putLong(DBKey.SID_ISFDB, isfdbId);
+            }
+
+            // update the book with Series information (if any) which was gathered from the TOC
             final List<Series> series = bookData.getSeries();
             if (!series.isEmpty()) {
                 final List<Series> inBook = book.getSeries();
@@ -453,7 +460,7 @@ public class EditBookTocFragment
             }
 
             // if we don't have one yet,
-            // update the book with the first publication date that was gathered from the TOC
+            // update the book with the first publication date which was gathered from the TOC
             if (!book.getFirstPublicationDate().isPresent()) {
                 final PartialDate bookFirstPublication = bookData.getFirstPublicationDate();
                 if (bookFirstPublication.isPresent()) {
