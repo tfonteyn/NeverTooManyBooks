@@ -1187,8 +1187,11 @@ public class IsfdbSearchEngine
 
         if (pageUrl.contains(CGI_PL)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
-            editions.add(new AltEditionIsfdb(stripNumber(pageUrl, '?'),
-                                             searchForIsbn, document));
+            final long isfdbId = stripNumber(pageUrl, '?');
+            // Sanity check
+            if (isfdbId != 0) {
+                editions.add(new AltEditionIsfdb(isfdbId, searchForIsbn, document));
+            }
 
         } else if (pageUrl.contains(CGI_TITLE)
                    || pageUrl.contains(CGI_SE)
@@ -1265,8 +1268,12 @@ public class IsfdbSearchEngine
                                     isbnStr = isbn.asText();
                                 }
                             }
-                            editions.add(new AltEditionIsfdb(stripNumber(url, '?'),
-                                                             isbnStr, publisher, lang));
+                            final long isfdbId = stripNumber(url, '?');
+                            // Sanity check
+                            if (isfdbId != 0) {
+                                editions.add(new AltEditionIsfdb(isfdbId, isbnStr,
+                                                                 publisher, lang));
+                            }
                         }
                     }
                 }
@@ -1328,10 +1335,13 @@ public class IsfdbSearchEngine
 
     /**
      * All lines are normally.
+     * <pre>
      * {@code
      * <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
      * <a href="http://www.worldcat.org/oclc/963112443">963112443</a>}
+     * </pre>
      * Except for Amazon:
+     * <pre>
      * {@code
      * <li><abbr class="template" ... >ASIN</abbr>:  B003ODIWEG
      * (<a href="https://www.amazon.com.au/dp/B003ODIWEG">AU</a>
@@ -1347,9 +1357,14 @@ public class IsfdbSearchEngine
      * <a href="https://www.amazon.com.mx/dp/B003ODIWEG">MX</a>
      * <a href="https://www.amazon.nl/dp/B003ODIWEG">NL</a>
      * <a href="https://www.amazon.co.uk/dp/B003ODIWEG">UK</a>
-     * <a href="https://www.amazon.com/dp/B003ODIWEG?">US</a>)}
-     * <p>
+     * <a href="https://www.amazon.com/dp/B003ODIWEG?">US</a>)
+     * }
+     * </pre>
      * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
+     * <p>
+     * Much more information can be found on the
+     * <a href="https://www.isfdb.org/wiki/index.php/Sources_of_Bibliographic_Information">
+     *     ISFDB Wiki</a>
      *
      * @param elements LI elements
      * @param book     to update
@@ -1362,7 +1377,19 @@ public class IsfdbSearchEngine
                 .map(element -> element.attr("href"))
                 .filter(Objects::nonNull)
                 .forEach(url -> {
-                    if (url.contains("www.worldcat.org")) {
+                    if (url.contains("openlibrary.org")) {
+                        // https://openlibrary.org/books/OL7524037M
+                        book.putString(DBKey.SID_OPEN_LIBRARY, stripString(url, '/'));
+
+                    } else if (url.contains("goodreads.com")) {
+                        // https://www.goodreads.com/book/show/211357
+                        final long id = stripNumber(url, '/');
+                        // Sanity check
+                        if (id != 0) {
+                            book.putLong(DBKey.SID_GOODREADS_BOOK, id);
+                        }
+
+                    } else if (url.contains("www.worldcat.org")) {
                         // http://www.worldcat.org/oclc/60560136
                         book.putString(DBKey.SID_OCLC, stripString(url, '/'));
 
@@ -1376,29 +1403,50 @@ public class IsfdbSearchEngine
                             final String asin = url.substring(start + 1, end);
                             book.putString(DBKey.SID_ASIN, asin);
                         }
+//                    } else if (url.contains("audible.com")) {
+                        // https://www.audible.com/pd/B00HJZAQPI
+
                     } else if (url.contains("lccn.loc.gov")) {
                         // Library of Congress (USA)
                         // http://lccn.loc.gov/2008299472
                         // http://lccn.loc.gov/95-22691
                         book.putString(DBKey.SID_LCCN, stripString(url, '/'));
 
-                        //            } else if (url.contains("explore.bl.uk")) {
+//                    } else if (url.contains("explore.bl.uk")) {
                         // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
                         // vid=BLVU1&docId=BLL01014057142
                         // British Library
 
-                        //            } else if (url.contains("d-nb.info")) {
+//                    } else if (url.contains("d-nb.info")) {
                         // http://d-nb.info/986851329
                         // DEUTSCHEN NATIONALBIBLIOTHEK
 
-                        //            } else if (url.contains("picarta.pica.nl")) {
+//                    } else if (url.contains("picarta.pica.nl")) {
                         // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
                         // Nederlandse Bibliografie
 
-
-                        //           } else if (url.contains("tercerafundacion.net")) {
+//                    } else if (url.contains("tercerafundacion.net")) {
                         // Spanish
                         // https://tercerafundacion.net/biblioteca/ver/libro/2329
+
+//                    } else if (url.contains("sfbg.us")) {
+                        // Bulgarian
+                        // http://www.sfbg.us/book/KAME-BFN-023X
+//                    } else if (url.contains("fantlab.ru")) {
+                        // Russian
+                        // https://fantlab.ru/edition169821
+//                    } else if (url.contains("chitanka.info")) {
+                        // Russian
+                        // https://biblioman.chitanka.info/books/12668
+//                    } else if (url.contains("libris.kb.se")) {
+                        // Swedish; a single book can have multiple libris.kb.se links!
+                        // https://libris.kb.se/bib/7626661
+                        // https://libris.kb.se/resource/bib/7626661
+                        // https://libris.kb.se/katalogisering/p60w3h3112v1wsm
+                        // https://libris.kb.se/p60w3h3112v1wsm
+//                    } else if (url.contains("noosfere.org")) {
+                        // French
+                        // https://www.noosfere.org/livres/niourf.asp?numlivre=-323033
                     }
                 });
     }
@@ -1420,7 +1468,7 @@ public class IsfdbSearchEngine
      * @param url  to handle
      * @param last character to look for as last-index
      *
-     * @return the number
+     * @return the number or {@code 0} if parsing failed.
      */
     private long stripNumber(@NonNull final String url,
                              @SuppressWarnings("SameParameterValue") final char last) {
@@ -1429,7 +1477,12 @@ public class IsfdbSearchEngine
             return 0;
         }
 
-        return Long.parseLong(url.substring(index));
+        try {
+            return Long.parseLong(url.substring(index));
+        } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
+        }
+        return 0;
     }
 
     // Experimenting with the REST API... to limited for full use for now.
