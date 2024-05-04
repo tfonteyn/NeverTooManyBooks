@@ -225,7 +225,7 @@ public class AuthorWorksFragment
                 ExtMenuButton.getPreferredMode(context),
                 (anchor, position) -> {
                     final DialogAndMenuMode menuMode = DialogAndMenuMode
-                            .getMode(getActivity(), rowMenu);
+                            .getMenuMode(getActivity(), rowMenu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(anchor.getContext())
                                 .setListener(this::onMenuItemSelected)

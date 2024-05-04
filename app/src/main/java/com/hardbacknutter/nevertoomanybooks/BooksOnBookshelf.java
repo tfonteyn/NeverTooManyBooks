@@ -1108,7 +1108,7 @@ public class BooksOnBookshelf
             menuMode = DialogAndMenuMode.Start;
         } else {
             // otherwise follow the global logic
-            menuMode = DialogAndMenuMode.getMode(this, menu);
+            menuMode = DialogAndMenuMode.getMenuMode(this, menu);
         }
 
         if (menuMode.isPopup()) {

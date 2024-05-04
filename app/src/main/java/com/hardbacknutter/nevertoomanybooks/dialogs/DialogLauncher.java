@@ -231,7 +231,7 @@ public abstract class DialogLauncher
     @NonNull
     private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
                                                        @NonNull final String requestKey) {
-        final DialogAndMenuMode dialogMode = DialogAndMenuMode.getMode(context);
+        final DialogAndMenuMode dialogMode = DialogAndMenuMode.getDialogMode(context);
         switch (dialogMode) {
             case Dialog:
                 return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);

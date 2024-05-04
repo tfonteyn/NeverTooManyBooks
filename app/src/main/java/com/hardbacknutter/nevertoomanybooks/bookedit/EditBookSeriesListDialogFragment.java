@@ -199,7 +199,7 @@ public class EditBookSeriesListDialogFragment
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
                     //noinspection DataFlowIssue
                     final DialogAndMenuMode menuMode = DialogAndMenuMode
-                            .getMode(getActivity(), menu);
+                            .getMenuMode(getActivity(), menu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())
                                 .setListener(this::onMenuItemSelected)

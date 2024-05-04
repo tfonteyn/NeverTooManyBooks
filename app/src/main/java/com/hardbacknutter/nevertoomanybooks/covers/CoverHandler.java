@@ -345,7 +345,7 @@ public class CoverHandler {
                 .setIcon(R.drawable.ic_baseline_undo_24);
         }
 
-        final DialogAndMenuMode menuMode = DialogAndMenuMode.getMode(context, menu);
+        final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(context, menu);
         if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(context)
                     .setListener(this::onMenuItemSelected)

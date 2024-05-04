@@ -58,7 +58,8 @@ public enum DialogAndMenuMode {
     private static final Set<DialogAndMenuMode> POPUPS = Set.of(Start, End, Center, Anchored);
 
     /**
-     * Determine how to show a dialog: either as a true Dialog, or as a BottomSheet.
+     * Determine how to show a <strong>dialog</strong>.
+     * Either as a true Dialog, or as a BottomSheet.
      *
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
@@ -66,34 +67,40 @@ public enum DialogAndMenuMode {
      * @return location
      */
     @NonNull
-    public static DialogAndMenuMode getMode(@NonNull final Context context) {
-        final WindowSizeClass size = WindowSizeClass.getWidth(context);
+    public static DialogAndMenuMode getDialogMode(@NonNull final Context context) {
+        final WindowSizeClass height = WindowSizeClass.getHeight(context);
+        final WindowSizeClass width = WindowSizeClass.getWidth(context);
 
-        final int dialogs = IntListPref.getInt(context, Prefs.PK_UI_DIALOGS_MODE,
-                                               UI_DIALOGS_MODE_BY_SCREEN_SIZE);
-        switch (dialogs) {
-            case UI_DIALOGS_MODE_CLASSIC:
-                return Dialog;
-            case UI_DIALOGS_MODE_BOTTOM_SHEET:
-                return BottomSheet;
-        }
-
-        // case UI_DIALOGS_MODE_BY_SCREEN_SIZE:
-        switch (size) {
-            case Expanded: {
+        final int mode = IntListPref.getInt(context, Prefs.PK_UI_DIALOGS_MODE,
+                                            UI_DIALOGS_MODE_BY_SCREEN_SIZE);
+        switch (mode) {
+            case UI_DIALOGS_MODE_CLASSIC: {
                 return Dialog;
             }
-            case Medium:
-            case Compact: {
+            case UI_DIALOGS_MODE_BOTTOM_SHEET: {
+                return BottomSheet;
+            }
+            case UI_DIALOGS_MODE_BY_SCREEN_SIZE: {
+                // Expanded/Expanded.
+                // Expanded/Medium
+                if (isLargeScreen(height, width)) {
+                    // Large screen like tablets or desktops always use true dialog.
+                    return Dialog;
+                }
+
+                // Expanded/Compact
+                // Medium/Medium
+                // Medium/Compact
+                // Compact/Compact
                 return BottomSheet;
             }
             default:
-                throw new IllegalArgumentException("menu==null, windowSize=" + size);
+                throw new IllegalArgumentException("mode=" + mode);
         }
     }
 
     /**
-     * Determine where to show a menu.
+     * Determine where to show a <strong>menu</strong>.
      *
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
@@ -103,13 +110,16 @@ public enum DialogAndMenuMode {
      */
     @Discouraged(message = "use getLocation(Activity,Menu) if possible")
     @NonNull
-    public static DialogAndMenuMode getMode(@NonNull final Context context,
-                                            @NonNull final Menu menu) {
-        return getMode(context, WindowSizeClass.getWidth(context), menu);
+    public static DialogAndMenuMode getMenuMode(@NonNull final Context context,
+                                                @NonNull final Menu menu) {
+        return getMenuMode(context,
+                           WindowSizeClass.getHeight(context),
+                           WindowSizeClass.getWidth(context),
+                           menu);
     }
 
     /**
-     * Determine where to show a menu.
+     * Determine where to show a <strong>menu</strong>.
      *
      * @param activity hosting Activity
      * @param menu     to check
@@ -117,41 +127,75 @@ public enum DialogAndMenuMode {
      * @return menu location
      */
     @NonNull
-    public static DialogAndMenuMode getMode(@NonNull final Activity activity,
-                                            @NonNull final Menu menu) {
-        return getMode(activity, WindowSizeClass.getWidth(activity), menu);
+    public static DialogAndMenuMode getMenuMode(@NonNull final Activity activity,
+                                                @NonNull final Menu menu) {
+        return getMenuMode(activity,
+                           WindowSizeClass.getHeight(activity),
+                           WindowSizeClass.getWidth(activity),
+                           menu);
     }
 
     @NonNull
-    private static DialogAndMenuMode getMode(@NonNull final Context context,
-                                             @NonNull final WindowSizeClass size,
-                                             @NonNull final Menu menu) {
-        final int menus = IntListPref.getInt(context, Prefs.PK_UI_CONTEXT_MENUS,
-                                             UI_CONTEXT_MENUS_BY_MENU_SIZE);
+    private static DialogAndMenuMode getMenuMode(@NonNull final Context context,
+                                                 @NonNull final WindowSizeClass height,
+                                                 @NonNull final WindowSizeClass width,
+                                                 @NonNull final Menu menu) {
+        final int mode = IntListPref.getInt(context, Prefs.PK_UI_CONTEXT_MENUS,
+                                            UI_CONTEXT_MENUS_BY_MENU_SIZE);
 
-        switch (menus) {
-            case UI_CONTEXT_MENUS_CLASSIC:
+        switch (mode) {
+            case UI_CONTEXT_MENUS_CLASSIC: {
                 return Anchored;
-            case UI_CONTEXT_MENUS_BOTTOM_SHEET:
+            }
+            case UI_CONTEXT_MENUS_BOTTOM_SHEET: {
                 return BottomSheet;
+            }
+            case UI_CONTEXT_MENUS_BY_MENU_SIZE: {
+                // Expanded/Expanded.
+                // Expanded/Medium
+                if (isLargeScreen(height, width)) {
+                    // Large screen like tablets or desktops always use a popup.
+                    return Anchored;
+                }
+
+                // Expanded/Compact
+                // Medium/Medium
+                // Medium/Compact
+                // Compact/Compact
+
+                // Small menus are served as popup menus
+                // anchored to the view to minimalize eye-movement.
+                if (menu.size() < 5) {
+                    return Anchored;
+                }
+
+                // menu with 5 or more items are large enough to warranty extra eye-movement
+                return BottomSheet;
+            }
+            default:
+                throw new IllegalArgumentException("mode=" + mode);
         }
+    }
 
-        // case UI_CONTEXT_MENUS_BY_MENU_SIZE:
-
-        // Tablets always use a popup
-        if (size == WindowSizeClass.Expanded) {
-            return Anchored;
-        }
-
-        // Small menus are best served as popup menus
-        // anchored to the view to minimalize eye-movement.
-        if (menu.size() < 5 && size == WindowSizeClass.Medium) {
-            return Anchored;
-        }
-
-        // We either have a Compact screen,
-        // or a Medium screen and a menu with 5 or more items.
-        return BottomSheet;
+    /**
+     * A large screen is defined as being
+     * <ul>
+     *     <li>Expanded/Expanded</li>
+     *     <li>Expanded/Medium</li>
+     * </ul>
+     *
+     * @param height size
+     * @param width  size
+     *
+     * @return {@code true} when large
+     */
+    private static boolean isLargeScreen(@NonNull final WindowSizeClass height,
+                                         @NonNull final WindowSizeClass width) {
+        return ((height == WindowSizeClass.Medium || height == WindowSizeClass.Expanded)
+                && width == WindowSizeClass.Expanded)
+               ||
+               ((width == WindowSizeClass.Medium || width == WindowSizeClass.Expanded)
+                && height == WindowSizeClass.Expanded);
     }
 
     /**

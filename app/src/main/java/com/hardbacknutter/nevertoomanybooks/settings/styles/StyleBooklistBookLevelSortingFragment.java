@@ -190,7 +190,7 @@ public class StyleBooklistBookLevelSortingFragment
 
         listAdapter.setOnRowShowMenuListener(ExtMenuButton.Always, (anchor, position) -> {
             final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
-            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMode(getActivity(), menu);
+            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(getActivity(), menu);
             if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(anchor.getContext())
                         .setListener(this::onMenuItemClick)

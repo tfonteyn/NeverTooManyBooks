@@ -127,7 +127,7 @@ public class EditBookshelvesFragment
             prepareMenu(menu, gridPosition);
 
             //noinspection DataFlowIssue
-            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMode(getActivity(), menu);
+            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(getActivity(), menu);
             if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(context)
                         .setListener(EditBookshelvesFragment.this::onMenuItemSelected)

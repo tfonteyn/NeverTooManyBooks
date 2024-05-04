@@ -215,7 +215,7 @@ public class PreferredStylesFragment
                     prepareMenu(menu, position);
 
                     final DialogAndMenuMode menuMode =
-                            DialogAndMenuMode.getMode(getActivity(), menu);
+                            DialogAndMenuMode.getMenuMode(getActivity(), menu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(context)
                                 .setListener(this::onMenuItemSelected)
