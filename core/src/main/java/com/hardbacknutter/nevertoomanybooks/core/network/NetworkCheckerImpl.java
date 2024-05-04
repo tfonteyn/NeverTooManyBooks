@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -44,10 +44,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 public class NetworkCheckerImpl
@@ -109,7 +107,7 @@ public class NetworkCheckerImpl
                         .getDefaultSharedPreferences(appContextSupplier.get())
                         .getBoolean(PK_NETWORK_ALLOW_METERED, true);
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK_CHECKER) {
+                if (BuildConfig.DEBUG && LoggerFactory.NETWORK_CHECKER) {
                     LoggerFactory.getLogger()
                                  .d(TAG, "getNetworkCapabilities",
                                     "hasInternet=" + hasInternet

@@ -75,9 +75,6 @@ public final class DEBUG_SWITCHES {
     /** all things related to cover image handling. */
     public static final boolean COVERS = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker}. */
-    public static final boolean NETWORK_CHECKER = false;
-
     /** {@link com.hardbacknutter.nevertoomanybooks.network.JsoupLoader}. */
     public static final boolean JSOUP = false;
 

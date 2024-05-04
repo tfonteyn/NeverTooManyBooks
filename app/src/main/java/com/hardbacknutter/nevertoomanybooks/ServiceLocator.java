@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import java.net.CookiePolicy;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -85,7 +86,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
