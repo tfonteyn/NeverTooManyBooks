@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -75,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -1525,6 +1527,33 @@ public class Book
 
 
         return Intent.createChooser(intent, context.getString(R.string.whichSendApplication));
+    }
+
+    /**
+     * Copy any external id's present in the given bookData to this Book.
+     *
+     * @param bookData to copy from
+     */
+    public void copyExternalIdsFrom(@NonNull final Book bookData) {
+        SearchEngineConfig.getExternalIdDomains()
+                          .stream()
+                          .filter(domain -> bookData.contains(domain.getName()))
+                          .forEach(domain -> {
+                              final String key = domain.getName();
+                              if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
+                                  final String id = bookData.getString(key);
+                                  // Sanity check
+                                  if (!id.isEmpty()) {
+                                      putString(key, id);
+                                  }
+                              } else {
+                                  final long id = bookData.getLong(key);
+                                  // Sanity check
+                                  if (id != 0) {
+                                      putLong(key, id);
+                                  }
+                              }
+                          });
     }
 
     /**

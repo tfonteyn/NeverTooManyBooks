@@ -439,12 +439,8 @@ public class EditBookTocFragment
 
             final Book book = vm.getBook();
 
-            // Copy the native ISFDB id to the current book (just overwrite)
-            final long isfdbId = bookData.getLong(DBKey.SID_ISFDB);
-            // Sanity check
-            if (isfdbId != 0) {
-                book.putLong(DBKey.SID_ISFDB, isfdbId);
-            }
+            // Copy any native id to the current book (just overwrite, ISFDB data is VERY accurate)
+            book.copyExternalIdsFrom(bookData);
 
             // update the book with Series information (if any) which was gathered from the TOC
             final List<Series> series = bookData.getSeries();
