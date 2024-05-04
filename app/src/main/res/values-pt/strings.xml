@@ -388,7 +388,7 @@
     <string name="vldt_non_blank_required_for_x">Valor não vazio necessário para “%1$s”</string>
     <string name="progress_msg_skip_s">A ignorar “%1$s”</string>
     <string name="progress_msg_cleaning_up">A limpar…</string>
-    <string name="info_tap_on_image_to_select">Toque na imagem maior para seleccioná-la.</string>
+    <string name="X_info_tap_on_image_to_select">Toque na imagem maior para seleccioná-la.</string>
     <string name="size_small">Pequeno</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Ler Códigos de Barras em lote</string>
     <string name="option_shop_books_in_series">Livros desta série</string>
@@ -804,4 +804,5 @@
     <string name="lbl_troubleshooting">Resolução de problemas</string>
     <string name="pt_enable_extra_logging">Ativar o registo adicional</string>
     <string name="lbl_troubleshooting_warning">Não active as opções abaixo, a menos que o programador da aplicação lho solicite explicitamente.</string>
+    <string name="info_tap_to_select">Toque para selecionar.</string>
 </resources>

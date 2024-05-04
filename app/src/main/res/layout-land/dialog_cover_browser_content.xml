@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -35,6 +35,16 @@
         app:title="@string/lbl_covers_long"
         />
 
+    <TextView
+        android:id="@+id/status_message"
+        style="@style/Text.Body"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        app:layout_constraintStart_toStartOf="@id/progress_bar"
+        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
+        tools:ignore="SelectableText"
+        tools:text="@string/progress_msg_searching_editions"
+        />
+
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progress_bar"
         android:layout_width="0dp"
@@ -44,18 +54,8 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@id/gallery"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
+        app:layout_constraintTop_toBottomOf="@id/status_message"
         tools:visibility="visible"
-        />
-
-    <TextView
-        android:id="@+id/status_message"
-        style="@style/Text.Body"
-        android:textAppearance="?attr/textAppearanceBodySmall"
-        app:layout_constraintStart_toStartOf="@id/progress_bar"
-        app:layout_constraintTop_toBottomOf="@id/progress_bar"
-        tools:ignore="SelectableText"
-        tools:text="@string/progress_msg_searching_editions"
         />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -68,10 +68,24 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintEnd_toStartOf="@id/preview"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/status_message"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar"
         app:spanCount="@integer/cover_browser_gallery_span_count"
         tools:itemCount="20"
         tools:listitem="@layout/row_cover_browser_gallery"
+        />
+
+    <TextView
+        android:id="@+id/lbl_preview"
+        style="@style/Text.Body"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/section_margin_top"
+        android:maxLines="2"
+        android:text="@string/info_tap_to_select"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        app:layout_constraintEnd_toEndOf="@id/preview"
+        app:layout_constraintStart_toStartOf="@id/preview"
+        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
+        tools:ignore="SelectableText"
         />
 
     <ImageView
@@ -83,7 +97,7 @@
         app:layout_constraintBottom_toTopOf="@id/barrier_covers_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/gallery"
-        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
+        app:layout_constraintTop_toBottomOf="@id/lbl_preview"
         tools:ignore="ContentDescription"
         tools:src="@sample/covers"
         tools:visibility="visible" />

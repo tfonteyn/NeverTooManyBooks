@@ -105,24 +105,7 @@ class CoverBrowserDelegate
 
         @Override
         public void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
-
-            //noinspection DataFlowIssue
-            final boolean imageOk =
-                    //If the site only supports a single size
-                    !imageFileInfo.getEngineId().getConfig().supportsMultipleCoverSizes()
-                    // or the gallery image is already a large image
-                    || Size.Large == imageFileInfo.getSize();
-
-            if (imageOk) {
-                // just display it
-                setSelectedImage(imageFileInfo);
-
-            } else {
-                // start a task to fetch a larger image
-                vb.preview.setVisibility(View.INVISIBLE);
-                vb.previewProgressBar.show();
-                vm.fetchSelectedImage(imageFileInfo);
-            }
+            setSelectedImage(imageFileInfo, true);
         }
 
         @Override
@@ -181,7 +164,8 @@ class CoverBrowserDelegate
         vm.onSearchEditionsTaskFinished().observe(owner.getViewLifecycleOwner(), message
                 -> message.process(this::showGallery));
 
-        vm.onSelectedImage().observe(owner.getViewLifecycleOwner(), this::setSelectedImage);
+        vm.onSelectedImage().observe(owner.getViewLifecycleOwner(),
+                                     imageFileInfo -> setSelectedImage(imageFileInfo, false));
         previewLoader = new ImageViewLoader(vm.getPreviewDisplayExecutor(),
                                             ImageView.ScaleType.FIT_START,
                                             ImageViewLoader.MaxSize.Enforce,
@@ -316,10 +300,27 @@ class CoverBrowserDelegate
             // No file. Remove the defunct view from the gallery
             vm.getEditions().remove(editionIndex);
             galleryAdapter.notifyItemRemoved(editionIndex);
+
+            // If there is only 1 alternative edition with a cover, auto-select it.
+            // The user still has to accept it manually.
+            if (vm.getEditions().size() == 1) {
+                final AltEdition altEdition = vm.getEditions().get(0);
+                final ImageFileInfo onlyOne = vm.getFileInfo(altEdition);
+                // Sanity check
+                if (onlyOne != null && onlyOne.getFile().isPresent()) {
+                    // Hide the now useless gallery and fetch/show the single image.
+                    // This does mean that if the user saw the gallery image,
+                    // and decided it's not the one they want...
+                    // we STILL potentially fetch a larger copy. Oh well...
+                    vb.statusMessage.setVisibility(View.GONE);
+                    vb.gallery.setVisibility(View.GONE);
+                    setSelectedImage(onlyOne, true);
+                }
+            }
         }
 
-        // if none left, dismiss.
-        if (galleryAdapter.getItemCount() == 0) {
+        // if none left, flash a warning, and dismiss after a small delay.
+        if (vm.getEditions().isEmpty()) {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_image_not_found);
             vb.statusMessage.postDelayed(owner::dismiss, Delay.LONG_MS);
@@ -328,12 +329,40 @@ class CoverBrowserDelegate
 
     /**
      * Display the given image in the preview View.
+     * The 'verify' flag:
+     * <ul>
+     *     <li>{@code true} if the user clicked on a gallery image,
+     *                      but it still needs to be verified and we
+     *                      potentially need to search for a better image.</li>
+     *     <li>{@code false} if the image is already verified, and
+     *                       we should just display it</li>
+     * </ul>
      *
      * @param imageFileInfo to display
+     * @param verify        flag
      */
-    private void setSelectedImage(@Nullable final ImageFileInfo imageFileInfo) {
+    private void setSelectedImage(@Nullable final ImageFileInfo imageFileInfo,
+                                  final boolean verify) {
+        if (verify) {
+            // If the site supports multiple sizes and
+            // the gallery image is not already a large image,
+            // start a task to fetch a larger image.
+            //noinspection DataFlowIssue
+            if (imageFileInfo.getEngineId().getConfig().supportsMultipleCoverSizes()
+                && Size.Large != imageFileInfo.getSize()) {
+                vb.lblPreview.setVisibility(View.INVISIBLE);
+                vb.preview.setVisibility(View.INVISIBLE);
+                vb.previewProgressBar.show();
+                vm.fetchSelectedImage(imageFileInfo);
+                return;
+            }
+        }
+
+        // image is accepted, display it
+
         // Always reset the preview and hide the progress bar
         vm.setSelectedFile(null);
+        vb.lblPreview.setVisibility(View.INVISIBLE);
         vb.preview.setVisibility(View.INVISIBLE);
         vb.previewProgressBar.hide();
 
@@ -343,8 +372,9 @@ class CoverBrowserDelegate
                 previewLoader.fromFile(vb.preview, file.get(), bitmap -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     vm.setSelectedFile(file.get());
+                    vb.lblPreview.setVisibility(View.VISIBLE);
                     vb.preview.setVisibility(View.VISIBLE);
-                    vb.statusMessage.setText(R.string.info_tap_on_image_to_select);
+                    vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
                 }, null);
                 return;
             }

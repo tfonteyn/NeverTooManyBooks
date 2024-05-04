@@ -318,7 +318,7 @@
     <!--Shown when browsing alternative edition book covers. -->
     <string name="info_tap_on_thumbnail_to_zoom">Nhấn vào hình thu nhỏ để hiển thị hình ảnh lớn hơn.</string>
     <!--Shown when browsing alternative edition book covers. -->
-    <string name="info_tap_on_image_to_select">Nhấn vào hình ảnh lớn hơn để chọn nó.</string>
+    <string name="X_info_tap_on_image_to_select">Nhấn vào hình ảnh lớn hơn để chọn nó.</string>
     <string name="info_download_successful">Tải xuống thành công</string>
     <!-- See GitHub docs... there is optional code to be added to Calibre. -->
     <string name="info_calibre_content_server_extension">Tiện ích mở rộng Máy chủ Nội dung Calibre chưa được cài đặt. Thư viện ảo sẽ không có sẵn.</string>
@@ -1515,4 +1515,5 @@
     <string name="lbl_troubleshooting">Xử lý sự cố</string>
     <string name="pt_enable_extra_logging">Cho phép ghi nhật ký bổ sung</string>
     <string name="lbl_troubleshooting_warning">Vui lòng không bật các tùy chọn bên dưới trừ khi nhà phát triển ứng dụng yêu cầu làm như vậy một cách rõ ràng.</string>
+    <string name="info_tap_to_select">Nhấn để chọn.</string>
 </resources>

@@ -350,8 +350,9 @@
     <string name="info_share_book_im_reading">I’m reading “%1$s” %2$s by %3$s %4$s</string>
     <!--Shown when browsing alternative edition book covers. -->
     <string name="info_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
-    <!--Shown when browsing alternative edition book covers. -->
-    <string name="info_tap_on_image_to_select">Tap on the larger image to select it.</string>
+    <!--Label above an image. -->
+    <string name="info_tap_to_select">Tap to select.</string>
+
     <string name="info_download_successful">Download successful</string>
     <!-- See GitHub docs... there is optional code to be added to Calibre. -->
     <string name="info_calibre_content_server_extension">Calibre Content Server extension is not installed. Virtual libraries will not be available.</string>
@@ -1712,6 +1713,8 @@
     <string name="X_info_not_authorized">Not Authorized</string>
     <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
 
+    <string name="X_info_tap_on_image_to_select">Tap on the larger image to select it.</string>
+
     <!-- endregion -->
 
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
@@ -1753,5 +1756,4 @@
     <string name="lbl_troubleshooting">Troubleshooting</string>
     <string name="pt_enable_extra_logging">Enable additional logging</string>
     <string name="lbl_troubleshooting_warning">Please do not enable the below options unless explicitly requested to do so by the app developer.</string>
-
 </resources>

@@ -629,7 +629,7 @@
     <string name="info_rebuild_scheduled">Ανακατασκευή προγραμματισμένη</string>
     <string name="info_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
     <string name="info_share_book_im_reading">Διαβάζω «%1$s» %2$s από %3$s %4$s</string>
-    <string name="info_tap_on_image_to_select">Πατήστε στη μεγαλύτερη εικόνα για να την επιλέξετε.</string>
+    <string name="X_info_tap_on_image_to_select">Πατήστε στη μεγαλύτερη εικόνα για να την επιλέξετε.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Κάντε κλικ στη μικρογραφία για να δείτε μια μεγαλύτερη εικόνα.</string>
     <string name="info_x_pages">%1$d σελίδες</string>
     <string name="unknown">Άγνωστο</string>
@@ -775,4 +775,5 @@
     <string name="lbl_troubleshooting">Αντιμετώπιση προβλημάτων</string>
     <string name="pt_enable_extra_logging">Ενεργοποίηση πρόσθετης καταγραφής</string>
     <string name="lbl_troubleshooting_warning">Παρακαλούμε μην ενεργοποιείτε τις παρακάτω επιλογές, εκτός αν σας ζητηθεί ρητά από τον προγραμματιστή της εφαρμογής.</string>
+    <string name="info_tap_to_select">Πατήστε για να επιλέξετε.</string>
 </resources>

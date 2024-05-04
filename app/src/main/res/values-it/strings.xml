@@ -632,7 +632,7 @@
     <string name="info_rebuild_scheduled">Ricostruzione programmata</string>
     <string name="info_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
     <string name="info_share_book_im_reading">Sto leggendo «%1$s» %2$s di %3$s %4$s</string>
-    <string name="info_tap_on_image_to_select">Tocca l’immagine più grande per selezionarla.</string>
+    <string name="X_info_tap_on_image_to_select">Tocca l’immagine più grande per selezionarla.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Toccare una miniatura per visualizzare un’immagine più grande.</string>
     <string name="info_x_pages">%1$d pagine</string>
     <string name="unknown">Sconosciuto</string>
@@ -778,4 +778,5 @@
     <string name="lbl_troubleshooting">Risoluzione dei problemi</string>
     <string name="pt_enable_extra_logging">Abilitare la registrazione aggiuntiva</string>
     <string name="lbl_troubleshooting_warning">Non abilitare le opzioni seguenti, a meno che non siano state esplicitamente richieste dallo sviluppatore dell\'applicazione.</string>
+    <string name="info_tap_to_select">Toccare per selezionare.</string>
 </resources>

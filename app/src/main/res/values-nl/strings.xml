@@ -230,7 +230,7 @@
     <string name="info_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
     <string name="info_story_in_multiple_books">„%1$s” is present in meerdere boeken:\n\n%2$s</string>
     <string name="info_story_in_single_book">„%1$s” is present in één enkel book:\n\n%2$s</string>
-    <string name="info_tap_on_image_to_select">Tik op de grotere afbeelding om deze te selecteren.</string>
+    <string name="X_info_tap_on_image_to_select">Tik op de grotere afbeelding om deze te selecteren.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Tik op een miniatuur om een grotere afbeelding weer te geven.</string>
     <string name="info_x_pages">%1$d pagina’s</string>
     <string name="lbl_about">Over deze App</string>
@@ -774,4 +774,5 @@
     <string name="lbl_troubleshooting">Problemen oplossen</string>
     <string name="pt_enable_extra_logging">Extra logging inschakelen</string>
     <string name="lbl_troubleshooting_warning">Schakel de onderstaande opties niet in, tenzij de ontwikkelaar van de app hier expliciet om vraagt.</string>
+    <string name="info_tap_to_select">Tik om te selecteren.</string>
 </resources>

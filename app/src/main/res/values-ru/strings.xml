@@ -640,7 +640,7 @@
     <string name="info_rebuild_scheduled">Перестройка запланирована</string>
     <string name="info_select_fields_to_update">Выбранные поля будут обновлены через интернет. Остальные останутся неизменными.</string>
     <string name="info_share_book_im_reading">Я читаю «%1$s» %2$s %3$s %4$s</string>
-    <string name="info_tap_on_image_to_select">Нажмите на увеличенное изображение, чтобы выбрать его.</string>
+    <string name="X_info_tap_on_image_to_select">Нажмите на увеличенное изображение, чтобы выбрать его.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Нажмите на миниатюру, чтобы отобразить увеличенное изображение.</string>
     <string name="info_x_pages">Страниц: %1$d</string>
     <string name="unknown">Неизвестно</string>
@@ -795,4 +795,5 @@
     <string name="lbl_troubleshooting">Устранение неполадок</string>
     <string name="pt_enable_extra_logging">Включите дополнительную регистрацию</string>
     <string name="lbl_troubleshooting_warning">Пожалуйста, не включайте перечисленные ниже опции, если разработчик приложения явно не попросил вас об этом.</string>
+    <string name="info_tap_to_select">Нажмите, чтобы выбрать.</string>
 </resources>

@@ -639,7 +639,7 @@
     <string name="info_rebuild_scheduled">Přestavba naplánována</string>
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="info_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
-    <string name="info_tap_on_image_to_select">Klepnutím na větší obrázek jej vyberte.</string>
+    <string name="X_info_tap_on_image_to_select">Klepnutím na větší obrázek jej vyberte.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Pro zobrazení většího obrázku klikněte na náhled.</string>
     <string name="info_x_pages">%1$d stran</string>
     <string name="unknown">Neznámé</string>
@@ -794,4 +794,5 @@
     <string name="lbl_troubleshooting">Řešení problémů</string>
     <string name="pt_enable_extra_logging">Povolení dalšího protokolování</string>
     <string name="lbl_troubleshooting_warning">Níže uvedené možnosti nepovolujte, pokud o to vývojář aplikace výslovně nepožádá.</string>
+    <string name="info_tap_to_select">Klepnutím na položku vyberte.</string>
 </resources>

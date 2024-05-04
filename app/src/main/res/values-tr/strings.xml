@@ -630,7 +630,7 @@
     <string name="info_rebuild_scheduled">Yeniden planlandı</string>
     <string name="info_select_fields_to_update">Seçilen alanlar İnternet’ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="info_share_book_im_reading">“%1$s” %2$s yazısını %3$s %4$s okuyorum</string>
-    <string name="info_tap_on_image_to_select">Seçmek için daha büyük resme dokunun.</string>
+    <string name="X_info_tap_on_image_to_select">Seçmek için daha büyük resme dokunun.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Daha büyük bir görüntü görüntülemek için bir küçük resme dokunun.</string>
     <string name="info_x_pages">%1$d bet</string>
     <string name="unknown">Bilinmiyor</string>
@@ -785,4 +785,5 @@
     <string name="lbl_troubleshooting">Sorun Giderme</string>
     <string name="pt_enable_extra_logging">Ek günlük kaydını etkinleştirin</string>
     <string name="lbl_troubleshooting_warning">Uygulama geliştiricisi tarafından açıkça talep edilmedikçe lütfen aşağıdaki seçenekleri etkinleştirmeyin.</string>
+    <string name="info_tap_to_select">Seçmek için dokunun.</string>
 </resources>

@@ -643,8 +643,8 @@
     <string name="info_rebuild_scheduled">Przebudowano zaplanowano</string>
     <string name="info_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
     <string name="info_share_book_im_reading">Czytam „%1$s” %2$s przez %3$s %4$s</string>
-    <string name="info_tap_on_image_to_select">Dotknij większego obrazu, aby go wybrać.</string>
-    <string name="info_tap_on_thumbnail_to_zoom">Dotknij miniatury, aby wyświetlić większy obraz.</string>
+    <string name="X_info_tap_on_image_to_select">Stuknij większy obraz, aby go wybrać.</string>
+    <string name="info_tap_on_thumbnail_to_zoom">Stuknij miniaturę, aby wyświetlić większy obraz.</string>
     <string name="info_x_pages">%1$d stron</string>
     <string name="unknown">Brak informacji</string>
     <string name="unknown_author">[Nieznany autor]</string>
@@ -797,4 +797,5 @@
     <string name="lbl_troubleshooting">Rozwiązywanie problemów</string>
     <string name="pt_enable_extra_logging">Włącz dodatkowe rejestrowanie</string>
     <string name="lbl_troubleshooting_warning">Nie włączaj poniższych opcji, chyba że zostaniesz o to wyraźnie poproszony przez twórcę aplikacji.</string>
+    <string name="info_tap_to_select">Stuknij, aby wybrać.</string>
 </resources>

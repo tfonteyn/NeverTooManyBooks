@@ -278,7 +278,7 @@
     <string name="size_medium">中等</string>
     <string name="size_large">较大</string>
     <string name="book_format_paperback_large">平装本</string>
-    <string name="info_tap_on_image_to_select">点击大图来选择它。</string>
+    <string name="X_info_tap_on_image_to_select">点击大图来选择它。</string>
     <string name="info_download_successful">下载成功</string>
     <string name="lbl_about">简介</string>
     <string name="pc_lists">列表</string>
@@ -804,4 +804,5 @@
     <string name="pc_context_menus">上下文菜单和行菜单</string>
     <string name="pe_context_menu_mode_classic">始终作为经典右键菜单</string>
     <string name="pe_context_menu_mode_by_size">长菜单显示在屏幕底部，短菜单则是经典的上下文菜单。</string>
+    <string name="info_tap_to_select">轻敲选择。</string>
 </resources>

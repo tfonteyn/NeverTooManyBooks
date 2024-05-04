@@ -628,7 +628,7 @@
     <string name="info_rebuild_scheduled">Wiederaufbau geplant</string>
     <string name="info_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
     <string name="info_share_book_im_reading">Ich lese „%1$s“ %2$s von %3$s %4$s</string>
-    <string name="info_tap_on_image_to_select">Tippen Sie auf das größere Bild, um es auszuwählen.</string>
+    <string name="X_info_tap_on_image_to_select">Tippen Sie auf das größere Bild, um es auszuwählen.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Tippen Sie auf eine Vorschaubild, um ein größeres Bild anzuzeigen.</string>
     <string name="info_x_pages">%1$d seiten</string>
     <string name="unknown">Unbekannt</string>
@@ -774,4 +774,5 @@
     <string name="lbl_troubleshooting">Fehlersuche</string>
     <string name="pt_enable_extra_logging">Zusätzliche Protokollierung einschalten</string>
     <string name="lbl_troubleshooting_warning">Bitte aktivieren Sie die folgenden Optionen nur, wenn Sie vom Entwickler der Anwendung ausdrücklich dazu aufgefordert werden.</string>
+    <string name="info_tap_to_select">Tippen Sie zum Auswählen.</string>
 </resources>
