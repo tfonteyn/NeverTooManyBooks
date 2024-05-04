@@ -47,7 +47,7 @@ public class CoverBrowserLauncher
      */
     CoverBrowserLauncher(@NonNull final String requestKey,
                          @NonNull final ResultListener resultListener) {
-        super(requestKey, CoverBrowserDialogFragment::new);
+        super(requestKey);
         this.resultListener = resultListener;
     }
 

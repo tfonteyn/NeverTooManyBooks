@@ -17,34 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.EnumSet;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
-public class CoverBrowserDialogFragment
-        extends FFBaseDialogFragment<DialogCoverBrowserContentBinding> {
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public CoverBrowserDialogFragment() {
-        super(R.layout.dialog_cover_browser,
-              R.layout.dialog_cover_browser_content,
-              // Fullscreen on Medium screens
-              EnumSet.of(WindowSizeClass.Medium),
-              EnumSet.of(WindowSizeClass.Medium));
-    }
+public class CoverBrowserBottomSheet
+        extends BaseBottomSheetDialogFragment<DialogCoverBrowserContentBinding> {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -52,13 +40,19 @@ public class CoverBrowserDialogFragment
         delegate = new CoverBrowserDelegate(this, requireArguments());
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = DialogCoverBrowserContentBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
+
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
-
-        // Don't give it the gallery! We're auto-adapting in the delegate already
-        adjustWindowSize(null, /* ignored */ 0f);
+        delegate.initToolbarActionButtons(vb.dialogToolbar, 0, delegate);
     }
 }

@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -99,9 +100,6 @@ public class CoverHandler {
     /** Log tag. */
     private static final String TAG = "CoverHandler";
     private static final String RK_MENU = TAG + ":menu";
-
-    /** FragmentResultListener request key. Append the cIdx value! */
-    private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDelegate.TAG;
 
     private static final String IMAGE_MIME_TYPE = "image/*";
 
@@ -165,8 +163,10 @@ public class CoverHandler {
 
         final FragmentManager fm = fragment.getChildFragmentManager();
 
-        coverBrowserLauncher = new CoverBrowserLauncher(RK_COVER_BROWSER + cIdx,
-                                                        this::onFileSelected);
+        coverBrowserLauncher = new CoverBrowserLauncher(
+                // Append the cIdx value!
+                DialogLauncher.RK_COVER_BROWSER + cIdx,
+                this::onFileSelected);
 
         // concat the RK with the cIdx as we have more than CoverHandler
         menuLauncher = new ExtMenuLauncher(RK_MENU + this.cIdx, this::onMenuItemSelected);
@@ -362,7 +362,7 @@ public class CoverHandler {
     /**
      * Menu selection listener.
      *
-     * @param cIdx 0..n image index
+     * @param cIdx       0..n image index
      * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.

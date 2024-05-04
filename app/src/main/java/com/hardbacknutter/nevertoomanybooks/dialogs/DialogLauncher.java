@@ -48,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgressBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgressDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -80,6 +82,9 @@ public abstract class DialogLauncher
     public static final String RK_FILTERS = "RK_FILTERS";
     public static final String RK_DATE_PICKER_PARTIAL = "RK_DATE_PICKER_PARTIAL";
 
+    /** <strong>IMPORTANT:</strong> always append the cIdx value */
+    public static final String RK_COVER_BROWSER = "RK_COVER_BROWSER";
+
     public static final String RK_EDIT_BOOK_BOOKSHELVES = "RK_EDIT_BOOK_BOOKSHELVES";
     public static final String RK_EDIT_BOOK_AUTHOR = "RK_EDIT_BOOK_AUTHOR";
     public static final String RK_EDIT_BOOK_PUBLISHER = "RK_EDIT_BOOK_PUBLISHER";
@@ -109,7 +114,10 @@ public abstract class DialogLauncher
 
                     Map.entry(RK_STYLE_PICKER, StylePickerBottomSheet::new),
                     Map.entry(RK_FILTERS, BookshelfFiltersBottomSheet::new),
-                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerBottomSheet::new)
+                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerBottomSheet::new),
+
+                    Map.entry(RK_COVER_BROWSER + "0", CoverBrowserBottomSheet::new),
+                    Map.entry(RK_COVER_BROWSER + "1", CoverBrowserBottomSheet::new)
             );
     private static final Map<String, Supplier<DialogFragment>> DIALOG =
             Map.ofEntries(
@@ -134,8 +142,12 @@ public abstract class DialogLauncher
 
                     Map.entry(RK_STYLE_PICKER, StylePickerDialogFragment::new),
                     Map.entry(RK_FILTERS, BookshelfFiltersDialogFragment::new),
-                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerDialogFragment::new)
+                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerDialogFragment::new),
+
+                    Map.entry(RK_COVER_BROWSER + "0", CoverBrowserDialogFragment::new),
+                    Map.entry(RK_COVER_BROWSER + "1", CoverBrowserDialogFragment::new)
             );
+
     private static final String TAG = "DialogLauncher";
     /**
      * The bundle key to pass the {@link #requestKey} around.
