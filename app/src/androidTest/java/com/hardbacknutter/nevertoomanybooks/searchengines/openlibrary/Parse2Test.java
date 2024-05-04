@@ -182,10 +182,9 @@ public class Parse2Test
         assertEquals(1, allSeries.size());
         assertEquals("Nevermoor", allSeries.get(0).getTitle());
 
-        //FIXME: there are NO covers found but the site does show one?
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        assertEquals(0, covers.size());
+        assertEquals(1, covers.size());
     }
 
     @Test
