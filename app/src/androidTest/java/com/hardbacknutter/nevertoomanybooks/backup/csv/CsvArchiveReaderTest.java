@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
+import android.database.Cursor;
 import android.net.Uri;
 
 import java.io.File;
@@ -35,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestUtils;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -94,7 +94,6 @@ public class CsvArchiveReaderTest
         ArchiveMetaData metaData;
         ImportResults importResults;
 
-        TypedCursor bookCursor;
         Book book;
 
         file = TestUtils.createFile(
@@ -163,56 +162,59 @@ public class CsvArchiveReaderTest
         assertFalse(bookDao.bookExistsById(666000003));
         assertFalse(bookDao.bookExistsById(666000004));
 
-        bookCursor = bookDao.fetchById(666000002);
-        assertTrue(bookCursor.moveToFirst());
-        book = Book.from(bookCursor);
-        bookDao.setRead(book, true);
+        try (Cursor cursor = bookDao.fetchById(666000002)) {
+            assertTrue(cursor.moveToFirst());
+            book = Book.from(cursor);
+            bookDao.setRead(book, true);
 
-        file = TestUtils.createFile(
-                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
-                new File(context.getCacheDir(), "testdata.csv"));
+            file = TestUtils.createFile(
+                    com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
+                    new File(context.getCacheDir(), "testdata.csv"));
 
-        locale = context.getResources().getConfiguration().getLocales().get(0);
+            locale = context.getResources().getConfiguration().getLocales().get(0);
 
-        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
-        importHelper.addRecordType(RecordType.Books);
-        importHelper.setUpdateOption(DataReader.Updates.OnlyNewer);
-        importResults = importHelper.read(context, new TestProgressListener(TAG));
+            importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+            importHelper.addRecordType(RecordType.Books);
+            importHelper.setUpdateOption(DataReader.Updates.OnlyNewer);
+            importResults = importHelper.read(context, new TestProgressListener(TAG));
 
-        assertEquals(4, importResults.booksProcessed);
-        assertEquals(3, importResults.booksCreated);
-        assertEquals(0, importResults.booksUpdated);
-        assertEquals(1, importResults.booksSkipped);
-        assertEquals(0, importResults.booksFailed);
-        assertEquals(booksPresent + 4, bookDao.count());
+            assertEquals(4, importResults.booksProcessed);
+            assertEquals(3, importResults.booksCreated);
+            assertEquals(0, importResults.booksUpdated);
+            assertEquals(1, importResults.booksSkipped);
+            assertEquals(0, importResults.booksFailed);
+            assertEquals(booksPresent + 4, bookDao.count());
+        }
 
-        bookCursor = bookDao.fetchById(666000002);
-        assertTrue(bookCursor.moveToFirst());
-        book = Book.from(bookCursor);
-        assertTrue(book.isRead());
+        try (Cursor cursor = bookDao.fetchById(666000002)) {
+            assertTrue(cursor.moveToFirst());
+            book = Book.from(cursor);
+            assertTrue(book.isRead());
 
-        // same import, but using DataReader.Updates.Overwrite
-        file = TestUtils.createFile(
-                com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
-                new File(context.getCacheDir(), "testdata.csv"));
+            // same import, but using DataReader.Updates.Overwrite
+            file = TestUtils.createFile(
+                    com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
+                    new File(context.getCacheDir(), "testdata.csv"));
 
-        locale = context.getResources().getConfiguration().getLocales().get(0);
+            locale = context.getResources().getConfiguration().getLocales().get(0);
 
-        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
-        importHelper.addRecordType(RecordType.Books);
-        importHelper.setUpdateOption(DataReader.Updates.Overwrite);
-        importResults = importHelper.read(context, new TestProgressListener(TAG));
+            importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+            importHelper.addRecordType(RecordType.Books);
+            importHelper.setUpdateOption(DataReader.Updates.Overwrite);
+            importResults = importHelper.read(context, new TestProgressListener(TAG));
 
-        assertEquals(4, importResults.booksProcessed);
-        assertEquals(0, importResults.booksCreated);
-        assertEquals(4, importResults.booksUpdated);
-        assertEquals(0, importResults.booksSkipped);
-        assertEquals(0, importResults.booksFailed);
-        assertEquals(booksPresent + 4, bookDao.count());
+            assertEquals(4, importResults.booksProcessed);
+            assertEquals(0, importResults.booksCreated);
+            assertEquals(4, importResults.booksUpdated);
+            assertEquals(0, importResults.booksSkipped);
+            assertEquals(0, importResults.booksFailed);
+            assertEquals(booksPresent + 4, bookDao.count());
+        }
 
-        bookCursor = bookDao.fetchById(666000002);
-        assertTrue(bookCursor.moveToFirst());
-        book = Book.from(bookCursor);
-        assertFalse(book.isRead());
+        try (Cursor cursor = bookDao.fetchById(666000002)) {
+            assertTrue(cursor.moveToFirst());
+            book = Book.from(cursor);
+            assertFalse(book.isRead());
+        }
     }
 }
