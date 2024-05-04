@@ -70,7 +70,7 @@ public interface ToolbarWithActionButtons {
      * Setup the Toolbar listeners.
      *
      * @param dialogToolbar to process
-     * @param menuResId     optional menu resource to inflate
+     * @param menuResId     optional menu resource to inflate; {@code 0} for none.
      * @param listener      to set
      */
     default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,

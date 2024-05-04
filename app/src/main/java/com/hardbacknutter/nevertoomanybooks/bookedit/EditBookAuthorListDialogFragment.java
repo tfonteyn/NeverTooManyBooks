@@ -161,7 +161,7 @@ public class EditBookAuthorListDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initToolbarActionButtons(vb.toolbar, Menu.NONE, this);
+        initToolbarActionButtons(vb.toolbar, 0, this);
         vb.toolbar.setSubtitle(vm.getBook().getTitle());
 
         //noinspection DataFlowIssue
