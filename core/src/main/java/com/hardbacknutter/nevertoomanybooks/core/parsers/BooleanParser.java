@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import java.util.Locale;
 
 public final class BooleanParser {
     /** log error string. */
-    private static final String ERROR_NOT_A_BOOLEAN = "Not a boolean: ";
+    private static final String ERROR_FAILED_TO_PARSE = "Failed to parse: ";
 
     private BooleanParser() {
     }
@@ -79,7 +79,7 @@ public final class BooleanParser {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new NumberFormatException(ERROR_NOT_A_BOOLEAN + source);
+                throw new NumberFormatException(ERROR_FAILED_TO_PARSE + source);
             }
         }
 
@@ -105,7 +105,7 @@ public final class BooleanParser {
                 try {
                     return Integer.parseInt(stringValue) != 0;
                 } catch (@NonNull final NumberFormatException e) {
-                    throw new NumberFormatException(ERROR_NOT_A_BOOLEAN + source);
+                    throw new NumberFormatException(ERROR_FAILED_TO_PARSE + source);
                 }
         }
     }
