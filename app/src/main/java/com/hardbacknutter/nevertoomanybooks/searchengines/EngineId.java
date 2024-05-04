@@ -494,7 +494,6 @@ public enum EngineId
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
                 type.addSite(OpenLibrary, true);
                 type.addSite(Isfdb, true);
-                type.addSite(LibraryThing, true);
                 break;
             }
 
