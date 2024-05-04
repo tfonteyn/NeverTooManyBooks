@@ -199,6 +199,7 @@
             android:icon="@drawable/ic_baseline_tune_24"
             android:key="psk_dialog_and_menu_popup_tuning"
             android:title="@string/pt_dialog_and_menu_popup_tuning"
+            android:summary="@string/pc_ui"
             />
 
         <SwitchPreference
