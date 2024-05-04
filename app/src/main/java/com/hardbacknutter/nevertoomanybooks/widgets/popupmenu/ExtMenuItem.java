@@ -35,6 +35,11 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * A lot of the methods in this class are in fact not used.
+ * We added them with the idea of "implements MenuItem".
+ * To be revisited some day...
+ */
 public class ExtMenuItem
         implements Parcelable {
 
@@ -86,7 +91,7 @@ public class ExtMenuItem
         enabled = in.readByte() != 0;
         subMenu = in.readParcelable(getClass().getClassLoader());
 
-        // see writeToParcel()
+        // see notes in writeToParcel()
         iconResId = in.readInt();
     }
 
@@ -147,7 +152,7 @@ public class ExtMenuItem
     }
 
     @IdRes
-    public int getGroup() {
+    public int getGroupId() {
         return groupId;
     }
 
@@ -272,13 +277,14 @@ public class ExtMenuItem
         dest.writeByte((byte) (enabled ? 1 : 0));
         dest.writeParcelable(subMenu, flags);
 
-        //URGENT: we cannot write the icon itself, and some menu items
+        // We cannot write the icon itself, and some menu items
         // might not have an iconRedId set.... not much we can do about that.
-        // See {@link IconMapper}
         // However, it's been seen that Parcelling this class
         // does not actually (ever?) calls the Parcelable interface?
         // Instead it seems Android proxies back to the original
         // and the icon Drawable IS FOUND AND USED anyhow.
+        // Either way, the above is a reminder/info only.
+        // Solved by using {@link IconMapper}
         dest.writeInt(iconResId);
     }
 

@@ -36,6 +36,11 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A lot of the methods in this class are in fact not used.
+ * We added them with the idea of "implements Menu".
+ * To be revisited some day...
+ */
 public class ExtMenu
         implements Parcelable {
 
@@ -71,8 +76,6 @@ public class ExtMenu
 
     /**
      * Convert a {@link Menu} to a list of {@link ExtMenuItem}s.
-     * <p>
-     * URGENT: check the 'orderInCategory'
      *
      * @param menu                to convert
      * @param groupDividerEnabled flag
@@ -85,6 +88,9 @@ public class ExtMenu
         final ArrayList<ExtMenuItem> list = new ArrayList<>();
         int previousGroupId = menu.size() > 0 ? menu.getItem(0).getGroupId() : 0;
 
+        // We don't have to bother with the 'orderInCategory' as the Menu
+        // will have ordered all items at the time of adding them.
+        // Hence, menu.getItem(i) will deliver them in the correct order as needed.
         for (int i = 0; i < menu.size(); i++) {
             final MenuItem menuItem = menu.getItem(i);
             final int groupId = menuItem.getGroupId();
