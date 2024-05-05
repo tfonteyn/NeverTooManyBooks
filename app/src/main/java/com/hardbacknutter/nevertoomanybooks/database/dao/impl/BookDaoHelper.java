@@ -508,11 +508,9 @@ public class BookDaoHelper {
                                     // This does mean that sentiments like:
                                     // list_price="a lot of money" will NOT be preserved!
                                     //
-                                    // FIXME: we also loose input like "12,95"
-                                    //  when we're running with Locales which
-                                    //  use "." as decimal sep.
-                                    // e.g. if a UK device imports data from a CSV file
-                                    // with prices like "12,95" we loose that info.
+                                    // FIXME: we also loose price data when we're running
+                                    //  with Locales which use "." as decimal sep and
+                                    //  the CSV file contains prices like "12,95"
                                     LoggerFactory.getLogger()
                                                  .w(TAG, "columnName(float)=" + columnName,
                                                     "entry=" + entry,
