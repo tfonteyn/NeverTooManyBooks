@@ -46,6 +46,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
+// 2024-05-05: Tried using a SideSheetDialog on phone screens, but they are just that: a "Dialog"
+// and not a DialogFragment. No life cycle entry points.
+// This limits their use with a delegate (like we do for BottomSheet)
+// to allow flexibility. Especially the integrated DisplayBookLauncher becomes hard to use.
 public class TocFragment
         extends BaseFragment {
 
@@ -158,7 +162,7 @@ public class TocFragment
 
         if (!vm.isEmbedded()) {
             final Toolbar toolbar = getToolbar();
-            vm.getScreenTitle(getContext()).ifPresent(toolbar::setTitle);
+            vm.getScreenTitle(context).ifPresent(toolbar::setTitle);
             vm.getScreenSubtitle().ifPresent(toolbar::setSubtitle);
         }
     }
