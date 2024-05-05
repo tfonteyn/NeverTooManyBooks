@@ -170,7 +170,7 @@
             tools:text="@sample/data.json/series_list/title_nr"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_show_toc"
             style="@style/Button.Action.OpenToc"
             android:layout_marginStart="@dimen/field_margin_start"
