@@ -54,6 +54,7 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private AmazonSearchEngine searchEngine;
+    private RealNumberParser realNumberParser;
 
     @Before
     public void setup()
@@ -62,6 +63,7 @@ public class ParseTest
 
         searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 
     @Test
@@ -83,6 +85,8 @@ public class ParseTest
         assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(28.85d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -118,6 +122,8 @@ public class ParseTest
         assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(4.81d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -143,9 +149,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.amazon_2205057332;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
@@ -155,7 +158,7 @@ public class ParseTest
                      book.getString(DBKey.TITLE, null));
         assertEquals("Français", book.getString(DBKey.LANGUAGE, null));
         assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals(13d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(13.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -182,9 +185,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.amazon_3518366823;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
@@ -196,7 +196,7 @@ public class ParseTest
         assertEquals("Deutsch", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Taschenbuch", book.getString(DBKey.FORMAT, null));
         assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
-        assertEquals(8d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(9d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("1974-07-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
@@ -221,9 +221,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.amazon_3518366823_us;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
@@ -233,7 +230,7 @@ public class ParseTest
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("German", book.getString(DBKey.LANGUAGE, null));
         assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
-        assertEquals(13.19d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(13.17d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         // The date is REALLY given as 1-jan.
         assertEquals("1995-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -259,9 +256,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.amazon_1107480558;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
@@ -272,7 +266,7 @@ public class ParseTest
         assertEquals("978-1107480551", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
         assertEquals("1107480558", book.getString(DBKey.SID_ASIN, null));
-        assertEquals(22.36d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("2015-04-20", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
@@ -296,9 +290,6 @@ public class ParseTest
         final String locationHeader = "https://www.amazon.es/gp/product/840827578X";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.amazon_840827578x;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();

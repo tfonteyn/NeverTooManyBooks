@@ -29,6 +29,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -36,10 +38,14 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -132,7 +138,7 @@ public class AmazonSearchEngine
             Pattern.compile("\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final String LABEL_FORMAT =
-            // English
+            // English, Dutch
             "hardcover,paperback"
             // French
             + ",relié,broché"
@@ -203,6 +209,18 @@ public class AmazonSearchEngine
 
     private static final String LABEL_ISBN_13 = "isbn-13";
     private static final String LABEL_ISBN_10 = "isbn-10";
+
+    private static final String[] PRICE_PREFIXES = {
+            // English
+            "from ",
+            // French
+            "à partir de ",
+            // German
+            "ab ",
+            // Dutch
+            "vanaf ",
+            // Spanish/Portuguese
+            "desde "};
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     /** Parse the "x pages" string. */
@@ -394,38 +412,52 @@ public class AmazonSearchEngine
                             @NonNull final Locale siteLocale,
                             @NonNull final Document document,
                             @NonNull final Book book) {
-        final Element mediaMatrix = document.selectFirst("div#MediaMatrix");
-        if (mediaMatrix == null) {
-            LoggerFactory.getLogger().w(TAG, "parsePrice", "no MediaMatrix?");
+        final Element tmmSwatches = document.selectFirst("div#tmmSwatches");
+        if (tmmSwatches == null) {
+            LoggerFactory.getLogger().w(TAG, "parsePrice", "no tmmSwatches?");
             return;
         }
 
-        final Element swatchElement = mediaMatrix.selectFirst("li.swatchElement.selected");
+        final Element swatchElement = tmmSwatches.selectFirst("div.swatchElement.selected");
         if (swatchElement == null) {
-            LoggerFactory.getLogger().w(TAG, "parsePrice", "no swatchElement?");
+            LoggerFactory.getLogger().w(TAG, "parsePrice", "no swatchElement.selected?");
             return;
         }
+
+        final Element slotPrice = swatchElement.selectFirst("span.slot-price");
+        if (slotPrice == null) {
+            LoggerFactory.getLogger().w(TAG, "parsePrice", "no span.slot-price?");
+            return;
+        }
+
 
         // 2023-10-28: verified to work on amazon.com, amazon.co.uk, amazon.com.be
-        // but some books (.com?) have a "from $xx" which does not have "a-color-price"
-        final Element price = swatchElement.selectFirst("span.a-color-price");
+        // but some books (.com?) have a "from $xx"
+        final Element price = slotPrice.selectFirst("span");
         if (price == null) {
-            LoggerFactory.getLogger().w(TAG, "parsePrice", "no a-color-price?");
+            LoggerFactory.getLogger().w(TAG, "parsePrice", "no span below span.slot-price?");
             return;
         }
 
-        final Optional<Money> money = getMoneyParser(context, siteLocale)
-                .parse(price.text().strip());
+        String priceText = price.text().strip();
+        for (final String prefix : PRICE_PREFIXES) {
+            if (priceText.startsWith(prefix)) {
+                priceText = priceText.substring(prefix.length());
+                break;
+            }
+        }
+
+        final Optional<Money> money = getMoneyParser(context, siteLocale).parse(priceText);
         if (money.isPresent()) {
             book.putMoney(DBKey.PRICE_LISTED, money.get());
         } else {
             // parsing failed, store the string as-is;
             // no separate currency!
-            book.putString(DBKey.PRICE_LISTED, price.text().strip());
+            book.putString(DBKey.PRICE_LISTED, priceText);
             // log this as we need to understand WHY it failed
             LoggerFactory.getLogger().w(TAG, "Failed to parse",
                                         DBKey.PRICE_LISTED,
-                                        "text=" + price.text().strip());
+                                        "text=" + priceText);
         }
 
         // The format can/should also be here
@@ -528,6 +560,24 @@ public class AmazonSearchEngine
                 }
             }
         }
+    }
+
+    @NonNull
+    protected DateParser getDateParser(@NonNull final Context context,
+                                       @NonNull final Locale siteLocale) {
+        final List<Locale> locales;
+
+        // Hack to support the Portuguese site which does a redirect to the Spanish one
+        if ("es".equals(siteLocale.getLanguage())) {
+            locales = new ArrayList<>(LocaleListUtils.asList(context, siteLocale));
+            // Not verified but let's hope "pt_BR" uses the same spelling for month names
+            locales.add(1, new Locale("pt"));
+        } else {
+            locales = LocaleListUtils.asList(context, siteLocale);
+        }
+        final Locale systemLocale = ServiceLocator
+                .getInstance().getSystemLocaleList().get(0);
+        return new FullDateParser(systemLocale, locales);
     }
 
     /**
