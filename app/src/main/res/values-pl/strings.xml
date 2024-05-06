@@ -390,6 +390,7 @@
     <string name="lbl_date_published_year">Rok publikacji</string>
     <string name="lbl_publisher">Wydawca</string>
     <string name="lbl_publishers">Wydawcy</string>
+    <string name="pe_ui_context_menu_mode_by_size">Mniejsze ekrany wyświetlają długie menu u dołu ekranu i krótkie menu jako klasyczne menu kontekstowe.\\nWiększe ekrany, takie jak tablety, zawsze używają klasycznych menu kontekstowych.</string>
     <string name="option_purge_files">Usuwanie plików</string>
     <string name="option_purge_image_cache">Wyczyść pamięć podręczną obrazu</string>
     <string name="lbl_rating">Ocena</string>
@@ -790,10 +791,9 @@
     <string name="pe_option_bottom_sheet">Zawsze w dolnej części ekranu</string>
     <string name="pt_ui_dialogs_mode">Dialogi</string>
     <string name="pe_ui_dialog_mode_classic">Zawsze jako klasyczne okno dialogowe</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Większe ekrany (takie jak tablety) używają klasycznych okien dialogowych, podczas gdy mniejsze ekrany wyświetlają okna dialogowe na dole ekranu.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Mniejsze ekrany wyświetlają okna dialogowe u dołu ekranu.\\nWiększe ekrany, takie jak tablety, zawsze używają klasycznych okien dialogowych.</string>
     <string name="pc_context_menus">Menu kontekstowe i wierszowe</string>
-    <string name="pe_context_menu_mode_classic">Zawsze jako klasyczne menu kontekstowe</string>
-    <string name="pe_context_menu_mode_by_size">Długie menu są wyświetlane na dole ekranu, a krótkie menu to klasyczne menu kontekstowe.</string>
+    <string name="pe_ui_context_menu_mode_classic">Zawsze jako klasyczne menu kontekstowe</string>
     <string name="lbl_troubleshooting">Rozwiązywanie problemów</string>
     <string name="pt_enable_extra_logging">Włącz dodatkowe rejestrowanie</string>
     <string name="lbl_troubleshooting_warning">Nie włączaj poniższych opcji, chyba że zostaniesz o to wyraźnie poproszony przez twórcę aplikacji.</string>

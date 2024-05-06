@@ -229,9 +229,9 @@
 
     <!-- ListPreference - How to display context/row menus. -->
     <string-array name="pe_ui_context_menu_mode">
-        <item>@string/pe_context_menu_mode_classic</item>
-        <item>@string/pe_context_menu_mode_bottom_sheet</item>
-        <item>@string/pe_context_menu_mode_by_size</item>
+        <item>@string/pe_ui_context_menu_mode_classic</item>
+        <item>@string/pe_ui_context_menu_mode_bottom_sheet</item>
+        <item>@string/pe_ui_context_menu_mode_by_size</item>
     </string-array>
     <string-array name="pv_ui_menus_context">
         <item>0</item>

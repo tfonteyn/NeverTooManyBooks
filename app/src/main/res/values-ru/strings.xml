@@ -387,6 +387,7 @@
     <string name="lbl_date_published_year">Год публикации</string>
     <string name="lbl_publisher">Издатель</string>
     <string name="lbl_publishers">Издатели</string>
+    <string name="pe_ui_context_menu_mode_by_size">На маленьких экранах длинные меню отображаются в нижней части экрана, а короткие - в виде классических контекстных меню.\\nНа больших экранах, таких как планшеты, всегда используются классические контекстные меню.</string>
     <string name="option_purge_files">Очистка файлов</string>
     <string name="option_purge_image_cache">Очистить кэш изображений</string>
     <string name="lbl_rating">Оценка</string>
@@ -788,10 +789,9 @@
     <string name="pe_option_bottom_sheet">Всегда в нижней части экрана</string>
     <string name="pt_ui_dialogs_mode">Диалоги</string>
     <string name="pe_ui_dialog_mode_classic">Всегда в виде классического диалогового окна</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">На больших экранах (например, на планшетах) используются классические диалоговые окна, а на маленьких экранах диалоговые окна отображаются в нижней части экрана.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">На маленьких экранах диалоговые окна отображаются в нижней части экрана.\\nНа больших экранах, таких как планшеты, всегда используются классические диалоговые окна.</string>
     <string name="pc_context_menus">Контекстное и строчное меню</string>
-    <string name="pe_context_menu_mode_classic">Всегда в виде классического контекстного меню</string>
-    <string name="pe_context_menu_mode_by_size">Длинные меню отображаются в нижней части экрана, а короткие - это классические контекстные меню.</string>
+    <string name="pe_ui_context_menu_mode_classic">Всегда в виде классического контекстного меню</string>
     <string name="lbl_troubleshooting">Устранение неполадок</string>
     <string name="pt_enable_extra_logging">Включите дополнительную регистрацию</string>
     <string name="lbl_troubleshooting_warning">Пожалуйста, не включайте перечисленные ниже опции, если разработчик приложения явно не попросил вас об этом.</string>

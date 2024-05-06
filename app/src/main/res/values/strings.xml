@@ -1282,18 +1282,6 @@
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
     <!-- MultiSelectListPreference title -->
     <string name="pt_primary_author_type">Primary author type</string>
-    <!-- [VERIFIED] ListPreference title: "UI Language" -->
-    <string name="pt_ui_language">Language</string>
-    <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
-    <string name="pt_ui_system_locale">System language</string>
-    <!-- ListPreference title: UI Theme -->
-    <string name="pt_ui_theme">Interface Theme</string>
-    <!-- ListPreference value: UI Theme -->
-    <string name="pe_ui_theme_day_night">Day / Night</string>
-    <!-- ListPreference value: UI Theme -->
-    <string name="pe_ui_theme_dark">Dark</string>
-    <!-- ListPreference value: UI Theme -->
-    <string name="pe_ui_theme_light">Light</string>
     <!-- ListPreference title: option title -->
     <string name="pt_edit_book_isbn_checks">ISBN validity checks</string>
     <!-- ListPreference title: Booklist startup-state preferences -->
@@ -1338,6 +1326,47 @@
     <string name="pe_camera_other">Other</string>
     <!-- Preference option title -->
     <string name="pt_search_show_shopping_options">Show shopping menus</string>
+    <!-- endregion -->
+    <!-- region ========== Global UI settings. -->
+    <!-- [VERIFIED] ListPreference title: "UI Language" -->
+    <string name="pt_ui_language">Language</string>
+    <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
+    <string name="pt_ui_system_locale">System language</string>
+    <!-- ListPreference title: UI Theme -->
+    <string name="pt_ui_theme">Interface Theme</string>
+    <!-- ListPreference value: UI Theme -->
+    <string name="pe_ui_theme_day_night">Day / Night</string>
+    <!-- ListPreference value: UI Theme -->
+    <string name="pe_ui_theme_dark">Dark</string>
+    <!-- ListPreference value: UI Theme -->
+    <string name="pe_ui_theme_light">Light</string>
+    <!-- ListPreference title. UI Dialog tuning. Opens a new screen with the related settings. -->
+    <string name="pt_dialog_and_menu_popup_tuning">Dialogs and Menus</string>
+
+    <!-- ListPreference value: UI Dialog tuning.
+         Always display a dialog or context menu using a BottomSheet. -->
+    <string name="pe_option_bottom_sheet">Always at the bottom of the screen</string>
+
+    <!-- ListPreference title: UI Dialog tuning. -->
+    <string name="pt_ui_dialogs_mode">Dialogs</string>
+    <!-- ListPreference value: UI Dialog tuning. -->
+    <string name="pe_ui_dialog_mode_classic">Always as a classic dialog box</string>
+    <!-- ListPreference value: UI Dialog tuning. -->
+    <string name="pe_ui_dialog_mode_bottom_sheet"
+            translatable="false">@string/pe_option_bottom_sheet</string>
+    <!-- ListPreference value: UI Dialog tuning. -->
+    <string name="pe_ui_dialog_mode_by_screen_size">Smaller screens display the dialogs at the bottom of the screen.\nLarger screens, such as tablets, always use classic dialog boxes.</string>
+
+    <!-- ListPreference title: UI context menu tuning. -->
+    <string name="pc_context_menus">Context and row menus</string>
+    <!-- ListPreference value: UI context menu tuning. -->
+    <string name="pe_ui_context_menu_mode_classic">Always as a classic context menu</string>
+    <!-- ListPreference value: UI context menu tuning. -->
+    <string name="pe_ui_context_menu_mode_bottom_sheet"
+            translatable="false">@string/pe_option_bottom_sheet</string>
+    <!-- ListPreference value: UI context menu tuning. -->
+    <string name="pe_ui_context_menu_mode_by_size">Smaller screens display long menus at the bottom of the screen and short menus as classic context menus.\nLarger screens, such as tablets, always use classic context menus.</string>
+
     <!-- endregion -->
     <!-- region ========== Maintenance. -->
     <!-- Cleanup log and other temp files -->
@@ -1750,32 +1779,6 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
-
-    <!-- ListPreference title. Opens a new screen with the related settings. -->
-    <string name="pt_dialog_and_menu_popup_tuning">Dialogs and Menus</string>
-
-    <!-- ListPreference value: always display a dialog or context menu using a BottomSheet. -->
-    <string name="pe_option_bottom_sheet">Always at the bottom of the screen</string>
-
-    <!-- ListPreference title: UI Dialog tuning. -->
-    <string name="pt_ui_dialogs_mode">Dialogs</string>
-    <!-- ListPreference value: UI Dialog tuning. -->
-    <string name="pe_ui_dialog_mode_classic">Always as a classic dialog box</string>
-    <!-- ListPreference value: UI Dialog tuning. -->
-    <string name="pe_ui_dialog_mode_bottom_sheet"
-            translatable="false">@string/pe_option_bottom_sheet</string>
-    <!-- ListPreference value: UI Dialog tuning. -->
-    <string name="pe_ui_dialog_mode_by_screen_size">Larger screens (such as tablets) use classic dialog boxes, while smaller screens display the dialog boxes at the bottom of the screen.</string>
-
-    <!-- ListPreference title: UI context menu tuning. -->
-    <string name="pc_context_menus">Context and row menus</string>
-    <!-- ListPreference value: UI context menu tuning. -->
-    <string name="pe_context_menu_mode_classic">Always as a classic context menu</string>
-    <!-- ListPreference value: UI context menu tuning. -->
-    <string name="pe_context_menu_mode_bottom_sheet"
-            translatable="false">@string/pe_option_bottom_sheet</string>
-    <!-- ListPreference value: UI context menu tuning. -->
-    <string name="pe_context_menu_mode_by_size">Long menus are displayed at the bottom of the screen and short menus are classic context menus.</string>
 
     <string name="lbl_troubleshooting">Troubleshooting</string>
     <string name="pt_enable_extra_logging">Enable additional logging</string>

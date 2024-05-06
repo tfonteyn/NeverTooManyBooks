@@ -385,6 +385,7 @@
     <string name="lbl_date_published_year">Año de publicación</string>
     <string name="lbl_publisher">Editorial</string>
     <string name="lbl_publishers">Editores</string>
+    <string name="pe_ui_context_menu_mode_by_size">Las pantallas más pequeñas muestran los menús largos en la parte inferior de la pantalla y los menús cortos como menús contextuales clásicos.\\nLas pantallas más grandes, como las tabletas, siempre utilizan menús contextuales clásicos.</string>
     <string name="option_purge_files">Borrar ficheros</string>
     <string name="option_purge_image_cache">Borrar caché de imágenes</string>
     <string name="lbl_rating">Calificación</string>
@@ -781,10 +782,9 @@
     <string name="pe_option_bottom_sheet">Siempre en la parte inferior de la pantalla</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
     <string name="pe_ui_dialog_mode_classic">Siempre como un diálogo clásico</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Las pantallas más grandes (como las tabletas) utilizan cuadros de diálogo clásicos, mientras que las pantallas más pequeñas muestran los cuadros de diálogo en la parte inferior de la pantalla.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Las pantallas más pequeñas muestran los cuadros de diálogo en la parte inferior de la pantalla.\\nLas pantallas más grandes, como las tabletas, utilizan siempre cuadros de diálogo clásicos.</string>
     <string name="pc_context_menus">Menús contextuales y de filas</string>
-    <string name="pe_context_menu_mode_classic">Siempre como un menú contextual clásico</string>
-    <string name="pe_context_menu_mode_by_size">Los menús largos se muestran en la parte inferior de la pantalla y los cortos son menús contextuales clásicos.</string>
+    <string name="pe_ui_context_menu_mode_classic">Siempre como un menú contextual clásico</string>
     <string name="lbl_troubleshooting">Solución de problemas</string>
     <string name="pt_enable_extra_logging">Activar registro adicional</string>
     <string name="lbl_troubleshooting_warning">No active las siguientes opciones a menos que el desarrollador de la aplicación se lo pida explícitamente.</string>

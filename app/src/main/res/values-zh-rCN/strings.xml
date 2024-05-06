@@ -693,6 +693,7 @@
     <string name="pt_bob_list_rebuild_state">书单启动时状态</string>
     <string name="pt_thumbnails_rotate_auto">旋转照片</string>
     <string name="camera_next_action">拍照后选择操作</string>
+    <string name="pe_ui_context_menu_mode_by_size">较小的屏幕会在屏幕底部显示长菜单，而短菜单则作为经典上下文菜单显示。</string>
     <string name="option_purge_files">清理文件</string>
     <string name="option_rebuild_fts">重建全文搜索数据</string>
     <string name="option_purge_bedetheque_authors_cache">清除 Bedetheque 作者缓存</string>
@@ -800,10 +801,9 @@
     <string name="pe_option_bottom_sheet">始终位于屏幕底部</string>
     <string name="pt_ui_dialogs_mode">对话框</string>
     <string name="pe_ui_dialog_mode_classic">始终作为经典对话框</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">较大的屏幕（如平板电脑）使用传统的对话框，而较小的屏幕则在屏幕底部显示对话框。</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">较小的屏幕会在屏幕底部显示对话框。</string>
     <string name="pc_context_menus">上下文菜单和行菜单</string>
-    <string name="pe_context_menu_mode_classic">始终作为经典右键菜单</string>
-    <string name="pe_context_menu_mode_by_size">长菜单显示在屏幕底部，短菜单则是经典的上下文菜单。</string>
+    <string name="pe_ui_context_menu_mode_classic">始终作为经典右键菜单</string>
     <string name="info_tap_to_select">轻敲选择。</string>
     <string name="lbl_tab_alternative_editions_long">备选版</string>
 </resources>

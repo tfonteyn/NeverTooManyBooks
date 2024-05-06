@@ -634,6 +634,7 @@
     <string name="pe_ui_theme_light">Luz</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Começar sempre recolhido</string>
     <string name="pt_bob_row_menu">Menu de contexto em linha</string>
+    <string name="pe_ui_context_menu_mode_by_size">Os ecrãs mais pequenos apresentam menus longos na parte inferior do ecrã e menus curtos como menus de contexto clássicos.\\nOs ecrãs maiores, como os tablets, utilizam sempre menus de contexto clássicos.</string>
     <string name="option_purge_files">Limpeza de Ficheiros</string>
     <string name="lbl_login_to_search">Entrar para pesquisar</string>
     <string name="pt_bob_header">Detalhes do resumo no cabeçalho</string>
@@ -797,10 +798,9 @@
     <string name="pe_option_bottom_sheet">Sempre na parte inferior do ecrã</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
     <string name="pe_ui_dialog_mode_classic">Sempre como uma caixa de diálogo clássica</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Os ecrãs maiores (como os tablets) utilizam caixas de diálogo clássicas, enquanto os ecrãs mais pequenos apresentam as caixas de diálogo na parte inferior do ecrã.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Os ecrãs mais pequenos apresentam as caixas de diálogo na parte inferior do ecrã.\\nOs ecrãs maiores, como os tablets, utilizam sempre caixas de diálogo clássicas.</string>
     <string name="pc_context_menus">Menus de contexto e de linha</string>
-    <string name="pe_context_menu_mode_classic">Sempre como um menu de contexto clássico</string>
-    <string name="pe_context_menu_mode_by_size">Os menus longos são apresentados na parte inferior do ecrã e os menus curtos são menus de contexto clássicos.</string>
+    <string name="pe_ui_context_menu_mode_classic">Sempre como um menu de contexto clássico</string>
     <string name="lbl_troubleshooting">Resolução de problemas</string>
     <string name="pt_enable_extra_logging">Ativar o registo adicional</string>
     <string name="lbl_troubleshooting_warning">Não active as opções abaixo, a menos que o programador da aplicação lho solicite explicitamente.</string>

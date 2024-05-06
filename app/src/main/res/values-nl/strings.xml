@@ -494,6 +494,7 @@
     <string name="option_level_reset">Voorkeur expansieniveau</string>
     <string name="option_moving_covers_from_x_to_y">Verplaats alle covers van „%1$s” naar „%2$s”</string>
     <string name="option_purge_bedetheque_authors_cache">Wis de cache van Bedetheque Authors</string>
+    <string name="pe_ui_context_menu_mode_by_size">Kleinere schermen geven lange menu\'s weer onderaan het scherm en korte menu\'s als klassieke contextmenu\'s.\\nGrotere schermen, zoals tablets, gebruiken altijd klassieke contextmenu\'s.</string>
     <string name="option_purge_files">Bestanden opschonen</string>
     <string name="option_purge_image_cache">Afbeeldingen cache wissen</string>
     <string name="option_rebuild_fts">Volledige tekst zoekgegevens opnieuw opbouwen</string>
@@ -767,10 +768,9 @@
     <string name="pe_option_bottom_sheet">Altijd onderaan het scherm</string>
     <string name="pt_ui_dialogs_mode">Dialogen</string>
     <string name="pe_ui_dialog_mode_classic">Altijd als een klassiek dialoogvenster</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Grotere schermen (zoals tablets) gebruiken klassieke dialoogvensters, terwijl kleinere schermen de dialoogvensters onderaan het scherm weergeven.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Kleinere schermen geven de dialoogvensters onderaan het scherm weer.\\nGrote schermen, zoals tablets, gebruiken altijd klassieke dialoogvensters.</string>
     <string name="pc_context_menus">Context- en rijmenu\'s</string>
-    <string name="pe_context_menu_mode_classic">Altijd als een klassiek contextmenu</string>
-    <string name="pe_context_menu_mode_by_size">Lange menu\'s worden onderaan het scherm weergegeven en korte menu\'s zijn klassieke contextmenu\'s.</string>
+    <string name="pe_ui_context_menu_mode_classic">Altijd als een klassiek contextmenu</string>
     <string name="lbl_troubleshooting">Problemen oplossen</string>
     <string name="pt_enable_extra_logging">Extra logging inschakelen</string>
     <string name="lbl_troubleshooting_warning">Schakel de onderstaande opties niet in, tenzij de ontwikkelaar van de app hier expliciet om vraagt.</string>

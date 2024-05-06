@@ -375,6 +375,7 @@
     <string name="lbl_date_published_year">Année de parution</string>
     <string name="lbl_publisher">Éditeur</string>
     <string name="lbl_publishers">Éditeurs</string>
+    <string name="pe_ui_context_menu_mode_by_size">Les écrans plus petits affichent des menus longs en bas de l\'écran et des menus courts sous la forme de menus contextuels classiques.\\nLes écrans plus grands, tels que les tablettes, utilisent toujours des menus contextuels classiques.</string>
     <string name="option_purge_files">Nettoyer les fichiers</string>
     <string name="option_purge_image_cache">Effacer le cache des images</string>
     <string name="lbl_rating">Appreciation</string>
@@ -772,10 +773,9 @@
     <string name="pe_option_bottom_sheet">Toujours en bas de l\'écran</string>
     <string name="pt_ui_dialogs_mode">Dialogues</string>
     <string name="pe_ui_dialog_mode_classic">Toujours sous forme de boîte de dialogue classique</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Les écrans de grande taille (tels que les tablettes) utilisent des boîtes de dialogue classiques, tandis que les écrans plus petits affichent les boîtes de dialogue en bas de l\'écran.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Les écrans plus petits affichent les boîtes de dialogue en bas de l\'écran.\\nLes écrans plus grands, tels que les tablettes, utilisent toujours les boîtes de dialogue classiques.</string>
     <string name="pc_context_menus">Menu contextuel et menu de ligne</string>
-    <string name="pe_context_menu_mode_classic">Toujours comme un menu contextuel classique</string>
-    <string name="pe_context_menu_mode_by_size">Les menus longs sont affichés en bas de l\'écran et les menus courts sont des menus contextuels classiques.</string>
+    <string name="pe_ui_context_menu_mode_classic">Toujours comme un menu contextuel classique</string>
     <string name="lbl_troubleshooting">Dépannage</string>
     <string name="pt_enable_extra_logging">Activer la journalisation supplémentaire</string>
     <string name="lbl_troubleshooting_warning">N\'activez pas les options ci-dessous à moins que le développeur de l\'application ne vous le demande explicitement.</string>
