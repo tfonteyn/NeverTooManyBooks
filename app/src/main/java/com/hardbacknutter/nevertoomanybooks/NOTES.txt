@@ -30,6 +30,7 @@ NEW:
 - Large Context (popup) menus in the book list are now shown as a bottom-sheet on phones.
   Small menus are kept as popups. On tablets, all menus are kept as popups.
   The user can configure/reverse this behaviour in the advanced-settings.
+- updated to parse the latest Amazon site changes.
 
 FIXES:
 - fix the issue with duplicate "(Year not set)" headers when sorting according to read-status.
