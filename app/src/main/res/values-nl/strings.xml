@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -768,7 +765,8 @@
     <string name="pe_option_bottom_sheet">Altijd onderaan het scherm</string>
     <string name="pt_ui_dialogs_mode">Dialogen</string>
     <string name="pe_ui_dialog_mode_classic">Altijd als een klassiek dialoogvenster</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Kleinere schermen geven de dialoogvensters onderaan het scherm weer.\\nGrote schermen, zoals tablets, gebruiken altijd klassieke dialoogvensters.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Kleinere schermen geven de dialoogvensters onderaan het scherm weer.
+\nGrote schermen, zoals tablets, gebruiken altijd klassieke dialoogvensters.</string>
     <string name="pc_context_menus">Context- en rijmenu\'s</string>
     <string name="pe_ui_context_menu_mode_classic">Altijd als een klassiek contextmenu</string>
     <string name="lbl_troubleshooting">Problemen oplossen</string>
