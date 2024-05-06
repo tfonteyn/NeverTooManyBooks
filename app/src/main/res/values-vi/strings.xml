@@ -1192,6 +1192,7 @@
     <!-- endregion -->
     <!-- region ========== Maintenance. -->
     <!-- Cleanup log and other temp files -->
+    <string name="pe_ui_context_menu_mode_by_size">Màn hình nhỏ hơn hiển thị các menu dài ở cuối màn hình và các menu ngắn dưới dạng menu ngữ cảnh cổ điển.\\nMàn hình lớn hơn, chẳng hạn như máy tính bảng, luôn sử dụng menu ngữ cảnh cổ điển.</string>
     <string name="option_purge_files">Dọn dẹp các tệp</string>
     <!-- param 1: file size; param 2: button text -->
     <string name="info_cleanup_files">Các tệp có thể xóa hiện đang sử dụng %1$s trên thẻ SD. Các tệp nhật ký và dữ liệu khác được lưu trên thẻ SD mỗi lần nâng cấp, khi bạn sao lưu cơ sở dữ liệu hoặc khi ứng dụng gặp sự cố. Nhấn vào nút bên dưới để xóa các tệp này khỏi thẻ SD của bạn. Nếu bạn gặp sự cố hoặc lỗi khác, trước tiên hãy cân nhắc sử dụng nút “%2$s”.</string>
@@ -1505,13 +1506,12 @@
     <string name="lbl_current_page">Trang hiện tại</string>
     <string name="info_builtin_style_asterix">(* kiểu mặc định)</string>
     <string name="pe_ui_dialog_mode_classic">Luôn là hộp thoại cổ điển</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Màn hình lớn hơn (chẳng hạn như máy tính bảng) sử dụng hộp thoại cổ điển, trong khi màn hình nhỏ hơn hiển thị các hộp thoại ở cuối màn hình.</string>
-    <string name="pe_context_menu_mode_by_size">Thực đơn dài được hiển thị ở cuối màn hình và thực đơn ngắn là thực đơn ngữ cảnh cổ điển.</string>
     <string name="pt_dialog_and_menu_popup_tuning">Hộp thoại và Thực đơn</string>
     <string name="pe_option_bottom_sheet">Luôn ở cuối màn hình</string>
     <string name="pt_ui_dialogs_mode">Hộp thoại</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Màn hình nhỏ hơn hiển thị các hộp thoại ở cuối màn hình.\\nMàn hình lớn hơn, chẳng hạn như máy tính bảng, luôn sử dụng hộp thoại cổ điển.</string>
     <string name="pc_context_menus">Thực đơn ngữ cảnh và hàng</string>
-    <string name="pe_context_menu_mode_classic">Luôn là một thực đơn ngữ cảnh cổ điển</string>
+    <string name="pe_ui_context_menu_mode_classic">Luôn là một thực đơn ngữ cảnh cổ điển</string>
     <string name="lbl_troubleshooting">Xử lý sự cố</string>
     <string name="pt_enable_extra_logging">Cho phép ghi nhật ký bổ sung</string>
     <string name="lbl_troubleshooting_warning">Vui lòng không bật các tùy chọn bên dưới trừ khi nhà phát triển ứng dụng yêu cầu làm như vậy một cách rõ ràng.</string>
