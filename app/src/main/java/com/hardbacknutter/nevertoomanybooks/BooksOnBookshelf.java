@@ -1101,16 +1101,7 @@ public class BooksOnBookshelf
                              @NonNull final Menu menu,
                              @NonNull final ExtMenuResultListener listener) {
 
-        final DialogAndMenuMode menuMode;
-
-        if (hasEmbeddedDetailsFrame()) {
-            // Tablet in landscape with split screen list/details, always use a popup
-            menuMode = DialogAndMenuMode.Start;
-        } else {
-            // otherwise follow the global logic
-            menuMode = DialogAndMenuMode.getMenuMode(this, menu);
-        }
-
+        final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(this, menu);
         if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(this)
                     .setTitle(menuTitle)
