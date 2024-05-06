@@ -20,15 +20,19 @@
 
 package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.List;
@@ -60,7 +64,8 @@ public class ExtMenuBottomSheet
                 @Override
                 public void onMenuItemClick(@IdRes final int menuItemId) {
                     ExtMenuBottomSheet.this.dismiss();
-                    ExtMenuLauncher.setResult(ExtMenuBottomSheet.this, requestKey, menuOwner, menuItemId);
+                    ExtMenuLauncher.setResult(ExtMenuBottomSheet.this, requestKey, menuOwner,
+                                              menuItemId);
                 }
             };
 
@@ -110,4 +115,20 @@ public class ExtMenuBottomSheet
         vb.itemList.setAdapter(adapter);
     }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        final Dialog d = super.onCreateDialog(savedInstanceState);
+        // Paranoia...
+        if (d instanceof BottomSheetDialog) {
+
+            final BottomSheetBehavior<FrameLayout> behavior = ((BottomSheetDialog) d).getBehavior();
+            // Needed for drag closing
+            behavior.setSkipCollapsed(true);
+            // Needed to open fully immediately.
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+
+        return d;
+    }
 }
