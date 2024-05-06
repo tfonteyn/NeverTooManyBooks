@@ -38,7 +38,7 @@
     <TextView
         android:id="@+id/status_message"
         style="@style/Text.Body"
-        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         app:layout_constraintStart_toStartOf="@id/progress_bar"
         app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
         tools:ignore="SelectableText"
@@ -81,11 +81,13 @@
         android:layout_marginTop="@dimen/section_margin_top"
         android:maxLines="2"
         android:text="@string/info_tap_to_select"
-        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textAppearance="?attr/textAppearanceLabelMedium"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@id/preview"
         app:layout_constraintStart_toStartOf="@id/preview"
         app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
         tools:ignore="SelectableText"
+        tools:visibility="visible"
         />
 
     <ImageView
