@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,8 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopNestedScroller"
     tools:context=".FragmentHostActivity"
-    tools:viewBindingIgnore="true"
-    >
+    tools:viewBindingIgnore="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -161,8 +160,8 @@
         -->
 
         <com.google.android.material.divider.MaterialDivider
-            style="@style/Widget.Material3.MaterialDivider"
             android:id="@+id/barrier_ext_id"
+            style="@style/Widget.Material3.MaterialDivider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -175,15 +174,16 @@
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/btn_auto_update_allowed"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/section_margin_top"
             android:checked="true"
             android:text="@string/option_auto_updates"
-            app:layout_constraintStart_toStartOf="@id/barrier_ext_id"
-            app:layout_constraintTop_toBottomOf="@id/barrier_ext_id"
+            app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toEndOf="parent"
-            />
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/barrier_ext_id"
+            app:layout_constraintTop_toBottomOf="@id/barrier_ext_id" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
 
