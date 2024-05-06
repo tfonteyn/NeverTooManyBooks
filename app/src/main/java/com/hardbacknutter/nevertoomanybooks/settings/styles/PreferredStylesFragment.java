@@ -187,6 +187,8 @@ public class PreferredStylesFragment
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_styles_long);
+        // Always reset, as we might have added one on a sub-screen of this one.
+        toolbar.setSubtitle(null);
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
