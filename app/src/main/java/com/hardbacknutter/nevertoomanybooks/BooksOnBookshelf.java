@@ -1291,10 +1291,10 @@ public class BooksOnBookshelf
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.book, menu);
 
-        if (!hasEmbeddedDetailsFrame()) {
-            // explicitly hide; but otherwise leave it to the details-frame menu handler.
-            menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(false);
-        }
+        // Always hide this for the book-row menu.
+        // It is used only when we're in embedded mode in the book-details fragment itself.
+        // Reason: we share the R.menu.books file
+        menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(false);
 
         if (calibreHandler != null) {
             calibreHandler.onCreateMenu(menu, inflater);
