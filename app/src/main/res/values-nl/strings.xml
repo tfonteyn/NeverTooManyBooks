@@ -394,7 +394,7 @@
     <string name="lbl_styles_long">Boekenplank styling</string>
     <string name="lbl_sync_date">Sinds</string>
     <string name="lbl_system_default">(Systeemstandaard)</string>
-    <string name="lbl_tab_alternative_editions">Alt. edities</string>
+    <string name="lbl_tab_alternative_editions">Alt. ed.</string>
     <string name="lbl_tab_details">Details</string>
     <string name="lbl_tab_lbl_ext_id">Extern ID</string>
     <string name="lbl_tab_notes">Opmerkingen</string>
@@ -775,4 +775,5 @@
     <string name="pt_enable_extra_logging">Extra logging inschakelen</string>
     <string name="lbl_troubleshooting_warning">Schakel de onderstaande opties niet in, tenzij de ontwikkelaar van de app hier expliciet om vraagt.</string>
     <string name="info_tap_to_select">Tik om te selecteren.</string>
+    <string name="lbl_tab_alternative_editions_long">Alternative edities</string>
 </resources>

@@ -423,7 +423,7 @@
     <string name="lbl_styles">Estilos</string>
     <string name="lbl_styles_long">Estilo estantería</string>
     <string name="lbl_sync_date">Ya que</string>
-    <string name="lbl_tab_alternative_editions">Ediciones Alt.</string>
+    <string name="lbl_tab_alternative_editions">Ed. Alt.</string>
     <string name="lbl_tab_details">Detalles</string>
     <string name="lbl_tab_lbl_ext_id">ID externo</string>
     <string name="lbl_tab_notes">Notas</string>
@@ -789,4 +789,5 @@
     <string name="pt_enable_extra_logging">Activar registro adicional</string>
     <string name="lbl_troubleshooting_warning">No active las siguientes opciones a menos que el desarrollador de la aplicación se lo pida explícitamente.</string>
     <string name="info_tap_to_select">Pulse para seleccionar.</string>
+    <string name="lbl_tab_alternative_editions_long">Ediciones alternativas</string>
 </resources>

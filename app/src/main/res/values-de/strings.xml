@@ -409,7 +409,7 @@
     <string name="lbl_styles">Stile</string>
     <string name="lbl_styles_long">Bücherregal-Styling</string>
     <string name="lbl_sync_date">Seit</string>
-    <string name="lbl_tab_alternative_editions">Alt. Editionen</string>
+    <string name="lbl_tab_alternative_editions">Alt. Edi.</string>
     <string name="lbl_tab_details">Details</string>
     <string name="lbl_tab_lbl_ext_id">Externe ID</string>
     <string name="lbl_tab_notes">Notizen</string>
@@ -775,4 +775,5 @@
     <string name="pt_enable_extra_logging">Zusätzliche Protokollierung einschalten</string>
     <string name="lbl_troubleshooting_warning">Bitte aktivieren Sie die folgenden Optionen nur, wenn Sie vom Entwickler der Anwendung ausdrücklich dazu aufgefordert werden.</string>
     <string name="info_tap_to_select">Tippen Sie zum Auswählen.</string>
+    <string name="lbl_tab_alternative_editions_long">Alternative Editionen</string>
 </resources>

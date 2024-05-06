@@ -805,4 +805,5 @@
     <string name="pt_enable_extra_logging">Ativar o registo adicional</string>
     <string name="lbl_troubleshooting_warning">Não active as opções abaixo, a menos que o programador da aplicação lho solicite explicitamente.</string>
     <string name="info_tap_to_select">Toque para selecionar.</string>
+    <string name="lbl_tab_alternative_editions_long">Edições alternativas</string>
 </resources>

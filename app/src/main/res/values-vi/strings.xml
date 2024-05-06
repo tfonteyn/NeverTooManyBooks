@@ -1516,4 +1516,5 @@
     <string name="pt_enable_extra_logging">Cho phép ghi nhật ký bổ sung</string>
     <string name="lbl_troubleshooting_warning">Vui lòng không bật các tùy chọn bên dưới trừ khi nhà phát triển ứng dụng yêu cầu làm như vậy một cách rõ ràng.</string>
     <string name="info_tap_to_select">Nhấn để chọn.</string>
+    <string name="lbl_tab_alternative_editions_long">Ấn.bản khác</string>
 </resources>

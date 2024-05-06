@@ -413,7 +413,7 @@
     <string name="lbl_styles">Les styles</string>
     <string name="lbl_styles_long">Style d\'une bibliothèque</string>
     <string name="lbl_sync_date">Depuis</string>
-    <string name="lbl_tab_alternative_editions">Éditions alt.</string>
+    <string name="lbl_tab_alternative_editions">Éd. alt.</string>
     <string name="lbl_tab_details">Détails</string>
     <string name="lbl_tab_lbl_ext_id">ID externe</string>
     <string name="lbl_tab_notes">Notes</string>
@@ -780,4 +780,5 @@
     <string name="pt_enable_extra_logging">Activer la journalisation supplémentaire</string>
     <string name="lbl_troubleshooting_warning">N\'activez pas les options ci-dessous à moins que le développeur de l\'application ne vous le demande explicitement.</string>
     <string name="info_tap_to_select">Appuyez pour sélectionner.</string>
+    <string name="lbl_tab_alternative_editions_long">Éditions alternatives</string>
 </resources>

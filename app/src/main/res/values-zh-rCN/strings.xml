@@ -805,4 +805,5 @@
     <string name="pe_context_menu_mode_classic">始终作为经典右键菜单</string>
     <string name="pe_context_menu_mode_by_size">长菜单显示在屏幕底部，短菜单则是经典的上下文菜单。</string>
     <string name="info_tap_to_select">轻敲选择。</string>
+    <string name="lbl_tab_alternative_editions_long">备选版</string>
 </resources>

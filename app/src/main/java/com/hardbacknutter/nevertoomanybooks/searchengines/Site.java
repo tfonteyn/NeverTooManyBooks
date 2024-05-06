@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -191,17 +191,25 @@ public final class Site
     public enum Type
             implements Parcelable {
 
-        /** {@link SearchEngine} - Generic searches (includes books AND covers). */
-        Data("data", R.string.lbl_books),
+        /** {@link SearchEngine} - Book searches (includes covers). */
+        Data("data",
+             R.string.lbl_tab_data,
+             R.string.lbl_tab_data_long),
 
         /** {@link SearchEngine} - Alternative editions for a given isbn. */
-        AltEditions("alted", R.string.lbl_tab_alternative_editions),
+        AltEditions("alted",
+                    R.string.lbl_tab_alternative_editions,
+                    R.string.lbl_tab_alternative_editions_long),
 
-        /** {@link CoverBrowserDialogFragment} - Dedicated covers searches. */
-        Covers("covers", R.string.lbl_covers),
+        /** {@link CoverBrowserDialogFragment} - Covers searches. */
+        Covers("covers",
+               R.string.lbl_tab_covers,
+               R.string.lbl_tab_covers_long),
 
         /** List of sites for which we store an id. */
-        ViewOnSite("view", R.string.option_view_book_at);
+        ViewOnSite("view",
+                   R.string.lbl_tab_view_on_site,
+                   R.string.lbl_tab_view_on_site_long);
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -229,9 +237,12 @@ public final class Site
         @NonNull
         private final String key;
 
-        /** User displayable name. */
+        /** User displayable short name; used as the text for a Tab. */
         @StringRes
         private final int labelResId;
+        /** User displayable long name; used as the content-description for a Tab. */
+        @StringRes
+        private final int contentDescriptionResId;
 
         /** The list of sites in this type. */
         private final Collection<Site> siteList = new ArrayList<>();
@@ -239,12 +250,15 @@ public final class Site
         /**
          * Constructor.
          *
-         * @param key        unique key string for internal usage
-         * @param labelResId for displaying the type name to the user
+         * @param key              unique key string for internal usage
+         * @param labelResId       short displayable name
+         * @param contentDescriptionResId short displayable name
          */
         Type(@NonNull final String key,
-             @StringRes final int labelResId) {
+             @StringRes final int labelResId,
+             @StringRes final int contentDescriptionResId) {
             this.labelResId = labelResId;
+            this.contentDescriptionResId = contentDescriptionResId;
             this.key = key;
         }
 
@@ -432,6 +446,11 @@ public final class Site
         @StringRes
         public int getLabelResId() {
             return labelResId;
+        }
+
+        @StringRes
+        public int getContentDescriptionResId() {
+            return contentDescriptionResId;
         }
 
         @NonNull

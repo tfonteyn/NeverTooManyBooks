@@ -1576,20 +1576,44 @@
     <string name="info_progress_page_x_of_y">Page: %1$d of %2$d</string>
 
     <!-- endregion -->
-    <!-- region ========== TAB labels - need to be very short; 4 tabs should fit on a screen. Ideally 5. -->
-    <!-- Edit book: Name of the 'Details' tab - need to be very short -->
+    <!-- region ========== TAB labels - 4 tabs should fit on a screen. Ideally 5. -->
+    <!-- Edit book: Name of the 'Details' tab - Needs to be very short -->
     <string name="lbl_tab_details">Details</string>
-    <!-- Edit book: Name of the 'Publication' tab. need to be very short -->
+    <!-- Edit book: Name of the 'Publication' tab. Needs to be very short -->
     <string name="lbl_tab_publication">Publication</string>
-    <!-- [VERIFIED] Edit book: Name of the 'Notes' tab. need to be very short-->
+    <!-- [VERIFIED] Edit book: Name of the 'Notes' tab. Needs to be very short-->
     <string name="lbl_tab_notes">Notes</string>
-    <!-- Edit book: Name of the 'Table Of Content' tab. need to be very short -->
+    <!-- Edit book: Name of the 'Table Of Content' tab. Needs to be very short -->
     <string name="lbl_tab_table_of_content"
             translatable="false">@string/lbl_table_of_content_short</string>
-    <!-- Edit book: Name of the 'External website id' tab.need to be very short -->
+    <!-- Edit book: Name of the 'External website id' tab. Needs to be very short -->
     <string name="lbl_tab_lbl_ext_id">External ID</string>
-    <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. need to be very short -->
+
+    <!-- SearchAdmin page: Name of the 'Book search' tab. Needs to be very short -->
+    <string name="lbl_tab_data"
+            translatable="false">@string/lbl_books</string>
+    <!-- SearchAdmin page: 'Book search' tab description -->
+    <string name="lbl_tab_data_long"
+            translatable="false">@string/lbl_books</string>
+
+    <!-- SearchAdmin page: Name of the 'Covers search' tab. Needs to be very short -->
+    <string name="lbl_tab_covers"
+            translatable="false">@string/lbl_covers</string>
+    <!-- SearchAdmin page: 'Covers search' tab description -->
+    <string name="lbl_tab_covers_long"
+            translatable="false">@string/lbl_covers_long</string>
+
+    <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. Needs to be very short -->
     <string name="lbl_tab_alternative_editions">Alt. Ed.</string>
+    <!-- SearchAdmin page: 'Alternative Editions' tab description -->
+    <string name="lbl_tab_alternative_editions_long">Alternative Editions</string>
+
+    <!-- SearchAdmin page: Name of the 'View on site' tab. Needs to be very short -->
+    <string name="lbl_tab_view_on_site"
+            translatable="false">@string/option_view_book_at</string>
+    <!-- SearchAdmin page: 'View on site' tab description -->
+    <string name="lbl_tab_view_on_site_long"
+            translatable="false">@string/option_view_book_at</string>
     <!-- endregion -->
     <!-- region ========== Single words used for multiple purposes. -->
     <!-- [VERIFIED] -->

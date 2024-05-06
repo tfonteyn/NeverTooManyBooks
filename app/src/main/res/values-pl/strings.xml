@@ -428,7 +428,7 @@
     <string name="lbl_styles">Style</string>
     <string name="lbl_styles_long">Stylizacja półek</string>
     <string name="lbl_sync_date">Odkąd</string>
-    <string name="lbl_tab_alternative_editions">Alt. wer.</string>
+    <string name="lbl_tab_alternative_editions">Wyd. alt.</string>
     <string name="lbl_tab_details">Szczegóły</string>
     <string name="lbl_tab_lbl_ext_id">Zewnętrzny ID</string>
     <string name="lbl_tab_notes">Notatki</string>
@@ -798,4 +798,5 @@
     <string name="pt_enable_extra_logging">Włącz dodatkowe rejestrowanie</string>
     <string name="lbl_troubleshooting_warning">Nie włączaj poniższych opcji, chyba że zostaniesz o to wyraźnie poproszony przez twórcę aplikacji.</string>
     <string name="info_tap_to_select">Stuknij, aby wybrać.</string>
+    <string name="lbl_tab_alternative_editions_long">Wydania alternatywne</string>
 </resources>

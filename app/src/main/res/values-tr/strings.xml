@@ -415,7 +415,7 @@
     <string name="lbl_styles">Stilleri</string>
     <string name="lbl_styles_long">Kitaplık tasarımı</string>
     <string name="lbl_sync_date">Dan beri</string>
-    <string name="lbl_tab_alternative_editions">Alt. Basımlar</string>
+    <string name="lbl_tab_alternative_editions">Alt. Bas.</string>
     <string name="lbl_tab_details">Ayrıntılar</string>
     <string name="lbl_tab_lbl_ext_id">Harici Kimlik</string>
     <string name="lbl_tab_notes">Notlar</string>
@@ -786,4 +786,5 @@
     <string name="pt_enable_extra_logging">Ek günlük kaydını etkinleştirin</string>
     <string name="lbl_troubleshooting_warning">Uygulama geliştiricisi tarafından açıkça talep edilmedikçe lütfen aşağıdaki seçenekleri etkinleştirmeyin.</string>
     <string name="info_tap_to_select">Seçmek için dokunun.</string>
+    <string name="lbl_tab_alternative_editions_long">Alternatif Baskılar</string>
 </resources>

@@ -424,7 +424,7 @@
     <string name="lbl_styles">Styly</string>
     <string name="lbl_styles_long">Stylování knihovny</string>
     <string name="lbl_sync_date">Od té doby</string>
-    <string name="lbl_tab_alternative_editions">Alt. vydání</string>
+    <string name="lbl_tab_alternative_editions">Alt. vy.</string>
     <string name="lbl_tab_details">Podrobnosti</string>
     <string name="lbl_tab_lbl_ext_id">Externí ID</string>
     <string name="lbl_tab_notes">Poznámky</string>
@@ -795,4 +795,5 @@
     <string name="pt_enable_extra_logging">Povolení dalšího protokolování</string>
     <string name="lbl_troubleshooting_warning">Níže uvedené možnosti nepovolujte, pokud o to vývojář aplikace výslovně nepožádá.</string>
     <string name="info_tap_to_select">Klepnutím na položku vyberte.</string>
+    <string name="lbl_tab_alternative_editions_long">Alternativní vydání</string>
 </resources>

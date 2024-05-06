@@ -425,7 +425,7 @@
     <string name="lbl_styles">стили</string>
     <string name="lbl_styles_long">Стиль книжной полки</string>
     <string name="lbl_sync_date">C</string>
-    <string name="lbl_tab_alternative_editions">Альтернативные издания</string>
+    <string name="lbl_tab_alternative_editions">Алт. изд.</string>
     <string name="lbl_tab_details">Сведения</string>
     <string name="lbl_tab_lbl_ext_id">Внешний идентификатор</string>
     <string name="lbl_tab_notes">Примечания</string>
@@ -796,4 +796,5 @@
     <string name="pt_enable_extra_logging">Включите дополнительную регистрацию</string>
     <string name="lbl_troubleshooting_warning">Пожалуйста, не включайте перечисленные ниже опции, если разработчик приложения явно не попросил вас об этом.</string>
     <string name="info_tap_to_select">Нажмите, чтобы выбрать.</string>
+    <string name="lbl_tab_alternative_editions_long">Альтернативные издания</string>
 </resources>

@@ -128,8 +128,10 @@ public class SearchAdminFragment
         vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
         vb.pager.setAdapter(tabAdapter);
-        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) ->
-                tab.setText(getString(tabAdapter.getTabTitle(position))))
+        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
+            tab.setText(getString(tabAdapter.getTabTitle(position)));
+            tab.setContentDescription(getString(tabAdapter.getTabDescription(position)));
+        })
                 .attach();
     }
 
@@ -179,6 +181,11 @@ public class SearchAdminFragment
         @StringRes
         int getTabTitle(final int position) {
             return siteTypeList.get(position).getLabelResId();
+        }
+
+        @StringRes
+        int getTabDescription(final int position) {
+            return siteTypeList.get(position).getContentDescriptionResId();
         }
     }
 
