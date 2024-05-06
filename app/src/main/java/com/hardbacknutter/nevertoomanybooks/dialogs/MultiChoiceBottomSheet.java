@@ -61,6 +61,8 @@ public class MultiChoiceBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Ensure the drag handle is visible.
+        vb.dragHandle.setVisibility(View.VISIBLE);
         delegate.onViewCreated(vb);
     }
 

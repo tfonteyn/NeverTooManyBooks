@@ -48,8 +48,8 @@ public class MultiChoiceDialogFragment
 
         final DialogEditChecklistBinding vb = DialogEditChecklistBinding.inflate(
                 getLayoutInflater(), null, false);
-        // Ensure the drag handle is visible.
-        vb.dragHandle.setVisibility(View.VISIBLE);
+        // Ensure the drag handle is hidden.
+        vb.dragHandle.setVisibility(View.GONE);
 
         delegate.onViewCreated(vb);
 
