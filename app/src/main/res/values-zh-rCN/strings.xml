@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -804,4 +801,7 @@
     <string name="pc_context_menus">上下文菜单和行菜单</string>
     <string name="pe_context_menu_mode_classic">始终作为经典右键菜单</string>
     <string name="pe_context_menu_mode_by_size">长菜单显示在屏幕底部，短菜单则是经典的上下文菜单。</string>
+    <string name="pt_enable_extra_logging">启用附加日志</string>
+    <string name="lbl_troubleshooting">排错设置</string>
+    <string name="lbl_troubleshooting_warning">除非应用开发者明确请求，请不要启用以下选项。</string>
 </resources>
