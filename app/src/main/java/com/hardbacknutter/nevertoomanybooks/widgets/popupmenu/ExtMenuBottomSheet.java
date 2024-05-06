@@ -118,17 +118,18 @@ public class ExtMenuBottomSheet
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final Dialog d = super.onCreateDialog(savedInstanceState);
+        final Dialog dialog = super.onCreateDialog(savedInstanceState);
         // Paranoia...
-        if (d instanceof BottomSheetDialog) {
-
-            final BottomSheetBehavior<FrameLayout> behavior = ((BottomSheetDialog) d).getBehavior();
-            // Needed for drag closing
+        if (dialog instanceof BottomSheetDialog) {
+            // Due to multi-use of the layouts, we don't set these in xml:
+            final BottomSheetBehavior<FrameLayout> behavior =
+                    ((BottomSheetDialog) dialog).getBehavior();
+            // Close fully when the user is dragging us down
             behavior.setSkipCollapsed(true);
-            // Needed to open fully immediately.
+            // Open fully when started.
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
 
-        return d;
+        return dialog;
     }
 }

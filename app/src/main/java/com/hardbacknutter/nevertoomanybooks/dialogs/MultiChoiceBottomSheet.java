@@ -20,15 +20,19 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditChecklistBinding;
@@ -64,6 +68,24 @@ public class MultiChoiceBottomSheet
         // Ensure the drag handle is visible.
         vb.dragHandle.setVisibility(View.VISIBLE);
         delegate.onViewCreated(vb);
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        final Dialog dialog = super.onCreateDialog(savedInstanceState);
+        // Paranoia...
+        if (dialog instanceof BottomSheetDialog) {
+            // Due to multi-use of the layouts, we don't set these in xml:
+            final BottomSheetBehavior<FrameLayout> behavior =
+                    ((BottomSheetDialog) dialog).getBehavior();
+            // Close fully when the user is dragging us down
+            behavior.setSkipCollapsed(true);
+            // Open fully when started.
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+
+        return dialog;
     }
 
     @Override

@@ -58,22 +58,20 @@ public class BaseBottomSheetDialogFragment<B>
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final BottomSheetDialog dialog = (BottomSheetDialog) getDialog();
-
-        // Make it completely visible when started.
-        //noinspection DataFlowIssue
-        final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
-        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 
         // Due to multi-use of the layouts, we don't set these in xml:
+        final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
+        // Close fully when the user is dragging us down
+        behavior.setSkipCollapsed(true);
+        // Open fully when started.
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         // SOFT_INPUT_STATE_ALWAYS_VISIBLE
         // This ensures that the first EditText field will be fully visible
         // when the onscreen keyboard pops up.
-
         // SOFT_INPUT_ADJUST_RESIZE
         // Make sure the BottomSheet sits above the keyboard
-
         //noinspection DataFlowIssue
         dialog.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
