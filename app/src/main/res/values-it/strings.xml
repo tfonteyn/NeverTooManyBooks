@@ -374,7 +374,7 @@
     <string name="lbl_date_published_year">Anno di Pubblicazione</string>
     <string name="lbl_publisher">Editore</string>
     <string name="lbl_publishers">Editori</string>
-    <string name="pe_ui_context_menu_mode_by_size">Gli schermi più piccoli visualizzano i menu lunghi nella parte inferiore dello schermo e i menu brevi come menu contestuali classici.\\nGli schermi più grandi, come i tablet, utilizzano sempre i menu contestuali classici.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Gli schermi più piccoli visualizzano i menu lunghi nella parte inferiore dello schermo e i menu brevi come menu contestuali classici.\nGli schermi più grandi, come i tablet, utilizzano sempre i menu contestuali classici.</string>
     <string name="option_purge_files">Cancella i file</string>
     <string name="option_purge_image_cache">Cancella cache immagini</string>
     <string name="lbl_rating">Valutazione</string>
@@ -772,7 +772,7 @@
     <string name="pe_option_bottom_sheet">Sempre nella parte inferiore dello schermo</string>
     <string name="pt_ui_dialogs_mode">Finestre di dialogo</string>
     <string name="pe_ui_dialog_mode_classic">Sempre come finestra di dialogo classica</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Gli schermi più piccoli visualizzano le finestre di dialogo nella parte inferiore dello schermo.\\nGli schermi più grandi, come i tablet, utilizzano sempre le finestre di dialogo classiche.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Gli schermi più piccoli visualizzano le finestre di dialogo nella parte inferiore dello schermo.\nGli schermi più grandi, come i tablet, utilizzano sempre le finestre di dialogo classiche.</string>
     <string name="pc_context_menus">Menu contestuali e di riga</string>
     <string name="pe_ui_context_menu_mode_classic">Sempre come un classico menu contestuale</string>
     <string name="lbl_troubleshooting">Risoluzione dei problemi</string>

@@ -372,7 +372,7 @@
     <string name="lbl_date_published_year">Έτος Εκδοσης</string>
     <string name="lbl_publisher">Εκδότης</string>
     <string name="lbl_publishers">Εκδότες</string>
-    <string name="pe_ui_context_menu_mode_by_size">Οι μικρότερες οθόνες εμφανίζουν μεγάλα μενού στο κάτω μέρος της οθόνης και μικρά μενού ως κλασικά μενού περιβάλλοντος.\\nΟι μεγαλύτερες οθόνες, όπως οι ταμπλέτες, χρησιμοποιούν πάντα κλασικά μενού περιβάλλοντος.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Οι μικρότερες οθόνες εμφανίζουν μεγάλα μενού στο κάτω μέρος της οθόνης και μικρά μενού ως κλασικά μενού περιβάλλοντος.\nΟι μεγαλύτερες οθόνες, όπως οι ταμπλέτες, χρησιμοποιούν πάντα κλασικά μενού περιβάλλοντος.</string>
     <string name="option_purge_files">Εκκαθάριση αρχείων</string>
     <string name="option_purge_image_cache">Καθαρή cache εικόνας</string>
     <string name="lbl_rating">Βαθμολογία</string>
@@ -769,7 +769,7 @@
     <string name="pe_option_bottom_sheet">Πάντα στο κάτω μέρος της οθόνης</string>
     <string name="pt_ui_dialogs_mode">Διάλογοι</string>
     <string name="pe_ui_dialog_mode_classic">Πάντα ως κλασικό παράθυρο διαλόγου</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Οι μικρότερες οθόνες εμφανίζουν τα παράθυρα διαλόγου στο κάτω μέρος της οθόνης.\\nΟι μεγαλύτερες οθόνες, όπως οι ταμπλέτες, χρησιμοποιούν πάντα τα κλασικά παράθυρα διαλόγου.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Οι μικρότερες οθόνες εμφανίζουν τα παράθυρα διαλόγου στο κάτω μέρος της οθόνης.\nΟι μεγαλύτερες οθόνες, όπως οι ταμπλέτες, χρησιμοποιούν πάντα τα κλασικά παράθυρα διαλόγου.</string>
     <string name="pc_context_menus">Μενού περιβάλλοντος και γραμμής</string>
     <string name="pe_ui_context_menu_mode_classic">Πάντα ως κλασικό μενού περιβάλλοντος</string>
     <string name="lbl_troubleshooting">Αντιμετώπιση προβλημάτων</string>

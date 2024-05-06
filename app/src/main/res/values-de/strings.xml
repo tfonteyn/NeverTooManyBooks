@@ -371,7 +371,7 @@
     <string name="lbl_date_published_year">Jahr der Veröffentlichung</string>
     <string name="lbl_publisher">Verlag</string>
     <string name="lbl_publishers">Verlag</string>
-    <string name="pe_ui_context_menu_mode_by_size">Kleinere Bildschirme zeigen lange Menüs am unteren Rand des Bildschirms und kurze Menüs als klassische Kontextmenüs an.\\nGrößere Bildschirme, wie Tablets, verwenden immer klassische Kontextmenüs.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Kleinere Bildschirme zeigen lange Menüs am unteren Rand des Bildschirms und kurze Menüs als klassische Kontextmenüs an.\nGrößere Bildschirme, wie Tablets, verwenden immer klassische Kontextmenüs.</string>
     <string name="option_purge_files">Dateien bereinigen</string>
     <string name="option_purge_image_cache">Zwischenspeicher für Bilder löschen</string>
     <string name="lbl_rating">Bewertung</string>
@@ -768,7 +768,7 @@
     <string name="pe_option_bottom_sheet">Immer am unteren Rand des Bildschirms</string>
     <string name="pt_ui_dialogs_mode">Dialoge</string>
     <string name="pe_ui_dialog_mode_classic">Immer als klassisches Dialogfenster</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Kleinere Bildschirme zeigen die Dialoge am unteren Rand des Bildschirms an.\\nGrößere Bildschirme, wie z. B. Tablets, verwenden immer die klassischen Dialogfelder.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Kleinere Bildschirme zeigen die Dialoge am unteren Rand des Bildschirms an.\nGrößere Bildschirme, wie z. B. Tablets, verwenden immer die klassischen Dialogfelder.</string>
     <string name="pc_context_menus">Kontext- und Zeilenmenüs</string>
     <string name="pe_ui_context_menu_mode_classic">Immer als klassisches Kontextmenü</string>
     <string name="lbl_troubleshooting">Fehlersuche</string>

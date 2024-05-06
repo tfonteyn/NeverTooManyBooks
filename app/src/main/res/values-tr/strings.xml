@@ -377,7 +377,7 @@
     <string name="lbl_date_published_year">Yayım yılı</string>
     <string name="lbl_publisher">Yayınevi</string>
     <string name="lbl_publishers">Yayıncılar</string>
-    <string name="pe_ui_context_menu_mode_by_size">Daha küçük ekranlar uzun menüleri ekranın altında ve kısa menüleri klasik bağlam menüleri olarak görüntüler.\\nTabletler gibi daha büyük ekranlar her zaman klasik bağlam menülerini kullanır.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Daha küçük ekranlar uzun menüleri ekranın altında ve kısa menüleri klasik bağlam menüleri olarak görüntüler.\nTabletler gibi daha büyük ekranlar her zaman klasik bağlam menülerini kullanır.</string>
     <string name="option_purge_files">Dosyaları temizle</string>
     <string name="option_purge_image_cache">Görüntü önbelleğini temizle</string>
     <string name="lbl_rating">Değerlendirme</string>
@@ -779,7 +779,7 @@
     <string name="pe_option_bottom_sheet">Her zaman ekranın alt kısmında</string>
     <string name="pt_ui_dialogs_mode">Diyaloglar</string>
     <string name="pe_ui_dialog_mode_classic">Her zaman klasik bir iletişim kutusu olarak</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Daha küçük ekranlar iletişim kutularını ekranın altında görüntüler.\\nTabletler gibi daha büyük ekranlar her zaman klasik iletişim kutularını kullanır.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Daha küçük ekranlar iletişim kutularını ekranın altında görüntüler.\nTabletler gibi daha büyük ekranlar her zaman klasik iletişim kutularını kullanır.</string>
     <string name="pc_context_menus">Bağlam ve satır menüleri</string>
     <string name="pe_ui_context_menu_mode_classic">Her zaman klasik bir içerik menüsü olarak</string>
     <string name="lbl_troubleshooting">Sorun Giderme</string>

@@ -386,7 +386,7 @@
     <string name="lbl_date_published_year">Rok vydání</string>
     <string name="lbl_publisher">Vydavatel</string>
     <string name="lbl_publishers">Vydavatelé</string>
-    <string name="pe_ui_context_menu_mode_by_size">Na menších obrazovkách se zobrazují dlouhé nabídky v dolní části obrazovky a krátké nabídky jako klasické kontextové nabídky.\\nNa větších obrazovkách, například na tabletech, se vždy používají klasické kontextové nabídky.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Na menších obrazovkách se zobrazují dlouhé nabídky v dolní části obrazovky a krátké nabídky jako klasické kontextové nabídky.\nNa větších obrazovkách, například na tabletech, se vždy používají klasické kontextové nabídky.</string>
     <string name="option_purge_files">Odstranit soubory</string>
     <string name="option_purge_image_cache">Vymazat mezipaměť obrázků</string>
     <string name="lbl_rating">Hodnocení</string>
@@ -788,7 +788,7 @@
     <string name="pe_option_bottom_sheet">Vždy v dolní části obrazovky</string>
     <string name="pt_ui_dialogs_mode">Dialogy</string>
     <string name="pe_ui_dialog_mode_classic">Vždy jako klasické dialogové okno</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">Menší obrazovky zobrazují dialogová okna ve spodní části obrazovky.\\nVětší obrazovky, například tablety, vždy používají klasická dialogová okna.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">Menší obrazovky zobrazují dialogová okna ve spodní části obrazovky.\nVětší obrazovky, například tablety, vždy používají klasická dialogová okna.</string>
     <string name="pc_context_menus">Kontextové a řádkové nabídky</string>
     <string name="pe_ui_context_menu_mode_classic">Vždy jako klasická kontextová nabídka</string>
     <string name="lbl_troubleshooting">Řešení problémů</string>
