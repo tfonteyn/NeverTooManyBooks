@@ -246,8 +246,7 @@ public class ExtMenuPopupWindow {
                 final int[] wh = calculatePopupWindowWidthAndHeight();
                 popupWindow.setWidth(wh[0]);
                 popupWindow.setHeight(wh[1]);
-                // preferred location: halfway on top of the anchor, and indented by mXOffset
-                popupWindow.showAsDropDown(view, xOffset, -view.getHeight() / 2);
+                popupWindow.showAsDropDown(view, xOffset, 0);
                 break;
             }
             default:
