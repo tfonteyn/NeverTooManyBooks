@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class SearchAdminFragment
         extends BaseFragment {
@@ -129,7 +130,13 @@ public class SearchAdminFragment
 
         vb.pager.setAdapter(tabAdapter);
         new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
-            tab.setText(getString(tabAdapter.getTabTitle(position)));
+            if (WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.Compact) {
+                tab.setText(getString(tabAdapter.getTabTitle(position)));
+            } else {
+                tab.setText(getString(tabAdapter.getTabDescription(position)));
+            }
+            // 2024-05-07: this turned out to be a dud...
+            // it's not shown when long-pressing the tab?
             tab.setContentDescription(getString(tabAdapter.getTabDescription(position)));
         })
                 .attach();
