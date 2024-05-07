@@ -22,4 +22,9 @@
 
 # Gradle plugin 8.4
 # https://developer.android.com/build/releases/gradle-plugin#library-classes-shrunk
--keep class com.hardbacknutter.nevertoomanybooks.core.** { *; }
+-keep class com.hardbacknutter.org.json.JSONArray { *; }
+-keep class com.hardbacknutter.org.json.JSONException { *; }
+-keep class com.hardbacknutter.org.json.JSONObject { *; }
+-keep class com.hardbacknutter.org.json.JSONString { *; }
+-keep class com.hardbacknutter.org.json.JSONTokener { *; }
+-keep class com.hardbacknutter.org.json.JSONWriter { *; }

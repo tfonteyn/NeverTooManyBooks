@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,12 +34,15 @@ android {
     buildTypes {
         release {
             minifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro")
         }
         beta {
-            initWith release
+            initWith(release)
         }
         debug {
-            initWith release
+            // Enforce testing the proguard rules during debug-builds.
+            initWith(release)
         }
     }
 

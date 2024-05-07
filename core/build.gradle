@@ -57,7 +57,11 @@ android {
                     "proguard-rules.pro")
         }
         beta {
-            initWith release
+            initWith(release)
+        }
+        debug {
+            // Enforce testing the proguard rules during debug-builds.
+            initWith(release)
         }
     }
 
