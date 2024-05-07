@@ -84,9 +84,6 @@ android {
         testInstrumentationRunnerArguments["runnerBuilder"] =
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
-        // Add the build UTC DateTime; ISO formatted
-        buildConfigField("String", "TIMESTAMP", "\"x\"")
-
         buildConfigField("boolean", "ENABLE_AMAZON", "true")
         buildConfigField("boolean", "ENABLE_BEDETHEQUE", "true")
         buildConfigField("boolean", "ENABLE_BOL", "true")
@@ -103,6 +100,11 @@ android {
         // ViewBookOnWebsiteHandler handles external-id's.
         buildConfigField("boolean", "ENABLE_GOODREADS_BY_EXT_ID", "true")
         buildConfigField("boolean", "ENABLE_LIBRARY_THING_BY_EXT_ID", "true")
+
+        // Under development; disabled for release builds in buildTypes.release
+        buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
+        buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
+        buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
     }
 
     buildTypes {
@@ -125,45 +127,32 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
-            // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
-            // under development
             buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }
         beta {
             initWith(release)
+
             versionNameSuffix = "-beta"
             // applicationIdSuffix: same as release to be able to update rel->beta
-
-            // Add the build UTC DateTime; ISO formatted
-            buildConfigField("String", "TIMESTAMP",
-                    "\"" + LocalDateTime.now(ZoneOffset.UTC)
-                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"")
 
             resValue("string", "searchSuggestAuthority",
                     "${defaultConfig.applicationId}.SearchSuggestionProvider.beta")
             resValue("string", "fileProviderAuthority",
                     "${defaultConfig.applicationId}.GenericFileProvider.beta")
-
-            // under development
-            buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
         }
         debug {
             debuggable = true
             versionNameSuffix = "-debug"
             applicationIdSuffix = ".debug"
 
+            // Add the build UTC DateTime as a fixed X to speed up debug builds
+            buildConfigField("String", "TIMESTAMP", "\"x\"")
+
             resValue("string", "searchSuggestAuthority",
                     "${defaultConfig.applicationId}.SearchSuggestionProvider.debug")
             resValue("string", "fileProviderAuthority",
                     "${defaultConfig.applicationId}.GenericFileProvider.debug")
-
-            // under development
-            buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
-            // under development
-            buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
-            // under development
-            buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }
     }
 
