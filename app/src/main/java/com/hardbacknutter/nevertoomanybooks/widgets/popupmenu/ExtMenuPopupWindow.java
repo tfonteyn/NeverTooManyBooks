@@ -65,8 +65,8 @@ public class ExtMenuPopupWindow {
                 public boolean onSubMenuClick(@NonNull final ExtMenuItem item) {
                     vb.title.setText(item.getTitle());
                     vb.title.setVisibility(View.VISIBLE);
-                    final int[] wh = calculatePopupWindowWidthAndHeight();
-                    popupWindow.update(wh[0], wh[1]);
+//                    final int[] wh = calculatePopupWindowWidthAndHeight();
+//                    popupWindow.update(wh[0], wh[1]);
                     return true;
                 }
 
@@ -157,11 +157,13 @@ public class ExtMenuPopupWindow {
      * The latter try to determine the absolute position of the window versus the anchor.
      * i.e. as requested under the anchor, or if not enough space, above the anchor.
      * <p>
-     * PopupWindow lines 1414 is where things start to go wrong.
+     * Line numbers based on API 34 source.
+     * {@link PopupWindow} lines 1418 is where things start to go wrong.
      * 'p' is initialized to the original width/height -> WRAP_CONTENT
      * instead of the ACTUAL width/height....
-     * line 2427 states:
+     * line 2440 states:
      * <pre>
+     * // If width and mWidth were both < 0 then we have a MATCH_PARENT or
      * // WRAP_CONTENT case. findDropDownPosition will have resolved
      * // this to absolute values, but we don't want to update
      * // mWidth/mHeight to these absolute values.
@@ -244,9 +246,9 @@ public class ExtMenuPopupWindow {
                 popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
                 break;
             case Anchored: {
-                final int[] wh = calculatePopupWindowWidthAndHeight();
-                popupWindow.setWidth(wh[0]);
-                popupWindow.setHeight(wh[1]);
+//                final int[] wh = calculatePopupWindowWidthAndHeight();
+//                popupWindow.setWidth(wh[0]);
+//                popupWindow.setHeight(wh[1]);
                 popupWindow.showAsDropDown(view, xOffset, 0);
                 break;
             }
