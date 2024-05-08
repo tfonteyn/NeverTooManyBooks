@@ -57,6 +57,9 @@ public enum DialogAndMenuMode {
 
     private static final Set<DialogAndMenuMode> POPUPS = Set.of(Start, End, Center, Anchored);
 
+    /** Different behavior depending on size < THRESHOLD versus size >= THRESHOLD */
+    private static final int MENU_SIZE_THRESHOLD = 5;
+
     /**
      * Determine how to show a <strong>dialog</strong>.
      * Either as a true Dialog, or as a BottomSheet.
@@ -145,7 +148,15 @@ public enum DialogAndMenuMode {
 
         switch (mode) {
             case UI_CONTEXT_MENUS_CLASSIC: {
-                return Anchored;
+                // TODO: offer Preference distinction for... or is that overkill...
+                //  - always as classic menus "Centered"
+                //  - always as classic menus "Anchored"
+                //  - by size (as implemented now)
+                if (!isLargeScreen(height, width) && menu.size() >= MENU_SIZE_THRESHOLD) {
+                    return Center;
+                } else {
+                    return Anchored;
+                }
             }
             case UI_CONTEXT_MENUS_BOTTOM_SHEET: {
                 return BottomSheet;
@@ -165,7 +176,7 @@ public enum DialogAndMenuMode {
 
                 // Small menus are served as popup menus
                 // anchored to the view to minimalize eye-movement.
-                if (menu.size() < 5) {
+                if (menu.size() < MENU_SIZE_THRESHOLD) {
                     return Anchored;
                 }
 
