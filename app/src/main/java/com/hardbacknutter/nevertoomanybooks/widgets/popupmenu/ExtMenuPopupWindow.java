@@ -62,11 +62,12 @@ public class ExtMenuPopupWindow {
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
-                public void onNewMenuTitle(@NonNull final CharSequence title) {
-                    vb.title.setText(title);
+                public boolean onSubMenuClick(@NonNull final ExtMenuItem item) {
+                    vb.title.setText(item.getTitle());
                     vb.title.setVisibility(View.VISIBLE);
                     final int[] wh = calculatePopupWindowWidthAndHeight();
                     popupWindow.update(wh[0], wh[1]);
+                    return true;
                 }
 
                 @Override

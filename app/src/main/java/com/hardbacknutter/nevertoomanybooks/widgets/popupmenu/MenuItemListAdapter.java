@@ -106,13 +106,12 @@ class MenuItemListAdapter
         final ExtMenuItem item = list.get(holder.getBindingAdapterPosition());
         if (item.isEnabled()) {
             if (item.hasSubMenu()) {
-                //noinspection DataFlowIssue
-                final List<ExtMenuItem> subMenuItems = item.getSubMenu().getItems();
-                setMenu(subMenuItems);
-                notifyDataSetChanged();
-                //noinspection DataFlowIssue
-                menuCallback.onNewMenuTitle(item.getTitle());
-
+                if (menuCallback.onSubMenuClick(item)) {
+                    //noinspection DataFlowIssue
+                    final List<ExtMenuItem> subMenuItems = item.getSubMenu().getItems();
+                    setMenu(subMenuItems);
+                    notifyDataSetChanged();
+                }
             } else {
                 menuCallback.onMenuItemClick(item.getItemId());
             }
@@ -133,11 +132,14 @@ class MenuItemListAdapter
     public interface MenuCallback {
 
         /**
-         * The menu was updated/replaced and the title should also be updated.
+         * The user clicked a menu item which represents a sub-menu.
          *
-         * @param title to set
+         * @param item The menu item that was invoked.
+         *
+         * @return {@code true} if the sub-menu should be shown.
+         *         {@code false} to ignore the click
          */
-        void onNewMenuTitle(@NonNull CharSequence title);
+        boolean onSubMenuClick(@NonNull ExtMenuItem item);
 
         /**
          * The user clicked a menu item.
