@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,12 +28,10 @@ import java.io.File;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 
 @SuppressWarnings("WeakerAccess")
-public class CoverHandlerViewModel
+public class CoverTransformationViewModel
         extends ViewModel {
 
     private final TransformationTask transformationTask = new TransformationTask();
-    /** Used to display a tip dialog when the user rotates a camera image. */
-    private boolean showTipAboutRotating = true;
 
     @NonNull
     LiveData<LiveDataEvent<TransformationTask.TransformedData>> onFinished() {
@@ -62,13 +60,5 @@ public class CoverHandlerViewModel
                  @NonNull final File destFile,
                  @NonNull final CoverHandler.NextAction action) {
         transformationTask.transform(transformation, destFile, action);
-    }
-
-    boolean isShowTipAboutRotating() {
-        return showTipAboutRotating;
-    }
-
-    void setShowTipAboutRotating(final boolean show) {
-        showTipAboutRotating = show;
     }
 }

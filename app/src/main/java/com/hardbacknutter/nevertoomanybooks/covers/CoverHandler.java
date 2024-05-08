@@ -112,7 +112,7 @@ public class CoverHandler {
     private final CoverBrowserLauncher coverBrowserLauncher;
     /** Main used is to run transformation tasks. Shared among all current CoverHandlers. */
     @NonNull
-    private final CoverHandlerViewModel vm;
+    private final CoverTransformationViewModel vm;
     @NonNull
     private final ImageViewLoader imageLoader;
     private final ExtMenuLauncher menuLauncher;
@@ -154,7 +154,7 @@ public class CoverHandler {
 
         // We could store idx in the VM, but there really is no point
         vm = new ViewModelProvider(fragment)
-                .get(String.valueOf(this.cIdx), CoverHandlerViewModel.class);
+                .get(String.valueOf(this.cIdx), CoverTransformationViewModel.class);
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           ImageView.ScaleType.FIT_START,
@@ -379,12 +379,11 @@ public class CoverHandler {
             return true;
 
         } else if (menuItemId == R.id.SUBMENU_THUMB_ROTATE) {
+            // TODO: this code is never reached since the menu popup/launcher handles
+            //  sub-menus directly. Leaving this here as we should move this tip elsewhere.
             // Just a submenu; skip, but display a hint if user is rotating a camera image
-            if (vm.isShowTipAboutRotating()) {
-                TipManager.getInstance()
-                          .display(context, R.string.tip_autorotate_camera_images, null);
-                vm.setShowTipAboutRotating(false);
-            }
+            TipManager.getInstance()
+                      .display(context, R.string.tip_autorotate_camera_images, null);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
