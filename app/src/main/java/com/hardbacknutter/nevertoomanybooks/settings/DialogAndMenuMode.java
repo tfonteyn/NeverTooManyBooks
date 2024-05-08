@@ -44,7 +44,7 @@ public enum DialogAndMenuMode {
     Anchored,
     /** Show a Dialog; Fullscreen or Floating. */
     Dialog,
-    /** Show a BottomSheet. */
+    /** Show a BottomSheet (Menus and BottomSheets). */
     BottomSheet;
 
     private static final int UI_DIALOGS_MODE_CLASSIC = 0;
@@ -67,7 +67,7 @@ public enum DialogAndMenuMode {
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
      *
-     * @return location
+     * @return location: either {@link #Dialog} or {@link #BottomSheet}
      */
     @NonNull
     public static DialogAndMenuMode getDialogMode(@NonNull final Context context) {
@@ -84,18 +84,17 @@ public enum DialogAndMenuMode {
                 return BottomSheet;
             }
             case UI_DIALOGS_MODE_BY_SCREEN_SIZE: {
-                // Expanded/Expanded.
-                // Expanded/Medium
                 if (isLargeScreen(height, width)) {
-                    // Large screen like tablets or desktops always use true dialog.
+                    // Expanded/Expanded.
+                    // Expanded/Medium
                     return Dialog;
+                } else {
+                    // Expanded/Compact
+                    // Medium/Medium
+                    // Medium/Compact
+                    // Compact/Compact
+                    return BottomSheet;
                 }
-
-                // Expanded/Compact
-                // Medium/Medium
-                // Medium/Compact
-                // Compact/Compact
-                return BottomSheet;
             }
             default:
                 throw new IllegalArgumentException("mode=" + mode);
@@ -104,6 +103,8 @@ public enum DialogAndMenuMode {
 
     /**
      * Determine where to show a <strong>menu</strong>.
+     * Small popup-menus will be anchored, longer ones will be centered.
+     * Depending on user-preference a BottomSheet is used instead.
      *
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
@@ -123,6 +124,8 @@ public enum DialogAndMenuMode {
 
     /**
      * Determine where to show a <strong>menu</strong>.
+     * Small popup-menus will be anchored, longer ones will be centered.
+     * Depending on user-preference a BottomSheet is used instead.
      *
      * @param activity hosting Activity
      * @param menu     to check
@@ -138,6 +141,18 @@ public enum DialogAndMenuMode {
                            menu);
     }
 
+    /**
+     * Determine where to show a <strong>menu</strong>.
+     * Small popup-menus will be anchored, longer ones will be centered.
+     * Depending on user-preference a BottomSheet is used instead.
+     *
+     * @param context Current context
+     * @param height  screen class
+     * @param width   screen class
+     * @param menu    to measure/display
+     *
+     * @return mode
+     */
     @NonNull
     private static DialogAndMenuMode getMenuMode(@NonNull final Context context,
                                                  @NonNull final WindowSizeClass height,
@@ -148,40 +163,23 @@ public enum DialogAndMenuMode {
 
         switch (mode) {
             case UI_CONTEXT_MENUS_CLASSIC: {
-                // TODO: offer Preference distinction for... or is that overkill...
-                //  - always as classic menus "Centered"
-                //  - always as classic menus "Anchored"
-                //  - by size (as implemented now)
-                if (!isLargeScreen(height, width) && menu.size() >= MENU_SIZE_THRESHOLD) {
-                    return Center;
-                } else {
-                    return Anchored;
-                }
+                return menu.size() < MENU_SIZE_THRESHOLD ? Anchored : Center;
             }
             case UI_CONTEXT_MENUS_BOTTOM_SHEET: {
                 return BottomSheet;
             }
             case UI_CONTEXT_MENUS_BY_MENU_SIZE: {
-                // Expanded/Expanded.
-                // Expanded/Medium
                 if (isLargeScreen(height, width)) {
-                    // Large screen like tablets or desktops always use a popup.
-                    return Anchored;
+                    // Expanded/Expanded.
+                    // Expanded/Medium
+                    return menu.size() < MENU_SIZE_THRESHOLD ? Anchored : Center;
+                } else {
+                    // Expanded/Compact
+                    // Medium/Medium
+                    // Medium/Compact
+                    // Compact/Compact
+                    return menu.size() < MENU_SIZE_THRESHOLD ? Anchored : BottomSheet;
                 }
-
-                // Expanded/Compact
-                // Medium/Medium
-                // Medium/Compact
-                // Compact/Compact
-
-                // Small menus are served as popup menus
-                // anchored to the view to minimalize eye-movement.
-                if (menu.size() < MENU_SIZE_THRESHOLD) {
-                    return Anchored;
-                }
-
-                // menu with 5 or more items are large enough to warranty extra eye-movement
-                return BottomSheet;
             }
             default:
                 throw new IllegalArgumentException("mode=" + mode);
