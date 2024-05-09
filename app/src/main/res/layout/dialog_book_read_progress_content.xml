@@ -104,6 +104,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_percentage"
+        app:tickVisible="false"
         tools:value="56"
         />
 
@@ -124,7 +125,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/current_page"
             style="@style/TIE.Number"
-            tools:text="23"
+            tools:text="123"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -147,7 +148,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/total_pages"
             style="@style/TIE.Number"
-            tools:text="1176"
+            tools:text="176"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -171,7 +172,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_pages"
-        tools:value="56"
+        app:tickVisible="false"
+        tools:value="123"
+        tools:valueTo="176"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
