@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -183,11 +183,16 @@ public class ParseTest
         // The parser will do a best-effort.
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_old_book);
 
+        verify9020612476(book);
+    }
+
+    static void verify9020612476(@NonNull final Book book) {
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
         assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9020612476", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("157", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

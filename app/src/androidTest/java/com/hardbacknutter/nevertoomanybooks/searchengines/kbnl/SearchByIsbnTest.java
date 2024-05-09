@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -34,10 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Does live lookups to the website !
@@ -64,16 +59,9 @@ public class SearchByIsbnTest
             throws SearchException, CredentialsException, StorageException {
 
         // this will first hit a multi-result page, take the first book, and fetch that.
-        // Run in debug for a full verification if in doubt
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
                 .searchByIsbn(context, "9020612476", new boolean[]{false, false});
 
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
-        assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
-        assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
-
-        // this is good enough... the local junit tests do the full parse test
+        ParseTest.verify9020612476(book);
     }
 }
