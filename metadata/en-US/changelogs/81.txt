@@ -1,0 +1,5 @@
+- Replaced the now defunct LibraryThing API for alternative-edition cover
+  searches with a new OpenLibrary version.
+- Support for CSV imports from Goodreads.
+- Quick switching between grid and list layout
+- Dialogs/Menus configurable to show as bottom-sheets or classic view.
