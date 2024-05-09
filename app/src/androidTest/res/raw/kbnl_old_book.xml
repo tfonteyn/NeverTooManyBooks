@@ -1,26 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--suppress ALL -->
 
 <?xml-stylesheet type="text/xsl" href="/cbs/get/worldcat_gui/%253Fid%253DLONGTITLE%2526db%253D2.37"?>
-<!--
-  ~ @Copyright 2018-2023 HardBackNutter
-  ~ @License GNU General Public License
-  ~
-  ~ This file is part of NeverTooManyBooks.
-  ~
-  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  ~ See the GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <!-- Copyright (c) 2023 by OCLC -->
 <!-- Release: cbs-8.4.6.1; cbscfg-8.4.5; pusher_proxy-1.0.1; lib: cbs-8.4.6.1  -->
 <psi:response xmlns:psi="http://www.oclcpica.org/xml/" name="LONGTITLE">
