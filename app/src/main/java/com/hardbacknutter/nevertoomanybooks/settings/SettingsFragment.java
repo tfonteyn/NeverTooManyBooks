@@ -143,14 +143,10 @@ public class SettingsFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        final ListPreference.SimpleSummaryProvider listSummaryProvider =
-                ListPreference.SimpleSummaryProvider.getInstance();
-
-
         final ListPreference pUiLocale = findPreference(Prefs.PK_UI_LOCALE);
         //noinspection DataFlowIssue
         pUiLocale.setEntries(vm.getUiLangNames());
-        pUiLocale.setSummaryProvider(listSummaryProvider);
+        pUiLocale.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
             // Set the activity result so our caller will recreate itself
             vm.setOnBackRequiresActivityRecreation();
@@ -161,7 +157,7 @@ public class SettingsFragment
 
         final Preference pUiTheme = findPreference(Prefs.PK_UI_THEME);
         //noinspection DataFlowIssue
-        pUiTheme.setSummaryProvider(listSummaryProvider);
+        pUiTheme.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pUiTheme.setOnPreferenceChangeListener((preference, newValue) -> {
             // we should never have an invalid setting in the prefs... flw
             try {
@@ -177,18 +173,21 @@ public class SettingsFragment
 
         final Preference pFastscroller = findPreference(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY);
         //noinspection DataFlowIssue
-        pFastscroller.setSummaryProvider(listSummaryProvider);
+        pFastscroller.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
             vm.setOnBackRequiresActivityRecreation();
             return true;
         });
 
         //noinspection DataFlowIssue
-        findPreference(ISBN.PK_EDIT_BOOK_ISBN_CHECKS).setSummaryProvider(listSummaryProvider);
+        findPreference(ISBN.PK_EDIT_BOOK_ISBN_CHECKS)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         //noinspection DataFlowIssue
-        findPreference(Prefs.pk_booklist_rebuild_state).setSummaryProvider(listSummaryProvider);
+        findPreference(Prefs.pk_booklist_rebuild_state)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         //noinspection DataFlowIssue
-        findPreference(Prefs.PK_BOOKLIST_CONTEXT_MENU).setSummaryProvider(listSummaryProvider);
+        findPreference(Prefs.PK_BOOKLIST_CONTEXT_MENU)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
 
         //noinspection DataFlowIssue
@@ -212,7 +211,6 @@ public class SettingsFragment
             storageWasMissing = args.getBoolean(BKEY_STORAGE_WAS_MISSING);
         }
 
-        //noinspection DataFlowIssue
         final StorageManager storage = (StorageManager)
                 getContext().getSystemService(Context.STORAGE_SERVICE);
 
@@ -234,7 +232,7 @@ public class SettingsFragment
 
         storageVolumePref = findPreference(Prefs.pk_storage_volume);
         //noinspection DataFlowIssue
-        storageVolumePref.setSummaryProvider(listSummaryProvider);
+        storageVolumePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         storageVolumePref.setEntries(entries);
         storageVolumePref.setEntryValues(entryValues);
         storageVolumePref.setOnPreferenceChangeListener(this::onStorageVolumeChange);
