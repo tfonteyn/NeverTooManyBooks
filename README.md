@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.6.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.6.0/NeverTooManyBooks-5.6.0.apk)
+## Download the latest release: [6.0.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.0.0/NeverTooManyBooks-6.0.0.apk)
 
 Also available
 on [IzzySoft](https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks).
