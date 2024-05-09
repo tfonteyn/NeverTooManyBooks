@@ -195,11 +195,11 @@
             />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuPreferenceFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"
             android:icon="@drawable/ic_baseline_tune_24"
             android:key="psk_dialog_and_menu_popup_tuning"
-            android:title="@string/pt_dialog_and_menu_popup_tuning"
-            android:summary="@string/pc_ui"
+            android:title="@string/pc_ui"
+            android:summary="@string/pt_dialog_and_menu_popup_tuning"
             />
 
         <SwitchPreference

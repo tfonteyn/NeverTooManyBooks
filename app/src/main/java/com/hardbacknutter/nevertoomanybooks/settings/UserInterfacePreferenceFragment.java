@@ -32,14 +32,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Used/defined in xml/preferences.xml
  */
 @Keep
-public class DialogAndMenuPreferenceFragment
+public class UserInterfacePreferenceFragment
         extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_dialog_and_menu_tuning, rootKey);
+        setPreferencesFromResource(R.xml.preferences_user_interface, rootKey);
 
         //noinspection DataFlowIssue
         findPreference(Prefs.PK_UI_DIALOGS_MODE)
