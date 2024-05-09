@@ -1,3 +1,31 @@
+### 6.0.0
+
+NEW:
+
+- Upgraded OpenLibrary support to their new Search-API.
+  This allows us to fetch additional fields including back-cover images.
+- Replaced the now defunct LibraryThing API for alternative-edition cover searches
+  with a new OpenLibrary version. As a side effect this will also speed up finding covers on
+  OpenLibrary.
+- Updated to parse the latest Amazon site changes.
+- Support for CSV imports from Goodreads.
+- The main screen has a new menu-option (button) to quickly flip between list and grid-layout.
+- All dialogs can be shown as bottom-sheets or classic dialogs as per user-preferences.
+- Context/popup menus can be shown as bottom-sheets or as classic context menus.
+- Configuration for Dialogs/Menus can be found in the Settings, Advanced section.
+
+FIXES:
+
+- Fix the issue with duplicate "(Year not set)" headers when sorting according to read-status.
+- The multi-redirect issue with OpenLibrary covers download has been fixed
+  by implementing a manual-redirect routine.
+
+REMOVED:
+
+- LibraryThing alternative-edition search
+
+---
+
 ### 5.6.0
 
 - Chinese translation completed.
