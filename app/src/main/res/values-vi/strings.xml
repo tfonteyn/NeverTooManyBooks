@@ -230,7 +230,7 @@
     <string name="warning_backup_request">Bạn có muốn sao lưu cơ sở dữ liệu vào thẻ sd của mình không?</string>
     <!-- If the user has enabled/disabled  website to search on and for example disabled ALL sites which can search by ISBN, and then the user tries to to search by ISBN.
         Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
-    <string name="warning_no_site_supports_this_method">CẢNH BÁO: không có trang web nào hiện được chọn hỗ trợ tìm kiếm theo %1$s. Vui lòng sử dụng menu trang web để kích hoạt các trang web thay thế hoặc sử dụng phương pháp tìm kiếm khác.</string>
+    <string name="warning_no_site_supports_this_method">CẢNH BÁO: không có trang nào hiện được chọn hỗ trợ tìm kiếm theo %1$s. Vui lòng sử dụng thực đơn trang để kích hoạt các trang thay thế hoặc sử dụng phương pháp tìm kiếm khác.</string>
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->
     <!-- Dialog title for validation messages. -->
@@ -349,7 +349,7 @@
     <string name="tip_reset_all">Đặt lại mẹo</string>
     <string name="tip_reset_done">Mẹo đã được đặt lại</string>
     <string name="tip_book_search_by_text">Thêm sách theo ISBN chính xác hơn nhiều so với thêm theo tác giả và tên sách và thường được ưu tiên hơn. Hãy nhớ rằng đôi khi bạn có thể tìm thấy mã vạch chính xác ở mặt trong của bìa trước.</string>
-    <string name="tip_booklist_styles_editor">Sử dụng màn hình này để tùy chỉnh danh sách các kiểu cách sẽ được hiển thị trong menu kiểu cách mặc định của bạn. Sử dụng hộp kiểm để chọn kiểu cách nào sẽ được hiển thị trong danh sách. Nếu không có kiểu cách nào được chọn thì tất cả các kiểu sẽ được hiển thị. Bạn có thể sắp xếp lại thứ bậc bằng cách kéo biểu tượng ở ngoài cùng bên phải của mỗi hàng lên hoặc xuống. Nhấn và giữ bất cứ nơi nào khác trong hàng sẽ cho phép bạn chỉnh sửa hoặc sao chép các chi tiết của một kiểu cụ thể. Nếu bạn sao chép một kiểu và thay đổi ý định, bạn sẽ cần phải tự xóa nó.</string>
+    <string name="tip_booklist_styles_editor">Sử dụng màn hình này để tùy chỉnh danh sách các kiểu cách sẽ được hiển thị trong thực đơn kiểu cách mặc định của bạn. Sử dụng hộp kiểm để chọn kiểu cách nào sẽ được hiển thị trong danh sách. Nếu không có kiểu cách nào được chọn thì tất cả các kiểu sẽ được hiển thị. Bạn có thể sắp xếp lại thứ bậc bằng cách kéo biểu tượng ở ngoài cùng bên phải của mỗi hàng lên hoặc xuống. Nhấn và giữ bất cứ nơi nào khác trong hàng sẽ cho phép bạn chỉnh sửa hoặc sao chép các chi tiết của một kiểu cụ thể. Nếu bạn sao chép một kiểu và thay đổi ý định, bạn sẽ cần phải tự xóa nó.</string>
     <string name="tip_booklist_style_groups">Sử dụng màn hình này để sửa đổi thứ bậc của các nhóm cho một kiểu cụ thể. Sử dụng hộp kiểm để chọn nhóm nào sẽ được hiển thị trong danh sách và sắp xếp lại thứ bậc bằng cách kéo biểu tượng ở cuối mỗi hàng lên hoặc xuống.</string>
     <string name="tip_booklist_style_defaults">Sử dụng màn hình này để đặt các đặc điểm mặc định của tất cả các kiểu. Chúng được sử dụng bởi tất cả các kiểu dựng sẵn và là điểm khởi đầu cho bất kỳ kiểu nào bạn tự xác định.</string>
     <string name="tip_booklist_style_properties">Sử dụng màn hình này để đặt các đặc điểm của một kiểu cụ thể. Bạn có thể thay đổi tên, chỉnh sửa các nhóm để thay đổi thứ bậc và điều chỉnh nhiều tùy chọn khác để tạo kiểu mà bạn thấy hữu ích.</string>
@@ -364,7 +364,7 @@
     <!-- Tip text displayed when user enters the 'Update fields from internet' screen
      The referred "View on…" is "option_view_book_at"
      TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
-    <string name="tip_update_fields_from_internet">Các liên kết trang web bên ngoài chỉ được xử lý nếu trang web đó thực sự được liên hệ. Do đó, menu “Xem trên…” cũng sẽ chỉ hiển thị những gì có sẵn.</string>
+    <string name="tip_update_fields_from_internet">Các liên kết trang bên ngoài chỉ được xử lý nếu trang đó thực sự được liên hệ. Do đó, thực đơn “Xem trên…” cũng sẽ chỉ hiển thị những gì có sẵn.</string>
     <string name="tip_configure_sites">Các trang web riêng lẻ có thể được định cấu hình bằng biểu tượng thiết đặt ở đầu màn hình.</string>
     <!-- tip title and explanations for the icons used. -->
     <string name="tip_authors_works">Các biểu tượng đã dùng</string>
@@ -1161,13 +1161,13 @@
     <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_collapsed">Luôn bắt đầu thu gọn</string>
     <!-- ListPreference title: context menu on a row in the booklist. -->
-    <string name="pt_bob_row_menu">Menu ngữ cảnh hàng</string>
+    <string name="pt_bob_row_menu">Thực đơn ngữ cảnh hàng</string>
     <!-- ListPreference value: context menu on a row in the booklist. -->
     <string name="pe_bob_row_menu_button">Luôn hiển thị một nút.</string>
     <!-- ListPreference value: context menu on a row in the booklist. -->
-    <string name="pe_bob_row_menu_button_when_space">Hiển thị một nút nếu có khoảng trống, nếu không thì hãy nhấn lâu.</string>
+    <string name="pe_bob_row_menu_button_when_space">Hiển thị một nút nếu có không gian, nếu không thì hãy nhấn giữ.</string>
     <!-- ListPreference value: context menu on a row in the booklist. -->
-    <string name="pe_bob_row_menu_long_click">Luôn sử dụng nhấn lâu.</string>
+    <string name="pe_bob_row_menu_long_click">Luôn sử dụng nhấn giữ.</string>
     <!-- ListPreference title: the popup bubble displayed while scrolling through a booklist. -->
     <string name="pt_fast_scroller_overlay">Bong bóng văn bản trong khi cuộn.</string>
     <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
@@ -1185,12 +1185,12 @@
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_other">Khác</string>
     <!-- Preference option title -->
-    <string name="pt_search_show_shopping_options">Hiển thị menu mua sắm</string>
+    <string name="pt_search_show_shopping_options">Hiển thị thực đơn mua sắm</string>
     <!-- endregion -->
     <!-- region ========== Maintenance. -->
     <!-- Cleanup log and other temp files -->
-    <string name="pe_ui_context_menu_mode_by_size">Màn hình nhỏ hơn hiển thị các menu dài ở cuối màn hình và các menu ngắn dưới dạng menu ngữ cảnh cổ điển.
-\nMàn hình lớn hơn, chẳng hạn như máy tính bảng, luôn sử dụng menu ngữ cảnh cổ điển.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Màn hình nhỏ hơn hiển thị các thực đơn dài ở cuối màn hình và các thực đơn ngắn dưới dạng menu ngữ cảnh cổ điển.
+\nMàn hình lớn hơn, chẳng hạn như máy tính bảng, luôn sử dụng thực đơn ngữ cảnh cổ điển.</string>
     <string name="option_purge_files">Dọn dẹp các tệp</string>
     <!-- param 1: file size; param 2: button text -->
     <string name="info_cleanup_files">Các tệp có thể xóa hiện đang sử dụng %1$s trên thẻ SD. Các tệp nhật ký và dữ liệu khác được lưu trên thẻ SD mỗi lần nâng cấp, khi bạn sao lưu cơ sở dữ liệu hoặc khi ứng dụng gặp sự cố. Nhấn vào nút bên dưới để xóa các tệp này khỏi thẻ SD của bạn. Nếu bạn gặp sự cố hoặc lỗi khác, trước tiên hãy cân nhắc sử dụng nút “%2$s”.</string>
@@ -1286,11 +1286,11 @@
     <string name="pe_bob_cover_click_details">Sẽ mở trang chi tiết sách.</string>
     <!-- ListPreference - How to open the book menu for a book in BoB grid-mode.
          Will have the option(s) listed underneath. -->
-    <string name="pt_bob_cover_long_click">Mở menu sách.</string>
+    <string name="pt_bob_cover_long_click">Mở thực đơn sách.</string>
     <!-- Option text for "pt_bob_cover_long_click" -->
     <string name="pe_bob_cover_long_click_ignore">Bằng cách nhấn vào một nút.</string>
     <!-- Option text for "pt_bob_cover_long_click" -->
-    <string name="pe_bob_cover_long_click_popupmenu">Bằng cách nhấn lâu vào ảnh bìa.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Bằng cách nhấn giữ vào ảnh bìa.</string>
     <!-- SeekBarPreference - Scale cover/thumbnail images. -->
     <string name="pt_bob_cover_scale">Cỡ bìa</string>
     <!-- [VERIFIED] SeekBarPreference - Scale text. -->
@@ -1343,7 +1343,7 @@
     <!-- region ========== Automatic update book fields from the internet. -->
     <!-- Booklist screen / Book details screen - context/options menu.
          Update Fields from internet for a SINGLE book -->
-    <string name="menu_update_fields">Cập nhật trường</string>
+    <string name="menu_update_fields">Cập nhật các trường</string>
     <!-- Booklist screen - context menu for NON-book rows.
          Update Fields from internet for a set of books -->
     <string name="menu_update_books">Cập nhật sách</string>
