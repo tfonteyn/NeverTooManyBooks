@@ -97,6 +97,7 @@
         android:id="@+id/slider_percentage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/lbl_percentage"
         android:stepSize="1"
         android:valueFrom="0"
         android:valueTo="100"
@@ -136,11 +137,11 @@
         android:hint="@string/lbl_total_pages"
         android:visibility="gone"
         app:endIconMode="clear_text"
+        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_current_page"
         app:layout_constraintTop_toBottomOf="@id/slider_percentage"
         tools:visibility="visible"
-        app:errorEnabled="true"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -163,6 +164,7 @@
         android:id="@+id/slider_pages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/lbl_pages"
         android:stepSize="1"
         android:valueFrom="0"
         android:valueTo="100"
