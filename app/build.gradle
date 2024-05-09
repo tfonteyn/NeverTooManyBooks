@@ -209,9 +209,9 @@ android {
         abortOnError = false
     }
 
-    applicationVariants.all {
+    applicationVariants.configureEach {
         final variant ->
-            variant.outputs.all {
+            variant.outputs.configureEach {
                 outputFileName = "${rootProject.name}-${defaultConfig.versionName}-${variant.name}.apk"
             }
     }
