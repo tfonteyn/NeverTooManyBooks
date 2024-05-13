@@ -79,6 +79,7 @@ public class Parse2Test
             throws IOException, StorageException, SearchException, CredentialsException {
         final Book book = new Book();
 
+        // getContext(): we want the "androidTest" context which is where our test resources live
         try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {
             assertNotNull(is);

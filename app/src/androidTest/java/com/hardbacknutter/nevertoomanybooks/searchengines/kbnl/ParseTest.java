@@ -79,6 +79,7 @@ public class ParseTest
             throws IOException, SAXException {
         final Book book = new Book();
         final KbNlBookHandler bookHandler = new KbNlBookHandler(searchEngine, book);
+        // getContext(): we want the "androidTest" context which is where our test resources live
         try (InputStream in = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {
             saxParser.parse(in, bookHandler);

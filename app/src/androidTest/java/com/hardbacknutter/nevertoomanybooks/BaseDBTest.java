@@ -92,6 +92,7 @@ public abstract class BaseDBTest {
                                     @NonNull final String locationHeader)
             throws IOException {
         final Document document;
+        // getContext(): we want the "androidTest" context which is where our test resources live
         try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {
             assertNotNull(is);

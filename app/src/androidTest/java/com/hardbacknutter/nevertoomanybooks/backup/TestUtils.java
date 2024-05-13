@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,6 +56,7 @@ public final class TestUtils {
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
+        // getContext(): we want the "androidTest" context which is where our test resources live
         final Context ic = InstrumentationRegistry.getInstrumentation().getContext();
         try (final InputStream is = ic.getResources().openRawResource(resId);
              final OutputStream os = new FileOutputStream(file)) {

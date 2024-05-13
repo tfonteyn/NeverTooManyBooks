@@ -25,6 +25,7 @@ import android.net.Uri;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,10 +43,11 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
  * A test helper to copy raw test resources to the test environment.
  * <p>
  * To load the raw test resource, we MUST use the instrumentation context
- * and NOT the application (aka target) context:
- * {@code InstrumentationRegistry.getInstrumentation().getContext()}
+ * {@link InstrumentationRegistry#getInstrumentation()#getContext()}
  * <p>
  * but to write the files, we MUST use the application context obviously...
+ * {@link InstrumentationRegistry#getInstrumentation()#getTargetContext()}
+ * or {@link ServiceLocator#getAppContext()}.
  */
 public class DbPrep {
     public static final String[] COVER = {"0.jpg", "1.jpg"};
