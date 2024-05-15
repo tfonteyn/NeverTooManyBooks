@@ -209,6 +209,14 @@ android {
         abortOnError = false
     }
 
+    // https://developer.android.com/build/dependencies#dependency-info-play
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs.
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles.
+        includeInBundle = false
+    }
+
     applicationVariants.configureEach {
         final variant ->
             variant.outputs.configureEach {
