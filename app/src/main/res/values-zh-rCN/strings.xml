@@ -645,7 +645,7 @@
     <string name="lbl_table_of_content_entry">目录条目</string>
     <string name="info_maintenance_sync_deleted_book_records">这将检查从另一设备导入文件中的已删除图书历史。换句话说，在那台设备上删除的图书，也会将其在本设备上删除。</string>
     <string name="lbl_login_to_search">登录以搜索</string>
-    <string name="lbl_styles_long">书架造型</string>
+    <string name="lbl_styles_long">书单样式</string>
     <string name="lbl_sync_date">自从</string>
     <string name="pt_show_title_reordered">将标题显示为…</string>
     <string name="option_info_lbl_archive_is_export_only">仅用于数据导出；不支持导入。</string>
@@ -805,5 +805,5 @@
     <string name="lbl_troubleshooting">排错设置</string>
     <string name="lbl_troubleshooting_warning">除非应用开发者明确请求，请不要启用以下选项。</string>
     <string name="lbl_tab_alternative_editions_long">备选版</string>
-    <string name="info_tap_to_select">轻敲选择。</string>
+    <string name="info_tap_to_select">点击以选择。</string>
 </resources>
