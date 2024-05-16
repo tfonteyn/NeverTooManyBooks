@@ -24,7 +24,7 @@ Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
-### Download the latest release
+### Download the latest release: 6.0.0
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.0.0/NeverTooManyBooks-6.0.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
