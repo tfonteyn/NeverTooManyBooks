@@ -18,17 +18,19 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [6.0.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.0.0/NeverTooManyBooks-6.0.0.apk)
-
-<a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
-<img src="metadata/en-US/images/IzzyOnDroid.png" alt="Get it on IzzySoft" style="width:150px;"/>
-</a>
-
 This is a book collection application, to keep track of your books and comics.
 
 Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
+
+### Download the latest release
+
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.0.0/NeverTooManyBooks-6.0.0.apk">
+<img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
+
+<a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
+<img src="metadata/en-US/images/IzzyOnDroid.png" alt="Get it on IzzySoft" style="width:150px;"/></a>
 
 ## User Interface languages:
 
