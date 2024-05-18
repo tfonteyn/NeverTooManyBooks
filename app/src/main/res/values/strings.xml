@@ -1333,7 +1333,7 @@
     <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
     <string name="pt_ui_system_locale">System language</string>
     <!-- ListPreference title: UI Theme -->
-    <string name="pt_ui_theme">Interface Theme</string>
+    <string name="pt_ui_theme">Theme</string>
     <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_day_night">Day / Night</string>
     <!-- ListPreference value: UI Theme -->
