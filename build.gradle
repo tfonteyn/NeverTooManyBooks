@@ -19,8 +19,8 @@
  */
 
 plugins {
-    id("com.android.application") version '8.4.0' apply false
-    id("com.android.library") version '8.4.0' apply false
+    id("com.android.application") version '8.4.1' apply false
+    id("com.android.library") version '8.4.1' apply false
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
     id("org.jetbrains.kotlin.android") version "1.9.23" apply false
     // https://github.com/mannodermaus/android-junit5
