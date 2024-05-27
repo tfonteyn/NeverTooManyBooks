@@ -93,6 +93,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
+import com.hardbacknutter.util.logger.FileLogger;
+import com.hardbacknutter.util.logger.Logger;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class ServiceLocator {
 
@@ -275,6 +278,15 @@ public class ServiceLocator {
             networkChecker = new NetworkCheckerImpl(this::getAppContext);
         }
         return networkChecker;
+    }
+
+    @Nullable
+    public File getLogDir() {
+        final Logger logger = LoggerFactory.getLogger();
+        if (logger instanceof FileLogger) {
+            return ((FileLogger) logger).getLogDir();
+        }
+        return null;
     }
 
     @NonNull

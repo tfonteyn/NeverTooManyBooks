@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.SearchFtsFragment;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SearchFtsContract
         extends ActivityResultContract<SearchCriteria, Optional<SearchCriteria>> {

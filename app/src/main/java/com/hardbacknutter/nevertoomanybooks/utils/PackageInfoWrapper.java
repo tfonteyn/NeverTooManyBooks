@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * A trivial wrapper for {@link PackageInfoWrapper} to hide the different API versions

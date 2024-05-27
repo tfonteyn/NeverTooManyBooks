@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,11 +27,10 @@ import java.io.File;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.util.logger.FileLogger;
 
 import org.junit.Test;
 
@@ -48,11 +47,16 @@ public class LoggerTest {
             throws StorageException {
 
         final Context context = ServiceLocator.getInstance().getAppContext();
-        final Logger logger = LoggerFactory.getLogger();
+
+        final File logDir = new File(context.getFilesDir(), "logs");
+        if (!logDir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            logDir.mkdirs();
+        }
+
+        final FileLogger logger = new FileLogger(logDir, "test.log");
 
         CoverVolume.initVolume(context, 0);
-
-        final File logDir = logger.getLogDir();
 
         FileUtils.deleteDirectory(logDir, null);
 

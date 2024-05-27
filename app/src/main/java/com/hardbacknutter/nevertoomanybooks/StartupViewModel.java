@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -186,9 +185,6 @@ public class StartupViewModel
         if (startTasks) {
 
             cleanObsoleteDirectories(context);
-
-            // from here on, we have access to our log file
-            LoggerFactory.getLogger().cycleLogs();
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 

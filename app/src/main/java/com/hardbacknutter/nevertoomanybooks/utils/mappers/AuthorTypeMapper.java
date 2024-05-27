@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Translate author types/roles into our own internal type codes.

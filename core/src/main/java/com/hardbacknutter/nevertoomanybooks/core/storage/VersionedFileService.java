@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Provides a rudimentary versioning for files.

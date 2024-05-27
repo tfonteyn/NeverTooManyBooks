@@ -47,7 +47,6 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -167,7 +166,7 @@ public class MaintenanceFragment
 
         final long bytes;
         try {
-            bytes = FileUtils.getUsedSpace(LoggerFactory.getLogger().getLogDir(), null)
+            bytes = FileUtils.getUsedSpace(serviceLocator.getLogDir(), null)
                     + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
                     + FileUtils.getUsedSpace(coverStorage.getTempDir(), null)
                     + FileUtils.getUsedSpace(coverStorage.getDir(), coverFilter);
@@ -192,7 +191,7 @@ public class MaintenanceFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         try {
-                            FileUtils.deleteDirectory(LoggerFactory.getLogger().getLogDir(), null);
+                            FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
                             FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
                             FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
                             FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);

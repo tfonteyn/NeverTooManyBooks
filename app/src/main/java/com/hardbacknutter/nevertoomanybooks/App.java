@@ -27,17 +27,18 @@ import android.os.StrictMode;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.google.android.material.color.DynamicColors;
+
 import java.io.File;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.debug.AcraCustomDialog;
-import com.hardbacknutter.nevertoomanybooks.debug.FileLogger;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
+import com.hardbacknutter.util.logger.FileLogger;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -51,9 +52,12 @@ public class App
 
     private static final String TAG = "App";
 
+    /** Sub directory of {@link Context#getFilesDir()}. */
+    private static final String LOG_DIR = "log";
+    /** Base name of the logfile. */
+    private static final String LOG_FILE = "error.log";
+
     private static final int ACRA_LOGFILE_LINES = 1_000;
-    private static final String APPLICATION_LOG_FILE =
-            FileLogger.DIR_LOG + File.separatorChar + FileLogger.ERROR_LOG_FILE;
 
     /** Flag to indicate the startup can skip a full init. */
     private boolean hotStart;
@@ -108,12 +112,16 @@ public class App
     public void onCreate() {
         super.onCreate();
 
-        final File logDir = new File(getFilesDir(), FileLogger.DIR_LOG);
+        DynamicColors.applyToActivitiesIfAvailable(this);
+
+        final File logDir = new File(getFilesDir(), LOG_DIR);
         if (!logDir.exists()) {
             //noinspection ResultOfMethodCallIgnored
             logDir.mkdirs();
         }
-        LoggerFactory.setLogger(new FileLogger(logDir));
+        final FileLogger logger = new FileLogger(logDir, LOG_FILE);
+        logger.cycleLogs();
+        LoggerFactory.setLogger(logger);
 
         ServiceLocator.create(getApplicationContext());
 
@@ -134,7 +142,7 @@ public class App
                 .withBuildConfigClass(BuildConfig.class)
                 .withReportFormat(StringFormat.JSON)
                 .withApplicationLogFileDir(Directory.FILES)
-                .withApplicationLogFile(APPLICATION_LOG_FILE)
+                .withApplicationLogFile(LOG_DIR + File.separatorChar + LOG_FILE)
                 .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
                 // regex's
                 .withExcludeMatchingSharedPreferencesKeys(".*password.*", ".*host\\.user.*")
@@ -186,12 +194,14 @@ public class App
 
         Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
             if (throwable instanceof OutOfMemoryError) {
-                final Logger logger = LoggerFactory.getLogger();
-                try {
-                    final File file = new File(logger.getLogDir(), "ntmb.hprof");
-                    Debug.dumpHprofData(file.getAbsolutePath());
-                } catch (@NonNull final IOException e) {
-                    logger.e(TAG, e);
+                final File logDir = ServiceLocator.getInstance().getLogDir();
+                if (logDir != null) {
+                    try {
+                        final File file = new File(logDir, "ntmb.hprof");
+                        Debug.dumpHprofData(file.getAbsolutePath());
+                    } catch (@NonNull final IOException e) {
+                        LoggerFactory.getLogger().e(TAG, e);
+                    }
                 }
             }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,8 +29,9 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
+import com.hardbacknutter.util.logger.Logger;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * A simple wrapper for an {@link SQLiteStatement} which is a final class, so we cannot extend it.
@@ -168,7 +169,7 @@ public class ExtSQLiteStatement
     public long simpleQueryForLong()
             throws SQLiteDoneException {
         final long result = statement.simpleQueryForLong();
-        if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger()
                          .d(TAG, "simpleQueryForLong", statement + "|long=" + result);
         }
@@ -202,7 +203,7 @@ public class ExtSQLiteStatement
     public String simpleQueryForString()
             throws SQLiteDoneException {
         final String result = statement.simpleQueryForString();
-        if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger()
                          .d(TAG, "simpleQueryForString", statement + "|string=" + result);
         }
@@ -221,7 +222,7 @@ public class ExtSQLiteStatement
         try {
             return simpleQueryForString();
         } catch (@NonNull final SQLiteDoneException e) {
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+            if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
                 LoggerFactory.getLogger()
                              .d(TAG, "simpleQueryForStringOrNull", super.toString() + "|NULL");
             }
@@ -234,7 +235,7 @@ public class ExtSQLiteStatement
      * CREATE / DROP table, view, trigger, index etc.
      */
     public void execute() {
-        if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger()
                          .d(TAG, "execute", statement);
         }
@@ -273,7 +274,7 @@ public class ExtSQLiteStatement
             rowsAffected = -1;
         }
 
-        if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger()
                          .d(TAG, "executeUpdateDelete",
                             statement + "|rowsAffected=" + rowsAffected);
@@ -307,7 +308,7 @@ public class ExtSQLiteStatement
             id = -1;
         }
 
-        if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             final Logger logger = LoggerFactory.getLogger();
             logger.d(TAG, "executeInsert", statement + "|id=" + id);
             if (id == -1) {

@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -48,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEng
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.util.logger.LoggerFactory;
+import com.hardbacknutter.util.logger.SystemOutLogger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,7 +176,7 @@ public class Base {
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
 
-        LoggerFactory.setLogger(new TestLogger(getTmpDir()));
+        LoggerFactory.setLogger(new SystemOutLogger());
         ServiceLocator.create(serviceLocatorMock);
         SearchEngineConfig.createRegistry(context, serviceLocatorMock.getLanguages());
     }

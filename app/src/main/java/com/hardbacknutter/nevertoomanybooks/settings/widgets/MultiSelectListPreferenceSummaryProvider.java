@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.preference.Preference;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class MultiSelectListPreferenceSummaryProvider
         implements Preference.SummaryProvider<MultiSelectListPreference> {

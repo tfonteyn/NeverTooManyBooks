@@ -37,8 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class EditStyleContract
         extends ActivityResultContract<EditStyleContract.Input,

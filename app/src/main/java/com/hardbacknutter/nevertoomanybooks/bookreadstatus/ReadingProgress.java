@@ -32,9 +32,9 @@ import androidx.core.math.MathUtils;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * A data class to facilitate encoding/decoding the database String value

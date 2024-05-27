@@ -37,8 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class ShowBookPagerContract
         extends ActivityResultContract<ShowBookPagerContract.Input, Optional<EditBookOutput>> {

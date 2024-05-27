@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -194,8 +194,12 @@ public final class FileUtils {
      *
      * @return number of bytes deleted
      */
-    public static long deleteDirectory(@NonNull final File root,
+    public static long deleteDirectory(@Nullable final File root,
                                        @Nullable final FileFilter filter) {
+        if (root == null) {
+            return 0;
+        }
+
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {
@@ -242,8 +246,12 @@ public final class FileUtils {
      *
      * @return number of bytes used
      */
-    public static long getUsedSpace(@NonNull final File root,
+    public static long getUsedSpace(@Nullable final File root,
                                     @Nullable final FileFilter filter) {
+        if (root == null) {
+            return 0;
+        }
+
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {

@@ -17,32 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.core;
+
+package com.hardbacknutter.util.logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-
 public interface Logger {
 
-    @NonNull
-    String getErrorLog()
-            throws IOException;
-
-    @NonNull
-    File getLogDir();
-
     /**
-     * Cycle the log each time the app is started; preserve previous if non-empty.
-     */
-    default void cycleLogs() {
-
-    }
-
-    /**
-     * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * ERROR message.
      *
      * @param tag    log tag
      * @param e      cause
@@ -53,7 +37,7 @@ public interface Logger {
            @Nullable Object... params);
 
     /**
-     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * WARN message.
      *
      * @param tag    log tag
      * @param params objects/text to log

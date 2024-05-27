@@ -45,8 +45,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class NetworkCheckerImpl
         implements NetworkChecker {
@@ -107,7 +108,7 @@ public class NetworkCheckerImpl
                         .getDefaultSharedPreferences(appContextSupplier.get())
                         .getBoolean(PK_NETWORK_ALLOW_METERED, true);
 
-                if (BuildConfig.DEBUG && LoggerFactory.NETWORK_CHECKER) {
+                if (BuildConfig.DEBUG && DEBUG_FLAGS.NETWORK_CHECKER) {
                     LoggerFactory.getLogger()
                                  .d(TAG, "getNetworkCapabilities",
                                     "hasInternet=" + hasInternet

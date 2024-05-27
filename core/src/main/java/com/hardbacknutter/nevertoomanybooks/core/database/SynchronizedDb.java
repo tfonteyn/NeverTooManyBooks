@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
@@ -426,7 +427,7 @@ public class SynchronizedDb
      * @throws TransactionException when currently inside a shared lock
      */
     public void execSQL(@NonNull final String sql) {
-        if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger().d(TAG, "execSQL", sql);
         }
 

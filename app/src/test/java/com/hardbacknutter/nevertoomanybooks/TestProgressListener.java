@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,9 +22,9 @@ package com.hardbacknutter.nevertoomanybooks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class TestProgressListener
         implements ProgressListener {
@@ -45,10 +45,10 @@ public class TestProgressListener
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (!BuildConfig.DEBUG  /* always */) {
             LoggerFactory.getLogger()
-                          .d(tag, "publishProgressStep",
-                             "progressCurrentPos=" + progressCurrentPos
-                             + "|delta=" + delta
-                             + "|message=" + message);
+                         .d(tag, "publishProgressStep",
+                            "progressCurrentPos=" + progressCurrentPos
+                            + "|delta=" + delta
+                            + "|message=" + message);
         }
 
     }
@@ -58,7 +58,7 @@ public class TestProgressListener
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (!BuildConfig.DEBUG  /* always */) {
             LoggerFactory.getLogger()
-                          .d(tag, "publishProgress", "message=" + message);
+                         .d(tag, "publishProgress", "message=" + message);
         }
     }
 
@@ -74,7 +74,7 @@ public class TestProgressListener
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
         LoggerFactory.getLogger()
-                      .d(tag, "setIndeterminate", String.valueOf(indeterminate));
+                     .d(tag, "setIndeterminate", String.valueOf(indeterminate));
     }
 
     @Override

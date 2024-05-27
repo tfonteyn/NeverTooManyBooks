@@ -48,8 +48,8 @@ import java.util.function.IntFunction;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Provides fullscreen or floating dialog support.

@@ -18,65 +18,33 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.util.logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
-
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.FileLogger;
-
-public class TestLogger
+public class NullLogger
         implements Logger {
-
-    @NonNull
-    private final File logDir;
-
-    TestLogger(@NonNull final File tmpDir) {
-        logDir = new File(tmpDir, FileLogger.DIR_LOG);
-        if (!logDir.exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            logDir.mkdirs();
-        }
-    }
-
-    @NonNull
-    @Override
-    public String getErrorLog() {
-        return "TestLogger";
-    }
-
-    @NonNull
-    @Override
-    public File getLogDir() {
-        return logDir;
-    }
-
-    @Override
-    public void cycleLogs() {
-
-    }
 
     @Override
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|ERROR|" + tag + "|" + FileLogger.concat(params)
-                           + "|" + (e == null ? null : e.getMessage())
-                           + "\n" + FileLogger.getStackTraceString(e));
+        // ignore
+
     }
 
     @Override
     public void w(@NonNull final String tag,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|WARN|" + tag + "|" + FileLogger.concat(params));
+        // ignore
+
     }
 
     @Override
     public void d(@NonNull final String tag,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|DEBUG|" + tag + "|" + FileLogger.concat(params));
+        // ignore
+
     }
 }

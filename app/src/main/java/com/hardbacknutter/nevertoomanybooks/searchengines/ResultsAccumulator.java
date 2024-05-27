@@ -37,7 +37,6 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -50,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 class ResultsAccumulator {
 

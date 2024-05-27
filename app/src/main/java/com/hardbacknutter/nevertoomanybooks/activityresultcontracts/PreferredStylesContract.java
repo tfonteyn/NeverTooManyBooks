@@ -33,8 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class PreferredStylesContract
         extends ActivityResultContract<String, Optional<PreferredStylesContract.Output>> {

@@ -34,12 +34,12 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class AddBookBySearchContract
         extends ActivityResultContract<AddBookBySearchContract.Input, Optional<EditBookOutput>> {

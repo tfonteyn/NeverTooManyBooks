@@ -247,6 +247,9 @@ dependencies {
     // https://github.com/stleary/JSON-java
     implementation project(path: ":repacked-org-json")
 
+    implementation project(':Logger')
+    testImplementation project(':Logger')
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
 
     implementation("androidx.activity:activity-ktx:${androidxActivityVersion}")

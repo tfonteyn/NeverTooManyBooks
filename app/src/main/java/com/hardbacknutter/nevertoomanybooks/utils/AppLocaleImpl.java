@@ -43,8 +43,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * An interesting read about Android Locale usage:

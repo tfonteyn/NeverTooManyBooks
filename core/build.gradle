@@ -102,6 +102,8 @@ android {
 }
 
 dependencies {
+    implementation project(path: ":Logger")
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
 
     implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")

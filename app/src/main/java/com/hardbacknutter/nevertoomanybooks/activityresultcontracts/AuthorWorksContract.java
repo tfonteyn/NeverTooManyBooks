@@ -34,8 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class AuthorWorksContract
         extends ActivityResultContract<AuthorWorksContract.Input, Optional<EditBookOutput>> {

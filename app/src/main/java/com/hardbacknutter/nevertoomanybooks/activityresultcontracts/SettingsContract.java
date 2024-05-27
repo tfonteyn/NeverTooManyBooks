@@ -33,9 +33,9 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SettingsContract
         extends ActivityResultContract<String, Optional<SettingsContract.Output>> {

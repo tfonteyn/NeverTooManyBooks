@@ -38,7 +38,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * This class name is a bit of a misnomer by now.

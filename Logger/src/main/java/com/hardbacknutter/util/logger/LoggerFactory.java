@@ -18,36 +18,28 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core;
+package com.hardbacknutter.util.logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-/**
- * The debug flags are still here as part of a migration to modules.
- * The plan is to eliminate them.
- */
 public final class LoggerFactory {
 
-    /** Dump SQL. */
-    public static final boolean DEBUG_EXEC_SQL = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker}. */
-    public static final boolean NETWORK_CHECKER = false;
-
     @Nullable
-    private static Logger logger;
+    private static Logger logger = new NullLogger();
 
     private LoggerFactory() {
     }
 
     @NonNull
     public static Logger getLogger() {
-        return Objects.requireNonNull(logger);
+        Objects.requireNonNull(logger);
+        return logger;
     }
 
-    public static synchronized void setLogger(@NonNull final Logger logger) {
-        LoggerFactory.logger = logger;
+    public static synchronized void setLogger(@Nullable final Logger logger) {
+        LoggerFactory.logger = Objects.requireNonNullElseGet(logger, NullLogger::new);
     }
 }

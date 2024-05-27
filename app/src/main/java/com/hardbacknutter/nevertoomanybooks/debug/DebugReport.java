@@ -53,7 +53,6 @@ import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -148,7 +147,10 @@ public class DebugReport {
 
     public void addLogs(final int maxFiles)
             throws IOException {
-        files.addAll(collectFiles(LoggerFactory.getLogger().getLogDir(), maxFiles));
+        final File logDir = ServiceLocator.getInstance().getLogDir();
+        if (logDir != null) {
+            files.addAll(collectFiles(logDir, maxFiles));
+        }
     }
 
     public void addPreferences() {

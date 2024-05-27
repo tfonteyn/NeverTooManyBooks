@@ -18,29 +18,24 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.debug;
+package com.hardbacknutter.util.logger;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -49,40 +44,54 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.StringJoiner;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
-
+@SuppressWarnings({"WeakerAccess", "Unused"})
 public class FileLogger
         implements Logger {
 
-    /**
-     * Base name of the logfile.
-     */
-    public static final String ERROR_LOG_FILE = "error.log";
-
-    /** Sub directory of {@link Context#getFilesDir()}. */
-    public static final String DIR_LOG = "log";
-
+    private static final String TAG = "FileLogger";
     /** Keep the last 3 log files. */
-    private static final int LOGFILE_COPIES = 3;
+    private static final int DEFAULT_LOGFILE_COPIES = 3;
 
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
     private static final String DEBUG = "DEBUG";
+    private static final String ERROR_SOURCE_MISSING = "Source does not exist: ";
+    private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
     @NonNull
     private final File logDir;
+    @NonNull
+    private final File backupDir;
+    @NonNull
+    private final String logFilename;
+
+    private int copies = DEFAULT_LOGFILE_COPIES;
 
     /**
      * Constructor.
      *
-     * @param logDir the directory where logs will be written
+     * @param logDir   the directory where logs will be written
+     * @param filename the base name for the logfile
      */
-    public FileLogger(@NonNull final File logDir) {
+    public FileLogger(@NonNull final File logDir,
+                      @NonNull final String filename) {
+        this(logDir, filename, logDir);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param logDir    the directory where logs will be written
+     * @param filename  the base name for the logfile
+     * @param backupDir Where to put the backup files.
+     *                  Must be on the same volume as the file(s).
+     */
+    public FileLogger(@NonNull final File logDir,
+                      @NonNull final String filename,
+                      @NonNull final File backupDir) {
         this.logDir = logDir;
+        this.logFilename = filename;
+        this.backupDir = backupDir;
     }
 
     /**
@@ -93,9 +102,8 @@ public class FileLogger
      *
      * @return String
      */
-    @VisibleForTesting
     @NonNull
-    public static String concat(@Nullable final Object... params) {
+    private static String concat(@Nullable final Object... params) {
         if (params == null) {
             return "";
         }
@@ -117,7 +125,7 @@ public class FileLogger
     }
 
     /**
-     * Use instead of {@link Log#getStackTraceString(Throwable)} so we can use it in unit tests.
+     * Used instead of {@link Log#getStackTraceString(Throwable)} so we can use it in unit tests.
      * <p>
      * Handy function to get a loggable stack trace from a Throwable
      *
@@ -125,9 +133,8 @@ public class FileLogger
      *
      * @return stacktrace as a printable string
      */
-    @VisibleForTesting
     @NonNull
-    public static String getStackTraceString(@Nullable final Throwable e) {
+    private static String getStackTraceString(@Nullable final Throwable e) {
         if (e == null) {
             return "";
         }
@@ -162,94 +169,129 @@ public class FileLogger
     }
 
     /**
-     * DEBUG only.
-     * Dump an InputStream to the console.
+     * Set the number of copies to keep.
+     * <p>
+     * Defaults to {@link #DEFAULT_LOGFILE_COPIES}.
+     *
+     * @param copies Number of copies to keep.
      */
-    @SuppressLint("LogConditional")
-    @SuppressWarnings("unused")
-    public void dump(@NonNull final String tag,
-                     @NonNull final String method,
-                     @NonNull final InputStream inputStream) {
-        try {
-            final BufferedInputStream bis = new BufferedInputStream(inputStream);
-            final ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            int result = bis.read();
-            while (result != -1) {
-                buf.write((byte) result);
-                result = bis.read();
-            }
-            // Charset needs API 33
-            //noinspection CharsetObjectCanBeUsed
-            final String msg = buf.toString("UTF-8");
-            d(tag, method, msg);
-        } catch (@NonNull final IOException e) {
-            Log.d(tag, "dumping failed: ", e);
-        }
+    public void setCopies(final int copies) {
+        this.copies = copies;
     }
 
-    /**
-     * DEBUG only.
-     */
-    @SuppressWarnings("unused")
-    private void debugArguments(@NonNull final Activity activity,
-                                @NonNull final String tag,
-                                @NonNull final String method) {
-        debugArguments(tag, method, activity.getIntent().getExtras());
-    }
-
-    /**
-     * DEBUG only.
-     */
-    @SuppressWarnings("unused")
-    private void debugArguments(@NonNull final Fragment fragment,
-                                @NonNull final String tag,
-                                @NonNull final String method) {
-        debugArguments(tag, method, fragment.getArguments());
-    }
-
-    private void debugArguments(@NonNull final String tag,
-                                @NonNull final String method,
-                                @Nullable final Bundle args) {
-        if (args != null) {
-            d(tag, method, "args=" + args);
-            if (args.containsKey(Book.BKEY_BOOK_DATA)) {
-                d(tag, method, "args[Book]=" + args.getParcelable(Book.BKEY_BOOK_DATA));
-            }
-        }
-    }
-
-    @Override
     @NonNull
     public String getErrorLog()
             throws IOException {
         return String.join("\n", Files.readAllLines(
-                Paths.get(logDir.getAbsolutePath(), ERROR_LOG_FILE), StandardCharsets.UTF_8));
+                Paths.get(logDir.getAbsolutePath(), logFilename), StandardCharsets.UTF_8));
     }
 
-    @Override
     @NonNull
     public File getLogDir() {
         return logDir;
     }
 
-    @Override
     public void cycleLogs() {
         File logFile = null;
         //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
-            logFile = new File(logDir, ERROR_LOG_FILE);
-            if (logFile.exists() && logFile.length() > 0) {
-                final File backup = new File(logFile.getPath() + ".bak");
-                // Move/rename the previous/original file
-                new VersionedFileService(LOGFILE_COPIES).save(backup);
-                // and write the new copy.
-                FileUtils.copy(logFile, backup);
+            logFile = new File(logDir, logFilename);
+            if (logFile.exists()) {
+                if (logFile.length() > 0) {
+                    final File backup = new File(logFile.getPath() + ".bak");
+                    // Move/rename the previous/original file
+                    makeBackup(backup);
+                    // and write the new copy.
+                    try (FileInputStream fis = new FileInputStream(logFile);
+                         FileOutputStream fos = new FileOutputStream(backup);
+                         FileChannel inChannel = fis.getChannel();
+                         FileChannel outChannel = fos.getChannel()) {
+                        inChannel.transferTo(0, inChannel.size(), outChannel);
+                    }
+                }
+                //noinspection ResultOfMethodCallIgnored
+                logFile.delete();
             }
         } catch (@NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
         }
+    }
 
-        FileUtils.delete(logFile);
+    /**
+     * Rename the given "file" to "file.1", keeping {@code copies} of the old file,
+     * i.e. the number of the copy is added as a SUFFIX to the name.
+     * <p>
+     * Upon success, the "file" is no longer available.
+     * Any exception is ignored. The presence of "file" is not defined, and should be assume
+     * to be no longer available.
+     * <p>
+     * <strong>Important:</strong> it's a 'rename', so single volume use only!
+     *
+     * @param file file to rename
+     */
+    private void makeBackup(@NonNull final File file) {
+
+        final String backupFilePath = new File(backupDir, file.getName()).getPath();
+
+        // remove the oldest copy (if there is one)
+        File previous = new File(backupFilePath + "." + copies);
+        //noinspection OverlyBroadCatchBlock
+        try {
+            if (previous.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                previous.delete();
+            }
+
+            // now bump each copy up one suffix.
+            for (int i = copies - 1; i > 0; i--) {
+                final File current = new File(backupFilePath + "." + i);
+                if (current.exists()) {
+                    rename(current, previous);
+                }
+                previous = current;
+            }
+
+            // Rename the current file giving it a suffix.
+            if (file.exists()) {
+                rename(file, previous);
+            }
+        } catch (@NonNull final Exception e) {
+            LoggerFactory.getLogger().e(TAG, e);
+        }
+    }
+
+    /**
+     * ENHANCE: make suitable for multiple filesystems.
+     * Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
+     *
+     * @param source      File to rename
+     * @param destination new name
+     *
+     * @throws FileNotFoundException if the source does not exist
+     * @throws IOException           on generic/other IO failures
+     */
+    private void rename(@NonNull final File source,
+                        @NonNull final File destination)
+            throws IOException {
+
+        //sanity check
+        if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
+            return;
+        }
+
+        if (!source.exists()) {
+            throw new FileNotFoundException(ERROR_SOURCE_MISSING + source);
+        }
+
+        try {
+            if (source.renameTo(destination)) {
+                return;
+            }
+            throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination);
+
+        } catch (@NonNull final SecurityException e) {
+            throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination, e);
+        }
     }
 
     @Override
@@ -257,11 +299,12 @@ public class FileLogger
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
 
-        final String msg = concat(params);
-        writeToLog(tag, ERROR, msg, e);
+        final String message = concat(params);
+
+        writeToLog(tag, ERROR, message, e);
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.e(tag, msg, e);
+            Log.e(tag, message, e);
         }
     }
 
@@ -316,7 +359,7 @@ public class FileLogger
 
         //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
-            final File logFile = new File(logDir, ERROR_LOG_FILE);
+            final File logFile = new File(logDir, logFilename);
             try (FileOutputStream fos = new FileOutputStream(logFile, true);
                  OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
                  PrintWriter out = new PrintWriter(new BufferedWriter(osw))) {
