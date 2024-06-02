@@ -192,10 +192,9 @@ public class FileLogger
     }
 
     public void cycleLogs() {
-        File logFile = null;
         //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
-            logFile = new File(logDir, logFilename);
+            final File logFile = new File(logDir, logFilename);
             if (logFile.exists()) {
                 if (logFile.length() > 0) {
                     final File backup = new File(logFile.getPath() + ".bak");
