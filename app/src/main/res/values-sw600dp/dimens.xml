@@ -32,8 +32,6 @@
     <dimen name="til_fixed_width_personal_name">360dp</dimen>
     <dimen name="cbx_fixed_width_author_type">160dp</dimen>
 
-    <dimen name="scrollbar_padding">10dp</dimen>
-
     <item name="context_menu_button_scale"
           format="float"
           type="dimen">0.75

@@ -52,6 +52,11 @@
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
     </style>
 
+    <style name="Widget.App.RecyclerView"
+           parent="">
+        <item name="android:paddingEnd">@dimen/scrollbar_padding</item>
+    </style>
+
     <style name="Widget.App.ChipGroup"
            parent="Widget.Material3.ChipGroup">
         <!-- the default was 8dp. -->

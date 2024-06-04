@@ -38,6 +38,15 @@
     <dimen name="field_margin_end">8dp</dimen>
     <dimen name="field_margin_inline">12dp</dimen>
 
+    <!-- On smaller screen we'll reduce this value to allow more content.
+         This does mean the scrollbar will overlap the content.
+
+         The width of the scrollbar "android.R.attr.fastScrollTrackDrawable" is 8dp
+         But Android does not support the use of attr values in dimen tags.
+         Use 8+1 so there is some small space in between
+    -->
+    <dimen name="scrollbar_padding">9dp</dimen>
+
     <dimen name="column_margin_end">32dp</dimen>
 
     <!-- fixed width TIL fields -->

@@ -152,9 +152,7 @@
           ?attr/textAppearanceLabelMedium -> textSide: 12sp   -->
     <dimen name="btn_open_toc_text_size">12sp</dimen>
 
-    <!-- on larger screens we'll add a paddingEnd to allow easier scrolling.
-     The width of the scrollbar "android.R.attr.fastScrollTrackDrawable" is 8dp
-    -->
+    <!-- see sw360dp/dimens.xml -->
     <dimen name="scrollbar_padding">2dp</dimen>
 
     <!-- The width of the BoB on the list/detail embedded screen.-->

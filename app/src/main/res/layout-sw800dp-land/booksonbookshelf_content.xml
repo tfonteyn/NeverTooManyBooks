@@ -35,7 +35,6 @@
         android:id="@+id/list"
         android:layout_width="@dimen/bob_embedded_list_width"
         android:layout_height="match_parent"
-        android:paddingEnd="@dimen/scrollbar_padding"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toStartOf="@id/details_frame"
         app:layout_constraintStart_toStartOf="parent"

@@ -33,7 +33,6 @@
         android:layout_height="0dp"
         android:clickable="true"
         android:focusable="true"
-        android:paddingEnd="@dimen/scrollbar_padding"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
