@@ -111,6 +111,9 @@
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
 
         <item name="recyclerViewStyle">@style/Widget.App.RecyclerView</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb</item>
+        <item name="android:fastScrollTrackDrawable">@drawable/fastscroll_track</item>
+
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
         <item name="extendedFloatingActionButtonStyle">
             @style/Widget.App.ExtendedFloatingActionButton

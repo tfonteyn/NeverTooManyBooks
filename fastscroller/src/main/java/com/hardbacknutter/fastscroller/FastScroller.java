@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,6 +80,12 @@ public final class FastScroller {
 
     /**
      * Constructor.
+     * <p>
+     * The drawables can be overridden byt setting these Theme by attributes:
+     * <ul>
+     *     <li>{@code android:fastScrollTrackDrawable="@drawable/your_track"}</li>
+     *     <li>{@code android:fastScrollThumbDrawable="@drawable/your_thumb"}</li>
+     * </ul>
      *
      * @param recyclerView the View to hook up
      * @param overlayType  Optional overlay
