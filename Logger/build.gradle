@@ -75,4 +75,6 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
     implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
+    // See project build.gradle
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
 }

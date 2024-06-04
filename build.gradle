@@ -98,7 +98,9 @@ ext {
     androidxTestRunnerVersion = "1.5.2"
     androidxTestRulesVersion = "1.5.0"
 
-    // needed for testing
+    // An explicit dependency must be added to avoid gradle/studio/bugs?
+    // adding (in some unknown circumstances) two different kotlin-stdlib versions
+    // resulting in Duplicate class kotlin.* build problems.
     kotlinxCoroutinesCoreVersion = '1.8.1'
 
     mannodermausVersion = '1.4.0'

@@ -299,6 +299,9 @@ dependencies {
     implementation("ch.acra:acra-core:${acraVersion}")
     implementation("ch.acra:acra-dialog:${acraVersion}")
 
+    // See project build.gradle
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
+
     // local tests use JUnit5
     testImplementation("org.mockito:mockito-core:${mockitoVersion}")
     testImplementation("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
@@ -318,8 +321,6 @@ dependencies {
     //    @Rule
     //    public TestRule rule = new InstantTaskExecutorRule();
     androidTestImplementation("androidx.arch.core:core-testing:${androidxArchCoreTestingVersion}")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
 
 //    testImplementation("org.robolectric:robolectric:4.4")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
