@@ -776,4 +776,5 @@
     <string name="lbl_troubleshooting_warning">Bitte aktivieren Sie die folgenden Optionen nur, wenn Sie vom Entwickler der Anwendung ausdrücklich dazu aufgefordert werden.</string>
     <string name="info_tap_to_select">Tippen Sie zum Auswählen.</string>
     <string name="lbl_tab_alternative_editions_long">Alternative Editionen</string>
+    <string name="warning_restart_required">App-Neustart erforderlich</string>
 </resources>

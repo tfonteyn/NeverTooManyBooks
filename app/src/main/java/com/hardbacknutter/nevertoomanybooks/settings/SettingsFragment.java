@@ -23,18 +23,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.provider.Settings;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -130,6 +132,7 @@ public class SettingsFragment
     private ProgressDelegate progressDelegate;
     private boolean storageWasMissing;
     private int volumeChangedOptionChosen;
+    private TitleOrderByHelper titleOrderByHelper;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -197,9 +200,10 @@ public class SettingsFragment
         });
 
         titleOrderByPref = findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED);
+        titleOrderByHelper = new TitleOrderByHelper();
         //noinspection DataFlowIssue
-        setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
-        titleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
+        titleOrderByPref.setOnPreferenceChangeListener(titleOrderByHelper::onChanged);
+        titleOrderByPref.setSummaryProvider(titleOrderByHelper);
 
         // Add flag to indicate we'll be editing the global-style when coming from here
         //noinspection DataFlowIssue
@@ -269,36 +273,6 @@ public class SettingsFragment
             storedVolumeIndex = savedInstanceState
                     .getString(SIS_VOLUME_INDEX, currentStorageVolume);
         }
-    }
-
-    private boolean onTitleOrderByChange(@NonNull final Preference pref,
-                                         @NonNull final Object newValue) {
-        final boolean checked = (Boolean) newValue;
-
-        //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_baseline_warning_24)
-                .setMessage(R.string.confirm_rebuild_orderby_columns)
-                // this dialog is important. Make sure the user pays some attention
-                .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    // revert to the original value.
-                    titleOrderByPref.setChecked(storedTitleOrderBy);
-                    StartupViewModel.schedule(getContext(),
-                                              StartupViewModel.PK_REBUILD_TITLE_OB, false);
-                    setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
-                })
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    // Persist the new value
-                    titleOrderByPref.setChecked(checked);
-                    StartupViewModel.schedule(getContext(),
-                                              StartupViewModel.PK_REBUILD_TITLE_OB, true);
-                    setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
-                })
-                .create()
-                .show();
-        // Do not let the system update the preference value.
-        return false;
     }
 
     private boolean onStorageVolumeChange(@NonNull final Preference pref,
@@ -408,35 +382,6 @@ public class SettingsFragment
         }
     }
 
-    /**
-     * Change the icon color depending on the preference being scheduled for change on restart.
-     * <p>
-     * TODO: this is not ideal as it does not explain to the user WHY the color is changed
-     * Check if it's possible to overlay the icon with another icon (showing e.g. a clock)
-     *
-     * @param preference   to modify
-     * @param schedulerKey to reflect
-     */
-    private void setVisualIndicator(@NonNull final Preference preference,
-                                    @SuppressWarnings("SameParameterValue")
-                                    @NonNull final String schedulerKey) {
-        @AttrRes
-        final int attr;
-        //careful: we use the pref to get SharedPreferences... but we need the 'schedulerKey' !
-        //noinspection DataFlowIssue
-        if (preference.getSharedPreferences().getBoolean(schedulerKey, false)) {
-            attr = R.attr.appPreferenceAlertColor;
-        } else {
-            attr = com.google.android.material.R.attr.colorOnSurfaceVariant;
-        }
-
-        //noinspection DataFlowIssue
-        final Drawable icon = preference.getIcon().mutate();
-        //noinspection DataFlowIssue
-        icon.setTint(AttrUtils.getColorInt(getContext(), attr));
-        preference.setIcon(icon);
-    }
-
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
             if (progressDelegate == null) {
@@ -504,5 +449,82 @@ public class SettingsFragment
             // FIXME: need better msg + tell user to clean up the destination
             showMessageAndFinishActivity(getString(R.string.cancelled));
         });
+    }
+
+    private class TitleOrderByHelper
+            implements Preference.SummaryProvider<Preference> {
+        @NonNull
+        @Override
+        public CharSequence provideSummary(@NonNull final Preference preference) {
+            String summary = titleOrderByPref.isChecked()
+                             ? getString(R.string.ps_show_titles_reordered_on)
+                             : getString(R.string.ps_show_titles_reordered_off);
+
+            final Spannable spannable;
+            // Use the 'schedulerKey' to get the condition!
+            //noinspection DataFlowIssue
+            if (preference.getSharedPreferences()
+                          .getBoolean(StartupViewModel.PK_REBUILD_TITLE_OB, false)) {
+                //noinspection DataFlowIssue
+                @ColorInt
+                final int color = AttrUtils.getColorInt(
+                        getContext(), com.google.android.material.R.attr.colorError);
+
+                // Add the warning
+                final String warning = getString(R.string.warning_restart_required)
+                        .toUpperCase(getContext().getResources().getConfiguration()
+                                                 .getLocales().get(0));
+                final int warningStart = summary.length() + 1;
+                summary = summary + '\n' + warning;
+                spannable = new SpannableString(summary);
+                spannable.setSpan(new ForegroundColorSpan(color),
+                                  warningStart, summary.length(), 0);
+            } else {
+                //noinspection DataFlowIssue
+                @ColorInt
+                final int color = AttrUtils.getColorInt(
+                        getContext(), android.R.attr.textColorPrimary);
+                spannable = new SpannableString(summary);
+                spannable.setSpan(new ForegroundColorSpan(color), 0, summary.length(), 0);
+            }
+
+            return spannable;
+        }
+
+        boolean onChanged(@NonNull final Preference pref,
+                          @NonNull final Object newValue) {
+            final boolean checked = (Boolean) newValue;
+
+            //noinspection DataFlowIssue
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setMessage(R.string.confirm_rebuild_orderby_columns)
+                    // this dialog is important. Make sure the user pays some attention
+                    .setCancelable(false)
+                    // Cancelling will revert to the original value and remove any scheduling
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                        titleOrderByPref.setChecked(storedTitleOrderBy);
+                        StartupViewModel.schedule(getContext(),
+                                                  StartupViewModel.PK_REBUILD_TITLE_OB,
+                                                  false);
+                        // Force the summary to redisplay by
+                        // re-setting the provider will call the protected "notifyChanged()"
+                        // as (of course..) Android does not allow an easier solution.
+                        // Note to self: fork or replace the androidx.preference lib...
+                        //noinspection unchecked,DataFlowIssue
+                        titleOrderByPref.setSummaryProvider(this);
+                    })
+                    // Confirming will persist the new value and schedule the rebuild
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        titleOrderByPref.setChecked(checked);
+                        StartupViewModel.schedule(getContext(),
+                                                  StartupViewModel.PK_REBUILD_TITLE_OB,
+                                                  true);
+                    })
+                    .create()
+                    .show();
+            // Do not let the system update the preference value.
+            return false;
+        }
     }
 }

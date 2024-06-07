@@ -776,4 +776,5 @@
     <string name="lbl_troubleshooting_warning">Schakel de onderstaande opties niet in, tenzij de ontwikkelaar van de app hier expliciet om vraagt.</string>
     <string name="info_tap_to_select">Tik om te selecteren.</string>
     <string name="lbl_tab_alternative_editions_long">Alternative edities</string>
+    <string name="warning_restart_required">App herstart vereist</string>
 </resources>

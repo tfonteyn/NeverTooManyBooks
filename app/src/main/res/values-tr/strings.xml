@@ -787,4 +787,5 @@
     <string name="lbl_troubleshooting_warning">Uygulama geliştiricisi tarafından açıkça talep edilmedikçe lütfen aşağıdaki seçenekleri etkinleştirmeyin.</string>
     <string name="info_tap_to_select">Seçmek için dokunun.</string>
     <string name="lbl_tab_alternative_editions_long">Alternatif Baskılar</string>
+    <string name="warning_restart_required">Uygulamanın yeniden başlatılması gerekiyor</string>
 </resources>

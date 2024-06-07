@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,11 +21,13 @@
 
 <resources>
 
-    <style name="Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
+    <style name="Theme.App.Startup"
+           parent="Theme.Material3.DayNight.Dialog">
         <item name="android:colorBackground">@color/m3grey_20</item>
     </style>
 
-    <style name="Theme.App" parent="Base.Theme.App">
+    <style name="Theme.App"
+           parent="Base.Theme.App">
         <!-- The system status bar at the very top of a screen.
              Reminder: never set this to ?attr/colorPrimary! -->
         <item name="android:statusBarColor">@color/m3grey_10</item>
@@ -59,12 +61,10 @@
         <item name="colorErrorContainer">@color/m3red_10</item>
         <item name="colorOnErrorContainer">@color/m3red_90</item>
 
-        <!-- Application specific -->
-        <item name="appPreferenceAlertColor">@color/m3red_50</item>
-
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/m3blue_grey_10</item>
         <item name="appNavBarColorCenter">@color/m3blue_grey_30</item>
         <item name="appNavBarColorEnd">@color/m3blue_grey_40</item>
     </style>
+
 </resources>

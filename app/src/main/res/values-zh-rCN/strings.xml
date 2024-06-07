@@ -806,4 +806,5 @@
     <string name="lbl_troubleshooting_warning">除非应用开发者明确请求，请不要启用以下选项。</string>
     <string name="lbl_tab_alternative_editions_long">备选版</string>
     <string name="info_tap_to_select">点击以选择。</string>
+    <string name="warning_restart_required">需要重新启动应用程序</string>
 </resources>

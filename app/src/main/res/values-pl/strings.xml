@@ -799,4 +799,5 @@
     <string name="lbl_troubleshooting_warning">Nie włączaj poniższych opcji, chyba że zostaniesz o to wyraźnie poproszony przez twórcę aplikacji.</string>
     <string name="info_tap_to_select">Stuknij, aby wybrać.</string>
     <string name="lbl_tab_alternative_editions_long">Wydania alternatywne</string>
+    <string name="warning_restart_required">Wymagany restart aplikacji</string>
 </resources>

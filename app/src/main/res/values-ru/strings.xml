@@ -797,4 +797,5 @@
     <string name="lbl_troubleshooting_warning">Пожалуйста, не включайте перечисленные ниже опции, если разработчик приложения явно не попросил вас об этом.</string>
     <string name="info_tap_to_select">Нажмите, чтобы выбрать.</string>
     <string name="lbl_tab_alternative_editions_long">Альтернативные издания</string>
+    <string name="warning_restart_required">Требуется перезапуск приложения</string>
 </resources>

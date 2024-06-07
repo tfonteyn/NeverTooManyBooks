@@ -780,4 +780,5 @@
     <string name="lbl_troubleshooting_warning">Non abilitare le opzioni seguenti, a meno che non siano state esplicitamente richieste dallo sviluppatore dell\'applicazione.</string>
     <string name="info_tap_to_select">Toccare per selezionare.</string>
     <string name="lbl_tab_alternative_editions_long">Edizioni alternative</string>
+    <string name="warning_restart_required">È necessario riavviare l\'app</string>
 </resources>

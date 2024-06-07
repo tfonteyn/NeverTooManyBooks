@@ -266,6 +266,7 @@
     <!-- If the user has enabled/disabled  website to search on and for example disabled ALL sites which can search by ISBN, and then the user tries to to search by ISBN.
         Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
+    <string name="warning_restart_required">App restart required</string>
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->
     <!-- Dialog title for validation messages. -->
@@ -1411,6 +1412,9 @@
             translatable="false">@string/lbl_settings</string>
     <!-- the hint text for the input field on the SQLite Shell debug page. -->
     <string name="lbl_sql_query">SQL query</string>
+    <string name="lbl_troubleshooting">Troubleshooting</string>
+    <string name="pt_enable_extra_logging">Enable additional logging</string>
+    <string name="lbl_troubleshooting_warning">Please do not enable the below options unless explicitly requested to do so by the app developer.</string>
     <!-- endregion -->
     <!-- region ========== Website settings. -->
     <string name="lbl_connection_timeout">Connection timeout (seconds)</string>
@@ -1780,7 +1784,4 @@
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
-    <string name="lbl_troubleshooting">Troubleshooting</string>
-    <string name="pt_enable_extra_logging">Enable additional logging</string>
-    <string name="lbl_troubleshooting_warning">Please do not enable the below options unless explicitly requested to do so by the app developer.</string>
 </resources>

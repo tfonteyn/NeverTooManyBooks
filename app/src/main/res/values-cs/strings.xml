@@ -796,4 +796,5 @@
     <string name="lbl_troubleshooting_warning">Níže uvedené možnosti nepovolujte, pokud o to vývojář aplikace výslovně nepožádá.</string>
     <string name="info_tap_to_select">Klepnutím na položku vyberte.</string>
     <string name="lbl_tab_alternative_editions_long">Alternativní vydání</string>
+    <string name="warning_restart_required">Vyžaduje se restart aplikace</string>
 </resources>

@@ -777,4 +777,5 @@
     <string name="lbl_troubleshooting_warning">Παρακαλούμε μην ενεργοποιείτε τις παρακάτω επιλογές, εκτός αν σας ζητηθεί ρητά από τον προγραμματιστή της εφαρμογής.</string>
     <string name="info_tap_to_select">Πατήστε για να επιλέξετε.</string>
     <string name="lbl_tab_alternative_editions_long">Εναλλακτικές εκδόσεις</string>
+    <string name="warning_restart_required">Απαιτείται επανεκκίνηση της εφαρμογής</string>
 </resources>

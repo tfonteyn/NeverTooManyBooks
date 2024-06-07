@@ -790,4 +790,5 @@
     <string name="lbl_troubleshooting_warning">No active las siguientes opciones a menos que el desarrollador de la aplicación se lo pida explícitamente.</string>
     <string name="info_tap_to_select">Pulse para seleccionar.</string>
     <string name="lbl_tab_alternative_editions_long">Ediciones alternativas</string>
+    <string name="warning_restart_required">Es necesario reiniciar la aplicación</string>
 </resources>

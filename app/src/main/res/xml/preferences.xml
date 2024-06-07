@@ -45,7 +45,8 @@
             android:entryValues="@array/pv_ui_language"
             android:icon="@drawable/ic_baseline_language_24"
             android:key="ui.locale"
-            android:title="@string/pt_ui_language" />
+            android:title="@string/pt_ui_language"
+            tools:summary="@string/pt_ui_system_locale" />
 
         <ListPreference
             android:defaultValue="0"
@@ -53,7 +54,8 @@
             android:entryValues="@array/pv_ui_theme"
             android:icon="@drawable/ic_baseline_settings_brightness_24"
             android:key="ui.theme"
-            android:title="@string/pt_ui_theme" />
+            android:title="@string/pt_ui_theme"
+            tools:summary="@string/pe_ui_theme_day_night" />
 
     </PreferenceCategory>
 
@@ -104,14 +106,14 @@
          ENHANCE: create TWO OB columns for each title column to avoid rebuilds
          ENHANCE: add a style override setting
          ENHANCE: split this into 2: book/series,toc titles + publisher name
-        -->
+
+         Summaries are set by a SummaryProvider -->
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_sort_24"
             android:key="sort.title.reordered"
-            android:summaryOff="@string/ps_show_titles_reordered_off"
-            android:summaryOn="@string/ps_show_titles_reordered_on"
-            android:title="@string/pt_sort_title_reordered" />
+            android:title="@string/pt_sort_title_reordered"
+            tools:summary="@string/ps_show_titles_reordered_on" />
 
     </PreferenceCategory>
 
@@ -198,8 +200,8 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"
             android:icon="@drawable/ic_baseline_tune_24"
             android:key="psk_dialog_and_menu_popup_tuning"
-            android:title="@string/pc_ui"
             android:summary="@string/pt_dialog_and_menu_popup_tuning"
+            android:title="@string/pc_ui"
             />
 
         <SwitchPreference
