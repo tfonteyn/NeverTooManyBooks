@@ -34,7 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,7 +41,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.StringJoiner;
+
+import static com.hardbacknutter.util.logger.Logger.concat;
 
 @SuppressWarnings({"WeakerAccess", "Unused"})
 public class FileLogger
@@ -92,58 +92,6 @@ public class FileLogger
         this.logDir = logDir;
         this.logFilename = filename;
         this.backupDir = backupDir;
-    }
-
-    /**
-     * Concatenate all parameters. If a parameter is an exception,
-     * add its stacktrace at the end of the message. (Only one exception is logged!)
-     *
-     * @param params to concat
-     *
-     * @return String
-     */
-    @NonNull
-    private static String concat(@Nullable final Object... params) {
-        if (params == null) {
-            return "";
-        }
-        final StringJoiner sj = new StringJoiner("|");
-        Exception e = null;
-        for (final Object parameter : params) {
-            if (parameter instanceof Exception) {
-                e = (Exception) parameter;
-            } else {
-                sj.add(String.valueOf(parameter));
-            }
-        }
-        final String message = sj.toString();
-        if (e == null) {
-            return message;
-        }
-
-        return message + '\n' + getStackTraceString(e);
-    }
-
-    /**
-     * Used instead of {@link Log#getStackTraceString(Throwable)} so we can use it in unit tests.
-     * <p>
-     * Handy function to get a loggable stack trace from a Throwable
-     *
-     * @param e An exception to log
-     *
-     * @return stacktrace as a printable string
-     */
-    @NonNull
-    private static String getStackTraceString(@Nullable final Throwable e) {
-        if (e == null) {
-            return "";
-        }
-
-        final StringWriter sw = new StringWriter();
-        final PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        pw.flush();
-        return sw.toString();
     }
 
     /**
@@ -297,10 +245,8 @@ public class FileLogger
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-
-        final String message = concat(params);
-
-        writeToLog(tag, ERROR, message, e);
+        final String message = concat(e, params);
+        writeToLog(tag, ERROR, message);
 
         if (BuildConfig.DEBUG /* always */) {
             Log.e(tag, message, e);
@@ -310,9 +256,8 @@ public class FileLogger
     @Override
     public void w(@NonNull final String tag,
                   @Nullable final Object... params) {
-
         final String msg = concat(params);
-        writeToLog(tag, WARN, msg, null);
+        writeToLog(tag, WARN, msg);
 
         if (BuildConfig.DEBUG /* always */) {
             Log.w(tag, msg);
@@ -324,7 +269,7 @@ public class FileLogger
                   @Nullable final Object... params) {
 
         final String msg = concat(params);
-        writeToLog(tag, DEBUG, msg, null);
+        writeToLog(tag, DEBUG, msg);
 
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag, msg);
@@ -337,24 +282,14 @@ public class FileLogger
      * @param tag     log tag
      * @param type    warn,error,...
      * @param message to write
-     * @param e       optional Throwable
      */
     private void writeToLog(@NonNull final String tag,
                             @NonNull final String type,
-                            @NonNull final String message,
-                            @Nullable final Throwable e) {
-
-        final String exMsg;
-        if (e != null) {
-            exMsg = '|' + getStackTraceString(e);
-        } else {
-            exMsg = "";
-        }
-
+                            @NonNull final String message) {
         // UTC based
         final String fullMsg = LocalDateTime.now(ZoneOffset.UTC)
                                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                               + '|' + tag + '|' + type + '|' + message + exMsg;
+                               + '|' + tag + '|' + type + '|' + message;
 
         //noinspection OverlyBroadCatchBlock,CheckStyle
         try {

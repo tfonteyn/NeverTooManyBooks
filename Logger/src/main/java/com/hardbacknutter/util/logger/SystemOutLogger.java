@@ -20,14 +20,10 @@
 
 package com.hardbacknutter.util.logger;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.StringJoiner;
+import static com.hardbacknutter.util.logger.Logger.concat;
 
 /**
  * This is really a test-logger only, but due to some gradle dependency issues
@@ -37,65 +33,11 @@ import java.util.StringJoiner;
 public class SystemOutLogger
         implements Logger {
 
-    /**
-     * Used instead of {@link Log#getStackTraceString(Throwable)} so we can use it in unit tests.
-     * <p>
-     * Handy function to get a loggable stack trace from a Throwable
-     *
-     * @param e An exception to log
-     *
-     * @return stacktrace as a printable string
-     */
-    @NonNull
-    private static String getStackTraceString(@Nullable final Throwable e) {
-        if (e == null) {
-            return "";
-        }
-
-        final StringWriter sw = new StringWriter();
-        final PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        pw.flush();
-        return sw.toString();
-    }
-
-    /**
-     * Concatenate all parameters. If a parameter is an exception,
-     * add its stacktrace at the end of the message. (Only one exception is logged!)
-     *
-     * @param params to concat
-     *
-     * @return String
-     */
-    @NonNull
-    private static String concat(@Nullable final Object... params) {
-        if (params == null) {
-            return "";
-        }
-        final StringJoiner sj = new StringJoiner("|");
-        Exception e = null;
-        for (final Object parameter : params) {
-            if (parameter instanceof Exception) {
-                e = (Exception) parameter;
-            } else {
-                sj.add(String.valueOf(parameter));
-            }
-        }
-        final String message = sj.toString();
-        if (e == null) {
-            return message;
-        }
-
-        return message + '\n' + getStackTraceString(e);
-    }
-
     @Override
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|ERROR|" + tag + "|" + concat(params)
-                           + "|" + (e == null ? null : e.getMessage())
-                           + "\n" + getStackTraceString(e));
+        System.out.println("JUnit|ERROR|" + tag + "|" + concat(e, params));
     }
 
     @Override

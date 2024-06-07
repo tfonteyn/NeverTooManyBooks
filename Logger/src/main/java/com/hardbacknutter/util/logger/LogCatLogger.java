@@ -25,9 +25,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import static com.hardbacknutter.util.logger.Logger.concat;
 
 public class LogCatLogger
         implements Logger {
@@ -36,45 +34,18 @@ public class LogCatLogger
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        if (params == null) {
-            Log.e(tag, "", e);
-        } else if (params.length == 1) {
-            Log.e(tag, String.valueOf(params[0]), e);
-        } else {
-            final List<String> ps = Arrays.stream(params)
-                                          .map(String::valueOf)
-                                          .collect(Collectors.toList());
-            Log.e(tag, String.join("|", ps), e);
-        }
+        Log.e(tag, concat(e, params));
     }
 
     @Override
     public void w(@NonNull final String tag,
                   @Nullable final Object... params) {
-        if (params == null) {
-            Log.w(tag, "");
-        } else if (params.length == 1) {
-            Log.w(tag, String.valueOf(params[0]));
-        } else {
-            final List<String> ps = Arrays.stream(params)
-                                          .map(String::valueOf)
-                                          .collect(Collectors.toList());
-            Log.w(tag, String.join("|", ps));
-        }
+        Log.w(tag, concat(params));
     }
 
     @Override
     public void d(@NonNull final String tag,
                   @Nullable final Object... params) {
-        if (params == null) {
-            Log.d(tag, "");
-        } else if (params.length == 1) {
-            Log.d(tag, String.valueOf(params[0]));
-        } else {
-            final List<String> ps = Arrays.stream(params)
-                                          .map(String::valueOf)
-                                          .collect(Collectors.toList());
-            Log.d(tag, String.join("|", ps));
-        }
+        Log.d(tag, concat(params));
     }
 }

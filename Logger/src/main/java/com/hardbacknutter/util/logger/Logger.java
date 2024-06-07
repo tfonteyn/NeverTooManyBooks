@@ -23,7 +23,46 @@ package com.hardbacknutter.util.logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.StringJoiner;
+
 public interface Logger {
+
+    /**
+     * Concatenate all parameters. If a parameter is an exception,
+     * add its stacktrace at the end of the message. (Only one exception is logged!)
+     *
+     * @param params to concat
+     *
+     * @return String
+     */
+    @NonNull
+    static String concat(@Nullable final Object... params) {
+        if (params == null) {
+            return "";
+        }
+
+        final StringJoiner sj = new StringJoiner("|");
+        Exception e = null;
+        for (final Object parameter : params) {
+            if (parameter instanceof Exception) {
+                e = (Exception) parameter;
+            } else {
+                sj.add(String.valueOf(parameter));
+            }
+        }
+        if (e == null) {
+            return sj.toString();
+        }
+
+        final StringWriter stackTrace = new StringWriter();
+        final PrintWriter pw = new PrintWriter(stackTrace);
+        e.printStackTrace(pw);
+        pw.flush();
+
+        return sj.add(e.getMessage()).toString() + '\n' + stackTrace;
+    }
 
     /**
      * ERROR message.
