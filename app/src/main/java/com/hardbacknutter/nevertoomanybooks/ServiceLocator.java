@@ -26,6 +26,7 @@ import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
@@ -307,6 +308,16 @@ public class ServiceLocator {
     @NonNull
     public Context getLocalizedAppContext() {
         return getAppLocale().apply(sInstance.appContext);
+    }
+
+    @StyleRes
+    public int getThemeResId() {
+        return R.style.Theme_App;
+    }
+
+    @StyleRes
+    public int getFullScreenThemeResId() {
+        return R.style.Theme_App_FullScreen;
     }
 
     /**
