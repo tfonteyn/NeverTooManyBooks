@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
@@ -120,7 +121,7 @@ public class CoverHandler {
     private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
     private ActivityResultLauncher<File> takePictureLauncher;
-    private ActivityResultLauncher<CropImageActivity.ResultContract.Input> cropPictureLauncher;
+    private ActivityResultLauncher<CropImageContract.Input> cropPictureLauncher;
     private ActivityResultLauncher<String> getFromFileLauncher;
     private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
     private Supplier<Book> bookSupplier;
@@ -248,7 +249,7 @@ public class CoverHandler {
                 new EditPictureContract(), o -> o.ifPresent(this::onPictureResult));
 
         cropPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new CropImageActivity.ResultContract(), o -> o.ifPresent(this::onPictureResult));
+                new CropImageContract(), o -> o.ifPresent(this::onPictureResult));
 
 
         final LifecycleOwner viewLifecycleOwner = fragment.getViewLifecycleOwner();
@@ -400,7 +401,7 @@ public class CoverHandler {
 
         } else if (menuItemId == R.id.MENU_THUMB_CROP) {
             try {
-                cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
+                cropPictureLauncher.launch(new CropImageContract.Input(
                         createTempCoverFile(book),
                         ServiceLocator.getInstance().getCoverStorage().getTempFile()));
 
@@ -704,7 +705,7 @@ public class CoverHandler {
             try {
                 switch (result.getNextAction()) {
                     case Crop: {
-                        cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
+                        cropPictureLauncher.launch(new CropImageContract.Input(
                                 file,
                                 ServiceLocator.getInstance().getCoverStorage().getTempFile()));
                         return;

@@ -155,10 +155,6 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <activity
-            android:name=".covers.CropImageActivity"
-            android:theme="@style/Theme.App.FullScreen" />
-
-        <activity
             android:name=".debug.AcraCustomDialog"
             android:process=":acra"
             android:theme="@style/Theme.App"

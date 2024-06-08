@@ -18,35 +18,20 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.CallSuper;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -56,60 +41,61 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImageEditorBinding;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * The activity can crop specific region of interest from an image.
- * <p>
- * Must be configured in the manifest to use a fullscreen theme.
- * <pre>
- *     {@code
- *         <activity
- *             android:name=".cropper.CropImageActivity"
- *             android:theme="@style/Theme.App.FullScreen" />
- *      }
- * </pre>
+ * A minimalist editor for the cover images.
+ * Limited to cropping for now, but the intention is to incorporate the rotating
+ * features implemented elsewhere.
  * <p>
  * Depends on / works in conjunction with {@link CropImageView}.
+ * <p>
+ * FIXME: rotating the device will revert the image to the original
  */
-public class CropImageActivity
-        extends AppCompatActivity {
+public class CropImageFragment
+        extends BaseFragment {
 
-    /** Log tag. */
-    private static final String TAG = "CropImageActivity";
-
-    private static final String BKEY_SOURCE = TAG + ":src";
-    private static final String BKEY_DESTINATION = TAG + ":dst";
+    private static final String TAG = "CropImageFragment";
 
     /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
     private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
 
-    /** View Binding. */
-    private ActivityCropimageBinding vb;
+    private FragmentImageEditorBinding vb;
+    // do NOT delete the destination file in case source and destination was the same file
     private String destinationPath;
 
+    /** A back-press is always a "cancel". */
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection DataFlowIssue
+                    getActivity().finish();
+                }
+            };
+
+    @Nullable
     @Override
-    protected void attachBaseContext(@NonNull final Context base) {
-        final Context localizedContext = ServiceLocator.getInstance().getAppLocale().apply(base);
-        super.attachBaseContext(localizedContext);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = FragmentImageEditorBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        // uses full-screen theme, see manifest
-        super.onCreate(savedInstanceState);
-
-        vb = ActivityCropimageBinding.inflate(getLayoutInflater());
-        setContentView(vb.getRoot());
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         try {
             final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
@@ -123,30 +109,39 @@ public class CropImageActivity
         } catch (@NonNull final CoverStorageException | IOException e) {
             // just log, do not display exception data
             LoggerFactory.getLogger().e(TAG, e);
-            new MaterialAlertDialogBuilder(this)
+            //noinspection DataFlowIssue
+            new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.error_storage_not_accessible)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> finish())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        //noinspection DataFlowIssue
+                        getActivity().finish();
+                    })
                     .create()
                     .show();
             return;
         }
 
-        final Bundle args = Objects.requireNonNull(getIntent().getExtras(),
-                                                   "getIntent().getExtras()");
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE), BKEY_SOURCE);
+        final Bundle args = requireArguments();
+
+        final String srcPath = Objects.requireNonNull(args.getString(
+                CropImageContract.BKEY_SOURCE), CropImageContract.BKEY_SOURCE);
         final Bitmap bitmap = getBitmap(srcPath);
+
         if (bitmap != null) {
-            destinationPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION),
-                                                     BKEY_DESTINATION);
+            destinationPath = Objects.requireNonNull(args.getString(
+                    CropImageContract.BKEY_DESTINATION), CropImageContract.BKEY_DESTINATION);
 
             vb.coverImage0.setInitialBitmap(bitmap);
 
             // the FAB button saves the image
             vb.fab.setOnClickListener(v -> onSave());
             // Back is cancel
-            vb.bottomAppBar.setNavigationOnClickListener(v -> finish());
+            vb.bottomAppBar.setNavigationOnClickListener(v -> getActivity().finish());
             // Reset/undo but stay here editing
             vb.bottomAppBar.setOnMenuItemClickListener(menuItem -> {
                 if (menuItem.getItemId() == R.id.MENU_UNDO) {
@@ -156,7 +151,7 @@ public class CropImageActivity
                 return false;
             });
         } else {
-            finish();
+            getActivity().finish();
         }
     }
 
@@ -184,9 +179,11 @@ public class CropImageActivity
                 final File destination = new File(destinationPath);
                 ServiceLocator.getInstance().getCoverStorage().persist(bitmap, destination);
 
-                setResult(Activity.RESULT_OK,
-                          new Intent().putExtra(BKEY_DESTINATION, destinationPath));
-                finish();
+                final Intent resultIntent = CropImageContract
+                        .createResult(destinationPath);
+                //noinspection DataFlowIssue
+                getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                getActivity().finish();
 
             } catch (@NonNull final IOException | CoverStorageException e) {
                 LoggerFactory.getLogger().e(TAG, e);
@@ -195,64 +192,14 @@ public class CropImageActivity
         }
 
         if (bitmap == null) {
-            new MaterialAlertDialogBuilder(this)
+            //noinspection DataFlowIssue
+            new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.action_save)
                     .setMessage(R.string.error_storage_not_writable)
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
-        }
-    }
-
-    public static class ResultContract
-            extends ActivityResultContract<ResultContract.Input, Optional<File>> {
-
-        @CallSuper
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @NonNull final ResultContract.Input input) {
-
-            // do NOT delete the destination file in case source and destination was the same file
-
-            return new Intent(context, CropImageActivity.class)
-                    .putExtra(BKEY_SOURCE, input.srcFile.getAbsolutePath())
-                    .putExtra(BKEY_DESTINATION, input.dstFile.getAbsolutePath());
-        }
-
-        @NonNull
-        @Override
-        public final Optional<File> parseResult(final int resultCode,
-                                                @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                LoggerFactory.getLogger().d(TAG, "parseResult",
-                                            "resultCode=" + resultCode, "intent=" + intent);
-            }
-
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return Optional.empty();
-            }
-            final String filename = intent.getStringExtra(BKEY_DESTINATION);
-            if (filename != null && !filename.isEmpty()) {
-                return Optional.of(new File(filename));
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        public static class Input {
-
-            @NonNull
-            final File srcFile;
-            @NonNull
-            final File dstFile;
-
-            Input(@NonNull final File srcFile,
-                  @NonNull final File dstFile) {
-                this.srcFile = srcFile;
-                this.dstFile = dstFile;
-            }
         }
     }
 }

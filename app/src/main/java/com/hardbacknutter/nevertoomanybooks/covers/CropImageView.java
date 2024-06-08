@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,12 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 /**
  * Custom view to be used in the layout.
  * <p>
- * Depends on / works in conjunction with {@link CropImageActivity}.
+ * Depends on / works in conjunction with {@link CropImageFragment}.
  */
 public class CropImageView
         extends AppCompatImageView {
-
-    private static final String TAG = "CropImageView";
 
     /** 400% zoom regardless of screen or image orientation. */
     private static final int ZOOM_FACTOR = 4;
@@ -69,6 +67,8 @@ public class CropImageView
      */
     private static final float TEN_PERCENT = 0.1f;
     private static final float SIXTY_PERCENT = 0.6f;
+    /** Epsilon value to compare sizes. */
+    private static final float SIZE_EPSILON = 0.01f;
 
     /** This is the base transformation which is used to show the image initially. */
     private final Matrix baseMatrix = new Matrix();
@@ -174,7 +174,7 @@ public class CropImageView
     /**
      * Constructor used by the xml inflater.
      *
-     * @param context This will be the hosting {@link CropImageActivity}
+     * @param context This will be the hosting {@link CropImageFragment}
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public CropImageView(@NonNull final Context context,
@@ -370,7 +370,7 @@ public class CropImageView
      * @return {@code true} if it is
      */
     private boolean isFullSize() {
-        return Math.abs(getScale() - 1.0f) < 0.01f;
+        return Math.abs(getScale() - 1.0f) < SIZE_EPSILON;
     }
 
     /**
