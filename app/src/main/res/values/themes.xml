@@ -38,7 +38,6 @@
     <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
     <style name="Theme.App.Startup"
            parent="Theme.Material3.DayNight.Dialog">
-        <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
