@@ -55,9 +55,9 @@ public class FragmentHostActivity
 
     /**
      * Allows passing in {@link AppBarLayout.LayoutParams}#SCROLL_FLAG_*
-     * which will be set on the Activity toolbar.
+     * which will be set on the (optional) Activity toolbar.
      *
-     * @see #initToolbar()
+     * @see #initOptionalToolbar()
      */
     public static final String BKEY_TOOLBAR_SCROLL_FLAGS = TAG + ":tbf";
 
@@ -112,13 +112,8 @@ public class FragmentHostActivity
         final int activityResId = getIntent().getIntExtra(BKEY_ACTIVITY, 0);
         setContentView(activityResId);
 
-        // Optional!
-        navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
-        if (navDrawer != null) {
-            initLaunchers();
-        }
-
-        initToolbar();
+        initOptionalNavDrawer();
+        initOptionalToolbar();
 
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
@@ -136,41 +131,45 @@ public class FragmentHostActivity
         addFirstFragment(R.id.main_fragment, fragmentClass, classname);
     }
 
-    private void initLaunchers() {
-        manageBookshelvesLauncher = registerForActivityResult(
-                new EditBookshelvesContract(), bookshelfId -> {
-                });
+    private void initOptionalNavDrawer() {
+        navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
+        if (navDrawer != null) {
+            manageBookshelvesLauncher = registerForActivityResult(
+                    new EditBookshelvesContract(), bookshelfId -> {
+                    });
 
-        editSettingsLauncher = registerForActivityResult(
-                new SettingsContract(), o -> o.ifPresent(this::onSettingsChanged));
+            editSettingsLauncher = registerForActivityResult(
+                    new SettingsContract(), o -> o.ifPresent(this::onSettingsChanged));
+        }
     }
 
-    private void initToolbar() {
+    private void initOptionalToolbar() {
         final Toolbar toolbar = findViewById(R.id.toolbar);
-        Objects.requireNonNull(toolbar, "R.id.toolbar");
-        if (isTaskRoot()) {
-            toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
-        } else {
-            toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
-        }
-
-        final int flags = getIntent().getIntExtra(BKEY_TOOLBAR_SCROLL_FLAGS, -1);
-        if (flags >= 0) {
-            final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
-                    toolbar.getLayoutParams();
-            lp.setScrollFlags(flags);
-        }
-
-        toolbar.setNavigationOnClickListener(v -> {
+        if (toolbar != null) {
             if (isTaskRoot()) {
-                if (navDrawer != null) {
-                    navDrawer.open();
-                }
+                toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
             } else {
-                // Simulate the user pressing the 'back' key.
-                getOnBackPressedDispatcher().onBackPressed();
+                toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
             }
-        });
+
+            final int flags = getIntent().getIntExtra(BKEY_TOOLBAR_SCROLL_FLAGS, -1);
+            if (flags >= 0) {
+                final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
+                        toolbar.getLayoutParams();
+                lp.setScrollFlags(flags);
+            }
+
+            toolbar.setNavigationOnClickListener(v -> {
+                if (isTaskRoot()) {
+                    if (navDrawer != null) {
+                        navDrawer.open();
+                    }
+                } else {
+                    // Simulate the user pressing the 'back' key.
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            });
+        }
     }
 
     /**
@@ -216,12 +215,11 @@ public class FragmentHostActivity
      * @return {@code true} if the menuItem was handled.
      */
     private boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+        if (navDrawer != null) {
+            navDrawer.close();
+        }
 
         final int menuItemId = menuItem.getItemId();
-
-        //noinspection DataFlowIssue
-        navDrawer.close();
-
         if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
             // child classes which have a 'current bookshelf' should
             // override and pass the current bookshelf id instead of 0L
