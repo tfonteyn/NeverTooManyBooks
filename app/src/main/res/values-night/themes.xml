@@ -23,6 +23,7 @@
 
     <style name="Theme.App.Startup"
            parent="Theme.Material3.DayNight.Dialog">
+        <item name="windowNoTitle">true</item>
         <item name="android:colorBackground">@color/m3grey_20</item>
     </style>
 
