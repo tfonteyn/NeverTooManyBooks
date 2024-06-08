@@ -158,7 +158,7 @@ public class SettingsFragment
         });
 
 
-        final Preference pUiTheme = findPreference(Prefs.PK_UI_THEME);
+        final Preference pUiTheme = findPreference(Prefs.PK_UI_DAY_NIGHT_MODE);
         //noinspection DataFlowIssue
         pUiTheme.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pUiTheme.setOnPreferenceChangeListener((preference, newValue) -> {

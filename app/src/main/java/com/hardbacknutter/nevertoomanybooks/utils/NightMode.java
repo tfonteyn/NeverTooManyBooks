@@ -56,7 +56,7 @@ public final class NightMode {
      * @param context Current context
      */
     public static void apply(@NonNull final Context context) {
-        apply(IntListPref.getInt(context, Prefs.PK_UI_THEME, 0));
+        apply(IntListPref.getInt(context, Prefs.PK_UI_DAY_NIGHT_MODE, 0));
     }
 
     /**

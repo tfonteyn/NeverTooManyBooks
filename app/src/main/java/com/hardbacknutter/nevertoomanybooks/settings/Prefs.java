@@ -52,7 +52,8 @@ public final class Prefs {
      *
      * @see com.hardbacknutter.nevertoomanybooks.utils.NightMode
      */
-    public static final String PK_UI_THEME = "ui.theme";
+    public static final String PK_UI_DAY_NIGHT_MODE = "ui.theme";
+
     /**
      * How dialogs will be shown.
      * <p>
