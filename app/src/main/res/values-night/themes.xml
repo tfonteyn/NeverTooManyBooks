@@ -60,11 +60,6 @@
         <item name="colorOnError">@color/black</item>
         <item name="colorErrorContainer">@color/m3red_10</item>
         <item name="colorOnErrorContainer">@color/m3red_90</item>
-
-        <!-- gradient used in the Navigation side bar. -->
-        <item name="appNavBarColorStart">@color/m3blue_grey_10</item>
-        <item name="appNavBarColorCenter">@color/m3blue_grey_30</item>
-        <item name="appNavBarColorEnd">@color/m3blue_grey_40</item>
     </style>
 
 </resources>

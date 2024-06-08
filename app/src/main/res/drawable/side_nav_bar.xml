@@ -22,8 +22,8 @@
     android:shape="rectangle">
     <gradient
         android:angle="135"
-        android:centerColor="?attr/appNavBarColorCenter"
-        android:endColor="?attr/appNavBarColorEnd"
-        android:startColor="?attr/appNavBarColorStart"
+        android:centerColor="@color/appNavBarColorCenter"
+        android:endColor="@color/appNavBarColorEnd"
+        android:startColor="@color/appNavBarColorStart"
         android:type="linear" />
 </shape>

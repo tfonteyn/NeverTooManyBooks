@@ -20,5 +20,11 @@
   -->
 
 <resources>
-
+    <!-- Gradient used in the Navigation side bar.
+         We use a fixed color for all themes for simplicity.
+         TODO: maybe just remove the gradient from the nav menu?
+    -->
+    <color name="appNavBarColorStart">@color/m3blue_grey_50</color>
+    <color name="appNavBarColorCenter">@color/m3blue_grey_70</color>
+    <color name="appNavBarColorEnd">@color/m3blue_grey_99</color>
 </resources>
