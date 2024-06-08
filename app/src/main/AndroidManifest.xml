@@ -157,7 +157,6 @@
         <activity
             android:name=".debug.AcraCustomDialog"
             android:process=":acra"
-            android:theme="@style/Theme.App"
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance" />
