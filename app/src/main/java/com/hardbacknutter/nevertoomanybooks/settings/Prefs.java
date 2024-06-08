@@ -37,28 +37,34 @@ public final class Prefs {
 
     /**
      * The locale the user is running our app in (which can be different from the device).
-     * String: "system" or an Android Locale code.
+     * {@code String}: The literal {@code "system"} or an Android Locale code.
      *
      * @see com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl
      */
     public static final String PK_UI_LOCALE = "ui.locale";
     /**
-     * Not the actual theme, but the day/night setting.
-     * int
+     * The day/night setting.
+     * <p>
+     * {@code int}
+     * <p>
+     * Note that the string is factually incorrect due to historical reasons.
+     * Changing it is not worth the effort.
      *
      * @see com.hardbacknutter.nevertoomanybooks.utils.NightMode
      */
     public static final String PK_UI_THEME = "ui.theme";
     /**
      * How dialogs will be shown.
-     * int
+     * <p>
+     * {@code int}
      *
      * @see DialogAndMenuMode
      */
     public static final String PK_UI_DIALOGS_MODE = "ui.dialog.mode";
     /**
      * How context/row menus will be shown.
-     * int
+     * <p>
+     * {@code int}
      *
      * @see DialogAndMenuMode
      */
@@ -66,14 +72,16 @@ public final class Prefs {
 
     /**
      * Whether to normalize {@link DBKey#FORMAT} values after a search.
-     * boolean
+     * <p>
+     * {@code boolean}
      *
      * @see com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper
      */
     public static final String PK_SEARCH_REFORMAT_FORMAT = "search.reformat.format";
     /**
      * Whether to normalize {@link DBKey#COLOR} values after a search.
-     * boolean
+     * <p>
+     * {@code boolean}
      *
      * @see com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper
      */
@@ -86,13 +94,15 @@ public final class Prefs {
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * Whether to search by using the ISBN10 value or the original {@link DBKey#BOOK_ISBN}.
-     * boolean
+     * <p>
+     * {@code boolean}
      */
     public static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * Whether a shopping menu should be shown.
-     * boolean
+     * <p>
+     * {@code boolean}
      *
      * @see com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig
      */
@@ -111,7 +121,8 @@ public final class Prefs {
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
     /**
      * How ACCESS to context/row menus is provide.
-     * int
+     * <p>
+     * {@code int}
      *
      * @see com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton
      */
@@ -119,7 +130,8 @@ public final class Prefs {
     /**
      * Whether and how a Text Bubble with row information is shown
      * while fast-scrolling through a list.
-     * int
+     * <p>
+     * {@code int}
      *
      * @see OverlayProviderFactory
      */
@@ -127,7 +139,8 @@ public final class Prefs {
 
     /**
      * Whether to show the fragment that allows the user to edit the external id's.
-     * boolean
+     * <p>
+     * {@code boolean}
      *
      * @see com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment
      */
@@ -138,39 +151,45 @@ public final class Prefs {
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * A full url, including the http(s) part.
-     * String
+     * <p>
+     * {@code String}
      */
     public static final String PK_HOST_URL = "host.url";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * A full url, including the http(s) part.
-     * String
+     * <p>
+     * {@code String}
      */
     public static final String PK_HOST_USER = "host.user";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * Clear text, but removed from debug reports.
-     * String
+     * <p>
+     * {@code String}
      */
     public static final String PK_HOST_PASSWORD = "host.password";
 
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * HTTP socket connect timeout.
-     * int, in seconds
+     * <p>
+     * {@code int} in seconds
      */
     public static final String PK_TIMEOUT_CONNECT_IN_SECONDS = "timeout.connect";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * HTTP socket read timeout
-     * int, in seconds
+     * <p>
+     * {@code int} in seconds
      */
     public static final String PK_TIMEOUT_READ_IN_SECONDS = "timeout.read";
 
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * HTTP GET/HEAD requests will log urls, response-codes and manual redirects.
-     * boolean
+     * <p>
+     * {@code boolean}
      */
     public static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
 
