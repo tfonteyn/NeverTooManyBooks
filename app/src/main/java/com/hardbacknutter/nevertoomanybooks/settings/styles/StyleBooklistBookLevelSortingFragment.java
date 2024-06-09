@@ -30,6 +30,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
@@ -141,12 +143,22 @@ public class StyleBooklistBookLevelSortingFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final Context context = getContext();
+
+        final Style style = vm.getStyle();
+
+        final Toolbar toolbar = getToolbar();
+        if (style.getId() == 0) {
+            toolbar.setTitle(R.string.lbl_clone_style);
+        } else {
+            toolbar.setTitle(R.string.lbl_edit_style);
+        }
+        //noinspection DataFlowIssue
+        toolbar.setSubtitle(style.getLabel(context));
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
-
-        final Context context = getContext();
 
         final List<StyleViewModel.WrappedBookLevelColumn> groupSortingFields =
                 vm.getStyle()

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,7 +91,6 @@ public class StyleFragment
         } else {
             toolbar.setTitle(R.string.lbl_edit_style);
         }
-        // Style name as the subtitle
         //noinspection DataFlowIssue
         toolbar.setSubtitle(style.getLabel(getContext()));
 

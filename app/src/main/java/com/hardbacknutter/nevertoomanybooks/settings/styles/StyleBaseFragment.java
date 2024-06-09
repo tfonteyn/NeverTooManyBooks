@@ -46,6 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
 
+/**
+ * Base fragment for editing a Style, or the Style defaults.
+ */
 public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
 

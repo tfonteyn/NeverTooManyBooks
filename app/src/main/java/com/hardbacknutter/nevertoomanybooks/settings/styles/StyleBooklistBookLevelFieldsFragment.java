@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,9 +26,11 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 /**
@@ -63,8 +65,15 @@ public class StyleBooklistBookLevelFieldsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Style name as the subtitle
+        final Style style = vm.getStyle();
+
+        final Toolbar toolbar = getToolbar();
+        if (style.getId() == 0) {
+            toolbar.setTitle(R.string.lbl_clone_style);
+        } else {
+            toolbar.setTitle(R.string.lbl_edit_style);
+        }
         //noinspection DataFlowIssue
-        getToolbar().setSubtitle(vm.getStyle().getLabel(getContext()));
+        toolbar.setSubtitle(style.getLabel(getContext()));
     }
 }

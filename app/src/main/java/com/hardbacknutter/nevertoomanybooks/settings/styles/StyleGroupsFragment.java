@@ -29,6 +29,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +41,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleGroupsBinding;
@@ -118,6 +120,17 @@ public class StyleGroupsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final Style style = vm.getStyle();
+
+        final Toolbar toolbar = getToolbar();
+        if (style.getId() == 0) {
+            toolbar.setTitle(R.string.lbl_clone_style);
+        } else {
+            toolbar.setTitle(R.string.lbl_edit_style);
+        }
+        //noinspection DataFlowIssue
+        toolbar.setSubtitle(style.getLabel(getContext()));
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()

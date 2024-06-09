@@ -87,8 +87,7 @@ public class StyleDefaultsFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        // Don't change the title; it's "Settings".
-        // Style name as the subtitle
+        toolbar.setTitle(R.string.lbl_styles_long);
         //noinspection DataFlowIssue
         toolbar.setSubtitle(vm.getStyle().getLabel(getContext()));
 
