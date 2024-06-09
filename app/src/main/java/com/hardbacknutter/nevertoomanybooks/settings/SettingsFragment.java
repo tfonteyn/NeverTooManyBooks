@@ -186,12 +186,11 @@ public class SettingsFragment
         findPreference(ISBN.PK_EDIT_BOOK_ISBN_CHECKS)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         //noinspection DataFlowIssue
-        findPreference(Prefs.pk_booklist_rebuild_state)
+        findPreference(Prefs.PK_BOOKLIST_REBUILD_STATE)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         //noinspection DataFlowIssue
         findPreference(Prefs.PK_BOOKLIST_CONTEXT_MENU)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-
 
         //noinspection DataFlowIssue
         findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {

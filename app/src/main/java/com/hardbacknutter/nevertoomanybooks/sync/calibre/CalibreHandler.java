@@ -65,7 +65,7 @@ public class CalibreHandler {
     private static final String TAG = "CalibreHandler";
 
     /** Whether to show any sync menus at all. */
-    public static final String PK_ENABLED = CalibreContentServer.PREF_KEY + ".enabled";
+    static final String PK_ENABLED = CalibreContentServer.PREF_KEY + ".enabled";
 
     @NonNull
     private final CalibreHandlerViewModel vm;

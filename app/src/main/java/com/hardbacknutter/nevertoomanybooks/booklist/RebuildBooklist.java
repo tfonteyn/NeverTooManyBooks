@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,7 +66,7 @@ public enum RebuildBooklist
      */
     @NonNull
     public static RebuildBooklist getPreferredMode(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, Prefs.pk_booklist_rebuild_state,
+        final int value = IntListPref.getInt(context, Prefs.PK_BOOKLIST_REBUILD_STATE,
                                              FromSaved.value);
         switch (value) {
             case 3:

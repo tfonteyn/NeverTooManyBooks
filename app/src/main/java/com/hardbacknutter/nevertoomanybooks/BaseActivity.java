@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsCont
 /**
  * Base class for all Activity's (except the startup and the crop activity)
  * providing the recreation mechanism.
+ * FIXME: reimplement recreation using the same mechanism as the
+ *  {@link com.hardbacknutter.nevertoomanybooks.utils.theme.ThemeColorController}
  */
 public abstract class BaseActivity
         extends AppCompatActivity {

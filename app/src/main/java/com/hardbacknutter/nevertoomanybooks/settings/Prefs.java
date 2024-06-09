@@ -117,9 +117,9 @@ public final class Prefs {
 
     public static final String pk_image_undo_enabled = "image.undo.enabled";
     public static final String pk_image_cache_resized = "image.cache.resized";
-    public static final String pk_storage_volume = "storage.volume.index";
+    public static final String PK_STORAGE_VOLUME = "storage.volume.index";
 
-    public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
+    public static final String PK_BOOKLIST_REBUILD_STATE = "booklist.rebuild.state";
     /**
      * How ACCESS to context/row menus is provide.
      * <p>

@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -300,8 +301,8 @@ public class StartupActivity
                             final Intent intent = FragmentHostActivity
                                     .createIntent(this, SettingsFragment.class)
                                     .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                              Prefs.pk_storage_volume)
-                                    .putExtra(SettingsFragment.BKEY_STORAGE_WAS_MISSING, true);
+                                              Prefs.PK_STORAGE_VOLUME)
+                                    .putExtra(SettingsViewModel.BKEY_MISSING_STORAGE_VOLUME, true);
 
                             startActivity(intent);
                             // and quit, this will make sure the user exists our app afterwards

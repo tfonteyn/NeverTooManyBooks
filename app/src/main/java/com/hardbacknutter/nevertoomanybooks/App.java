@@ -74,8 +74,9 @@ public class App
     @CallSuper
     protected void attachBaseContext(@NonNull final Context base) {
         super.attachBaseContext(base);
-
+        // Theoretically not needed, as we're not using Acra senders; but paranoia....
         if (!ACRA.isACRASenderServiceProcess()) {
+            // Don't double-init
             initAcra();
         }
 

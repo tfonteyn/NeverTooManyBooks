@@ -93,30 +93,7 @@ public final class CoverVolume {
 
         final StorageManager storage = (StorageManager)
                 context.getSystemService(Context.STORAGE_SERVICE);
-        final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
-
-        final int actualVolume;
-        if (volume >= storageVolumes.size()) {
-            // The most obvious issue:
-            // Storage was configured to be on SDCARD (index==1),
-            // but the SDCARD was ejected AND removed.
-            // We set "0" and go ahead for now, so at least we get a valid Log folder.
-            actualVolume = 0;
-
-        } else if (!Environment.MEDIA_MOUNTED.equals(storageVolumes.get(volume).getState())) {
-            // The second most obvious issue:
-            // Storage was configured to be on SDCARD (index==1),
-            // but the SDCARD was eject and NOT removed: status wil be MEDIA_UNMOUNTED.
-            // There are plenty of other possible issues but they are not as easy to handle
-            // so we won't...
-            // We set "0" and go ahead for now, so at least we get a valid Log folder.
-            actualVolume = 0;
-
-        } else {
-            //FIXME: add one more, elaborate, check for situations where the SDCARD was REPLACED.
-            // all fine.
-            actualVolume = volume;
-        }
+        final int actualVolume = getActualVolume(storage, volume);
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger()
@@ -148,6 +125,35 @@ public final class CoverVolume {
         return actualVolume;
     }
 
+    private static int getActualVolume(@NonNull final StorageManager storage,
+                                       final int volume) {
+        final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
+
+        final int actualVolume;
+        if (volume >= storageVolumes.size()) {
+            // The most obvious issue:
+            // Storage was configured to be on SDCARD (index==1),
+            // but the SDCARD was ejected AND removed.
+            // We set "0" and go ahead for now, so at least we get a valid Log folder.
+            actualVolume = 0;
+
+        } else if (!Environment.MEDIA_MOUNTED.equals(storageVolumes.get(volume).getState())) {
+            // The second most obvious issue:
+            // Storage was configured to be on SDCARD (index==1),
+            // but the SDCARD was eject and NOT removed: status wil be MEDIA_UNMOUNTED.
+            // There are plenty of other possible issues but they are not as easy to handle
+            // so we won't...
+            // We set "0" and go ahead for now, so at least we get a valid Log folder.
+            actualVolume = 0;
+
+        } else {
+            //FIXME: add one more, elaborate, check for situations where the SDCARD was REPLACED.
+            // all fine.
+            actualVolume = volume;
+        }
+        return actualVolume;
+    }
+
     /**
      * Set the user preferred volume.
      *
@@ -158,7 +164,7 @@ public final class CoverVolume {
                                  final int volume) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(Prefs.pk_storage_volume, String.valueOf(volume))
+                         .putString(Prefs.PK_STORAGE_VOLUME, String.valueOf(volume))
                          .apply();
     }
 
@@ -170,7 +176,7 @@ public final class CoverVolume {
      * @return the volume
      */
     public static int getVolume(@NonNull final Context context) {
-        return IntListPref.getInt(context, Prefs.pk_storage_volume, 0);
+        return IntListPref.getInt(context, Prefs.PK_STORAGE_VOLUME, 0);
     }
 
     private static void dumpStorageInfo(@NonNull final Context context,

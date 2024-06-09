@@ -48,6 +48,11 @@ public class SettingsViewModel
         extends ViewModel {
 
     private static final String TAG = "SettingsViewModel";
+
+    /** Passed in by the startup routines, indicating the storage device was not found. */
+    public static final String BKEY_MISSING_STORAGE_VOLUME = TAG + ":msv";
+
+
     private final StorageMoverTask storageMoverTask = new StorageMoverTask();
     private boolean requiresActivityRecreation;
 

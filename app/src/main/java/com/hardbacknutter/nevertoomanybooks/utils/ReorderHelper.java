@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,6 @@ public final class ReorderHelper {
      * Boolean preference.
      * {@code true} if the title/name should be SORTED by the reordered version.
      */
-
     public static final String PK_SORT_TITLE_REORDERED = "sort.title.reordered";
     private static final String SUFFIX_SEPARATOR = ", ";
 
@@ -91,7 +90,7 @@ public final class ReorderHelper {
      *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    private boolean forSorting(@NonNull final Context context) {
+    public static boolean isSortReordered(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
@@ -110,7 +109,7 @@ public final class ReorderHelper {
     public String reorderForSorting(@NonNull final Context context,
                                     @NonNull final String text,
                                     @NonNull final Locale locale) {
-        if (forSorting(context)) {
+        if (isSortReordered(context)) {
             return reorder(context, text, locale, LocaleListUtils.asList(context));
         } else {
             return text;
@@ -133,7 +132,7 @@ public final class ReorderHelper {
                                     @NonNull final String text,
                                     @Nullable final Locale firstLocale,
                                     @NonNull final List<Locale> localeList) {
-        if (forSorting(context)) {
+        if (isSortReordered(context)) {
             return reorder(context, text, firstLocale, localeList);
         } else {
             return text;
