@@ -42,34 +42,6 @@ public final class Prefs {
      * @see com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl
      */
     public static final String PK_UI_LOCALE = "ui.locale";
-    /**
-     * The day/night setting.
-     * <p>
-     * {@code int}
-     * <p>
-     * Note that the string is factually incorrect due to historical reasons.
-     * Changing it is not worth the effort.
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.utils.NightMode
-     */
-    public static final String PK_UI_DAY_NIGHT_MODE = "ui.theme";
-
-    /**
-     * How dialogs will be shown.
-     * <p>
-     * {@code int}
-     *
-     * @see DialogAndMenuMode
-     */
-    public static final String PK_UI_DIALOGS_MODE = "ui.dialog.mode";
-    /**
-     * How context/row menus will be shown.
-     * <p>
-     * {@code int}
-     *
-     * @see DialogAndMenuMode
-     */
-    public static final String PK_UI_CONTEXT_MENUS = "ui.menu.context.mode";
 
     /**
      * Whether to normalize {@link DBKey#FORMAT} values after a search.

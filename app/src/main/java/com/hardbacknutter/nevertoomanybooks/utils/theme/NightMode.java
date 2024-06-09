@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.utils.theme;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
@@ -28,16 +29,27 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.math.MathUtils;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class NightMode {
 
     /**
+     * The {@link NightMode} setting.
+     * <p>
+     * {@code int}
+     * <p>
+     * Note that the string is factually incorrect due to historical reasons.
+     * Changing it is not worth the effort.
+     *
+     * @see NightMode
+     */
+    public static final String PK_UI_THEME_MODE = "ui.theme";
+
+    /**
      * We're not using the actual {@link AppCompatDelegate} mode constants
-     * due to 'day-night' being different depending on the OS version.
+     * due to the devices-setting being different depending on the OS version.
      */
     private static final int[] NIGHT_MODES = {
-            // day-night
+            // follow the system setting
             Build.VERSION.SDK_INT >= 29 ? AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                                         : AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY,
             // light
@@ -50,18 +62,31 @@ public final class NightMode {
     }
 
     /**
-     * Apply the user's preferred NightMode.
-     * Called at startup.
+     * Init the user's preferred NightMode.
+     * <p>
+     * Must be called from {@link Application#onCreate()}.
      *
      * @param context Current context
      */
-    public static void apply(@NonNull final Context context) {
-        apply(IntListPref.getInt(context, Prefs.PK_UI_DAY_NIGHT_MODE, 0));
+    public static void init(@NonNull final Context context) {
+        apply(getSetting(context));
+    }
+
+    /**
+     * Get the current preference setting.
+     *
+     * @param context Current context
+     *
+     * @return the stored index into {@link #NIGHT_MODES}
+     */
+    public static int getSetting(@NonNull final Context context) {
+        return IntListPref.getInt(context, PK_UI_THEME_MODE, 0);
     }
 
     /**
      * Apply the user's preferred NightMode.
-     * Called when the user changes the preference.
+     * <p>
+     * To be called when the user changes the preference.
      *
      * @param mode index into {@link #NIGHT_MODES}
      */
