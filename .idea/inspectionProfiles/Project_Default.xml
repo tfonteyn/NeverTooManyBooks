@@ -236,6 +236,8 @@
           <option value="OverlyBroadThrowsClause" />
           <option value="StaticMethodOnlyUsedInOneClass" />
           <option value="MethodOnlyUsedFromInnerClass" />
+          <option value="RedundantFieldInitialization" />
+          <option value="StaticVariableMayNotBeInitialized" />
         </list>
       </option>
     </inspection_tool>
