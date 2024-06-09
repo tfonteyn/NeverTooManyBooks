@@ -27,16 +27,15 @@ import android.os.StrictMode;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.google.android.material.color.DynamicColors;
-
 import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.debug.AcraCustomDialog;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
+import com.hardbacknutter.nevertoomanybooks.utils.theme.NightMode;
+import com.hardbacknutter.nevertoomanybooks.utils.theme.ThemeColorController;
 import com.hardbacknutter.util.logger.FileLogger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -113,8 +112,23 @@ public class App
     public void onCreate() {
         super.onCreate();
 
-        DynamicColors.applyToActivitiesIfAvailable(this);
+        initLogger();
 
+        ServiceLocator.create(getApplicationContext());
+
+        // Theoretically not needed, as we're not using Acra senders; but paranoia....
+        if (!ACRA.isACRASenderServiceProcess()) {
+            // Only setup the SearchEngines if this is NOT the Acra process.
+            final Languages languages = ServiceLocator.getInstance().getLanguages();
+            SearchEngineConfig.createRegistry(getApplicationContext(), languages);
+        }
+
+        // setup support for custom themes, dynamic colors and day/night modes.
+        ThemeColorController.init(this);
+        NightMode.init(this);
+    }
+
+    private void initLogger() {
         final File logDir = new File(getFilesDir(), LOG_DIR);
         if (!logDir.exists()) {
             //noinspection ResultOfMethodCallIgnored
@@ -123,16 +137,6 @@ public class App
         final FileLogger logger = new FileLogger(logDir, LOG_FILE);
         logger.cycleLogs();
         LoggerFactory.setLogger(logger);
-
-        ServiceLocator.create(getApplicationContext());
-
-        if (!ACRA.isACRASenderServiceProcess()) {
-            final Languages languages = ServiceLocator.getInstance().getLanguages();
-            SearchEngineConfig.createRegistry(getApplicationContext(), languages);
-        }
-
-        // always set the mode, so it's valid for acra as well.
-        NightMode.apply(this);
     }
 
     /**

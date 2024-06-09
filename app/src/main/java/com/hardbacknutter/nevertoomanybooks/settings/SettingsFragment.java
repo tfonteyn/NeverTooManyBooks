@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.storage.StorageManager;
@@ -35,6 +36,7 @@ import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.ArrayRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -49,6 +51,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -65,8 +68,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.theme.NightMode;
+import com.hardbacknutter.nevertoomanybooks.utils.theme.ThemeColorController;
 
 /**
  * Global settings page.
@@ -83,34 +87,15 @@ public class SettingsFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "SettingsFragment";
-    /** Passed in by the startup routines, indicating the storage device was not found. */
-    public static final String BKEY_STORAGE_WAS_MISSING = TAG + ":swm";
-    /** savedInstanceState key. */
-    private static final String SIS_TITLE_ORDERBY = TAG + ":tob";
-    private static final String SIS_VOLUME_INDEX = TAG + ":vol";
 
+    private static final String PSK_USER_INTERFACE = "psk_user_interface";
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
-    private static final String PSK_CALIBRE = "psk_calibre";
-
     private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
+    private static final String PSK_CALIBRE = "psk_calibre";
 
     private final ActivityResultLauncher<Void> editSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
                                       success -> { /* ignore */ });
-
-    /**
-     * Used to be able to reset this pref to what it was when this fragment started.
-     * Persisted with savedInstanceState.
-     */
-    private boolean storedTitleOrderBy;
-    private SwitchPreference titleOrderByPref;
-
-    /**
-     * Used to be able to reset this pref to what it was when this fragment started.
-     * Persisted with savedInstanceState.
-     */
-    private String storedVolumeIndex;
-    private ListPreference storageVolumePref;
 
     private SettingsViewModel vm;
 
@@ -128,11 +113,9 @@ public class SettingsFragment
                 }
             };
 
-    @Nullable
-    private ProgressDelegate progressDelegate;
-    private boolean storageWasMissing;
-    private int volumeChangedOptionChosen;
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private TitleOrderByHelper titleOrderByHelper;
+    private StorageVolumeHelper storageVolumeHelper;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -142,7 +125,7 @@ public class SettingsFragment
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(getContext());
+        vm.init(getContext(), getArguments());
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
@@ -156,23 +139,6 @@ public class SettingsFragment
             getActivity().recreate();
             return true;
         });
-
-
-        final Preference pUiTheme = findPreference(Prefs.PK_UI_DAY_NIGHT_MODE);
-        //noinspection DataFlowIssue
-        pUiTheme.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        pUiTheme.setOnPreferenceChangeListener((preference, newValue) -> {
-            // we should never have an invalid setting in the prefs... flw
-            try {
-                final int mode = Integer.parseInt(String.valueOf(newValue));
-                NightMode.apply(mode);
-            } catch (@NonNull final NumberFormatException ignore) {
-                NightMode.apply(0);
-            }
-
-            return true;
-        });
-
 
         final Preference pFastscroller = findPreference(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY);
         //noinspection DataFlowIssue
@@ -198,47 +164,18 @@ public class SettingsFragment
             return true;
         });
 
-        titleOrderByPref = findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED);
-        titleOrderByHelper = new TitleOrderByHelper();
-        //noinspection DataFlowIssue
-        titleOrderByPref.setOnPreferenceChangeListener(titleOrderByHelper::onChanged);
-        titleOrderByPref.setSummaryProvider(titleOrderByHelper);
-
         // Add flag to indicate we'll be editing the global-style when coming from here
         //noinspection DataFlowIssue
         findPreference(PSK_STYLE_DEFAULTS)
                 .getExtras().putBoolean(StyleViewModel.BKEY_GLOBAL_STYLE, true);
 
-        final Bundle args = getArguments();
-        if (args != null) {
-            storageWasMissing = args.getBoolean(BKEY_STORAGE_WAS_MISSING);
-        }
-
-        final StorageManager storage = (StorageManager)
-                getContext().getSystemService(Context.STORAGE_SERVICE);
-
-        final List<StorageVolume> storageVolumes =
-                storage.getStorageVolumes()
-                       .stream()
-                       .filter(sv -> Environment.MEDIA_MOUNTED.equals(sv.getState()))
-                       .collect(Collectors.toList());
-
-        final int max = storageVolumes.size();
-        final CharSequence[] entries = new CharSequence[max];
-        final CharSequence[] entryValues = new CharSequence[max];
-
-        for (int i = 0; i < max; i++) {
-            final StorageVolume sv = storageVolumes.get(i);
-            entries[i] = sv.getDescription(getContext());
-            entryValues[i] = String.valueOf(i);
-        }
-
-        storageVolumePref = findPreference(Prefs.pk_storage_volume);
         //noinspection DataFlowIssue
-        storageVolumePref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        storageVolumePref.setEntries(entries);
-        storageVolumePref.setEntryValues(entryValues);
-        storageVolumePref.setOnPreferenceChangeListener(this::onStorageVolumeChange);
+        titleOrderByHelper = new TitleOrderByHelper(
+                getContext(), findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED));
+
+        //noinspection DataFlowIssue
+        storageVolumeHelper = new StorageVolumeHelper(
+                getContext(), findPreference(Prefs.PK_STORAGE_VOLUME));
     }
 
     @Override
@@ -248,118 +185,62 @@ public class SettingsFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_settings);
-        // erase any existing subtitle as we can come back here from a sub-fragment
         toolbar.setSubtitle("");
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        vm.onMoveCancelled().observe(getViewLifecycleOwner(), this::onMoveCancelled);
-        vm.onMoveFailure().observe(getViewLifecycleOwner(), this::onMoveFailure);
-        vm.onMoveFinished().observe(getViewLifecycleOwner(), this::onMoveFinished);
-
-        final boolean currentSortTitleReordered = titleOrderByPref.isChecked();
-        final String currentStorageVolume = storageVolumePref.getValue();
-
-        if (savedInstanceState == null) {
-            storedTitleOrderBy = currentSortTitleReordered;
-            storedVolumeIndex = currentStorageVolume;
-        } else {
-            storedTitleOrderBy = savedInstanceState
-                    .getBoolean(SIS_TITLE_ORDERBY, currentSortTitleReordered);
-            storedVolumeIndex = savedInstanceState
-                    .getString(SIS_VOLUME_INDEX, currentStorageVolume);
-        }
-    }
-
-    private boolean onStorageVolumeChange(@NonNull final Preference pref,
-                                          @NonNull final Object newValue) {
-        final int newVolumeIndex = storageVolumePref.findIndexOfValue((String) newValue);
-        final CharSequence newVolumeDesc = storageVolumePref.getEntries()[newVolumeIndex];
-
-        if (storageWasMissing) {
-            // The originally used volume is not available; there is nothing to move.
-            // Handle this as a simple 'select'
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.lbl_storage_settings)
-                    // this dialog is important. Make sure the user pays some attention
-                    .setCancelable(false)
-                    .setMessage(getString(R.string.option_storage_select, newVolumeDesc))
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) ->
-                            setStorageVolume(newVolumeIndex))
-                    .create()
-                    .show();
-        } else {
-            final int oldVolumeIndex = storageVolumePref.findIndexOfValue(storedVolumeIndex);
-            final CharSequence oldVolumeDesc = storageVolumePref.getEntries()[oldVolumeIndex];
-
-            final CharSequence[] items = {
-                    getString(R.string.option_storage_select, newVolumeDesc),
-                    getString(R.string.option_moving_covers_from_x_to_y,
-                              oldVolumeDesc, newVolumeDesc)};
-
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.lbl_storage_settings)
-                    // this dialog is important. Make sure the user pays some attention
-                    .setCancelable(false)
-                    .setSingleChoiceItems(items, 1, (d, w) -> volumeChangedOptionChosen = w)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) ->
-                            onVolumeChangedOptionChosen(oldVolumeIndex, newVolumeIndex))
-                    .create()
-                    .show();
-        }
-
-        // Do not let the system update the preference value.
-        return false;
-    }
-
-    private void onVolumeChangedOptionChosen(final int oldVolumeIndex,
-                                             final int newVolumeIndex) {
-        switch (volumeChangedOptionChosen) {
-            case 0: {
-                setStorageVolume(newVolumeIndex);
-                break;
-            }
-            case 1: {
-                // check space and start the task
-                //noinspection DataFlowIssue
-                if (!vm.moveData(getContext(), oldVolumeIndex, newVolumeIndex)) {
-                    //noinspection DataFlowIssue
-                    Snackbar.make(getView(), R.string.error_storage_not_writable,
-                                  Snackbar.LENGTH_LONG).show();
-                }
-                break;
-            }
-            default:
-                throw new IllegalStateException(String.valueOf(volumeChangedOptionChosen));
-        }
+        vm.onProgress().observe(getViewLifecycleOwner(), storageVolumeHelper::onProgress);
+        vm.onMoveCancelled().observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveCancelled);
+        vm.onMoveFailure().observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFailure);
+        vm.onMoveFinished().observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFinished);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        final SharedPreferences global = getPreferenceScreen().getSharedPreferences();
+        final SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
         //noinspection DataFlowIssue
-        global.registerOnSharedPreferenceChangeListener(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
 
-        final boolean enabled = global.getBoolean(CalibreHandler.PK_ENABLED, false);
+        updateThemeSummary();
+
         //noinspection DataFlowIssue
-        findPreference(PSK_CALIBRE).setSummary(enabled ? R.string.enabled : R.string.disabled);
+        findPreference(PSK_CALIBRE).setSummary(CalibreHandler.isSyncEnabled(getContext())
+                                               ? R.string.enabled : R.string.disabled);
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(SIS_TITLE_ORDERBY, storedTitleOrderBy);
-        outState.putString(SIS_VOLUME_INDEX, storedVolumeIndex);
+    private void updateThemeSummary() {
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        final Resources res = context.getResources();
+
+        final String themeMode = getModeSummary(res, R.array.pe_ui_theme_mode,
+                                                NightMode.getSetting(context));
+
+        final String themeColors = getModeSummary(res, R.array.pe_ui_theme_colors,
+                                                  ThemeColorController.getSetting(context));
+
+        // Hardcoded ';' as separator... oh well...
+        // Also note we don't display the other UI settings (e.g. dialogs etc...)
+        final String uiSummary = themeMode + "; " + themeColors;
+
+        //noinspection DataFlowIssue
+        findPreference(PSK_USER_INTERFACE).setSummary(uiSummary);
+    }
+
+    @NonNull
+    private static String getModeSummary(@NonNull final Resources res,
+                                         @ArrayRes final int resId,
+                                         final int value) {
+        final String[] modes = res.getStringArray(resId);
+        int mode = value;
+        // sanity check
+        if (mode > modes.length) {
+            mode = 0;
+        }
+        return modes[mode];
     }
 
     @Override
@@ -381,149 +262,281 @@ public class SettingsFragment
         }
     }
 
-    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.process(progress -> {
-            if (progressDelegate == null) {
-                //noinspection DataFlowIssue
-                progressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.lbl_moving_data)
-                        .setPreventSleep(true)
-                        .setIndeterminate(true)
-                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                        .show(() -> getActivity().getWindow());
-            }
-            progressDelegate.onProgress(progress);
-        });
-    }
+    /**
+     * Encapsulates all the code to handle the
+     * {@link Prefs#PK_STORAGE_VOLUME} preference.
+     */
+    private class StorageVolumeHelper {
+        @NonNull
+        private final Context context;
+        private final ListPreference storageVolumePref;
+        @Nullable
+        private ProgressDelegate progressDelegate;
+        private int volumeChangedOptionChosen;
 
-    private void closeProgressDialog() {
-        if (progressDelegate != null) {
-            //noinspection DataFlowIssue
-            progressDelegate.dismiss(getActivity().getWindow());
-            progressDelegate = null;
+        StorageVolumeHelper(@NonNull final Context context,
+                            @NonNull final ListPreference preference) {
+            this.context = context;
+            this.storageVolumePref = preference;
+
+            final StorageManager storage = (StorageManager)
+                    this.context.getSystemService(Context.STORAGE_SERVICE);
+
+            final List<StorageVolume> storageVolumes =
+                    storage.getStorageVolumes()
+                           .stream()
+                           .filter(sv -> Environment.MEDIA_MOUNTED.equals(sv.getState()))
+                           .collect(Collectors.toList());
+
+            final int max = storageVolumes.size();
+            final CharSequence[] entries = new CharSequence[max];
+            final CharSequence[] entryValues = new CharSequence[max];
+
+            for (int i = 0; i < max; i++) {
+                final StorageVolume sv = storageVolumes.get(i);
+                entries[i] = sv.getDescription(context);
+                entryValues[i] = String.valueOf(i);
+            }
+
+            storageVolumePref.setSummaryProvider(
+                    ListPreference.SimpleSummaryProvider.getInstance());
+            storageVolumePref.setEntries(entries);
+            storageVolumePref.setEntryValues(entryValues);
+            storageVolumePref.setOnPreferenceChangeListener(this::onStorageVolumeChange);
         }
-    }
 
-    private void onMoveFinished(@NonNull final LiveDataEvent<Integer> message) {
-        closeProgressDialog();
+        private boolean onStorageVolumeChange(@NonNull final Preference pref,
+                                              @NonNull final Object newValue) {
+            final int newVolumeIndex = storageVolumePref.findIndexOfValue((String) newValue);
+            final CharSequence newVolumeDesc = storageVolumePref.getEntries()[newVolumeIndex];
 
-        message.process(volume -> {
-            if (setStorageVolume(volume)) {
-                //noinspection DataFlowIssue
-                Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
+            if (vm.isMissingStorageVolume()) {
+                // The originally used volume is not available; there is nothing to move.
+                // Handle this as a simple 'select'
+                new MaterialAlertDialogBuilder(context)
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.lbl_storage_settings)
+                        // this dialog is important. Make sure the user pays some attention
+                        .setCancelable(false)
+                        .setMessage(context.getString(R.string.option_storage_select,
+                                                      newVolumeDesc))
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                setStorageVolume(newVolumeIndex))
+                        .create()
+                        .show();
+            } else {
+                final int oldVolumeIndex = vm.getStoredVolumeIndex();
+                final CharSequence oldVolumeDesc = storageVolumePref.getEntries()[oldVolumeIndex];
+
+                final CharSequence[] items = {
+                        context.getString(R.string.option_storage_select, newVolumeDesc),
+                        context.getString(R.string.option_moving_covers_from_x_to_y,
+                                          oldVolumeDesc, newVolumeDesc)};
+
+                new MaterialAlertDialogBuilder(context)
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.lbl_storage_settings)
+                        // this dialog is important. Make sure the user pays some attention
+                        .setCancelable(false)
+                        .setSingleChoiceItems(items, 1, (d, w) -> volumeChangedOptionChosen = w)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                onVolumeChangedOptionChosen(oldVolumeIndex, newVolumeIndex))
+                        .create()
+                        .show();
             }
-        });
-    }
 
-    private boolean setStorageVolume(final int volume) {
-        storageVolumePref.setValue(String.valueOf(volume));
-        //noinspection OverlyBroadCatchBlock
-        try {
-            //noinspection DataFlowIssue
-            CoverVolume.initVolume(getContext(), volume);
-            return true;
-
-        } catch (@NonNull final StorageException e) {
-            // This should never happen... flw
-            ErrorDialog.show(getContext(), TAG, e);
+            // Do not let the system update the preference value.
             return false;
         }
-    }
 
-    private void onMoveFailure(@NonNull final LiveDataEvent<Throwable> message) {
-        closeProgressDialog();
-
-        message.process(e -> {
-            //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), TAG, e,
-                             getString(R.string.lbl_moving_data),
-                             getString(R.string.error_storage_not_accessible));
-        });
-    }
-
-    private void onMoveCancelled(@NonNull final LiveDataEvent<Integer> message) {
-        closeProgressDialog();
-
-        message.process(ignored -> {
-            // FIXME: need better msg + tell user to clean up the destination
-            showMessageAndFinishActivity(getString(R.string.cancelled));
-        });
-    }
-
-    private class TitleOrderByHelper
-            implements Preference.SummaryProvider<Preference> {
-        @NonNull
-        @Override
-        public CharSequence provideSummary(@NonNull final Preference preference) {
-            String summary = titleOrderByPref.isChecked()
-                             ? getString(R.string.ps_show_titles_reordered_on)
-                             : getString(R.string.ps_show_titles_reordered_off);
-
-            final Spannable spannable;
-            // Use the 'schedulerKey' to get the condition!
-            //noinspection DataFlowIssue
-            if (preference.getSharedPreferences()
-                          .getBoolean(StartupViewModel.PK_REBUILD_TITLE_OB, false)) {
-                //noinspection DataFlowIssue
-                @ColorInt
-                final int color = AttrUtils.getColorInt(
-                        getContext(), com.google.android.material.R.attr.colorError);
-
-                // Add the warning
-                final String warning = getString(R.string.warning_restart_required)
-                        .toUpperCase(getContext().getResources().getConfiguration()
-                                                 .getLocales().get(0));
-                final int warningStart = summary.length() + 1;
-                summary = summary + '\n' + warning;
-                spannable = new SpannableString(summary);
-                spannable.setSpan(new ForegroundColorSpan(color),
-                                  warningStart, summary.length(), 0);
-            } else {
-                //noinspection DataFlowIssue
-                @ColorInt
-                final int color = AttrUtils.getColorInt(
-                        getContext(), android.R.attr.textColorPrimary);
-                spannable = new SpannableString(summary);
-                spannable.setSpan(new ForegroundColorSpan(color), 0, summary.length(), 0);
+        private void onVolumeChangedOptionChosen(final int oldVolumeIndex,
+                                                 final int newVolumeIndex) {
+            switch (volumeChangedOptionChosen) {
+                case 0: {
+                    setStorageVolume(newVolumeIndex);
+                    break;
+                }
+                case 1: {
+                    // check space and start the task
+                    if (!vm.moveData(context, oldVolumeIndex, newVolumeIndex)) {
+                        //noinspection DataFlowIssue
+                        Snackbar.make(getView(), R.string.error_storage_not_writable,
+                                      Snackbar.LENGTH_LONG).show();
+                    }
+                    break;
+                }
+                default:
+                    throw new IllegalStateException(String.valueOf(volumeChangedOptionChosen));
             }
+        }
 
-            return spannable;
+        private boolean setStorageVolume(final int volume) {
+            storageVolumePref.setValue(String.valueOf(volume));
+            //noinspection OverlyBroadCatchBlock
+            try {
+                CoverVolume.initVolume(context, volume);
+                return true;
+
+            } catch (@NonNull final StorageException e) {
+                // This should never happen... flw
+                ErrorDialog.show(context, TAG, e);
+                return false;
+            }
+        }
+
+        void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
+            message.process(progress -> {
+                if (progressDelegate == null) {
+                    //noinspection DataFlowIssue
+                    progressDelegate = new ProgressDelegate(getProgressFrame())
+                            .setTitle(R.string.lbl_moving_data)
+                            .setPreventSleep(true)
+                            .setIndeterminate(true)
+                            .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
+                            .show(() -> getActivity().getWindow());
+                }
+                progressDelegate.onProgress(progress);
+            });
+        }
+
+        private void closeProgressDialog() {
+            if (progressDelegate != null) {
+                //noinspection DataFlowIssue
+                progressDelegate.dismiss(getActivity().getWindow());
+                progressDelegate = null;
+            }
+        }
+
+        void onMoveFinished(@NonNull final LiveDataEvent<Integer> message) {
+            closeProgressDialog();
+
+            message.process(volume -> {
+                if (setStorageVolume(volume)) {
+                    //noinspection DataFlowIssue
+                    Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        void onMoveFailure(@NonNull final LiveDataEvent<Throwable> message) {
+            closeProgressDialog();
+
+            message.process(e -> {
+                //noinspection DataFlowIssue
+                ErrorDialog.show(getContext(), TAG, e,
+                                 getString(R.string.lbl_moving_data),
+                                 getString(R.string.error_storage_not_accessible));
+            });
+        }
+
+        void onMoveCancelled(@NonNull final LiveDataEvent<Integer> message) {
+            closeProgressDialog();
+
+            message.process(ignored -> {
+                // FIXME: need better msg + tell user to clean up the destination
+                showMessageAndFinishActivity(getString(R.string.cancelled));
+            });
+        }
+    }
+
+    /**
+     * Encapsulates all the code to handle the
+     * {@link ReorderHelper#PK_SORT_TITLE_REORDERED} preference.
+     */
+    private class TitleOrderByHelper {
+
+        @NonNull
+        private final Context context;
+        private final SwitchPreference titleOrderByPref;
+        private final PreferenceSummaryProvider summaryProvider;
+
+        TitleOrderByHelper(@NonNull final Context context,
+                           @NonNull final SwitchPreference preference) {
+            this.context = context;
+            this.titleOrderByPref = preference;
+
+            titleOrderByPref.setOnPreferenceChangeListener(this::onChanged);
+            summaryProvider = new PreferenceSummaryProvider(context);
+            titleOrderByPref.setSummaryProvider(summaryProvider);
         }
 
         boolean onChanged(@NonNull final Preference pref,
                           @NonNull final Object newValue) {
             final boolean checked = (Boolean) newValue;
 
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
+            new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setMessage(R.string.confirm_rebuild_orderby_columns)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     // Cancelling will revert to the original value and remove any scheduling
                     .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                        titleOrderByPref.setChecked(storedTitleOrderBy);
-                        StartupViewModel.schedule(getContext(),
-                                                  StartupViewModel.PK_REBUILD_TITLE_OB,
+                        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB,
                                                   false);
+                        titleOrderByPref.setChecked(vm.getStoredTitleOrderBy());
                         // Force the summary to redisplay by
                         // re-setting the provider will call the protected "notifyChanged()"
                         // as (of course..) Android does not allow an easier solution.
                         // Note to self: fork or replace the androidx.preference lib...
-                        //noinspection unchecked,DataFlowIssue
-                        titleOrderByPref.setSummaryProvider(this);
+                        titleOrderByPref.setSummaryProvider(summaryProvider);
                     })
                     // Confirming will persist the new value and schedule the rebuild
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        titleOrderByPref.setChecked(checked);
-                        StartupViewModel.schedule(getContext(),
-                                                  StartupViewModel.PK_REBUILD_TITLE_OB,
+                        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB,
                                                   true);
+                        titleOrderByPref.setChecked(checked);
                     })
                     .create()
                     .show();
             // Do not let the system update the preference value.
             return false;
+        }
+
+        private class PreferenceSummaryProvider
+                implements Preference.SummaryProvider<SwitchPreference> {
+            private final Context context;
+
+            PreferenceSummaryProvider(@NonNull final Context context) {
+                this.context = context;
+            }
+
+            @NonNull
+            @Override
+            public CharSequence provideSummary(@NonNull final SwitchPreference preference) {
+                String summary = preference.isChecked()
+                                 ? context.getString(R.string.ps_show_titles_reordered_on)
+                                 : context.getString(R.string.ps_show_titles_reordered_off);
+
+                final Spannable spannable;
+                // Use the 'schedulerKey' to get the condition!
+                //noinspection DataFlowIssue
+                if (preference.getSharedPreferences()
+                              .getBoolean(StartupViewModel.PK_REBUILD_TITLE_OB, false)) {
+                    @ColorInt
+                    final int color = AttrUtils.getColorInt(
+                            context, com.google.android.material.R.attr.colorError);
+
+                    final int warningStart = summary.length() + 1;
+                    // Add the warning
+                    final Locale locale = context.getResources().getConfiguration()
+                                                 .getLocales().get(0);
+                    summary += '\n' + context.getString(R.string.warning_restart_required)
+                                             .toUpperCase(locale);
+                    spannable = new SpannableString(summary);
+                    spannable.setSpan(new ForegroundColorSpan(color),
+                                      warningStart, summary.length(), 0);
+                } else {
+                    @ColorInt
+                    final int color = AttrUtils.getColorInt(
+                            context, android.R.attr.textColorPrimary);
+                    spannable = new SpannableString(summary);
+                    spannable.setSpan(new ForegroundColorSpan(color), 0, summary.length(), 0);
+                }
+
+                return spannable;
+            }
         }
     }
 }

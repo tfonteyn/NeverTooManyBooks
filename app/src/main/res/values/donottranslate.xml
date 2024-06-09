@@ -165,15 +165,25 @@
     </string-array>
 
     <!-- ListPreference -->
-    <string-array name="pe_ui_theme">
-        <item>@string/pe_ui_theme_day_night</item>
+    <string-array name="pe_ui_theme_mode">
+        <item>@string/pe_ui_theme_from_device</item>
         <item>@string/pe_ui_theme_light</item>
         <item>@string/pe_ui_theme_dark</item>
     </string-array>
-    <string-array name="pv_ui_theme">
+    <string-array name="pv_ui_theme_mode">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+    </string-array>
+
+    <!-- ListPreference -->
+    <string-array name="pe_ui_theme_colors">
+        <item>@string/pe_ui_theme_colors_blue_grey</item>
+        <item>@string/pe_ui_theme_colors_dynamic</item>
+    </string-array>
+    <string-array name="pv_ui_theme_colors">
+        <item>0</item>
+        <item>1</item>
     </string-array>
 
     <!-- ListPreference - the level of validity checking of ISBN numbers while editing (by the user) of a book. -->

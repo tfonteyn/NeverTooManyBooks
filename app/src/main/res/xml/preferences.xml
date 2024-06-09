@@ -48,14 +48,12 @@
             android:title="@string/pt_ui_language"
             tools:summary="@string/pt_ui_system_locale" />
 
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pe_ui_theme"
-            android:entryValues="@array/pv_ui_theme"
-            android:icon="@drawable/ic_baseline_settings_brightness_24"
-            android:key="ui.theme"
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"
+            android:icon="@drawable/ic_baseline_tune_24"
+            android:key="psk_user_interface"
             android:title="@string/pt_ui_theme"
-            tools:summary="@string/pe_ui_theme_day_night" />
+            />
 
     </PreferenceCategory>
 
@@ -194,14 +192,6 @@
             android:key="psk_fields_visibility"
             android:summary="@string/ps_manage_fields"
             android:title="@string/pt_field_visibility"
-            />
-
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"
-            android:icon="@drawable/ic_baseline_tune_24"
-            android:key="psk_dialog_and_menu_popup_tuning"
-            android:summary="@string/pt_dialog_and_menu_popup_tuning"
-            android:title="@string/pc_ui"
             />
 
         <SwitchPreference

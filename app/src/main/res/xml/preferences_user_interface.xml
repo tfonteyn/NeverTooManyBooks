@@ -19,9 +19,28 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                                      xmlns:tools="http://schemas.android.com/tools">
     <PreferenceCategory
         android:title="@string/pc_ui">
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_ui_theme_mode"
+            android:entryValues="@array/pv_ui_theme_mode"
+            android:icon="@drawable/ic_baseline_settings_brightness_24"
+            android:key="ui.theme"
+            android:title="@string/pt_ui_theme"
+            tools:summary="@string/pe_ui_theme_from_device" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_ui_theme_colors"
+            android:entryValues="@array/pv_ui_theme_colors"
+            android:icon="@drawable/ic_baseline_color_lens_24"
+            android:key="ui.theme.color"
+            android:title="@string/pt_ui_theme_colors"
+            tools:summary="@string/pe_ui_theme_colors_blue_grey" />
 
         <!-- Default: by screen size. -->
         <ListPreference
@@ -30,7 +49,8 @@
             android:entryValues="@array/pv_ui_dialogs_mode"
             android:icon="@drawable/ic_baseline_article_24"
             android:key="ui.dialog.mode"
-            android:title="@string/pt_ui_dialogs_mode" />
+            android:title="@string/pt_ui_dialogs_mode"
+            tools:summary="@string/pe_ui_dialog_mode_classic" />
 
         <!-- Default: by menu and screen size. -->
         <ListPreference
@@ -39,7 +59,8 @@
             android:entryValues="@array/pv_ui_menus_context"
             android:icon="@drawable/ic_baseline_menu_24"
             android:key="ui.menu.context.mode"
-            android:title="@string/pc_context_menus" />
+            android:title="@string/pc_context_menus"
+            tools:summary="@string/pe_ui_context_menu_mode_classic" />
     </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>
