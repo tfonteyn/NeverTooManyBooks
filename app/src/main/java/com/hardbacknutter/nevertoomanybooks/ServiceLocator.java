@@ -105,7 +105,12 @@ public class ServiceLocator {
      */
     private static final String DIR_UPGRADES = "upgrades";
 
-    /** Singleton. */
+    /**
+     * Singleton.
+     *
+     * @see #create
+     */
+    @SuppressWarnings("StaticVariableMayNotBeInitialized")
     private static ServiceLocator sInstance;
 
     /** Either the real Application Context, or the injected context when running in unit tests. */
