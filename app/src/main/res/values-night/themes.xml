@@ -29,11 +29,6 @@
 
     <style name="Theme.App"
            parent="Base.Theme.App">
-        <!-- The system status bar at the very top of a screen.
-             Reminder: never set this to ?attr/colorPrimary! -->
-        <item name="android:statusBarColor">@color/m3grey_10</item>
-
-        <!-- Material color attributes -->
         <item name="colorPrimary">@color/m3grey_30</item>
         <item name="colorOnPrimary">@color/m3grey_80</item>
         <item name="colorPrimaryContainer">@color/m3blue_grey_60</item>

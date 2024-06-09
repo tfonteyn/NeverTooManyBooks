@@ -52,11 +52,6 @@
     <!-- Top level Theme to be used in AndroidManifest.xml-->
     <style name="Theme.App"
            parent="Base.Theme.App">
-        <!-- The system status bar at the very top of a screen.
-             Reminder: never set this to ?attr/colorPrimary! -->
-        <item name="android:statusBarColor">@color/m3blue_grey_30</item>
-
-        <!-- Material color attributes -->
         <item name="colorPrimary">@color/m3blue_grey_40</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/m3blue_grey_90</item>
