@@ -74,7 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.AltEditionIsfdb;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -245,8 +245,7 @@ public class EditBookTocFragment
                 (v, position) -> {
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
                     //noinspection DataFlowIssue
-                    final DialogAndMenuMode menuMode = DialogAndMenuMode
-                            .getMenuMode(getActivity(), menu);
+                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())
                                 .setListener(this::onMenuItemSelected)

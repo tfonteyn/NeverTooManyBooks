@@ -108,7 +108,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
@@ -1101,7 +1101,7 @@ public class BooksOnBookshelf
                              @NonNull final Menu menu,
                              @NonNull final ExtMenuResultListener listener) {
 
-        final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(this, menu);
+        final MenuMode menuMode = MenuMode.getMode(this, menu);
         if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(this)
                     .setTitle(menuTitle)

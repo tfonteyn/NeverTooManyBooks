@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBindin
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -216,8 +216,7 @@ public class PreferredStylesFragment
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
                     prepareMenu(menu, position);
 
-                    final DialogAndMenuMode menuMode =
-                            DialogAndMenuMode.getMenuMode(getActivity(), menu);
+                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(context)
                                 .setListener(this::onMenuItemSelected)

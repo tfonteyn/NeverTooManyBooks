@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -203,8 +203,7 @@ public class EditBookAuthorListDialogFragment
                 (v, position) -> {
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
                     //noinspection DataFlowIssue
-                    final DialogAndMenuMode menuMode = DialogAndMenuMode
-                            .getMenuMode(getActivity(), menu);
+                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())
                                 .setListener(this::onMenuItemSelected)

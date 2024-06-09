@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -190,7 +190,7 @@ public class StyleBooklistBookLevelSortingFragment
 
         listAdapter.setOnRowShowMenuListener(ExtMenuButton.Always, (anchor, position) -> {
             final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
-            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(getActivity(), menu);
+            final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
             if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(anchor.getContext())
                         .setListener(this::onMenuItemClick)

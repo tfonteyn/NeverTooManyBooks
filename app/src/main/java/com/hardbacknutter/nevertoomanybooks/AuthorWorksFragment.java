@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -224,8 +224,7 @@ public class AuthorWorksFragment
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (anchor, position) -> {
-                    final DialogAndMenuMode menuMode = DialogAndMenuMode
-                            .getMenuMode(getActivity(), rowMenu);
+                    final MenuMode menuMode = MenuMode.getMode(getActivity(), rowMenu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(anchor.getContext())
                                 .setListener(this::onMenuItemSelected)

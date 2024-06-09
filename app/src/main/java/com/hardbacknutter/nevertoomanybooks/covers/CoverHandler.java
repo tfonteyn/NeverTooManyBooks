@@ -76,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
@@ -346,7 +346,7 @@ public class CoverHandler {
                 .setIcon(R.drawable.ic_baseline_undo_24);
         }
 
-        final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(context, menu);
+        final MenuMode menuMode = MenuMode.getMode(context, menu);
         if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(context)
                     .setListener(this::onMenuItemSelected)

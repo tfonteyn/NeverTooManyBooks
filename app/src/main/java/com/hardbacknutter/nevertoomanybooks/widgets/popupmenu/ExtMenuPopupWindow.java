@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
@@ -210,7 +210,7 @@ public class ExtMenuPopupWindow {
     }
 
     /**
-     * Set the menu which will be displayed when {@link #show(View, DialogAndMenuMode)} is called.
+     * Set the menu which will be displayed when {@link #show(View, MenuMode)} is called.
      *
      * @param menu                to set
      * @param groupDividerEnabled flag
@@ -227,14 +227,14 @@ public class ExtMenuPopupWindow {
     /**
      * Display the menu.
      *
-     * @param view     the anchor for {@link DialogAndMenuMode#Anchored},
+     * @param view     the anchor for {@link MenuMode#Anchored},
      *                 or a view from which the window token can be used for the other modes
      * @param menuMode the placement of the popup window
      *
      * @throws IllegalArgumentException when an invalid menuMode is passed in
      */
     public void show(@NonNull final View view,
-                     @NonNull final DialogAndMenuMode menuMode) {
+                     @NonNull final MenuMode menuMode) {
         switch (menuMode) {
             case Start:
                 popupWindow.showAtLocation(view, Gravity.START, xOffset, 0);

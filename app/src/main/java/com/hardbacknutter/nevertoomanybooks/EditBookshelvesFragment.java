@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -127,7 +127,7 @@ public class EditBookshelvesFragment
             prepareMenu(menu, gridPosition);
 
             //noinspection DataFlowIssue
-            final DialogAndMenuMode menuMode = DialogAndMenuMode.getMenuMode(getActivity(), menu);
+            final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
             if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(context)
                         .setListener(EditBookshelvesFragment.this::onMenuItemSelected)

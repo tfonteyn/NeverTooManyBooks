@@ -120,7 +120,7 @@ public enum WindowSizeClass {
     @NonNull
     public static WindowSizeClass getHeight(@NonNull final Context context) {
         if (context instanceof Activity) {
-            return getWidth((Activity) context);
+            return getHeight((Activity) context);
         }
         return getHeight(getActivity(context));
     }
@@ -147,5 +147,27 @@ public enum WindowSizeClass {
             iterator = ((ContextWrapper) iterator).getBaseContext();
         }
         throw new IllegalArgumentException("Context is not a UiContext");
+    }
+
+    /**
+     * A large screen is defined as being
+     * <ul>
+     *     <li>Expanded/Expanded</li>
+     *     <li>Expanded/Medium</li>
+     * </ul>
+     *
+     * @param context Current context - this <strong>MUST</strong> be a UI context
+     *
+     * @return {@code true} when large
+     */
+    public static boolean isLargeScreen(@NonNull final Context context) {
+        final WindowSizeClass width = getWidth(context);
+        final WindowSizeClass height = getHeight(context);
+
+        return ((height == Medium || height == Expanded)
+                && width == Expanded)
+               ||
+               ((width == Medium || width == Expanded)
+                && height == Expanded);
     }
 }

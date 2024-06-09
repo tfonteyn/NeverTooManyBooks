@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomShe
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogAndMenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 
 public abstract class DialogLauncher
         implements FragmentResultListener {
@@ -231,7 +231,7 @@ public abstract class DialogLauncher
     @NonNull
     private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
                                                        @NonNull final String requestKey) {
-        final DialogAndMenuMode dialogMode = DialogAndMenuMode.getDialogMode(context);
+        final DialogMode dialogMode = DialogMode.getMode(context);
         switch (dialogMode) {
             case Dialog:
                 return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
