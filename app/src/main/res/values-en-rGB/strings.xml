@@ -24,4 +24,7 @@
     <string name="lbl_author_type_cover_colorist">Cover colourist</string>
     <string name="lbl_color">Colour</string>
     <string name="pt_search_reformat_color">Standardize “book colour” names</string>
+    <string name="pt_ui_theme_colors">Theme Colours</string>
+    <string name="pe_ui_theme_colors_blue_grey">Blue-grey</string>
+    <string name="pe_ui_theme_colors_dynamic">Dynamic Colours</string>
 </resources>

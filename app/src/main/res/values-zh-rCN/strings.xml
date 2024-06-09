@@ -745,7 +745,7 @@
     <string name="lbl_date_first_publication_month">首次出版月份</string>
     <string name="option_info_import_books_option_new_only">仅导入新图书。将忽略已有图书更新。</string>
     <string name="pt_ui_theme">界面主题</string>
-    <string name="pe_ui_theme_day_night">白天/夜晚</string>
+    <string name="pe_ui_theme_from_device">设备主题</string>
     <string name="pe_fast_scroller_overlay_static">静态</string>
     <string name="option_rebuild_index">重建索引</string>
     <string name="info_purge_blns_item_name">要清除 %1$s “%2$s”的节点状态吗？</string>
@@ -807,4 +807,8 @@
     <string name="lbl_tab_alternative_editions_long">备选版</string>
     <string name="info_tap_to_select">点击以选择。</string>
     <string name="warning_restart_required">需要重新启动应用程序</string>
+    <string name="pt_ui_theme_colors">主题颜色</string>
+    <string name="pe_ui_theme_colors_blue_grey">蓝灰色</string>
+    <string name="pe_ui_theme_colors_dynamic">动态色彩</string>
+    <string name="warning_requires_android_12">需要 Android 12 或更高版本</string>
 </resources>

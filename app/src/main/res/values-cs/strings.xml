@@ -509,8 +509,8 @@
     <string name="loose">Uvolněný</string>
     <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
     <string name="pe_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
-    <string name="pe_ui_theme_dark">Temný</string>
-    <string name="pe_ui_theme_day_night">Den / Noc</string>
+    <string name="pe_ui_theme_dark">Tmavý</string>
+    <string name="pe_ui_theme_from_device">Motiv zařízení</string>
     <string name="pe_ui_theme_light">Světlo</string>
     <string name="pt_barcode_scanner">Čtečka kódů</string>
     <string name="pt_bob_show_details">Podrobnosti knihy zobrazené v seznamu</string>
@@ -797,4 +797,8 @@
     <string name="info_tap_to_select">Klepnutím na položku vyberte.</string>
     <string name="lbl_tab_alternative_editions_long">Alternativní vydání</string>
     <string name="warning_restart_required">Vyžaduje se restart aplikace</string>
+    <string name="pt_ui_theme_colors">Tématické barvy</string>
+    <string name="pe_ui_theme_colors_blue_grey">Modrošedá</string>
+    <string name="pe_ui_theme_colors_dynamic">Dynamické barvy</string>
+    <string name="warning_requires_android_12">Vyžaduje systém Android 12 nebo vyšší</string>
 </resources>

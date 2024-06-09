@@ -535,7 +535,7 @@
     <string name="lbl_select_fields">Selecionar campos</string>
     <string name="X_action_update">Atualizar</string>
     <string name="lbl_date_published">Data de Publicação</string>
-    <string name="pe_ui_theme_day_night">Dia / Noite</string>
+    <string name="pe_ui_theme_from_device">Tema do dispositivo</string>
     <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
     <string name="confirm_email_file">Gostaria de enviar este ficheiro como um e-mail?</string>
     <string name="action_merge">Unir</string>
@@ -807,4 +807,8 @@
     <string name="info_tap_to_select">Toque para selecionar.</string>
     <string name="lbl_tab_alternative_editions_long">Edições alternativas</string>
     <string name="warning_restart_required">É necessário reiniciar a aplicação</string>
+    <string name="pt_ui_theme_colors">Cores do tema</string>
+    <string name="pe_ui_theme_colors_blue_grey">Azul-cinza</string>
+    <string name="pe_ui_theme_colors_dynamic">Cores dinâmicas</string>
+    <string name="warning_requires_android_12">Requer Android 12 ou superior</string>
 </resources>

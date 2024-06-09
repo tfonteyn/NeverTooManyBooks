@@ -498,8 +498,8 @@
     <string name="loose">Libre</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensionner à chaque fois que nécessaire (moins d’espace nécessaire, défilement des listes plus lent)</string>
     <string name="pe_thumbnails_cache_resized_stored">Mettre les couvertures en cache (plus d’espace nécessaire, défilement des listes plus rapide)</string>
-    <string name="pe_ui_theme_dark">Noir</string>
-    <string name="pe_ui_theme_day_night">Jour / Nuit</string>
+    <string name="pe_ui_theme_dark">Sombre</string>
+    <string name="pe_ui_theme_from_device">Thème de l’appareil</string>
     <string name="pe_ui_theme_light">Clair</string>
     <string name="pt_barcode_scanner">Scanner de code à barres</string>
     <string name="pt_bob_show_details">Détails du livre affichés dans la liste</string>
@@ -782,4 +782,8 @@
     <string name="info_tap_to_select">Appuyez pour sélectionner.</string>
     <string name="lbl_tab_alternative_editions_long">Éditions alternatives</string>
     <string name="warning_restart_required">Redémarrage de l\'application nécessaire</string>
+    <string name="pt_ui_theme_colors">Couleurs du thème</string>
+    <string name="pe_ui_theme_colors_blue_grey">Bleu-gris</string>
+    <string name="pe_ui_theme_colors_dynamic">Couleurs dynamiques</string>
+    <string name="warning_requires_android_12">Nécessite Android 12 ou une version plus récente</string>
 </resources>

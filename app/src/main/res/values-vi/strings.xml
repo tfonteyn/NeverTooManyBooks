@@ -1143,7 +1143,7 @@
     <!-- ListPreference title: UI Theme -->
     <string name="pt_ui_theme">Chủ đề giao diện</string>
     <!-- ListPreference value: UI Theme -->
-    <string name="pe_ui_theme_day_night">Ngày / Đêm</string>
+    <string name="pe_ui_theme_from_device">Giao diện thiết bị</string>
     <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_dark">Tối</string>
     <!-- ListPreference value: UI Theme -->
@@ -1517,4 +1517,8 @@
     <string name="info_tap_to_select">Nhấn để chọn.</string>
     <string name="lbl_tab_alternative_editions_long">Ấn.bản khác</string>
     <string name="warning_restart_required">Cần phải khởi động lại ứng dụng</string>
+    <string name="pt_ui_theme_colors">Màu sắc giao diện</string>
+    <string name="pe_ui_theme_colors_blue_grey">Xanh xám</string>
+    <string name="pe_ui_theme_colors_dynamic">Màu sắc năng động</string>
+    <string name="warning_requires_android_12">Yêu cầu Android 12 trở lên</string>
 </resources>

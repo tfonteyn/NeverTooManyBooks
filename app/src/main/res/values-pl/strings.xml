@@ -514,7 +514,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Zmień rozmiar obrazów za każdym razem, gdy są potrzebne (zużywa mniej pamięci, przewijanie będzie wolniejsze)</string>
     <string name="pe_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
     <string name="pe_ui_theme_dark">Ciemny</string>
-    <string name="pe_ui_theme_day_night">Dzień / Noc</string>
+    <string name="pe_ui_theme_from_device">Motyw urządzenia</string>
     <string name="pe_ui_theme_light">Światło</string>
     <string name="pt_barcode_scanner">Skaner kodów kreskowych</string>
     <string name="pt_bob_show_details">Szczegóły książki pokazane na liście</string>
@@ -800,4 +800,8 @@
     <string name="info_tap_to_select">Stuknij, aby wybrać.</string>
     <string name="lbl_tab_alternative_editions_long">Wydania alternatywne</string>
     <string name="warning_restart_required">Wymagany restart aplikacji</string>
+    <string name="pt_ui_theme_colors">Kolory motywu</string>
+    <string name="pe_ui_theme_colors_blue_grey">Niebiesko-szary</string>
+    <string name="pe_ui_theme_colors_dynamic">Dynamiczne kolory</string>
+    <string name="warning_requires_android_12">Wymaga systemu Android 12 lub nowszego</string>
 </resources>

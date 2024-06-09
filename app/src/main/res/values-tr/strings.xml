@@ -501,7 +501,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
     <string name="pe_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
     <string name="pe_ui_theme_dark">Koyu</string>
-    <string name="pe_ui_theme_day_night">Gündüz / Gece</string>
+    <string name="pe_ui_theme_from_device">Cihaz teması</string>
     <string name="pe_ui_theme_light">Açık</string>
     <string name="pt_barcode_scanner">Barkod okuyucu</string>
     <string name="pt_bob_show_details">Listede gösterilen Kitap Detayları</string>
@@ -788,4 +788,8 @@
     <string name="info_tap_to_select">Seçmek için dokunun.</string>
     <string name="lbl_tab_alternative_editions_long">Alternatif Baskılar</string>
     <string name="warning_restart_required">Uygulamanın yeniden başlatılması gerekiyor</string>
+    <string name="pt_ui_theme_colors">Tema renkleri</string>
+    <string name="pe_ui_theme_colors_blue_grey">Mavi-gri</string>
+    <string name="pe_ui_theme_colors_dynamic">Dinamik Renkler</string>
+    <string name="warning_requires_android_12">Android 12 veya üstü gerektirir</string>
 </resources>

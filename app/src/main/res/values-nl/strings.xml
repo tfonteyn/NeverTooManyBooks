@@ -536,7 +536,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Herschaal elke keer als ze nodig zijn (gebruikt minder opslagruimte, scrollen zal langzamer gaan)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cache herschaalde afbeeldingen (gebruikt meer opslagruimte, scrollen van de lijst gaat sneller)</string>
     <string name="pe_ui_theme_dark">Donker</string>
-    <string name="pe_ui_theme_day_night">Dag / Nacht</string>
+    <string name="pe_ui_theme_from_device">Apparaatthema</string>
     <string name="pe_ui_theme_light">Helder</string>
     <string name="preference_not_set">Niet ingesteld</string>
     <string name="progress_msg_cleaning_up">Schoonmaken…</string>
@@ -777,4 +777,8 @@
     <string name="info_tap_to_select">Tik om te selecteren.</string>
     <string name="lbl_tab_alternative_editions_long">Alternative edities</string>
     <string name="warning_restart_required">App herstart vereist</string>
+    <string name="pt_ui_theme_colors">Thema Kleuren</string>
+    <string name="pe_ui_theme_colors_blue_grey">Blauw/Grijs</string>
+    <string name="pe_ui_theme_colors_dynamic">Dynamische kleuren</string>
+    <string name="warning_requires_android_12">Android 12 of hoger vereist</string>
 </resources>

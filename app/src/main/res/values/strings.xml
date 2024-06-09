@@ -1333,14 +1333,21 @@
     <string name="pt_ui_language">Language</string>
     <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
     <string name="pt_ui_system_locale">System language</string>
-    <!-- ListPreference title: UI Theme -->
+
+    <!-- [VERIFIED] ListPreference title: UI Theme -->
     <string name="pt_ui_theme">Theme</string>
-    <!-- ListPreference value: UI Theme -->
-    <string name="pe_ui_theme_day_night">Day / Night</string>
+    <!-- [VERIFIED] ListPreference value: UI Theme -->
+    <string name="pe_ui_theme_from_device">Device theme</string>
     <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_dark">Dark</string>
-    <!-- ListPreference value: UI Theme -->
+    <!-- ListPreference value: UI Theme Mode -->
     <string name="pe_ui_theme_light">Light</string>
+
+    <!-- ListPreference title: UI Theme Mode: Colors. -->
+    <string name="pt_ui_theme_colors">Theme Colors</string>
+    <string name="pe_ui_theme_colors_blue_grey">Blue-gray</string>
+    <string name="pe_ui_theme_colors_dynamic">Dynamic Colors</string>
+
     <!-- ListPreference title. UI Dialog tuning. Opens a new screen with the related settings. -->
     <string name="pt_dialog_and_menu_popup_tuning">Dialogs and Menus</string>
 
@@ -1783,5 +1790,7 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
+
+    <string name="warning_requires_android_12">Requires Android 12 or higher</string>
 
 </resources>

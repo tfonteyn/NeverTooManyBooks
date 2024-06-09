@@ -495,7 +495,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
     <string name="pe_thumbnails_cache_resized_stored">Buchumschläge zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
     <string name="pe_ui_theme_dark">Dunkel</string>
-    <string name="pe_ui_theme_day_night">Tag / Nacht</string>
+    <string name="pe_ui_theme_from_device">Gerätedesign</string>
     <string name="pe_ui_theme_light">Hell</string>
     <string name="pt_barcode_scanner">Barcodelesegerät</string>
     <string name="pt_bob_show_details">In der Liste angezeigte Buchdetails</string>
@@ -572,7 +572,7 @@
     <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
     <string name="pt_ui_language">Sprache</string>
     <string name="pt_ui_system_locale">Systemsprache</string>
-    <string name="pt_ui_theme">Farbschema</string>
+    <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Priorität, aktivieren und deaktivieren</string>
     <string name="ps_show_author_name_family_first">Anzeige mit dem Familiennamen zuerst,\nz.B. „Kafka, Franz“</string>
     <string name="ps_show_author_name_given_first">Anzeige mit den Vornamen zuerst,\nz.B. „Franz  Kafka“</string>
@@ -777,4 +777,8 @@
     <string name="info_tap_to_select">Tippen Sie zum Auswählen.</string>
     <string name="lbl_tab_alternative_editions_long">Alternative Editionen</string>
     <string name="warning_restart_required">App-Neustart erforderlich</string>
+    <string name="pt_ui_theme_colors">Thema Farben</string>
+    <string name="pe_ui_theme_colors_blue_grey">Blau-grau</string>
+    <string name="pe_ui_theme_colors_dynamic">Dynamische Farben</string>
+    <string name="warning_requires_android_12">Erfordert Android 12 oder höher</string>
 </resources>

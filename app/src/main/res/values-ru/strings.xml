@@ -510,8 +510,8 @@
     <string name="loose">свободно</string>
     <string name="pe_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
     <string name="pe_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
-    <string name="pe_ui_theme_dark">темный</string>
-    <string name="pe_ui_theme_day_night">День / Ночь</string>
+    <string name="pe_ui_theme_dark">Тёмная</string>
+    <string name="pe_ui_theme_from_device">Тема устройства</string>
     <string name="pe_ui_theme_light">свет</string>
     <string name="pt_barcode_scanner">Сканер штрих-кода</string>
     <string name="pt_bob_show_details">Информация о книге отображается в списке</string>
@@ -798,4 +798,8 @@
     <string name="info_tap_to_select">Нажмите, чтобы выбрать.</string>
     <string name="lbl_tab_alternative_editions_long">Альтернативные издания</string>
     <string name="warning_restart_required">Требуется перезапуск приложения</string>
+    <string name="pt_ui_theme_colors">Цвета темы</string>
+    <string name="pe_ui_theme_colors_blue_grey">Сине-серый</string>
+    <string name="pe_ui_theme_colors_dynamic">Динамические цвета</string>
+    <string name="warning_requires_android_12">Требуется Android 12 или более поздняя версия</string>
 </resources>

@@ -496,7 +496,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργό scrolling)</string>
     <string name="pe_thumbnails_cache_resized_stored">Αποθήκευση μικρογραφιών αλλαγμένου μεγέθους στην προσωρινή μνήμη (χρήση περισσότερου αποθηλευτικού χώρου, πιο γρήγορο scrolling στις λίστες)</string>
     <string name="pe_ui_theme_dark">Σκούρο</string>
-    <string name="pe_ui_theme_day_night">Ημέρα / Νύχτα</string>
+    <string name="pe_ui_theme_from_device">Θέμα συσκευής</string>
     <string name="pe_ui_theme_light">Φως</string>
     <string name="pt_barcode_scanner">Σάρωση γραμμοκώδικα</string>
     <string name="pt_bob_show_details">Λεπτομέρειες βιβλίου εμφανίζονται στη λίστα</string>
@@ -778,4 +778,8 @@
     <string name="info_tap_to_select">Πατήστε για να επιλέξετε.</string>
     <string name="lbl_tab_alternative_editions_long">Εναλλακτικές εκδόσεις</string>
     <string name="warning_restart_required">Απαιτείται επανεκκίνηση της εφαρμογής</string>
+    <string name="pt_ui_theme_colors">Χρώματα θέματος</string>
+    <string name="pe_ui_theme_colors_blue_grey">Μπλε-γκρι</string>
+    <string name="pe_ui_theme_colors_dynamic">Δυναμικά χρώματα</string>
+    <string name="warning_requires_android_12">Απαιτεί Android 12 ή νεότερη έκδοση</string>
 </resources>
