@@ -20,9 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -33,8 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -58,14 +63,31 @@ public class SettingsViewModel
 
     private boolean forceRebuildBooklist;
 
+    /**
+     * Used to be able to reset this pref to what it was when this fragment started.
+     */
+    private boolean storedTitleOrderBy;
+
+    /**
+     * Used to be able to reset this pref to what it was when this fragment started.
+     */
+    private int storedVolumeIndex;
+    /**
+     * Set using {@link #BKEY_MISSING_STORAGE_VOLUME} in the startup routines
+     * to indicate the storage volume as configured was not found at startup.
+     */
+    private boolean missingStorageVolume;
+
     private String[] uiLangNames;
 
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
+     * @param context   Current context
+     * @param args      {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context) {
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
         if (uiLangNames == null) {
             final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 
@@ -77,6 +99,12 @@ public class SettingsViewModel
                 final Locale locale = appLocale.getLocale(context, uiLangCodes[i]).orElseThrow();
                 uiLangNames[i] = locale.getDisplayName(locale);
             }
+
+            if (args != null) {
+                missingStorageVolume = args.getBoolean(BKEY_MISSING_STORAGE_VOLUME);
+            }
+            storedTitleOrderBy = ReorderHelper.isSortReordered(context);
+            storedVolumeIndex = CoverVolume.getVolume(context);
         }
     }
 
@@ -99,6 +127,18 @@ public class SettingsViewModel
 
     public void setForceRebuildBooklist() {
         this.forceRebuildBooklist = true;
+    }
+
+    public boolean getStoredTitleOrderBy() {
+        return storedTitleOrderBy;
+    }
+
+    public boolean isMissingStorageVolume() {
+        return missingStorageVolume;
+    }
+
+    public int getStoredVolumeIndex() {
+        return storedVolumeIndex;
     }
 
     boolean moveData(@NonNull final Context context,
