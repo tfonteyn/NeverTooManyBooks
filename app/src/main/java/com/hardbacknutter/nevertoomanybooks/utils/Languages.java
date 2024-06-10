@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public class Languages {
     /**
      * The SharedPreferences name where we'll maintain our language to ISO mappings.
      * Uses the {@link Locale#getDisplayName()} for the key,
-     * and {@link Locale#getISO3Language} for the value.
+     * and {@link #getIsoCode(Locale)} for the value.
      */
     @VisibleForTesting
     public static final String LANGUAGE_MAP = "language2iso3";
@@ -81,10 +81,8 @@ public class Languages {
 
         final String[] languages = Locale.getISOLanguages();
         lang3ToLang2Map = new HashMap<>(languages.length);
-        for (final String language : languages) {
-            final Locale locale = new Locale(language);
-            lang3ToLang2Map.put(locale.getISO3Language(), language);
-        }
+        Arrays.stream(languages).forEach(
+                language -> lang3ToLang2Map.put(getIsoCode(new Locale(language)), language));
     }
 
     /**
@@ -168,7 +166,7 @@ public class Languages {
             return "eng";
         } else {
             try {
-                return appLocaleSupplier.get().create(code).getISO3Language();
+                return getIsoCode(appLocaleSupplier.get().create(code));
             } catch (@NonNull final MissingResourceException ignore) {
                 return code;
             }
@@ -428,18 +426,41 @@ public class Languages {
                                             @NonNull final Locale locale) {
         final SharedPreferences cacheFile = getCacheFile(context);
 
+        final String isoCode = getIsoCode(locale);
+
         // just return if already done for this Locale.
-        if (cacheFile.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
+        if (cacheFile.getBoolean(LANG_CREATED_PREFIX + isoCode, false)) {
             return;
         }
         final SharedPreferences.Editor ed = cacheFile.edit();
         for (final Locale loc : Locale.getAvailableLocales()) {
             ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
-                         loc.getISO3Language());
+                         getIsoCode(loc));
         }
         // signal this Locale was done
-        ed.putBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), true);
+        ed.putBoolean(LANG_CREATED_PREFIX + isoCode, true);
         ed.apply();
+    }
+
+    /**
+     * We've seen {@link Locale#getISO3Language()} throw {@link MissingResourceException}
+     * on a HUAWEI model "ADA-AL10U" with Android 12; see github #58
+     * The OS code somehow found "zz" for a language from the list Locale.getAvailableLocales()
+     *
+     * @param locale to get the ISO3/ISO2 code from.
+     *
+     * @return iso3/2 code
+     */
+    @NonNull
+    private String getIsoCode(@NonNull final Locale locale) {
+        String isoCode;
+        try {
+            isoCode = locale.getISO3Language();
+        } catch (@NonNull final MissingResourceException mre) {
+            // Fallback to 2-character code
+            isoCode = locale.getLanguage();
+        }
+        return isoCode;
     }
 
     /**
@@ -470,7 +491,7 @@ public class Languages {
                                   @NonNull final String iso) {
         return LocaleListUtils.asList(context)
                               .stream()
-                              .map(Locale::getISO3Language)
+                              .map(this::getIsoCode)
                               .anyMatch(iso::equals);
     }
 
