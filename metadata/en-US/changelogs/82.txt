@@ -1,0 +1,1 @@
+fix for github #58 - Most users can skip this version as the issue seems to be specific to a HUAWEI device.

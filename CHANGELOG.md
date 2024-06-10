@@ -1,3 +1,11 @@
+### 6.0.1
+
+- fix #58
+
+Most users can skip this version as the issue seems to be specific to a HUAWEI device.
+
+---
+
 ### 6.0.0
 
 NEW:
