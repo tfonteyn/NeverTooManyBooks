@@ -305,7 +305,7 @@ public class ServiceLocator {
     }
 
     /**
-     * Get a <strong>new</strong>> localized Application Context.
+     * Get a <strong>new</strong> localized Application Context.
      *
      * @return Application Context using the user preferred Locale
      */
