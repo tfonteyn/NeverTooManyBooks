@@ -160,7 +160,11 @@ public class FullDateParser
                 if (textParsers == null) {
                     textParsers = new ArrayList<>();
                     addPatterns(textParsers, TEXT_PATTERNS, locales);
-                    addEnglish(textParsers, TEXT_PATTERNS, locales);
+                    //Create an English variant of a parser
+                    // if English is not already in the list of locales.
+                    if (locales.stream().noneMatch(Locale.ENGLISH::equals)) {
+                        addPatterns(textParsers, TEXT_PATTERNS, List.of(Locale.ENGLISH));
+                    }
                 }
                 return parse(textParsers, dateStr, locale);
             });
@@ -234,25 +238,6 @@ public class FullDateParser
                     group.add(builder.toFormatter(locale));
                 }
             }
-        }
-    }
-
-    /**
-     * Create an English variant of a parser if English not already in the list of locales.
-     */
-    private void addEnglish(@SuppressWarnings("SameParameterValue")
-                            @NonNull final Collection<DateTimeFormatter> group,
-                            @SuppressWarnings("SameParameterValue")
-                            @NonNull final String[] patterns,
-                            @NonNull final List<Locale> locales) {
-
-        final String english = Locale.ENGLISH.getISO3Language();
-
-        final boolean add = locales.stream()
-                                   .map(Locale::getISO3Language)
-                                   .noneMatch(english::equals);
-        if (add) {
-            addPatterns(group, patterns, List.of(Locale.ENGLISH));
         }
     }
 }
