@@ -52,6 +52,6 @@ public class StylePickerBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.style_picker_style, delegate);
+        delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.style_picker, delegate);
     }
 }

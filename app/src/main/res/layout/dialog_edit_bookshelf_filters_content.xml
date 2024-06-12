@@ -41,7 +41,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle"
-        app:menu="@menu/edit_filters_floating_dialog"
         app:title="@string/lbl_filters"
         />
 
