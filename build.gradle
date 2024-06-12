@@ -35,7 +35,7 @@ tasks.register("clean", Delete) {
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
     applicationVersionCode = 83
-    applicationVersionName = "6.0.2"
+    applicationVersionName = "6.1.0"
 
     // see NOTES.txt
     toolChain = 17
