@@ -111,17 +111,17 @@ public class EditSeriesViewModel
 
         // Check if there is an another one with the same new name.
         final Optional<Series> existingEntity = dao.findByName(context, series, locale);
-        if (existingEntity.isEmpty()) {
-            // Just insert or update as needed
-            if (series.getId() == 0) {
-                dao.insert(context, series, locale);
-            } else {
-                dao.update(context, series, locale);
-            }
-            return Optional.empty();
+        if (existingEntity.isPresent()) {
+            return existingEntity;
         }
 
-        return existingEntity;
+        // Just insert or update as needed
+        if (series.getId() == 0) {
+            dao.insert(context, series, locale);
+        } else {
+            dao.update(context, series, locale);
+        }
+        return Optional.empty();
     }
 
     void move(@NonNull final Context context,

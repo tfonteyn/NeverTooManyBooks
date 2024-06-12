@@ -110,17 +110,18 @@ public class EditPublisherViewModel
 
         // Check if there is an another one with the same new name.
         final Optional<Publisher> existingEntity = dao.findByName(context, publisher, locale);
-        if (existingEntity.isEmpty()) {
-            // Just insert or update as needed
-            if (publisher.getId() == 0) {
-                dao.insert(context, publisher, locale);
-            } else {
-                dao.update(context, publisher, locale);
-            }
-            return Optional.empty();
+        if (existingEntity.isPresent()) {
+            return existingEntity;
         }
 
-        return existingEntity;
+        // Just insert or update as needed
+        if (publisher.getId() == 0) {
+            dao.insert(context, publisher, locale);
+        } else {
+            dao.update(context, publisher, locale);
+        }
+        // return SUCCESS
+        return Optional.empty();
     }
 
     void move(@NonNull final Context context,

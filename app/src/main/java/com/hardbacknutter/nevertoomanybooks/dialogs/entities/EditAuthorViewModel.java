@@ -233,17 +233,18 @@ public class EditAuthorViewModel
 
         // Check if there is an another one with the same new name.
         final Optional<Author> existingEntity = dao.findByName(context, author, locale);
-        if (existingEntity.isEmpty()) {
-            // Just insert or update as needed
-            if (author.getId() == 0) {
-                dao.insert(context, author, locale);
-            } else {
-                dao.update(context, author, locale);
-            }
-            return Optional.empty();
+        if (existingEntity.isPresent()) {
+            return existingEntity;
         }
 
-        return existingEntity;
+        // Just insert or update as needed
+        if (author.getId() == 0) {
+            dao.insert(context, author, locale);
+        } else {
+            dao.update(context, author, locale);
+        }
+        // return SUCCESS
+        return Optional.empty();
     }
 
     void move(@NonNull final Context context,
