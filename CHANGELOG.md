@@ -1,3 +1,18 @@
+### 6.1.0
+
+NEW:
+
+- #46 Dynamic Colors in Android 12 and above.
+
+FIXES:
+
+- #57 Scroll bar tweak
+- #58 a crash specific to (some?) Huawei devices.
+- Creating a new Bookshelf could fail
+- Duplicate menu icons on the style picker and filters
+
+---
+
 ### 6.0.1
 
 - fix #58
