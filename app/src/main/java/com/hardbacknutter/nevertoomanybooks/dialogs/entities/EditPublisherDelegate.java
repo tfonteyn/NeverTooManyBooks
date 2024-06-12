@@ -148,6 +148,7 @@ class EditPublisherDelegate
         try {
             final Optional<Publisher> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
+                // Success
                 EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getPublisher());
                 return true;
             }

@@ -196,6 +196,7 @@ class EditAuthorDelegate
         try {
             final Optional<Author> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
+                // Success
                 EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getAuthor());
                 return true;
             }

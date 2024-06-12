@@ -79,6 +79,20 @@ public class EditPublisherViewModel
         return !publisher.isSameName(currentEdit);
     }
 
+    /**
+     * Check if the current user entered Publisher name already exists.
+     * <p>
+     * If it does not, insert or update the current edit,
+     * and return an empty optional indicating a successful insert/update.
+     * <p>
+     * If it does, return the existing Publisher indicating failure to save.
+     *
+     * @param context Current context
+     *
+     * @return an empty Optional for SUCCESS, or else the existing Publisher.
+     *
+     * @throws DaoWriteException on failure
+     */
     @NonNull
     Optional<Publisher> saveIfUnique(@NonNull final Context context)
             throws DaoWriteException {
@@ -87,6 +101,8 @@ public class EditPublisherViewModel
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
+        // It's an existing one and the name was not changed;
+        // just update the other attributes
         if (publisher.getId() != 0 && publisher.isSameName(currentEdit)) {
             dao.update(context, publisher, locale);
             return Optional.empty();

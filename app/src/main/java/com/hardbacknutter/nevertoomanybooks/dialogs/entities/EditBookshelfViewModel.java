@@ -80,6 +80,20 @@ public class EditBookshelfViewModel
         return !bookshelf.isSameName(currentEdit);
     }
 
+    /**
+     * Check if the current user entered Bookshelf name already exists.
+     * <p>
+     * If it does not, insert or update the current edit,
+     * and return an empty optional indicating a successful insert/update.
+     * <p>
+     * If it does, return the existing Bookshelf indicating failure to save.
+     *
+     * @param context Current context
+     *
+     * @return an empty Optional for SUCCESS, or else the existing Bookshelf.
+     *
+     * @throws DaoWriteException on failure
+     */
     @NonNull
     Optional<Bookshelf> saveIfUnique(@NonNull final Context context)
             throws DaoWriteException {

@@ -80,10 +80,23 @@ public class EditSeriesViewModel
                  && series.isComplete() == currentEdit.isComplete());
     }
 
+    /**
+     * Check if the current user entered Series name already exists.
+     * <p>
+     * If it does not, insert or update the current edit,
+     * and return an empty optional indicating a successful insert/update.
+     * <p>
+     * If it does, return the existing Series indicating failure to save.
+     *
+     * @param context Current context
+     *
+     * @return an empty Optional for SUCCESS, or else the existing Series.
+     *
+     * @throws DaoWriteException on failure
+     */
     @NonNull
     Optional<Series> saveIfUnique(@NonNull final Context context)
             throws DaoWriteException {
-
         series.copyFrom(currentEdit, false);
 
         final Locale locale = series.getLocale(context).orElseGet(

@@ -203,6 +203,20 @@ public class EditAuthorViewModel
                  && Objects.equals(author.getRealAuthor(), currentEdit.getRealAuthor()));
     }
 
+    /**
+     * Check if the current user entered Author name already exists.
+     * <p>
+     * If it does not, insert or update the current edit,
+     * and return an empty optional indicating a successful insert/update.
+     * <p>
+     * If it does, return the existing Author indicating failure to save.
+     *
+     * @param context Current context
+     *
+     * @return an empty Optional for SUCCESS, or else the existing Author.
+     *
+     * @throws DaoWriteException on failure
+     */
     @NonNull
     Optional<Author> saveIfUnique(@NonNull final Context context)
             throws DaoWriteException {

@@ -149,6 +149,7 @@ class EditSeriesDelegate
         try {
             final Optional<Series> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
+                // Success
                 EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getSeries());
                 return true;
             }
