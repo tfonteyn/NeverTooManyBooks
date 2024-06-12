@@ -145,7 +145,7 @@ class EditBookAuthorDelegate
     }
 
     private void setupRealAuthorField(final Context context) {
-        if (authorVm.useRealAuthorName()) {
+        if (authorVm.showRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);
 
@@ -164,7 +164,7 @@ class EditBookAuthorDelegate
     }
 
     private void setupAuthorTypeField(@Author.Type final int currentType) {
-        if (authorVm.useAuthorType()) {
+        if (authorVm.showAuthorType()) {
             vb.btnUseAuthorType.setVisibility(View.VISIBLE);
             vb.btnUseAuthorType.setOnCheckedChangeListener((v, isChecked) -> {
                 setTypeEnabled(isChecked);
@@ -310,11 +310,11 @@ class EditBookAuthorDelegate
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        if (authorVm.useRealAuthorName()) {
+        if (authorVm.showRealAuthorName()) {
             authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
         }
 
-        if (authorVm.useAuthorType()) {
+        if (authorVm.showAuthorType()) {
             int type = Author.TYPE_UNKNOWN;
             for (int i = 0; i < typeButtons.size(); i++) {
                 if (typeButtons.valueAt(i).isChecked()) {

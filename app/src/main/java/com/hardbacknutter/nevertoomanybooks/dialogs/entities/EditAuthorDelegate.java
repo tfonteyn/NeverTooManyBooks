@@ -125,7 +125,7 @@ class EditAuthorDelegate
 
     private void setupRealAuthorField(@NonNull final Context context,
                                       @NonNull final AuthorDao authorDao) {
-        if (vm.useRealAuthorName()) {
+        if (vm.showRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);
 
@@ -252,7 +252,7 @@ class EditAuthorDelegate
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        if (vm.useRealAuthorName()) {
+        if (vm.showRealAuthorName()) {
             vm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
         }
     }

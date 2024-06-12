@@ -88,19 +88,40 @@ public class EditAuthorViewModel
         }
     }
 
-    public boolean useRealAuthorName() {
+    /**
+     * Has the user enabled the use of the real-author-name.
+     *
+     * @return {@code true} if we need to show the real-author-name for books
+     *         where the author name is a pen-name
+     */
+    public boolean showRealAuthorName() {
         return useRealAuthorName;
     }
 
-    public boolean useAuthorType() {
+    /**
+     * Has the user enable the use of Author-types.
+     *
+     * @return {@code true} if extended author-types should be shown
+     */
+    public boolean showAuthorType() {
         return useAuthorType;
     }
 
+    /**
+     * The original/non-modified Author we're editing.
+     *
+     * @return author
+     */
     @NonNull
     public Author getAuthor() {
         return author;
     }
 
+    /**
+     * The copy-of/modified Author we're editing.
+     *
+     * @return author
+     */
     @NonNull
     public Author getCurrentEdit() {
         return currentEdit;
@@ -138,9 +159,7 @@ public class EditAuthorViewModel
         // If we have a pseudonym set, it must be a valid/existing author.
         final Author tmpRealAuthor = Author.from(currentRealAuthorName);
 
-        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
         final Optional<Author> existing = dao.findByName(context, tmpRealAuthor, locale);
-
         if (existing.isPresent()) {
             currentEdit.setRealAuthor(existing.get());
             return true;
@@ -171,8 +190,14 @@ public class EditAuthorViewModel
         }
     }
 
+    /**
+     * Check if the author was modified at all.
+     * <p>
+     * The check is sase-sensitive! We must allow the user to correct case.
+     *
+     * @return {@code true} if modified
+     */
     public boolean isModified() {
-        // Case-sensitive! We must allow the user to correct case.
         return !(author.isSameName(currentEdit)
                  && author.isComplete() == currentEdit.isComplete()
                  && Objects.equals(author.getRealAuthor(), currentEdit.getRealAuthor()));
