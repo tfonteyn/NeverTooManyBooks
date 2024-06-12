@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
+import android.widget.EditText;
+
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -28,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.fields.DecimalEditTextField;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 
@@ -35,8 +38,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FieldTest
         extends Base {
@@ -61,13 +64,13 @@ public class FieldTest
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
-        assertTrue(out instanceof String);
+        assertInstanceOf(String.class, out);
         assertEquals("7.0", (String) out);
 
         final DoubleNumberFormatter doubleNumberFormatter = new DoubleNumberFormatter(
                 realNumberParser);
 
-        final DecimalEditTextField moneyField =
+        final Field<Number, EditText> moneyField =
                 new DecimalEditTextField(FragmentId.Publication,
                                          R.id.price_listed,
                                          DBKey.PRICE_LISTED,

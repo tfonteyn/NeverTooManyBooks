@@ -399,17 +399,14 @@ public class StyleDataStore
                 break;
             }
             case PK_LAYOUT: {
-                //noinspection DataFlowIssue
                 style.setLayout(Integer.parseInt(value));
                 break;
             }
             case PK_COVER_CLICK_ACTION: {
-                //noinspection DataFlowIssue
                 style.setCoverClickAction(Integer.parseInt(value));
                 break;
             }
             case PK_COVER_LONG_CLICK_ACTION: {
-                //noinspection DataFlowIssue
                 style.setCoverLongClickAction(Integer.parseInt(value));
                 break;
             }

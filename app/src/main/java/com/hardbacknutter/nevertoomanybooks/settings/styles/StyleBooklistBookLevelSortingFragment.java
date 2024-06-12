@@ -184,7 +184,6 @@ public class StyleBooklistBookLevelSortingFragment
                   .collect(Collectors.toList());
 
 
-        //noinspection DataFlowIssue
         vb.columnList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.columnList.setHasFixedSize(true);

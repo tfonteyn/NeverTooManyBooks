@@ -129,22 +129,22 @@ public class StyleGroupsFragment
         } else {
             toolbar.setTitle(R.string.lbl_edit_style);
         }
+        final Context context = getContext();
         //noinspection DataFlowIssue
-        toolbar.setSubtitle(style.getLabel(getContext()));
+        toolbar.setSubtitle(style.getLabel(context));
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        //noinspection DataFlowIssue
         vb.groupList.addItemDecoration(
-                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.groupList.setHasFixedSize(true);
 
         // setup the adapter
         // The adapter for the list.
         final GroupWrapperListAdapter listAdapter =
-                new GroupWrapperListAdapter(getContext(),
+                new GroupWrapperListAdapter(context,
                                             vm.createWrappedGroupList(),
                                             vh -> itemTouchHelper.startDrag(vh));
 
@@ -156,7 +156,7 @@ public class StyleGroupsFragment
         itemTouchHelper.attachToRecyclerView(vb.groupList);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(getContext(), R.string.tip_booklist_style_groups,
+            TipManager.getInstance().display(context, R.string.tip_booklist_style_groups,
                                              null);
         }
     }
