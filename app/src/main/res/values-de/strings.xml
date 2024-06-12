@@ -23,7 +23,8 @@
 <!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
+<!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d Buch</item>
         <item quantity="other">%1$d Bücher</item>
@@ -752,7 +753,8 @@
     <string name="lbl_author_type_storyboard">Drehbuch</string>
     <string name="lbl_author_type_lettering">Beschriftung</string>
     <string name="lbl_percentage">Prozentsatz</string>
-    <string name="lbl_percentage_read">% gelesen</string>
+    <string name="lbl_percentage_read"
+            tools:ignore="StringFormatInvalid">% gelesen</string>
     <string name="lbl_current_page">Aktuelle Seite</string>
     <string name="btn_completed">Beendet</string>
     <string name="ps_use_read_progress_off">Verwenden Sie einen einfachen Gelesen/Ungelesen-Status.</string>
