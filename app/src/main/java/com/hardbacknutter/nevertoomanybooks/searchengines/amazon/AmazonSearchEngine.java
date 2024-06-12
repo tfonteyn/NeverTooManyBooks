@@ -68,7 +68,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  * This class supports parsing these Amazon websites:
@@ -501,65 +500,65 @@ public class AmazonSearchEngine
                               @NonNull final Locale siteLocale,
                               @NonNull final Document document,
                               @NonNull final Book book) {
-        final Elements lis = document
-                .select("div#detailBulletsWrapper_feature_div > div > ul > li");
-        for (final Element li : lis) {
-            final String[] text = li.text().strip().split(":", 2);
-            if (text.length != 2) {
-                continue;
-            }
 
-            final String label = SearchEngineUtils.cleanText(text[0]);
-            final String lcLabel = label.toLowerCase(siteLocale);
-            final String data = SearchEngineUtils.cleanName(text[1]);
+        document.select("div#detailBulletsWrapper_feature_div > div > ul > li")
+                .stream()
+                .map(li -> li.text().strip().split(":", 2))
+                .filter(text -> text.length == 2)
+                .forEach(text -> {
 
-            if (LABEL_ISBN_13.equals(lcLabel)) {
-                book.putString(DBKey.BOOK_ISBN, data);
+                    final String label = SearchEngineUtils.cleanText(text[0]);
+                    final String data = SearchEngineUtils.cleanName(text[1]);
 
-            } else if (LABEL_ISBN_10.equals(lcLabel) && !book.contains(DBKey.BOOK_ISBN)) {
-                book.putString(DBKey.BOOK_ISBN, data);
+                    final String lcLabel = label.toLowerCase(siteLocale);
 
-            } else if (LABEL_FORMAT.contains(lcLabel)) {
-                // we might already have the format, but we'll overwrite it - that's ok.
-                book.putString(DBKey.FORMAT, label);
-                book.putString(DBKey.PAGE_COUNT, extractPages(context, data));
+                    if (LABEL_ISBN_13.equals(lcLabel)) {
+                        book.putString(DBKey.BOOK_ISBN, data);
 
-            } else if (LABEL_LANGUAGE.contains(lcLabel)) {
-                book.putString(DBKey.LANGUAGE, data);
+                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.contains(DBKey.BOOK_ISBN)) {
+                        book.putString(DBKey.BOOK_ISBN, data);
 
-            } else if (LABEL_PUBLISHER.contains(lcLabel)) {
-                boolean publisherWasAdded = false;
-                final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
-                if (matcher.find()) {
-                    final String pubName = matcher.group(1);
-                    if (pubName != null) {
-                        final Publisher publisher = Publisher.from(pubName.strip());
-                        book.add(publisher);
-                        publisherWasAdded = true;
+                    } else if (LABEL_FORMAT.contains(lcLabel)) {
+                        // we might already have the format, but we'll overwrite it - that's ok.
+                        book.putString(DBKey.FORMAT, label);
+                        book.putString(DBKey.PAGE_COUNT, extractPages(context, data));
+
+                    } else if (LABEL_LANGUAGE.contains(lcLabel)) {
+                        book.putString(DBKey.LANGUAGE, data);
+
+                    } else if (LABEL_PUBLISHER.contains(lcLabel)) {
+                        boolean publisherWasAdded = false;
+                        final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
+                        if (matcher.find()) {
+                            final String pubName = matcher.group(1);
+                            if (pubName != null) {
+                                final Publisher publisher = Publisher.from(pubName.strip());
+                                book.add(publisher);
+                                publisherWasAdded = true;
+                            }
+
+                            final String pubDate = matcher.group(2);
+                            if (pubDate != null) {
+                                processPublicationDate(context, siteLocale, pubDate.strip(), book);
+                            }
+                        }
+
+                        if (!publisherWasAdded) {
+                            final Publisher publisher = Publisher.from(data);
+                            book.add(publisher);
+                        }
+
+                    } else if (LABEL_SERIES.contains(lcLabel)) {
+                        book.add(Series.from(data));
+
+                    } else {
+                        if (BuildConfig.DEBUG /* always */) {
+                            if (!LABEL_IGNORED.contains(lcLabel)) {
+                                LoggerFactory.getLogger().d(TAG, "parse", "label=" + label);
+                            }
+                        }
                     }
-
-                    final String pubDate = matcher.group(2);
-                    if (pubDate != null) {
-                        processPublicationDate(context, siteLocale, pubDate.strip(), book);
-                    }
-                }
-
-                if (!publisherWasAdded) {
-                    final Publisher publisher = Publisher.from(data);
-                    book.add(publisher);
-                }
-
-            } else if (LABEL_SERIES.contains(lcLabel)) {
-                book.add(Series.from(data));
-
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    if (!LABEL_IGNORED.contains(lcLabel)) {
-                        LoggerFactory.getLogger().d(TAG, "parse", "label=" + label);
-                    }
-                }
-            }
-        }
+                });
     }
 
     @NonNull
