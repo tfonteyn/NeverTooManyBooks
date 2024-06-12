@@ -101,25 +101,19 @@ public class EditBookshelfViewModel
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
-        // The logic flow here is different from the default one as used for e.g. an Author.
-        // IF the user meant to create a NEW shelf
-        // REJECT an already existing Bookshelf with the same name.
+        // Check if there is an another one with the same new name.
         final Optional<Bookshelf> existingEntity = dao.findByName(context, bookshelf, locale);
-        if (bookshelf.getId() == 0) {
+        if (existingEntity.isPresent()) {
             return existingEntity;
         }
 
-        if (existingEntity.isEmpty()) {
-            // Just insert or update as needed
-            if (bookshelf.getId() == 0) {
-                dao.insert(context, bookshelf, locale);
-            } else {
-                dao.update(context, bookshelf, locale);
-            }
-            return Optional.empty();
+        // Just insert or update as needed
+        if (bookshelf.getId() == 0) {
+            dao.insert(context, bookshelf, locale);
+        } else {
+            dao.update(context, bookshelf, locale);
         }
-
-        return existingEntity;
+        return Optional.empty();
     }
 
     void move(@NonNull final Context context,

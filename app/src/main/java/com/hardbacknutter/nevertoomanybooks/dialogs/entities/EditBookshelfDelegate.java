@@ -136,18 +136,20 @@ class EditBookshelfDelegate
 
         try {
             final Optional<Bookshelf> existingEntity = vm.saveIfUnique(context);
-            // IF the user meant to create a NEW shelf
+            if (existingEntity.isEmpty()) {
+                // Success
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getBookshelf());
+                return true;
+            }
+
+            // The logic flow here is different from the default one as used for e.g. an Author.
+            // IF the user meant to create a NEW Bookshelf
             // REJECT an already existing Bookshelf with the same name.
-            if (vm.getBookshelf().getId() == 0 && existingEntity.isPresent()) {
+            if (vm.getBookshelf().getId() == 0) {
                 vb.lblBookshelf.setError(context.getString(
                         R.string.warning_x_already_exists,
                         context.getString(R.string.lbl_bookshelf)));
                 return false;
-            }
-
-            if (existingEntity.isEmpty()) {
-                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getBookshelf());
-                return true;
             }
 
             // There is one with the same name; ask whether to merge the 2
