@@ -4,15 +4,17 @@ Supported Android versions:
 
 https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
 
-2024-04-12:
-14.0     16.22
-13.0     42.52
-12.0     59.49
-11.0     75.69
-10.0     84.51
-9.0      90.17
-8.1      92.09
-8.0      95.10
+https://apilevels.com/
+
+2024-04-27:
+14.0     16.3
+13.0     42.5
+12.0     59.5
+11.0     75.7
+10.0     84.5
+9.0      90.2
+8.1      92.1
+8.0      95.1
 ----------------------------------------------------------------------------------------------------
 Draft notes for next version:
 
