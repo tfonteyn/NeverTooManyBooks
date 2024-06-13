@@ -121,7 +121,6 @@
             style="@style/TIL.Language"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lbl_title"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -137,9 +136,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_original_title"
             style="@style/TIL.Text.Title"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:hint="@string/lbl_original_title_long"
-            app:layout_constraintEnd_toEndOf="@id/lbl_title"
-            app:layout_constraintStart_toStartOf="@id/lbl_title"
+            app:layout_constraintEnd_toStartOf="@id/lbl_language"
+            app:layout_constraintStart_toStartOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 

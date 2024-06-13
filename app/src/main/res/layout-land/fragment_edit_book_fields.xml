@@ -144,9 +144,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_original_title"
             style="@style/TIL.Text.Title"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:hint="@string/lbl_original_title_long"
-            app:layout_constraintEnd_toEndOf="@id/lbl_title"
-            app:layout_constraintStart_toStartOf="@id/lbl_title"
+            app:layout_constraintEnd_toStartOf="@id/lbl_language"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 

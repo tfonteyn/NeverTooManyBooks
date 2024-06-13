@@ -30,15 +30,11 @@
     <style name="Base.TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- 4x so we can override individually (is this another Android bug?) -->
-        <item name="android:layout_marginTop">@dimen/til_margin</item>
-        <item name="android:layout_marginBottom">@dimen/til_margin</item>
-        <item name="android:layout_marginStart">@dimen/til_margin</item>
-        <item name="android:layout_marginEnd">@dimen/til_margin</item>
     </style>
 
     <!-- See "TIE.ReadOnly" -->
-    <style name="TIL.ReadOnly" parent="Base.TIL">
+    <style name="Base.TIL.ReadOnly"
+           parent="Base.TIL">
         <item name="endIconMode">none</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
@@ -46,6 +42,11 @@
 
     <style name="TIL.Text" parent="Base.TIL">
         <item name="endIconMode">custom</item>
+        <!-- 4x so we can override individually (is this another Android bug?) -->
+        <item name="android:layout_marginTop">@dimen/til_margin</item>
+        <item name="android:layout_marginBottom">@dimen/til_margin</item>
+        <item name="android:layout_marginStart">@dimen/til_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_margin</item>
     </style>
 
     <style name="TIL.Text.Title">
@@ -104,6 +105,11 @@
         <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
+        <!-- 4x so we can override individually (is this another Android bug?) -->
+        <item name="android:layout_marginTop">@dimen/til_margin</item>
+        <item name="android:layout_marginBottom">@dimen/til_margin</item>
+        <item name="android:layout_marginStart">@dimen/til_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_margin</item>
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick a date; the end-icon clears the field -->
@@ -112,9 +118,15 @@
         <item name="endIconDrawable">@drawable/ic_baseline_cancel_24</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
+        <!-- 4x so we can override individually (is this another Android bug?) -->
+        <item name="android:layout_marginTop">@dimen/til_margin</item>
+        <item name="android:layout_marginBottom">@dimen/til_margin</item>
+        <item name="android:layout_marginStart">@dimen/til_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_margin</item>
     </style>
 
-    <style name="TIL.ReadOnly.SyncDate">
+    <style name="TIL.ReadOnly.SyncDate"
+           parent="Base.TIL.ReadOnly">
         <item name="android:hint">@string/lbl_sync_date</item>
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>

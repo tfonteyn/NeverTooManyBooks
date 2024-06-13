@@ -185,6 +185,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_sync_date"
             style="@style/TIL.ReadOnly.SyncDate"
+            android:layout_margin="@dimen/til_margin"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/cbx_covers"
             app:layout_constraintStart_toStartOf="parent"
