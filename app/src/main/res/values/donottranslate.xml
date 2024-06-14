@@ -135,7 +135,12 @@
             translatable="false">List tables</string>
     <string name="debug_sq_shell_max_rows"
             translatable="false">Max rows</string>
-
+    <string name="debug_sq_shell_rows_x"
+            translatable="false">Rows: %1$d</string>
+    <string name="debug_sq_shell_rows_affected_x"
+            translatable="false">Rows affected: %1$d</string>
+    <string name="debug_sq_shell_warning_updates_not_allowed"
+            translatable="false">Updates are not allowed</string>
     <!-- The defaults for MultiSelect fields, i.e. select nothing -->
     <string-array name="empty_array" />
 

@@ -60,9 +60,9 @@ public final class Prefs {
      */
     public static final String PK_SEARCH_REFORMAT_COLOR = "search.reformat.color";
 
-    public static final String pk_normalize_series_title = "normalize.series.title";
-    public static final String pk_normalize_toc_title = "normalize.toc.title";
-    public static final String pk_normalize_publisher_name = "normalize.publisher.name";
+    public static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
+    public static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
+    public static final String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
 
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
@@ -87,8 +87,8 @@ public final class Prefs {
 
     public static final String PK_SCAN_MODE_SINGLE = "scan.mode.single";
 
-    public static final String pk_image_undo_enabled = "image.undo.enabled";
-    public static final String pk_image_cache_resized = "image.cache.resized";
+    public static final String PK_IMAGE_UNDO_ENABLED = "image.undo.enabled";
+    public static final String PK_IMAGE_CACHE_RESIZED = "image.cache.resized";
     public static final String PK_STORAGE_VOLUME = "storage.volume.index";
 
     public static final String PK_BOOKLIST_REBUILD_STATE = "booklist.rebuild.state";
@@ -177,16 +177,16 @@ public final class Prefs {
 
     public static boolean normalizeSeriesTitle(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(pk_normalize_series_title, false);
+                                .getBoolean(PK_NORMALIZE_SERIES_TITLE, false);
     }
 
     public static boolean normalizePublisherName(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(pk_normalize_publisher_name, false);
+                                .getBoolean(PK_NORMALIZE_PUBLISHER_NAME, false);
     }
 
     public static boolean normalizeTocEntryName(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(pk_normalize_toc_title, false);
+                                .getBoolean(PK_NORMALIZE_TOC_TITLE, false);
     }
 }

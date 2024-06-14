@@ -64,9 +64,6 @@ public class SqliteShellFragment
 
     private static final String UTF_8 = "utf-8";
     private static final String TEXT_HTML = "text/html";
-    private static final String STR_LAST_COUNT = "Rows: ";
-    private static final String STR_ROWS_AFFECTED = "Rows affected: ";
-    private static final String STR_UPDATES_NOT_ALLOWED = "Updates are not allowed";
 
     private static final String SQL_LIST_TABLES =
             "SELECT '' AS T, tbl_name FROM sqlite_master WHERE type='table'"
@@ -169,17 +166,22 @@ public class SqliteShellFragment
                     try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                         rowsAffected = stmt.executeUpdateDelete();
                     }
-                    final String result = STR_ROWS_AFFECTED + rowsAffected;
+                    final String result = getString(R.string.debug_sq_shell_rows_affected_x,
+                                                    rowsAffected);
                     vb.output.loadDataWithBaseURL(null, result,
                                                   TEXT_HTML, UTF_8, null);
                 } else {
-                    vb.output.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
-                                                  TEXT_HTML, UTF_8, null);
+                    vb.output.loadDataWithBaseURL(
+                            null,
+                            getString(R.string.debug_sq_shell_warning_updates_not_allowed),
+                            TEXT_HTML, UTF_8, null);
                 }
             } else {
                 //TODO: parse for keyword 'limit' and add default if not present
                 try (Cursor cursor = db.rawQuery(sql, null)) {
-                    getToolbar().setTitle(STR_LAST_COUNT + cursor.getCount());
+                    final String result = getString(R.string.debug_sq_shell_rows_x,
+                                                    cursor.getCount());
+                    getToolbar().setTitle(result);
 
                     final StringBuilder sb = new StringBuilder("<table>");
                     final String[] columnNames = cursor.getColumnNames();

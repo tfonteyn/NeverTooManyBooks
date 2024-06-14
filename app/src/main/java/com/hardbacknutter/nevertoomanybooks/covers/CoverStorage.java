@@ -516,7 +516,7 @@ public class CoverStorage {
      */
     private boolean isUndoEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(Prefs.pk_image_undo_enabled, true);
+                                .getBoolean(Prefs.PK_IMAGE_UNDO_ENABLED, true);
     }
 
     /**
@@ -526,7 +526,7 @@ public class CoverStorage {
      */
     public boolean isImageCachingEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(Prefs.pk_image_cache_resized, false);
+                                .getBoolean(Prefs.PK_IMAGE_CACHE_RESIZED, false);
     }
 
     /**
@@ -537,7 +537,7 @@ public class CoverStorage {
     public void setImageCachingEnabled(final boolean enable) {
         PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                          .edit()
-                         .putBoolean(Prefs.pk_image_cache_resized, enable)
+                         .putBoolean(Prefs.PK_IMAGE_CACHE_RESIZED, enable)
                          .apply();
     }
 
