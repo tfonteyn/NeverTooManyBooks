@@ -119,8 +119,6 @@ public final class Prefs {
      */
     public static final String PK_EDIT_BOOK_TABS_EXTERNAL_ID = "edit.book.tab.externalId";
 
-    public static final String pk_sqlite_max_lines = "sqlite.shell.max.lines";
-
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * A full url, including the http(s) part.

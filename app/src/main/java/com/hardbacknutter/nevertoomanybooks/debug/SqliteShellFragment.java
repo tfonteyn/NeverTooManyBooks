@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBinding;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * A crude sql shell.
@@ -58,7 +57,11 @@ public class SqliteShellFragment
     public static final String TAG = "SqliteShellFragment";
 
     private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
+
+    private static final String PK_SQLITE_MAX_LINES = "sqlite.shell.max.lines";
+
     private static final int MAX_LINES = 200;
+
     private static final String UTF_8 = "utf-8";
     private static final String TEXT_HTML = "text/html";
     private static final String STR_LAST_COUNT = "Rows: ";
@@ -137,7 +140,7 @@ public class SqliteShellFragment
         super.onResume();
         //noinspection DataFlowIssue
         maxLines = PreferenceManager.getDefaultSharedPreferences(getContext())
-                                    .getInt(Prefs.pk_sqlite_max_lines, MAX_LINES);
+                                    .getInt(PK_SQLITE_MAX_LINES, MAX_LINES);
     }
 
     //    private void textSmaller() {
