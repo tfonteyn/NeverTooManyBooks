@@ -22,7 +22,7 @@
         android:width="24dp"
         android:height="24dp"
         android:autoMirrored="true"
-        android:tint="?attr/colorOnSurfaceVariant"
+        android:tint="?attr/colorControlNormal"
         android:viewportWidth="24"
         android:viewportHeight="24">
     <!--suppress LongLine -->
