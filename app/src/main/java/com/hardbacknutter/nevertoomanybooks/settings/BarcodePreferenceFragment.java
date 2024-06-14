@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,15 +63,10 @@ public class BarcodePreferenceFragment
                 cameraLabels[i] = getString(R.string.pe_camera_back);
             }
         }
-        final ListPreference cameraPref = findPreference(Prefs.pk_camera_lens_facing);
+        final ListPreference cameraPref = findPreference(Prefs.PK_CAMERA_LENS_FACING);
         //noinspection DataFlowIssue
         cameraPref.setEntries(cameraLabels);
         cameraPref.setEntryValues(cameraValues);
-        cameraPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-
-        //noinspection DataFlowIssue
-        findPreference(Prefs.PK_SCAN_MODE_SINGLE)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         //noinspection DataFlowIssue
         findPreference(SoundManager.PK_SOUNDS_SCAN_FOUND_BARCODE)

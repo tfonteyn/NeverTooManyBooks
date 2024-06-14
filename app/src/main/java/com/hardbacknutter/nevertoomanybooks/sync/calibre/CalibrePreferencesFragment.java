@@ -88,8 +88,6 @@ public class CalibrePreferencesFragment
             editText.setInputType(InputType.TYPE_CLASS_TEXT);
             editText.selectAll();
         });
-        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
-
 
         etp = findPreference(CalibreContentServer.PK_HOST_PASS);
         //noinspection DataFlowIssue

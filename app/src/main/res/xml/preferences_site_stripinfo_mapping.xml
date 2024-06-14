@@ -20,7 +20,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:tools="http://schemas.android.com/tools">
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="@string/lbl_assign_bookshelves">
@@ -29,21 +29,21 @@
             android:icon="@drawable/ic_baseline_sync_alt_24"
             android:key="stripinfo.bookshelf.owned"
             android:title="@string/lbl_strip_info_bookshelf_assigned_to_owned_books"
-            tools:summary="@sample/data.json/shelves/name"
+            app:useSimpleSummaryProvider="true"
             />
 
         <ListPreference
             android:icon="@drawable/ic_baseline_sync_alt_24"
             android:key="stripinfo.bookshelf.digital"
             android:title="@string/lbl_strip_info_bookshelf_assigned_to_digital_books"
-            tools:summary="@sample/data.json/shelves/name"
+            app:useSimpleSummaryProvider="true"
             />
 
         <ListPreference
             android:icon="@drawable/ic_baseline_sync_alt_24"
             android:key="stripinfo.bookshelf.wishlist"
             android:title="@string/lbl_strip_info_bookshelf_assigned_to_wishlist"
-            tools:summary="@sample/data.json/shelves/name"
+            app:useSimpleSummaryProvider="true"
             />
     </PreferenceCategory>
 

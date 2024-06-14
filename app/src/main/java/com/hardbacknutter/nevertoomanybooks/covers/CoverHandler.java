@@ -658,7 +658,7 @@ public class CoverHandler {
 
             // Should we apply an explicit rotation angle?
             final int explicitRotation = IntListPref
-                    .getInt(context, Prefs.pk_camera_image_autorotate, 0);
+                    .getInt(context, Prefs.PK_CAMERA_IMAGE_AUTOROTATE, 0);
 
             // What action (if any) should we take after we're done?
             final NextAction action = NextAction.getAction(context);
@@ -770,7 +770,7 @@ public class CoverHandler {
         @NonNull
         static NextAction getAction(@NonNull final Context context) {
 
-            final int value = IntListPref.getInt(context, Prefs.pk_camera_image_action,
+            final int value = IntListPref.getInt(context, Prefs.PK_CAMERA_IMAGE_ACTION,
                                                  Done.value);
             switch (value) {
                 case 2:

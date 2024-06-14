@@ -28,7 +28,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -50,7 +49,6 @@ public class UserInterfacePreferenceFragment
 
         final Preference pUiThemeMode = findPreference(NightMode.PK_UI_THEME_MODE);
         //noinspection DataFlowIssue
-        pUiThemeMode.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pUiThemeMode.setOnPreferenceChangeListener((preference, newValue) -> {
             // we should never have an invalid setting in the prefs... flw
             try {
@@ -70,22 +68,11 @@ public class UserInterfacePreferenceFragment
             pUiThemeColor.setSummary(R.string.warning_requires_android_12);
         } else {
             //noinspection DataFlowIssue
-            pUiThemeColor.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
             pUiThemeColor.setOnPreferenceChangeListener((preference, newValue) -> {
                 ThemeColorController.recreate();
                 return true;
             });
         }
-
-
-        //noinspection DataFlowIssue
-        findPreference(DialogMode.PK_UI_DIALOGS_MODE)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-
-        //noinspection DataFlowIssue
-        findPreference(MenuMode.PK_UI_CONTEXT_MENUS)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-
     }
 
     @Override

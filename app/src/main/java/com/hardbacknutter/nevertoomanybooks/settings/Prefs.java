@@ -81,9 +81,9 @@ public final class Prefs {
      */
     public static final String PK_SEARCH_SHOW_SHOPPING_MENU = "search.shopping.menu";
 
-    public static final String pk_camera_image_autorotate = "camera.image.autorotate";
-    public static final String pk_camera_image_action = "camera.image.action";
-    public static final String pk_camera_lens_facing = "camera.lens.facing";
+    public static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
+    public static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
+    public static final String PK_CAMERA_LENS_FACING = "camera.lens.facing";
 
     public static final String PK_SCAN_MODE_SINGLE = "scan.mode.single";
 

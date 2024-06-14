@@ -19,7 +19,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:title="@string/pt_barcode_scanner">
 
@@ -28,6 +29,7 @@
             android:icon="@drawable/ic_baseline_photo_camera_24"
             android:key="camera.lens.facing"
             android:title="@string/pt_camera_lens_facing"
+            app:useSimpleSummaryProvider="true"
             />
 
         <ListPreference
@@ -36,7 +38,8 @@
             android:entryValues="@array/pv_scan_mode_single"
             android:icon="@drawable/ic_barcode"
             android:key="scan.mode.single"
-            android:title="@string/pt_scan_mode" />
+            android:title="@string/pt_scan_mode"
+            app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
             android:defaultValue="true"

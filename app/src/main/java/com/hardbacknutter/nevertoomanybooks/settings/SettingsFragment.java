@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsCont
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -132,7 +131,6 @@ public class SettingsFragment
         final ListPreference pUiLocale = findPreference(Prefs.PK_UI_LOCALE);
         //noinspection DataFlowIssue
         pUiLocale.setEntries(vm.getUiLangNames());
-        pUiLocale.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
             // Set the activity result so our caller will recreate itself
             vm.setOnBackRequiresActivityRecreation();
@@ -142,21 +140,10 @@ public class SettingsFragment
 
         final Preference pFastscroller = findPreference(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY);
         //noinspection DataFlowIssue
-        pFastscroller.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
             vm.setOnBackRequiresActivityRecreation();
             return true;
         });
-
-        //noinspection DataFlowIssue
-        findPreference(ISBN.PK_EDIT_BOOK_ISBN_CHECKS)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        //noinspection DataFlowIssue
-        findPreference(Prefs.PK_BOOKLIST_REBUILD_STATE)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        //noinspection DataFlowIssue
-        findPreference(Prefs.PK_BOOKLIST_CONTEXT_MENU)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         //noinspection DataFlowIssue
         findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {
@@ -298,8 +285,6 @@ public class SettingsFragment
                 entryValues[i] = String.valueOf(i);
             }
 
-            storageVolumePref.setSummaryProvider(
-                    ListPreference.SimpleSummaryProvider.getInstance());
             storageVolumePref.setEntries(entries);
             storageVolumePref.setEntryValues(entryValues);
             storageVolumePref.setOnPreferenceChangeListener(this::onStorageVolumeChange);

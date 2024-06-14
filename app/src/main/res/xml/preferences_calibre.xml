@@ -20,7 +20,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="@string/lbl_calibre_content_server">
@@ -61,8 +61,8 @@
             android:dependency="calibre.enabled"
             android:icon="@drawable/ic_baseline_person_24"
             android:key="calibre.host.user"
-            android:summary="@string/preference_not_set"
             android:title="@string/username"
+            app:useSimpleSummaryProvider="true"
             />
 
         <EditTextPreference

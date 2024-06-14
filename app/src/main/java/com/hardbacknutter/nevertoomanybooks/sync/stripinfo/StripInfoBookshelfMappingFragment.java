@@ -104,7 +104,6 @@ public class StripInfoBookshelfMappingFragment
         //noinspection DataFlowIssue
         p.setEntries(values.first);
         p.setEntryValues(values.second);
-        p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         // The ListPreference has an issue that the initial value is set during the inflation
         // step. At that time, the default value is ONLY available from xml.

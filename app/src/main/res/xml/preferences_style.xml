@@ -29,8 +29,8 @@
     <EditTextPreference
         android:icon="@drawable/ic_baseline_edit_24"
         android:key="style.booklist.name"
-        android:summary="@string/preference_not_set"
         android:title="@string/lbl_name"
+        app:useSimpleSummaryProvider="true"
         />
 
     <PreferenceCategory
@@ -85,6 +85,7 @@
             android:icon="@drawable/ic_baseline_aod_24"
             android:key="style.booklist.layout"
             android:title="@string/pt_layout"
+            app:useSimpleSummaryProvider="true"
             />
 
         <Preference
@@ -104,6 +105,11 @@
             android:title="@string/pt_bob_cover_show"
             />
 
+        <!--
+             Used for both list and grid-mode (key="style.booklist.layout")
+             For simplicity, we always show this option even if the user hides all covers
+             with the key="style.booklist.show.thumbnails" option.
+        -->
         <ListPreference
             android:defaultValue="0"
             android:dependency="style.booklist.show.thumbnails"
@@ -112,6 +118,7 @@
             android:icon="@drawable/ic_baseline_image_24"
             android:key="style.booklist.cover.click"
             android:title="@string/pt_bob_cover_click"
+            app:useSimpleSummaryProvider="true"
             />
 
         <!-- Only visible in grid-mode -->
@@ -122,6 +129,7 @@
             android:icon="@drawable/ic_baseline_image_24"
             android:key="style.booklist.cover.click.long"
             android:title="@string/pt_bob_cover_long_click"
+            app:useSimpleSummaryProvider="true"
             />
 
         <!-- default Style.IMAGE_SCALE_2_MEDIUM == 2 -->

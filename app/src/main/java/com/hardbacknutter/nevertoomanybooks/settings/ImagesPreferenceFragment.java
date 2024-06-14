@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,6 @@ import android.os.Bundle;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -46,14 +45,6 @@ public class ImagesPreferenceFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
-
-        //noinspection DataFlowIssue
-        findPreference(Prefs.pk_camera_image_autorotate)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-
-        //noinspection DataFlowIssue
-        findPreference(Prefs.pk_camera_image_action)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         // Purge image cache database table.
         final Preference purgeCache = findPreference(PSK_PURGE_IMAGE_CACHE);

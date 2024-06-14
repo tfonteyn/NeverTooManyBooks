@@ -19,7 +19,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="@string/pc_camera">
@@ -31,7 +32,8 @@
             android:entryValues="@array/pv_thumbnails_rotate_auto"
             android:icon="@drawable/ic_baseline_rotate_right_24"
             android:key="camera.image.autorotate"
-            android:title="@string/pt_thumbnails_rotate_auto" />
+            android:title="@string/pt_thumbnails_rotate_auto"
+            app:useSimpleSummaryProvider="true" />
 
         <!-- default 0 == do nothing -->
         <ListPreference
@@ -40,7 +42,8 @@
             android:entryValues="@array/pv_camera_next_action"
             android:icon="@drawable/ic_baseline_tune_24"
             android:key="camera.image.action"
-            android:title="@string/camera_next_action" />
+            android:title="@string/camera_next_action"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
@@ -50,9 +53,9 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_undo_24"
             android:key="image.undo.enabled"
-            android:title="@string/pt_cover_undo_enabled"
             android:summaryOff="@string/ps_cover_undo_disabled"
             android:summaryOn="@string/ps_cover_undo_enabled"
+            android:title="@string/pt_cover_undo_enabled"
             />
     </PreferenceCategory>
 

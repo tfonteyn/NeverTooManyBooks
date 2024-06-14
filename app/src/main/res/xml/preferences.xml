@@ -46,7 +46,8 @@
             android:icon="@drawable/ic_baseline_language_24"
             android:key="ui.locale"
             android:title="@string/pt_ui_language"
-            tools:summary="@string/pt_ui_system_locale" />
+            tools:summary="@string/pt_ui_system_locale"
+            app:useSimpleSummaryProvider="true" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"
@@ -143,7 +144,8 @@
             android:entryValues="@array/pv_edit_book_isbn_checks"
             android:icon="@drawable/ic_baseline_check_24"
             android:key="edit.book.isbn.checks"
-            android:title="@string/pt_edit_book_isbn_checks" />
+            android:title="@string/pt_edit_book_isbn_checks"
+            app:useSimpleSummaryProvider="true" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"
@@ -164,7 +166,8 @@
             android:entryValues="@array/pv_bob_list_state"
             android:icon="@drawable/ic_baseline_view_list_24"
             android:key="booklist.rebuild.state"
-            android:title="@string/pt_bob_list_rebuild_state" />
+            android:title="@string/pt_bob_list_rebuild_state"
+            app:useSimpleSummaryProvider="true" />
 
         <ListPreference
             android:defaultValue="0"
@@ -172,7 +175,8 @@
             android:entryValues="@array/pv_bob_row_menu"
             android:icon="@drawable/ic_baseline_view_list_24"
             android:key="booklist.context.menu"
-            android:title="@string/pt_bob_row_menu" />
+            android:title="@string/pt_bob_row_menu"
+            app:useSimpleSummaryProvider="true" />
 
         <ListPreference
             android:defaultValue="3"
@@ -180,7 +184,8 @@
             android:entryValues="@array/pv_fastscroller_overlay"
             android:icon="@drawable/ic_baseline_chat_24"
             android:key="booklist.fastscroller.overlay"
-            android:title="@string/pt_fast_scroller_overlay" />
+            android:title="@string/pt_fast_scroller_overlay"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -239,7 +244,8 @@
             android:defaultValue="0"
             android:icon="@drawable/ic_baseline_folder_24"
             android:key="storage.volume.index"
-            android:title="@string/pt_storage_volume" />
+            android:title="@string/pt_storage_volume"
+            app:useSimpleSummaryProvider="true" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"

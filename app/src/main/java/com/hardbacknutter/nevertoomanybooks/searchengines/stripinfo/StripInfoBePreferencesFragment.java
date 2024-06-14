@@ -72,7 +72,6 @@ public class StripInfoBePreferencesFragment
                 editText.setInputType(InputType.TYPE_CLASS_TEXT);
                 editText.selectAll();
             });
-            etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
             etp = findPreference(StripInfoAuth.PK_HOST_PASS);
             //noinspection DataFlowIssue

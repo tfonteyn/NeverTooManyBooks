@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
@@ -89,7 +88,6 @@ public abstract class StyleBaseFragment
 
         pName = findPreference(StyleDataStore.PK_NAME);
         //noinspection DataFlowIssue
-        pName.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
         pName.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT);
             editText.selectAll();
@@ -101,7 +99,6 @@ public abstract class StyleBaseFragment
         // List layout
         final Preference pLayout = findPreference(StyleDataStore.PK_LAYOUT);
         //noinspection DataFlowIssue
-        pLayout.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pLayout.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof String) {
                 updateLayoutPrefs();
@@ -110,17 +107,8 @@ public abstract class StyleBaseFragment
             return false;
         });
 
-        // Used for both list and grid-mode
-        // For simplicity, we always show this option even if the user hides all covers
-        // with the "pShowCovers" option.
-        //noinspection DataFlowIssue
-        findPreference(StyleDataStore.PK_COVER_CLICK_ACTION)
-                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-
         // Used only in grid-mode, hidden in list-mode
         pCoverLongClick = findPreference(StyleDataStore.PK_COVER_LONG_CLICK_ACTION);
-        //noinspection DataFlowIssue
-        pCoverLongClick.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         // For simplicity, we always show this option even if the user hides all covers
         // with the "pShowCovers" option.
