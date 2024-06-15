@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 
 /**
- * FIXME: open screen, click in field -> keyboard up * now rotate screen... logcat msg
- * https://stackoverflow.com/questions/8122625#15732554
- * <p>
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any time.
  * ENHANCE: SHOW the list, just like the system search does?
