@@ -73,12 +73,10 @@ public abstract class SearchEngineBase
     /** Helper to randomize some urls to avoid fingerprinting by the servers. */
     @NonNull
     private final Random random;
-    @Nullable
-    private ImageDownloader imageDownloader;
-
     /** Workaround for Android not always following 302's. */
     protected boolean imageDownloader404redirect;
-
+    @Nullable
+    private ImageDownloader imageDownloader;
     @Nullable
     private Cancellable caller;
 
@@ -378,8 +376,8 @@ public abstract class SearchEngineBase
         httpHead.enableLogging(config.isLogHttpGetRequests(context));
 
         httpHead.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                     .setReadTimeout(config.getReadTimeoutInMs(context))
-                     .setThrottler(config.getThrottler());
+                .setReadTimeout(config.getReadTimeoutInMs(context))
+                .setThrottler(config.getThrottler());
         return httpHead;
     }
 
@@ -460,6 +458,10 @@ public abstract class SearchEngineBase
      * If the given date-string consists of 4 characters, it is assumed it's
      * a year-value and the simplified form will be set on the book.
      * Otherwise full parsing is done.
+     * <p>
+     * Note that the input <strong>MUST</strong> be either a 4-digit year,
+     * or a full-date string in one of the supported formats.
+     * Partial date-strings will <strong>FAIL</strong>
      *
      * @param context    Current context
      * @param siteLocale for parsing
