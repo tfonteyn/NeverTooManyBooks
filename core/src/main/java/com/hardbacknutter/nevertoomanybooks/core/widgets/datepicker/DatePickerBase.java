@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,8 +32,11 @@ import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClic
 
 import java.lang.ref.WeakReference;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 
@@ -119,9 +122,14 @@ abstract class DatePickerBase<S>
     Long parseDate(@Nullable final String value,
                    final boolean todayIfNone) {
         Objects.requireNonNull(dateParser, "dateParser was NULL, call setDateParser() first");
-        return dateParser.parseToInstant(value, todayIfNone)
-                         .map(Instant::toEpochMilli)
-                         .orElse(null);
+        final Optional<LocalDateTime> date = dateParser.parse(value);
+        if (date.isPresent()) {
+            return date.get().toInstant(ZoneOffset.UTC).toEpochMilli();
+        } else if (todayIfNone) {
+            return Instant.now().toEpochMilli();
+        } else {
+            return null;
+        }
     }
 
     /**

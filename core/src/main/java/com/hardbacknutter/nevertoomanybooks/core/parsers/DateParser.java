@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,9 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.core.parsers;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -56,42 +54,5 @@ public interface DateParser {
     default Optional<LocalDateTime> parse(@Nullable final String dateStr,
                                           @Nullable final Locale locale) {
         return parse(dateStr);
-    }
-
-    /**
-     * Parse a value (String) to an Instant in time.
-     *
-     * @param dateStr to extract from
-     *
-     * @return Resulting instant if successfully parsed, otherwise {@code Optional.empty()}
-     */
-    @NonNull
-    default Optional<Instant> parseToInstant(@Nullable final String dateStr) {
-        final LocalDateTime date = parse(dateStr).orElse(null);
-        if (date != null) {
-            return Optional.of(date.toInstant(ZoneOffset.UTC));
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Parse a value (String) to an Instant in time.
-     *
-     * @param dateStr     to extract from
-     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
-     *
-     * @return Resulting instant if successfully parsed, otherwise {@code Optional.empty()}
-     */
-    @NonNull
-    default Optional<Instant> parseToInstant(@Nullable final String dateStr,
-                                             final boolean todayIfNone) {
-        final LocalDateTime date = parse(dateStr).orElse(null);
-        if (date != null) {
-            return Optional.of(date.toInstant(ZoneOffset.UTC));
-        }
-        if (todayIfNone) {
-            return Optional.of(Instant.now());
-        }
-        return Optional.empty();
     }
 }
