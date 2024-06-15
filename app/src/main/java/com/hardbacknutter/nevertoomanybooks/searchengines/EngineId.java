@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEng
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
@@ -164,6 +165,15 @@ public enum EngineId
                Locale.US,
                BookFinderSearchEngine.class,
                BuildConfig.ENABLE_BOOKFINDER),
+
+    /** German language books & comics. */
+    Dnb("dnb",
+        R.string.site_dnb_de,
+        R.string.site_info_dnb_de,
+        "https://katalog.dnb.de",
+        new Locale("de", "DE"),
+        DnbSearchEngine.class,
+        BuildConfig.ENABLE_DNB_DE),
 
     /** Only used for {@link SearchEngine.ViewBookByExternalId}. */
     Goodreads("goodreads",
@@ -369,7 +379,10 @@ public enum EngineId
                                       R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
                      .build();
         }
-
+        if (Dnb.isEnabled()) {
+            Dnb.createConfiguration()
+               .build();
+        }
         if (GoogleBooks.isEnabled()) {
             GoogleBooks.createConfiguration()
                        .build();
@@ -453,6 +466,7 @@ public enum EngineId
         // matches the site language.
         final boolean activateIfDutch = languages.isUserLanguage(context, "nld");
         final boolean activateIfFrench = languages.isUserLanguage(context, "fra");
+        final boolean activateIfGerman = languages.isUserLanguage(context, "deu");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 
@@ -480,6 +494,8 @@ public enum EngineId
 
                 type.addSite(KbNl, activateIfDutch);
                 type.addSite(Bol, activateIfDutch);
+
+                type.addSite(Dnb, activateIfGerman);
                 break;
             }
             case Covers: {
