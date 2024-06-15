@@ -98,6 +98,10 @@
             translatable="false">StripWeb</string>
     <string name="site_info_stripweb_be"
             translatable="false">@string/site_description_dutch_comics_shopping</string>
+    <string name="site_dnb_de"
+            translatable="false">DNB</string>
+    <string name="site_info_dnb_de"
+            translatable="false">@string/site_description_german_catalogue</string>
 
     <!-- https://calibre-ebook.com -->
     <string name="site_calibre"
