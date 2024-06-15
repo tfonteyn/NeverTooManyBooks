@@ -20,8 +20,8 @@
   -->
 
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                                      xmlns:tools="http://schemas.android.com/tools"
-                                      xmlns:app="http://schemas.android.com/apk/res-auto">
+                                      xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
     <PreferenceCategory
         android:title="@string/pc_ui">
 
@@ -32,7 +32,6 @@
             android:icon="@drawable/ic_baseline_settings_brightness_24"
             android:key="ui.theme"
             android:title="@string/pt_ui_theme"
-            tools:summary="@string/pe_ui_theme_from_device"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
@@ -42,7 +41,6 @@
             android:icon="@drawable/ic_baseline_color_lens_24"
             android:key="ui.theme.color"
             android:title="@string/pt_ui_theme_colors"
-            tools:summary="@string/pe_ui_theme_colors_blue_grey"
             app:useSimpleSummaryProvider="true" />
 
         <!-- Default: by screen size. -->
@@ -53,7 +51,6 @@
             android:icon="@drawable/ic_baseline_article_24"
             android:key="ui.dialog.mode"
             android:title="@string/pt_ui_dialogs_mode"
-            tools:summary="@string/pe_ui_dialog_mode_classic"
             app:useSimpleSummaryProvider="true" />
 
         <!-- Default: by menu and screen size. -->
@@ -64,7 +61,6 @@
             android:icon="@drawable/ic_baseline_menu_24"
             android:key="ui.menu.context.mode"
             android:title="@string/pc_context_menus"
-            tools:summary="@string/pe_ui_context_menu_mode_classic"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
