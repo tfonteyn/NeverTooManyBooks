@@ -91,9 +91,10 @@ public class Parse2Test
     }
 
     @Test
-    public void parse()
+    public void parse1()
             throws IOException, SearchException, StorageException, CredentialsException {
-
+        // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
+        // https://openlibrary.org/books/OL22853304M.json
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
                                           .R.raw.openlibrary2_9780980200447);
 
@@ -122,11 +123,25 @@ public class Parse2Test
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
+        Author author;
         assertNotNull(authors);
-        assertEquals(1, authors.size());
-        assertEquals("Miedema", authors.get(0).getFamilyName());
-        assertEquals("John", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
+        assertEquals(String.valueOf(authors), 3, authors.size());
+
+        author = authors.get(0);
+        assertEquals("Miedema", author.getFamilyName());
+        assertEquals("John", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        author = authors.get(1);
+        assertEquals("Miedema.", author.getFamilyName());
+        assertEquals("John", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        author = authors.get(2);
+        assertEquals("Ekholm", author.getFamilyName());
+        assertEquals("C.", author.getGivenNames());
+        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+
 
         final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
@@ -140,7 +155,7 @@ public class Parse2Test
 
         assertEquals("Miedema", tocs.get(0).getPrimaryAuthor().getFamilyName());
         assertEquals("John", tocs.get(0).getPrimaryAuthor().getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
+        assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -233,5 +248,60 @@ public class Parse2Test
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
                                           + "_14615096_1_"));
+    }
+
+
+    @Test
+    public void parse4()
+            throws IOException, SearchException, StorageException, CredentialsException {
+        // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
+        // https://openlibrary.org/books/OL36696710M.json
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.openlibrary2_9783103971422);
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        assertEquals("Autokorrektur", book.getString(DBKey.TITLE, null));
+        assertEquals("9783103971422", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("OL36696710M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("2022-02-09", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("272", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("ger", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals("Mit zahlreichen farbigen Illustrationen",
+                     book.getString(DBKey.DESCRIPTION, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("S. Fischer Verlag", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        Author author;
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+
+        author = authors.get(0);
+        assertEquals("Diehl", author.getFamilyName());
+        assertEquals("Katja", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        author = authors.get(1);
+        assertEquals("Reich", author.getFamilyName());
+        assertEquals("Doris", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+
+        //   "covers": [
+        //    14615097,
+        //    14615096,
+        //    13011694
+        //  ],
+        List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                          + "_12585189_0_"));
     }
 }

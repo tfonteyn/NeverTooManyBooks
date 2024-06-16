@@ -1,0 +1,108 @@
+{
+  "works": [
+    {"key": "/works/OL27063321W"}
+  ], "title": "Autokorrektur", "publishers": [
+  "S. Fischer Verlag"
+], "publish_date": "2022-02-09", "key": "/books/OL36696710M", "type": {"key": "/type/edition"},
+  "identifiers": {
+    "dnb": [
+      "1244449636"
+    ], "google": [
+      "lzexzgEACAAJ"
+    ]
+  }, "covers": [
+  12585189
+], "isbn_13": [
+  "9783103971422"
+], "isbn_10": [
+  "3103971427"
+], "oclc_numbers": [
+  "1282184385"
+], "classifications": {}, "physical_dimensions": "21.4 x 13.5 x  centimeters",
+  "weight": "378 grams", "table_of_contents": [
+  {
+    "level": 0, "title": "Bin ich der Wandel \u2013 oder warte ich auf ihn?", "pagenum": "11",
+    "type": {"key": "/type/toc_item"}
+  },
+  {"level": 1, "title": "Mobilit\u00e4t", "pagenum": "17", "type": {"key": "/type/toc_item"}},
+  {
+    "level": 2, "title": "Was hat sich durch das Auto verdndert?", "pagenum": "18",
+    "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "#Autokorrektur-Fakten", "pagenum": "28", "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "\u00bbNicht-m\u00e4nnliche\u00ab Mobilit\u00e4t", "pagenum": "36",
+    "type": {"key": "/type/toc_item"}
+  },
+  {"level": 2, "title": "Privilegien", "pagenum": "45", "type": {"key": "/type/toc_item"}},
+  {"level": 2, "title": "Lobbyismus", "pagenum": "59", "type": {"key": "/type/toc_item"}},
+  {
+    "level": 2, "title": "F\u00fcr eine wahlfreie Mobilit\u00e4t", "pagenum": "68",
+    "type": {"key": "/type/toc_item"}
+  },
+  {"level": 1, "title": "Raum", "pagenum": "79", "type": {"key": "/type/toc_item"}},
+  {
+    "level": 2, "title": "Die Entwicklung des Raums", "pagenum": "79",
+    "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "Die autogerechte Stadt", "pagenum": "88",
+    "type": {"key": "/type/toc_item"}
+  },
+  {"level": 2, "title": "L\u00e4ndlicher Raum", "pagenum": "98", "type": {"key": "/type/toc_item"}},
+  {
+    "level": 2, "title": "\u00d6ffentlicher Raum", "pagenum": "102",
+    "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "F\u00fcr einen lebenswerten Raum", "pagenum": "119",
+    "type": {"key": "/type/toc_item"}
+  },
+  {"level": 1, "title": "Mensch", "pagenum": "135", "type": {"key": "/type/toc_item"}},
+  {
+    "level": 2, "title": "Menschen, die nicht Auto fahren wollen", "pagenum": "137",
+    "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "Menschen in Familien", "pagenum": "151", "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "Menschen im l\u00e4ndlichen Raum", "pagenum": "165",
+    "type": {"key": "/type/toc_item"}
+  },
+  {"level": 2, "title": "Menschen in Armut", "pagenum": "174", "type": {"key": "/type/toc_item"}},
+  {
+    "level": 2, "title": "Menschen mit Einschr\u00e4nkungen", "pagenum": "185",
+    "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "BIPoC und Transpersonen", "pagenum": "200",
+    "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "Menschen, die alt oder krank sind", "pagenum": "213",
+    "type": {"key": "/type/toc_item"}
+  },
+  {
+    "level": 2, "title": "So geht Mobilit\u00e4t f\u00fcr alle!", "pagenum": "225",
+    "type": {"key": "/type/toc_item"}
+  }
+], "by_statement": "Katja Diehl, mit zahlreichen Illustrationen von Doris Reich",
+  "publish_places": [
+    "Frankfurt am Main, Germany"
+  ], "notes": {"type": "/type/text", "value": "Mit zahlreichen farbigen Illustrationen"},
+  "other_titles": [
+    "#Autokorrektur"
+  ], "edition_name": "1. Auflage", "languages": [
+  {"key": "/languages/ger"}
+], "number_of_pages": 272, "subtitle": "Mobilit\u00e4t f\u00fcr eine lebenswerte Welt",
+  "physical_format": "Paperback", "contributors": [
+  {"name": "Doris Reich", "role": "Illustrator"}
+], "copyright_date": "2022", "pagination": "272p.", "source_records": [
+  "amazon:3103971427"
+], "latest_revision": 4, "revision": 4,
+  "created": {"type": "/type/datetime", "value": "2022-01-26T18:46:36.134264"},
+  "last_modified": {"type": "/type/datetime", "value": "2022-10-29T17:32:39.367930"}
+}
