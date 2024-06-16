@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -109,7 +110,7 @@ public class OpenLibrary2SearchEngine
      * the service will return "403 Forbidden" status.
      */
     private static final int COVER_BY_ISBN_REQUEST_DELAY = 3_000;
-
+    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @Nullable
     private FutureHttpGet<String> futureHttpGet;
 
@@ -201,10 +202,10 @@ public class OpenLibrary2SearchEngine
 
     @NonNull
     public Optional<String> searchCoverByKey(@NonNull final Context context,
-                                              @NonNull final String key,
-                                              @NonNull final String id,
-                                              @IntRange(from = 0, to = 1) final int cIdx,
-                                              @Nullable final Size size)
+                                             @NonNull final String key,
+                                             @NonNull final String id,
+                                             @IntRange(from = 0, to = 1) final int cIdx,
+                                             @Nullable final Size size)
             throws StorageException {
         final String sizeParam;
         if (size == null) {
@@ -548,10 +549,36 @@ public class OpenLibrary2SearchEngine
         //  and concatenate it with the title
         // s = document.optString("subtitle");
 
-        // TODO: there is also "contributors" with name/role pairs
+        // "authors" contains structured Author data
         a = document.optJSONArray("authors");
         if (a != null && !a.isEmpty()) {
             processAuthors(context, a, book);
+        }
+        // "by_statement" contains NON-structured author data:
+        //     "by John Miedema."
+        //     "Katja Diehl, mit zahlreichen Illustrationen von Doris Reich"
+        //
+        // In the above example "John Miedema." will be created WITH the "." at the end.
+        // There are just to many inconsistencies to catch them all, so we leave those
+        // to the user.
+        s = document.optString("by_statement");
+        if (s != null && !s.isEmpty()) {
+            // These are gambles.... we don't have enough data samples
+            if (s.startsWith("by ") && s.length() > 3) {
+                s = s.substring(3);
+                processAuthor(Author.from(s), Author.TYPE_UNKNOWN, book);
+            }
+            if (s.contains(",")) {
+                final String[] split = s.split(",");
+                if (split.length > 0) {
+                    processAuthor(Author.from(split[0]), Author.TYPE_UNKNOWN, book);
+                }
+            }
+        }
+
+        a = document.optJSONArray("contributors");
+        if (a != null && !a.isEmpty()) {
+            processContributors(context, a, book);
         }
 
         // There is also a key "pagination" which I believe to be the number of
@@ -604,9 +631,26 @@ public class OpenLibrary2SearchEngine
 
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.
-        s = document.optString("notes");
-        if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.DESCRIPTION, s);
+        // There are two known formats returned
+        //
+        // "notes": "Includes bibliographical references and index.",
+        // "notes": {"type": "/type/text", "value": "Mit zahlreichen farbigen Illustrationen"}
+        //
+        element = document.optJSONObject("notes");
+        if (element != null) {
+            // Sanity check, no idea if there are others types
+            if ("/type/text".equals(element.optString("type"))) {
+                s = element.optString("value");
+                if (s != null && !s.isEmpty()) {
+                    book.putString(DBKey.DESCRIPTION, s);
+                }
+            }
+        } else {
+            // Try the plain string format
+            s = document.optString("notes");
+            if (s != null && !s.isEmpty()) {
+                book.putString(DBKey.DESCRIPTION, s);
+            }
         }
 
         a = document.optJSONArray("table_of_contents");
@@ -739,6 +783,25 @@ public class OpenLibrary2SearchEngine
                     if (name != null && !name.isEmpty()) {
                         processAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
                     }
+                }
+            }
+        }
+    }
+
+    private void processContributors(@NonNull final Context context,
+                                     @NonNull final JSONArray a,
+                                     @NonNull final Book book) {
+        for (int ai = 0; ai < a.length(); ai++) {
+            final JSONObject c = a.optJSONObject(ai);
+            if (c != null) {
+                final String name = c.optString("name");
+                if (name != null) {
+                    final Author author = Author.from(name);
+                    final String role = c.optString("role");
+                    if (role != null) {
+                        author.setType(authorTypeMapper.map(getLocale(context), role));
+                    }
+                    book.add(author);
                 }
             }
         }
