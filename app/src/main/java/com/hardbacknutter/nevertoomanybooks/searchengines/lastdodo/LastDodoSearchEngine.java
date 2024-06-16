@@ -307,13 +307,15 @@ public class LastDodoSearchEngine
      * <p>
      * This is not practical in the scope of this application.
      *
+     * @param context  Current context
      * @param sections to parse
      * @param book     Bundle to update
      *
      * @return the toc list with either {@code 0} or {@code 2} or more entries
      */
     @NonNull
-    private List<TocEntry> parseToc(@NonNull final Collection<Element> sections,
+    private List<TocEntry> parseToc(@NonNull final Context context,
+                                    @NonNull final Collection<Element> sections,
                                     @NonNull final Book book) {
 
         // section 0 was the "Catalogusgegevens"; normally section 3 is the one we need here...
@@ -330,13 +332,19 @@ public class LastDodoSearchEngine
 
 
         if (tocSection != null) {
+            // always use the first author only for TOC entries.
+            Author tocAuthor = book.getPrimaryAuthor();
+            if (tocAuthor == null) {
+                tocAuthor = Author.createUnknownAuthor(context);
+            }
+
             final List<TocEntry> toc = new ArrayList<>();
             for (final Element divRows : tocSection.select("div.row-information")) {
                 final Element th = divRows.selectFirst("div.label");
                 final Element td = divRows.selectFirst("div.value");
                 if (th != null && td != null) {
                     if ("Verhaaltitel".equals(th.text())) {
-                        toc.add(new TocEntry(book.getAuthors().get(0), td.text()));
+                        toc.add(new TocEntry(tocAuthor, td.text()));
                     }
                 }
             }
@@ -524,7 +532,7 @@ public class LastDodoSearchEngine
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        final List<TocEntry> toc = parseToc(sections, book);
+        final List<TocEntry> toc = parseToc(context, sections, book);
         if (!toc.isEmpty()) {
             book.setToc(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {

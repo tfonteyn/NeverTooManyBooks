@@ -863,20 +863,18 @@ public class OpenLibrary2SearchEngine
                             @NonNull final Book book) {
         JSONObject element;
         // always use the first author only for TOC entries.
-        Author primAuthor = book.getPrimaryAuthor();
-        if (primAuthor == null) {
-            // OpenLibrary likely returned unstructured data about the authors
-            // i.e. no "authors" element, but a "by_statement" which we might
-            // have failed to parse.
-            primAuthor = Author.createUnknownAuthor(context);
+        Author tocAuthor = book.getPrimaryAuthor();
+        if (tocAuthor == null) {
+            tocAuthor = Author.createUnknownAuthor(context);
         }
+
         final List<TocEntry> toc = new ArrayList<>();
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
             if (element != null) {
                 final String title = element.optString("title");
                 if (title != null && !title.isEmpty()) {
-                    toc.add(new TocEntry(primAuthor, title));
+                    toc.add(new TocEntry(tocAuthor, title));
                 }
             }
         }

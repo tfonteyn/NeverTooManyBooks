@@ -585,18 +585,18 @@ public class OpenLibrarySearchEngine
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
             // always use the first author only for TOC entries.
-            Author primAuthor = book.getPrimaryAuthor();
-            if (primAuthor == null) {
-                // OpenLibrary had no author for this book....
-                primAuthor = Author.createUnknownAuthor(context);
+            Author tocAuthor = book.getPrimaryAuthor();
+            if (tocAuthor == null) {
+                tocAuthor = Author.createUnknownAuthor(context);
             }
+
             final List<TocEntry> toc = new ArrayList<>();
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
                 if (element != null) {
                     final String title = element.optString("title");
                     if (title != null && !title.isEmpty()) {
-                        toc.add(new TocEntry(primAuthor, title));
+                        toc.add(new TocEntry(tocAuthor, title));
                     }
                 }
             }

@@ -765,15 +765,12 @@ public class StripInfoSearchEngine
                             }
 
                             if (title != null && !title.isEmpty()) {
-                                final Author author;
-                                final List<Author> authorList = book.getAuthors();
-                                if (authorList.isEmpty()) {
-                                    author = Author.createUnknownAuthor(context);
-                                } else {
-                                    author = authorList.get(0);
+                                // always use the first author only for TOC entries.
+                                Author tocAuthor = book.getPrimaryAuthor();
+                                if (tocAuthor == null) {
+                                    tocAuthor = Author.createUnknownAuthor(context);
                                 }
-                                final TocEntry tocEntry = new TocEntry(author, title);
-                                toc.add(tocEntry);
+                                toc.add(new TocEntry(tocAuthor, title));
                             }
                         }
                         if (toc.size() > 1) {
