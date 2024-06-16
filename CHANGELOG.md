@@ -1,3 +1,12 @@
+### 6.1.1
+
+FIXES:
+
+- #64 OpenLibrary sometimes fails to return an Author - enhanced parsing for author, contributors
+- #65 regression: picking the first-publication date was crashing when using a BottomSheet dialog.
+
+---
+
 ### 6.1.0
 
 NEW:
