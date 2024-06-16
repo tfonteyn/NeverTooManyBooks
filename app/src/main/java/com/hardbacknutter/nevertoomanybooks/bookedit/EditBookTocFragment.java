@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBindi
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryLauncher;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -185,9 +186,14 @@ public class EditBookTocFragment
 
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_add_24);
-        //noinspection DataFlowIssue
-        fab.setOnClickListener(v -> editEntry(
-                new TocEntry(vm.getPrimaryAuthor(getContext()), ""), POS_NEW_ENTRY));
+        fab.setOnClickListener(v -> {
+            Author tocAuthor = vm.getBook().getPrimaryAuthor();
+            if (tocAuthor == null) {
+                //noinspection DataFlowIssue
+                tocAuthor = Author.createUnknownAuthor(getContext());
+            }
+            editEntry(new TocEntry(tocAuthor, ""), POS_NEW_ENTRY);
+        });
 
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);

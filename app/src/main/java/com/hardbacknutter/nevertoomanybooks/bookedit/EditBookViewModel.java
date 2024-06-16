@@ -415,19 +415,6 @@ public class EditBookViewModel
     }
 
     /**
-     * Get the primary book Author.
-     *
-     * @param context Current context
-     *
-     * @return primary book author (or 'unknown' if none)
-     */
-    @NonNull
-    Author getPrimaryAuthor(@NonNull final Context context) {
-        return Objects.requireNonNullElseGet(book.getPrimaryAuthor(),
-                                             () -> Author.createUnknownAuthor(context));
-    }
-
-    /**
      * Check if the book already exists in the database.
      *
      * @return {@code true} if it does
