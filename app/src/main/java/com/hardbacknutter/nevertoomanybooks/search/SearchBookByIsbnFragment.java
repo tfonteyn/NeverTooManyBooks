@@ -67,6 +67,8 @@ import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
 
+import org.acra.ACRA;
+
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
  * <p>
@@ -447,6 +449,11 @@ public class SearchBookByIsbnFragment
         // See if ISBN already exists in our database, if not then start the search.
         final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
         if (existingIds.isEmpty()) {
+            // Preserve the ISBN should we crash.
+            // While a crash is seldom, it can happen if the website(s) returns
+            // bad/unexpected data - OpenLibrary being notorious...
+            // If a user reports this crash, we'll have the ISBN to try and reproduce.
+            ACRA.getErrorReporter().putCustomData(DBKey.BOOK_ISBN, code.asText());
             startSearch();
 
         } else {
