@@ -52,10 +52,13 @@ public class PartialDatePickerBottomSheet
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+
         // Ensure components match current Locale order BEFORE we bind the views.
         ((PartialDatePickerDelegate) delegate).reorderPickers(view);
+
         vb = DialogPartialDatePickerContentBinding.bind(view);
+        super.onViewCreated(view, savedInstanceState);
+
         delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.toolbar_action_save, delegate);
     }
 }
