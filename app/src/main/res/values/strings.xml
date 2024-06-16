@@ -267,6 +267,8 @@
         Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <string name="warning_restart_required">App restart required</string>
+    <string name="warning_requires_android_12">Requires Android 12 or higher</string>
+
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->
     <!-- Dialog title for validation messages. -->
@@ -1791,6 +1793,12 @@
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
-    <string name="warning_requires_android_12">Requires Android 12 or higher</string>
+    <!-- Specifically used for an anonymous book author.
+     i.e. the Author is genuinely unknown to anyone and not due to a failure to lookup.
+     Examples: https://www.gutenberg.org/ebooks/author/216
+     Translations must add the [] around the string. -->
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="anonymous_author"
+            translatable="false">[Anonymous]</string>
 
 </resources>
