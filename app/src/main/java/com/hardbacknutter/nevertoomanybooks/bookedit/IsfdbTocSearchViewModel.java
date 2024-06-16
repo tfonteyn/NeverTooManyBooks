@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetBookTask
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetEditionsTask;
 
 @SuppressWarnings("WeakerAccess")
-public class EditBookTocViewModel
+public class IsfdbTocSearchViewModel
         extends ViewModel {
 
     private final IsfdbGetEditionsTask isfdbGetEditionsTask = new IsfdbGetEditionsTask();

@@ -139,7 +139,7 @@ public class EditBookTocFragment
     private ItemTouchHelper itemTouchHelper;
 
     /** Handles the ISFDB lookup tasks. */
-    private EditBookTocViewModel editTocVm;
+    private IsfdbTocSearchViewModel isfdbTocSearchVm;
 
     private ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher;
 
@@ -195,7 +195,7 @@ public class EditBookTocFragment
         //noinspection DataFlowIssue
         vm.initFields(getContext(), FragmentId.Toc, FieldGroup.Toc);
 
-        initEditTocViewModel();
+        initIsfdbTocSearchViewModel();
 
         initListView();
 
@@ -205,25 +205,25 @@ public class EditBookTocFragment
         itemTouchHelper.attachToRecyclerView(vb.tocList);
     }
 
-    private void initEditTocViewModel() {
-        editTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
-        editTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
-        editTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
+    private void initIsfdbTocSearchViewModel() {
+        isfdbTocSearchVm = new ViewModelProvider(this).get(IsfdbTocSearchViewModel.class);
+        isfdbTocSearchVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
+        isfdbTocSearchVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
-        editTocVm.onIsfdbEditionsCancelled().observe(getViewLifecycleOwner(), message ->
+        isfdbTocSearchVm.onIsfdbEditionsCancelled().observe(getViewLifecycleOwner(), message ->
                 message.process(ignored -> Snackbar
                         .make(vb.getRoot(), R.string.cancelled,
                               Snackbar.LENGTH_LONG).show()));
-        editTocVm.onIsfdbEditionsFailure().observe(getViewLifecycleOwner(), message ->
+        isfdbTocSearchVm.onIsfdbEditionsFailure().observe(getViewLifecycleOwner(), message ->
                 message.process(e -> Snackbar
                         .make(vb.getRoot(), R.string.warning_no_editions,
                               Snackbar.LENGTH_LONG).show()));
 
-        editTocVm.onIsfdbBookCancelled().observe(getViewLifecycleOwner(), message ->
+        isfdbTocSearchVm.onIsfdbBookCancelled().observe(getViewLifecycleOwner(), message ->
                 message.process(ignored -> Snackbar
                         .make(vb.getRoot(), R.string.cancelled,
                               Snackbar.LENGTH_LONG).show()));
-        editTocVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message ->
+        isfdbTocSearchVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message ->
                 message.process(e -> Snackbar
                         .make(vb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show()));
@@ -494,7 +494,7 @@ public class EditBookTocFragment
         } else {
             Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            editTocVm.searchEdition(isfdbEditions.get(0));
+            isfdbTocSearchVm.searchEdition(isfdbEditions.get(0));
             isfdbEditions.remove(0);
         }
     }
@@ -780,7 +780,7 @@ public class EditBookTocFragment
                 if (isfdbId != 0) {
                     Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
-                    editTocVm.searchBook(isfdbId);
+                    isfdbTocSearchVm.searchBook(isfdbId);
                     return true;
                 }
 
@@ -790,7 +790,7 @@ public class EditBookTocFragment
                     if (isbn.isValid(true)) {
                         Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                                       Snackbar.LENGTH_LONG).show();
-                        editTocVm.searchByIsbn(isbn);
+                        isfdbTocSearchVm.searchByIsbn(isbn);
                         return true;
                     }
                 }
