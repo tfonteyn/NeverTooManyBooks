@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -150,13 +151,19 @@ public class AuthorWorksFragment
 
     private void deleteWork(final int position,
                             @NonNull final AuthorWork work) {
+        Author primaryAuthor = work.getPrimaryAuthor();
+        // Sanity check
+        if (primaryAuthor == null) {
+            //noinspection DataFlowIssue
+            primaryAuthor = Author.createUnknownAuthor(getContext());
+        }
         switch (work.getWorkType()) {
             case TocEntry: {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteTocEntry(
                         getContext(),
                         work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
-                        work.getPrimaryAuthor(), () -> {
+                        primaryAuthor, () -> {
                             vm.delete(getContext(), work);
                             adapter.notifyItemRemoved(position);
                         });
@@ -168,7 +175,7 @@ public class AuthorWorksFragment
                 StandardDialogs.deleteBook(
                         getContext(),
                         work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
-                        Collections.singletonList(work.getPrimaryAuthor()), () -> {
+                        Collections.singletonList(primaryAuthor), () -> {
                             vm.delete(getContext(), work);
                             adapter.notifyItemRemoved(position);
                         });
