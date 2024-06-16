@@ -655,30 +655,7 @@ public class OpenLibrary2SearchEngine
 
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
-            // always use the first author only for TOC entries.
-            Author primAuthor = book.getPrimaryAuthor();
-            if (primAuthor == null) {
-                // OpenLibrary had no author for this book....
-                primAuthor = Author.createUnknownAuthor(context);
-            }
-            final List<TocEntry> toc = new ArrayList<>();
-            for (int ai = 0; ai < a.length(); ai++) {
-                element = a.optJSONObject(ai);
-                if (element != null) {
-                    final String title = element.optString("title");
-                    if (title != null && !title.isEmpty()) {
-                        toc.add(new TocEntry(primAuthor, title));
-                    }
-                }
-            }
-
-            if (!toc.isEmpty()) {
-                book.setToc(toc);
-                if (toc.size() > 1) {
-                    book.putLong(DBKey.BOOK_CONTENT_TYPE,
-                                 Book.ContentType.Collection.getId());
-                }
-            }
+            processToc(context, a, book);
         }
 
         if (isCancelled()) {
@@ -693,6 +670,7 @@ public class OpenLibrary2SearchEngine
             parseCovers(context, a, fetchCovers, book);
         }
     }
+
 
     private void parseCovers(@NonNull final Context context,
                              @NonNull final JSONArray coverIds,
@@ -877,6 +855,38 @@ public class OpenLibrary2SearchEngine
         a = element.optJSONArray("oclc");
         if (a != null && !a.isEmpty()) {
             book.putString(DBKey.SID_OCLC, a.getString(0));
+        }
+    }
+
+    private void processToc(@NonNull final Context context,
+                            @NonNull final JSONArray a,
+                            @NonNull final Book book) {
+        JSONObject element;
+        // always use the first author only for TOC entries.
+        Author primAuthor = book.getPrimaryAuthor();
+        if (primAuthor == null) {
+            // OpenLibrary likely returned unstructured data about the authors
+            // i.e. no "authors" element, but a "by_statement" which we might
+            // have failed to parse.
+            primAuthor = Author.createUnknownAuthor(context);
+        }
+        final List<TocEntry> toc = new ArrayList<>();
+        for (int ai = 0; ai < a.length(); ai++) {
+            element = a.optJSONObject(ai);
+            if (element != null) {
+                final String title = element.optString("title");
+                if (title != null && !title.isEmpty()) {
+                    toc.add(new TocEntry(primAuthor, title));
+                }
+            }
+        }
+
+        if (!toc.isEmpty()) {
+            book.setToc(toc);
+            if (toc.size() > 1) {
+                book.putLong(DBKey.BOOK_CONTENT_TYPE,
+                             Book.ContentType.Collection.getId());
+            }
         }
     }
 
