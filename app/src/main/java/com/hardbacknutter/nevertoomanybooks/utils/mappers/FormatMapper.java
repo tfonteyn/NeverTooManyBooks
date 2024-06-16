@@ -73,6 +73,8 @@ public final class FormatMapper
         MAPPINGS.put("mass market paperback", R.string.book_format_paperback);
         MAPPINGS.put("pb", R.string.book_format_paperback);
         MAPPINGS.put("paperback", R.string.book_format_paperback);
+        MAPPINGS.put("perfect paperback", R.string.book_format_paperback);
+        MAPPINGS.put("pocket book", R.string.book_format_paperback);
         // dutch - KBNL
         MAPPINGS.put("pbk.", R.string.book_format_paperback);
         // french - BOL
@@ -90,7 +92,7 @@ public final class FormatMapper
         MAPPINGS.put("softcover", R.string.book_format_softcover);
 
 
-        // ### e-books ###
+        // ### e-books ### Do not add "Kindle Edition", leave it as-is
         MAPPINGS.put("ebook", R.string.book_format_ebook);
         MAPPINGS.put("e-book", R.string.book_format_ebook);
         // dutch - stripinfo.be
@@ -100,6 +102,7 @@ public final class FormatMapper
 
 
         // ### Audio-books ###
+        MAPPINGS.put("audiobook", R.string.book_format_audiobook);
         MAPPINGS.put("audio cassette", R.string.book_format_audiobook);
         MAPPINGS.put("audio cd", R.string.book_format_audiobook);
         // dutch - BOL
