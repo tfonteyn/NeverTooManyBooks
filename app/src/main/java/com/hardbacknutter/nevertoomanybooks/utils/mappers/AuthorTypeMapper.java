@@ -61,10 +61,11 @@ public class AuthorTypeMapper {
         MAPPINGS.put("coverart", Author.TYPE_COVER_ARTIST);
         MAPPINGS.put("cover artist", Author.TYPE_COVER_ARTIST);
         MAPPINGS.put("cover illustrator", Author.TYPE_COVER_ARTIST);
+        MAPPINGS.put("cover photographs", Author.TYPE_COVER_ARTIST);
 
         MAPPINGS.put("colorist", Author.TYPE_COLORIST);
 
-        MAPPINGS.put("pseudonym", Author.TYPE_PSEUDONYM);
+        MAPPINGS.put("pseudonym", Author.TYPE_WRITER);
 
         MAPPINGS.put("editor", Author.TYPE_EDITOR);
 
@@ -124,6 +125,14 @@ public class AuthorTypeMapper {
         // Maybe better if this is done in an external file on a per language basis ?
     }
 
+    /**
+     * Map the given type-name to an Author type code.
+     *
+     * @param locale   to use for case manipulation
+     * @param typeName to map
+     *
+     * @return mapped author type, or {@link Author#TYPE_UNKNOWN}.
+     */
     public int map(@NonNull final Locale locale,
                    @NonNull final String typeName) {
         final Integer mapped = MAPPINGS.get(typeName.toLowerCase(locale).trim());
