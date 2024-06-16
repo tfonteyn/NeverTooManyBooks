@@ -609,17 +609,20 @@ public class OpenLibrary2SearchEngine
             book.putString(DBKey.DESCRIPTION, s);
         }
 
-        // always use the first author only for TOC entries.
-        final Author primAuthor = book.getPrimaryAuthor();
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
+            // always use the first author only for TOC entries.
+            Author primAuthor = book.getPrimaryAuthor();
+            if (primAuthor == null) {
+                // OpenLibrary had no author for this book....
+                primAuthor = Author.createUnknownAuthor(context);
+            }
             final List<TocEntry> toc = new ArrayList<>();
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
                 if (element != null) {
                     final String title = element.optString("title");
                     if (title != null && !title.isEmpty()) {
-                        //noinspection DataFlowIssue
                         toc.add(new TocEntry(primAuthor, title));
                     }
                 }
