@@ -544,7 +544,7 @@
     <string name="pt_allow_editing_external_id">Povolit úpravy ID nativní webové knihy</string>
     <string name="pt_allow_metered_network_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
-    <string name="pt_bob_books_under_multiple_publisher">Zobrazit knihy s více vydavateli</string>
+    <string name="pt_bob_books_under_multiple_publishers">Zobrazit knihy s více vydavateli</string>
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
     <string name="pt_bob_cover_long_click">Otevřete kontextovou nabídku knihy.</string>
     <string name="pe_bob_cover_long_click_ignore">Pomocí tlačítka.</string>
@@ -564,7 +564,7 @@
     <string name="pt_fast_scroller_overlay">Textová bublina při posouvání.</string>
     <string name="pt_line_spacing">Řádkování</string>
     <string name="pt_maintenance">Údržba</string>
-    <string name="pt_primary_author_type">Typ primárního autora</string>
+    <string name="pt_main_author_type">Typ primárního autora</string>
     <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípne</string>
     <string name="pt_scanning_beep_on_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
     <string name="pt_scanning_beep_on_valid">Je-li naskenované číslo ISBN platné, pípněte</string>
@@ -585,12 +585,12 @@
     <string name="pt_website_search_order_and_enable">Priorita, povolení a zakázání</string>
     <string name="ps_show_author_name_family_first">Zobrazte nejprve příjmení,\ntj. „Čapek, Karel“</string>
     <string name="ps_show_author_name_given_first">Zobrazení s křestními jmény na prvním místě,\ntj. „Karel Čapek“</string>
-    <string name="ps_bob_books_under_multiple_each_author">Pod každým autor</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">pod každým vydavatelem</string>
-    <string name="ps_bob_books_under_multiple_each_series">Pod každým série</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">Pouze pod primárním autor</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">pouze pod jejich primárním vydavatelem</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">Pouze pod primárním série</string>
+    <string name="ps_bob_books_under_multiple_authors_each">Pod každým autor</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">pod každým vydavatelem</string>
+    <string name="ps_bob_books_under_multiple_series_each">Pod každým série</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">Pouze pod primárním autor</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">pouze pod jejich primárním vydavatelem</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">Pouze pod primárním série</string>
     <string name="pv_bob_header_filters">Filtry</string>
     <string name="pv_bob_header_nr_of_books">Počet knih</string>
     <string name="pv_bob_header_style_name">Název stylu</string>

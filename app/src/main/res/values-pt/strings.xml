@@ -420,7 +420,7 @@
     <string name="pt_allow_editing_external_id">Permitir a edição do ID do livro do site</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicialização da lista de livros</string>
     <string name="pe_fast_scroller_overlay_static">Estático</string>
-    <string name="pt_bob_books_under_multiple_publisher">Mostrar livros com várias editoras</string>
+    <string name="pt_bob_books_under_multiple_publishers">Mostrar livros com várias editoras</string>
     <string name="pt_bob_cover_long_click">Abrir o menu de contexto do livro.</string>
     <string name="pe_bob_cover_long_click_ignore">Com um botão.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Com um clique longo na imagem da capa.</string>
@@ -459,7 +459,7 @@
     <string name="pt_scanning_beep_on_barcode_found">Apitar quando um código de barras é encontrado</string>
     <string name="ps_manage_fields">Os campos selecionados são visíveis nos ecrãs de adicionar/editar livros. Os campos não selecionados ficam ocultos.</string>
     <string name="pt_search_prefer_isbn10">Use o ISBN-10 sempre que possível</string>
-    <string name="pt_primary_author_type">Tipo de autor principal</string>
+    <string name="pt_main_author_type">Tipo de autor principal</string>
     <string name="loose">Solto</string>
     <string name="pe_bob_list_rebuild_state_preferred">Use a expansão preferida</string>
     <string name="pe_bob_list_rebuild_state_expanded">Começar sempre expandido</string>
@@ -471,7 +471,7 @@
     <string name="info_rebuild_scheduled">Reconstrução agendada</string>
     <string name="lbl_purge_blns">Limpar o estado do nó</string>
     <string name="info_purge_blns_all">Limpar o estado do nó de todas as listas</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">apenas sob o seu autor principal</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">apenas sob o seu autor principal</string>
     <string name="info_select_fields_to_update">Os campos selecionados serão atualizados a partir da internet. Os campos não selecionados permanecerão inalterados.</string>
     <string name="option_bob_filter_lend_out_no">Livros disponíveis</string>
     <string name="X_lbl_anthologies">Antologias</string>
@@ -640,9 +640,9 @@
     <string name="pv_bob_header_filters">Filtros</string>
     <string name="pt_line_spacing">Espaçamento entre linhas</string>
     <string name="pt_bob_list_state_expansion_level">Expansão por defeito da lista de livros</string>
-    <string name="ps_bob_books_under_multiple_each_author">sob cada autor</string>
+    <string name="ps_bob_books_under_multiple_authors_each">sob cada autor</string>
     <string name="X_option_bob_filter_read_yes">Livros lidos</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">em cada editor</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">em cada editor</string>
     <string name="lbl_filters">Filtros</string>
     <string name="lbl_add_filter">Adicionar filtro</string>
     <string name="menu_update_books">Atualizar livros</string>
@@ -666,12 +666,12 @@
     <string name="ps_show_author_name_given_first">Mostrar com os nomes próprios em primeiro lugar,\npor exemplo, “Luís de Camões”</string>
     <string name="pt_bob_books_under_multiple_series">Mostrar livros em várias séries</string>
     <string name="pe_bob_row_menu_button">Mostre sempre um botão.</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">apenas nas suas séries principais</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">apenas sob o seu editor principal</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">apenas nas suas séries principais</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">apenas sob o seu editor principal</string>
     <string name="lbl_connection_timeout">Tempo limite de conexão (segundos)</string>
     <string name="pt_bob_show_details">Detalhes do livro mostrados na lista</string>
     <string name="lbl_currency">Moeda</string>
-    <string name="ps_bob_books_under_multiple_each_series">em cada série</string>
+    <string name="ps_bob_books_under_multiple_series_each">em cada série</string>
     <string name="lbl_rating">Classificação</string>
     <string name="lbl_description">Descrição</string>
     <string name="lbl_personal_notes">Notas pessoais</string>

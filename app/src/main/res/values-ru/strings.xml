@@ -545,7 +545,7 @@
     <string name="pt_allow_editing_external_id">Разрешить редактировать родной идентификатор книги сайта</string>
     <string name="pt_allow_metered_network_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
-    <string name="pt_bob_books_under_multiple_publisher">Показать книги с несколькими издателями</string>
+    <string name="pt_bob_books_under_multiple_publishers">Показать книги с несколькими издателями</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
     <string name="pt_bob_cover_long_click">Открыть контекстное меню книги.</string>
     <string name="pe_bob_cover_long_click_ignore">С помощью кнопки.</string>
@@ -565,7 +565,7 @@
     <string name="pt_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке.</string>
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="pt_maintenance">обслуживание</string>
-    <string name="pt_primary_author_type">Основной тип автора</string>
+    <string name="pt_main_author_type">Основной тип автора</string>
     <string name="pt_scanning_beep_on_barcode_found">Звуковой сигнал, когда штрих-код найден</string>
     <string name="pt_scanning_beep_on_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
     <string name="pt_scanning_beep_on_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
@@ -586,12 +586,12 @@
     <string name="pt_website_search_order_and_enable">Важные разговоры, включить и отключить</string>
     <string name="ps_show_author_name_family_first">Отображать сначала фамилии,\nнапример «Достоевский, Фёдор»</string>
     <string name="ps_show_author_name_given_first">Отобразить сначала фамилии,\nнапример «Фёдор Достоевский»</string>
-    <string name="ps_bob_books_under_multiple_each_author">Под каждым автор</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">под каждым издателем</string>
-    <string name="ps_bob_books_under_multiple_each_series">Под каждым серии</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">Только под первым автор</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">только под своим основным издателем</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">Только под первым серии</string>
+    <string name="ps_bob_books_under_multiple_authors_each">Под каждым автор</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">под каждым издателем</string>
+    <string name="ps_bob_books_under_multiple_series_each">Под каждым серии</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">Только под первым автор</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">только под своим основным издателем</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">Только под первым серии</string>
     <string name="pv_bob_header_filters">Фильтры</string>
     <string name="pv_bob_header_nr_of_books">Показывать номера книг</string>
     <string name="pv_bob_header_style_name">Название стиля</string>

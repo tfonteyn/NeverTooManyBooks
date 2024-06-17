@@ -543,7 +543,7 @@
     <string name="pt_allow_editing_external_id">Permitir editar la identificación del libro nativo del sitio</string>
     <string name="pt_allow_metered_network_data">Permitir el uso de datos móviles</string>
     <string name="pt_bob_books_under_multiple_authors">Libros con varios autores</string>
-    <string name="pt_bob_books_under_multiple_publisher">Mostrar libros con varias editoriales</string>
+    <string name="pt_bob_books_under_multiple_publishers">Mostrar libros con varias editoriales</string>
     <string name="pt_bob_books_under_multiple_series">Libros en varias series</string>
     <string name="pt_bob_cover_long_click">Abre el menú contextual del libro.</string>
     <string name="pe_bob_cover_long_click_ignore">Con un botón.</string>
@@ -563,7 +563,7 @@
     <string name="pt_fast_scroller_overlay">Burbuja de texto mientras se desplaza.</string>
     <string name="pt_line_spacing">Espaciado entre líneas</string>
     <string name="pt_maintenance">Mantenimiento</string>
-    <string name="pt_primary_author_type">Tipo de autor principal</string>
+    <string name="pt_main_author_type">Tipo de autor principal</string>
     <string name="pt_scanning_beep_on_barcode_found">Pitido cuando se encuentra un código de barras</string>
     <string name="pt_scanning_beep_on_invalid">Pitido si el ISBN escaneado no es válido</string>
     <string name="pt_scanning_beep_on_valid">Pitido si el ISBN escaneado es válido</string>
@@ -587,12 +587,12 @@
     <string name="pt_website_search_order_and_enable">Prioridad, habilitar y deshabilitar</string>
     <string name="ps_show_author_name_family_first">Mostrar primero el apellido,\npor ejemplo «Pérez Galdós, Benito»</string>
     <string name="ps_show_author_name_given_first">Mostrar primero los apellidos,\npor ejemplo «Benito Pérez Galdós»</string>
-    <string name="ps_bob_books_under_multiple_each_author">Bajo cada autorр</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">debajo de cada editor</string>
-    <string name="ps_bob_books_under_multiple_each_series">Bajo cada serie</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">Sólo bajo primer autor</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">solo bajo su editor principal</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">Sólo bajo primer serie</string>
+    <string name="ps_bob_books_under_multiple_authors_each">Bajo cada autorр</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">debajo de cada editor</string>
+    <string name="ps_bob_books_under_multiple_series_each">Bajo cada serie</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">Sólo bajo primer autor</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">solo bajo su editor principal</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">Sólo bajo primer serie</string>
     <string name="pv_bob_header_filters">Filtros</string>
     <string name="pv_bob_header_nr_of_books">Mostrar el número de libros</string>
     <string name="pv_bob_header_style_name">Nombre de estilo</string>

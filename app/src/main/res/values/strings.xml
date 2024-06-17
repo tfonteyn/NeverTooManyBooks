@@ -1284,7 +1284,7 @@
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
     <!-- MultiSelectListPreference title -->
-    <string name="pt_primary_author_type">Primary author type</string>
+    <string name="pt_main_author_type">Primary author type</string>
     <!-- ListPreference title: option title -->
     <string name="pt_edit_book_isbn_checks">ISBN validity checks</string>
     <!-- ListPreference title: Booklist startup-state preferences -->
@@ -1518,16 +1518,16 @@
 
     <!-- SwitchPreference - option title -->
     <string name="pt_bob_books_under_multiple_authors">Show books with multiple authors</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">under their primary author only</string>
-    <string name="ps_bob_books_under_multiple_each_author">under each author</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">under their primary author only</string>
+    <string name="ps_bob_books_under_multiple_authors_each">under each author</string>
     <!-- SwitchPreference - option title  -->
     <string name="pt_bob_books_under_multiple_series">Show books in multiple series</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">under their primary series only</string>
-    <string name="ps_bob_books_under_multiple_each_series">under each series</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">under their primary series only</string>
+    <string name="ps_bob_books_under_multiple_series_each">under each series</string>
     <!-- SwitchPreference - option title  -->
-    <string name="pt_bob_books_under_multiple_publisher">Show books with multiple publishers</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">under their primary publisher only</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">under each publisher</string>
+    <string name="pt_bob_books_under_multiple_publishers">Show books with multiple publishers</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">under their primary publisher only</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">under each publisher</string>
     <!-- endregion -->
     <!-- region ========== Filters. -->
     <!-- Multiple filters -->

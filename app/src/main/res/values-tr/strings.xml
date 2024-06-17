@@ -535,7 +535,7 @@
     <string name="pt_allow_editing_external_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver</string>
     <string name="pt_allow_metered_network_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
-    <string name="pt_bob_books_under_multiple_publisher">Birden çok yayıncının bulunduğu kitapları gösterin</string>
+    <string name="pt_bob_books_under_multiple_publishers">Birden çok yayıncının bulunduğu kitapları gösterin</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
     <string name="pt_bob_cover_long_click">Kitabın içerik menüsünü açın.</string>
     <string name="pe_bob_cover_long_click_ignore">Bir düğme ile.</string>
@@ -555,7 +555,7 @@
     <string name="pt_fast_scroller_overlay">Kaydırma sırasında metin balonu.</string>
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="pt_maintenance">Bakım</string>
-    <string name="pt_primary_author_type">Birincil yazar türü</string>
+    <string name="pt_main_author_type">Birincil yazar türü</string>
     <string name="pt_scanning_beep_on_barcode_found">Bir barkod bulunduğunda bip sesi</string>
     <string name="pt_scanning_beep_on_invalid">Taranan ISBN geçerli değil ise biple</string>
     <string name="pt_scanning_beep_on_valid">Taranan ISBN geçerli ise biple</string>
@@ -576,12 +576,12 @@
     <string name="pt_website_search_order_and_enable">Öncelikli, etkinleştir ve devre dışı bırak</string>
     <string name="ps_show_author_name_family_first">Önce aile adı ile görüntüleyin,\nÖrneğin “Nesin, Aziz”</string>
     <string name="ps_show_author_name_given_first">Önce verilen adlarla görüntüleyin,\nÖrneğin “Aziz Nesin”</string>
-    <string name="ps_bob_books_under_multiple_each_author">Her yazar altında</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">her yayıncının altında</string>
-    <string name="ps_bob_books_under_multiple_each_series">Her dizi altında</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">Yalnızca birincil yazar altında</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">yalnızca birincil yayıncıları altında</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">Yalnızca birincil dizi altında</string>
+    <string name="ps_bob_books_under_multiple_authors_each">Her yazar altında</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">her yayıncının altında</string>
+    <string name="ps_bob_books_under_multiple_series_each">Her dizi altında</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">Yalnızca birincil yazar altında</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">yalnızca birincil yayıncıları altında</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">Yalnızca birincil dizi altında</string>
     <string name="pv_bob_header_filters">Filtreler</string>
     <string name="pv_bob_header_nr_of_books">Kitap sayısını göster</string>
     <string name="pv_bob_header_style_name">Stil adı</string>

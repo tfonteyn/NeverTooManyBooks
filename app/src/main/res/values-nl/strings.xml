@@ -557,12 +557,12 @@
     <string name="progress_msg_x_deleted">%1$d verwijderd</string>
     <string name="ps_show_author_name_family_first">Weergeven met de achternaam eerst,\nbvb. „Vandersteen, Willy”</string>
     <string name="ps_show_author_name_given_first">Weergeven met de voornamen eerst,\nbvb. „Willy Vandersteen”</string>
-    <string name="ps_bob_books_under_multiple_each_author">Onder elke auteur</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">onder elke uitgever</string>
-    <string name="ps_bob_books_under_multiple_each_series">Onder elke reeks</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">Alleen onder primaire auteur</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">alleen onder hun primaire uitgever</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">Alleen onder primaire reeks</string>
+    <string name="ps_bob_books_under_multiple_authors_each">Onder elke auteur</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">onder elke uitgever</string>
+    <string name="ps_bob_books_under_multiple_series_each">Onder elke reeks</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">Alleen onder primaire auteur</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">alleen onder hun primaire uitgever</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">Alleen onder primaire reeks</string>
     <string name="ps_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="ps_show_titles_reordered_off">Weergeven zoals gegeven,\nbvb. „De schat van Beersel”</string>
     <string name="error_type_not_supported">Type niet ondersteund: %1$s …</string>
@@ -572,7 +572,7 @@
     <string name="pt_barcode_scanner">Barcode scanner</string>
     <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Franse) naamgeving</string>
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
-    <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers</string>
+    <string name="pt_bob_books_under_multiple_publishers">Toon boeken met meerdere uitgevers</string>
     <string name="pt_bob_books_under_multiple_series">Boeken in meerdere reeksen</string>
     <string name="pt_bob_cover_long_click">Open het contextmenu van het boek.</string>
     <string name="pe_bob_cover_long_click_ignore">Met een knop.</string>
@@ -592,7 +592,7 @@
     <string name="pt_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="pt_line_spacing">Regelafstand</string>
     <string name="pt_maintenance">Onderhoud</string>
-    <string name="pt_primary_author_type">Type primaire auteur</string>
+    <string name="pt_main_author_type">Type primaire auteur</string>
     <string name="pt_scanning_beep_on_barcode_found">Beep wanneer een barcode wordt gevonden</string>
     <string name="pt_scanning_beep_on_invalid">Beep als het gescande ISBN ongeldig is</string>
     <string name="pt_scanning_beep_on_valid">Beep als gescande ISBN geldig is</string>

@@ -540,7 +540,7 @@
     <string name="option_download_ebook_format">下载电子书（%1$s）</string>
     <string name="action_synchronize">同步</string>
     <string name="lbl_read_end">阅读完成日期</string>
-    <string name="pt_bob_books_under_multiple_publisher">显示有多个出版商的图书</string>
+    <string name="pt_bob_books_under_multiple_publishers">显示有多个出版商的图书</string>
     <string name="lbl_tab_lbl_ext_id">外部 ID</string>
     <string name="lbl_group_1st_char_author_family_name">作者姓氏的首字符</string>
     <string name="action_merge">合并</string>
@@ -609,7 +609,7 @@
     <string name="pt_allow_editing_external_id">允许编辑网站图书编号</string>
     <string name="pe_ui_theme_light">浅色</string>
     <string name="pe_bob_cover_click_zoom">将放大封面图像。</string>
-    <string name="ps_bob_books_under_multiple_each_author">在每位作者下</string>
+    <string name="ps_bob_books_under_multiple_authors_each">在每位作者下</string>
     <string name="option_level_reset">偏好展开级别</string>
     <string name="lbl_author_pseudonym">作者笔名</string>
     <string name="lbl_author_pseudonym_of_X">笔名 %1$s</string>
@@ -637,10 +637,10 @@
     <string name="pt_bob_books_under_multiple_series">显示多个系列中的图书</string>
     <string name="ps_show_author_name_given_first">优先显示名字，
 \n如“Cixin Liu”</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">仅在其主要系列中</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">仅在其主要系列中</string>
     <string name="menu_update_fields">更新字段</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">仅在其主要出版商下</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">在每个出版商下</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">仅在其主要出版商下</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">在每个出版商下</string>
     <string name="lbl_select_fields">选择字段</string>
     <string name="lbl_table_of_content_entry">目录条目</string>
     <string name="info_maintenance_sync_deleted_book_records">这将检查从另一设备导入文件中的已删除图书历史。换句话说，在那台设备上删除的图书，也会将其在本设备上删除。</string>
@@ -680,7 +680,7 @@
     <string name="pt_search_reformat_color">标准化“图书颜色”名称</string>
     <string name="pt_search_uses_publisher">搜索时使用出版商</string>
     <string name="pt_search_prefer_isbn10">可用时使用 ISBN-10</string>
-    <string name="pt_primary_author_type">主要作者类型</string>
+    <string name="pt_main_author_type">主要作者类型</string>
     <string name="pt_collect_series_info_from_toc">从目录收集系列信息</string>
     <string name="pt_bedetheque_search_resolve_formats">保留 Bedetheque（法语）格式命名</string>
     <string name="pe_ui_theme_dark">深色</string>
@@ -702,7 +702,7 @@
     <string name="pt_bob_header">在头栏中显示细节概要</string>
     <string name="ps_sort_author_name_family_first">优先按姓氏排序，
 \n如“Liu, Cixin”</string>
-    <string name="ps_bob_books_under_multiple_each_series">在每个系列中</string>
+    <string name="ps_bob_books_under_multiple_series_each">在每个系列中</string>
     <string name="lbl_lending">租借</string>
     <string name="info_select_fields_to_update">将从互联网更新选中的字段。将不会更改未选中字段。</string>
     <string name="lbl_tab_alternative_editions">备选版</string>
@@ -736,7 +736,7 @@
     <string name="lbl_sql_query">SQL 查询</string>
     <string name="lbl_connection_timeout">连接超时（秒）</string>
     <string name="pt_bob_books_under_multiple_authors">显示多作者图书</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">仅在其主要作者下</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">仅在其主要作者下</string>
     <string name="lbl_owned">已拥有</string>
     <string name="option_clear_deleted_book_records">清除已删除图书历史</string>
     <string name="lbl_scope_of_change">变更范围</string>

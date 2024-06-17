@@ -1135,7 +1135,7 @@
     <string name="pt_search_resolve_authors_bedetheque">Giải quyết bút danh tác giả bằng cách sử dụng trang web Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Giữ nguyên cách đặt tên theo định dạng Bedetheque (tiếng Pháp)</string>
     <!-- MultiSelectListPreference title -->
-    <string name="pt_primary_author_type">Loại tác giả chính</string>
+    <string name="pt_main_author_type">Loại tác giả chính</string>
     <!-- [VERIFIED] ListPreference title: "UI Language" -->
     <string name="pt_ui_language">Ngôn ngữ</string>
     <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
@@ -1313,16 +1313,16 @@
     <string name="ps_show_author_name_family_first">Hiển thị với họ trước,\nv.d. “Nguyễn Du”</string>
     <!-- SwitchPreference - option title -->
     <string name="pt_bob_books_under_multiple_authors">Hiển thị sách có nhiều tác giả</string>
-    <string name="ps_bob_books_under_multiple_primary_author_only">chỉ theo tác giả chính của chúng</string>
-    <string name="ps_bob_books_under_multiple_each_author">theo từng tác giả</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">chỉ theo tác giả chính của chúng</string>
+    <string name="ps_bob_books_under_multiple_authors_each">theo từng tác giả</string>
     <!-- SwitchPreference - option title  -->
     <string name="pt_bob_books_under_multiple_series">Hiển thị sách theo nhiều bộ</string>
-    <string name="ps_bob_books_under_multiple_primary_series_only">chỉ trong các bộ chính của chúng</string>
-    <string name="ps_bob_books_under_multiple_each_series">theo từng bộ</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">chỉ trong các bộ chính của chúng</string>
+    <string name="ps_bob_books_under_multiple_series_each">theo từng bộ</string>
     <!-- SwitchPreference - option title  -->
-    <string name="pt_bob_books_under_multiple_publisher">Hiển thị sách có nhiều nhà xuất bản</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">chỉ thuộc nhà xuất bản chính của chúng</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">theo từng nhà xuất bản</string>
+    <string name="pt_bob_books_under_multiple_publishers">Hiển thị sách có nhiều nhà xuất bản</string>
+    <string name="ps_bob_books_under_multiple_publishers_main_only">chỉ thuộc nhà xuất bản chính của chúng</string>
+    <string name="ps_bob_books_under_multiple_publishers_each">theo từng nhà xuất bản</string>
     <!-- endregion -->
     <!-- region ========== Filters. -->
     <!-- Multiple filters -->
