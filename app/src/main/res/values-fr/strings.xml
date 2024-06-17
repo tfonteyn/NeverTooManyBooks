@@ -259,6 +259,7 @@
     <string name="lbl_author_type_translator">Traducteur</string>
     <string name="lbl_author_type_writer">Écrivain</string>
     <string name="lbl_authors">Auteurs</string>
+    <string name="option_toc_list_update_with_main_author">Mise à jour des auteurs</string>
     <string name="option_auto_updates">Autoriser les mises à jour automatiques depuis Internet.</string>
     <string name="lbl_available">Disponible</string>
     <string name="lbl_backup">Sauvegarder</string>
@@ -695,6 +696,7 @@
     <string name="confirm_create_real_author">« %1$s » n’existe pas encore. Faut-il les créer ?</string>
     <string name="pt_search_resolve_authors_bedetheque">Résoudre les pseudonymes des auteurs à l’aide du site Web Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Remplacer l’auteur de toutes les entrées par l’auteur principal du livre « %1$s » ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tous les livres en dessous de cette rangée ont des couvertures. Rechercher à nouveau à partir du haut ?</string>
     <string name="info_all_books_have_covers">Tous les livres de cette bibliothèque ont des couvertures</string>
     <string name="book_format_hardcover_oblong">Relié - oblongue</string>

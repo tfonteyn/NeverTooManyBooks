@@ -148,6 +148,7 @@
     <string name="confirm_merge_bookshelves">De boekenplank die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_publishers">De uitgever die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_series">De reeks die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_toc_list_update_with_books_main_author">De auteur van alle items vervangen door de hoofdauteur van het boek „%1$s” ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Alle boeken onder deze rij hebben omslagen. Opnieuw zoeken vanaf de top?</string>
     <string name="confirm_overwrite_cover">Dit zal de geselecteerde velden zoals getoond bijwerken, maar afbeeldingen kunnen desgewenst voor alle boeken worden gedownload.\n\nWil je alle afbeeldingen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen.</string>
     <string name="confirm_rebuild_fts">De zoekindexgegevens worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan?</string>
@@ -429,6 +430,7 @@
     <string name="option_author_details">Alle werken van deze Auteur</string>
     <string name="option_author_works_book">Alleen boeken</string>
     <string name="option_author_works_toc">Alleen inhouds titels</string>
+    <string name="option_toc_list_update_with_main_author">Auteurs bijwerken</string>
     <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
     <string name="option_apply_to_this_node_only">Alleen dit knooppunt</string>
     <string name="option_apply_to_all_related_books">Alle gerelateerde boeken</string>

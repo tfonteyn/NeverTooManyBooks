@@ -261,6 +261,7 @@
     <string name="lbl_author_type_translator">Çevirmen</string>
     <string name="lbl_author_type_writer">Yazar</string>
     <string name="lbl_authors">Yazarlar</string>
+    <string name="option_toc_list_update_with_main_author">Güncelleme yazarları</string>
     <string name="option_auto_updates">İnternetten otomatik güncellemelere izin ver.</string>
     <string name="lbl_available">Kullanılabilir</string>
     <string name="lbl_backup">Yedek kopya</string>
@@ -692,6 +693,7 @@
     <string name="confirm_create_real_author">“%1$s” henüz mevcut değil. Yaratılmalılar mı?</string>
     <string name="pt_search_resolve_authors_bedetheque">Bedetheque web sitesini kullanarak yazar takma adlarını çözün</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (Fransızca) biçim adlandırmasını koru</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Tüm girişlerdeki yazarı kitabın ana yazarı “%1$s” ile değiştirelim mi?</string>
     <string name="confirm_no_missing_covers_search_from_top">Bu sıranın altındaki tüm kitapların kapakları vardır. Baştan tekrar aransın mı?</string>
     <string name="info_all_books_have_covers">Bu kitaplıktaki tüm kitapların kapakları vardır</string>
     <string name="book_format_hardcover_oblong">Ciltli / dikdörtgen</string>

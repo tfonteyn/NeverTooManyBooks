@@ -97,7 +97,8 @@
     <item name="MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK"
           type="id" />
     <!-- A list of books (which can be a single book) specific to a node in the booklist.
-         When shown in the option menu for the BoB screen, it's implicitly for the current Bookshelf.
+         When shown in the option menu for the BoB screen, it's implicitly for
+         the current Bookshelf.
     -->
     <item name="MENU_UPDATE_FROM_INTERNET"
           type="id" />
@@ -108,7 +109,8 @@
     <item name="MENU_UPDATE_FROM_INTERNET_ALL_SHELVES"
           type="id" />
 
-    <!-- An option of the SearchBookUpdatesFragment option menu to quickly flip all fields to "skip". -->
+    <!-- An option of the SearchBookUpdatesFragment option menu to quickly
+         flip all fields to "skip". -->
     <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
           type="id" />
 
@@ -198,6 +200,9 @@
           type="id" />
 
     <item name="MENU_POPULATE_TOC_FROM_ISFDB"
+          type="id" />
+
+    <item name="MENU_TOC_LIST_UPDATE_WITH_PRIMARY_AUTHOR"
           type="id" />
 
     <!-- standard Booklist options menu -->

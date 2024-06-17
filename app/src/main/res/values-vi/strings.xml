@@ -632,6 +632,7 @@
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
     <string name="option_isfdb_menu_populate_toc">Nhan đề phổ biến (chỉ ISFDB)</string>
     <!-- Whether a book can be updated without user-permission. -->
+    <string name="option_toc_list_update_with_main_author">Cập nhật tác giả</string>
     <string name="option_auto_updates">Cho phép cập nhật tự động từ internet.</string>
     <!-- [VERIFIED] -->
     <string name="option_import">Nhập</string>
@@ -678,6 +679,7 @@
     <!-- Param 1: author name -->
     <string name="confirm_create_real_author">“%1$s” chưa tồn tại. Chúng có nên được tạo ra không?</string>
     <!-- Show when the user searches for books which have no cover (with the intention to add one) -->
+    <string name="confirm_toc_list_update_with_books_main_author">Thay thế tác giả trên tất cả các mục bằng tác giả chính của cuốn sách “%1$s” ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tất cả sách ở dưới hàng này đều có bìa. Tìm kiếm lại từ đầu?</string>
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild. -->

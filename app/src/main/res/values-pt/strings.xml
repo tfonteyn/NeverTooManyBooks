@@ -401,6 +401,7 @@
     <string name="btn_just_this_shelf">Apenas esta prateleira</string>
     <string name="lbl_all_bookshelves">Todas as prateleiras</string>
     <string name="option_isfdb_menu_populate_toc">Preencher títulos (somente ISFDB)</string>
+    <string name="option_toc_list_update_with_main_author">Atualizar autores</string>
     <string name="option_auto_updates">Permitir atualizações automáticas da internet.</string>
     <string name="confirm_scope_for_delete">Excluir o título “%1$s” por %2$s
 \n
@@ -593,6 +594,7 @@
     <string name="pt_ui_system_locale">Idioma do sistema</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="camera_next_action">Acção depois de tirar uma foto</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Substituir o autor em todas as entradas pelo autor principal do livro “%1$s” ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Todos os livros abaixo desta linha têm capas. Procurar outra vez do topo?</string>
     <string name="lbl_scope_of_change">Âmbito de Mudança</string>
     <string name="lbl_duplicate_book">Copiar este livro</string>

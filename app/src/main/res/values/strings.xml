@@ -738,6 +738,11 @@
     <string name="option_isbn_strict">Strict ISBN</string>
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
     <string name="option_isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
+    <!-- Menu option:
+         Replace/update the Author for all the entries in the TOC with the books main Author.
+         See msg key: confirm_toc_list_update_with_main_author -->
+    <string name="option_toc_list_update_with_main_author">Update authors</string>
+
     <!-- Whether a book can be updated without user-permission. -->
     <string name="option_auto_updates">Allow automatic updates from the internet.</string>
     <!-- [VERIFIED] -->
@@ -786,6 +791,13 @@
     <string name="confirm_test_connection">It is advisable to test this connection to avoid issues later on.</string>
     <!-- Param 1: author name -->
     <string name="confirm_create_real_author">“%1$s” does not exist yet. Should they be created?</string>
+
+    <!--
+     Confirmation message to Replace/update the author for all the entries in the TOC with the books main author.
+     Param 1: the books main author name
+    -->
+    <string name="confirm_toc_list_update_with_books_main_author">Replace the author on all the entries with the books main author “%1$s” ?</string>
+
     <!-- Show when the user searches for books which have no cover (with the intention to add one) -->
     <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
     <!-- Displayed when the user changes their sorting preference.

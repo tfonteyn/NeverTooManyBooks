@@ -578,6 +578,7 @@
     <string name="option_cover_rotate_cw">顺时针</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">批量扫描条形码</string>
     <string name="confirm_delete_style">删除样式“%1$s”吗？</string>
+    <string name="confirm_toc_list_update_with_books_main_author">用图书主要作者 “%1$s” 替换所有条目的作者？</string>
     <string name="confirm_no_missing_covers_search_from_top">此行以下的所有图书均有封面。从顶部再次搜索吗？</string>
     <string name="action_duplicate">创建副本</string>
     <string name="action_show_toc_long">显示目录</string>
@@ -600,6 +601,7 @@
     <string name="site_description_english_catalogue">英语及其他；目录</string>
     <string name="option_barcode_scan_mode_continuous">持续扫描</string>
     <string name="btn_show_list">显示列表</string>
+    <string name="option_toc_list_update_with_main_author">更新作者</string>
     <string name="option_auto_updates">允许自动从网络更新。</string>
     <string name="option_enable_sync_options">启用同步设置</string>
     <string name="confirm_continue">你确定要继续吗？</string>

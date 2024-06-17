@@ -256,6 +256,7 @@
     <string name="lbl_author_type_translator">Μεταφράστης</string>
     <string name="lbl_author_type_writer">συγγραφέας</string>
     <string name="lbl_authors">Συγγραφείς</string>
+    <string name="option_toc_list_update_with_main_author">Ενημέρωση συγγραφέων</string>
     <string name="option_auto_updates">Επιτρέψτε τις αυτόματες ενημερώσεις από το διαδίκτυο.</string>
     <string name="lbl_available">Διαθέσιμη</string>
     <string name="lbl_backup">Αντιγράφων ασφαλείας</string>
@@ -691,6 +692,7 @@
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
     <string name="pt_search_resolve_authors_bedetheque">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική)</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Αντικατάσταση του συγγραφέα σε όλες τις εγγραφές με τον κύριο συγγραφέα του βιβλίου «%1$s» ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη σειρά έχουν εξώφυλλα. Ψάξτε ξανά από την κορυφή;</string>
     <string name="info_all_books_have_covers">Όλα τα βιβλία σε αυτό το ράφι έχουν εξώφυλλα</string>
     <string name="book_format_hardcover_oblong">σκληρό βιβλίο - επίμηκες</string>

@@ -271,6 +271,7 @@
     <string name="lbl_author_type_translator">Переводчик</string>
     <string name="lbl_author_type_writer">Писатель</string>
     <string name="lbl_authors">Авторы</string>
+    <string name="option_toc_list_update_with_main_author">Обновить авторов</string>
     <string name="option_auto_updates">Разрешить автоматические обновления из Интернета.</string>
     <string name="lbl_available">Доступен</string>
     <string name="lbl_backup">Резервная копия</string>
@@ -702,6 +703,7 @@
     <string name="confirm_create_real_author">«%1$s» еще не существует. Должны ли они быть созданы?</string>
     <string name="pt_search_resolve_authors_bedetheque">Разрешить авторские псевдонимы с помощью веб-сайта Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Сохранить название формата Bedetheque (французский)</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Заменить автора во всех записях на основного автора книги «%1$s»?</string>
     <string name="confirm_no_missing_covers_search_from_top">Все книги ниже этого ряда имеют обложки. Искать снова сверху?</string>
     <string name="info_all_books_have_covers">У всех книг на этой полке есть обложки</string>
     <string name="book_format_hardcover_oblong">Твердая обложка - продолговатый</string>

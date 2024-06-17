@@ -270,6 +270,7 @@
     <string name="lbl_author_type_translator">Překladatel</string>
     <string name="lbl_author_type_writer">Spisovatel</string>
     <string name="lbl_authors">Autoři</string>
+    <string name="option_toc_list_update_with_main_author">Autoři aktualizace</string>
     <string name="option_auto_updates">Povolit automatické aktualizace z internetu.</string>
     <string name="lbl_available">Dostupná</string>
     <string name="lbl_backup">Záloha</string>
@@ -701,6 +702,7 @@
     <string name="confirm_create_real_author">„%1$s“ zatím neexistuje. Měly by být vytvořeny?</string>
     <string name="pt_search_resolve_authors_bedetheque">Vyřešte pseudonymy autorů pomocí webových stránek Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovat pojmenování ve formátu Bedetheque (francouzský)</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Nahradit autora u všech záznamů hlavním autorem knihy „%1$s“ ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Všechny knihy pod tímto řádkem mají obálky. Hledat znovu shora?</string>
     <string name="info_all_books_have_covers">Všechny knihy na této poličce mají obálky</string>
     <string name="book_format_hardcover_oblong">Tvrdý obal - podlouhlý</string>

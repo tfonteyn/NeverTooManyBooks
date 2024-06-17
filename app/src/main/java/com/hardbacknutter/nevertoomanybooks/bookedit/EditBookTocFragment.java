@@ -35,6 +35,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -163,7 +164,7 @@ public class EditBookTocFragment
 
         confirmTocResultsLauncher = new ConfirmTocDialogFragment.Launcher(
                 RK_CONFIRM_TOC,
-                this::onIsfdbDataConfirmed, this::searchIsfdb);
+                this::onIsfdbDataConfirmed, this::searchIsfdbNextEdition);
         confirmTocResultsLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
@@ -424,10 +425,85 @@ public class EditBookTocFragment
                                     tocEntry, vm.isAnthology());
     }
 
+    @SuppressLint({"NotifyDataSetChanged", "MethodOnlyUsedFromInnerClass"})
+    private void updateWithPrimaryBookAuthor() {
+        final Author tocAuthor = vm.getBook().getPrimaryAuthor();
+        // Sanity/paranoia check, this should never be the case
+        // as we disable the menu option in onPrepareMenu
+        if (tocAuthor == null) {
+            Snackbar.make(vb.getRoot(), R.string.bob_empty_author,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        }
+
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        final String message = context.getString(
+                R.string.confirm_toc_list_update_with_books_main_author,
+                tocAuthor.getLabel(context));
+
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.option_toc_list_update_with_main_author)
+                .setMessage(message)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    tocEntryList.forEach(tocEntry -> tocEntry.setPrimaryAuthor(tocAuthor));
+                    adapter.notifyDataSetChanged();
+                })
+                .create()
+                .show();
+    }
+
+    /**
+     * Search for the book (editions) on ISFDB.
+     */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private void searchIsfdb() {
+        final Book book = vm.getBook();
+        final long isfdbId = book.getLong(DBKey.SID_ISFDB);
+        if (isfdbId != 0) {
+            Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
+                          Snackbar.LENGTH_LONG).show();
+            isfdbTocSearchVm.searchBook(isfdbId);
+            return;
+        }
+
+        final String isbnStr = book.getString(DBKey.BOOK_ISBN);
+        if (!isbnStr.isEmpty()) {
+            final ISBN isbn = new ISBN(isbnStr, true);
+            if (isbn.isValid(true)) {
+                Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
+                              Snackbar.LENGTH_LONG).show();
+                isfdbTocSearchVm.searchByIsbn(isbn);
+                return;
+            }
+        }
+
+        Snackbar.make(vb.getRoot(), R.string.warning_requires_isbn,
+                      Snackbar.LENGTH_LONG).show();
+    }
+
+    /**
+     * Search for the next possible edition on ISFDB.
+     */
+    private void searchIsfdbNextEdition() {
+        if (isfdbEditions.isEmpty()) {
+            Snackbar.make(vb.getRoot(), R.string.warning_no_editions,
+                          Snackbar.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
+                          Snackbar.LENGTH_LONG).show();
+            isfdbTocSearchVm.searchEdition(isfdbEditions.get(0));
+            isfdbEditions.remove(0);
+        }
+    }
+
     /**
      * We got one or more editions from ISFDB.
      * <p>
-     * Stores the urls locally as the user might want to try the next in line.
+     * Stores the urls locally as the user might want to try the next in line,
+     * and fetches the first one in the list.
      *
      * @param message list of editions
      */
@@ -435,10 +511,16 @@ public class EditBookTocFragment
         message.process(editionList -> {
             isfdbEditions.clear();
             isfdbEditions.addAll(editionList);
-            searchIsfdb();
+            searchIsfdbNextEdition();
         });
     }
 
+    /**
+     * We got the resulting ISFDB book for the edition we searched for.
+     * Prompt the user to accept it, or to search for the next edition.
+     *
+     * @param message with the book data
+     */
     private void onIsfdbBook(@NonNull final LiveDataEvent<Book> message) {
         message.process(bookData -> {
 
@@ -491,18 +573,6 @@ public class EditBookTocFragment
         // They will get weeded out when saved to the DAO
         tocEntryList.addAll(tocEntries);
         adapter.notifyDataSetChanged();
-    }
-
-    private void searchIsfdb() {
-        if (isfdbEditions.isEmpty()) {
-            Snackbar.make(vb.getRoot(), R.string.warning_no_editions,
-                          Snackbar.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
-                          Snackbar.LENGTH_LONG).show();
-            isfdbTocSearchVm.searchEdition(isfdbEditions.get(0));
-            isfdbEditions.remove(0);
-        }
     }
 
     /**
@@ -773,35 +843,34 @@ public class EditBookTocFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            menu.add(R.id.MENU_POPULATE_TOC_FROM_ISFDB, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0,
+            MenuCompat.setGroupDividerEnabled(menu, true);
+
+            menu.add(R.id.MENU_TOC_LIST_UPDATE_WITH_PRIMARY_AUTHOR,
+                     R.id.MENU_TOC_LIST_UPDATE_WITH_PRIMARY_AUTHOR,
+                     0,
+                     R.string.option_toc_list_update_with_main_author);
+            menu.add(R.id.MENU_POPULATE_TOC_FROM_ISFDB,
+                     R.id.MENU_POPULATE_TOC_FROM_ISFDB,
+                     0,
                      R.string.option_isfdb_menu_populate_toc);
+        }
+
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            final Author tocAuthor = vm.getBook().getPrimaryAuthor();
+            menu.findItem(R.id.MENU_TOC_LIST_UPDATE_WITH_PRIMARY_AUTHOR)
+                .setEnabled(tocAuthor != null);
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
 
-            if (menuItem.getItemId() == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
-                final Book book = vm.getBook();
-                final long isfdbId = book.getLong(DBKey.SID_ISFDB);
-                if (isfdbId != 0) {
-                    Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
-                                  Snackbar.LENGTH_LONG).show();
-                    isfdbTocSearchVm.searchBook(isfdbId);
-                    return true;
-                }
+            if (menuItem.getItemId() == R.id.MENU_TOC_LIST_UPDATE_WITH_PRIMARY_AUTHOR) {
+                updateWithPrimaryBookAuthor();
+                return true;
 
-                final String isbnStr = book.getString(DBKey.BOOK_ISBN);
-                if (!isbnStr.isEmpty()) {
-                    final ISBN isbn = new ISBN(isbnStr, true);
-                    if (isbn.isValid(true)) {
-                        Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
-                                      Snackbar.LENGTH_LONG).show();
-                        isfdbTocSearchVm.searchByIsbn(isbn);
-                        return true;
-                    }
-                }
-                Snackbar.make(vb.getRoot(), R.string.warning_requires_isbn,
-                              Snackbar.LENGTH_LONG).show();
+            } else if (menuItem.getItemId() == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
+                searchIsfdb();
                 return true;
             }
             return false;
