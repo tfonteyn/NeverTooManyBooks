@@ -30,11 +30,16 @@
          external-path-pics ->
           "/storage/emulated/0/Android/data/
            com.hardbacknutter.nevertoomanybooks.debug/files/Pictures"
-         -->
+
+         Gives access to Context#getExternalFilesDir(String)[0]
+    -->
     <external-files-path
         name="external-path-pics"
         path="Pictures/" />
-    <!-- See ExtFileProvider for the attribute "volume"-->
+
+    <!-- See ExtFileProvider for the attribute "volume"
+         Gives access to Context#getExternalFilesDir(String)[1] if [1] exists (sdcard)
+    -->
     <external-files-path
         name="external-path-pics-sdcard"
         path="Pictures/"
