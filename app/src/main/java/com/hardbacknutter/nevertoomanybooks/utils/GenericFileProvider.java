@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,9 +82,13 @@ public class GenericFileProvider
      * Get a FileProvider URI for the given file.
      *
      * @param context Current context
-     * @param file    to uri-fy
+     * @param file    A {@link File} pointing to the filename for which you want a
+     *                {@code content} {@link Uri}.
      *
-     * @return the uri
+     * @return A content URI for the file.
+     *
+     * @throws IllegalArgumentException When the given {@link File} is outside
+     *                                  the paths supported by the provider.
      */
     @NonNull
     public static Uri createUri(@NonNull final Context context,
@@ -96,10 +100,14 @@ public class GenericFileProvider
      * Get a FileProvider URI for the given file.
      *
      * @param context     Current context
-     * @param file        to uri-fy
+     * @param file        A {@link File} pointing to the filename for which you want a
+     *                    {@code content} {@link Uri}.
      * @param displayName the name to display instead of the original file name
      *
-     * @return the uri
+     * @return A content URI for the file.
+     *
+     * @throws IllegalArgumentException When the given {@link File} is outside
+     *                                  the paths supported by the provider.
      */
     @NonNull
     public static Uri createUri(@NonNull final Context context,

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -1519,11 +1520,19 @@ public class Book
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_TEXT, text);
 
-        getCover(0).ifPresent(file -> intent
+        getCover(0).ifPresent(file -> {
+            try {
+                final Uri uri = GenericFileProvider.createUri(context, file, title);
                 // read access to the input uri
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .putExtra(Intent.EXTRA_STREAM,
-                          GenericFileProvider.createUri(context, file, title)));
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                      .putExtra(Intent.EXTRA_STREAM, uri);
+            } catch (@NonNull final IllegalArgumentException e) {
+                // Ignore the error, but log it. If the GenericFileProvider
+                // is at fault, the user will be hit with this exception
+                // when they add/edit covers.
+                LoggerFactory.getLogger().e(TAG, e, file.getAbsolutePath());
+            }
+        });
 
 
         return Intent.createChooser(intent, context.getString(R.string.whichSendApplication));

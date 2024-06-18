@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -49,22 +48,44 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * https://www.opencamera.org.uk/
  */
 public class TakePictureContract
-        extends ActivityResultContract<File, Optional<File>> {
+        extends ActivityResultContract<TakePictureContract.Input, Optional<File>> {
 
     private static final String TAG = "TakePictureContract";
 
+    /**
+     * Keeps a reference between {@link #createIntent(Context, Input)} and
+     * returning in {@link #parseResult(int, Intent)}.
+     */
     private File dstFile;
+
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     * @param dstFile the output file (name)
+     *
+     * @return instance
+     *
+     * @throws IllegalArgumentException When a given {@link File} is outside
+     *                                  the paths supported by the provider.
+     */
+    @NonNull
+    public static Input createInput(@NonNull final Context context,
+                                    @NonNull final File dstFile) {
+        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+
+        return new Input(dstUri, dstFile);
+    }
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final File dstFile) {
+                               @NonNull final Input input) {
         // MediaStore.ACTION_IMAGE_CAPTURE does not produce output, so keep a reference here
-        this.dstFile = Objects.requireNonNull(dstFile, "dstFile");
+        this.dstFile = input.dstFile;
 
-        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                .putExtra(MediaStore.EXTRA_OUTPUT, dstUri);
+                .putExtra(MediaStore.EXTRA_OUTPUT, input.dstUri);
     }
 
     @Override
@@ -84,5 +105,18 @@ public class TakePictureContract
         }
 
         return Optional.of(dstFile);
+    }
+
+    public static final class Input {
+        @NonNull
+        final File dstFile;
+        @NonNull
+        final Uri dstUri;
+
+        private Input(@NonNull final Uri dstUri,
+                      @NonNull final File dstFile) {
+            this.dstUri = dstUri;
+            this.dstFile = dstFile;
+        }
     }
 }

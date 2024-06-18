@@ -120,7 +120,7 @@ public class CoverHandler {
     /** The fragment root view; used for context, resources, Snackbar. */
     private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
-    private ActivityResultLauncher<File> takePictureLauncher;
+    private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
     private ActivityResultLauncher<CropImageContract.Input> cropPictureLauncher;
     private ActivityResultLauncher<String> getFromFileLauncher;
     private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
@@ -559,10 +559,18 @@ public class CoverHandler {
      */
     private void editPicture(@NonNull final File srcFile)
             throws CoverStorageException {
+        final Context context = fragmentView.getContext();
         try {
-            editPictureLauncher.launch(new EditPictureContract.Input(
-                    srcFile,
-                    ServiceLocator.getInstance().getCoverStorage().getTempFile()));
+            final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
+            final EditPictureContract.Input input =
+                    EditPictureContract.createInput(context, srcFile, tempFile);
+            editPictureLauncher.launch(input);
+
+        } catch (@NonNull final IllegalArgumentException e) {
+            // This is a bug; a permission issue with the GenericFileProvider
+            ErrorDialog.show(context, TAG, new CoverStorageException(
+                    "GenericFileProvider", e));
+
         } catch (@NonNull final ActivityNotFoundException e) {
             Snackbar.make(fragmentView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG)
                     .show();
@@ -626,15 +634,26 @@ public class CoverHandler {
                == PackageManager.PERMISSION_GRANTED) {
 
             try {
-                takePictureLauncher.launch(
-                        ServiceLocator.getInstance().getCoverStorage().getTempFile());
+                final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
+                final TakePictureContract.Input input =
+                        TakePictureContract.createInput(context, tempFile);
+                takePictureLauncher.launch(input);
 
             } catch (@NonNull final CoverStorageException e) {
                 ErrorDialog.show(context, TAG, e);
+
+            } catch (@NonNull final IllegalArgumentException e) {
+                // This is a bug; a permission issue with the GenericFileProvider
+                ErrorDialog.show(context, TAG, new CoverStorageException(
+                        "GenericFileProvider", e));
+
             } catch (@NonNull final ActivityNotFoundException e) {
-                // No Camera? we should not get here... flw
-                Snackbar.make(fragmentView, R.string.error_unexpected, Snackbar.LENGTH_LONG)
-                        .show();
+                // No Camera? we should not get here as we should not have been
+                // to call this method in the first place... flw
+                // Fake an IOException...
+                ErrorDialog.show(context, TAG,
+                                 new IOException(context.getString(R.string.error_unexpected),
+                                                 e));
             }
 
         } else {

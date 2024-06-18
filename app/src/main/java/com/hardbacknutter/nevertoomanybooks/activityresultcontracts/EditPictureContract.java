@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -50,37 +49,60 @@ public class EditPictureContract
 
     private static final String IMAGE_MIME_TYPE = "image/*";
 
+    /**
+     * Keeps a reference between {@link #createIntent(Context, Input)} and
+     * returning in {@link #parseResult(int, Intent)}.
+     */
     private File dstFile;
+
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     * @param srcFile the input file
+     * @param dstFile the output file (name)
+     *
+     * @return instance
+     *
+     * @throws IllegalArgumentException When a given {@link File} is outside
+     *                                  the paths supported by the provider.
+     */
+    @NonNull
+    public static Input createInput(@NonNull final Context context,
+                                    @NonNull final File srcFile,
+                                    @NonNull final File dstFile) {
+        final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
+        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+
+        return new Input(srcUri, dstUri, dstFile);
+    }
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        Objects.requireNonNull(input.srcFile, "srcFile");
         // Intent.ACTION_EDIT does not produce output, so keep a reference here
-        this.dstFile = Objects.requireNonNull(input.dstFile, "dstFile");
+        this.dstFile = input.dstFile;
 
-        final Uri srcUri = GenericFileProvider.createUri(context, input.srcFile);
-        final Uri dstUri = GenericFileProvider.createUri(context, input.dstFile);
         final Intent intent = new Intent(Intent.ACTION_EDIT)
-                .setDataAndType(srcUri, IMAGE_MIME_TYPE)
+                .setDataAndType(input.srcUri, IMAGE_MIME_TYPE)
                 // read access to the input uri
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 // write access see below
-                .putExtra(MediaStore.EXTRA_OUTPUT, dstUri);
+                .putExtra(MediaStore.EXTRA_OUTPUT, input.dstUri);
 
         final List<ResolveInfo> resInfoList =
                 context.getPackageManager()
                        .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
         if (resInfoList.isEmpty()) {
-            throw new ActivityNotFoundException();
+            throw new ActivityNotFoundException("no ACTION_EDIT apps found");
         }
 
         // We do not know which app will be used, so need to grant permission to all.
         for (final ResolveInfo resolveInfo : resInfoList) {
             context.grantUriPermission(resolveInfo.activityInfo.packageName,
-                                       dstUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                       input.dstUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         }
 
         return Intent.createChooser(intent, context.getString(R.string.whichEditApplication));
@@ -92,7 +114,7 @@ public class EditPictureContract
                                       @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
@@ -102,16 +124,20 @@ public class EditPictureContract
         return Optional.of(dstFile);
     }
 
-    public static class Input {
+    public static final class Input {
 
-        @NonNull
-        final File srcFile;
         @NonNull
         final File dstFile;
+        @NonNull
+        final Uri srcUri;
+        @NonNull
+        final Uri dstUri;
 
-        public Input(@NonNull final File srcFile,
-                     @NonNull final File dstFile) {
-            this.srcFile = srcFile;
+        private Input(@NonNull final Uri srcUri,
+                      @NonNull final Uri dstUri,
+                      @NonNull final File dstFile) {
+            this.srcUri = srcUri;
+            this.dstUri = dstUri;
             this.dstFile = dstFile;
         }
     }

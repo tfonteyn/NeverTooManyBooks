@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public class DebugReport {
@@ -226,16 +225,6 @@ public class DebugReport {
             printWriter.println(text);
         }
         files.add(file);
-    }
-
-    @NonNull
-    public List<Uri> createUriList() {
-        // Build the attachment list
-        return files
-                .stream()
-                .filter(file -> file.exists() && file.length() > 0)
-                .map(file -> GenericFileProvider.createUri(context, file))
-                .collect(Collectors.toList());
     }
 
     @NonNull
