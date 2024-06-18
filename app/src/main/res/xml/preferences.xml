@@ -239,13 +239,14 @@
             tools:summary="@string/disabled">
         </Preference>
 
-        <!-- entries/values are set from code; default 0 == internal 'shared' storage. -->
+        <!-- entries/values are set from code;
+             default 0 == internal 'shared' storage.
+             SummaryProvider must be set from code. -->
         <ListPreference
             android:defaultValue="0"
             android:icon="@drawable/ic_baseline_folder_24"
             android:key="storage.volume.index"
-            android:title="@string/pt_storage_volume"
-            app:useSimpleSummaryProvider="true" />
+            android:title="@string/pt_storage_volume" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"

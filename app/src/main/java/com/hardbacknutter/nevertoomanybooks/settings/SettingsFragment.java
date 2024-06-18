@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.storage.StorageManager;
@@ -160,9 +161,19 @@ public class SettingsFragment
         titleOrderByHelper = new TitleOrderByHelper(
                 getContext(), findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED));
 
-        //noinspection DataFlowIssue
-        storageVolumeHelper = new StorageVolumeHelper(
-                getContext(), findPreference(Prefs.PK_STORAGE_VOLUME));
+        final ListPreference pStorageVolume = findPreference(Prefs.PK_STORAGE_VOLUME);
+        // On Android 9+, the Context#getExternalFilesDirs method will return
+        // both internal and sdcard directories.
+        // Android 8.x it "depends" ... as this is quite old now, we simply don't support 8.x
+        // for moving the cover storage.
+        if (Build.VERSION.SDK_INT < 28) {
+            //noinspection DataFlowIssue
+            pStorageVolume.setEnabled(false);
+            pStorageVolume.setSummary(getString(R.string.warning_requires_android_x, 9));
+        } else {
+            //noinspection DataFlowIssue
+            storageVolumeHelper = new StorageVolumeHelper(getContext(), pStorageVolume);
+        }
     }
 
     @Override
@@ -178,10 +189,16 @@ public class SettingsFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        vm.onProgress().observe(getViewLifecycleOwner(), storageVolumeHelper::onProgress);
-        vm.onMoveCancelled().observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveCancelled);
-        vm.onMoveFailure().observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFailure);
-        vm.onMoveFinished().observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFinished);
+        if (storageVolumeHelper != null) {
+            vm.onProgress()
+              .observe(getViewLifecycleOwner(), storageVolumeHelper::onProgress);
+            vm.onMoveCancelled()
+              .observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveCancelled);
+            vm.onMoveFailure()
+              .observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFailure);
+            vm.onMoveFinished()
+              .observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFinished);
+        }
     }
 
     @Override
@@ -265,6 +282,9 @@ public class SettingsFragment
                             @NonNull final ListPreference preference) {
             this.context = context;
             this.storageVolumePref = preference;
+
+            this.storageVolumePref.setSummaryProvider(
+                    ListPreference.SimpleSummaryProvider.getInstance());
 
             final StorageManager storage = (StorageManager)
                     this.context.getSystemService(Context.STORAGE_SERVICE);
