@@ -98,7 +98,7 @@
             android.buildTypes.[type].resValue("string", "fileProviderAuthority", "[value]")
          -->
         <provider
-            android:name=".utils.GenericFileProvider"
+            android:name=".utils.provider.GenericFileProvider"
             android:authorities="@string/fileProviderAuthority"
             android:exported="false"
             android:grantUriPermissions="true">

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.utils.provider;
 
 import android.content.Context;
 import android.net.Uri;
@@ -69,6 +69,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * </paths>
  * }
  * </pre>
+ *
+ * <a href="https://issuetracker.google.com/issues/37125252">Google BUG 37125252 won't fix??</a>
  *
  * @see <a href="https://developer.android.com/reference/androidx/core/content/FileProvider">
  *         FileProvider</a>

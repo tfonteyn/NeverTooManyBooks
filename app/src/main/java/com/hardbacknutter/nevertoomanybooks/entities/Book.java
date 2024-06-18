@@ -78,8 +78,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**

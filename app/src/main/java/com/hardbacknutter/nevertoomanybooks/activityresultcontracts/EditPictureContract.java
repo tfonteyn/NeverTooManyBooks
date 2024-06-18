@@ -39,7 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
+import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class EditPictureContract
