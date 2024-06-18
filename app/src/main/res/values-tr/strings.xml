@@ -788,5 +788,5 @@
     <string name="pt_ui_theme_colors">Tema renkleri</string>
     <string name="pe_ui_theme_colors_blue_grey">Mavi-gri</string>
     <string name="pe_ui_theme_colors_dynamic">Dinamik Renkler</string>
-    <string name="warning_requires_android_12">Android 12 veya üstü gerektirir</string>
+    <string name="warning_requires_android_x">Android %1$d veya üstü gerektirir</string>
 </resources>

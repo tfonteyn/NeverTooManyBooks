@@ -781,5 +781,5 @@
     <string name="pt_ui_theme_colors">Colori del tema</string>
     <string name="pe_ui_theme_colors_blue_grey">Blu-grigio</string>
     <string name="pe_ui_theme_colors_dynamic">Colori dinamici</string>
-    <string name="warning_requires_android_12">Richiede Android 12 o superiore</string>
+    <string name="warning_requires_android_x">Richiede Android %1$d o superiore</string>
 </resources>

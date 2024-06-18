@@ -798,5 +798,5 @@
     <string name="pt_ui_theme_colors">Цвета темы</string>
     <string name="pe_ui_theme_colors_blue_grey">Сине-серый</string>
     <string name="pe_ui_theme_colors_dynamic">Динамические цвета</string>
-    <string name="warning_requires_android_12">Требуется Android 12 или более поздняя версия</string>
+    <string name="warning_requires_android_x">Требуется Android %1$d или более поздняя версия</string>
 </resources>

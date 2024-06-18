@@ -779,5 +779,5 @@
     <string name="pt_ui_theme_colors">Thema Kleuren</string>
     <string name="pe_ui_theme_colors_blue_grey">Blauw/Grijs</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamische kleuren</string>
-    <string name="warning_requires_android_12">Android 12 of hoger vereist</string>
+    <string name="warning_requires_android_x">Android %1$d of hoger vereist</string>
 </resources>

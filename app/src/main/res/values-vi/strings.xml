@@ -1520,5 +1520,5 @@
     <string name="pt_ui_theme_colors">Màu sắc giao diện</string>
     <string name="pe_ui_theme_colors_blue_grey">Xanh xám</string>
     <string name="pe_ui_theme_colors_dynamic">Màu sắc năng động</string>
-    <string name="warning_requires_android_12">Yêu cầu Android 12 trở lên</string>
+    <string name="warning_requires_android_x">Yêu cầu Android %1$d trở lên</string>
 </resources>

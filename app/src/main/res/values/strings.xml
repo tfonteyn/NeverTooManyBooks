@@ -267,7 +267,7 @@
         Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <string name="warning_restart_required">App restart required</string>
-    <string name="warning_requires_android_12">Requires Android 12 or higher</string>
+    <string name="warning_requires_android_x">Requires Android %1$d or higher</string>
 
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->

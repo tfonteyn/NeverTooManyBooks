@@ -791,5 +791,5 @@
     <string name="pt_ui_theme_colors">Colores temáticos</string>
     <string name="pe_ui_theme_colors_blue_grey">Gris azulado</string>
     <string name="pe_ui_theme_colors_dynamic">Colores dinámicos</string>
-    <string name="warning_requires_android_12">Requiere Android 12 o superior</string>
+    <string name="warning_requires_android_x">Requiere Android %1$d o superior</string>
 </resources>

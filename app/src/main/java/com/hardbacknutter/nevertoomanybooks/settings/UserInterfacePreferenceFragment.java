@@ -65,7 +65,7 @@ public class UserInterfacePreferenceFragment
         if (Build.VERSION.SDK_INT < 33) {
             //noinspection DataFlowIssue
             pUiThemeColor.setEnabled(false);
-            pUiThemeColor.setSummary(R.string.warning_requires_android_12);
+            pUiThemeColor.setSummary(getString(R.string.warning_requires_android_x, 12));
         } else {
             //noinspection DataFlowIssue
             pUiThemeColor.setOnPreferenceChangeListener((preference, newValue) -> {

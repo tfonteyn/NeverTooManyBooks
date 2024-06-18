@@ -797,5 +797,5 @@
     <string name="pt_ui_theme_colors">Tématické barvy</string>
     <string name="pe_ui_theme_colors_blue_grey">Modrošedá</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamické barvy</string>
-    <string name="warning_requires_android_12">Vyžaduje systém Android 12 nebo vyšší</string>
+    <string name="warning_requires_android_x">Vyžaduje systém Android %1$d nebo vyšší</string>
 </resources>

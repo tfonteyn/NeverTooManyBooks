@@ -810,5 +810,5 @@
     <string name="pt_ui_theme_colors">主题颜色</string>
     <string name="pe_ui_theme_colors_blue_grey">蓝灰色</string>
     <string name="pe_ui_theme_colors_dynamic">动态色彩</string>
-    <string name="warning_requires_android_12">需要 Android 12 或更高版本</string>
+    <string name="warning_requires_android_x">需要 Android %1$d 或更高版本</string>
 </resources>

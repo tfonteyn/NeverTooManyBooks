@@ -778,5 +778,5 @@
     <string name="pt_ui_theme_colors">Χρώματα θέματος</string>
     <string name="pe_ui_theme_colors_blue_grey">Μπλε-γκρι</string>
     <string name="pe_ui_theme_colors_dynamic">Δυναμικά χρώματα</string>
-    <string name="warning_requires_android_12">Απαιτεί Android 12 ή νεότερη έκδοση</string>
+    <string name="warning_requires_android_x">Απαιτεί Android %1$d ή νεότερη έκδοση</string>
 </resources>

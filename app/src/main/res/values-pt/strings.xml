@@ -807,5 +807,5 @@
     <string name="pt_ui_theme_colors">Cores do tema</string>
     <string name="pe_ui_theme_colors_blue_grey">Azul-cinza</string>
     <string name="pe_ui_theme_colors_dynamic">Cores dinâmicas</string>
-    <string name="warning_requires_android_12">Requer Android 12 ou superior</string>
+    <string name="warning_requires_android_x">Requer Android %1$d ou superior</string>
 </resources>

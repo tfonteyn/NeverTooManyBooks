@@ -802,5 +802,5 @@
     <string name="pt_ui_theme_colors">Kolory motywu</string>
     <string name="pe_ui_theme_colors_blue_grey">Niebiesko-szary</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamiczne kolory</string>
-    <string name="warning_requires_android_12">Wymaga systemu Android 12 lub nowszego</string>
+    <string name="warning_requires_android_x">Wymaga systemu Android %1$d lub nowszego</string>
 </resources>
