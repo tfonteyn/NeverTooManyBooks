@@ -28,6 +28,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -68,6 +69,7 @@ public class UserInterfacePreferenceFragment
             pUiThemeColor.setSummary(getString(R.string.warning_requires_android_x, 12));
         } else {
             //noinspection DataFlowIssue
+            pUiThemeColor.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
             pUiThemeColor.setOnPreferenceChangeListener((preference, newValue) -> {
                 ThemeColorController.recreate();
                 return true;
