@@ -83,8 +83,17 @@ import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
 /**
- * <strong>COPIED FROM {@link androidx.core.content.FileProvider}
- * as found in androidx.core:core-ktx:1.13.1</strong>
+ * <strong>COPIED FROM {@link androidx.core.content.FileProvider} core-1.13.1</strong>
+ * Matches the source from:
+ * https://github.com/androidx/androidx/blob/f8a77b18c27ff63ab9783ba89e296218fc359c24/core/core/src/main/java/androidx/core/content/FileProvider.java
+ * <p>
+ * Current version:
+ * https://github.com/androidx/androidx/blob/androidx-main/core/core/src/main/java/androidx/core/content/FileProvider.java
+ * <p>
+ * Changes is this file have been surrounded with EXTFILEPROVIDER tags.
+ * <p>
+ * <p>
+ * <p>
  * <p>
  * FileProvider is a special subclass of {@link ContentProvider} that facilitates secure sharing
  * of files associated with an app by creating a <code>content://</code> {@link Uri} for a file
@@ -438,7 +447,7 @@ public class ExtFileProvider
      * information about the provider.
      *
      * @param context A {@link Context} for the current component.
-     * @param info    A {@link ProviderInfo} for the new provider.
+     * @param info A {@link ProviderInfo} for the new provider.
      */
     @SuppressWarnings("StringSplitter")
     @CallSuper
@@ -477,16 +486,14 @@ public class ExtFileProvider
      * <code>content</code> {@link Uri} for file paths defined in their <code>&lt;paths&gt;</code>
      * meta-data element. See the Class Overview for more information.
      *
-     * @param context   A {@link Context} for the current component.
+     * @param context A {@link Context} for the current component.
      * @param authority The authority of a {@link ExtFileProvider} defined in a
-     *                  {@code <provider>} element in your app's manifest.
-     * @param file      A {@link File} pointing to the filename for which you want a
-     *                  <code>content</code> {@link Uri}.
-     *
+     *            {@code <provider>} element in your app's manifest.
+     * @param file A {@link File} pointing to the filename for which you want a
+     * <code>content</code> {@link Uri}.
      * @return A content URI for the file.
-     *
      * @throws IllegalArgumentException When the given {@link File} is outside
-     *                                  the paths supported by the provider.
+     * the paths supported by the provider.
      */
     public static Uri getUriForFile(@NonNull Context context,
                                     @NonNull String authority,
@@ -506,18 +513,16 @@ public class ExtFileProvider
      * <code>content</code> {@link Uri} for file paths defined in their <code>&lt;paths&gt;</code>
      * meta-data element. See the Class Overview for more information.
      *
-     * @param context     A {@link Context} for the current component.
-     * @param authority   The authority of a {@link ExtFileProvider} defined in a
-     *                    {@code <provider>} element in your app's manifest.
-     * @param file        A {@link File} pointing to the filename for which you want a
-     *                    <code>content</code> {@link Uri}.
+     * @param context A {@link Context} for the current component.
+     * @param authority The authority of a {@link ExtFileProvider} defined in a
+     *            {@code <provider>} element in your app's manifest.
+     * @param file A {@link File} pointing to the filename for which you want a
+     * <code>content</code> {@link Uri}.
      * @param displayName The filename to be displayed. This can be used if the original filename
-     *                    is undesirable.
-     *
+     * is undesirable.
      * @return A content URI for the file.
-     *
      * @throws IllegalArgumentException When the given {@link File} is outside
-     *                                  the paths supported by the provider.
+     * the paths supported by the provider.
      */
     @SuppressLint("StreamFiles")
     @NonNull
@@ -542,20 +547,20 @@ public class ExtFileProvider
      * {@link ContentProvider#query(Uri, String[], String, String[], String)
      * ContentProvider.query()}.
      *
-     * @param uri           A content URI returned by {@link #getUriForFile}.
-     * @param projection    The list of columns to put into the {@link Cursor}. If null all columns are
-     *                      included.
-     * @param selection     Selection criteria to apply. If null then all data that matches the content
-     *                      URI is returned.
+     * @param uri A content URI returned by {@link #getUriForFile}.
+     * @param projection The list of columns to put into the {@link Cursor}. If null all columns are
+     * included.
+     * @param selection Selection criteria to apply. If null then all data that matches the content
+     * URI is returned.
      * @param selectionArgs An array of {@link String}, containing arguments to bind to
-     *                      the <i>selection</i> parameter. The <i>query</i> method scans <i>selection</i> from left to
-     *                      right and iterates through <i>selectionArgs</i>, replacing the current "?" character in
-     *                      <i>selection</i> with the value at the current position in <i>selectionArgs</i>. The
-     *                      values are bound to <i>selection</i> as {@link String} values.
-     * @param sortOrder     A {@link String} containing the column name(s) on which to sort
-     *                      the resulting {@link Cursor}.
-     *
+     * the <i>selection</i> parameter. The <i>query</i> method scans <i>selection</i> from left to
+     * right and iterates through <i>selectionArgs</i>, replacing the current "?" character in
+     * <i>selection</i> with the value at the current position in <i>selectionArgs</i>. The
+     * values are bound to <i>selection</i> as {@link String} values.
+     * @param sortOrder A {@link String} containing the column name(s) on which to sort
+     * the resulting {@link Cursor}.
      * @return A {@link Cursor} containing the results of the query.
+     *
      */
     @NonNull
     @Override
@@ -598,10 +603,9 @@ public class ExtFileProvider
      * {@link #getUriForFile(Context, String, File) getUriForFile()}.
      *
      * @param uri A content URI returned by
-     *            {@link #getUriForFile(Context, String, File) getUriForFile()}.
-     *
+     * {@link #getUriForFile(Context, String, File) getUriForFile()}.
      * @return If the associated file has an extension, the MIME type associated with that
-     *         extension; otherwise <code>application/octet-stream</code>.
+     * extension; otherwise <code>application/octet-stream</code>.
      */
     @Nullable
     @Override
@@ -659,11 +663,10 @@ public class ExtFileProvider
      * returned by {@link #getUriForFile(Context, String, File) getUriForFile()}. Notice that this
      * method does <b>not</b> throw an {@link IOException}; you must check its return value.
      *
-     * @param uri           A content URI for a file, as returned by
-     *                      {@link #getUriForFile(Context, String, File) getUriForFile()}.
-     * @param selection     Ignored. Set to {@code null}.
+     * @param uri A content URI for a file, as returned by
+     * {@link #getUriForFile(Context, String, File) getUriForFile()}.
+     * @param selection Ignored. Set to {@code null}.
      * @param selectionArgs Ignored. Set to {@code null}.
-     *
      * @return 1 if the delete succeeds; otherwise, 0.
      */
     @Override
@@ -681,14 +684,13 @@ public class ExtFileProvider
      * {@link Uri}. To get the {@link ParcelFileDescriptor}, call
      * {@link ContentResolver#openFileDescriptor(Uri, String)
      * ContentResolver.openFileDescriptor}.
-     * <p>
+     *
      * To override this method, you must provide your own subclass of FileProvider.
      *
-     * @param uri  A content URI associated with a file, as returned by
-     *             {@link #getUriForFile(Context, String, File) getUriForFile()}.
+     * @param uri A content URI associated with a file, as returned by
+     * {@link #getUriForFile(Context, String, File) getUriForFile()}.
      * @param mode Access mode for the file. May be "r" for read-only access, "rw" for read and
-     *             write access, or "rwt" for read and write access that truncates any existing file.
-     *
+     * write access, or "rwt" for read and write access that truncates any existing file.
      * @return A new {@link ParcelFileDescriptor} with which you can access the file.
      */
     @SuppressLint("UnknownNullness") // b/171012356
@@ -790,8 +792,20 @@ public class ExtFileProvider
             if (type == START_TAG) {
                 final String tag = in.getName();
 
-                final String name = in.getAttributeValue(null, ATTR_NAME);
+                String name = in.getAttributeValue(null, ATTR_NAME);
                 String path = in.getAttributeValue(null, ATTR_PATH);
+
+                // begin EXTFILEPROVIDER
+                int volume = 0;
+                final String volumeStr = in.getAttributeValue(null, "volume");
+                if (volumeStr != null) {
+                    try {
+                        volume = Integer.parseInt(volumeStr);
+                    } catch (final NumberFormatException ignore) {
+                        // ignore, use "0"
+                    }
+                }
+                // end EXTFILEPROVIDER
 
                 File target = null;
                 if (TAG_ROOT_PATH.equals(tag)) {
@@ -804,20 +818,26 @@ public class ExtFileProvider
                     target = Environment.getExternalStorageDirectory();
                 } else if (TAG_EXTERNAL_FILES.equals(tag)) {
                     File[] externalFilesDirs = ContextCompat.getExternalFilesDirs(context, null);
-                    if (externalFilesDirs.length > 0) {
-                        target = externalFilesDirs[0];
+                    // begin EXTFILEPROVIDER: replace '0' with 'volume'
+                    if (externalFilesDirs.length > volume) {
+                        target = externalFilesDirs[volume];
                     }
+                    // end EXTFILEPROVIDER
                 } else if (TAG_EXTERNAL_CACHE.equals(tag)) {
                     File[] externalCacheDirs = ContextCompat.getExternalCacheDirs(context);
-                    if (externalCacheDirs.length > 0) {
-                        target = externalCacheDirs[0];
+                    // begin EXTFILEPROVIDER: replace '0' with 'volume'
+                    if (externalCacheDirs.length > volume) {
+                        target = externalCacheDirs[volume];
                     }
+                    // end EXTFILEPROVIDER
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                            && TAG_EXTERNAL_MEDIA.equals(tag)) {
                     File[] externalMediaDirs = Api21Impl.getExternalMediaDirs(context);
-                    if (externalMediaDirs.length > 0) {
-                        target = externalMediaDirs[0];
+                    // begin EXTFILEPROVIDER: replace '0' with 'volume'
+                    if (externalMediaDirs.length > volume) {
+                        target = externalMediaDirs[volume];
                     }
+                    // end EXTFILEPROVIDER
                 }
 
                 if (target != null) {

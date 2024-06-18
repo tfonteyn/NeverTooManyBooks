@@ -26,10 +26,19 @@
          The root path of this subdirectory is the same as the value returned
          by Context#getExternalFilesDir(String).
 
-         Access limited to the Pictures directory. -->
+         Access limited to the Pictures directory.
+         external-path-pics ->
+          "/storage/emulated/0/Android/data/
+           com.hardbacknutter.nevertoomanybooks.debug/files/Pictures"
+         -->
     <external-files-path
         name="external-path-pics"
         path="Pictures/" />
+    <!-- See ExtFileProvider for the attribute "volume"-->
+    <external-files-path
+        name="external-path-pics-sdcard"
+        path="Pictures/"
+        volume="1" />
 
     <!-- Represents files in the files/ subdirectory of your app's internal
          storage area. This subdirectory is the same as the value returned by

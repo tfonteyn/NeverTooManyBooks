@@ -23,7 +23,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 
 import java.io.File;
 
@@ -78,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  *         ContentProvider</a>
  */
 public class GenericFileProvider
-        extends FileProvider {
+        extends ExtFileProvider {
 
     /**
      * Get a FileProvider URI for the given file.
