@@ -84,11 +84,12 @@ public class EditPictureContract
         // Intent.ACTION_EDIT does not produce output, so keep a reference here
         this.dstFile = input.dstFile;
 
+        final int permissions = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+
         final Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(input.srcUri, IMAGE_MIME_TYPE)
-                // read access to the input uri
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                // write access see below
+                .addFlags(permissions)
                 .putExtra(MediaStore.EXTRA_OUTPUT, input.dstUri);
 
         final List<ResolveInfo> resInfoList =
@@ -102,7 +103,8 @@ public class EditPictureContract
         // We do not know which app will be used, so need to grant permission to all.
         for (final ResolveInfo resolveInfo : resInfoList) {
             context.grantUriPermission(resolveInfo.activityInfo.packageName,
-                                       input.dstUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                       input.dstUri,
+                                       permissions);
         }
 
         return Intent.createChooser(intent, context.getString(R.string.whichEditApplication));
