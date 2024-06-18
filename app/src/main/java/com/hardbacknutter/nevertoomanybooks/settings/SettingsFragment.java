@@ -365,6 +365,7 @@ public class SettingsFragment
             //noinspection OverlyBroadCatchBlock
             try {
                 CoverVolume.initVolume(context, volume);
+                vm.setOnBackRequiresActivityRecreation();
                 return true;
 
             } catch (@NonNull final StorageException e) {
