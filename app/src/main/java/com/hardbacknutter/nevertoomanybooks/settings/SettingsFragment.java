@@ -318,13 +318,16 @@ public class SettingsFragment
                         context.getString(R.string.option_storage_select, newVolumeDesc),
                         context.getString(R.string.option_moving_covers_from_x_to_y,
                                           oldVolumeDesc, newVolumeDesc)};
+                // default to option_moving_covers_from_x_to_y
+                volumeChangedOptionChosen = 1;
 
                 new MaterialAlertDialogBuilder(context)
                         .setIcon(R.drawable.ic_baseline_warning_24)
                         .setTitle(R.string.lbl_storage_settings)
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
-                        .setSingleChoiceItems(items, 1, (d, w) -> volumeChangedOptionChosen = w)
+                        .setSingleChoiceItems(items, volumeChangedOptionChosen,
+                                              (d, w) -> volumeChangedOptionChosen = w)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) ->
                                 onVolumeChangedOptionChosen(oldVolumeIndex, newVolumeIndex))
