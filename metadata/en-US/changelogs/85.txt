@@ -1,0 +1,2 @@
+FIXES
+    #68 permissions issue when the covers were moved to secondary storage

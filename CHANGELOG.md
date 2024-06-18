@@ -1,3 +1,11 @@
+### 6.1.2
+
+FIXES
+
+- #68 permissions issue when the covers were moved to secondary storage
+
+---
+
 ### 6.1.1
 
 FIXES:
