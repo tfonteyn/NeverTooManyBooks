@@ -78,10 +78,6 @@ public class CoverStorage {
     @NonNull
     private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
 
-    /** Use {@link #getVersionedFileService()}. */
-    @Nullable
-    private VersionedFileService versionedFileService;
-
     /**
      * Constructor.
      *
@@ -141,10 +137,9 @@ public class CoverStorage {
     @NonNull
     private VersionedFileService getVersionedFileService()
             throws CoverStorageException {
-        if (versionedFileService == null) {
-            versionedFileService = new VersionedFileService(getTempDir(), 1);
-        }
-        return versionedFileService;
+        // Don't cache... the backup directory depends on the .getExternalFilesDirs()
+        // which can change (i.e. when the user uses a replaceable sdcard)
+        return new VersionedFileService(getTempDir(), 1);
     }
 
     /**
