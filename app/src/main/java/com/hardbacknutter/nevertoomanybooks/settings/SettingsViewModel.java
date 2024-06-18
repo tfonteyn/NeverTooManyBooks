@@ -144,9 +144,8 @@ public class SettingsViewModel
     boolean moveData(@NonNull final Context context,
                      final int sourceIndex,
                      final int destIndex) {
-
-        storageMoverTask.setDirs(context, sourceIndex, destIndex);
         try {
+            storageMoverTask.setDirs(context, sourceIndex, destIndex);
             if (storageMoverTask.checkSpace()) {
                 storageMoverTask.start();
                 return true;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,13 +52,31 @@ public class StorageMoverTask
         super(R.id.TASK_ID_VOLUME_MOVER, TAG);
     }
 
+    /**
+     * Set the source and destination directories.
+     * <p>
+     * The indexes must be valid values for {@link Context#getExternalFilesDirs(String)}.
+     *
+     * @param context     Current context
+     * @param sourceIndex 0..
+     * @param destIndex   0..
+     *
+     * @throws IOException if one of the indexed directories does not exist
+     */
     public void setDirs(@NonNull final Context context,
                         final int sourceIndex,
-                        final int destIndex) {
+                        final int destIndex)
+            throws IOException {
         this.destIndex = destIndex;
 
         final File[] dirs = context.getExternalFilesDirs(null);
+        if (sourceIndex > dirs.length) {
+            throw new IOException("getExternalFilesDirs[" + sourceIndex + "] does not exist");
+        }
         sourceDir = dirs[sourceIndex];
+        if (destIndex > dirs.length) {
+            throw new IOException("getExternalFilesDirs[" + destIndex + "] does not exist");
+        }
         destDir = dirs[destIndex];
     }
 
