@@ -51,6 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerA
  * FIXME: not in use right now, but if we do use it, this needs
  * ENHANCE: to be converted to dialog/bottom-sheet support
  *
+ * Search the code for "setSingleChoiceItems" to check where this can/should be used.
+ *
  * @see MultiChoiceDelegate
  */
 public class SingleChoiceDialogFragment
