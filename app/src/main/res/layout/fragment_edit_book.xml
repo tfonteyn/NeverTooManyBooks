@@ -28,6 +28,22 @@
     tools:context=".FragmentHostActivity"
     >
 
+    <!--
+    FIXME: 2024-01-21: bug in android framework causing a TransactionTooLargeException
+
+          Reproducing is very difficult... it involves
+          - open a book detail
+          - update fields
+          - swipe to next book
+          - update fields
+          - repeat for 10..20 books
+          - but it will still depend on the amount of data downloaded.
+
+           https://stackoverflow.com/questions/11451393/what-to-do-on-transactiontoolargeexception
+
+           The solution they claim is to add
+              android:saveEnabled="false"
+          -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
         android:layout_width="match_parent"

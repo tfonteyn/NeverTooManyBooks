@@ -19,6 +19,22 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+FIXME: 2024-01-21: bug in android framework causing a TransactionTooLargeException
+
+      Reproducing is very difficult... it involves
+      - open a book detail
+      - update fields
+      - swipe to next book
+      - update fields
+      - repeat for 10..20 books
+      - but it will still depend on the amount of data downloaded.
+
+       https://stackoverflow.com/questions/11451393/what-to-do-on-transactiontoolargeexception
+
+       The solution they claim is to add
+          android:saveEnabled="false"
+      -->
 <androidx.viewpager2.widget.ViewPager2
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,6 +44,6 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical|top"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:viewBindingIgnore="true"
     tools:context=".FragmentHostActivity"
+    tools:viewBindingIgnore="true"
     />
