@@ -75,7 +75,7 @@
     <string name="site_info_isfdb"
             translatable="false">@string/site_description_english_catalogue_FSF</string>
     <string name="site_kb_nl"
-            translatable="false">KBNL</string>
+            translatable="false">KB.NL</string>
     <string name="site_info_kb_nl"
             translatable="false">@string/site_description_dutch_catalogue</string>
     <string name="site_lastdodo_nl"
@@ -99,7 +99,7 @@
     <string name="site_info_stripweb_be"
             translatable="false">@string/site_description_dutch_comics_shopping</string>
     <string name="site_dnb_de"
-            translatable="false">DNB</string>
+            translatable="false">DNB.DE</string>
     <string name="site_info_dnb_de"
             translatable="false">@string/site_description_german_catalogue</string>
 
