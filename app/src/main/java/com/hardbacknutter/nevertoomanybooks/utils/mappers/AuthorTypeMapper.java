@@ -89,7 +89,7 @@ public class AuthorTypeMapper {
         MAPPINGS.put("scénario", Author.TYPE_WRITER);
         MAPPINGS.put("dessins", Author.TYPE_ARTIST);
         MAPPINGS.put("dessin", Author.TYPE_ARTIST);
-        MAPPINGS.put("Inker", Author.TYPE_INKING);
+        MAPPINGS.put("inker", Author.TYPE_INKING);
         MAPPINGS.put("avec la contribution de", Author.TYPE_CONTRIBUTOR);
         MAPPINGS.put("contribution", Author.TYPE_CONTRIBUTOR);
         MAPPINGS.put("couleurs", Author.TYPE_COLORIST);
@@ -106,8 +106,10 @@ public class AuthorTypeMapper {
 
         // German, unless listed above
         MAPPINGS.put("autor", Author.TYPE_WRITER);
-        MAPPINGS.put("Übersetzer", Author.TYPE_TRANSLATOR);
-        MAPPINGS.put("Übersetzung", Author.TYPE_TRANSLATOR);
+        MAPPINGS.put("autorin", Author.TYPE_WRITER);
+        MAPPINGS.put("verfasser", Author.TYPE_WRITER);
+        MAPPINGS.put("übersetzer", Author.TYPE_TRANSLATOR);
+        MAPPINGS.put("übersetzung", Author.TYPE_TRANSLATOR);
 
         // Spanish, unless listed above
         MAPPINGS.put("escritor", Author.TYPE_WRITER);
