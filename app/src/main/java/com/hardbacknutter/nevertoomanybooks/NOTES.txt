@@ -35,6 +35,8 @@ Amazon... or "why are these sites not supported?"
 
 ENHANCE: ISSN (serials) lookups?
 
+ENHANCE: https://www.belgischebibliografie.be
+
 ENHANCE: add book by search: allow publisher + present list of finds instead of using first found.
 ==> SearchCoordinator.search when isbn not provided, will run a search until it finds an isbn,
     and then redo the search WITH the isbn
