@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -76,11 +77,18 @@ public class DnbSearchEngine
                                              "&sortA=bez" +
                                              "&pr=0" +
                                              "&v=plist";
-    private static final String[] TITLE_SUFFIXES = {": Roman", "Kriminalroman"};
+    private static final String[] TITLE_SUFFIXES = {
+            ": Roman",
+            ": Thriller",
+            "Kriminalroman"};
     private static final Pattern PATTERN_SERIES_NR = Pattern.compile(" ; ");
     private static final Pattern PATTERN_BAR = Pattern.compile("\\|");
     private static final Pattern PATTERN_SLASH = Pattern.compile("/");
+    private static final Pattern PAGE_NUMBER_PATTERN = Pattern.compile("\\d+");
 
+    // URGENT: extend the PartialDate parser to handle multiple formats
+    private static final Pattern PUB_DATE_MM_YYYY = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
+    private static final Pattern PUB_DATE_YYYY = Pattern.compile("\\d\\d\\d\\d");
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
 
@@ -144,6 +152,12 @@ public class DnbSearchEngine
 
         final Locale locale = getLocale(context);
 
+        final Element titleElement = document
+                .selectFirst("h3.c-catalog-result__ueberschrift > span");
+        if (titleElement != null) {
+            processTitle(titleElement, book);
+        }
+
         final Element tableElement = document.selectFirst("table.c-catalog-table__table");
         // We could collapse the above select with the select for the tr's
         // But there is a tbody in between, let's take the safe route for now
@@ -160,7 +174,9 @@ public class DnbSearchEngine
                         switch (s) {
                             case "Titel":
                             case "Title":
-                                processTitle(td, book);
+                                if (!book.contains(DBKey.TITLE)) {
+                                    processTitle(td, book);
+                                }
                                 break;
                             case "Beteiligt":
                             case "Involved":
@@ -171,27 +187,18 @@ public class DnbSearchEngine
                                 processPublisher(context, td, book);
                                 break;
                             case "Umfang":
-                            case "Extent": {
-                                String text = td.text();
-                                // "123 Seiten"
-                                // "182 Seiten : Illustrationen"
-                                final int i = text.indexOf(" Seiten");
-                                if (i > 0) {
-                                    text = text.substring(0, i + 1);
-                                }
-                                book.putString(DBKey.PAGE_COUNT, text);
+                            case "Extent":
+                                processPageNumber(td, book);
                                 break;
-                            }
                             case "ISBN":
                                 processIsbn(td, book);
                                 break;
                             case "Sprache":
                             case "Language":
-                                book.putString(DBKey.LANGUAGE,
-                                               ServiceLocator.getInstance().getLanguages()
-                                                             .getISO3FromDisplayName(context,
-                                                                                     locale,
-                                                                                     td.text()));
+                                final String lang = ServiceLocator
+                                        .getInstance().getLanguages()
+                                        .getISO3FromDisplayName(context, locale, td.text());
+                                book.putString(DBKey.LANGUAGE, lang);
                                 break;
                             case "Genre":
                                 // there is also:
@@ -201,6 +208,12 @@ public class DnbSearchEngine
                                     book.putString(DBKey.GENRE, td.text());
                                 }
                                 break;
+                            case "Werk":
+                            case "Work":
+                                // This looks like it's the original title for a translated book
+                                book.putString(DBKey.TITLE_ORIGINAL_LANG, td.text());
+                                break;
+
                             case "Reihe":
                             case "Series":
                                 processSeries(td, book);
@@ -222,13 +235,26 @@ public class DnbSearchEngine
         }
     }
 
-    private void processTitle(@NonNull final Element td,
+    /**
+     * The title data from the site is very bad... as a library site they should be ashamed :(
+     * <p>
+     * 978-3-453-32189-2
+     * Nemesis : Roman / Isaac Asimov ; deutsche Übersetzung von Irene Holicki
+     * 978-3-426-22668-1
+     * Totholz : Was vergraben ist, ist nicht vergessen. Kriminalroman | Nummer 1 SPIEGEL Bestseller-Autor / Andreas Föhr
+     * 978-3-453-44215-3
+     * Wenn sie wüsste : Thriller / Freida McFadden ; aus dem Amerikanischen von Astrid Gravert und Renate Weitbrecht
+     * 978-3-551-03302-4
+     * Das kleine Wir im Kindergarten / Daniela Kunkel
+     * 978-3-499-01410-9
+     * Brüssel sehen und sterben : wie ich im Europaparlament meinen Glauben an (fast) alles verloren habe / Nico Semsrott
+     * 978-3-96584-423-0
+     * Der Glukose-Masterplan / Ernährungs-Doc Dr. med. Matthias Riedl ; mit Texten von Franziska Pfeiffer und Rezepten von Inga Pfannebecker
+     */
+    private void processTitle(@NonNull final Element element,
                               @NonNull final Book book) {
-        // This is horribly unstructured...
 
-        // Nemesis : Roman / Isaac Asimov ; deutsche Übersetzung von Irene Holicki
-        // Totholz : Was vergraben ist, ist nicht vergessen. Kriminalroman | Nummer 1 SPIEGEL Bestseller-Autor / Andreas Föhr
-        String text = td.text();
+        String text = element.text();
         if (text.contains("/")) {
             text = PATTERN_SLASH.split(text)[0];
         }
@@ -315,11 +341,28 @@ public class DnbSearchEngine
         }
     }
 
+    /**
+     * <pre>
+     *     "München: Knaur
+     *     2024"
+     *   ==> "2024"
+     *     "München: Wilhelm Heyne Verlag
+     *     01/2023"
+     *   ==> "2023-01"
+     *     "Schwarzenbek: newart medien & design GbR
+     *     [2019]"
+     *   ==> "2019"
+     *     "Bamberg: Karl-May-Verlag
+     *     to be released in November 2024"
+     *   ==> "2024"
+     *     "Hamburg: Rowohlt Polaris
+     *     Mai 2024"
+     *   ==> "2024"
+     * </pre>
+     */
     private void processPublisher(@NonNull final Context context,
                                   @NonNull final Element td,
                                   @NonNull final Book book) {
-        // München: Wilhelm Heyne Verlag<br>01/2023
-        // Schwarzenbek: newart medien & design GbR<br>[2019]
         final List<Node> nodes = td.childNodes();
         if (!nodes.isEmpty()) {
             final String publisherName = nodes.get(0).toString().strip();
@@ -334,20 +377,43 @@ public class DnbSearchEngine
                 book.add(Publisher.from(publisherName));
             }
 
-            // skip node.get(1) which should be the br tag
+            // node.get(1) should be the br tag which we skip.
+
             if (nodes.size() > 2) {
-                // URGENT: extend the PartialDate parser to handle more formats
                 String dateStr = nodes.get(2).toString().strip();
-                // [2019]
-                if (dateStr.startsWith("[") && dateStr.endsWith("]")) {
-                    dateStr = dateStr.substring(1, dateStr.length() - 1);
-                }
-                // 01/2023: just flip them around
-                if (dateStr.length() == 7 && dateStr.charAt(2) == '/') {
+                Matcher matcher;
+                matcher = PUB_DATE_MM_YYYY.matcher(dateStr);
+                if (matcher.find()) {
+                    dateStr = matcher.group();
+                    // Flip them around to "YYYY-MM"
                     dateStr = dateStr.substring(3) + "-" + dateStr.substring(0, 2);
+                    book.putString(DBKey.BOOK_PUBLICATION__DATE, dateStr);
+                    return;
                 }
-                book.putString(DBKey.BOOK_PUBLICATION__DATE, dateStr);
+                matcher = PUB_DATE_YYYY.matcher(dateStr);
+                if (matcher.find()) {
+                    book.putString(DBKey.BOOK_PUBLICATION__DATE, matcher.group());
+                    return;
+                }
             }
+        }
+    }
+
+    /**
+     * Patterns seen:
+     * <pre>
+     * "123 Seiten"
+     * "182 Seiten : Illustrationen"
+     * "Online-Ressource, 224 Seiten"
+     * </pre>
+     * We grab the first set of digit's we find.
+     */
+    private void processPageNumber(@NonNull final Element td,
+                                   @NonNull final Book book) {
+
+        final Matcher matcher = PAGE_NUMBER_PATTERN.matcher(td.text());
+        if (matcher.find()) {
+            book.putString(DBKey.PAGE_COUNT, matcher.group());
         }
     }
 
