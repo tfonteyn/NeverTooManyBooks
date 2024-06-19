@@ -57,7 +57,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
- * <a href="https://www.dnb.de">Deutsche National Bibliothek (DNB)</a>
+ * <a href="https://www.dnb.de">Deutsche Nationalbibliothek (DNB)</a>
  * <a href="https://www.dnb.de">Germany's National Library (DNB)</a>
  */
 public class DnbSearchEngine
