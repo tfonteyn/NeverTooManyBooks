@@ -1,6 +1,14 @@
+### 6.1.3
+
+FIXES:
+
+- #70 the Contacts app can return 'null' values. Ignore those.
+
+---
+
 ### 6.1.2
 
-FIXES
+FIXES:
 
 - #68 permissions issue when the covers were moved to secondary storage
 

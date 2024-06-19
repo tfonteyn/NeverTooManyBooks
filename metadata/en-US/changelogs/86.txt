@@ -1,0 +1,2 @@
+FIXES
+    #70 the Contacts app can return 'null' values. Ignore those.
