@@ -37,6 +37,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -78,7 +79,13 @@ public class EditLenderViewModel
             dao = ServiceLocator.getInstance().getLoaneeDao();
 
             // get previously used lender names
-            people.addAll(dao.getList());
+            final List<String> list = dao.getList();
+            // We have seen an NPE in github #70 which almost certainly can be attributed
+            // to the Contacts application returning null data. See #getContact
+            // but to make sure we never crash again here, adding a sanity/paranoia
+            // check for null here as well.
+            // We're NOT adding the null check to the DAO though leaving future investigation open
+            people.addAll(list.stream().filter(Objects::nonNull).collect(Collectors.toList()));
 
             bookId = args.getLong(DBKey.FK_BOOK);
             bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
@@ -152,7 +159,10 @@ public class EditLenderViewModel
                 while (cursor.moveToNext()) {
                     final String name = cursor.getString(cursor.getColumnIndexOrThrow(
                             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                    contacts.add(name);
+                    // sanity check added due to github #70
+                    if (name != null && !name.isBlank()) {
+                        contacts.add(name);
+                    }
                 }
             }
         }
