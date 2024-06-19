@@ -39,7 +39,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-//FIXME: test 1 does not use toc id's (and passes) + test 2/3 uses id's (and fails)
 @MediumTest
 @SuppressWarnings("MissingJavadoc")
 public class TocEntryTest
