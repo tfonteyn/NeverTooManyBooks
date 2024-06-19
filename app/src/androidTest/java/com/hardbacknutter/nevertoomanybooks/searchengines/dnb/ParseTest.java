@@ -76,7 +76,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, book);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
@@ -123,7 +123,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, book);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Totholz : Was vergraben ist, ist nicht vergessen.",

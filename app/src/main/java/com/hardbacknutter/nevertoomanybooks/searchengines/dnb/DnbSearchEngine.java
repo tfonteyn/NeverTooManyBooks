@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -57,7 +58,7 @@ import org.jsoup.select.Elements;
 
 /**
  * <a href="https://www.dnb.de">Deutsche National Bibliothek (DNB)</a>
- * <a href="https://www.dnb.de">Germany national Library (DNB)</a>
+ * <a href="https://www.dnb.de">Germany's National Library (DNB)</a>
  */
 public class DnbSearchEngine
         extends JsoupSearchEngineBase
@@ -79,6 +80,9 @@ public class DnbSearchEngine
     private static final Pattern PATTERN_SERIES_NR = Pattern.compile(" ; ");
     private static final Pattern PATTERN_BAR = Pattern.compile("\\|");
     private static final Pattern PATTERN_SLASH = Pattern.compile("/");
+
+
+    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -107,27 +111,34 @@ public class DnbSearchEngine
             // Not verified for multi-results
             final Element table = document.selectFirst("div.l-catalog-single-content");
             if (table != null) {
-                parse(context, document, book);
+                parse(context, document, fetchCovers, book);
             }
-        }
-
-        if (isCancelled()) {
-            return book;
-        }
-
-        if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
-            parseCovers(context, document, isbn, 0).ifPresent(
-                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
 
         return book;
     }
 
+    /**
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
+     */
     @VisibleForTesting
     @WorkerThread
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
+                      @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
@@ -153,7 +164,7 @@ public class DnbSearchEngine
                                 break;
                             case "Beteiligt":
                             case "Involved":
-                                processAuthor(td, book);
+                                processAuthor(context, td, book);
                                 break;
                             case "Erschienen":
                             case "Published":
@@ -198,6 +209,16 @@ public class DnbSearchEngine
                     }
                 }
             }
+
+            if (isCancelled()) {
+                return;
+            }
+
+            if (fetchCovers[0]) {
+                final String isbn = book.getString(DBKey.BOOK_ISBN);
+                parseCovers(context, document, isbn, 0).ifPresent(
+                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+            }
         }
     }
 
@@ -225,7 +246,19 @@ public class DnbSearchEngine
         book.putString(DBKey.TITLE, text);
     }
 
-    private void processAuthor(@NonNull final Element td,
+    private void processIsbn(@NonNull final Element td,
+                             @NonNull final Book book) {
+        if (!book.contains(DBKey.BOOK_ISBN)) {
+            final String digits = SearchEngineUtils.isbn(td.text());
+            // (don't do a full ISBN test here, no need)
+            if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
+                book.putString(DBKey.BOOK_ISBN, digits);
+            }
+        }
+    }
+
+    private void processAuthor(final Context context,
+                               @NonNull final Element td,
                                @NonNull final Book book) {
         final Iterator<Element> it = td.children().iterator();
         while (it.hasNext()) {
@@ -238,8 +271,17 @@ public class DnbSearchEngine
                     // The tag AFTER the "a" can be a "<small>" or a "<br>"
                     e = it.next();
                     if (e.nameIs("small")) {
-                        final int type = getAuthorType(e.text());
-                        processAuthor(Author.from(name), type, book);
+                        String authorTypeText = e.text();
+                        // Sanity check, this is always true ... flw
+                        if (authorTypeText.startsWith("(") && authorTypeText.endsWith(")")
+                            && authorTypeText.length() > 3) {
+                            authorTypeText = authorTypeText
+                                    .substring(1, authorTypeText.length() - 1);
+                        }
+                        @Author.Type
+                        final int authorType = authorTypeMapper
+                                .map(getLocale(context), authorTypeText);
+                        processAuthor(Author.from(name), authorType, book);
                         if (it.hasNext()) {
                             // The tag AFTER the "small" can be a "br" or an "a"
                             e = it.next();
@@ -260,14 +302,17 @@ public class DnbSearchEngine
         }
     }
 
-    private int getAuthorType(final String text) {
-        switch (text) {
-            case "(Verfasser)":
-                return Author.TYPE_WRITER;
-            case "(Übersetzer)":
-                return Author.TYPE_TRANSLATOR;
+    private void processSeries(@NonNull final Element td,
+                               @NonNull final Book book) {
+        final String text = td.text();
+        if (text.contains(" ; ")) {
+            final String[] split = PATTERN_SERIES_NR.split(text);
+            final Series series = Series.from(split[0]);
+            series.setNumber(split[1].strip());
+            book.add(series);
+        } else {
+            book.add(Series.from(text));
         }
-        return Author.TYPE_UNKNOWN;
     }
 
     private void processPublisher(@NonNull final Context context,
@@ -303,30 +348,6 @@ public class DnbSearchEngine
                 }
                 book.putString(DBKey.BOOK_PUBLICATION__DATE, dateStr);
             }
-        }
-    }
-
-    private void processIsbn(@NonNull final Element td,
-                             @NonNull final Book book) {
-        if (!book.contains(DBKey.BOOK_ISBN)) {
-            final String digits = SearchEngineUtils.isbn(td.text());
-            // (don't do a full ISBN test here, no need)
-            if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
-                book.putString(DBKey.BOOK_ISBN, digits);
-            }
-        }
-    }
-
-    private static void processSeries(@NonNull final Element td,
-                                      @NonNull final Book book) {
-        final String text = td.text();
-        if (text.contains(" ; ")) {
-            final String[] split = PATTERN_SERIES_NR.split(text);
-            final Series series = Series.from(split[0]);
-            series.setNumber(split[1].strip());
-            book.add(series);
-        } else {
-            book.add(Series.from(text));
         }
     }
 
