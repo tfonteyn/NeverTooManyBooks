@@ -175,6 +175,13 @@ android {
         buildConfig = true
     }
 
+    // ENHANCE: https://developer.android.com/guide/topics/resources/app-languages#auto-localeconfig
+    //    android {
+    //        androidResources {
+    //            generateLocaleConfig = true
+    //        }
+    //    }
+
     testOptions {
         unitTests {
             includeAndroidResources = true

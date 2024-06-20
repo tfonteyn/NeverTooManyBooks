@@ -66,11 +66,6 @@
         </intent>
     </queries>
 
-    <!-- ENHANCE: add  android:localeConfig="@xml/locales_config" for Android 13,
-         but first we need to integrate our language picker with the system setting
-          and AppCompat API
-          https://developer.android.com/guide/topics/resources/app-languages#use-localeconfig
-    -->
     <application
         android:name=".App"
         android:allowBackup="true"
