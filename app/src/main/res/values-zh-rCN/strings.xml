@@ -257,7 +257,6 @@
     <string name="tip_reset_all">重置提示</string>
     <string name="info_isfdb_warning_limited_to">(仅支持ISFDB)</string>
     <string name="tip_dialog_title">提示</string>
-    <string name="site_description_german_catalogue">德语；目录</string>
     <string name="tip_reset_done">提示已重置</string>
     <string name="tip_booklist_style_groups">使用此界面可修改特定样式的组的层次结构。使用复选框选择要在列表中显示的组，并通过向上或向下拖动每一行末尾的图标来重新排列层次结构。</string>
     <string name="tip_authors_book_may_appear_more_than_once">如果每本书的每个作者都显示了书，那么这些书可能会在列表中出现多次。删除其中一本书的效果是将所有副本从列表中删除。</string>
