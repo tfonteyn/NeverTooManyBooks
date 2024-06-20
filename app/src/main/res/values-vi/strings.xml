@@ -343,6 +343,7 @@
     <string name="site_description_french_catalogue_eu_comics">Tiếng Pháp và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_general_shopping">Tổng quan; Mua sắm</string>
+    <string name="site_description_german_catalogue">Tiếng Đức; Mục lục</string>
     <!-- endregion -->
     <!-- region ========== Tips which are shown in some places on how to use a screen. -->
     <string name="tip_dialog_title">Mẹo</string>

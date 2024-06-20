@@ -618,6 +618,7 @@
     <string name="tip_booklist_styles_editor">Utilisez cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Utilisez la case à cocher pour sélectionner les styles qui seront affichés dans la liste.  Si aucun style n’est sélectionné, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne vers le haut ou vers le bas. Un appui long sur une autre ligne vous permettra de modifier ou de cloner les détails d’un style spécifique. Si vous avez cloné un style et que vous changez d’avis, vous devrez le supprimer vous-même.</string>
     <string name="tip_dialog_title">Astuce</string>
     <string name="tip_reset_all">Réinitialiser les astuces</string>
+    <string name="site_description_german_catalogue">Allemand ; Catalogue</string>
     <string name="tip_reset_done">Les astuces ont été réinitialisées</string>
     <string name="tip_series_book_may_appear_more_than_once">Si des livres sont affichés dans toutes les séries auxquelles ils appartiennent, ils peuvent apparaître plusieurs fois dans la liste. La suppression d’un de ces livres a pour effet de supprimer tous les exemplaires de la liste.</string>
     <string name="tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu « Voir sur… » ne montrera également que ce qui est disponible.</string>

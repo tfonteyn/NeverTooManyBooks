@@ -624,6 +624,7 @@
     <string name="tip_booklist_styles_editor">Na této obrazovce můžete upravit seznam stylů, které se budou zobrazovat v nabídce výchozích stylů. Pomocí zaškrtávacího políčka vyberte, které styly se budou v seznamu zobrazovat.  Pokud není vybrán žádný styl, budou zobrazeny všechny styly. Hierarchii můžete změnit přetažením ikony v pravém krajním rohu každého řádku nahoru nebo dolů. Dlouhým stisknutím kdekoli jinde v řádku můžete upravit nebo klonovat podrobnosti konkrétního stylu. Pokud jste styl naklonovali a rozmysleli si to, musíte jej sami odstranit.</string>
     <string name="tip_dialog_title">Rada</string>
     <string name="tip_reset_all">Obnovit rady</string>
+    <string name="site_description_german_catalogue">Němčina; katalog</string>
     <string name="tip_reset_done">Rady byly obnoveny</string>
     <string name="tip_series_book_may_appear_more_than_once">Pokud jsou knihy zobrazeny ve všech sériích, do kterých kniha patří, mohou se v seznamu objevit vícekrát. Odstranění jedné z těchto knih má za následek odstranění všech výtisků ze seznamu.</string>
     <string name="tip_update_fields_from_internet">Externí odkazy na stránky jsou zpracovány pouze v případě, že je web skutečně kontaktován. Výsledkem je, že nabídka „Výhled na…“ také ukáže pouze to, co je k dispozici.</string>

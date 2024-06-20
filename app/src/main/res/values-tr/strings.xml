@@ -615,6 +615,7 @@
     <string name="tip_booklist_styles_editor">Varsayılan stiller menünüzde görüntülenecek stillerin listesini özelleştirmek için bu ekranı kullanın. Listede hangi stillerin gösterileceğini seçmek için onay kutusunu kullanın.  Hiçbir stil seçilmezse tüm stiller gösterilir. Her satırın en sağındaki simgeyi yukarı veya aşağı sürükleyerek hiyerarşiyi yeniden sıralayabilirsiniz. Bir satırda başka bir yere uzun basmak, belirli bir stilin ayrıntılarını düzenlemenize veya klonlamanıza olanak tanır. Bir stili klonladıysanız ve fikrinizi değiştirdiyseniz, onu kendiniz silmeniz gerekecektir.</string>
     <string name="tip_dialog_title">İpucu</string>
     <string name="tip_reset_all">İpuçlarını sıfırla</string>
+    <string name="site_description_german_catalogue">Almanca; Katalog</string>
     <string name="tip_reset_done">İpuçları sıfırlandı</string>
     <string name="tip_series_book_may_appear_more_than_once">Kitaplar, kitabın ait olduğu tüm serilerde gösteriliyorsa, listede birden fazla kez görünebilirler. Bu kitaplardan birinin silinmesi, listedeki tüm kopyaların silinmesine neden olur.</string>
     <string name="tip_update_fields_from_internet">Dış site bağlantıları yalnızca siteyle gerçekten iletişime geçildiyse işlenir. Sonuç olarak, “Üzerinde görüntülemek…” menüsü de aynı şekilde neyin uygun olduğunu gösterecektir.</string>

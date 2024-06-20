@@ -617,6 +617,7 @@
     <string name="tip_booklist_styles_editor">Utilizzare questa schermata per personalizzare l’elenco degli stili che verranno visualizzati nel menu stili predefinito. Utilizzare la casella di controllo per selezionare gli stili da visualizzare nell’elenco.  Se non viene selezionato alcuno stile, verranno visualizzati tutti gli stili. È possibile riordinare la gerarchia trascinando l’icona all’estrema destra di ogni riga verso l’alto o verso il basso. Premendo a lungo in un punto qualsiasi di una riga, è possibile modificare o clonare i dettagli di uno stile specifico. Se si clona uno stile e si cambia idea, è necessario cancellarlo.</string>
     <string name="tip_dialog_title">Suggerimento</string>
     <string name="tip_reset_all">Ripristina suggerimenti</string>
+    <string name="site_description_german_catalogue">Tedesco; Catalogo</string>
     <string name="tip_reset_done">Suggerimenti azzerati</string>
     <string name="tip_series_book_may_appear_more_than_once">Se i libri sono mostrati in tutte le serie a cui il libro appartiene, possono comparire più volte nell’elenco. L’eliminazione di uno di questi libri ha l’effetto di rimuovere tutte le copie dall’elenco.</string>
     <string name="tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu «Visualizza su…» mostrerà solo ciò che è disponibile.</string>

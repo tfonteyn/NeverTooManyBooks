@@ -199,6 +199,7 @@
     <string name="warning_no_matching_book_found">Nenhum livro correspondente encontrado</string>
     <string name="warning_requires_site_and_id">Selecione um site e insira um id.</string>
     <string name="warning_already_in_list">Já está na lista!</string>
+    <string name="site_description_german_catalogue">Alemão; Catálogo</string>
     <string name="tip_reset_done">As dicas foram repostas</string>
     <string name="tip_authors_works_book">Livro.</string>
     <string name="tip_authors_works_single_book">O título está presente num único livro.</string>

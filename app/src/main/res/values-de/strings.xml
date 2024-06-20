@@ -617,6 +617,7 @@
     <string name="tip_booklist_styles_editor">Auf diesem Bildschirm können Sie die Liste der Stile, die in Ihrem Standardmenü angezeigt werden, anpassen. Verwenden Sie das Kontrollkästchen, um auszuwählen, welche Stile in der Liste angezeigt werden sollen.  Wenn keine Stile ausgewählt sind, werden alle Stile angezeigt. Sie können die Hierarchie neu ordnen, indem Sie das Symbol ganz rechts in jeder Zeile nach oben oder unten ziehen. Wenn Sie an einer anderen Stelle in einer Reihe lange drücken, können Sie die Details eines bestimmten Stils bearbeiten oder klonen. Wenn Sie einen Stil geklont und Ihre Meinung geändert haben, müssen Sie ihn selbst löschen.</string>
     <string name="tip_dialog_title">Hinweis</string>
     <string name="tip_reset_all">Hinweise zurücksetzen</string>
+    <string name="site_description_german_catalogue">Deutsch; Katalog</string>
     <string name="tip_reset_done">Hinweise wurden zurückgesetzt</string>
     <string name="tip_series_book_may_appear_more_than_once">Wenn Bücher in allen Serien angezeigt werden, zu denen das Buch gehört, können sie mehrfach in der Liste erscheinen. Das Löschen eines dieser Bücher hat zur Folge, dass alle Exemplare aus der Liste entfernt werden.</string>
     <string name="tip_update_fields_from_internet">Externe Site-Links werden nur verarbeitet, wenn die Site tatsächlich kontaktiert wird. Infolgedessen zeigt das Menü „Anschauen auf…“ ebenfalls nur, was verfügbar ist.</string>
