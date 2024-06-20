@@ -75,10 +75,17 @@ android {
 
         signingConfig(signingConfigs.release)
 
-        // NEWTHINGS: add app language
-        resourceConfigurations += ["de", "en", "en_GB", "es", "fr", "it", "nl",
-                                   "pt", "vi", "zh_CN",
-                                   "cs", "el", "pl", "ru", "tr"]
+        // NEWTHINGS: add app language,
+        // Keep the two sub-lists in alphabetic order
+        def supportedLocales = [
+                // Primary translations - done by native speaker or pretty good.
+                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "vi", "zh_CN",
+                // Secondary translations - These really need checking by a native speaker
+                "cs", "el", "pl", "ru", "tr"]
+        resourceConfigurations += supportedLocales
+
+        buildConfigField("String[]", "SUPPORTED_LOCALES",
+                "new String[]{\"" + supportedLocales.join("\",\"") + "\"}")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =

@@ -148,31 +148,6 @@
     <!-- The defaults for MultiSelect fields, i.e. select nothing -->
     <string-array name="empty_array" />
 
-    <!-- ListPreference - Preferred interface Language -->
-    <string-array name="pv_ui_language">
-        <item translatable="false">system</item>
-
-        <!-- Primary translations - done by native speaker or pretty good. -->
-        <item translatable="false">de</item>
-        <item translatable="false">en_GB</item>
-        <item translatable="false">en_US</item>
-        <item translatable="false">es</item>
-        <item translatable="false">fr</item>
-        <item translatable="false">it</item>
-        <item translatable="false">nl</item>
-        <item translatable="false">pt</item>
-        <item translatable="false">vi</item>
-        <item translatable="false">zh_CN</item>
-        <!-- NEWTHINGS: add app language: add the iso code -->
-
-        <!-- Secondary translations - These really need checking by a native speaker -->
-        <item translatable="false">cs</item>
-        <item translatable="false">el</item>
-        <item translatable="false">pl</item>
-        <item translatable="false">ru</item>
-        <item translatable="false">tr</item>
-    </string-array>
-
     <!-- ListPreference -->
     <string-array name="pe_ui_theme_mode">
         <item>@string/pe_ui_theme_from_device</item>

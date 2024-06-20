@@ -40,8 +40,6 @@ public interface AppLocale {
 
     /**
      * Value stored in preferences if the user runs our app in the default device language.
-     * The string "system" is hardcoded in the preference string-array and
-     * in the default setting in the preference screen.
      */
     String SYSTEM_LANGUAGE = "system";
 

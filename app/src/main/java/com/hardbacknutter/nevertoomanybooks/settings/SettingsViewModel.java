@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
@@ -78,39 +79,63 @@ public class SettingsViewModel
      */
     private boolean missingStorageVolume;
 
-    private String[] uiLangNames;
+    private String[] uiLanguageEntryValues;
+    private String[] uiLanguageEntries;
 
+    private boolean initDone;
     /**
      * Pseudo constructor.
      *
-     * @param context   Current context
-     * @param args      {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
-        if (uiLangNames == null) {
-            final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+        if (!initDone) {
+            initDone = true;
 
-            final String[] uiLangCodes = context.getResources()
-                                                .getStringArray(R.array.pv_ui_language);
-            uiLangNames = new String[uiLangCodes.length];
-            uiLangNames[0] = context.getString(R.string.pt_ui_system_locale);
-            for (int i = 1; i < uiLangCodes.length; i++) {
-                final Locale locale = appLocale.getLocale(context, uiLangCodes[i]).orElseThrow();
-                uiLangNames[i] = locale.getDisplayName(locale);
-            }
+            storedVolumeIndex = CoverVolume.getVolume(context);
+            storedTitleOrderBy = ReorderHelper.isSortReordered(context);
 
             if (args != null) {
                 missingStorageVolume = args.getBoolean(BKEY_MISSING_STORAGE_VOLUME);
             }
-            storedTitleOrderBy = ReorderHelper.isSortReordered(context);
-            storedVolumeIndex = CoverVolume.getVolume(context);
+        }
+
+        // ALWAYS refresh!
+        initLanguages(context);
+    }
+
+    private void initLanguages(@NonNull final Context context) {
+        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+
+        final String[] tmpEntryValues = BuildConfig.SUPPORTED_LOCALES;
+
+        uiLanguageEntries = new String[tmpEntryValues.length + 1];
+        uiLanguageEntryValues = new String[tmpEntryValues.length + 1];
+
+        uiLanguageEntryValues[0] = AppLocale.SYSTEM_LANGUAGE;
+        uiLanguageEntries[0] = context.getString(R.string.pt_ui_system_locale);
+
+        for (int i = 0; i < tmpEntryValues.length; i++) {
+            uiLanguageEntryValues[i + 1] = tmpEntryValues[i];
+            final Locale locale = appLocale
+                    .getLocale(context, tmpEntryValues[i])
+                    // We should never get here... flw
+                    .orElseGet(() -> context.getResources().getConfiguration().getLocales().get(0));
+            // The NAME, i.e. including country, script,...
+            uiLanguageEntries[i + 1] = locale.getDisplayName(locale);
         }
     }
 
     @NonNull
-    public String[] getUiLangNames() {
-        return uiLangNames;
+    public String[] getUiLanguageEntryValues() {
+        return uiLanguageEntryValues;
+    }
+
+    @NonNull
+    public String[] getUiLanguageEntries() {
+        return uiLanguageEntries;
     }
 
     boolean isRequiresActivityRecreation() {

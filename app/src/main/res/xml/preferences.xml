@@ -36,18 +36,17 @@
 
     <PreferenceCategory
         android:title="@string/pc_ui">
-        <!-- The language list contains Locale string IDs in contrast to other
-             ListPreference which use 0,1...
+        <!-- These are set from code:
+                android:defaultValue : device/system default
+                android:entryValues  : Locale codes
+                android:entries      : DisplayName for the code
 
-             android:entries is set from code -->
+                Do NOT use useSimpleSummaryProvider as it will cache the values.
+        -->
         <ListPreference
-            android:defaultValue="system"
-            android:entryValues="@array/pv_ui_language"
             android:icon="@drawable/ic_baseline_language_24"
             android:key="ui.locale"
-            android:title="@string/pt_ui_language"
-            tools:summary="@string/pt_ui_system_locale"
-            app:useSimpleSummaryProvider="true" />
+            android:title="@string/pt_ui_language" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"

@@ -38,7 +38,7 @@ import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 
@@ -516,8 +516,7 @@ public class Languages {
         set.add(getISO3FromCode(res.getConfiguration().getLocales().get(0).getLanguage()));
 
         // and all supported locales.
-        Arrays.stream(res.getStringArray(R.array.pv_ui_language))
-              .filter(code -> !AppLocale.SYSTEM_LANGUAGE.equals(code))
+        Arrays.stream(BuildConfig.SUPPORTED_LOCALES)
               .map(this::getISO3FromCode)
               .forEachOrdered(set::add);
 

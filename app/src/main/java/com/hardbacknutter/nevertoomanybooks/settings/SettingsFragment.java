@@ -32,6 +32,7 @@ import android.os.storage.StorageVolume;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
@@ -56,6 +57,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -67,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.theme.NightMode;
@@ -129,22 +132,8 @@ public class SettingsFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        final ListPreference pUiLocale = findPreference(Prefs.PK_UI_LOCALE);
-        //noinspection DataFlowIssue
-        pUiLocale.setEntries(vm.getUiLangNames());
-        pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
-            // Set the activity result so our caller will recreate itself
-            vm.setOnBackRequiresActivityRecreation();
-            getActivity().recreate();
-            return true;
-        });
-
-        final Preference pFastscroller = findPreference(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY);
-        //noinspection DataFlowIssue
-        pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
-            vm.setOnBackRequiresActivityRecreation();
-            return true;
-        });
+        initUiLanguagePreference();
+        initFastscrollerPreference();
 
         //noinspection DataFlowIssue
         findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {
@@ -161,6 +150,35 @@ public class SettingsFragment
         titleOrderByHelper = new TitleOrderByHelper(
                 getContext(), findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED));
 
+        initStorageVolumePreference();
+    }
+
+    private void initUiLanguagePreference() {
+        final ListPreference pUiLocale = findPreference(Prefs.PK_UI_LOCALE);
+        //noinspection DataFlowIssue
+        pUiLocale.setDefaultValue(AppLocale.SYSTEM_LANGUAGE);
+        pUiLocale.setEntries(vm.getUiLanguageEntries());
+        pUiLocale.setEntryValues(vm.getUiLanguageEntryValues());
+        pUiLocale.setSummaryProvider(new UiLanguageSummaryProvider());
+        pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
+            // Set the activity result so our caller will recreate itself
+            vm.setOnBackRequiresActivityRecreation();
+            //noinspection DataFlowIssue
+            getActivity().recreate();
+            return true;
+        });
+    }
+
+    private void initFastscrollerPreference() {
+        final Preference pFastscroller = findPreference(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY);
+        //noinspection DataFlowIssue
+        pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
+            vm.setOnBackRequiresActivityRecreation();
+            return true;
+        });
+    }
+
+    private void initStorageVolumePreference() {
         final ListPreference pStorageVolume = findPreference(Prefs.PK_STORAGE_VOLUME);
         // On Android 9+, the Context#getExternalFilesDirs method will return
         // both internal and sdcard directories.
@@ -235,7 +253,7 @@ public class SettingsFragment
     }
 
     @NonNull
-    private static String getModeSummary(@NonNull final Resources res,
+    private String getModeSummary(@NonNull final Resources res,
                                          @ArrayRes final int resId,
                                          final int value) {
         final String[] modes = res.getStringArray(resId);
@@ -263,6 +281,36 @@ public class SettingsFragment
         if (ReorderHelper.PK_SORT_TITLE_REORDERED.equals(key)) {
             // Set the activity result so our caller will recreate itself
             vm.setOnBackRequiresActivityRecreation();
+        }
+    }
+
+    public static class UiLanguageSummaryProvider
+            implements Preference.SummaryProvider<ListPreference> {
+
+        UiLanguageSummaryProvider() {
+        }
+
+        @Nullable
+        @Override
+        public CharSequence provideSummary(@NonNull final ListPreference preference) {
+            final Context context = preference.getContext();
+            if (TextUtils.isEmpty(preference.getEntry())) {
+                return (context.getString(R.string.preference_not_set));
+            } else {
+                final String value = preference.getValue();
+                if (AppLocale.SYSTEM_LANGUAGE.equals(value)) {
+                    return context.getString(R.string.pt_ui_system_locale);
+                } else {
+                    final Locale locale = ServiceLocator
+                            .getInstance().getAppLocale()
+                            .getLocale(context, value)
+                            // We should never get here... flw
+                            .orElseGet(() -> context.getResources().getConfiguration().getLocales()
+                                                    .get(0));
+                    // The NAME, i.e. including country, script,...
+                    return locale.getDisplayName(locale);
+                }
+            }
         }
     }
 
