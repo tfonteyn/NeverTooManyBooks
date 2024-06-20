@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
@@ -466,7 +467,9 @@ public class ShowBookDetailsFragment
     private void bindLoanee(@NonNull final Book book) {
         //noinspection DataFlowIssue
         final TextView lendTo = getView().findViewById(R.id.lend_to);
-        if (aVm.getStyle().isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
+        // Use the global setting! The user may disabled the field on the list screen,
+        // but if lending is enabled globally, we MUST display the status on the details screen.
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.LOANEE_NAME)) {
             final Optional<String> loanee =
                     book.getLoanee().map(s -> getString(R.string.lbl_lend_out_to_name, s));
 
