@@ -814,4 +814,5 @@
     <string name="pe_ui_theme_colors_blue_grey">蓝灰色</string>
     <string name="pe_ui_theme_colors_dynamic">动态色彩</string>
     <string name="warning_requires_android_x">需要 Android %1$d 或更高版本</string>
+    <string name="site_description_german_catalogue">德语；目录</string>
 </resources>
