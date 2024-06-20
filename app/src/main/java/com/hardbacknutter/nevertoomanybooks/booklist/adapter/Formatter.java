@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -151,7 +151,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_language);
                 } else {
-                    return serviceLocator.getLanguages().getDisplayNameFromISO3(context, text);
+                    return serviceLocator.getLanguages().getDisplayLanguageFromISO3(context, text);
                 }
             }
             case BooklistGroup.CONDITION: {

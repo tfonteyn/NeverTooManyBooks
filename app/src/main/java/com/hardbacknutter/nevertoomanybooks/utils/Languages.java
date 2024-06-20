@@ -57,8 +57,11 @@ public class Languages {
 
     /**
      * The SharedPreferences name where we'll maintain our language to ISO mappings.
-     * Uses the {@link Locale#getDisplayName()} for the key,
-     * and {@link #getIsoCode(Locale)} for the value.
+     * <br>
+     * Key: the {@link Locale#getDisplayLanguage()} in all lowercase
+     * (i.e. WITHOUT country/script)
+     * <br>
+     * Value: {@link #getIsoCode(Locale)}
      */
     @VisibleForTesting
     public static final String LANGUAGE_MAP = "language2iso3";
@@ -116,33 +119,32 @@ public class Languages {
      *         or the input string itself if it was an invalid ISO code
      */
     @NonNull
-    public String getDisplayNameFromISO3(@NonNull final Context context,
-                                         @NonNull final String iso3) {
+    public String getDisplayLanguageFromISO3(@NonNull final Context context,
+                                             @NonNull final String iso3) {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         return appLocaleSupplier.get().getLocale(context, iso3)
-                                .map(locale -> locale.getDisplayLanguage(
-                                        context.getResources().getConfiguration().getLocales()
-                                               .get(0)))
+                                .map(locale -> locale.getDisplayLanguage(userLocale))
                                 .orElse(iso3);
     }
 
     /**
-     * Try to convert a Language DisplayName to an ISO3 code.
+     * Try to convert a language string to an ISO3 code.
      * At installation time we generated the users System Locale + Locale.ENGLISH
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
-     * @param context     Current context
-     * @param locale      the locale of the displayName
-     * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
+     * @param context  Current context
+     * @param locale   the locale of the language string
+     * @param language the string as normally produced by {@link Locale#getDisplayLanguage}
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public String getISO3FromDisplayName(@NonNull final Context context,
-                                         @NonNull final Locale locale,
-                                         @NonNull final String displayName) {
+    public String getISO3FromDisplayLanguage(@NonNull final Context context,
+                                             @NonNull final Locale locale,
+                                             @NonNull final String language) {
 
-        final String source = displayName.trim().toLowerCase(locale);
+        final String source = language.trim().toLowerCase(locale);
         if (source.isEmpty()) {
             return "";
         }
@@ -434,8 +436,7 @@ public class Languages {
         }
         final SharedPreferences.Editor ed = cacheFile.edit();
         for (final Locale loc : Locale.getAvailableLocales()) {
-            ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
-                         getIsoCode(loc));
+            ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale), getIsoCode(loc));
         }
         // signal this Locale was done
         ed.putBoolean(LANG_CREATED_PREFIX + isoCode, true);
@@ -445,11 +446,14 @@ public class Languages {
     /**
      * We've seen {@link Locale#getISO3Language()} throw {@link MissingResourceException}
      * on a HUAWEI model "ADA-AL10U" with Android 12; see github #58
-     * The OS code somehow found "zz" for a language from the list Locale.getAvailableLocales()
+     * The OS code returned the invalid code "zz" for a language
+     * in {@link Locale#getAvailableLocales()}.
      *
      * @param locale to get the ISO3/ISO2 code from.
      *
      * @return iso3/2 code
+     *
+     * @see <a href="https://github.com/tfonteyn/NeverTooManyBooks/issues/58">github #58</a>
      */
     @NonNull
     private String getIsoCode(@NonNull final Locale locale) {

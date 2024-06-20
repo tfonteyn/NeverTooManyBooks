@@ -1217,7 +1217,7 @@ public class IsfdbSearchEngine
                     final Node node = langHeader.nextSibling();
                     if (node != null) {
                         final Languages languages = ServiceLocator.getInstance().getLanguages();
-                        lang = languages.getISO3FromDisplayName(
+                        lang = languages.getISO3FromDisplayLanguage(
                                 context, getLocale(context),
                                 node.toString().trim());
                     }

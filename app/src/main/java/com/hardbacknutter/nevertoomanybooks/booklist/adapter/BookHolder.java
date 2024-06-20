@@ -274,7 +274,7 @@ public class BookHolder
         if (use.contains(DBKey.LANGUAGE)) {
             // We could use the LanguageFormatter but there is really no point here
             final String language = ServiceLocator
-                    .getInstance().getLanguages().getDisplayNameFromISO3(
+                    .getInstance().getLanguages().getDisplayLanguageFromISO3(
                             itemView.getContext(), rowData.getString(DBKey.LANGUAGE));
             showOrHide(vb.language, language);
         }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public class LanguageFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return languages.getDisplayNameFromISO3(context, rawValue);
+            return languages.getDisplayLanguageFromISO3(context, rawValue);
         }
     }
 
@@ -74,6 +74,6 @@ public class LanguageFormatter
     @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return languages.getISO3FromDisplayName(context, locale, text);
+        return languages.getISO3FromDisplayLanguage(context, locale, text);
     }
 }

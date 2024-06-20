@@ -63,7 +63,7 @@ class EditLanguageDelegate
         return super.getList(context)
                     .stream()
                     .filter(code -> code != null && !code.isEmpty())
-                    .map(code -> languages.getDisplayNameFromISO3(context, code))
+                    .map(code -> languages.getDisplayLanguageFromISO3(context, code))
                     .distinct()
                     .collect(Collectors.toList());
     }
@@ -77,9 +77,9 @@ class EditLanguageDelegate
         final Languages languages = ServiceLocator.getInstance().getLanguages();
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        final String fromIso = languages.getISO3FromDisplayName(
+        final String fromIso = languages.getISO3FromDisplayLanguage(
                 context, userLocale, originalText);
-        final String toIso = languages.getISO3FromDisplayName(
+        final String toIso = languages.getISO3FromDisplayLanguage(
                 context, userLocale, currentText);
 
         super.onSave(context, fromIso, toIso);

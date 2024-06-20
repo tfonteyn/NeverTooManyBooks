@@ -197,7 +197,7 @@ public class DnbSearchEngine
                             case "Language":
                                 final String lang = ServiceLocator
                                         .getInstance().getLanguages()
-                                        .getISO3FromDisplayName(context, locale, td.text());
+                                        .getISO3FromDisplayLanguage(context, locale, td.text());
                                 book.putString(DBKey.LANGUAGE, lang);
                                 break;
                             case "Genre":

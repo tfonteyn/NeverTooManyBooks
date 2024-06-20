@@ -200,7 +200,7 @@ class ResultsAccumulator {
         // If more than 3 characters, it's likely a 'display' name of a language.
         if (dataToAdd.length() > 3) {
             dataToAdd = languagesSupplier
-                    .get().getISO3FromDisplayName(context, locale, dataToAdd);
+                    .get().getISO3FromDisplayLanguage(context, locale, dataToAdd);
         }
 
         // copy the new data
