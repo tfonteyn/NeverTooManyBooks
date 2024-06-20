@@ -18,11 +18,14 @@ https://apilevels.com/
 ----------------------------------------------------------------------------------------------------
 Draft notes for next version:
 
-### 6.1.1
+### 6.2.0
 
 NEW:
+- option to replace the authors on all entries in a TOC with the books main author
 
 FIXES:
+- always show loanee on book-details when globally enabled
+- language selection no longer cached which sometime led to wrongly displayed
 
 REMOVED:
 
