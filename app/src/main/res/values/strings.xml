@@ -1177,8 +1177,7 @@
          The actual text is different from hint_empty_field in Translations.
          [VERIFIED] Copied from androidx.preferences# not_set; WITHOUT brackets-->
     <string name="preference_not_set">Not Set</string>
-    <!-- Preference Category -->
-    <string name="pc_ui">User Interface</string>
+
     <!-- Preference Category -->
     <string name="pc_search"
             translatable="false">@android:string/search_go</string>
@@ -1344,6 +1343,9 @@
     <string name="pt_search_show_shopping_options">Show shopping menus</string>
     <!-- endregion -->
     <!-- region ========== Global UI settings. -->
+    <!-- Preference Category -->
+    <string name="pc_ui">User Interface</string>
+
     <!-- [VERIFIED] ListPreference title: "UI Language" -->
     <string name="pt_ui_language">Language</string>
     <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->

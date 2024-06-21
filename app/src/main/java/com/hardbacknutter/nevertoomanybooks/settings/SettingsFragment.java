@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,13 +31,11 @@ import android.os.storage.StorageVolume;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.ArrayRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -54,10 +51,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -69,11 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.theme.NightMode;
-import com.hardbacknutter.nevertoomanybooks.utils.theme.ThemeColorController;
 
 /**
  * Global settings page.
@@ -95,6 +89,7 @@ public class SettingsFragment
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
     private static final String PSK_CALIBRE = "psk_calibre";
+    private static final int ANDROID_9 = 9;
 
     private final ActivityResultLauncher<Void> editSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
@@ -132,7 +127,8 @@ public class SettingsFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        initUiLanguagePreference();
+        initUiSummary();
+
         initFastscrollerPreference();
 
         //noinspection DataFlowIssue
@@ -153,20 +149,16 @@ public class SettingsFragment
         initStorageVolumePreference();
     }
 
-    private void initUiLanguagePreference() {
-        final ListPreference pUiLocale = findPreference(Prefs.PK_UI_LOCALE);
+    private void initUiSummary() {
+        final StringJoiner uiSummary = new StringJoiner(", ");
+        uiSummary.add(getString(R.string.pt_ui_language));
+        uiSummary.add(getString(R.string.pt_ui_theme));
+        uiSummary.add(getString(R.string.pt_ui_theme_colors));
+        // don't list more, keep it clean
+        uiSummary.add("…");
+
         //noinspection DataFlowIssue
-        pUiLocale.setDefaultValue(AppLocale.SYSTEM_LANGUAGE);
-        pUiLocale.setEntries(vm.getUiLanguageEntries());
-        pUiLocale.setEntryValues(vm.getUiLanguageEntryValues());
-        pUiLocale.setSummaryProvider(new UiLanguageSummaryProvider());
-        pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
-            // Set the activity result so our caller will recreate itself
-            vm.setOnBackRequiresActivityRecreation();
-            //noinspection DataFlowIssue
-            getActivity().recreate();
-            return true;
-        });
+        findPreference(PSK_USER_INTERFACE).setSummary(uiSummary.toString());
     }
 
     private void initFastscrollerPreference() {
@@ -182,12 +174,12 @@ public class SettingsFragment
         final ListPreference pStorageVolume = findPreference(Prefs.PK_STORAGE_VOLUME);
         // On Android 9+, the Context#getExternalFilesDirs method will return
         // both internal and sdcard directories.
-        // Android 8.x it "depends" ... as this is quite old now, we simply don't support 8.x
-        // for moving the cover storage.
-        if (Build.VERSION.SDK_INT < 28) {
+        // Android 8.x it "depends" ... as this is quite old now,
+        // we simply do not support 8.x for moving the cover storage.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             //noinspection DataFlowIssue
             pStorageVolume.setEnabled(false);
-            pStorageVolume.setSummary(getString(R.string.warning_requires_android_x, 9));
+            pStorageVolume.setSummary(getString(R.string.warning_requires_android_x, ANDROID_9));
         } else {
             //noinspection DataFlowIssue
             storageVolumeHelper = new StorageVolumeHelper(getContext(), pStorageVolume);
@@ -226,43 +218,9 @@ public class SettingsFragment
         //noinspection DataFlowIssue
         prefs.registerOnSharedPreferenceChangeListener(this);
 
-        updateThemeSummary();
-
         //noinspection DataFlowIssue
         findPreference(PSK_CALIBRE).setSummary(CalibreHandler.isSyncEnabled(getContext())
                                                ? R.string.enabled : R.string.disabled);
-    }
-
-    private void updateThemeSummary() {
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        final Resources res = context.getResources();
-
-        final String themeMode = getModeSummary(res, R.array.pe_ui_theme_mode,
-                                                NightMode.getSetting(context));
-
-        final String themeColors = getModeSummary(res, R.array.pe_ui_theme_colors,
-                                                  ThemeColorController.getSetting(context));
-
-        // Hardcoded ';' as separator... oh well...
-        // Also note we don't display the other UI settings (e.g. dialogs etc...)
-        final String uiSummary = themeMode + "; " + themeColors;
-
-        //noinspection DataFlowIssue
-        findPreference(PSK_USER_INTERFACE).setSummary(uiSummary);
-    }
-
-    @NonNull
-    private String getModeSummary(@NonNull final Resources res,
-                                         @ArrayRes final int resId,
-                                         final int value) {
-        final String[] modes = res.getStringArray(resId);
-        int mode = value;
-        // sanity check
-        if (mode > modes.length) {
-            mode = 0;
-        }
-        return modes[mode];
     }
 
     @Override
@@ -281,36 +239,6 @@ public class SettingsFragment
         if (ReorderHelper.PK_SORT_TITLE_REORDERED.equals(key)) {
             // Set the activity result so our caller will recreate itself
             vm.setOnBackRequiresActivityRecreation();
-        }
-    }
-
-    public static class UiLanguageSummaryProvider
-            implements Preference.SummaryProvider<ListPreference> {
-
-        UiLanguageSummaryProvider() {
-        }
-
-        @Nullable
-        @Override
-        public CharSequence provideSummary(@NonNull final ListPreference preference) {
-            final Context context = preference.getContext();
-            if (TextUtils.isEmpty(preference.getEntry())) {
-                return (context.getString(R.string.preference_not_set));
-            } else {
-                final String value = preference.getValue();
-                if (AppLocale.SYSTEM_LANGUAGE.equals(value)) {
-                    return context.getString(R.string.pt_ui_system_locale);
-                } else {
-                    final Locale locale = ServiceLocator
-                            .getInstance().getAppLocale()
-                            .getLocale(context, value)
-                            // We should never get here... flw
-                            .orElseGet(() -> context.getResources().getConfiguration().getLocales()
-                                                    .get(0));
-                    // The NAME, i.e. including country, script,...
-                    return locale.getDisplayName(locale);
-                }
-            }
         }
     }
 

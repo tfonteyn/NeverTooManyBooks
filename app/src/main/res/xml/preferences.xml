@@ -29,23 +29,13 @@
 
     <PreferenceCategory
         android:title="@string/pc_ui">
-        <!-- These are set from code:
-                android:defaultValue : device/system default
-                android:entryValues  : Locale codes
-                android:entries      : DisplayName for the code
 
-                Do NOT use useSimpleSummaryProvider as it will cache the values.
-        -->
-        <ListPreference
-            android:icon="@drawable/ic_baseline_language_24"
-            android:key="ui.locale"
-            android:title="@string/pt_ui_language" />
-
+        <!-- summary set from code. -->
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"
             android:icon="@drawable/display_settings_24px"
             android:key="psk_user_interface"
-            android:title="@string/pt_ui_theme"
+            android:title="@string/pc_ui"
             />
 
     </PreferenceCategory>
