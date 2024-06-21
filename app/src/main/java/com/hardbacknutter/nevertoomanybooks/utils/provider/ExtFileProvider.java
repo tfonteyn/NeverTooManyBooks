@@ -386,6 +386,7 @@ import static org.xmlpull.v1.XmlPullParser.START_TAG;
  *    URIs</a>.
  * </p>
  */
+@SuppressWarnings("all")
 public class ExtFileProvider
         extends ContentProvider {
     private static final String[] COLUMNS = {
