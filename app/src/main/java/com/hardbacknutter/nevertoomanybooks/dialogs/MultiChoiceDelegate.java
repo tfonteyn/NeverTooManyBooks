@@ -35,11 +35,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditChecklistBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseMultipleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 /**
- * Replacement for the AlertDialog with checkbox setup.
+ * Replacement for an AlertDialog with checkbox setup.
  */
 class MultiChoiceDelegate {
 
@@ -93,7 +93,7 @@ class MultiChoiceDelegate {
         return dialogTitle;
     }
 
-    public void onViewCreated(@NonNull final DialogEditChecklistBinding vb) {
+    public void onViewCreated(@NonNull final DialogChooseMultipleBinding vb) {
 
         final Context context = vb.getRoot().getContext();
 

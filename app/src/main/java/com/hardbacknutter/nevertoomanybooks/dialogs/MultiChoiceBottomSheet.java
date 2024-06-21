@@ -35,7 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditChecklistBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseMultipleBinding;
 
 /**
  * Note that {@link #onDismiss(DialogInterface)} will <strong>save</strong> the selection.
@@ -44,7 +44,7 @@ public class MultiChoiceBottomSheet
         extends BottomSheetDialogFragment {
 
     private MultiChoiceDelegate delegate;
-    private DialogEditChecklistBinding vb;
+    private DialogChooseMultipleBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class MultiChoiceBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = DialogEditChecklistBinding.inflate(inflater, container, false);
+        vb = DialogChooseMultipleBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 

@@ -37,7 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditChecklistBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseMultipleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 public class MultiChoiceAlertDialogBuilder<T extends Number> {
@@ -157,7 +157,7 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         Objects.requireNonNull(itemLabels);
         Objects.requireNonNull(positiveButtonConsumer);
 
-        final DialogEditChecklistBinding vb = DialogEditChecklistBinding.inflate(
+        final DialogChooseMultipleBinding vb = DialogChooseMultipleBinding.inflate(
                 layoutInflater, null, false);
         // Layouts supporting BottomSheet have a drag-handle. Just hide it.
         vb.dragHandle.setVisibility(View.GONE);
