@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -39,6 +40,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.dialogs.PreferenceDialogFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 
@@ -59,7 +61,8 @@ public abstract class BasePreferenceFragment
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-
+    private static final String DIALOG_FRAGMENT_TAG =
+            "androidx.preference.PreferenceFragment.DIALOG";
     @Nullable
     private View progressFrame;
     @Nullable
@@ -157,6 +160,21 @@ public abstract class BasePreferenceFragment
           .replace(R.id.main_fragment, fragment)
           .commit();
         return true;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
+
+        // check if dialog is already showing
+        if (getParentFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+            return;
+        }
+
+        final DialogFragment f = PreferenceDialogFactory.create(preference);
+        // Don't blame me... this is the androidx.preference requirement
+        f.setTargetFragment(this, 0);
+        f.show(getParentFragmentManager(), DIALOG_FRAGMENT_TAG);
     }
 
     /**

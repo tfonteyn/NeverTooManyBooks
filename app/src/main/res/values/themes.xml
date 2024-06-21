@@ -120,6 +120,11 @@
 
         <!-- Material3 theme OVERLAYS! -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <!-- The intention of the next line was to apply the M3 look to the androidx.preference
+             library's use of AlertDialog; but it does not seem to do anything.
+             Leaving this as reminder/docs.
+             -->
+        <!-- <item name="alertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
 
         <item name="materialCalendarTheme">@style/ThemeOverlay.App.MaterialCalendarTheme</item>
         <item name="materialCalendarFullscreenTheme">
