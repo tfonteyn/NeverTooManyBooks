@@ -23,7 +23,9 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -43,8 +45,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class BaseBottomSheetDialogFragment<B>
         extends BottomSheetDialogFragment {
 
-    protected B vb;
+    /** Set from {@link #onCreate(Bundle)}. */
     protected FlexDialogDelegate<B> delegate;
+
+    /** Set from {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}. */
+    protected B vb;
 
     @Override
     public void onAttach(@NonNull final Context context) {
