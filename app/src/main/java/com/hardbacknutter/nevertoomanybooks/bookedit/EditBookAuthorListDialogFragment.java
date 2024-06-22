@@ -51,8 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -85,7 +85,7 @@ public class EditBookAuthorListDialogFragment
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookAuthorListDlg";
-    private static final String RK_MENU = TAG + ":menu";
+    private static final String RK_MENU = TAG + ":rk:menu";
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
@@ -129,9 +129,8 @@ public class EditBookAuthorListDialogFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = new EditParcelableLauncher<>(
-                DialogLauncher.RK_EDIT_BOOK_AUTHOR,
-                this::add, this::processChanges);
+        editLauncher = EditParcelableLauncher.create(DBKey.FK_AUTHOR,
+                                                     this::add, this::processChanges);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);

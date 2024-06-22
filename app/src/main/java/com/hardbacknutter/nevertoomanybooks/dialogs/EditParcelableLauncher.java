@@ -26,19 +26,36 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 
 /**
  * Launcher to edit a Parcelable object.
  *
  * @param <T> type of editable object
  */
-public class EditParcelableLauncher<T extends Parcelable>
+public final class EditParcelableLauncher<T extends Parcelable>
         extends DialogLauncher {
 
     private static final String TAG = "EditParcelableLauncher";
@@ -58,14 +75,18 @@ public class EditParcelableLauncher<T extends Parcelable>
     /**
      * Constructor for doing {@link EditAction#Add} or {@link EditAction#Edit}.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
-     * @param onAddListener  results listener
-     * @param onEditListener results listener
+     * @param requestKey          FragmentResultListener request key to use for our response.
+     * @param dialogSupplier      a supplier for a new plain DialogFragment
+     * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
+     * @param onAddListener       results listener
+     * @param onEditListener      results listener
      */
-    public EditParcelableLauncher(@NonNull final String requestKey,
-                                  @NonNull final OnAddListener<T> onAddListener,
-                                  @NonNull final OnEditListener<T> onEditListener) {
-        super(requestKey);
+    private EditParcelableLauncher(@NonNull final String requestKey,
+                                   @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                   @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
+                                   @Nullable final OnAddListener<T> onAddListener,
+                                   @Nullable final OnEditListener<T> onEditListener) {
+        super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.onAddListener = onAddListener;
         this.onEditListener = onEditListener;
         this.onEditInPlaceListener = null;
@@ -75,14 +96,97 @@ public class EditParcelableLauncher<T extends Parcelable>
      * Constructor for doing {@link EditAction#EditInPlace}.
      *
      * @param requestKey            FragmentResultListener request key to use for our response.
+     * @param dialogSupplier        a supplier for a new plain DialogFragment
+     * @param bottomSheetSupplier   a supplier for a new BottomSheetDialogFragment.
      * @param onEditInPlaceListener results listener
      */
-    public EditParcelableLauncher(@NonNull final String requestKey,
-                                  @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
-        super(requestKey);
+    private EditParcelableLauncher(@NonNull final String requestKey,
+                                   @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                   @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
+                                   @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
+        super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.onAddListener = null;
         this.onEditListener = null;
         this.onEditInPlaceListener = onEditInPlaceListener;
+    }
+
+    /**
+     * Create one of the predefined launchers based on the given request-key.
+     *
+     * @param requestKey     to lookup
+     * @param onAddListener  results listener
+     * @param onEditListener results listener
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static <T extends Parcelable> EditParcelableLauncher<T> create(
+            @NonNull final String requestKey,
+            @Nullable final OnAddListener<T> onAddListener,
+            @Nullable final OnEditListener<T> onEditListener) {
+        switch (requestKey) {
+            case DBKey.FK_AUTHOR:
+                return new EditParcelableLauncher<>(requestKey,
+                                                    EditBookAuthorDialogFragment::new,
+                                                    EditBookAuthorBottomSheet::new,
+                                                    onAddListener,
+                                                    onEditListener);
+
+            case DBKey.FK_SERIES:
+                return new EditParcelableLauncher<>(requestKey,
+                                                    EditBookSeriesDialogFragment::new,
+                                                    EditBookSeriesBottomSheet::new,
+                                                    onAddListener,
+                                                    onEditListener);
+
+            case DBKey.FK_PUBLISHER:
+                return new EditParcelableLauncher<>(requestKey,
+                                                    EditBookPublisherDialogFragment::new,
+                                                    EditBookPublisherBottomSheet::new,
+                                                    onAddListener,
+                                                    onEditListener);
+
+            default:
+                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+        }
+    }
+
+    /**
+     * Create one of the predefined launchers based on the given request-key.
+     *
+     * @param requestKey            to lookup
+     * @param onEditInPlaceListener results listener
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static <T extends Parcelable> EditParcelableLauncher<T> create(
+            @NonNull final String requestKey,
+            @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
+        switch (requestKey) {
+            case DBKey.FK_BOOKSHELF:
+                return new EditParcelableLauncher<>(requestKey,
+                                                    EditBookshelfDialogFragment::new,
+                                                    EditBookshelfBottomSheet::new,
+                                                    onEditInPlaceListener);
+            case DBKey.FK_AUTHOR:
+                return new EditParcelableLauncher<>(requestKey,
+                                                    EditAuthorDialogFragment::new,
+                                                    EditAuthorBottomSheet::new,
+                                                    onEditInPlaceListener);
+            case DBKey.FK_SERIES:
+                return new EditParcelableLauncher<>(requestKey,
+                                                    EditSeriesDialogFragment::new,
+                                                    EditSeriesBottomSheet::new,
+                                                    onEditInPlaceListener);
+            case DBKey.FK_PUBLISHER:
+                return new EditParcelableLauncher<>(requestKey,
+                                                    EditPublisherDialogFragment::new,
+                                                    EditPublisherBottomSheet::new,
+                                                    onEditInPlaceListener);
+            default:
+                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+        }
     }
 
     /**
@@ -155,7 +259,7 @@ public class EditParcelableLauncher<T extends Parcelable>
         args.putParcelable(EditAction.BKEY, action);
         args.putParcelable(BKEY_ITEM, item);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

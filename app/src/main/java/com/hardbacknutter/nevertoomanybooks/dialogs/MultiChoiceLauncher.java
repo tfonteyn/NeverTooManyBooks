@@ -25,17 +25,20 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-public class MultiChoiceLauncher<T extends Parcelable & Entity>
+public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         extends DialogLauncher {
 
     private static final String TAG = "MultiChoiceLauncher";
@@ -50,13 +53,33 @@ public class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
-     * @param resultListener listener
+     * @param requestKey          FragmentResultListener request key to use for our response.
+     * @param dialogSupplier      a supplier for a new plain DialogFragment
+     * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
+     * @param resultListener      listener
      */
-    public MultiChoiceLauncher(@NonNull final String requestKey,
-                               @NonNull final ResultListener resultListener) {
-        super(requestKey);
+    private MultiChoiceLauncher(@NonNull final String requestKey,
+                                @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
+                                @NonNull final ResultListener resultListener) {
+        super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.resultListener = resultListener;
+    }
+
+    @NonNull
+    public static <T extends Parcelable & Entity> MultiChoiceLauncher<T> create(
+            @NonNull final String requestKey,
+            @NonNull final ResultListener resultListener) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (requestKey) {
+            case DBKey.FK_BOOKSHELF:
+                return new MultiChoiceLauncher<>(requestKey,
+                                                 MultiChoiceDialogFragment::new,
+                                                 MultiChoiceBottomSheet::new,
+                                                 resultListener);
+            default:
+                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+        }
     }
 
     /**
@@ -80,8 +103,8 @@ public class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Launch the dialog.
      *
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
+     * @param context       preferably the {@code Activity}
+     *                      but another UI {@code Context} will also do.
      * @param dialogTitle   the dialog title
      * @param allItems      list of all possible items
      * @param selectedItems list of item which are currently selected
@@ -102,7 +125,7 @@ public class MultiChoiceLauncher<T extends Parcelable & Entity>
         args.putLongArray(BKEY_SELECTED, selectedItems
                 .stream().mapToLong(Entity::getId).toArray());
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

@@ -39,6 +39,7 @@ public class PartialDatePickerLauncher
         extends DialogLauncher {
 
     private static final String TAG = "PartialDatePickerLaunch";
+    private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
 
     /** a standard sql style date string, must be correct. */
     static final String BKEY_DATE = TAG + ":date";
@@ -51,12 +52,12 @@ public class PartialDatePickerLauncher
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public PartialDatePickerLauncher(@NonNull final String requestKey,
-                                     @NonNull final ResultListener resultListener) {
-        super(requestKey);
+    public PartialDatePickerLauncher(@NonNull final ResultListener resultListener) {
+        super(RK_DATE_PICKER_PARTIAL,
+              PartialDatePickerDialogFragment::new,
+              PartialDatePickerBottomSheet::new);
         this.resultListener = resultListener;
     }
 
@@ -109,7 +110,7 @@ public class PartialDatePickerLauncher
         args.putInt(BKEY_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, dateStr);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

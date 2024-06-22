@@ -33,7 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 class BookshelfFiltersLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "BookshelfFiltersL";
+    private static final String TAG = "BookshelfFilters";
+    private static final String RK_FILTERS = TAG + ":rk:filters";
 
     private static final String BKEY_MODIFIED = TAG + ":m";
 
@@ -43,12 +44,12 @@ class BookshelfFiltersLauncher
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    BookshelfFiltersLauncher(@NonNull final String requestKey,
-                             @NonNull final ResultListener resultListener) {
-        super(requestKey);
+    BookshelfFiltersLauncher(@NonNull final ResultListener resultListener) {
+        super(RK_FILTERS,
+              BookshelfFiltersDialogFragment::new,
+              BookshelfFiltersBottomSheet::new);
         this.resultListener = resultListener;
     }
 
@@ -81,7 +82,7 @@ class BookshelfFiltersLauncher
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

@@ -42,12 +42,12 @@ public class EditTocEntryLauncher
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public EditTocEntryLauncher(@NonNull final String requestKey,
-                                @NonNull final ResultListener resultListener) {
-        super(requestKey);
+    public EditTocEntryLauncher(@NonNull final ResultListener resultListener) {
+        super(DBKey.FK_TOC_ENTRY,
+              EditTocEntryDialogFragment::new,
+              EditTocEntryBottomSheet::new);
         this.resultListener = resultListener;
     }
 
@@ -75,8 +75,9 @@ public class EditTocEntryLauncher
 
     /**
      * Constructor.
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
+     *
+     * @param context     preferably the {@code Activity}
+     *                    but another UI {@code Context} will also do.
      * @param book        the entry belongs to
      * @param position    of the tocEntry in the list
      * @param tocEntry    to edit.
@@ -94,7 +95,7 @@ public class EditTocEntryLauncher
         args.putParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY, tocEntry);
         args.putInt(EditTocEntryViewModel.BKEY_POSITION, position);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

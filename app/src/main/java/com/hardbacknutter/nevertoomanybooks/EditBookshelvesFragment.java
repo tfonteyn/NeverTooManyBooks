@@ -74,7 +74,7 @@ public class EditBookshelvesFragment
         extends BaseFragment {
 
     private static final String TAG = "EditBookshelvesFragment";
-    private static final String RK_MENU = TAG + ":menu";
+    private static final String RK_MENU = TAG + ":rk:menu";
 
     private EditBookshelvesViewModel vm;
 
@@ -152,7 +152,7 @@ public class EditBookshelvesFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = new EditParcelableLauncher<>(DBKey.FK_BOOKSHELF, this::onModified);
+        editLauncher = EditParcelableLauncher.create(DBKey.FK_BOOKSHELF, this::onModified);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);

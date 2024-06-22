@@ -42,12 +42,12 @@ public class EditLenderLauncher
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    public EditLenderLauncher(@NonNull final String requestKey,
-                              @NonNull final ResultListener resultListener) {
-        super(requestKey);
+    public EditLenderLauncher(@NonNull final ResultListener resultListener) {
+        super(DBKey.LOANEE_NAME,
+              EditLenderDialogFragment::new,
+              EditLenderBottomSheet::new);
         this.resultListener = resultListener;
     }
 
@@ -86,8 +86,8 @@ public class EditLenderLauncher
     /**
      * Launch the dialog.
      *
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
+     * @param context   preferably the {@code Activity}
+     *                  but another UI {@code Context} will also do.
      * @param bookId    to lend
      * @param bookTitle displayed for info only
      */
@@ -99,7 +99,7 @@ public class EditLenderLauncher
         args.putLong(DBKey.FK_BOOK, bookId);
         args.putString(DBKey.TITLE, bookTitle);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

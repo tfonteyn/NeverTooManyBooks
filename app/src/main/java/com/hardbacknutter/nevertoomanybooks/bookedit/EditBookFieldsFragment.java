@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -79,6 +78,7 @@ public class EditBookFieldsFragment
                         //noinspection DataFlowIssue
                         SoundManager.beepOnBarcodeFound(getContext());
                     }));
+
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] coverHandler = new CoverHandler[2];
     private MultiChoiceLauncher<Bookshelf> editBookshelvesLauncher;
@@ -104,9 +104,8 @@ public class EditBookFieldsFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editBookshelvesLauncher = new MultiChoiceLauncher<>(
-                DialogLauncher.RK_EDIT_BOOK_BOOKSHELVES,
-                this::onBookshelvesSelection);
+        editBookshelvesLauncher = MultiChoiceLauncher.create(DBKey.FK_BOOKSHELF,
+                                                             this::onBookshelvesSelection);
         editBookshelvesLauncher.registerForFragmentResult(fm, this);
     }
 

@@ -210,7 +210,6 @@ public class ShowBookDetailsFragment
         final FragmentManager fm = getChildFragmentManager();
 
         editLenderLauncher = new EditLenderLauncher(
-                DBKey.LOANEE_NAME,
                 (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
 
 

@@ -36,6 +36,7 @@ class StylePickerLauncher
         extends DialogLauncher {
 
     private static final String TAG = "StylePickerLauncher";
+
     static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
 
     @NonNull
@@ -44,12 +45,12 @@ class StylePickerLauncher
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
      */
-    StylePickerLauncher(@NonNull final String requestKey,
-                        @NonNull final StylePickerLauncher.ResultListener resultListener) {
-        super(requestKey);
+    StylePickerLauncher(@NonNull final ResultListener resultListener) {
+        super(DBKey.FK_STYLE,
+              StylePickerDialogFragment::new,
+              StylePickerBottomSheet::new);
         this.resultListener = resultListener;
     }
 
@@ -86,7 +87,7 @@ class StylePickerLauncher
         args.putString(Style.BKEY_UUID, currentStyle.getUuid());
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

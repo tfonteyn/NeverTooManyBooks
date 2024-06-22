@@ -32,121 +32,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.BookshelfFiltersBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.BookshelfFiltersDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.StylePickerBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.StylePickerDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgressBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 
 public abstract class DialogLauncher
         implements FragmentResultListener {
-
-    public static final String RK_STYLE_PICKER = "RK_STYLE_PICKER";
-    public static final String RK_FILTERS = "RK_FILTERS";
-    public static final String RK_DATE_PICKER_PARTIAL = "RK_DATE_PICKER_PARTIAL";
-
-    /** <strong>IMPORTANT:</strong> always append the cIdx value */
-    public static final String RK_COVER_BROWSER = "RK_COVER_BROWSER";
-
-    public static final String RK_EDIT_BOOK_BOOKSHELVES = "RK_EDIT_BOOK_BOOKSHELVES";
-    public static final String RK_EDIT_BOOK_AUTHOR = "RK_EDIT_BOOK_AUTHOR";
-    public static final String RK_EDIT_BOOK_PUBLISHER = "RK_EDIT_BOOK_PUBLISHER";
-    public static final String RK_EDIT_BOOK_SERIES = "RK_EDIT_BOOK_SERIES";
-    public static final String RK_EDIT_BOOK_TOC_ENTRY = "RK_EDIT_BOOK_TOC_ENTRY";
-
-    private static final Map<String, Supplier<DialogFragment>> BOTTOM_SHEET =
-            Map.ofEntries(
-                    Map.entry(DBKey.FK_BOOKSHELF, EditBookshelfBottomSheet::new),
-                    Map.entry(DBKey.FK_AUTHOR, EditAuthorBottomSheet::new),
-                    Map.entry(DBKey.FK_SERIES, EditSeriesBottomSheet::new),
-                    Map.entry(DBKey.FK_PUBLISHER, EditPublisherBottomSheet::new),
-                    Map.entry(DBKey.READ_PROGRESS, ReadingProgressBottomSheet::new),
-                    Map.entry(DBKey.LOANEE_NAME, EditLenderBottomSheet::new),
-
-                    Map.entry(DBKey.COLOR, EditColorBottomSheet::new),
-                    Map.entry(DBKey.FORMAT, EditFormatBottomSheet::new),
-                    Map.entry(DBKey.GENRE, EditGenreBottomSheet::new),
-                    Map.entry(DBKey.LANGUAGE, EditLanguageBottomSheet::new),
-                    Map.entry(DBKey.LOCATION, EditLocationBottomSheet::new),
-
-                    Map.entry(RK_EDIT_BOOK_BOOKSHELVES, MultiChoiceBottomSheet::new),
-                    Map.entry(RK_EDIT_BOOK_AUTHOR, EditBookAuthorBottomSheet::new),
-                    Map.entry(RK_EDIT_BOOK_PUBLISHER, EditBookPublisherBottomSheet::new),
-                    Map.entry(RK_EDIT_BOOK_SERIES, EditBookSeriesBottomSheet::new),
-                    Map.entry(RK_EDIT_BOOK_TOC_ENTRY, EditTocEntryBottomSheet::new),
-
-                    Map.entry(RK_STYLE_PICKER, StylePickerBottomSheet::new),
-                    Map.entry(RK_FILTERS, BookshelfFiltersBottomSheet::new),
-                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerBottomSheet::new),
-
-                    Map.entry(RK_COVER_BROWSER + "0", CoverBrowserBottomSheet::new),
-                    Map.entry(RK_COVER_BROWSER + "1", CoverBrowserBottomSheet::new)
-            );
-    private static final Map<String, Supplier<DialogFragment>> DIALOG =
-            Map.ofEntries(
-                    Map.entry(DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new),
-                    Map.entry(DBKey.FK_AUTHOR, EditAuthorDialogFragment::new),
-                    Map.entry(DBKey.FK_SERIES, EditSeriesDialogFragment::new),
-                    Map.entry(DBKey.FK_PUBLISHER, EditPublisherDialogFragment::new),
-                    Map.entry(DBKey.READ_PROGRESS, ReadingProgressDialogFragment::new),
-                    Map.entry(DBKey.LOANEE_NAME, EditLenderDialogFragment::new),
-
-                    Map.entry(DBKey.COLOR, EditColorDialogFragment::new),
-                    Map.entry(DBKey.FORMAT, EditFormatDialogFragment::new),
-                    Map.entry(DBKey.GENRE, EditGenreDialogFragment::new),
-                    Map.entry(DBKey.LANGUAGE, EditLanguageDialogFragment::new),
-                    Map.entry(DBKey.LOCATION, EditLocationDialogFragment::new),
-
-                    Map.entry(RK_EDIT_BOOK_BOOKSHELVES, MultiChoiceDialogFragment::new),
-                    Map.entry(RK_EDIT_BOOK_AUTHOR, EditBookAuthorDialogFragment::new),
-                    Map.entry(RK_EDIT_BOOK_PUBLISHER, EditBookPublisherDialogFragment::new),
-                    Map.entry(RK_EDIT_BOOK_SERIES, EditBookSeriesDialogFragment::new),
-                    Map.entry(RK_EDIT_BOOK_TOC_ENTRY, EditTocEntryDialogFragment::new),
-
-                    Map.entry(RK_STYLE_PICKER, StylePickerDialogFragment::new),
-                    Map.entry(RK_FILTERS, BookshelfFiltersDialogFragment::new),
-                    Map.entry(RK_DATE_PICKER_PARTIAL, PartialDatePickerDialogFragment::new),
-
-                    Map.entry(RK_COVER_BROWSER + "0", CoverBrowserDialogFragment::new),
-                    Map.entry(RK_COVER_BROWSER + "1", CoverBrowserDialogFragment::new)
-            );
 
     private static final String TAG = "DialogLauncher";
     /**
@@ -163,31 +55,26 @@ public abstract class DialogLauncher
     @NonNull
     private final String requestKey;
 
-    @Nullable
-    private final Supplier<DialogFragment> dialogFragmentSupplier;
+    @NonNull
+    private final Supplier<DialogFragment> dialogSupplier;
+    @NonNull
+    private final Supplier<DialogFragment> bottomSheetSupplier;
     @Nullable
     private FragmentManager fragmentManager;
 
     /**
      * Constructor.
      *
-     * @param requestKey FragmentResultListener request key to use for our response.
-     */
-    protected DialogLauncher(@NonNull final String requestKey) {
-        this.requestKey = requestKey;
-        this.dialogFragmentSupplier = null;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param requestKey     FragmentResultListener request key to use for our response.
-     * @param dialogSupplier a supplier for a new DialogFragment
+     * @param requestKey          FragmentResultListener request key to use for our response.
+     * @param dialogSupplier      a supplier for a new plain DialogFragment
+     * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
      */
     protected DialogLauncher(@NonNull final String requestKey,
-                             @NonNull final Supplier<DialogFragment> dialogSupplier) {
+                             @NonNull final Supplier<DialogFragment> dialogSupplier,
+                             @NonNull final Supplier<DialogFragment> bottomSheetSupplier) {
         this.requestKey = requestKey;
-        this.dialogFragmentSupplier = dialogSupplier;
+        this.dialogSupplier = dialogSupplier;
+        this.bottomSheetSupplier = bottomSheetSupplier;
     }
 
     /**
@@ -212,34 +99,28 @@ public abstract class DialogLauncher
      *                but another UI {@code Context} will also do.
      * @param args    to pass
      */
-    protected void createDialog(@NonNull final Context context,
-                                @NonNull final Bundle args) {
+    protected void showDialog(@NonNull final Context context,
+                              @NonNull final Bundle args) {
         Objects.requireNonNull(fragmentManager, "fragmentManager");
 
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-
+        final DialogMode mode = DialogMode.getMode(context);
         final DialogFragment dialogFragment;
-        dialogFragment = Objects
-                .requireNonNullElseGet(dialogFragmentSupplier,
-                                       () -> getDialogSupplier(context, requestKey))
-                .get();
+        switch (mode) {
+            case Dialog: {
+                dialogFragment = dialogSupplier.get();
+                break;
+            }
+            case BottomSheet: {
+                dialogFragment = bottomSheetSupplier.get();
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("requestKey=" + requestKey + ", type=" + mode);
+        }
+
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         dialogFragment.setArguments(args);
         // using the requestKey as the fragment tag.
         dialogFragment.show(fragmentManager, requestKey);
-    }
-
-    @NonNull
-    private Supplier<DialogFragment> getDialogSupplier(@NonNull final Context context,
-                                                       @NonNull final String requestKey) {
-        final DialogMode dialogMode = DialogMode.getMode(context);
-        switch (dialogMode) {
-            case Dialog:
-                return Objects.requireNonNull(DIALOG.get(requestKey), requestKey);
-            case BottomSheet:
-                return Objects.requireNonNull(BOTTOM_SHEET.get(requestKey), requestKey);
-            default:
-                throw new IllegalArgumentException("requestKey=" + requestKey
-                                                   + ", type=" + dialogMode);
-        }
     }
 }

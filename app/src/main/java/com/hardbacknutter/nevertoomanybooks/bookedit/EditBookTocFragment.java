@@ -102,10 +102,10 @@ public class EditBookTocFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
-    private static final String RK_MENU = TAG + ":menu";
+    private static final String RK_MENU = TAG + ":rk:menu";
 
     /** FragmentResultListener request key. */
-    private static final String RK_CONFIRM_TOC = TAG + ":rk:" + ConfirmTocDialogFragment.TAG;
+    private static final String RK_CONFIRM_TOC = TAG + ":rk:toc";
     private static final int POS_NEW_ENTRY = -1;
 
     /** If the list changes, the book is dirty. */
@@ -157,9 +157,7 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editTocEntryLauncher = new EditTocEntryLauncher(
-                DialogLauncher.RK_EDIT_BOOK_TOC_ENTRY,
-                this::onEntryUpdated);
+        editTocEntryLauncher = new EditTocEntryLauncher(this::onEntryUpdated);
         editTocEntryLauncher.registerForFragmentResult(fm, this);
 
         confirmTocResultsLauncher = new ConfirmTocDialogFragment.Launcher(
@@ -676,7 +674,10 @@ public class EditBookTocFragment
             Launcher(@NonNull final String requestKey,
                      @NonNull final ResultListener resultListener,
                      @NonNull final OnSearchNextListener onSearchNextListener) {
-                super(requestKey, ConfirmTocDialogFragment::new);
+                super(requestKey,
+                      ConfirmTocDialogFragment::new,
+                      // ENHANCE: implement ConfirmTocBottomSheet
+                      ConfirmTocDialogFragment::new);
                 this.resultListener = resultListener;
                 this.onSearchNextListener = onSearchNextListener;
             }
@@ -729,7 +730,7 @@ public class EditBookTocFragment
                 args.putLong(DBKey.BOOK_CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
-                createDialog(context, args);
+                showDialog(context, args);
             }
 
             @Override

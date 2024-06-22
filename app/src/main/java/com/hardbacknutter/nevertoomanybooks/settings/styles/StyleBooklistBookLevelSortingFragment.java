@@ -71,7 +71,7 @@ public class StyleBooklistBookLevelSortingFragment
         extends BaseFragment {
 
     private static final String TAG = "StyleBooklistBookLevelS";
-    private static final String RK_MENU = TAG + ":menu";
+    private static final String RK_MENU = TAG + ":rk:menu";
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;

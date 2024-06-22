@@ -80,7 +80,7 @@ public class AuthorWorksFragment
     static final String BKEY_WITH_TOC = TAG + ":tocs";
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
-    private static final String RK_MENU = TAG + ":menu";
+    private static final String RK_MENU = TAG + ":rk:menu";
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel vm;
     /** Set the hosting Activity result, and close it. */

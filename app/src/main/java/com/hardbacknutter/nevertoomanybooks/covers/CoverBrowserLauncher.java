@@ -35,6 +35,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 public class CoverBrowserLauncher
         extends DialogLauncher {
 
+    private static final String TAG = "CoverBrowserLauncher";
+
+    /** <strong>IMPORTANT:</strong> always append the cIdx value */
+    private static final String RK_COVER_BROWSER = TAG + ":rk:";
+
     private static final String COVER_FILE_SPEC = "fileSpec";
     @NonNull
     private final ResultListener resultListener;
@@ -42,12 +47,16 @@ public class CoverBrowserLauncher
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
+     * @param cIdx           0..n image index
      * @param resultListener listener
      */
-    CoverBrowserLauncher(@NonNull final String requestKey,
+    CoverBrowserLauncher(@IntRange(from = 0, to = 1) final int cIdx,
                          @NonNull final ResultListener resultListener) {
-        super(requestKey);
+        // Append the cIdx value!
+        super(RK_COVER_BROWSER + cIdx,
+              CoverBrowserDialogFragment::new,
+              CoverBrowserBottomSheet::new);
+
         this.resultListener = resultListener;
     }
 
@@ -72,8 +81,8 @@ public class CoverBrowserLauncher
     /**
      * Launch the dialog.
      *
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
+     * @param context   preferably the {@code Activity}
+     *                  but another UI {@code Context} will also do.
      * @param bookTitle to display
      * @param isbn      ISBN of book
      * @param cIdx      0..n image index
@@ -88,7 +97,7 @@ public class CoverBrowserLauncher
         args.putString(DBKey.BOOK_ISBN, isbn);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

@@ -94,7 +94,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -116,7 +115,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragm
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuResultListener;
@@ -166,7 +164,7 @@ public class BooksOnBookshelf
     private static final String TAG = "BooksOnBookshelf";
 
     /** {@link FragmentResultListener} request key. */
-    private static final String RK_MENU = TAG + ":rk" + ExtMenuBottomSheet.TAG;
+    private static final String RK_MENU = TAG + ":rk:menu";
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
     private static final int OFFSCREEN_CACHE_SIZE = 20;
@@ -408,63 +406,50 @@ public class BooksOnBookshelf
     private void createFragmentLaunchers() {
         final FragmentManager fm = getSupportFragmentManager();
 
-        stylePickerLauncher = new StylePickerLauncher(
-                DialogLauncher.RK_STYLE_PICKER,
-                this::onStyleSelected);
+        stylePickerLauncher = new StylePickerLauncher(this::onStyleSelected);
         stylePickerLauncher.registerForFragmentResult(fm, this);
 
-        bookshelfFiltersLauncher = new BookshelfFiltersLauncher(
-                DialogLauncher.RK_FILTERS,
-                this::onFiltersUpdate);
+        bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
 
-        editBookshelfLauncher = new EditParcelableLauncher<>(
+        editBookshelfLauncher = EditParcelableLauncher.create(
                 DBKey.FK_BOOKSHELF,
                 bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
         editBookshelfLauncher.registerForFragmentResult(fm, this);
 
-        editAuthorLauncher = new EditParcelableLauncher<>(
-                DBKey.FK_AUTHOR,
-                author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
+        editAuthorLauncher = EditParcelableLauncher.create(
+                DBKey.FK_AUTHOR, author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
         editAuthorLauncher.registerForFragmentResult(fm, this);
 
-        editSeriesLauncher = new EditParcelableLauncher<>(
-                DBKey.FK_SERIES,
-                series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
+        editSeriesLauncher = EditParcelableLauncher.create(
+                DBKey.FK_SERIES, series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
         editSeriesLauncher.registerForFragmentResult(fm, this);
 
-        editPublisherLauncher = new EditParcelableLauncher<>(
-                DBKey.FK_PUBLISHER,
-                publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
+        editPublisherLauncher = EditParcelableLauncher.create(
+                DBKey.FK_PUBLISHER, publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
         editPublisherLauncher.registerForFragmentResult(fm, this);
 
         editLenderLauncher = new EditLenderLauncher(
-                DBKey.LOANEE_NAME,
                 (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
         editLenderLauncher.registerForFragmentResult(fm, this);
 
-        editColorLauncher = new EditStringLauncher(
-                DBKey.COLOR, (original, modified)
+        editColorLauncher = EditStringLauncher.create(DBKey.COLOR, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
         editColorLauncher.registerForFragmentResult(fm, this);
 
-        editFormatLauncher = new EditStringLauncher(
-                DBKey.FORMAT, (original, modified)
+        editFormatLauncher = EditStringLauncher.create(DBKey.FORMAT, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
         editFormatLauncher.registerForFragmentResult(fm, this);
 
-        editGenreLauncher = new EditStringLauncher(
-                DBKey.GENRE, (original, modified)
+        editGenreLauncher = EditStringLauncher.create(DBKey.GENRE, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
         editGenreLauncher.registerForFragmentResult(fm, this);
 
-        editLanguageLauncher = new EditStringLauncher(
-                DBKey.LANGUAGE, (original, modified)
+        editLanguageLauncher = EditStringLauncher.create(DBKey.LANGUAGE, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
         editLanguageLauncher.registerForFragmentResult(fm, this);
 
-        editLocationLauncher = new EditStringLauncher(
-                DBKey.LOCATION, (original, modified)
+        editLocationLauncher = EditStringLauncher.create(DBKey.LOCATION, (original, modified)
                 -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
         editLocationLauncher.registerForFragmentResult(fm, this);
 

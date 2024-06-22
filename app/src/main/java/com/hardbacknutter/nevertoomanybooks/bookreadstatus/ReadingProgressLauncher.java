@@ -48,7 +48,9 @@ class ReadingProgressLauncher
      */
     ReadingProgressLauncher(@NonNull final OnReadListener onReadListener,
                             @NonNull final OnReadingProgressListener onReadingProgressListener) {
-        super(DBKey.READ_PROGRESS);
+        super(DBKey.READ_PROGRESS,
+              ReadingProgressDialogFragment::new,
+              ReadingProgressBottomSheet::new);
         this.onReadListener = onReadListener;
         this.onReadingProgressListener = onReadingProgressListener;
     }
@@ -92,8 +94,8 @@ class ReadingProgressLauncher
     /**
      * Launch the dialog.
      *
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
+     * @param context         preferably the {@code Activity}
+     *                        but another UI {@code Context} will also do.
      * @param readingProgress to edit
      */
     public void launch(@NonNull final Context context,
@@ -101,7 +103,7 @@ class ReadingProgressLauncher
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.READ_PROGRESS, readingProgress);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

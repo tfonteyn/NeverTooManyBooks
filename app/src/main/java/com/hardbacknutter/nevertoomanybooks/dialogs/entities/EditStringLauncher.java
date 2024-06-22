@@ -24,10 +24,13 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 /**
@@ -38,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
  * <li>returns the original and the modified/stored text</li>
  * </ul>
  */
-public class EditStringLauncher
+public final class EditStringLauncher
         extends DialogLauncher {
 
     private static final String TAG = "Launcher";
@@ -55,14 +58,62 @@ public class EditStringLauncher
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
-     *                       Typically the {@code DBKey} for the column we're editing.
-     * @param resultListener callback for results
+     * @param requestKey          FragmentResultListener request key to use for our response.
+     *                            Typically the {@code DBKey} for the column we're editing.
+     * @param dialogSupplier      a supplier for a new plain DialogFragment
+     * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
+     * @param resultListener      callback for results
      */
-    public EditStringLauncher(@NonNull final String requestKey,
-                              @NonNull final ResultListener resultListener) {
-        super(requestKey);
+    private EditStringLauncher(@NonNull final String requestKey,
+                               @NonNull final Supplier<DialogFragment> dialogSupplier,
+                               @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
+                               @NonNull final ResultListener resultListener) {
+        super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.resultListener = resultListener;
+    }
+
+    /**
+     * Create one of the predefined launchers based on the given request-key.
+     *
+     * @param requestKey     to lookup
+     * @param resultListener callback for results
+     *
+     * @return new instance
+     */
+    @SuppressWarnings("DuplicateBranchesInSwitch")
+    @NonNull
+    public static EditStringLauncher create(@NonNull final String requestKey,
+                                            @NonNull final ResultListener resultListener) {
+        // Android Studio thinks these are all the same 'case's .... sigh
+        switch (requestKey) {
+            case DBKey.COLOR:
+                return new EditStringLauncher(requestKey,
+                                              EditColorDialogFragment::new,
+                                              EditColorBottomSheet::new,
+                                              resultListener);
+            case DBKey.FORMAT:
+                return new EditStringLauncher(requestKey,
+                                              EditFormatDialogFragment::new,
+                                              EditFormatBottomSheet::new,
+                                              resultListener);
+            case DBKey.GENRE:
+                return new EditStringLauncher(requestKey,
+                                              EditGenreDialogFragment::new,
+                                              EditGenreBottomSheet::new,
+                                              resultListener);
+            case DBKey.LANGUAGE:
+                return new EditStringLauncher(requestKey,
+                                              EditLanguageDialogFragment::new,
+                                              EditLanguageBottomSheet::new,
+                                              resultListener);
+            case DBKey.LOCATION:
+                return new EditStringLauncher(requestKey,
+                                              EditLocationDialogFragment::new,
+                                              EditLocationBottomSheet::new,
+                                              resultListener);
+            default:
+                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+        }
     }
 
     /**
@@ -88,16 +139,17 @@ public class EditStringLauncher
 
     /**
      * Launch the dialog.
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
-     * @param text to edit.
+     *
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
+     * @param text    to edit.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String text) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_TEXT, text);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override

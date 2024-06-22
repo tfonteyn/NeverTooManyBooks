@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DateRangePic
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -105,7 +104,6 @@ public abstract class EditBookBaseFragment
         final FragmentManager fm = getChildFragmentManager();
 
         partialDatePickerLauncher = new PartialDatePickerLauncher(
-                DialogLauncher.RK_DATE_PICKER_PARTIAL,
                 (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
         partialDatePickerLauncher.registerForFragmentResult(fm, this);
     }

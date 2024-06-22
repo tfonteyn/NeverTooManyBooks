@@ -77,7 +77,7 @@ public class PreferredStylesFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "PreferredStylesFragment";
-    private static final String RK_MENU = TAG + ":menu";
+    private static final String RK_MENU = TAG + ":rk:menu";
 
     private PreferredStylesViewModel vm;
     /** Set the hosting Activity result, and close it. */

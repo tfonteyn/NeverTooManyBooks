@@ -58,7 +58,10 @@ public class ExtMenuLauncher
      */
     public ExtMenuLauncher(@NonNull final String requestKey,
                            @NonNull final ExtMenuResultListener resultListener) {
-        super(requestKey, ExtMenuBottomSheet::new);
+        super(requestKey,
+              // We ONLY use a BottomSheet here as the dialog is done by using a PopupWindow
+              ExtMenuBottomSheet::new,
+              ExtMenuBottomSheet::new);
         this.resultListener = resultListener;
     }
 
@@ -113,7 +116,7 @@ public class ExtMenuLauncher
         }
         args.putParcelableArrayList(BKEY_MENU, items);
 
-        createDialog(context, args);
+        showDialog(context, args);
     }
 
     @Override
