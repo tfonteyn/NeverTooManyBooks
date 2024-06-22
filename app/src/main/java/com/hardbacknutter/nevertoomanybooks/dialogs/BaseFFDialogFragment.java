@@ -65,34 +65,29 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *         {@code android:minHeight="@dimen/floating_dialog_recycler_view_min_height"}
  *     </li>
  *     <li>add to the RecyclerView:<br>
- *           {@code style="@style/Dialog.Body.RecyclerView"}
- *     </li>
- *     <li>add to the RecyclerView:<br>
- *         {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
+ *           {@code style="@style/Dialog.Body.RecyclerView"}<br>
+ *           {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
  *     <li>
+ *         Special cases<br>
  *         Call {@link #adjustWindowSize(RecyclerView, float)}
  *         from {@link #onViewCreated(View, Bundle)}
  *     </li>
  * </ol>
- * <p>
- * Special cases see {@link #adjustWindowSize} methods.
- *
- * @param <B> ViewBinding class type.
  */
-public abstract class FFBaseDialogFragment<B>
+public abstract class BaseFFDialogFragment
         extends DialogFragment {
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
-    /** Whether to force fullscreen - set in the constructor. */
-    private final boolean forceFullscreen;
     @NonNull
     private final Set<WindowSizeClass> useFullscreenWidth = EnumSet.of(WindowSizeClass.Compact);
     @NonNull
     private final Set<WindowSizeClass> useFullscreenHeight = EnumSet.of(WindowSizeClass.Compact);
-    protected B vb;
-    protected FlexDialogDelegate<B> delegate;
+
+    /** Must be created/set in {@link #onCreate(Bundle)}. */
+    protected FlexDialogDelegate delegate;
+
     /**
      * Show the dialog fullscreen (default) or as a floating dialog.
      * Decided in {@link #onAttach(Context)}
@@ -111,11 +106,10 @@ public abstract class FFBaseDialogFragment<B>
      *                           Set this to {@code 0} to <strong>force</strong> fullscreen usage
      *                           on all screen sizes.
      */
-    protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
+    protected BaseFFDialogFragment(@LayoutRes final int fullscreenLayoutId,
                                    @LayoutRes final int contentLayoutId) {
         this.fullscreenLayoutId = fullscreenLayoutId;
         this.contentLayoutId = contentLayoutId;
-        forceFullscreen = contentLayoutId == 0;
     }
 
     /**
@@ -134,7 +128,7 @@ public abstract class FFBaseDialogFragment<B>
      * @param useFullscreenHeight set of {@link WindowSizeClass} when to use fullscreen.
      *                            Ignored when {@code contentLayoutId == 0}
      */
-    protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
+    protected BaseFFDialogFragment(@LayoutRes final int fullscreenLayoutId,
                                    @LayoutRes final int contentLayoutId,
                                    @NonNull final Set<WindowSizeClass> useFullscreenWidth,
                                    @NonNull final Set<WindowSizeClass> useFullscreenHeight) {
@@ -147,17 +141,20 @@ public abstract class FFBaseDialogFragment<B>
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
+
         // fullscreen check must be done here as it's needed by both onCreateDialog/onCreateView
         final FragmentActivity activity = requireActivity();
         final WindowSizeClass width = WindowSizeClass.getWidth(activity);
         final WindowSizeClass height = WindowSizeClass.getHeight(activity);
-        fullscreen = forceFullscreen
+        // Use fullscreen mode if there is no content layout set,
+        // or if the device screen does not match our size requirements as set in the constructor.
+        fullscreen = this.contentLayoutId == 0
                      ||
                      useFullscreenWidth.contains(width) && useFullscreenHeight.contains(height);
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger().d(getClass().getSimpleName(), "onAttach",
-                                        "forceFullscreen=" + forceFullscreen,
+                                        "forceFullscreen=" + (this.contentLayoutId == 0),
                                         "width=" + width,
                                         "height=" + height,
                                         "fullscreen=" + fullscreen);
@@ -183,16 +180,22 @@ public abstract class FFBaseDialogFragment<B>
         return dialog;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
+        // Sanity check
+        Objects.requireNonNull(delegate, "delegate not set");
+
+        final View view;
         if (fullscreen) {
-            return inflater.inflate(fullscreenLayoutId, container, false);
+            view = inflater.inflate(fullscreenLayoutId, container, false);
         } else {
-            return inflater.inflate(contentLayoutId, container, false);
+            view = inflater.inflate(contentLayoutId, container, false);
         }
+        delegate.onCreateView(view);
+        return view;
     }
 
     @Override
@@ -201,34 +204,38 @@ public abstract class FFBaseDialogFragment<B>
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Sanity check
-        Objects.requireNonNull(vb, "vb not set");
-        Objects.requireNonNull(delegate, "delegate not set");
-
-        // Layouts supporting BottomSheet have a drag-handle. Just hide it.
+        // Ensure the drag handle is hidden.
         final View dragHandle = view.findViewById(R.id.drag_handle);
         if (dragHandle != null) {
             dragHandle.setVisibility(View.GONE);
         }
 
-        final View buttonPanel = view.findViewById(R.id.button_panel_layout);
-        if (buttonPanel != null) {
-            buttonPanel.setVisibility(fullscreen ? View.GONE : View.VISIBLE);
-        }
-
         final Toolbar floatingToolbar = view.findViewById(R.id.dialog_toolbar);
-        if (floatingToolbar != null) {
-            floatingToolbar.setVisibility(fullscreen ? View.GONE : View.VISIBLE);
-        }
+        final View buttonPanel = view.findViewById(R.id.button_panel_layout);
 
-        // Either the full-screen toolbar, or the floating dialog toolbar
-        final Toolbar toolbar;
         if (fullscreen) {
-            toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
-        } else {
-            toolbar = floatingToolbar;
-
+            // Hidden in fullscreen mode
+            if (floatingToolbar != null) {
+                floatingToolbar.setVisibility(View.GONE);
+            }
+            // Hidden in fullscreen mode
             if (buttonPanel != null) {
+                buttonPanel.setVisibility(View.GONE);
+            }
+            delegate.setToolbar(Objects.requireNonNull(view.findViewById(R.id.toolbar),
+                                                       "R.id.toolbar"));
+
+        } else {
+            if (floatingToolbar != null) {
+                // Show the toolbar, but hide the menu
+                floatingToolbar.setVisibility(View.VISIBLE);
+                // It's easier to set the menu from xml,
+                // and clear it here than doing the opposite.
+                floatingToolbar.getMenu().clear();
+            }
+            if (buttonPanel != null) {
+                // Show the button bar at the bottom of the dialog
+                buttonPanel.setVisibility(View.VISIBLE);
                 Button button;
                 // The cancel button is always hooked up with #onToolbarNavigationClick
                 button = buttonPanel.findViewById(R.id.btn_negative);
@@ -244,13 +251,12 @@ public abstract class FFBaseDialogFragment<B>
                     button.setOnClickListener(delegate::onToolbarButtonClick);
                 }
             }
+
+            // can be null, that's ok
+            delegate.setToolbar(floatingToolbar);
         }
 
-        if (toolbar != null) {
-            delegate.initToolbarActionButtons(toolbar, 0, delegate);
-        }
-
-        delegate.onViewCreated(vb);
+        delegate.onViewCreated();
     }
 
     /**

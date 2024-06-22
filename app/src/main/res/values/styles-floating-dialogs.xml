@@ -20,12 +20,12 @@
   -->
 
 <!--
-    These are workarounds and hacks for {@link FFBaseDialogFragment} and
+    These are workarounds and hacks for {@link BaseFFDialogFragment} and
     {@link BottomSheetDialogFragment}.
     Android styles are an utter design mess.
 -->
 <resources>
-    <!-- Special style for RecyclerView's embedded in a FFBaseDialogFragment or BottomSheet -->
+    <!-- Special style for RecyclerView's embedded in a BaseFFDialogFragment or BottomSheet -->
     <style name="Dialog.Body.RecyclerView"
            parent="">
         <item name="android:layout_width">match_parent</item>

@@ -25,16 +25,24 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 public class EditFormatDialogFragment
-        extends EditStringDialogFragment {
+        extends BaseFFDialogFragment {
+
+    /**
+     * No-arg constructor for OS use.
+     */
+    EditFormatDialogFragment() {
+        super(R.layout.dialog_edit_string, R.layout.dialog_edit_string_content);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditStringDelegate(this,
-                                          requireArguments(), R.string.lbl_format, R.string.lbl_format,
-                                          ServiceLocator.getInstance()::getFormatDao
+        delegate = new EditInLineStringDelegate(this, requireArguments(),
+                                                R.string.lbl_format, R.string.lbl_format,
+                                                ServiceLocator.getInstance()::getFormatDao
         );
     }
 }

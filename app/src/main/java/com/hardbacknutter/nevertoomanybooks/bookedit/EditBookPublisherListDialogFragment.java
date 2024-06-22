@@ -54,12 +54,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -71,19 +72,19 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow
 /**
  * Edit the list of Publishers of a Book.
  * <p>
- * DialogFragment: we need to display this on top of edit-book fragment(s)
- * which run inside a ViewPager. It's just much easier to show this as a fullscreen dialog.
- * We're going to show a Dialog/BottomSheet on top of it, so it should be fullscreen anyhow.
+ * This is a plain fullscreen DialogFragment.
+ * Displayed on top of edit-book fragment(s) which run inside a ViewPager.
+ * Row edits use a Dialog/BottomSheet displayed on top of this fragment.
  */
 public class EditBookPublisherListDialogFragment
         extends DialogFragment
-        implements ToolbarWithActionButtons {
+        implements FlexToolbar {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookPubListDlg";
     private static final String RK_MENU = TAG + ":rk:menu";
 
-    /** The book. Must be in the Activity scope. */
+    /** Book View model. Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
     private DialogEditBookPublisherListBinding vb;
@@ -156,7 +157,7 @@ public class EditBookPublisherListDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initToolbarActionButtons(vb.toolbar, 0, this);
+        initToolbar(vb.toolbar);
         vb.toolbar.setSubtitle(vm.getBook().getTitle());
 
         //noinspection DataFlowIssue
@@ -164,7 +165,7 @@ public class EditBookPublisherListDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
         vb.publisherName.setAdapter(nameAdapter);
-        autoRemoveError(vb.publisherName, vb.lblPublisherName);
+        TilUtil.autoRemoveError(vb.publisherName, vb.lblPublisherName);
 
         // soft-keyboards 'done' button act as a shortcut to add the publisher
         vb.publisherName.setOnEditorActionListener((v, actionId, event) -> {

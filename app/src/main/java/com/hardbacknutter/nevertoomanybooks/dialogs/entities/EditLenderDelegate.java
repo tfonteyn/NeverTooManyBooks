@@ -25,8 +25,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -45,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 
 /**
  * Dialog to create a new loan, edit an existing one or remove it (book is returned).
@@ -54,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
  * This is done to minimize trips to the database.
  */
 class EditLenderDelegate
-        implements FlexDialogDelegate<DialogEditLoanContentBinding> {
+        implements FlexDialogDelegate {
 
     private final EditLenderViewModel vm;
     @NonNull
@@ -69,6 +70,8 @@ class EditLenderDelegate
     private final ActivityResultLauncher<String> requestPermissionLauncher;
     private ExtArrayAdapter<String> adapter;
     private DialogEditLoanContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     @SuppressLint("MissingPermission")
     EditLenderDelegate(@NonNull final DialogFragment owner,
@@ -87,10 +90,36 @@ class EditLenderDelegate
                 });
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogEditLoanContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogEditLoanContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogEditLoanContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
+
         final Context context = vb.getRoot().getContext();
+
         adapter = new ExtArrayAdapter<>(context, R.layout.popup_dropdown_menu_item,
                                         ExtArrayAdapter.FilterType.Diacritic,
                                         vm.getPeople());
@@ -110,18 +139,16 @@ class EditLenderDelegate
         vb.lendTo.requestFocus();
     }
 
+    @Override
+    public void initToolbar(@NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(toolbar);
+        toolbar.setSubtitle(vm.getBookTitle());
+    }
+
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     private void addContacts() {
         adapter.clear();
         adapter.addAll(vm.getContacts(adapter.getContext()));
-    }
-
-    @Override
-    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                         final int menuResId,
-                                         @NonNull final ToolbarWithActionButtons listener) {
-        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
-        dialogToolbar.setSubtitle(vm.getBookTitle());
     }
 
     @Override

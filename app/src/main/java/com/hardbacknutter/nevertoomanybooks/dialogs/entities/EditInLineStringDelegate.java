@@ -22,8 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
@@ -44,14 +46,14 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
- * Dialog to edit an <strong>in-line in Books table</strong> {@code String}
+ * Dialog to edit an <strong>in-line {@code String} in the Books table</strong>
  * supported by an {@link InlineStringDao}.
  */
-class EditStringDelegate
-        implements FlexDialogDelegate<DialogEditStringContentBinding> {
+class EditInLineStringDelegate
+        implements FlexDialogDelegate {
 
     @NonNull
     private final String toolbarTitle;
@@ -60,12 +62,14 @@ class EditStringDelegate
     @NonNull
     private final Supplier<InlineStringDao> daoSupplier;
 
-    private final EditStringViewModel vm;
+    private final EditInLineStringViewModel vm;
     @NonNull
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
     private DialogEditStringContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     /**
      * Constructor.
@@ -76,33 +80,58 @@ class EditStringDelegate
      * @param labelResId    to use for the 'hint' of the input field
      * @param daoSupplier   the {@link InlineStringDao} supplier
      */
-    EditStringDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final Bundle args,
-                       @StringRes final int dialogTitleId,
-                       @StringRes final int labelResId,
-                       @NonNull final Supplier<InlineStringDao> daoSupplier) {
+    EditInLineStringDelegate(@NonNull final DialogFragment owner,
+                             @NonNull final Bundle args,
+                             @StringRes final int dialogTitleId,
+                             @StringRes final int labelResId,
+                             @NonNull final Supplier<InlineStringDao> daoSupplier) {
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
-        this.daoSupplier = daoSupplier;
+
+        vm = new ViewModelProvider(owner).get(EditInLineStringViewModel.class);
+        vm.init(args);
 
         final Context context = owner.getContext();
         //noinspection DataFlowIssue
         this.toolbarTitle = context.getString(dialogTitleId);
         this.label = context.getString(labelResId);
 
-        vm = new ViewModelProvider(owner).get(EditStringViewModel.class);
-        vm.init(args);
+        this.daoSupplier = daoSupplier;
+    }
+
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogEditStringContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull final DialogEditStringContentBinding vb) {
-        this.vb = vb;
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogEditStringContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
+
         final Context context = vb.getRoot().getContext();
 
         vb.lblEditString.setHint(label);
         vb.editString.setText(vm.getCurrentText());
-        autoRemoveError(vb.editString, vb.lblEditString);
+        TilUtil.autoRemoveError(vb.editString, vb.lblEditString);
 
         // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
         vb.editString.setOnEditorActionListener((v, actionId, event) -> {
@@ -124,11 +153,9 @@ class EditStringDelegate
     }
 
     @Override
-    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                         final int menuResId,
-                                         @NonNull final ToolbarWithActionButtons listener) {
-        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
-        dialogToolbar.setTitle(toolbarTitle);
+    public void initToolbar(@NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(toolbar);
+        toolbar.setTitle(toolbarTitle);
     }
 
     @Override
@@ -171,7 +198,7 @@ class EditStringDelegate
         }
 
         final String storedText = onSave(context, vm.getOriginalText(), vm.getCurrentText());
-        EditStringLauncher.setResult(owner, requestKey, vm.getOriginalText(), storedText);
+        EditInLineStringLauncher.setResult(owner, requestKey, vm.getOriginalText(), storedText);
         return true;
     }
 

@@ -145,7 +145,7 @@ public final class ErrorDialog {
      * Show an error message after a generic Exception was thrown.
      *
      * @param context       Current context
-     * @param tag     log tag
+     * @param tag           log tag
      * @param e             The error
      * @param title         Dialog title
      * @param message       The message to show

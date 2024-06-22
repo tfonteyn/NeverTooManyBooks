@@ -27,7 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 @SuppressWarnings("WeakerAccess")
-public class EditStringViewModel
+public class EditInLineStringViewModel
         extends ViewModel {
 
     /** The text we're editing. */
@@ -42,7 +42,7 @@ public class EditStringViewModel
      */
     void init(@NonNull final Bundle args) {
         if (originalText == null) {
-            originalText = args.getString(EditStringLauncher.BKEY_TEXT, "");
+            originalText = args.getString(EditInLineStringLauncher.BKEY_TEXT, "");
 
             currentText = originalText;
         }

@@ -42,11 +42,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * and a manual edit <strong>will</strong> be needed.
  */
 class EditLanguageDelegate
-        extends EditStringDelegate {
+        extends EditInLineStringDelegate {
 
     EditLanguageDelegate(@NonNull final DialogFragment owner,
                          @NonNull final Bundle args) {
-        super(owner, args, R.string.lbl_language, R.string.lbl_language,
+        super(owner, args,
+              R.string.lbl_language, R.string.lbl_language,
               ServiceLocator.getInstance()::getLanguageDao
         );
     }

@@ -25,16 +25,17 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class EditLocationBottomSheet
-        extends EditStringBottomSheet {
+        extends BaseBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditStringDelegate(this,
-                                          requireArguments(), R.string.lbl_location, R.string.lbl_location,
-                                          ServiceLocator.getInstance()::getLocationDao
+        delegate = new EditInLineStringDelegate(this, requireArguments(),
+                                                R.string.lbl_location, R.string.lbl_location,
+                                                ServiceLocator.getInstance()::getLocationDao
         );
     }
 }

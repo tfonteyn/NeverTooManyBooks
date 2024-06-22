@@ -23,8 +23,10 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
@@ -46,9 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorCont
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
  * Add/Edit a single {@link Author} from the book's author list.
@@ -57,20 +59,20 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * <p>
  * {@link EditAction#Add}:
  * <ul>
- * <li>Used for list-dialogs needing to add a NEW item to the list</li>
- * <li>The new item is NOT stored in the database</li>
+ * <li>List-dialogs ADD a NEW item</li>
+ * <li>The new item is <strong>NOT stored</strong> in the database</li>
  * <li>Returns the new item</li>
  * </ul>
  * <p>
  * {@link EditAction#Edit}:
  * <ul>
- * <li>Used for list-dialogs needing to EDIT an existing item in the list</li>
- * <li>The modifications are NOT stored in the database</li>
- * <li>Returns the original untouched + a new copy with the modifications</li>
+ * <li>List-dialogs EDIT an EXISTING item</li>
+ * <li>Modifications are <strong>NOT STORED</strong> in the database</li>
+ * <li>Returns the original + a new instance/copy with the modifications</li>
  * </ul>
  */
 class EditBookAuthorDelegate
-        implements FlexDialogDelegate<DialogEditBookAuthorContentBinding> {
+        implements FlexDialogDelegate {
 
     /**
      * We create a list of all the {@link Author.Type} checkboxes for easy handling.
@@ -83,7 +85,7 @@ class EditBookAuthorDelegate
     @NonNull
     private final String requestKey;
 
-    /** Book View model. Must be in the Activity scope. */
+    /** Book View model. Activity scope. */
     private final EditBookViewModel vm;
     /** Author View model. Fragment scope. */
     private final EditAuthorViewModel authorVm;
@@ -91,6 +93,12 @@ class EditBookAuthorDelegate
     private final EditAction action;
     /** View Binding. */
     private DialogEditBookAuthorContentBinding vb;
+    /**
+     * Defaults to the {@code vb.dialogToolbar}.
+     * Fullscreen dialogs will override with the with the fullscreen toolbar.
+     */
+    @Nullable
+    private Toolbar toolbar;
 
     EditBookAuthorDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
@@ -105,9 +113,32 @@ class EditBookAuthorDelegate
         authorVm.init(args);
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogEditBookAuthorContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogEditBookAuthorContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogEditBookAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
 
         final Context context = vb.getRoot().getContext();
 
@@ -119,7 +150,7 @@ class EditBookAuthorDelegate
                 vm.getAllAuthorFamilyNames());
         vb.familyName.setText(currentEdit.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
-        autoRemoveError(vb.familyName, vb.lblFamilyName);
+        TilUtil.autoRemoveError(vb.familyName, vb.lblFamilyName);
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
@@ -137,11 +168,9 @@ class EditBookAuthorDelegate
     }
 
     @Override
-    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                         final int menuResId,
-                                         @NonNull final ToolbarWithActionButtons listener) {
-        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
-        dialogToolbar.setSubtitle(vm.getBook().getTitle());
+    public void initToolbar(@NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(toolbar);
+        toolbar.setSubtitle(vm.getBook().getTitle());
     }
 
     private void setupRealAuthorField(final Context context) {
@@ -155,7 +184,7 @@ class EditBookAuthorDelegate
                     vm.getAllAuthorNames());
             vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
             vb.realAuthor.setAdapter(realNameAdapter);
-            autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
+            TilUtil.autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
 
         } else {
             vb.lblRealAuthorHeader.setVisibility(View.GONE);

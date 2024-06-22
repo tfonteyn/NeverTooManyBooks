@@ -21,38 +21,17 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class CoverBrowserBottomSheet
-        extends BaseBottomSheetDialogFragment<DialogCoverBrowserContentBinding> {
+        extends BaseBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new CoverBrowserDelegate(this, requireArguments());
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        vb = DialogCoverBrowserContentBinding.inflate(inflater, container, false);
-        return vb.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        delegate.initToolbarActionButtons(vb.dialogToolbar, 0, delegate);
     }
 }

@@ -22,11 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -43,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -51,7 +55,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * We do however keep the code flexible enough to allow it for future usage.
  * <ul>
  * <li>Direct/in-place editing.</li>
- * <li>Modifications ARE STORED in the database</li>
+ * <li>Modifications <strong>ARE STORED</strong> in the database</li>
  * <li>Returns the modified item.</li>
  * </ul>
  *
@@ -65,7 +69,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * @see EditBookshelfBottomSheet
  */
 class EditSeriesDelegate
-        implements FlexDialogDelegate<DialogEditSeriesContentBinding> {
+        implements FlexDialogDelegate {
 
     private static final String TAG = "EditSeriesDelegate";
 
@@ -77,6 +81,8 @@ class EditSeriesDelegate
 
     /** View Binding. */
     private DialogEditSeriesContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     EditSeriesDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
@@ -87,21 +93,48 @@ class EditSeriesDelegate
         vm.init(args);
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogEditSeriesContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogEditSeriesContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogEditSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
+
         final Context context = vb.getRoot().getContext();
+
+        final Series currentEdit = vm.getCurrentEdit();
 
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getSeriesDao().getNames());
 
-        vb.seriesTitle.setText(vm.getCurrentEdit().getTitle());
+        vb.seriesTitle.setText(currentEdit.getTitle());
         vb.seriesTitle.setAdapter(titleAdapter);
-        autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
+        TilUtil.autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
 
-        vb.cbxIsComplete.setChecked(vm.getCurrentEdit().isComplete());
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.seriesTitle.requestFocus();
     }

@@ -24,11 +24,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -45,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
  * Supports percentage and "page x of y".
  */
 class ReadingProgressDelegate
-        implements FlexDialogDelegate<DialogBookReadProgressContentBinding> {
+        implements FlexDialogDelegate {
 
     @NonNull
     private final DialogFragment owner;
@@ -54,6 +57,8 @@ class ReadingProgressDelegate
     @NonNull
     private final ReadingProgressViewModel vm;
     private DialogBookReadProgressContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     private final ExtTextWatcher percentageTextWatcher = this::percentageTextToSlider;
     private final ExtTextWatcher currentPageTextWatcher = this::currentPageTextToSlider;
@@ -91,9 +96,31 @@ class ReadingProgressDelegate
         return defValue;
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogBookReadProgressContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogBookReadProgressContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogBookReadProgressContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
 
         updateUI();
         // Call BEFORE we setup any listeners!

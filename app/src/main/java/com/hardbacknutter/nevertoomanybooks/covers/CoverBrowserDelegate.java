@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserConten
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
@@ -75,7 +74,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * ENHANCE: pass in a {@link Site.Type#Covers} list allow configuring search-sites on the fly
  */
 class CoverBrowserDelegate
-        implements FlexDialogDelegate<DialogCoverBrowserContentBinding> {
+        implements FlexDialogDelegate {
 
     /** Fragment/Log tag. */
     public static final String TAG = "CoverBrowserDelegate";
@@ -99,6 +98,8 @@ class CoverBrowserDelegate
     private GalleryAdapter galleryAdapter;
     /** View Binding. */
     private DialogCoverBrowserContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     private ImageViewLoader previewLoader;
     private final PositionHandler positionHandler = new PositionHandler() {
@@ -135,9 +136,33 @@ class CoverBrowserDelegate
         vm.init(args);
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogCoverBrowserContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogCoverBrowserContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
 
         final Context context = vb.getRoot().getContext();
 
@@ -180,6 +205,12 @@ class CoverBrowserDelegate
     }
 
     @Override
+    public void initToolbar(@NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(toolbar);
+        toolbar.setSubtitle(bookTitle);
+    }
+
+    @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
         vm.cancelAllTasks();
     }
@@ -202,14 +233,6 @@ class CoverBrowserDelegate
             previewLp.height = previewMaxHeight;
             vb.preview.setLayoutParams(previewLp);
         }
-    }
-
-    @Override
-    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                         final int menuResId,
-                                         @NonNull final ToolbarWithActionButtons listener) {
-        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
-        dialogToolbar.setSubtitle(bookTitle);
     }
 
     @Override

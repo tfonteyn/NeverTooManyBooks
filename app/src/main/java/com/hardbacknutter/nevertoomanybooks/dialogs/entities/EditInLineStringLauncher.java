@@ -37,11 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
  * Launcher for one of the inline-string fields in the Books table.
  * <ul>
  * <li>used for direct/in-place editing of an inline field text; e.g. Book Color, Format...</li>
- * <li>modifications ARE STORED in the database</li>
+ * <li>modifications <strong>ARE STORED</strong> in the database</li>
  * <li>returns the original and the modified/stored text</li>
  * </ul>
  */
-public final class EditStringLauncher
+public final class EditInLineStringLauncher
         extends DialogLauncher {
 
     private static final String TAG = "Launcher";
@@ -64,10 +64,10 @@ public final class EditStringLauncher
      * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
      * @param resultListener      callback for results
      */
-    private EditStringLauncher(@NonNull final String requestKey,
-                               @NonNull final Supplier<DialogFragment> dialogSupplier,
-                               @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                               @NonNull final ResultListener resultListener) {
+    private EditInLineStringLauncher(@NonNull final String requestKey,
+                                     @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                     @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
+                                     @NonNull final ResultListener resultListener) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.resultListener = resultListener;
     }
@@ -82,35 +82,35 @@ public final class EditStringLauncher
      */
     @SuppressWarnings("DuplicateBranchesInSwitch")
     @NonNull
-    public static EditStringLauncher create(@NonNull final String requestKey,
-                                            @NonNull final ResultListener resultListener) {
+    public static EditInLineStringLauncher create(@NonNull final String requestKey,
+                                                  @NonNull final ResultListener resultListener) {
         // Android Studio thinks these are all the same 'case's .... sigh
         switch (requestKey) {
             case DBKey.COLOR:
-                return new EditStringLauncher(requestKey,
-                                              EditColorDialogFragment::new,
-                                              EditColorBottomSheet::new,
-                                              resultListener);
+                return new EditInLineStringLauncher(requestKey,
+                                                    EditColorDialogFragment::new,
+                                                    EditColorBottomSheet::new,
+                                                    resultListener);
             case DBKey.FORMAT:
-                return new EditStringLauncher(requestKey,
-                                              EditFormatDialogFragment::new,
-                                              EditFormatBottomSheet::new,
-                                              resultListener);
+                return new EditInLineStringLauncher(requestKey,
+                                                    EditFormatDialogFragment::new,
+                                                    EditFormatBottomSheet::new,
+                                                    resultListener);
             case DBKey.GENRE:
-                return new EditStringLauncher(requestKey,
-                                              EditGenreDialogFragment::new,
-                                              EditGenreBottomSheet::new,
-                                              resultListener);
+                return new EditInLineStringLauncher(requestKey,
+                                                    EditGenreDialogFragment::new,
+                                                    EditGenreBottomSheet::new,
+                                                    resultListener);
             case DBKey.LANGUAGE:
-                return new EditStringLauncher(requestKey,
-                                              EditLanguageDialogFragment::new,
-                                              EditLanguageBottomSheet::new,
-                                              resultListener);
+                return new EditInLineStringLauncher(requestKey,
+                                                    EditLanguageDialogFragment::new,
+                                                    EditLanguageBottomSheet::new,
+                                                    resultListener);
             case DBKey.LOCATION:
-                return new EditStringLauncher(requestKey,
-                                              EditLocationDialogFragment::new,
-                                              EditLocationBottomSheet::new,
-                                              resultListener);
+                return new EditInLineStringLauncher(requestKey,
+                                                    EditLocationDialogFragment::new,
+                                                    EditLocationBottomSheet::new,
+                                                    resultListener);
             default:
                 throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
         }

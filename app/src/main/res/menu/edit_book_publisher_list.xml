@@ -26,7 +26,7 @@
     Only alternative is to use an icon with outline builtin...
     which makes the actual icon to small.
 
-    Also: MENU_ACTION_CONFIRM must be used to have "FFBaseDialogFragment" handle
+    Also: MENU_ACTION_CONFIRM must be used to have "BaseFFDialogFragment" handle
     some mapping automatically.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"

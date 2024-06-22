@@ -21,44 +21,15 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
-
 public class PartialDatePickerBottomSheet
-        extends BaseBottomSheetDialogFragment<DialogPartialDatePickerContentBinding> {
+        extends BaseBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new PartialDatePickerDelegate(this, requireArguments());
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        // See onViewCreated where we reorder the pickers BEFORE binding
-        return inflater.inflate(R.layout.dialog_partial_date_picker_content, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-
-        // Ensure components match current Locale order BEFORE we bind the views.
-        ((PartialDatePickerDelegate) delegate).reorderPickers(view);
-
-        vb = DialogPartialDatePickerContentBinding.bind(view);
-        super.onViewCreated(view, savedInstanceState);
-
-        delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.toolbar_action_save, delegate);
     }
 }

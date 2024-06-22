@@ -41,6 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle"
+        app:menu="@menu/style_picker"
         app:title="@string/lbl_style"
         app:subtitle="@string/info_builtin_style_asterix"
         app:subtitleTextAppearance="?attr/textAppearanceTitleSmall"

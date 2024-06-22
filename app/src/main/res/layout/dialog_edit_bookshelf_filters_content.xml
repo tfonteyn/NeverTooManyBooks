@@ -42,6 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle"
         app:title="@string/lbl_filters"
+        app:menu="@menu/edit_filters"
         />
 
     <androidx.recyclerview.widget.RecyclerView

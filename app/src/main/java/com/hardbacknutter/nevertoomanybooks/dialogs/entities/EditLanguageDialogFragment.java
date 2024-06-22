@@ -23,9 +23,19 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
+
 
 public class EditLanguageDialogFragment
-        extends EditStringDialogFragment {
+        extends BaseFFDialogFragment {
+
+    /**
+     * No-arg constructor for OS use.
+     */
+    EditLanguageDialogFragment() {
+        super(R.layout.dialog_edit_string, R.layout.dialog_edit_string_content);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

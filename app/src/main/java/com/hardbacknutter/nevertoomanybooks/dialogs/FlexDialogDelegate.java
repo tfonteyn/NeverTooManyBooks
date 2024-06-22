@@ -22,45 +22,88 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-public interface FlexDialogDelegate<B>
-        extends ToolbarWithActionButtons {
+import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
+
+/**
+ * The interface between the {@link DialogMode} base classes and
+ * the delegates.
+ *
+ * @see BaseFFDialogFragment
+ * @see BaseBottomSheetDialogFragment
+ */
+public interface FlexDialogDelegate
+        extends FlexToolbar {
 
     /**
-     * To be called from {@link Fragment#onViewCreated(View, Bundle)}.
+     * {@link DialogMode#BottomSheet} ONLY.
+     * <p>
+     * Called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      *
-     * @param vb the view binding
+     * @param inflater  LayoutInflater
+     * @param container parent view
+     *
+     * @return the view
      */
-    void onViewCreated(@NonNull B vb);
+    @NonNull
+    View onCreateView(@NonNull LayoutInflater inflater,
+                      @Nullable ViewGroup container);
 
     /**
-     * To be called from {@link Fragment#onStart()}.
+     * {@link DialogMode#Dialog} ONLY.
+     * <p>
+     * Called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     *
+     * @param view to use
+     */
+    void onCreateView(@NonNull View view);
+
+    /**
+     * {@link DialogMode#Dialog} ONLY.
+     * <p>
+     * Called from {@link Fragment#onViewCreated(View, Bundle)}.
+     *
+     * @param toolbar to set (either the fullscreen or the floating dialog toolbar)
+     */
+    void setToolbar(@Nullable Toolbar toolbar);
+
+    /**
+     * Called from {@link Fragment#onViewCreated(View, Bundle)}.
+     */
+    void onViewCreated();
+
+    /**
+     * Called from {@link Fragment#onStart()}.
      */
     default void onStart() {
         // no action
     }
 
     /**
-     * To be called from {@link Fragment#onResume()}.
+     * Called from {@link Fragment#onResume()}.
      */
     default void onResume() {
         // no action
     }
 
     /**
-     * To be called from {@link Fragment#onPause()}.
+     * Called from {@link Fragment#onPause()}.
      */
     default void onPause() {
         // no action
     }
 
     /**
-     * To be called from {@link DialogFragment#onCancel(DialogInterface)}.
+     * Called from {@link DialogFragment#onCancel(DialogInterface)}.
      *
      * @param dialog .
      */

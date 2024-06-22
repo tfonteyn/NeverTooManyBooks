@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,22 +38,18 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-/**
- * @param <B> ViewBinding class type.
- */
-public class BaseBottomSheetDialogFragment<B>
+public class BaseBottomSheetDialogFragment
         extends BottomSheetDialogFragment {
 
-    /** Set from {@link #onCreate(Bundle)}. */
-    protected FlexDialogDelegate<B> delegate;
+    /** Must be created/set in {@link #onCreate(Bundle)}. */
+    protected FlexDialogDelegate delegate;
 
-    /** Set from {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}. */
-    protected B vb;
-
+    @Nullable
     @Override
-    public void onAttach(@NonNull final Context context) {
-
-        super.onAttach(context);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return delegate.onCreateView(inflater, container);
     }
 
     @CallSuper
@@ -88,13 +83,13 @@ public class BaseBottomSheetDialogFragment<B>
         if (dragHandle != null) {
             dragHandle.setVisibility(View.VISIBLE);
         }
-        // Layouts supporting FFBaseDialogFragment have a button panel. Just hide it.
+        // Ensure the (optional) BaseFFDialogFragment button panel is hidden.
         final View buttonPanel = view.findViewById(R.id.button_panel_layout);
         if (buttonPanel != null) {
             buttonPanel.setVisibility(View.GONE);
         }
 
-        delegate.onViewCreated(vb);
+        delegate.onViewCreated();
     }
 
     @Override

@@ -27,12 +27,11 @@ import androidx.annotation.Nullable;
 
 import java.util.EnumSet;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class BookshelfFiltersDialogFragment
-        extends FFBaseDialogFragment<DialogEditBookshelfFiltersContentBinding> {
+        extends BaseFFDialogFragment {
 
     /**
      * No-arg constructor for OS use.
@@ -55,9 +54,8 @@ public class BookshelfFiltersDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        vb = DialogEditBookshelfFiltersContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
 
-        adjustWindowSize(vb.filterList, 0.33f);
+        adjustWindowSize(((BookshelfFiltersDelegate) delegate).getRecyclerView(), 0.33f);
     }
 }

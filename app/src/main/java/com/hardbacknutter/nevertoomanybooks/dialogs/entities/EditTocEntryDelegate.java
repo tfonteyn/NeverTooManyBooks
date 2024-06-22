@@ -22,8 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,14 +43,14 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
 class EditTocEntryDelegate
-        implements FlexDialogDelegate<DialogEditBookTocContentBinding> {
+        implements FlexDialogDelegate {
 
     private final EditTocEntryViewModel vm;
     @NonNull
@@ -57,6 +59,8 @@ class EditTocEntryDelegate
     private final String requestKey;
     /** View Binding. */
     private DialogEditBookTocContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     EditTocEntryDelegate(@NonNull final DialogFragment owner,
                          @NonNull final Bundle args) {
@@ -68,17 +72,44 @@ class EditTocEntryDelegate
         vm.init(owner.getContext(), args);
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogEditBookTocContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogEditBookTocContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
+
         final Context context = vb.getRoot().getContext();
+
+        final TocEntry currentEdit = vm.getCurrentEdit();
 
         //ENHANCE: should we provide a TocAdapter to aid manually adding TOC titles?
         // What about the publication year?
-        vb.title.setText(vm.getCurrentEdit().getTitle());
-        autoRemoveError(vb.title, vb.lblTitle);
+        vb.title.setText(currentEdit.getTitle());
+        TilUtil.autoRemoveError(vb.title, vb.lblTitle);
 
-        final PartialDate firstPublicationDate = vm.getCurrentEdit().getFirstPublicationDate();
+        final PartialDate firstPublicationDate = currentEdit.getFirstPublicationDate();
         if (firstPublicationDate.isPresent()) {
             vb.firstPublication.setText(String.valueOf(firstPublicationDate.getYearValue()));
         }
@@ -106,13 +137,11 @@ class EditTocEntryDelegate
     }
 
     @Override
-    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                         final int menuResId,
-                                         @NonNull final ToolbarWithActionButtons listener) {
-        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
+    public void initToolbar(@NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(toolbar);
         final String toolbarTitle = vm.getBookTitle();
         if (toolbarTitle != null) {
-            dialogToolbar.setTitle(toolbarTitle);
+            toolbar.setTitle(toolbarTitle);
         }
     }
 

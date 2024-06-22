@@ -28,12 +28,11 @@ import androidx.annotation.Nullable;
 import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class CoverBrowserDialogFragment
-        extends FFBaseDialogFragment<DialogCoverBrowserContentBinding> {
+        extends BaseFFDialogFragment {
 
     /**
      * No-arg constructor for OS use.
@@ -55,7 +54,6 @@ public class CoverBrowserDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
         super.onViewCreated(view, savedInstanceState);
 
         // Don't give it the gallery! We're auto-adapting in the delegate already

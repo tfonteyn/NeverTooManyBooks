@@ -20,18 +20,15 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 
 public class EditPublisherDialogFragment
-        extends FFBaseDialogFragment<DialogEditPublisherContentBinding> {
+        extends BaseFFDialogFragment {
 
     /**
      * No-arg constructor for OS use.
@@ -44,12 +41,5 @@ public class EditPublisherDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new EditPublisherDelegate(this, requireArguments());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        vb = DialogEditPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
-        super.onViewCreated(view, savedInstanceState);
     }
 }

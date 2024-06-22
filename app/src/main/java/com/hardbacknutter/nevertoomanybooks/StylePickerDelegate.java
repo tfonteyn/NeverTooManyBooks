@@ -23,13 +23,17 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Objects;
 
@@ -40,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 class StylePickerDelegate
-        implements FlexDialogDelegate<DialogStylePickerContentBinding> {
+        implements FlexDialogDelegate {
 
     @NonNull
     private final DialogFragment owner;
@@ -51,7 +55,9 @@ class StylePickerDelegate
 
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<Style> adapter;
-
+    private DialogStylePickerContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     StylePickerDelegate(@NonNull final DialogFragment owner,
                         @NonNull final Bundle args) {
@@ -62,9 +68,34 @@ class StylePickerDelegate
         vm.init(args);
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogStylePickerContentBinding vb) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogStylePickerContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogStylePickerContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
+
         final Context context = vb.getRoot().getContext();
+
         //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(context,
                                                   vm.getStyles(),
@@ -72,6 +103,11 @@ class StylePickerDelegate
                                                   vm.getCurrentStyle(),
                                                   vm::setCurrentStyle);
         vb.stylesList.setAdapter(adapter);
+    }
+
+    @NonNull
+    RecyclerView getRecyclerView() {
+        return vb.stylesList;
     }
 
     @Override

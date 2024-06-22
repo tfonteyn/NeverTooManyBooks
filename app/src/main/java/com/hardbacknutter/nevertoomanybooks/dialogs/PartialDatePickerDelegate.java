@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +61,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * A final validity check is done when trying to accept the date.
  */
 class PartialDatePickerDelegate
-        implements FlexDialogDelegate<DialogPartialDatePickerContentBinding> {
+        implements FlexDialogDelegate {
 
     private static final String TAG = "PartialDatePickerDelega";
     /** Displayed to user: unset month. */
@@ -86,6 +87,9 @@ class PartialDatePickerDelegate
     private final int fieldId;
     private PartialDatePickerViewModel vm;
     private DialogPartialDatePickerContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
+
     /** This listener is called after <strong>any change</strong> made to the pickers. */
     private final NumberPicker.OnValueChangeListener valueChangeListener =
             (picker, oldVal, newVal) -> {
@@ -181,9 +185,38 @@ class PartialDatePickerDelegate
         }
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogPartialDatePickerContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        // Ensure components match current Locale order BEFORE we bind the views.
+        final View view = inflater.inflate(R.layout.dialog_partial_date_picker_content,
+                                           container, false);
+        reorderPickers(view);
+        vb = DialogPartialDatePickerContentBinding.bind(view);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        // Ensure components match current Locale order BEFORE we bind the views.
+        reorderPickers(view);
+        vb = DialogPartialDatePickerContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
 
         // 0: 'not set'
         vb.year.setMinValue(0);
@@ -214,11 +247,9 @@ class PartialDatePickerDelegate
     }
 
     @Override
-    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                         final int menuResId,
-                                         @NonNull final ToolbarWithActionButtons listener) {
-        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
-        dialogToolbar.setTitle(dialogTitle);
+    public void initToolbar(@NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(toolbar);
+        toolbar.setTitle(dialogTitle);
     }
 
     @Override

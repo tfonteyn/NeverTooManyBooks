@@ -20,19 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class PartialDatePickerDialogFragment
-        extends FFBaseDialogFragment<DialogPartialDatePickerContentBinding> {
+        extends BaseFFDialogFragment {
 
     /**
      * No-arg constructor for OS use.
@@ -50,15 +47,5 @@ public class PartialDatePickerDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new PartialDatePickerDelegate(this, requireArguments());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        // Ensure components match current Locale order BEFORE we bind the views.
-        ((PartialDatePickerDelegate) delegate).reorderPickers(view);
-
-        vb = DialogPartialDatePickerContentBinding.bind(view);
-        super.onViewCreated(view, savedInstanceState);
     }
 }

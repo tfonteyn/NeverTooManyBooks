@@ -24,22 +24,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
-import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.textfield.TextInputLayout;
-
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 
-public interface ToolbarWithActionButtons {
+public interface FlexToolbar {
 
     /**
-     * Called when the user clicks the Navigation icon from the toolbar menu.
+     * Called when the user clicks the Navigation icon on the toolbar.
      * The default action should dismiss the dialog.
      *
      * @param v view
@@ -48,7 +43,6 @@ public interface ToolbarWithActionButtons {
 
     /**
      * Called when the user selects a menu item from the toolbar menu.
-     * The default action ignores the selection.
      *
      * @param menuItem The menu item that was invoked.
      *
@@ -57,8 +51,7 @@ public interface ToolbarWithActionButtons {
     boolean onToolbarMenuItemClick(@Nullable MenuItem menuItem);
 
     /**
-     * Called when the user clicks a button on the toolbar or the bottom button-bar.
-     * The default action ignores the selection.
+     * Called when the user clicks a button on the toolbar or the dialog (bottom) button-bar.
      *
      * @param button the toolbar action-view-button or button-bar button
      *
@@ -69,29 +62,21 @@ public interface ToolbarWithActionButtons {
     /**
      * Setup the Toolbar listeners.
      *
-     * @param dialogToolbar to process
-     * @param menuResId     optional menu resource to inflate; {@code 0} for none.
-     * @param listener      to set
+     * @param toolbar   to process
      */
-    default void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                          @MenuRes final int menuResId,
-                                          @NonNull final ToolbarWithActionButtons listener) {
-        if (menuResId != 0) {
-            dialogToolbar.inflateMenu(menuResId);
-        }
-
-        dialogToolbar.setNavigationOnClickListener(listener::onToolbarNavigationClick);
+    default void initToolbar(@NonNull final Toolbar toolbar) {
+        toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         // Simple menu items; i.e. non-action view.
-        dialogToolbar.setOnMenuItemClickListener(listener::onToolbarMenuItemClick);
+        toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
 
         // Hookup any/all buttons in the action-view to use #onToolbarButtonClick
-        final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+        final MenuItem menuItem = toolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
         if (menuItem != null) {
             final View actionView = menuItem.getActionView();
 
             if (actionView instanceof Button) {
                 // Single button as top-level view
-                actionView.setOnClickListener(listener::onToolbarButtonClick);
+                actionView.setOnClickListener(this::onToolbarButtonClick);
 
             } else if (actionView instanceof ViewGroup) {
                 // A ViewGroup with multiple Buttons.
@@ -99,28 +84,10 @@ public interface ToolbarWithActionButtons {
                 for (int c = 0; c < av.getChildCount(); c++) {
                     final View child = av.getChildAt(c);
                     if (child instanceof Button) {
-                        child.setOnClickListener(listener::onToolbarButtonClick);
+                        child.setOnClickListener(this::onToolbarButtonClick);
                     }
                 }
             }
         }
-    }
-
-    /**
-     * FIXME: this does not belong here...
-     * Add the needed listeners to automatically remove any error text from
-     * a {@link TextInputLayout} when the user changes the content.
-     *
-     * @param editText inner text edit view
-     * @param til      outer layout view
-     */
-    default void autoRemoveError(@NonNull final EditText editText,
-                                 @NonNull final TextInputLayout til) {
-        editText.addTextChangedListener((ExtTextWatcher) s -> til.setError(null));
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                til.setError(null);
-            }
-        });
     }
 }

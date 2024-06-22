@@ -23,8 +23,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
+
 public class EditLanguageBottomSheet
-        extends EditStringBottomSheet {
+        extends BaseBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

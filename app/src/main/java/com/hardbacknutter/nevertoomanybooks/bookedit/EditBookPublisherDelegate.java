@@ -22,8 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,9 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherC
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
  * Add/Edit a single {@link Publisher} from the book's publisher list.
@@ -50,27 +52,27 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * <p>
  * {@link EditAction#Add}:
  * <ul>
- * <li>used for list-dialogs needing to add a NEW item to the list</li>
- * <li>the item is NOT stored in the database</li>
- * <li>returns the new item</li>
+ * <li>List-dialogs ADD a NEW item</li>
+ * <li>The new item is <strong>NOT stored</strong> in the database</li>
+ * <li>Returns the new item</li>
  * </ul>
  * <p>
  * {@link EditAction#Edit}:
  * <ul>
- * <li>used for list-dialogs needing to EDIT an existing item in the list</li>
- * <li>the modifications are NOT stored in the database</li>
- * <li>returns the original untouched + a new copy with the modifications</li>
+ * <li>List-dialogs EDIT an EXISTING item</li>
+ * <li>Modifications are <strong>NOT STORED</strong> in the database</li>
+ * <li>Returns the original + a new instance/copy with the modifications</li>
  * </ul>
  */
 class EditBookPublisherDelegate
-        implements FlexDialogDelegate<DialogEditBookPublisherContentBinding> {
+        implements FlexDialogDelegate {
 
     @NonNull
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
 
-    /** View model. Must be in the Activity scope. */
+    /** Book View model. Activity scope. */
     private final EditBookViewModel vm;
     /** Publisher View model. Fragment scope. */
     private final EditPublisherViewModel publisherVm;
@@ -78,6 +80,12 @@ class EditBookPublisherDelegate
     private final EditAction action;
     /** View Binding. */
     private DialogEditBookPublisherContentBinding vb;
+    /**
+     * Defaults to the {@code vb.dialogToolbar}.
+     * Fullscreen dialogs will override with the with the fullscreen toolbar.
+     */
+    @Nullable
+    private Toolbar toolbar;
 
     EditBookPublisherDelegate(@NonNull final DialogFragment owner,
                               @NonNull final Bundle args) {
@@ -92,29 +100,51 @@ class EditBookPublisherDelegate
         publisherVm.init(args);
     }
 
+    @NonNull
     @Override
-    public void initToolbarActionButtons(@NonNull final Toolbar dialogToolbar,
-                                         final int menuResId,
-                                         @NonNull final ToolbarWithActionButtons listener) {
-        FlexDialogDelegate.super.initToolbarActionButtons(dialogToolbar, menuResId, listener);
-        dialogToolbar.setSubtitle(vm.getBook().getTitle());
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogEditBookPublisherContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull final DialogEditBookPublisherContentBinding vb) {
-        this.vb = vb;
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
 
         final Context context = vb.getRoot().getContext();
+
+        final Publisher currentEdit = publisherVm.getCurrentEdit();
 
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
 
-        vb.publisherName.setText(publisherVm.getCurrentEdit().getName());
+        vb.publisherName.setText(currentEdit.getName());
         vb.publisherName.setAdapter(nameAdapter);
-        autoRemoveError(vb.publisherName, vb.lblPublisherName);
+        TilUtil.autoRemoveError(vb.publisherName, vb.lblPublisherName);
 
         vb.publisherName.requestFocus();
+    }
+
+    @Override
+    public void initToolbar(@NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(toolbar);
+        toolbar.setSubtitle(vm.getBook().getTitle());
     }
 
     @Override

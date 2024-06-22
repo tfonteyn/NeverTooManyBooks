@@ -22,11 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -41,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -49,7 +53,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * We do however keep the code flexible enough to allow it for future usage.
  * <ul>
  * <li>Direct/in-place editing.</li>
- * <li>Modifications ARE STORED in the database</li>
+ * <li>Modifications <strong>ARE STORED</strong> in the database</li>
  * <li>Returns the modified item.</li>
  * </ul>
  *
@@ -63,7 +67,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * @see EditBookshelfBottomSheet
  */
 class EditBookshelfDelegate
-        implements FlexDialogDelegate<DialogEditBookshelfContentBinding> {
+        implements FlexDialogDelegate {
 
     private static final String TAG = "EditBookshelfDelegate";
     @NonNull
@@ -74,6 +78,8 @@ class EditBookshelfDelegate
     private final EditBookshelfViewModel vm;
     /** View Binding. */
     private DialogEditBookshelfContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     EditBookshelfDelegate(@NonNull final DialogFragment owner,
                           @NonNull final Bundle args) {
@@ -84,12 +90,36 @@ class EditBookshelfDelegate
         vm.init(args);
     }
 
+    @NonNull
     @Override
-    public void onViewCreated(@NonNull final DialogEditBookshelfContentBinding vb) {
-        this.vb = vb;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogEditBookshelfContentBinding.inflate(inflater, container, false);
+        toolbar = vb.dialogToolbar;
+        return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        vb = DialogEditBookshelfContentBinding.bind(view.findViewById(R.id.dialog_content));
+        toolbar = vb.dialogToolbar;
+
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (toolbar != null) {
+            initToolbar(toolbar);
+        }
 
         vb.bookshelf.setText(vm.getCurrentEdit().getName());
-        autoRemoveError(vb.bookshelf, vb.lblBookshelf);
+        TilUtil.autoRemoveError(vb.bookshelf, vb.lblBookshelf);
 
         vb.bookshelf.requestFocus();
     }

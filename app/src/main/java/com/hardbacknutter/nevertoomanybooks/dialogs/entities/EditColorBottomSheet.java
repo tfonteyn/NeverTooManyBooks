@@ -25,16 +25,16 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class EditColorBottomSheet
-        extends EditStringBottomSheet {
+        extends BaseBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditStringDelegate(this,
-                                          requireArguments(), R.string.lbl_color, R.string.lbl_color,
-                                          ServiceLocator.getInstance()::getColorDao
-        );
+        delegate = new EditInLineStringDelegate(this, requireArguments(),
+                                                R.string.lbl_color, R.string.lbl_color,
+                                                ServiceLocator.getInstance()::getColorDao);
     }
 }

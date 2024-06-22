@@ -38,6 +38,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -53,12 +54,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ToolbarWithActionButtons;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -70,19 +72,19 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow
 /**
  * Edit the list of Series of a Book.
  * <p>
- * DialogFragment: we need to display this on top of edit-book fragment(s)
- * which run inside a ViewPager. It's just much easier to show this as a fullscreen dialog.
- * We're going to show a Dialog/BottomSheet on top of it, so it should be fullscreen anyhow.
+ * This is a plain fullscreen DialogFragment.
+ * Displayed on top of edit-book fragment(s) which run inside a ViewPager.
+ * Row edits use a Dialog/BottomSheet displayed on top of this fragment.
  */
 public class EditBookSeriesListDialogFragment
-        extends androidx.fragment.app.DialogFragment
-        implements ToolbarWithActionButtons {
+        extends DialogFragment
+        implements FlexToolbar {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookSeriesListDlg";
     private static final String RK_MENU = TAG + ":rk:menu";
 
-    /** The book. Must be in the Activity scope. */
+    /** Book View model. Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
     private DialogEditBookSeriesListBinding vb;
@@ -155,7 +157,7 @@ public class EditBookSeriesListDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initToolbarActionButtons(vb.toolbar, 0, this);
+        initToolbar(vb.toolbar);
         vb.toolbar.setSubtitle(vm.getBook().getTitle());
 
         //noinspection DataFlowIssue
@@ -163,7 +165,7 @@ public class EditBookSeriesListDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
         vb.seriesTitle.setAdapter(titleAdapter);
-        autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
+        TilUtil.autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
 
         // soft-keyboards 'done' button act as a shortcut to add the series
         vb.seriesNum.setOnEditorActionListener((v, actionId, event) -> {

@@ -20,38 +20,17 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
 
 public class StylePickerBottomSheet
-        extends BaseBottomSheetDialogFragment<DialogStylePickerContentBinding> {
+        extends BaseBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new StylePickerDelegate(this, requireArguments());
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        vb = DialogStylePickerContentBinding.inflate(inflater, container, false);
-        return vb.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        delegate.initToolbarActionButtons(vb.dialogToolbar, R.menu.style_picker, delegate);
     }
 }
