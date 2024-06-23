@@ -28,7 +28,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:padding">8dp</item>
-        <item name="icon">@drawable/ic_baseline_delete_24</item>
+        <item name="icon">@drawable/delete_24px</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:clickable">true</item>
@@ -42,7 +42,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:padding">8dp</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:src">@drawable/ic_baseline_drag_handle_24</item>
+        <item name="android:src">@drawable/drag_handle_24px</item>
         <item name="android:contentDescription">@string/cd_btn_drag_handle</item>
     </style>
 
@@ -52,7 +52,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="iconTint">?attr/colorOnPrimaryContainer</item>
-        <item name="icon">@drawable/ic_baseline_sort_unsorted</item>
+        <item name="icon">@drawable/sort_unsorted</item>
         <item name="android:contentDescription">@string/lbl_sorting</item>
     </style>
 

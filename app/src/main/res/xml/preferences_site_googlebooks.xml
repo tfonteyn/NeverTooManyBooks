@@ -26,7 +26,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_barcode"
+            android:icon="@drawable/barcode_24px"
             android:key="googlebooks.search.byIsbn.prefer.10"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

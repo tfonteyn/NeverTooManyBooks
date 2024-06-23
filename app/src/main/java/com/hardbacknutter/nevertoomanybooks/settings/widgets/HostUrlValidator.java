@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ public class HostUrlValidator
     public void showUrlInvalidDialog(@NonNull final EditTextPreference preference,
                                      @Nullable final Runnable onDiscard) {
         new MaterialAlertDialogBuilder(preference.getContext())
-                .setIcon(R.drawable.ic_baseline_info_24)
+                .setIcon(R.drawable.info_24px)
                 .setTitle(R.string.error_invalid_url)
                 .setMessage(preference.getText())
                 .setPositiveButton(R.string.action_edit, (d, w) -> d.dismiss())

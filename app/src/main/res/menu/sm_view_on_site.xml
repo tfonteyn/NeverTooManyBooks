@@ -23,7 +23,7 @@
     <group android:id="@id/MENU_GROUP_BOOK">
         <item
             android:id="@id/SUBMENU_VIEW_BOOK_AT_SITE"
-            android:icon="@drawable/ic_baseline_link_24"
+            android:icon="@drawable/link_24px"
             android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_SITE"
             android:title="@string/option_view_book_at"
             >

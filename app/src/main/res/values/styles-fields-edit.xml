@@ -89,20 +89,20 @@
     <!-- An ISBN field - a TextWatcher handles the start-icon. -->
     <style name="TIL.Text.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
-        <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
+        <item name="startIconDrawable">@drawable/check_24px</item>
         <item name="startIconTint">?attr/colorSecondary</item>
     </style>
 
     <!-- An ISBN field with a barcode-scan button as end-icon. -->
     <style name="TIL.Text.Isbn.Scan">
         <item name="endIconMode">custom</item>
-        <item name="endIconDrawable">@drawable/ic_barcode</item>
+        <item name="endIconDrawable">@drawable/barcode_24px</item>
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->
     <style name="TIL.ListPicker" parent="Base.TIL">
         <item name="endIconMode">custom</item>
-        <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
+        <item name="endIconDrawable">@drawable/edit_24px</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
@@ -115,7 +115,7 @@
     <!-- Brings up a dialog/screen to let the user pick a date; the end-icon clears the field -->
     <style name="TIL.DatePicker" parent="Base.TIL">
         <item name="endIconMode">custom</item>
-        <item name="endIconDrawable">@drawable/ic_baseline_cancel_24</item>
+        <item name="endIconDrawable">@drawable/cancel_24px</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
@@ -129,7 +129,7 @@
            parent="Base.TIL.ReadOnly">
         <item name="android:hint">@string/lbl_sync_date</item>
         <item name="endIconMode">custom</item>
-        <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
+        <item name="endIconDrawable">@drawable/edit_24px</item>
     </style>
 
     <!-- A TextInputLayout style specific for fields where the inner field

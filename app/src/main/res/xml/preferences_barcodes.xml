@@ -26,7 +26,7 @@
 
         <ListPreference
             android:defaultValue="-1"
-            android:icon="@drawable/ic_baseline_photo_camera_24"
+            android:icon="@drawable/photo_camera_24px"
             android:key="camera.lens.facing"
             android:title="@string/pt_camera_lens_facing"
             app:useSimpleSummaryProvider="true"
@@ -36,14 +36,14 @@
             android:defaultValue="1"
             android:entries="@array/pe_scan_mode_single"
             android:entryValues="@array/pv_scan_mode_single"
-            android:icon="@drawable/ic_barcode"
+            android:icon="@drawable/barcode_24px"
             android:key="scan.mode.single"
             android:title="@string/pt_scan_mode"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_surround_sound_24"
+            android:icon="@drawable/surround_sound_24px"
             android:key="sounds.scan.barcode.found"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -51,7 +51,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_surround_sound_24"
+            android:icon="@drawable/surround_sound_24px"
             android:key="sounds.scan.isbn.valid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -59,7 +59,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_surround_sound_24"
+            android:icon="@drawable/surround_sound_24px"
             android:key="sounds.scan.isbn.invalid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

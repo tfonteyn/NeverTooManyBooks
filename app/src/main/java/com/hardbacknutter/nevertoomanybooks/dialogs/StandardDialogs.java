@@ -111,7 +111,7 @@ public final class StandardDialogs {
                                                  thisBook,
                                                  itemType);
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.lbl_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -134,7 +134,7 @@ public final class StandardDialogs {
                                     @Nullable final Runnable onSave,
                                     @Nullable final Runnable onDiscard) {
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.confirm_unsaved_edits)
                 // this dialog is important. Make sure the user pays some attention
@@ -162,7 +162,7 @@ public final class StandardDialogs {
                                     @NonNull final Series series,
                                     @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_series,
                                               series.getLabel(context)))
@@ -183,7 +183,7 @@ public final class StandardDialogs {
                                        @NonNull final Publisher publisher,
                                        @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_publisher,
                                               publisher.getLabel(context)))
@@ -204,7 +204,7 @@ public final class StandardDialogs {
                                        @NonNull final Bookshelf bookshelf,
                                        @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_bookshelf,
                                               bookshelf.getLabel(context),
@@ -228,7 +228,7 @@ public final class StandardDialogs {
                                       @NonNull final Author author,
                                       @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry_everywhere,
                                               title,
@@ -271,7 +271,7 @@ public final class StandardDialogs {
         }
 
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -291,7 +291,7 @@ public final class StandardDialogs {
                                    @NonNull final Style style,
                                    @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_style,
                                               style.getLabel(context)))
@@ -318,7 +318,7 @@ public final class StandardDialogs {
                                              context.getString(label),
                                              entityLabel);
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(msg)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -333,7 +333,7 @@ public final class StandardDialogs {
                                   @NonNull final Runnable onMerge) {
 
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(title)
                 .setMessage(mergeMessageResId)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

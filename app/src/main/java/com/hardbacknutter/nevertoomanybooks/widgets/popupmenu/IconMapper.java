@@ -43,68 +43,65 @@ final class IconMapper {
 
     private static final Map<Integer, Integer> MAP = Map.ofEntries(
             // R.menu.book
-            Map.entry(R.id.MENU_SYNC_LIST_WITH_DETAILS, R.drawable.ic_baseline_arrow_back_24),
-            Map.entry(R.id.MENU_BOOK_SET_READ, R.drawable.ic_baseline_check_box_24),
-            Map.entry(R.id.MENU_BOOK_SET_UNREAD, R.drawable.ic_baseline_check_box_outline_blank_24),
-            Map.entry(R.id.MENU_BOOK_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_BOOK_DUPLICATE, R.drawable.ic_baseline_content_copy_24),
-            Map.entry(R.id.MENU_BOOK_DELETE, R.drawable.ic_baseline_delete_24),
-            Map.entry(R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK,
-                      R.drawable.ic_baseline_cloud_download_24),
-            Map.entry(R.id.MENU_BOOK_LOAN_ADD, R.drawable.ic_baseline_people_24),
-            Map.entry(R.id.MENU_BOOK_LOAN_DELETE, R.drawable.ic_baseline_people_24),
-            Map.entry(R.id.MENU_SHARE, R.drawable.ic_baseline_share_24),
+            Map.entry(R.id.MENU_SYNC_LIST_WITH_DETAILS, R.drawable.arrow_back_24px),
+            Map.entry(R.id.MENU_BOOK_SET_READ, R.drawable.check_box_24px),
+            Map.entry(R.id.MENU_BOOK_SET_UNREAD, R.drawable.check_box_outline_blank_24px),
+            Map.entry(R.id.MENU_BOOK_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_BOOK_DUPLICATE, R.drawable.content_copy_24px),
+            Map.entry(R.id.MENU_BOOK_DELETE, R.drawable.delete_24px),
+            Map.entry(R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK, R.drawable.cloud_download_24px),
+            Map.entry(R.id.MENU_BOOK_LOAN_ADD, R.drawable.group_24px),
+            Map.entry(R.id.MENU_BOOK_LOAN_DELETE, R.drawable.group_24px),
+            Map.entry(R.id.MENU_SHARE, R.drawable.share_24px),
 
             // BoB for a Book
-            Map.entry(R.id.MENU_LANGUAGE_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_LOCATION_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_GENRE_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_FORMAT_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_COLOR_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_NEXT_MISSING_COVER, R.drawable.ic_baseline_broken_image_24),
+            Map.entry(R.id.MENU_LANGUAGE_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_LOCATION_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_GENRE_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_FORMAT_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_COLOR_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_NEXT_MISSING_COVER, R.drawable.broken_image_24px),
 
 
             // R.menu.author
-            Map.entry(R.id.MENU_AUTHOR_WORKS_FILTER, R.drawable.ic_baseline_details_24),
-            Map.entry(R.id.MENU_AUTHOR_SET_COMPLETE, R.drawable.ic_baseline_check_box_24),
-            Map.entry(R.id.MENU_AUTHOR_SET_INCOMPLETE,
-                      R.drawable.ic_baseline_check_box_outline_blank_24),
-            Map.entry(R.id.MENU_AUTHOR_EDIT, R.drawable.ic_baseline_edit_24),
+            Map.entry(R.id.MENU_AUTHOR_WORKS_FILTER, R.drawable.details_24px),
+            Map.entry(R.id.MENU_AUTHOR_SET_COMPLETE, R.drawable.check_box_24px),
+            Map.entry(R.id.MENU_AUTHOR_SET_INCOMPLETE, R.drawable.check_box_outline_blank_24px),
+            Map.entry(R.id.MENU_AUTHOR_EDIT, R.drawable.edit_24px),
             // R.menu.series
-            Map.entry(R.id.MENU_SERIES_SET_COMPLETE, R.drawable.ic_baseline_check_box_24),
-            Map.entry(R.id.MENU_SERIES_SET_INCOMPLETE,
-                      R.drawable.ic_baseline_check_box_outline_blank_24),
-            Map.entry(R.id.MENU_SERIES_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_SERIES_DELETE, R.drawable.ic_baseline_delete_24),
+            Map.entry(R.id.MENU_SERIES_SET_COMPLETE, R.drawable.check_box_24px),
+            Map.entry(R.id.MENU_SERIES_SET_INCOMPLETE, R.drawable.check_box_outline_blank_24px),
+            Map.entry(R.id.MENU_SERIES_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_SERIES_DELETE, R.drawable.delete_24px),
             // R.menu.publisher
-            Map.entry(R.id.MENU_PUBLISHER_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_PUBLISHER_DELETE, R.drawable.ic_baseline_delete_24),
+            Map.entry(R.id.MENU_PUBLISHER_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_PUBLISHER_DELETE, R.drawable.delete_24px),
             // R.menu.bookshelf
-            Map.entry(R.id.MENU_BOOKSHELF_EDIT, R.drawable.ic_baseline_edit_24),
-            Map.entry(R.id.MENU_BOOKSHELF_DELETE, R.drawable.ic_baseline_delete_24),
+            Map.entry(R.id.MENU_BOOKSHELF_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_BOOKSHELF_DELETE, R.drawable.delete_24px),
 
             // R.menu.sm_calibre
-            Map.entry(R.id.SUBMENU_CALIBRE, R.drawable.ic_baseline_cloud_24),
-            Map.entry(R.id.MENU_CALIBRE_READ, R.drawable.ic_baseline_menu_book_24),
-            Map.entry(R.id.MENU_CALIBRE_DOWNLOAD, R.drawable.ic_baseline_cloud_download_24),
-            Map.entry(R.id.MENU_CALIBRE_SETTINGS, R.drawable.ic_baseline_settings_24),
+            Map.entry(R.id.SUBMENU_CALIBRE, R.drawable.cloud_24px),
+            Map.entry(R.id.MENU_CALIBRE_READ, R.drawable.menu_book_24px),
+            Map.entry(R.id.MENU_CALIBRE_DOWNLOAD, R.drawable.cloud_download_24px),
+            Map.entry(R.id.MENU_CALIBRE_SETTINGS, R.drawable.settings_24px),
             // R.menu.sm_view_on_site
-            Map.entry(R.id.SUBMENU_VIEW_BOOK_AT_SITE, R.drawable.ic_baseline_link_24),
+            Map.entry(R.id.SUBMENU_VIEW_BOOK_AT_SITE, R.drawable.link_24px),
             // R.menu.sm_search_on_amazon
-            Map.entry(R.id.SUBMENU_AMAZON_SEARCH, R.drawable.ic_baseline_search_24),
-            Map.entry(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.drawable.ic_baseline_search_24),
-            Map.entry(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.drawable.ic_baseline_search_24),
-            Map.entry(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.drawable.ic_baseline_search_24),
+            Map.entry(R.id.SUBMENU_AMAZON_SEARCH, R.drawable.search_24px),
+            Map.entry(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.drawable.search_24px),
+            Map.entry(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.drawable.search_24px),
+            Map.entry(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.drawable.search_24px),
             // R.menu.sm_search_on_bol
-            Map.entry(R.id.SUBMENU_BOL_SEARCH, R.drawable.ic_baseline_search_24),
-            Map.entry(R.id.MENU_BOL_BOOKS_BY_AUTHOR, R.drawable.ic_baseline_search_24),
-            Map.entry(R.id.MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES, R.drawable.ic_baseline_search_24),
-            Map.entry(R.id.MENU_BOL_BOOKS_IN_SERIES, R.drawable.ic_baseline_search_24),
+            Map.entry(R.id.SUBMENU_BOL_SEARCH, R.drawable.search_24px),
+            Map.entry(R.id.MENU_BOL_BOOKS_BY_AUTHOR, R.drawable.search_24px),
+            Map.entry(R.id.MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES, R.drawable.search_24px),
+            Map.entry(R.id.MENU_BOL_BOOKS_IN_SERIES, R.drawable.search_24px),
 
 
             // common to several menus
-            Map.entry(R.id.MENU_UPDATE_FROM_INTERNET, R.drawable.ic_baseline_cloud_download_24),
-            Map.entry(R.id.MENU_LEVEL_EXPAND, R.drawable.ic_baseline_unfold_more_24)
+            Map.entry(R.id.MENU_UPDATE_FROM_INTERNET, R.drawable.cloud_download_24px),
+            Map.entry(R.id.MENU_LEVEL_EXPAND, R.drawable.unfold_more_24px)
     );
 
     private IconMapper() {

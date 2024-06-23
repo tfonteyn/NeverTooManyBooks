@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,7 +122,7 @@ public class StripInfoSyncFragment
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_STRIP_INFO_SETTING, 0,
                      R.string.lbl_settings)
-                .setIcon(R.drawable.ic_baseline_settings_24);
+                .setIcon(R.drawable.settings_24px);
         }
 
         @Override

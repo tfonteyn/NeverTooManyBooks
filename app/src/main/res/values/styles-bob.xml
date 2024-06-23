@@ -134,7 +134,7 @@
     <style name="BoB.Group.Book.ReadingProgress"
            parent="Base.BoB.Group.Book">
         <item name="android:gravity">center_vertical</item>
-        <item name="android:drawableStart">@drawable/ic_baseline_menu_book_24_small</item>
+        <item name="android:drawableStart">@drawable/menu_book_20px</item>
         <item name="android:drawablePadding">4dp</item>
     </style>
 </resources>

@@ -180,7 +180,7 @@ public class SyncReaderFragment
                 vm.getSyncDate(), this::onSyncDateSet));
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_import);
+        fab.setImageResource(R.drawable.download_24px);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> startReading());
 
@@ -441,7 +441,7 @@ public class SyncReaderFragment
                                   @NonNull final ReaderResults result) {
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_baseline_info_24)
+                .setIcon(R.drawable.info_24px)
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {

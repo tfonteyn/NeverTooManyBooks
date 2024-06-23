@@ -130,10 +130,10 @@ public final class MenuUtils {
         final Resources res = context.getResources();
         menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                  R.string.action_edit_ellipsis)
-            .setIcon(R.drawable.ic_baseline_edit_24);
+            .setIcon(R.drawable.edit_24px);
         menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.action_delete)
-            .setIcon(R.drawable.ic_baseline_delete_24);
+            .setIcon(R.drawable.delete_24px);
         return menu;
     }
 

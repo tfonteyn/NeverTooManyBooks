@@ -27,7 +27,7 @@
     -->
     <item
         android:id="@id/MENU_SEARCH"
-        android:icon="@drawable/ic_baseline_search_24"
+        android:icon="@drawable/search_24px"
         android:orderInCategory="@integer/MENU_ORDER_SEARCH"
         android:title="@android:string/search_go"
         app:actionViewClass="android.widget.SearchView"
@@ -35,14 +35,14 @@
 
     <item
         android:id="@id/MENU_FILTERS"
-        android:icon="@drawable/ic_baseline_filter_list_24"
+        android:icon="@drawable/filter_list_24px"
         android:orderInCategory="@integer/MENU_ORDER_FILTERS"
         android:title="@string/lbl_filters"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@id/MENU_STYLE_SHORTCUT_LAYOUT_LIST"
-        android:icon="@drawable/ic_baseline_view_list_24"
+        android:icon="@drawable/view_list_24px"
         android:orderInCategory="@integer/MENU_ORDER_SHORTCUT_LIST_OR_GRID"
         android:title="@string/pe_list"
         app:showAsAction="ifRoom"
@@ -50,7 +50,7 @@
 
     <item
         android:id="@id/MENU_STYLE_SHORTCUT_LAYOUT_GRID"
-        android:icon="@drawable/ic_baseline_grid_view_24"
+        android:icon="@drawable/grid_view_24px"
         android:orderInCategory="@integer/MENU_ORDER_SHORTCUT_LIST_OR_GRID"
         android:title="@string/pe_grid"
         app:showAsAction="ifRoom"
@@ -58,7 +58,7 @@
 
     <item
         android:id="@id/MENU_STYLE_PICKER"
-        android:icon="@drawable/ic_baseline_style_24"
+        android:icon="@drawable/style_24px"
         android:orderInCategory="@integer/MENU_ORDER_SORT"
         android:title="@string/option_sort_and_style_ellipsis"
         app:showAsAction="ifRoom" />
@@ -66,21 +66,21 @@
     <group android:id="@id/MENU_GROUP_BOB_EXPANSION">
         <item
             android:id="@id/MENU_LEVEL_PREFERRED_EXPANSION"
-            android:icon="@drawable/ic_baseline_unfold_less_preferred_24"
+            android:icon="@drawable/unfold_less_preferred_24"
             android:orderInCategory="@integer/MENU_ORDER_LEVEL_EXPAND_PREFERRED_LEVEL"
             android:title="@string/option_level_reset"
             app:showAsAction="ifRoom" />
 
         <item
             android:id="@id/MENU_LEVEL_COLLAPSE"
-            android:icon="@drawable/ic_baseline_unfold_less_24"
+            android:icon="@drawable/unfold_less_24px"
             android:orderInCategory="@integer/MENU_ORDER_LEVEL_COLLAPSE"
             android:title="@string/option_level_collapse"
             app:showAsAction="ifRoom" />
 
         <item
             android:id="@id/MENU_LEVEL_EXPAND"
-            android:icon="@drawable/ic_baseline_unfold_more_24"
+            android:icon="@drawable/unfold_more_24px"
             android:orderInCategory="@integer/MENU_ORDER_LEVEL_EXPAND"
             android:title="@string/option_level_expand"
             app:showAsAction="ifRoom" />
@@ -96,7 +96,7 @@
  -->
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"
-        android:icon="@drawable/ic_baseline_cloud_download_24"
+        android:icon="@drawable/cloud_download_24px"
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
         android:title="@string/menu_update_books"
         android:visible="false"

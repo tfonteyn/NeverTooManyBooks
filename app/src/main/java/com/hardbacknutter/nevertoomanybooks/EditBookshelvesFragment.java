@@ -183,7 +183,7 @@ public class EditBookshelvesFragment
 
         // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_add_24);
+        fab.setImageResource(R.drawable.add_24px);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> editNewBookshelf());
 
@@ -258,7 +258,7 @@ public class EditBookshelvesFragment
                 // e.g. count > 2, then you can delete '1'
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setMessage(R.string.warning_cannot_delete_1st_bs)
                         .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                         .create()

@@ -197,7 +197,7 @@ public class ImportFragment
         });
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_import);
+        fab.setImageResource(R.drawable.download_24px);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> onStartImport());
 
@@ -245,7 +245,7 @@ public class ImportFragment
         } catch (@NonNull final DataReaderException e) {
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_import_failed)
                     .setMessage(e.getUserMessage(getContext()))
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
@@ -254,7 +254,7 @@ public class ImportFragment
         } catch (@NonNull final FileNotFoundException e) {
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_import_failed)
                     .setMessage(getString(R.string.error_file_not_found, uri.getPath()))
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
@@ -390,7 +390,7 @@ public class ImportFragment
             // CsvArchiveReader will make a database backup before importing.
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setIcon(R.drawable.warning_24px)
                     .setTitle(R.string.lbl_import_books)
                     .setMessage(R.string.warning_import_csv)
                     .setNegativeButton(android.R.string.cancel,
@@ -479,7 +479,7 @@ public class ImportFragment
         result.booksDeleted = vm.postProcessDeletedBooks();
 
         new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_baseline_info_24)
+                .setIcon(R.drawable.info_24px)
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {

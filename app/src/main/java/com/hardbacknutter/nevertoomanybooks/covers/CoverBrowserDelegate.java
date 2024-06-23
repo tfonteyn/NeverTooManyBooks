@@ -524,7 +524,7 @@ class CoverBrowserDelegate
                 positionHandler.fetchGalleryImage(altEdition);
 
                 // use a placeholder but preserve the available space
-                imageLoader.placeholder(holder.vb.coverImage0, R.drawable.ic_baseline_image_24);
+                imageLoader.placeholder(holder.vb.coverImage0, R.drawable.image_24px);
                 holder.vb.lblSite.setText("");
                 holder.vb.coverImage0.setOnClickListener(null);
 
@@ -544,7 +544,7 @@ class CoverBrowserDelegate
                     // as a failed search should have removed the edition from the list,
                     // but race-conditions + paranoia...
                     imageLoader.placeholder(holder.vb.coverImage0,
-                                            R.drawable.ic_baseline_broken_image_24);
+                                            R.drawable.broken_image_24px);
                     holder.vb.lblSite.setText("");
                     holder.vb.coverImage0.setOnClickListener(null);
                 }

@@ -27,7 +27,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_barcode"
+            android:icon="@drawable/barcode_24px"
             android:key="bedetheque.search.byIsbn.prefer.10"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -36,7 +36,7 @@
         <!-- note the default is 'true'! Other sites default to 'false' -->
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_cloud_download_24"
+            android:icon="@drawable/cloud_download_24px"
             android:key="bedetheque.resolve.authors.bedetheque"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -45,7 +45,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:icon="@drawable/sync_alt_24px"
             android:key="bedetheque.resolve.formats"
             android:summaryOff="@string/pt_search_reformat_format"
             android:summaryOn="@string/yes"
@@ -57,7 +57,7 @@
         android:title="@string/lbl_timeouts">
         <SeekBarPreference
             android:defaultValue="20"
-            android:icon="@drawable/ic_baseline_more_time_24"
+            android:icon="@drawable/more_time_24px"
             android:key="bedetheque.timeout.connect"
             android:max="60"
             android:title="@string/lbl_connection_timeout"
@@ -66,7 +66,7 @@
             />
         <SeekBarPreference
             android:defaultValue="60"
-            android:icon="@drawable/ic_baseline_more_time_24"
+            android:icon="@drawable/more_time_24px"
             android:key="bedetheque.timeout.read"
             android:max="120"
             android:title="@string/lbl_read_timeout"
@@ -77,7 +77,7 @@
     <PreferenceCategory
         android:title="@string/pt_maintenance">
         <Preference
-            android:icon="@drawable/ic_baseline_delete_24"
+            android:icon="@drawable/delete_24px"
             android:key="bedetheque.cache.authors.clear"
             android:title="@string/option_purge_bedetheque_authors_cache"
             />

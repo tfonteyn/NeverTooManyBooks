@@ -23,21 +23,21 @@
 
     <item
         android:id="@id/MENU_MANAGE_BOOKSHELVES"
-        android:icon="@drawable/ic_baseline_library_books_24"
+        android:icon="@drawable/library_books_24px"
         android:title="@string/lbl_bookshelves" />
 
     <item
         android:id="@id/MENU_SETTINGS"
-        android:icon="@drawable/ic_baseline_settings_24"
+        android:icon="@drawable/settings_24px"
         android:title="@string/lbl_settings" />
 
     <item
         android:id="@id/MENU_HELP"
-        android:icon="@drawable/ic_baseline_help_24"
+        android:icon="@drawable/help_24px"
         android:title="@string/action_help" />
 
     <item
         android:id="@id/MENU_ABOUT"
-        android:icon="@drawable/ic_baseline_info_24"
+        android:icon="@drawable/info_24px"
         android:title="@string/lbl_about" />
 </menu>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -169,7 +169,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
 
         textInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
         if (textInputLayout.getEndIconDrawable() == null) {
-            textInputLayout.setEndIconDrawable(R.drawable.ic_baseline_cancel_24);
+            textInputLayout.setEndIconDrawable(R.drawable.cancel_24px);
         }
         textInputLayout.setEndIconContentDescription(
                 textInputLayout.getResources().getText(R.string.cd_clear_text_end_icon));

@@ -1,0 +1,37 @@
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- "unfold_less_24px.xml" with an added horizontal bar -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:tint="?attr/colorControlNormal"
+        android:viewportWidth="960"
+        android:viewportHeight="960">
+    <!--suppress LongLine -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M356,800L300,744L480,564L660,744L604,800L480,676L356,800ZM480,396L300,216L356,160L480,284L604,160L660,216L480,396Z" />
+
+    <!-- horizontal bar -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M120,440 h720 v80 h-720 z" />
+</vector>

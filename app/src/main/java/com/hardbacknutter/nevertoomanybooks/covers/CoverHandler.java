@@ -278,7 +278,7 @@ public class CoverHandler {
             imageLoader.fromFile(view, file.get(), null, null);
             view.setBackground(null);
         } else {
-            imageLoader.placeholder(view, R.drawable.ic_baseline_add_a_photo_24);
+            imageLoader.placeholder(view, R.drawable.add_a_photo_24px);
             view.setBackgroundResource(R.drawable.bg_cover_not_set);
         }
     }
@@ -339,7 +339,7 @@ public class CoverHandler {
         if (ServiceLocator.getInstance().getCoverStorage()
                           .isUndoEnabled(book.getString(DBKey.BOOK_UUID), cIdx)) {
             menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover)
-                .setIcon(R.drawable.ic_baseline_undo_24);
+                .setIcon(R.drawable.undo_24px);
         }
 
         final MenuMode menuMode = MenuMode.getMode(context, menu);

@@ -289,7 +289,7 @@ public final class TipManager {
             }
 
             new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_info_24)
+                    .setIcon(R.drawable.info_24px)
                     .setView(root)
                     .setTitle(R.string.tip_dialog_title)
                     .setNeutralButton(R.string.action_disable_message, (d, w) -> {

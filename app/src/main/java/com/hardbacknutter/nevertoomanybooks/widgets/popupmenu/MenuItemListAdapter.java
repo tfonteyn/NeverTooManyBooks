@@ -183,7 +183,7 @@ class MenuItemListAdapter
                     textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             item.getIcon(context),
                             null,
-                            context.getDrawable(R.drawable.ic_baseline_arrow_right_24),
+                            context.getDrawable(R.drawable.arrow_right_24px),
                             null);
                 } else {
                     textView.setCompoundDrawablesRelativeWithIntrinsicBounds(

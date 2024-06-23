@@ -54,7 +54,7 @@ public class ImagesPreferenceFragment
         purgeCache.setOnPreferenceClickListener(p -> {
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setIcon(R.drawable.warning_24px)
                     .setMessage(R.string.option_purge_image_cache)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {

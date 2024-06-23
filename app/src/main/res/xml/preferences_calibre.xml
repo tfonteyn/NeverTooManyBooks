@@ -34,7 +34,7 @@
 
         <Preference
             android:dependency="calibre.enabled"
-            android:icon="@drawable/ic_baseline_folder_24"
+            android:icon="@drawable/folder_24px"
             android:key="psk_pick_folder"
             android:summary="@string/preference_not_set"
             android:title="@string/option_download_folder"
@@ -43,14 +43,14 @@
         <EditTextPreference
             android:defaultValue=""
             android:dependency="calibre.enabled"
-            android:icon="@drawable/ic_baseline_link_24"
+            android:icon="@drawable/link_24px"
             android:key="calibre.host.url"
             android:summary="@string/preference_not_set"
             android:title="@string/lbl_website_address" />
 
         <Preference
             android:dependency="calibre.enabled"
-            android:icon="@drawable/ic_baseline_security_24"
+            android:icon="@drawable/security_24px"
             android:key="psk_ca_from_file"
             android:summary="@string/preference_not_set"
             android:title="@string/lbl_certificate_ca"
@@ -59,7 +59,7 @@
         <EditTextPreference
             android:defaultValue=""
             android:dependency="calibre.enabled"
-            android:icon="@drawable/ic_baseline_person_24"
+            android:icon="@drawable/person_24px"
             android:key="calibre.host.user"
             android:title="@string/username"
             app:useSimpleSummaryProvider="true"
@@ -68,7 +68,7 @@
         <EditTextPreference
             android:defaultValue=""
             android:dependency="calibre.enabled"
-            android:icon="@drawable/ic_baseline_password_24"
+            android:icon="@drawable/password_24px"
             android:key="calibre.host.password"
             android:summary="@string/preference_not_set"
             android:title="@string/password"
@@ -80,7 +80,7 @@
         <SeekBarPreference
             android:defaultValue="10"
             android:dependency="calibre.enabled"
-            android:icon="@drawable/ic_baseline_more_time_24"
+            android:icon="@drawable/more_time_24px"
             android:key="calibre.timeout.connect"
             android:max="60"
             android:title="@string/lbl_connection_timeout"
@@ -90,7 +90,7 @@
         <SeekBarPreference
             android:defaultValue="10"
             android:dependency="calibre.enabled"
-            android:icon="@drawable/ic_baseline_more_time_24"
+            android:icon="@drawable/more_time_24px"
             android:key="calibre.timeout.read"
             android:max="120"
             android:title="@string/lbl_read_timeout"

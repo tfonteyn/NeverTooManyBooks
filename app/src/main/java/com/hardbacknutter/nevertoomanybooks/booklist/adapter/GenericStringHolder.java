@@ -146,7 +146,7 @@ public class GenericStringHolder
 
         if (size > 0) {
             @SuppressLint("UseCompatLoadingForDrawables")
-            final Drawable bullet = context.getDrawable(R.drawable.ic_baseline_lens_24);
+            final Drawable bullet = context.getDrawable(R.drawable.lens_24px);
             //noinspection DataFlowIssue
             bullet.setBounds(0, 0, size, size);
             textView.setCompoundDrawablePadding(

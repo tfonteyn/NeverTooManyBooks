@@ -127,7 +127,7 @@
             android:id="@+id/btn_search"
             style="@style/Button.Action.Submit"
             android:text="@android:string/search_go"
-            app:icon="@drawable/ic_baseline_search_24"
+            app:icon="@drawable/search_24px"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
             />

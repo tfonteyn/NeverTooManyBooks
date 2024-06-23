@@ -147,9 +147,9 @@ public class FragmentHostActivity
         final Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             if (isTaskRoot()) {
-                toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+                toolbar.setNavigationIcon(R.drawable.menu_24px);
             } else {
-                toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+                toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
             }
 
             final int flags = getIntent().getIntExtra(BKEY_TOOLBAR_SCROLL_FLAGS, -1);

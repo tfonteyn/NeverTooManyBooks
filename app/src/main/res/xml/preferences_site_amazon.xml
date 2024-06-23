@@ -26,14 +26,14 @@
 
         <EditTextPreference
             android:defaultValue="https://www.amazon.com"
-            android:icon="@drawable/ic_baseline_link_24"
+            android:icon="@drawable/link_24px"
             android:key="amazon.host.url"
             android:summary="@string/preference_not_set"
             android:title="@string/lbl_website_address" />
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_shop_24"
+            android:icon="@drawable/shop_24px"
             android:key="amazon.search.shopping.menu"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -41,7 +41,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_barcode"
+            android:icon="@drawable/barcode_24px"
             android:key="amazon.search.byIsbn.prefer.10"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

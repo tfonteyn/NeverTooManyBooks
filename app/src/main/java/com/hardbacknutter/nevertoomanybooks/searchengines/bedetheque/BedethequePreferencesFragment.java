@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public class BedethequePreferencesFragment
             if (authorCacheCount > 0) {
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setMessage(R.string.option_purge_bedetheque_authors_cache)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) -> {

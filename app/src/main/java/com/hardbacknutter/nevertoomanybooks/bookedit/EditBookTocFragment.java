@@ -184,7 +184,7 @@ public class EditBookTocFragment
         super.onViewCreated(view, savedInstanceState);
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_add_24);
+        fab.setImageResource(R.drawable.add_24px);
         fab.setOnClickListener(v -> {
             Author tocAuthor = vm.getBook().getPrimaryAuthor();
             if (tocAuthor == null) {
@@ -361,7 +361,7 @@ public class EditBookTocFragment
                 // The entry is saved, but only occurs in this single book.
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(context)
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setTitle(R.string.action_delete)
                         .setMessage(context.getString(R.string.confirm_remove_toc_entry,
                                                       tocEntry.getTitle(),
@@ -383,7 +383,7 @@ public class EditBookTocFragment
                 // all books.
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(context)
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setTitle(R.string.action_delete)
                         .setMessage(context.getString(R.string.confirm_scope_for_delete,
                                                       tocEntry.getTitle(),
@@ -441,7 +441,7 @@ public class EditBookTocFragment
                 tocAuthor.getLabel(context));
 
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_toc_list_update_with_main_author)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -632,7 +632,7 @@ public class EditBookTocFragment
             //noinspection DataFlowIssue
             final AlertDialog dialog =
                     new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_baseline_warning_24)
+                            .setIcon(R.drawable.warning_24px)
                             .setView(rootView)
                             .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                             .create();

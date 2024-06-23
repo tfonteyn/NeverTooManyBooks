@@ -248,7 +248,7 @@ public class StartupActivity
         clipboard.setPrimaryClip(clip);
 
         new MaterialAlertDialogBuilder(this)
-                .setIcon(R.drawable.ic_baseline_error_24)
+                .setIcon(R.drawable.error_24px)
                 .setTitle(R.string.app_name)
                 .setMessage(msg)
                 .setCancelable(false)
@@ -277,7 +277,7 @@ public class StartupActivity
                 getString(R.string.option_storage_edit_settings)};
 
         new MaterialAlertDialogBuilder(this)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.lbl_storage_settings)
                 // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)

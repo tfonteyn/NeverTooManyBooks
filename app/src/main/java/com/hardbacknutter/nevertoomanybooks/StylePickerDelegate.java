@@ -130,10 +130,10 @@ class StylePickerDelegate
         } else if (menuItemId == R.id.MENU_STYLE_LIST_TOGGLE) {
             if (vm.flipShowAllStyles()) {
                 menuItem.setTitle(R.string.action_less_ellipsis);
-                menuItem.setIcon(R.drawable.ic_baseline_unfold_less_24);
+                menuItem.setIcon(R.drawable.unfold_less_24px);
             } else {
                 menuItem.setTitle(R.string.action_more_ellipsis);
-                menuItem.setIcon(R.drawable.ic_baseline_unfold_more_24);
+                menuItem.setIcon(R.drawable.unfold_more_24px);
             }
 
             adapter.notifyDataSetChanged();

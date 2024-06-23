@@ -26,9 +26,30 @@
 -->
 <resources>
 
-    <!-- These base values will never get used as the dialogs will be fullscreen
+    <!-- This base value will never get used as the dialogs will be fullscreen
          at this resolution. -->
     <dimen name="floating_dialog_recycler_view_min_height">100dp</dimen>
-    <!-- Copied from Material 1.8 libs -->
+
+    <!--
+    URGENT: re-evaluate the use of this
+        This is the corner radius used for our progress-dialogs
+         and the DialogMode#Dialog flexible/floating dialogs.
+         TODO: figure out how to use the ?attr/shapeAppearanceCornerExtraLarge directly.
+
+     Copied from Material 1.8 libs :
+         <style name="ThemeOverlay.Material3.MaterialAlertDialog"
+                parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+      ==>
+      <item name="alertDialogStyle">@style/MaterialAlertDialog.Material3</item>
+       ==>
+      <item name="shapeAppearance">@macro/m3_comp_dialog_container_shape</item>
+      ==>
+      <macro name="m3_comp_dialog_container_shape">?attr/shapeAppearanceCornerExtraLarge</macro>
+      ==>
+      @style/ShapeAppearance.Material3.Corner.ExtraLarge
+      ==>
+      <item name="cornerSize">28dp</item>
+
+      -->
     <dimen name="floating_dialog_corner_radius">28dp</dimen>
 </resources>

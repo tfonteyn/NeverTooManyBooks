@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -83,17 +83,17 @@ public interface Notifier
     enum Channel {
         Error("Error",
               R.string.notification_channel_error,
-              R.drawable.ic_baseline_error_24,
+              R.drawable.error_24px,
               NotificationManager.IMPORTANCE_HIGH,
               NotificationCompat.PRIORITY_HIGH),
         Warning("Warning",
                 R.string.notification_channel_warn,
-                R.drawable.ic_baseline_warning_24,
+                R.drawable.warning_24px,
                 NotificationManager.IMPORTANCE_DEFAULT,
                 NotificationCompat.PRIORITY_DEFAULT),
         Info("Info",
              R.string.notification_channel_info,
-             R.drawable.ic_baseline_info_24,
+             R.drawable.info_24px,
              NotificationManager.IMPORTANCE_LOW,
              NotificationCompat.PRIORITY_LOW);
 

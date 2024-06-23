@@ -29,7 +29,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_ui_theme_mode"
             android:entryValues="@array/pv_ui_theme_mode"
-            android:icon="@drawable/ic_baseline_settings_brightness_24"
+            android:icon="@drawable/settings_brightness_24px"
             android:key="ui.theme"
             android:title="@string/pt_ui_theme"
             app:useSimpleSummaryProvider="true" />
@@ -39,7 +39,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_ui_theme_colors"
             android:entryValues="@array/pv_ui_theme_colors"
-            android:icon="@drawable/ic_baseline_color_lens_24"
+            android:icon="@drawable/palette_24px"
             android:key="ui.theme.color"
             android:title="@string/pt_ui_theme_colors" />
 
@@ -48,7 +48,7 @@
             android:defaultValue="2"
             android:entries="@array/pe_ui_dialog_mode"
             android:entryValues="@array/pv_ui_dialogs_mode"
-            android:icon="@drawable/ic_baseline_article_24"
+            android:icon="@drawable/dialogs_24px"
             android:key="ui.dialog.mode"
             android:title="@string/pt_ui_dialogs_mode"
             app:useSimpleSummaryProvider="true" />
@@ -58,7 +58,7 @@
             android:defaultValue="2"
             android:entries="@array/pe_ui_context_menu_mode"
             android:entryValues="@array/pv_ui_menus_context"
-            android:icon="@drawable/ic_baseline_menu_24"
+            android:icon="@drawable/menu_24px"
             android:key="ui.menu.context.mode"
             android:title="@string/pc_context_menus"
             app:useSimpleSummaryProvider="true" />

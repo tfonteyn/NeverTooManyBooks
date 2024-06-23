@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -209,7 +209,7 @@ public class ImageViewLoader {
                             onFailed.run();
                         } else {
                             // So use 'broken-image' icon and preserve the space.
-                            placeholder(view, R.drawable.ic_baseline_broken_image_24);
+                            placeholder(view, R.drawable.broken_image_24px);
                         }
                     }
                 }

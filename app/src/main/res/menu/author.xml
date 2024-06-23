@@ -24,30 +24,30 @@
 
     <item
         android:id="@id/MENU_AUTHOR_WORKS_FILTER"
-        android:icon="@drawable/ic_baseline_details_24"
+        android:icon="@drawable/details_24px"
         android:title="@string/option_author_details" />
 
     <item
         android:id="@id/MENU_AUTHOR_SET_COMPLETE"
-        android:icon="@drawable/ic_baseline_check_box_24"
+        android:icon="@drawable/check_box_24px"
         android:orderInCategory="@integer/MENU_ORDER_COMPLETE"
         android:title="@string/option_set_complete" />
 
     <item
         android:id="@id/MENU_AUTHOR_SET_INCOMPLETE"
-        android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
+        android:icon="@drawable/check_box_outline_blank_24px"
         android:orderInCategory="@integer/MENU_ORDER_COMPLETE"
         android:title="@string/option_set_incomplete" />
 
     <item
         android:id="@id/MENU_AUTHOR_EDIT"
-        android:icon="@drawable/ic_baseline_edit_24"
+        android:icon="@drawable/edit_24px"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
         android:title="@string/action_edit_ellipsis" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"
-        android:icon="@drawable/ic_baseline_cloud_download_24"
+        android:icon="@drawable/cloud_download_24px"
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
         android:title="@string/menu_update_books" />
 </menu>

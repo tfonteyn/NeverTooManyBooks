@@ -133,7 +133,7 @@ public class ExportFragment
         vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_export);
+        fab.setImageResource(R.drawable.upload_24px);
         // GONE here; will be made visible in showOptions() together with the full UI.
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(v -> startExport());
@@ -298,7 +298,7 @@ public class ExportFragment
             if (items.isEmpty()) {
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_info_24)
+                        .setIcon(R.drawable.info_24px)
                         .setTitle(R.string.title_backup_and_export)
                         .setMessage(R.string.warning_export_contains_no_data)
                         .setPositiveButton(R.string.action_done, (d, w)
@@ -320,7 +320,7 @@ public class ExportFragment
                 //noinspection DataFlowIssue
                 final MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_baseline_info_24)
+                                .setIcon(R.drawable.info_24px)
                                 .setTitle(title)
                                 .setPositiveButton(R.string.action_done, (d, w)
                                         -> getActivity().finish());
@@ -436,7 +436,7 @@ public class ExportFragment
             LoggerFactory.getLogger().e(TAG, e);
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_email_failed)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()

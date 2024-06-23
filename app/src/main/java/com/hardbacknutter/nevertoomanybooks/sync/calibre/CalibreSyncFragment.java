@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -125,7 +125,7 @@ public class CalibreSyncFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_CALIBRE_SETTINGS, 0, R.string.lbl_settings)
-                .setIcon(R.drawable.ic_baseline_settings_24);
+                .setIcon(R.drawable.settings_24px);
         }
 
         @Override

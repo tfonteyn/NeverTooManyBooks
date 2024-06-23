@@ -38,7 +38,7 @@
         android:layout_height="@dimen/app_logo"
         android:scaleX="1.5"
         android:scaleY="1.5"
-        android:src="@drawable/ic_launcher_foreground"
+        android:src="@drawable/launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"

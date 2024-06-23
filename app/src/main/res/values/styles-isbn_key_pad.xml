@@ -43,7 +43,7 @@
         <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
 
         <item name="strokeWidth">@dimen/isbn_keypad_search_stroke_width</item>
-        <item name="icon">@drawable/ic_baseline_search_24</item>
+        <item name="icon">@drawable/search_24px</item>
         <item name="iconSize">@dimen/isbn_keypad_search_icon_size</item>
         <item name="iconGravity">textTop</item>
     </style>
@@ -51,7 +51,7 @@
     <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="icon">@drawable/ic_baseline_backspace_24</item>
+        <item name="icon">@drawable/backspace_24px</item>
         <item name="android:contentDescription">@string/action_delete</item>
         <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
     </style>

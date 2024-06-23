@@ -199,10 +199,10 @@ public class TocAdapter
 
             // The entry is a story (etc...) which appears in one book only.
             tocStr = res.getString(R.string.lbl_table_of_content_entry);
-            tocIcon = res.getDrawable(R.drawable.ic_baseline_menu_book_24, theme);
+            tocIcon = res.getDrawable(R.drawable.menu_book_24px, theme);
             // The entry is a story (etc...) which appears in multiple books.
             multipleBooksStr = res.getString(R.string.tip_authors_works_multiple_books);
-            multipleBooksIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
+            multipleBooksIcon = res.getDrawable(R.drawable.library_books_24px, theme);
         }
 
         @Override
@@ -235,7 +235,7 @@ public class TocAdapter
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
             typeDescription = res.getString(R.string.lbl_book);
-            typeIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
+            typeIcon = res.getDrawable(R.drawable.book_2_24px, theme);
         }
 
         @Override
@@ -264,7 +264,7 @@ public class TocAdapter
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
             typeDescription = res.getString(R.string.lbl_book);
-            typeIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
+            typeIcon = res.getDrawable(R.drawable.book_2_24px, theme);
         }
 
         @Override

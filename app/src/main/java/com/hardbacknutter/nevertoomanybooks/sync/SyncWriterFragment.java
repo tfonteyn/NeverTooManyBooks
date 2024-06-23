@@ -126,7 +126,7 @@ public class SyncWriterFragment
                 .setDeleteLocalBooks(isChecked));
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_export);
+        fab.setImageResource(R.drawable.upload_24px);
         // GONE here; will be made visible in showOptions() together with the full UI.
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(v -> startWriting());
@@ -217,7 +217,7 @@ public class SyncWriterFragment
             if (items.isEmpty()) {
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_info_24)
+                        .setIcon(R.drawable.info_24px)
                         .setTitle(R.string.title_backup_and_export)
                         .setMessage(R.string.warning_no_matching_book_found)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
@@ -235,7 +235,7 @@ public class SyncWriterFragment
 
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_info_24)
+                        .setIcon(R.drawable.info_24px)
                         .setTitle(R.string.info_export_successful)
                         .setMessage(itemList)
                         .setPositiveButton(R.string.action_done, (d, w) -> {

@@ -32,35 +32,35 @@
     <!-- A book has been read. -->
     <style name="Flag.Read">
         <item name="android:contentDescription">@string/lbl_read</item>
-        <item name="android:src">@drawable/ic_baseline_file_download_done_24</item>
+        <item name="android:src">@drawable/download_done_24px</item>
         <item name="android:tint">?attr/colorSecondary</item>
     </style>
 
     <!-- A book is a first edition. -->
     <style name="Flag.FirstEdition">
         <item name="android:contentDescription">@string/lbl_edition_first_edition</item>
-        <item name="android:src">@drawable/ic_baseline_filter_1_24</item>
+        <item name="android:src">@drawable/filter_1_24px</item>
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
     <!-- A book is signed. -->
     <style name="Flag.Signed">
         <item name="android:contentDescription">@string/lbl_signed</item>
-        <item name="android:src">@drawable/ic_signed</item>
+        <item name="android:src">@drawable/signed</item>
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
     <!-- A book has been lend out. -->
     <style name="Flag.LendOut">
         <item name="android:contentDescription">@string/lbl_lend_out</item>
-        <item name="android:src">@drawable/ic_lend_out</item>
+        <item name="android:src">@drawable/do_not_touch_24px</item>
         <item name="android:tint">?attr/colorError</item>
     </style>
 
     <!-- A series/author/... is complete. -->
     <style name="Flag.Complete">
         <item name="android:contentDescription">@string/lbl_is_complete</item>
-        <item name="android:src">@drawable/ic_baseline_done_all_24</item>
+        <item name="android:src">@drawable/done_all_24px</item>
         <item name="android:tint">?attr/colorSecondary</item>
     </style>
 </resources>

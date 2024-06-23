@@ -226,7 +226,7 @@ public class AuthorWorksFragment
         rowMenu = MenuUtils.create(context);
         rowMenu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                     R.string.action_delete)
-               .setIcon(R.drawable.ic_baseline_delete_24);
+               .setIcon(R.drawable.delete_24px);
 
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),

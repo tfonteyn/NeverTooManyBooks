@@ -235,7 +235,7 @@ public abstract class SearchBookBaseFragment
             if (searchErrors != null && !searchErrors.isEmpty()) {
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setTitle(hasData ? R.string.warning_book_not_always_found
                                           : R.string.warning_book_not_found)
                         .setMessage(searchErrors)
@@ -299,7 +299,7 @@ public abstract class SearchBookBaseFragment
             menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                      r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
                      R.string.lbl_websites)
-                .setIcon(R.drawable.ic_baseline_find_in_page_24)
+                .setIcon(R.drawable.find_in_page_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 

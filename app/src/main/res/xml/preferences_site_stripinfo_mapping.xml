@@ -26,21 +26,21 @@
         android:title="@string/lbl_assign_bookshelves">
 
         <ListPreference
-            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:icon="@drawable/sync_alt_24px"
             android:key="stripinfo.bookshelf.owned"
             android:title="@string/lbl_strip_info_bookshelf_assigned_to_owned_books"
             app:useSimpleSummaryProvider="true"
             />
 
         <ListPreference
-            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:icon="@drawable/sync_alt_24px"
             android:key="stripinfo.bookshelf.digital"
             android:title="@string/lbl_strip_info_bookshelf_assigned_to_digital_books"
             app:useSimpleSummaryProvider="true"
             />
 
         <ListPreference
-            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:icon="@drawable/sync_alt_24px"
             android:key="stripinfo.bookshelf.wishlist"
             android:title="@string/lbl_strip_info_bookshelf_assigned_to_wishlist"
             app:useSimpleSummaryProvider="true"

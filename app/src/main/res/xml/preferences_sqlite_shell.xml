@@ -24,7 +24,7 @@
 
     <SeekBarPreference
         android:defaultValue="200"
-        android:icon="@drawable/ic_baseline_table_rows_24"
+        android:icon="@drawable/table_rows_24px"
         android:key="sqlite.shell.max.lines"
         android:max="9999"
         android:title="@string/debug_sq_shell_max_rows"

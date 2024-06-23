@@ -23,24 +23,24 @@
     <group android:id="@id/MENU_GROUP_BOOK">
         <item
             android:id="@id/SUBMENU_CALIBRE"
-            android:icon="@drawable/ic_baseline_cloud_24"
+            android:icon="@drawable/cloud_24px"
             android:orderInCategory="@integer/MENU_ORDER_CALIBRE"
             android:title="@string/site_calibre">
             <menu>
                 <item
                     android:id="@id/MENU_CALIBRE_READ"
-                    android:icon="@drawable/ic_baseline_menu_book_24"
+                    android:icon="@drawable/menu_book_24px"
                     android:title="@string/lbl_read" />
 
                 <!-- title always set from code; the below is just a placeholder. -->
                 <item
                     android:id="@id/MENU_CALIBRE_DOWNLOAD"
-                    android:icon="@drawable/ic_baseline_cloud_download_24"
+                    android:icon="@drawable/cloud_download_24px"
                     android:title="@string/book_format_ebook" />
 
                 <item
                     android:id="@id/MENU_CALIBRE_SETTINGS"
-                    android:icon="@drawable/ic_baseline_settings_24"
+                    android:icon="@drawable/settings_24px"
                     android:title="@string/lbl_settings" />
             </menu>
         </item>

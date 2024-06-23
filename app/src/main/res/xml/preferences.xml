@@ -19,13 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    The main/root PreferenceScreen for the app.
-    Notes:
-     - PreferenceCategory which have a key <strong>must</strong> be mirrored in "Prefs.java"
-     - Actual preference elements <strong>may</strong> need to be mirrored in "Prefs.java"
-     - defaultValue attribute must match with wherever the underlying preference is used.
- -->
 <!--suppress LongLine -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -50,7 +43,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.UserInterfacePreferenceFragment"
-            android:icon="@drawable/ic_baseline_tune_24"
+            android:icon="@drawable/display_settings_24px"
             android:key="psk_user_interface"
             android:title="@string/pt_ui_theme"
             />
@@ -61,7 +54,7 @@
         android:title="@string/pc_search">
 
         <Preference
-            android:icon="@drawable/ic_baseline_search_24"
+            android:icon="@drawable/search_24px"
             android:key="psk_search_site_order"
             android:summary="@string/pt_website_search_order_and_enable"
             android:title="@string/lbl_websites">
@@ -69,7 +62,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_data_usage_24"
+            android:icon="@drawable/data_usage_24px"
             android:key="network.allow.metered"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -77,7 +70,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
+            android:icon="@drawable/merge_24px"
             android:key="search.reformat.format"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -85,7 +78,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
+            android:icon="@drawable/merge_24px"
             android:key="search.reformat.color"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -108,7 +101,7 @@
          Summaries are set by a SummaryProvider -->
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_sort_24"
+            android:icon="@drawable/sort_24px"
             android:key="sort.title.reordered"
             android:title="@string/pt_sort_title_reordered"
             tools:summary="@string/ps_show_titles_reordered_on" />
@@ -120,7 +113,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDefaultsFragment"
-            android:icon="@drawable/ic_baseline_style_24"
+            android:icon="@drawable/style_24px"
             android:key="psk_style_defaults"
             android:title="@string/action_edit_defaults"
             />
@@ -132,7 +125,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
-            android:icon="@drawable/ic_baseline_image_24"
+            android:icon="@drawable/image_24px"
             android:key="psk_thumbnails"
             android:title="@string/pt_covers"
             />
@@ -141,14 +134,14 @@
             android:defaultValue="1"
             android:entries="@array/pe_edit_book_isbn_checks"
             android:entryValues="@array/pv_edit_book_isbn_checks"
-            android:icon="@drawable/ic_baseline_check_24"
+            android:icon="@drawable/check_24px"
             android:key="edit.book.isbn.checks"
             android:title="@string/pt_edit_book_isbn_checks"
             app:useSimpleSummaryProvider="true" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"
-            android:icon="@drawable/ic_barcode"
+            android:icon="@drawable/barcode_24px"
             android:key="psk_barcode"
             android:title="@string/pt_barcode_scanner"
             />
@@ -163,7 +156,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"
             android:entryValues="@array/pv_bob_list_state"
-            android:icon="@drawable/ic_baseline_view_list_24"
+            android:icon="@drawable/view_list_24px"
             android:key="booklist.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state"
             app:useSimpleSummaryProvider="true" />
@@ -172,7 +165,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_bob_row_menu"
             android:entryValues="@array/pv_bob_row_menu"
-            android:icon="@drawable/ic_baseline_view_list_24"
+            android:icon="@drawable/view_list_24px"
             android:key="booklist.context.menu"
             android:title="@string/pt_bob_row_menu"
             app:useSimpleSummaryProvider="true" />
@@ -181,7 +174,7 @@
             android:defaultValue="3"
             android:entries="@array/pe_fastscroller_overlay"
             android:entryValues="@array/pv_fastscroller_overlay"
-            android:icon="@drawable/ic_baseline_chat_24"
+            android:icon="@drawable/chat_24px"
             android:key="booklist.fastscroller.overlay"
             android:title="@string/pt_fast_scroller_overlay"
             app:useSimpleSummaryProvider="true" />
@@ -192,7 +185,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
-            android:icon="@drawable/ic_baseline_visibility_24"
+            android:icon="@drawable/visibility_24px"
             android:key="psk_fields_visibility"
             android:summary="@string/ps_manage_fields"
             android:title="@string/pt_field_visibility"
@@ -200,7 +193,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_people_24"
+            android:icon="@drawable/group_24px"
             android:key="fields.visibility.loaned_to"
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
@@ -208,7 +201,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_tab_24"
+            android:icon="@drawable/tab_24px"
             android:key="edit.book.tab.externalId"
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
@@ -232,7 +225,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment"
-            android:icon="@drawable/ic_baseline_cloud_24"
+            android:icon="@drawable/cloud_24px"
             android:key="psk_calibre"
             android:title="@string/pt_calibre_content_server"
             tools:summary="@string/disabled">
@@ -243,13 +236,13 @@
              SummaryProvider must be set from code. -->
         <ListPreference
             android:defaultValue="0"
-            android:icon="@drawable/ic_baseline_folder_24"
+            android:icon="@drawable/folder_24px"
             android:key="storage.volume.index"
             android:title="@string/pt_storage_volume" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"
-            android:icon="@drawable/ic_baseline_settings_24"
+            android:icon="@drawable/settings_24px"
             android:key="psk_advanced_options"
             android:title="@string/pt_maintenance"
             />

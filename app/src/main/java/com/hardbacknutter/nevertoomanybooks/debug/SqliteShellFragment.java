@@ -221,18 +221,18 @@ public class SqliteShellFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_RUN, 0, R.string.debug_sq_shell_run)
-                .setIcon(allowUpdates ? R.drawable.ic_baseline_directions_run_dangerously_24
-                                      : R.drawable.ic_baseline_directions_run_24)
+                .setIcon(allowUpdates ? R.drawable.directions_run_dangerously_24px
+                                      : R.drawable.directions_run_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES, 0,
                      R.string.debug_sq_shell_list_tables)
-                .setIcon(R.drawable.ic_baseline_info_24)
+                .setIcon(R.drawable.info_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES, 0,
                      R.string.debug_sq_shell_max_rows)
-                .setIcon(R.drawable.ic_baseline_table_rows_24)
+                .setIcon(R.drawable.table_rows_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         }

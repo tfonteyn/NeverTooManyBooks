@@ -71,7 +71,7 @@ public class ViewBookOnWebsiteHandler
                                     config.getDomainMenuResId(),
                                     res.getInteger(config.getDomainMenuOrderResId()),
                                     engineId.getLabelResId())
-                               .setIcon(R.drawable.ic_baseline_link_24);
+                               .setIcon(R.drawable.link_24px);
                     });
         }
     }

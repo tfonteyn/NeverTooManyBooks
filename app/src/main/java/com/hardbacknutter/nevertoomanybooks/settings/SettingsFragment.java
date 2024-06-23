@@ -367,7 +367,7 @@ public class SettingsFragment
                 // The originally used volume is not available; there is nothing to move.
                 // Handle this as a simple 'select'
                 new MaterialAlertDialogBuilder(context)
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setTitle(R.string.lbl_storage_settings)
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
@@ -390,7 +390,7 @@ public class SettingsFragment
                 volumeChangedOptionChosen = 1;
 
                 new MaterialAlertDialogBuilder(context)
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setTitle(R.string.lbl_storage_settings)
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
@@ -524,7 +524,7 @@ public class SettingsFragment
             final boolean checked = (Boolean) newValue;
 
             new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setIcon(R.drawable.warning_24px)
                     .setMessage(R.string.confirm_rebuild_orderby_columns)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)

@@ -25,7 +25,7 @@
 
     <item
         android:id="@id/MENU_PREFS_SEARCH_SITES"
-        android:icon="@drawable/ic_baseline_find_in_page_24"
+        android:icon="@drawable/find_in_page_24px"
         android:orderInCategory="@integer/MENU_ORDER_SEARCH_SITES"
         android:title="@string/lbl_websites"
         app:showAsAction="ifRoom"
@@ -33,13 +33,13 @@
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
-        android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
+        android:icon="@drawable/check_box_outline_blank_24px"
         android:title="@string/option_select_none"
         />
 
     <item
         android:id="@id/MENU_RESET"
-        android:icon="@drawable/ic_baseline_undo_24"
+        android:icon="@drawable/undo_24px"
         android:title="@string/action_reset_to_default"
         />
 

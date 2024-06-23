@@ -391,7 +391,7 @@ public class BooksOnBookshelf
 
             if (vm.isProposeBackup()) {
                 new MaterialAlertDialogBuilder(this)
-                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setIcon(R.drawable.warning_24px)
                         .setTitle(R.string.app_name)
                         .setMessage(R.string.warning_backup_request)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -685,9 +685,9 @@ public class BooksOnBookshelf
 
     private void setNavIcon() {
         if (isRootActivity()) {
-            vb.toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+            vb.toolbar.setNavigationIcon(R.drawable.menu_24px);
         } else {
-            vb.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+            vb.toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
         }
     }
 
@@ -1002,7 +1002,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_baseline_edit_24);
+                        .setIcon(R.drawable.edit_24px);
                 }
                 break;
             }
@@ -1011,7 +1011,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_baseline_edit_24);
+                        .setIcon(R.drawable.edit_24px);
                 }
                 break;
             }
@@ -1020,7 +1020,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_baseline_edit_24);
+                        .setIcon(R.drawable.edit_24px);
                 }
                 break;
             }
@@ -1029,7 +1029,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_baseline_edit_24);
+                        .setIcon(R.drawable.edit_24px);
                 }
                 break;
             }
@@ -1047,7 +1047,7 @@ public class BooksOnBookshelf
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
-                    .setIcon(R.drawable.ic_baseline_cloud_download_24);
+                    .setIcon(R.drawable.cloud_download_24px);
                 break;
             }
             default: {
@@ -1060,13 +1060,13 @@ public class BooksOnBookshelf
         // forms its own group
         menu.add(R.id.MENU_NEXT_MISSING_COVER, R.id.MENU_NEXT_MISSING_COVER, menuOrder,
                  R.string.option_goto_next_book_without_cover)
-            .setIcon(R.drawable.ic_baseline_broken_image_24);
+            .setIcon(R.drawable.broken_image_24px);
 
         // if it's a level, add the expand option
         if (rowData.getInt(DBKey.BL_NODE_GROUP) != BooklistGroup.BOOK) {
             menu.add(R.id.MENU_GROUP_BOB_EXPANSION, R.id.MENU_LEVEL_EXPAND, ++menuOrder,
                      R.string.option_level_expand)
-                .setIcon(R.drawable.ic_baseline_unfold_more_24);
+                .setIcon(R.drawable.unfold_more_24px);
         }
 
         // If we actually have a menu, show it.
@@ -1462,7 +1462,7 @@ public class BooksOnBookshelf
             menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                      getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                      R.string.menu_update_books)
-                .setIcon(R.drawable.ic_baseline_cloud_download_24);
+                .setIcon(R.drawable.cloud_download_24px);
         }
     }
 
@@ -1523,7 +1523,7 @@ public class BooksOnBookshelf
             menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                      getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                      R.string.menu_update_books)
-                .setIcon(R.drawable.ic_baseline_cloud_download_24);
+                .setIcon(R.drawable.cloud_download_24px);
         }
     }
 
@@ -1620,7 +1620,7 @@ public class BooksOnBookshelf
             menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                      getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                      R.string.action_edit_ellipsis)
-                .setIcon(R.drawable.ic_baseline_edit_24);
+                .setIcon(R.drawable.edit_24px);
         }
     }
 

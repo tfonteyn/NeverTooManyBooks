@@ -28,62 +28,62 @@
     <group android:id="@id/MENU_GROUP_BOOK">
         <item
             android:id="@id/MENU_SYNC_LIST_WITH_DETAILS"
-            android:icon="@drawable/ic_baseline_arrow_back_24"
+            android:icon="@drawable/arrow_back_24px"
             android:orderInCategory="@integer/MENU_ORDER_SYNC_LIST_WITH_DETAILS"
             android:title="@string/option_book_sync_list_with_details" />
 
         <item
             android:id="@id/MENU_BOOK_SET_READ"
-            android:icon="@drawable/ic_baseline_check_box_24"
+            android:icon="@drawable/check_box_24px"
             android:orderInCategory="@integer/MENU_ORDER_READ"
             android:title="@string/option_set_read" />
 
         <item
             android:id="@id/MENU_BOOK_SET_UNREAD"
-            android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
+            android:icon="@drawable/check_box_outline_blank_24px"
             android:orderInCategory="@integer/MENU_ORDER_READ"
             android:title="@string/option_set_unread" />
 
         <item
             android:id="@id/MENU_BOOK_EDIT"
-            android:icon="@drawable/ic_baseline_edit_24"
+            android:icon="@drawable/edit_24px"
             android:orderInCategory="@integer/MENU_ORDER_EDIT"
             android:title="@string/action_edit_ellipsis"
             app:showAsAction="ifRoom" />
 
         <item
             android:id="@id/MENU_BOOK_DUPLICATE"
-            android:icon="@drawable/ic_baseline_content_copy_24"
+            android:icon="@drawable/content_copy_24px"
             android:orderInCategory="@integer/MENU_ORDER_DUPLICATE"
             android:title="@string/action_duplicate" />
 
         <item
             android:id="@id/MENU_BOOK_DELETE"
-            android:icon="@drawable/ic_baseline_delete_24"
+            android:icon="@drawable/delete_24px"
             android:orderInCategory="@integer/MENU_ORDER_DELETE"
             android:title="@string/action_delete" />
 
         <item
             android:id="@id/MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK"
-            android:icon="@drawable/ic_baseline_cloud_download_24"
+            android:icon="@drawable/cloud_download_24px"
             android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
             android:title="@string/menu_update_fields" />
 
         <item
             android:id="@id/MENU_BOOK_LOAN_ADD"
-            android:icon="@drawable/ic_baseline_people_24"
+            android:icon="@drawable/group_24px"
             android:orderInCategory="@integer/MENU_ORDER_LENDING"
             android:title="@string/option_lend_out_book" />
 
         <item
             android:id="@id/MENU_BOOK_LOAN_DELETE"
-            android:icon="@drawable/ic_baseline_people_24"
+            android:icon="@drawable/group_24px"
             android:orderInCategory="@integer/MENU_ORDER_LENDING"
             android:title="@string/option_lend_return_book" />
 
         <item
             android:id="@id/MENU_SHARE"
-            android:icon="@drawable/ic_baseline_share_24"
+            android:icon="@drawable/share_24px"
             android:orderInCategory="@integer/MENU_ORDER_SHARE"
             android:title="@string/whichSendApplication" />
     </group>

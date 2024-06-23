@@ -26,6 +26,6 @@
     android:id="@+id/btn_add"
     style="@style/Toolbar.Button"
     android:contentDescription="@string/action_add"
-    app:icon="@drawable/ic_baseline_add_24"
+    app:icon="@drawable/add_24px"
     tools:viewBindingIgnore="true"
     />

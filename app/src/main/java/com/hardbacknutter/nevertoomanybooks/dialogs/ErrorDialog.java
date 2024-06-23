@@ -178,7 +178,7 @@ public final class ErrorDialog {
                                    @NonNull final DialogInterface.OnClickListener closingAction) {
 
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_error_24)
+                .setIcon(R.drawable.error_24px)
                 .setPositiveButton(android.R.string.ok, closingAction);
 
         // both are set

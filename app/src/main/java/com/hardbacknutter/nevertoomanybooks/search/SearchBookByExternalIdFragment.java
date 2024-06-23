@@ -175,12 +175,12 @@ public class SearchBookByExternalIdFragment
         //noinspection DataFlowIssue
         if (config.getExternalIdDomain().getSqLiteDataType() == SqLiteDataType.Text) {
             // display an alphanumeric keyboard icon
-            keyboardIcon = R.drawable.ic_baseline_keyboard_24;
+            keyboardIcon = R.drawable.keyboard_24px;
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
 
         } else {
             // display a (sort of) numeric keyboard icon
-            keyboardIcon = R.drawable.ic_baseline_apps_24;
+            keyboardIcon = R.drawable.apps_24px;
             inputType = InputType.TYPE_CLASS_NUMBER;
 
             // if the user switched from a text input, clean the input

@@ -161,7 +161,7 @@ public class SearchBookUpdatesFragment
         vm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
+        fab.setImageResource(R.drawable.cloud_download_24px);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
@@ -226,7 +226,7 @@ public class SearchBookUpdatesFragment
             // check if the user really wants to overwrite all covers
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setIcon(R.drawable.warning_24px)
                     .setTitle(R.string.menu_update_books)
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())

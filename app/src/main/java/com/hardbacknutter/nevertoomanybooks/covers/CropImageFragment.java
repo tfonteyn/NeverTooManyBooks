@@ -111,7 +111,7 @@ public class CropImageFragment
             LoggerFactory.getLogger().e(TAG, e);
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_storage_not_accessible)
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         //noinspection DataFlowIssue
@@ -194,7 +194,7 @@ public class CropImageFragment
         if (bitmap == null) {
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.action_save)
                     .setMessage(R.string.error_storage_not_writable)
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())

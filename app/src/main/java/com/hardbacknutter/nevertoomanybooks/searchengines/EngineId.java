@@ -793,7 +793,7 @@ public enum EngineId
             final String siteName = createSearchEngine(context).getHostUrl(context);
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setIcon(R.drawable.warning_24px)
                     .setTitle(siteName)
                     .setNegativeButton(R.string.action_not_now, (d, w) ->
                             onResult.accept(RegistrationAction.NotNow))

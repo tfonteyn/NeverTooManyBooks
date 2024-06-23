@@ -38,7 +38,7 @@
                   app:orderingFromXml="false">
 
     <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory
-        android:icon="@drawable/ic_baseline_visibility_24"
+        android:icon="@drawable/visibility_24px"
         android:summary="@string/ps_manage_fields"
         android:title="@string/pt_field_visibility">
 

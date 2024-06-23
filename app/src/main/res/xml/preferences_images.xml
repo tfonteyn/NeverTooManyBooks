@@ -30,7 +30,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_thumbnails_rotate_auto"
             android:entryValues="@array/pv_thumbnails_rotate_auto"
-            android:icon="@drawable/ic_baseline_rotate_right_24"
+            android:icon="@drawable/rotate_right_24px"
             android:key="camera.image.autorotate"
             android:title="@string/pt_thumbnails_rotate_auto"
             app:useSimpleSummaryProvider="true" />
@@ -40,7 +40,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_camera_next_action"
             android:entryValues="@array/pv_camera_next_action"
-            android:icon="@drawable/ic_baseline_tune_24"
+            android:icon="@drawable/tune_24px"
             android:key="camera.image.action"
             android:title="@string/camera_next_action"
             app:useSimpleSummaryProvider="true" />
@@ -51,7 +51,7 @@
         android:title="@string/option_cover_replace">
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_undo_24"
+            android:icon="@drawable/undo_24px"
             android:key="image.undo.enabled"
             android:summaryOff="@string/ps_cover_undo_disabled"
             android:summaryOn="@string/ps_cover_undo_enabled"
@@ -64,7 +64,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_cached_24"
+            android:icon="@drawable/cached_24px"
             android:key="image.cache.resized"
             android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
             android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
@@ -72,7 +72,7 @@
 
         <Preference
             android:dependency="image.cache.resized"
-            android:icon="@drawable/ic_baseline_delete_24"
+            android:icon="@drawable/delete_24px"
             android:key="psk_purge_image_cache"
             android:title="@string/option_purge_image_cache"
             />

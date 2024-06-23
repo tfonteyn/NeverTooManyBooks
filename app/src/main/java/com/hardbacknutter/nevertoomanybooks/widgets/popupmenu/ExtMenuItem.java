@@ -196,7 +196,7 @@ public class ExtMenuItem
         // to avoid any complications with the parceling/mapping of icons
         // See {@link IconMapper}
         if (icon == null && iconResId == 0) {
-            icon = context.getResources().getDrawable(R.drawable.ic_blank_placeholder,
+            icon = context.getResources().getDrawable(R.drawable.blank_placeholder_24px,
                                                       context.getTheme());
         }
         // Icon defined, but not loaded yet?

@@ -35,7 +35,7 @@
     android:paddingEnd="?attr/listPreferredItemPaddingEnd"
     android:text=""
     android:textAppearance="?attr/textAppearanceLargePopupMenu"
-    tools:drawableStart="@drawable/ic_baseline_image_24"
+    tools:drawableStart="@drawable/image_24px"
     tools:text="@sample/data.json/context_menu/name"
     tools:viewBindingIgnore="true"
     />

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,7 +121,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
     protected void proposeValidation() {
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_baseline_info_24)
+                .setIcon(R.drawable.info_24px)
                 .setTitle(R.string.lbl_test_connection)
                 .setMessage(R.string.confirm_test_connection)
                 .setNegativeButton(R.string.action_not_now, (d, w) ->

@@ -1,0 +1,35 @@
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:autoMirrored="true"
+        android:viewportWidth="960"
+        android:viewportHeight="960">
+
+    <path
+        android:fillColor="?attr/colorError"
+        android:pathData="M630,120 H330 L120,330 v300 L330,840 h300 L840,630 V330 L630,120z" />
+    <!--suppress LongLine -->
+    <path
+        android:fillColor="?attr/colorControlNormal"
+        android:pathData="M520,920L520,680L436,600L396,776L120,720L136,640L328,680L392,356L320,384L320,520L240,520L240,332L398,264Q433,249 449.5,244.5Q466,240 480,240Q501,240 519,251Q537,262 548,280L588,344Q614,386 658.5,413Q703,440 760,440L760,520Q694,520 636.5,492.5Q579,465 540,420L516,540L600,620L600,920L520,920ZM540,220Q507,220 483.5,196.5Q460,173 460,140Q460,107 483.5,83.5Q507,60 540,60Q573,60 596.5,83.5Q620,107 620,140Q620,173 596.5,196.5Q573,220 540,220Z" />
+</vector>

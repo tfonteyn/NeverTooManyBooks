@@ -312,7 +312,7 @@ class EditBookAuthorDelegate
 
     private void warnThatRealAuthorMustBeValid(@NonNull final Context context) {
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.vldt_real_author_must_be_valid)
                 .setMessage(context.getString(R.string.confirm_create_real_author,
                                               authorVm.getCurrentRealAuthorName()))

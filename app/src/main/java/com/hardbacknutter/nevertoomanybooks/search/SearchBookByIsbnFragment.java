@@ -469,7 +469,7 @@ public class SearchBookByIsbnFragment
 
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setIcon(R.drawable.warning_24px)
                     .setTitle(R.string.lbl_duplicate_book)
                     .setMessage(msg)
                     // this dialog is important. Make sure the user pays some attention

@@ -48,7 +48,7 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:layout_marginEnd="@dimen/field_margin_end"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:drawableStart="@drawable/ic_baseline_warning_24"
+            android:drawableStart="@drawable/warning_24px"
             android:drawablePadding="@dimen/field_margin_inline"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"

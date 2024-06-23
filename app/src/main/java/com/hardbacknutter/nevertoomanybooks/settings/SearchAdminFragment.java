@@ -203,11 +203,11 @@ public class SearchAdminFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-                .setIcon(R.drawable.ic_baseline_undo_24)
+                .setIcon(R.drawable.undo_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
             menu.add(Menu.NONE, R.id.MENU_SETTINGS, 0, R.string.lbl_settings)
-                .setIcon(R.drawable.ic_baseline_settings_24)
+                .setIcon(R.drawable.settings_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
 

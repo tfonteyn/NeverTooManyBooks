@@ -24,46 +24,46 @@
 
     <item
         android:id="@id/MENU_ADVANCED_SEARCH"
-        android:icon="@drawable/ic_baseline_search_24"
+        android:icon="@drawable/search_24px"
         android:title="@string/lbl_local_search_long" />
 
     <item
         android:id="@id/MENU_MANAGE_BOOKSHELVES"
-        android:icon="@drawable/ic_baseline_library_books_24"
+        android:icon="@drawable/library_books_24px"
         android:title="@string/lbl_bookshelves" />
 
     <item
         android:id="@id/MENU_MANAGE_LIST_STYLES"
-        android:icon="@drawable/ic_baseline_style_24"
+        android:icon="@drawable/style_24px"
         android:title="@string/lbl_styles_long" />
 
     <item
         android:id="@id/MENU_FILE_EXPORT"
-        android:icon="@drawable/ic_baseline_sd_storage_24"
+        android:icon="@drawable/sd_card_24px"
         android:title="@string/option_backup_and_export" />
 
     <item
         android:id="@id/MENU_FILE_IMPORT"
-        android:icon="@drawable/ic_baseline_file_download_24"
+        android:icon="@drawable/download_24px"
         android:title="@string/option_import" />
 
     <item
         android:id="@id/SUBMENU_SYNC"
-        android:icon="@drawable/ic_baseline_sync_alt_24"
+        android:icon="@drawable/sync_alt_24px"
         android:title="@string/action_synchronize" />
 
     <item
         android:id="@id/MENU_SETTINGS"
-        android:icon="@drawable/ic_baseline_settings_24"
+        android:icon="@drawable/settings_24px"
         android:title="@string/lbl_settings" />
 
     <item
         android:id="@id/MENU_HELP"
-        android:icon="@drawable/ic_baseline_help_24"
+        android:icon="@drawable/help_24px"
         android:title="@string/action_help" />
 
     <item
         android:id="@id/MENU_ABOUT"
-        android:icon="@drawable/ic_baseline_info_24"
+        android:icon="@drawable/info_24px"
         android:title="@string/lbl_about" />
 </menu>

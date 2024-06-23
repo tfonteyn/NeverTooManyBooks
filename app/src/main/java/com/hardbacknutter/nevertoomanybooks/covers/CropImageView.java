@@ -756,8 +756,8 @@ public class CropImageView
             final Resources res = context.getResources();
             final Resources.Theme theme = context.getTheme();
 
-            resizeHorizontal = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
-            resizeVertical = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
+            resizeHorizontal = res.getDrawable(R.drawable.adjust_24px, theme);
+            resizeVertical = res.getDrawable(R.drawable.adjust_24px, theme);
 
             final int focusColor = AttrUtils.getColorInt(
                     context, com.google.android.material.R.attr.colorSurface);

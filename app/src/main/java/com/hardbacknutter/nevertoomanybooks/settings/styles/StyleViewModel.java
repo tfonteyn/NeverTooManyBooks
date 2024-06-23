@@ -76,13 +76,13 @@ public class StyleViewModel
         final int iconResId;
         switch (sort) {
             case Unsorted:
-                iconResId = R.drawable.ic_baseline_sort_unsorted;
+                iconResId = R.drawable.sort_unsorted;
                 break;
             case Asc:
-                iconResId = R.drawable.ic_baseline_sort_ascending;
+                iconResId = R.drawable.sort_ascending;
                 break;
             case Desc:
-                iconResId = R.drawable.ic_baseline_sort_descending;
+                iconResId = R.drawable.sort_descending;
                 break;
             default:
                 throw new IllegalArgumentException(sort.toString());

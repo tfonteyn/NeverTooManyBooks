@@ -52,7 +52,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:icon="@drawable/ic_baseline_menu_book_24"
+                tools:icon="@drawable/menu_book_24px"
                 tools:ignore="ContentDescription"
                 />
 

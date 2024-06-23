@@ -28,7 +28,7 @@
         <!-- By exception defaults to "true" ! -->
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_barcode"
+            android:icon="@drawable/barcode_24px"
             android:key="stripweb.search.byIsbn.prefer.10"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -36,7 +36,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_cloud_download_24"
+            android:icon="@drawable/cloud_download_24px"
             android:key="stripweb.resolve.authors.bedetheque"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -48,7 +48,7 @@
         android:title="@string/lbl_timeouts">
         <SeekBarPreference
             android:defaultValue="20"
-            android:icon="@drawable/ic_baseline_more_time_24"
+            android:icon="@drawable/more_time_24px"
             android:key="stripweb.timeout.connect"
             android:max="60"
             android:title="@string/lbl_connection_timeout"
@@ -57,7 +57,7 @@
             />
         <SeekBarPreference
             android:defaultValue="60"
-            android:icon="@drawable/ic_baseline_more_time_24"
+            android:icon="@drawable/more_time_24px"
             android:key="stripweb.timeout.read"
             android:max="120"
             android:title="@string/lbl_read_timeout"

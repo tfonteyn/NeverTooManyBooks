@@ -130,11 +130,11 @@ public class MaintenanceFragment
                 // Sanity check
                 if (vb.btnDebugSqShell instanceof MaterialButton) {
                     ((MaterialButton) (vb.btnDebugSqShell))
-                            .setIconResource(R.drawable.ic_baseline_warning_24);
+                            .setIconResource(R.drawable.warning_24px);
                 } else {
                     // This SHOULD have worked, but doesn't on a MaterialButton
                     vb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_baseline_warning_24, 0, 0, 0);
+                            R.drawable.warning_24px, 0, 0, 0);
                 }
             }
         });
@@ -185,7 +185,7 @@ public class MaintenanceFragment
                                          getString(R.string.option_bug_report));
 
             new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setIcon(R.drawable.warning_24px)
                     .setTitle(R.string.option_purge_files)
                     .setMessage(msg)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -212,7 +212,7 @@ public class MaintenanceFragment
 
     private void onSyncDeletedBooks(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_sync_deleted_book_records)
                 .setMessage(getString(R.string.info_maintenance_sync_deleted_book_records)
                             + "\n\n" + getString(R.string.confirm_continue))
@@ -232,7 +232,7 @@ public class MaintenanceFragment
 
     private void onClearDeletedBooks(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_clear_deleted_book_records)
                 .setMessage(R.string.info_maintenance_clear_deleted_book_records)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -247,7 +247,7 @@ public class MaintenanceFragment
 
     private void onPurgeNodeStates(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -262,7 +262,7 @@ public class MaintenanceFragment
 
     private void onRebuildFts(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_info_24)
+                .setIcon(R.drawable.info_24px)
                 .setTitle(R.string.option_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -281,7 +281,7 @@ public class MaintenanceFragment
 
     private void onRebuildIndex(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_info_24)
+                .setIcon(R.drawable.info_24px)
                 .setTitle(R.string.option_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -305,7 +305,7 @@ public class MaintenanceFragment
         // - the user will/should very seldom need this (◔_◔)
         // - It's more explicit in offering a textual OK/Cancel choice.
         new MultiChoiceAlertDialogBuilder<Integer>(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.debug)
                 .setMessage(R.string.debug_select_items)
                 .setSelectedItems(Set.of(MaintenanceViewModel.DBG_SEND_LOGFILES,

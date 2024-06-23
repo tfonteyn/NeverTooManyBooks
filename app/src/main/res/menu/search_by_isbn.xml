@@ -29,7 +29,7 @@
           ic_baseline_photo_camera_24 -->
     <item
         android:id="@id/MENU_BARCODE_SCAN"
-        android:icon="@drawable/ic_barcode"
+        android:icon="@drawable/barcode_24px"
         android:orderInCategory="@integer/MENU_ORDER_BARCODE_SCAN"
         android:title="@string/option_fab_add_book_by_barcode_scan"
         app:showAsAction="always" />
@@ -37,7 +37,7 @@
     <!-- ic_baseline_add_a_photo_24 -->
     <item
         android:id="@id/MENU_BARCODE_SCAN_BATCH"
-        android:icon="@drawable/ic_barcode_batch"
+        android:icon="@drawable/barcode_batch_24px"
         android:orderInCategory="@integer/MENU_ORDER_BARCODE_SCAN_BATCH"
         android:title="@string/option_fab_add_book_by_barcode_scan_batch"
         app:showAsAction="ifRoom" />

@@ -42,7 +42,7 @@
     <ImageView
         android:id="@id/cover_image_0"
         style="@style/CoverImage.BrowserGallery"
-        android:src="@drawable/ic_baseline_image_24"
+        android:src="@drawable/image_24px"
         tools:ignore="ContentDescription"
         tools:src="@sample/covers"
         />

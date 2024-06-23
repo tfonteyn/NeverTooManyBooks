@@ -36,7 +36,7 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:scaleX="2"
         android:scaleY="2"
-        android:src="@drawable/ic_launcher_foreground"
+        android:src="@drawable/launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />

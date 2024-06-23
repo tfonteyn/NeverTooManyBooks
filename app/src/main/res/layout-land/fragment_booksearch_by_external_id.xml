@@ -142,7 +142,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/external_id"
                 style="@style/TIE.Generic"
-                android:drawableStart="@drawable/ic_baseline_apps_24"
+                android:drawableStart="@drawable/apps_24px"
                 android:enabled="false"
                 android:imeOptions="actionSearch"
                 android:inputType="number"
@@ -156,7 +156,7 @@
             style="@style/Button.Action.Submit"
             android:layout_marginTop="@dimen/section_margin_top"
             android:text="@android:string/search_go"
-            app:icon="@drawable/ic_baseline_search_24"
+            app:icon="@drawable/search_24px"
             app:layout_constraintEnd_toEndOf="@id/lbl_external_id"
             app:layout_constraintTop_toBottomOf="@id/lbl_external_id"
             />

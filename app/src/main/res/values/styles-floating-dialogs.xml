@@ -47,16 +47,21 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
-    <!-- use these instead of the app wide "ThemeOverlay.App.MaterialAlertDialog" -->
+    <!--
+     URGENT: re-evaluate the use of this in relation to the corner-radius and the backgroundTint
+
+     use these instead of the app wide "ThemeOverlay.App.MaterialAlertDialog"
+
+        Note that Studio is for some strange reason (pile-of-bleep) not able to find this
+        by using "Find Usages" .... instead do a text-search for "ThemeOverlay_App_CustomDialog"
+    -->
     <style name="ThemeOverlay.App.CustomDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <!-- using "?attr/dialogCornerRadius" does not work.... sigh...-->
         <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>
 
         <!-- needed to get the correct day/night background.
             See MaterialAlertDialogBuilder(Context) where the surface color is explicitly set
-            as the shape 'fill' color.
-        -->
+            as the shape 'fill' color. -->
         <item name="android:backgroundTint">?attr/colorSurface</item>
 
         <!-- needed to get the background of the buttons to use colorSurface -->

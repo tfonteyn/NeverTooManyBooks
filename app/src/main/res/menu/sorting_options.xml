@@ -24,16 +24,16 @@
     <item
         android:id="@+id/MENU_SORT_UNSORTED"
         android:title="@string/lbl_sort_unsorted"
-        android:icon="@drawable/ic_baseline_sort_unsorted"
+        android:icon="@drawable/sort_unsorted"
         />
     <item
         android:id="@+id/MENU_SORT_ASC"
         android:title="@string/lbl_sort_ascending"
-        android:icon="@drawable/ic_baseline_sort_ascending"
+        android:icon="@drawable/sort_ascending"
         />
     <item
         android:id="@+id/MENU_SORT_DESC"
         android:title="@string/lbl_sort_descending"
-        android:icon="@drawable/ic_baseline_sort_descending"
+        android:icon="@drawable/sort_descending"
         />
 </menu>

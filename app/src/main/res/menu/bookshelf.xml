@@ -23,19 +23,19 @@
 
     <item
         android:id="@id/MENU_BOOKSHELF_EDIT"
-        android:icon="@drawable/ic_baseline_edit_24"
+        android:icon="@drawable/edit_24px"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
         android:title="@string/action_edit_ellipsis" />
 
     <item
         android:id="@id/MENU_BOOKSHELF_DELETE"
-        android:icon="@drawable/ic_baseline_delete_24"
+        android:icon="@drawable/delete_24px"
         android:orderInCategory="@integer/MENU_ORDER_DELETE"
         android:title="@string/action_delete" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"
-        android:icon="@drawable/ic_baseline_cloud_download_24"
+        android:icon="@drawable/cloud_download_24px"
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
         android:title="@string/menu_update_books" />
 </menu>
