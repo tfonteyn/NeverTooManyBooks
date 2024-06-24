@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,14 +107,12 @@ public class SearchBookByTextFragment
             vb.title.setOnEditorActionListener(null);
 
             vb.publisher.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            vb.publisher.setOnEditorActionListener(
-                    (v, actionId, event) -> onEditorAction(actionId));
+            vb.publisher.setOnEditorActionListener(this::onEditorAction);
         } else {
             vb.lblPublisher.setVisibility(View.GONE);
 
             vb.title.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            vb.title.setOnEditorActionListener(
-                    (v, actionId, event) -> onEditorAction(actionId));
+            vb.title.setOnEditorActionListener(this::onEditorAction);
         }
 
         vb.author.setText(coordinator.getAuthorSearchText());
@@ -162,9 +161,11 @@ public class SearchBookByTextFragment
                                             + " / " + getString(R.string.lbl_title)));
     }
 
-    private boolean onEditorAction(final int actionId) {
+    private boolean onEditorAction(@NonNull final View view,
+                                   final int actionId,
+                                   @Nullable final KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-            hideKeyboard();
+            hideKeyboard(view);
             startSearch();
             return true;
         }

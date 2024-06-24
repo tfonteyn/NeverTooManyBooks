@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,13 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.SoftwareKeyboardControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -48,13 +47,11 @@ public abstract class BaseFragment
 
     /**
      * Hide the keyboard.
+     *
+     * @param v a View from which we can get the window token.
      */
-    protected void hideKeyboard() {
-        final View view = getView();
-        //noinspection DataFlowIssue
-        final InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    protected void hideKeyboard(@NonNull final View v) {
+        new SoftwareKeyboardControllerCompat(v).hide();
     }
 
     @NonNull

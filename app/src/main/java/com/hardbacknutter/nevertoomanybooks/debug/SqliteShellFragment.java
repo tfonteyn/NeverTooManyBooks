@@ -124,7 +124,7 @@ public class SqliteShellFragment
 
         vb.input.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
-                hideKeyboard();
+                hideKeyboard(v);
                 execute();
                 return true;
             }

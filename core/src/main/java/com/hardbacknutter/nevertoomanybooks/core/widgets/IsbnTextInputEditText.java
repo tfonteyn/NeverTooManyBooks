@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,19 +26,19 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.SoftwareKeyboardControllerCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 /**
- * Provides a TextInputEditText field specific to editing an ISBN number.
+ * Provides a {@code TextInputEditText} field specific to editing an ISBN number.
  * <p>
  * This hides & facilitates the internal needs for the inputType, and the virtual keyboard.
  * <ul>
- *     <li>Sets a DigitsKeyListener to workaround the inputType issue;
+ *     <li>Sets a {@link DigitsKeyListener} to workaround the inputType issue;
  *          see {@link #getInputType()}</li>
  *      <li><strong>Deliberately</strong> not adding a TextWatcher here to keep this flexible</li>
  *      <li>the virtual keyboard can only add one 'X' character in the entire field</li>
@@ -47,20 +47,10 @@ import com.google.android.material.textfield.TextInputEditText;
  * <strong>Notes on the virtual keyboard:</strong>
  * <p>
  * Stop it from showing when a field gets the focus.<br>
- * This must be done for <strong>ALL</strong> fields individually
- * <pre>
- * {@code editText.setShowSoftInputOnFocus(false);}
- * </pre>
+ * This must be done for <strong>ALL</strong> EditText fields individually
+ * <pre>{@code editText.setShowSoftInputOnFocus(false);}</pre>
  * Hide it when already showing:
- * <pre>
- * {@code
- *      InputMethodManager imm = (InputMethodManager)
- *          getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
- *      if (imm != null && imm.isActive(this)) {
- *          imm.hideSoftInputFromWindow(getWindowToken(), 0);
- *      }
- * }
- * </pre>
+ * <pre>{@code new SoftwareKeyboardControllerCompat(v).hide(); }</pre>
  */
 public class IsbnTextInputEditText
         extends TextInputEditText {
@@ -94,11 +84,7 @@ public class IsbnTextInputEditText
         setKeyListener(DigitsKeyListener.getInstance(ISBN_DIGITS));
 
         // hide the virtual keyboard.
-        final InputMethodManager imm = (InputMethodManager)
-                getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null && imm.isActive(this)) {
-            imm.hideSoftInputFromWindow(getWindowToken(), 0);
-        }
+        new SoftwareKeyboardControllerCompat(this).hide();
     }
 
     /**

@@ -132,7 +132,7 @@ public class SearchBookByExternalIdFragment
         autoRemoveError(vb.externalId, vb.lblExternalId);
         vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                hideKeyboard();
+                hideKeyboard(v);
                 startSearch();
                 return true;
             }

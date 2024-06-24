@@ -31,13 +31,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.SoftwareKeyboardControllerCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -425,12 +425,10 @@ public class EditBookPublisherListDialogFragment
     /**
      * Hide the keyboard.
      *
-     * @param view a View from which we can get the window token.
+     * @param v a View from which we can get the window token.
      */
-    private void hideKeyboard(@NonNull final View view) {
-        final InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    private void hideKeyboard(@NonNull final View v) {
+        new SoftwareKeyboardControllerCompat(v).hide();
     }
 
     /**
