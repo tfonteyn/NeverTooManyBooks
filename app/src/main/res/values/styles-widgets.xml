@@ -90,7 +90,7 @@
 
     <style name="Widget.App.SwitchPreference"
            parent="Preference.SwitchPreference.Material">
-        <item name="android:widgetLayout">@layout/widget_prefs_switch</item>
+        <item name="android:widgetLayout">@layout/preference_widget_material_switch</item>
     </style>
 
     <style name="Widget.App.LinearProgressIndicator"
