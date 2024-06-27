@@ -55,7 +55,7 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     @Nullable
     private CharSequence dialogMessage;
     @Nullable
-    private List<T> itemIds;
+    private List<T> items;
     @Nullable
     private List<String> itemLabels;
     @StringRes
@@ -111,9 +111,9 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     }
 
     @NonNull
-    public MultiChoiceAlertDialogBuilder<T> setItems(@NonNull final List<T> itemIds,
+    public MultiChoiceAlertDialogBuilder<T> setItems(@NonNull final List<T> items,
                                                      @NonNull final List<String> itemLabels) {
-        this.itemIds = itemIds;
+        this.items = items;
         this.itemLabels = itemLabels;
         return this;
     }
@@ -153,7 +153,7 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
 
     @NonNull
     public AlertDialog build() {
-        Objects.requireNonNull(itemIds);
+        Objects.requireNonNull(items);
         Objects.requireNonNull(itemLabels);
         Objects.requireNonNull(positiveButtonConsumer);
 
@@ -169,8 +169,10 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
             vb.message.setVisibility(View.GONE);
         }
 
-        final ChecklistRecyclerAdapter<T, String> adapter =
-                new ChecklistRecyclerAdapter<>(context, itemIds, itemLabels, selectedItems,
+        final ChecklistRecyclerAdapter<T> adapter =
+                new ChecklistRecyclerAdapter<>(context, items,
+                                               position -> itemLabels.get(position),
+                                               selectedItems,
                                                (id, checked) -> {
                                                    if (checked) {
                                                        selectedItems.add(id);

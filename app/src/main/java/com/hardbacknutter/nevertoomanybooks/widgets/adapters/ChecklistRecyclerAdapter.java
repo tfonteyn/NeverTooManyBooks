@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceMultiBinding;
 
@@ -38,45 +39,42 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceMultiBinding;
  * <p>
  * Row layout: {@code R.layout.row_choice_multi}
  *
- * @param <ID> the id for the item
- * @param <CS> the CharSequence to display
+ * @param <T> type of the item
  */
-public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
+public class ChecklistRecyclerAdapter<T>
         extends RecyclerView.Adapter<ChecklistRecyclerAdapter.Holder> {
 
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
-    private final List<ID> itemIds;
+    private final List<T> items;
     @NonNull
-    private final List<CS> itemLabels;
-
+    private final Function<Integer, CharSequence> labelSupplier;
     /** The (pre-)selected items. */
     @NonNull
-    private final Set<ID> selection;
+    private final Set<T> selection;
     @Nullable
-    private final SelectionListener<ID> selectionListener;
-
+    private final SelectionListener<T> selectionListener;
 
     /**
      * Constructor.
      *
-     * @param context   Current context
-     * @param ids       List of items; their ids
-     * @param labels    List of items; their labels to display
-     * @param selection (optional) the pre-selected item ids
-     * @param listener  (optional) to send a selection to as the user changes them;
-     *                  alternatively use {@link #getSelection()} when done.
+     * @param context       Current context
+     * @param items         List of items
+     * @param labelSupplier given the position in the list, supply a label for the item
+     * @param selection     (optional) the pre-selected item ids
+     * @param listener      (optional) to send a selection to as the user changes them;
+     *                      alternatively use {@link #getSelection()} when done.
      */
     public ChecklistRecyclerAdapter(@NonNull final Context context,
-                                    @NonNull final List<ID> ids,
-                                    @NonNull final List<CS> labels,
-                                    @Nullable final Set<ID> selection,
-                                    @Nullable final SelectionListener<ID> listener) {
+                                    @NonNull final List<T> items,
+                                    @NonNull final Function<Integer, CharSequence> labelSupplier,
+                                    @Nullable final Set<T> selection,
+                                    @Nullable final SelectionListener<T> listener) {
         inflater = LayoutInflater.from(context);
-        itemIds = ids;
-        itemLabels = labels;
+        this.items = items;
+        this.labelSupplier = labelSupplier;
         this.selection = selection != null ? selection : new HashSet<>();
         selectionListener = listener;
     }
@@ -94,9 +92,9 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        final boolean checked = selection.contains(itemIds.get(position));
+        final boolean checked = selection.contains(items.get(position));
         holder.vb.btnOption.setChecked(checked);
-        holder.vb.btnOption.setText(itemLabels.get(position));
+        holder.vb.btnOption.setText(labelSupplier.apply(position));
     }
 
     private void onItemCheckChanged(@NonNull final Holder holder) {
@@ -104,38 +102,44 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
         final boolean selected = holder.vb.btnOption.isChecked();
 
-        final ID itemId = itemIds.get(position);
+        final T item = items.get(position);
         if (selected) {
-            selection.add(itemId);
+            selection.add(item);
         } else {
-            selection.remove(itemId);
+            selection.remove(item);
         }
 
         if (selectionListener != null) {
             // use a post allowing the UI to update view first
-            holder.vb.btnOption.post(() -> selectionListener.onSelected(itemId, selected));
+            holder.vb.btnOption.post(() -> selectionListener.onSelected(item, selected));
         }
     }
 
     /**
-     * Get the set with the selected item ID's.
+     * Get the set with the selected items.
      *
-     * @return set of ID's
+     * @return set of selected items, can be empty of none selected.
      */
     @NonNull
-    public Set<ID> getSelection() {
+    public Set<T> getSelection() {
         return selection;
     }
 
     @Override
     public int getItemCount() {
-        return itemIds.size();
+        return items.size();
     }
 
     @FunctionalInterface
-    public interface SelectionListener<ID> {
+    public interface SelectionListener<T> {
 
-        void onSelected(@NonNull ID id,
+        /**
+         * Called after the user selected an item.
+         *
+         * @param item    selected
+         * @param checked state of the item
+         */
+        void onSelected(@NonNull T item,
                         boolean checked);
     }
 

@@ -57,7 +57,7 @@ class MultiChoiceDelegate {
 
     /** The list of items to display. */
     @NonNull
-    private final List<Long> itemIds;
+    private final List<Long> items;
     @NonNull
     private final List<String> itemLabels;
 
@@ -70,13 +70,13 @@ class MultiChoiceDelegate {
                                      owner.getString(R.string.action_edit));
         dialogMessage = args.getString(MultiChoiceLauncher.BKEY_DIALOG_MESSAGE, null);
 
-        itemIds = Arrays.stream(Objects.requireNonNull(
-                                args.getLongArray(MultiChoiceLauncher.BKEY_ALL_IDS),
-                                MultiChoiceLauncher.BKEY_ALL_IDS))
-                        .boxed().collect(Collectors.toList());
+        items = Arrays.stream(Objects.requireNonNull(
+                              args.getLongArray(MultiChoiceLauncher.BKEY_ITEMS),
+                              MultiChoiceLauncher.BKEY_ITEMS))
+                      .boxed().collect(Collectors.toList());
         itemLabels = Arrays.stream(Objects.requireNonNull(
-                                   args.getStringArray(MultiChoiceLauncher.BKEY_ALL_LABELS),
-                                   MultiChoiceLauncher.BKEY_ALL_LABELS))
+                                   args.getStringArray(MultiChoiceLauncher.BKEY_ITEM_LABELS),
+                                   MultiChoiceLauncher.BKEY_ITEM_LABELS))
                            .collect(Collectors.toList());
 
         vm = new ViewModelProvider(owner).get(MultiChoiceViewModel.class);
@@ -104,8 +104,10 @@ class MultiChoiceDelegate {
             vb.message.setVisibility(View.GONE);
         }
 
-        final ChecklistRecyclerAdapter<Long, String> adapter =
-                new ChecklistRecyclerAdapter<>(context, itemIds, itemLabels,
+        final ChecklistRecyclerAdapter<Long> adapter =
+                new ChecklistRecyclerAdapter<>(context,
+                                               items,
+                                               itemLabels::get,
                                                vm.getSelectedItems(),
                                                (id, checked) -> {
                                                    if (checked) {

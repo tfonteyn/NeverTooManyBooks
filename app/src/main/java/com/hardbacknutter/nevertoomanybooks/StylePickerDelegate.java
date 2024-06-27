@@ -100,8 +100,8 @@ class StylePickerDelegate
         adapter = new RadioGroupRecyclerAdapter<>(context,
                                                   vm.getStyles(),
                                                   position -> vm.getLabel(context, position),
-                                                  vm.getCurrentStyle(),
-                                                  vm::setCurrentStyle);
+                                                  vm.getSelectedStyle(),
+                                                  vm::setSelectedStyle);
         vb.stylesList.setAdapter(adapter);
     }
 
@@ -158,11 +158,7 @@ class StylePickerDelegate
     }
 
     private boolean saveChanges() {
-        final Style selectedStyle = adapter.getSelection();
-        if (selectedStyle == null) {
-            // We should never get here.
-            return false;
-        }
+        final Style selectedStyle = vm.getSelectedStyle();
 
         StylePickerLauncher.setResult(owner, requestKey, selectedStyle);
         return true;
@@ -172,11 +168,7 @@ class StylePickerDelegate
      * Edit the selected style.
      */
     private void onEditStyle() {
-        final Style selectedStyle = adapter.getSelection();
-        if (selectedStyle == null) {
-            // We should never get here.
-            return;
-        }
+        final Style selectedStyle = vm.getSelectedStyle();
         owner.dismiss();
 
         // use the activity so we get the results there.

@@ -44,10 +44,10 @@ public class MultiChoiceViewModel
      */
     void init(@NonNull final Bundle args) {
         if (selectedItems == null) {
-            selectedItems = Arrays.stream(Objects.requireNonNull(
-                                          args.getLongArray(MultiChoiceLauncher.BKEY_SELECTED),
-                                          MultiChoiceLauncher.BKEY_SELECTED))
-                                  .boxed().collect(Collectors.toSet());
+            final long[] items = Objects.requireNonNull(
+                    args.getLongArray(MultiChoiceLauncher.BKEY_SELECTED_ITEMS),
+                    MultiChoiceLauncher.BKEY_SELECTED_ITEMS);
+            selectedItems = Arrays.stream(items).boxed().collect(Collectors.toSet());
         }
     }
 

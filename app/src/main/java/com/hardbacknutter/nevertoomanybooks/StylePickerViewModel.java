@@ -49,7 +49,7 @@ public class StylePickerViewModel
     private boolean showAllStyles;
     /** Currently selected style. */
     @Nullable
-    private Style currentStyle;
+    private Style selectedStyle;
 
     private SpannableString builtinLabelSuffix;
 
@@ -59,9 +59,9 @@ public class StylePickerViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (currentStyle == null) {
+        if (selectedStyle == null) {
             // We MUST have a style
-            currentStyle = ServiceLocator
+            selectedStyle = ServiceLocator
                     .getInstance()
                     .getStyles()
                     .getStyle(args.getString(Style.BKEY_UUID))
@@ -82,12 +82,12 @@ public class StylePickerViewModel
 
         styleList.clear();
         styleList.addAll(stylesHelper.getStyles(showAllStyles));
-        if (!showAllStyles && currentStyle != null) {
+        if (!showAllStyles && selectedStyle != null) {
             // Make sure the currently selected style is in the list
             // This can be the case where for example the selected style is a builtin
             // while the list is set to show only the preferred styles.
-            if (styleList.stream().noneMatch(style -> currentStyle.equals(style))) {
-                stylesHelper.getStyle(currentStyle.getUuid()).ifPresent(styleList::add);
+            if (styleList.stream().noneMatch(style -> selectedStyle.equals(style))) {
+                stylesHelper.getStyle(selectedStyle.getUuid()).ifPresent(styleList::add);
             }
         }
     }
@@ -132,12 +132,12 @@ public class StylePickerViewModel
     }
 
     @NonNull
-    Style getCurrentStyle() {
-        Objects.requireNonNull(currentStyle, "currentStyle");
-        return currentStyle;
+    Style getSelectedStyle() {
+        Objects.requireNonNull(selectedStyle, "currentStyle");
+        return selectedStyle;
     }
 
-    void setCurrentStyle(@NonNull final Style style) {
-        this.currentStyle = style;
+    void setSelectedStyle(@NonNull final Style style) {
+        this.selectedStyle = style;
     }
 }

@@ -44,9 +44,9 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     private static final String TAG = "MultiChoiceLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
-    static final String BKEY_SELECTED = TAG + ":selected";
-    static final String BKEY_ALL_IDS = TAG + ":ids";
-    static final String BKEY_ALL_LABELS = TAG + ":labels";
+    static final String BKEY_SELECTED_ITEMS = TAG + ":selected";
+    static final String BKEY_ITEMS = TAG + ":ids";
+    static final String BKEY_ITEM_LABELS = TAG + ":labels";
     @NonNull
     private final ResultListener resultListener;
 
@@ -104,7 +104,8 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
                           @NonNull final String requestKey,
                           @NonNull final Set<Long> selectedItems) {
         final Bundle result = new Bundle(1);
-        result.putLongArray(BKEY_SELECTED, selectedItems.stream().mapToLong(o -> o).toArray());
+        result.putLongArray(BKEY_SELECTED_ITEMS,
+                            selectedItems.stream().mapToLong(o -> o).toArray());
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
@@ -125,12 +126,12 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         final Bundle args = new Bundle(5);
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
 
-        args.putLongArray(BKEY_ALL_IDS, allItems
+        args.putLongArray(BKEY_ITEMS, allItems
                 .stream().mapToLong(Entity::getId).toArray());
-        args.putStringArray(BKEY_ALL_LABELS, allItems
+        args.putStringArray(BKEY_ITEM_LABELS, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-        args.putLongArray(BKEY_SELECTED, selectedItems
+        args.putLongArray(BKEY_SELECTED_ITEMS, selectedItems
                 .stream().mapToLong(Entity::getId).toArray());
 
         showDialog(context, args);
@@ -140,8 +141,8 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
         resultListener.onResult(
-                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_SELECTED),
-                                                     BKEY_SELECTED))
+                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_SELECTED_ITEMS),
+                                                     BKEY_SELECTED_ITEMS))
                       .boxed().collect(Collectors.toSet()));
     }
 
