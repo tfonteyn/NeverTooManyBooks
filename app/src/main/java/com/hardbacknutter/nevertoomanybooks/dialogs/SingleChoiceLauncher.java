@@ -49,10 +49,10 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
+     * @param requestKey          FragmentResultListener request key to use for our response.
      * @param dialogSupplier      a supplier for a new plain DialogFragment
      * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
-     * @param resultListener listener
+     * @param resultListener      listener
      */
     public SingleChoiceLauncher(@NonNull final String requestKey,
                                 @NonNull final Supplier<DialogFragment> dialogSupplier,

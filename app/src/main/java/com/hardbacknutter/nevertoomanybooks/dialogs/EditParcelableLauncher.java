@@ -113,7 +113,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
     /**
      * Create one of the predefined launchers based on the given request-key.
      *
-     * @param requestKey     to lookup
+     * @param key            of the predefined launcher
      * @param onAddListener  results listener
      * @param onEditListener results listener
      *
@@ -121,71 +121,71 @@ public final class EditParcelableLauncher<T extends Parcelable>
      */
     @NonNull
     public static <T extends Parcelable> EditParcelableLauncher<T> create(
-            @NonNull final String requestKey,
+            @NonNull final String key,
             @Nullable final OnAddListener<T> onAddListener,
             @Nullable final OnEditListener<T> onEditListener) {
-        switch (requestKey) {
+        switch (key) {
             case DBKey.FK_AUTHOR:
-                return new EditParcelableLauncher<>(requestKey,
+                return new EditParcelableLauncher<>(key,
                                                     EditBookAuthorDialogFragment::new,
                                                     EditBookAuthorBottomSheet::new,
                                                     onAddListener,
                                                     onEditListener);
 
             case DBKey.FK_SERIES:
-                return new EditParcelableLauncher<>(requestKey,
+                return new EditParcelableLauncher<>(key,
                                                     EditBookSeriesDialogFragment::new,
                                                     EditBookSeriesBottomSheet::new,
                                                     onAddListener,
                                                     onEditListener);
 
             case DBKey.FK_PUBLISHER:
-                return new EditParcelableLauncher<>(requestKey,
+                return new EditParcelableLauncher<>(key,
                                                     EditBookPublisherDialogFragment::new,
                                                     EditBookPublisherBottomSheet::new,
                                                     onAddListener,
                                                     onEditListener);
 
             default:
-                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+                throw new IllegalArgumentException("Unsupported requestKey=" + key);
         }
     }
 
     /**
      * Create one of the predefined launchers based on the given request-key.
      *
-     * @param requestKey            to lookup
+     * @param key                   of the predefined launcher
      * @param onEditInPlaceListener results listener
      *
      * @return new instance
      */
     @NonNull
     public static <T extends Parcelable> EditParcelableLauncher<T> create(
-            @NonNull final String requestKey,
+            @NonNull final String key,
             @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
-        switch (requestKey) {
+        switch (key) {
             case DBKey.FK_BOOKSHELF:
-                return new EditParcelableLauncher<>(requestKey,
+                return new EditParcelableLauncher<>(key,
                                                     EditBookshelfDialogFragment::new,
                                                     EditBookshelfBottomSheet::new,
                                                     onEditInPlaceListener);
             case DBKey.FK_AUTHOR:
-                return new EditParcelableLauncher<>(requestKey,
+                return new EditParcelableLauncher<>(key,
                                                     EditAuthorDialogFragment::new,
                                                     EditAuthorBottomSheet::new,
                                                     onEditInPlaceListener);
             case DBKey.FK_SERIES:
-                return new EditParcelableLauncher<>(requestKey,
+                return new EditParcelableLauncher<>(key,
                                                     EditSeriesDialogFragment::new,
                                                     EditSeriesBottomSheet::new,
                                                     onEditInPlaceListener);
             case DBKey.FK_PUBLISHER:
-                return new EditParcelableLauncher<>(requestKey,
+                return new EditParcelableLauncher<>(key,
                                                     EditPublisherDialogFragment::new,
                                                     EditPublisherBottomSheet::new,
                                                     onEditInPlaceListener);
             default:
-                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+                throw new IllegalArgumentException("Unsupported requestKey=" + key);
         }
     }
 

@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerA
 /**
  * Replacement for an AlertDialog with radio button setup.
  */
-public class SingleChoiceDelegate {
+class SingleChoiceDelegate {
 
     @NonNull
     private final DialogFragment owner;
@@ -61,8 +61,8 @@ public class SingleChoiceDelegate {
     @NonNull
     private final List<String> itemLabels;
 
-    public SingleChoiceDelegate(@NonNull final DialogFragment owner,
-                                @NonNull final Bundle args) {
+    SingleChoiceDelegate(@NonNull final DialogFragment owner,
+                         @NonNull final Bundle args) {
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);

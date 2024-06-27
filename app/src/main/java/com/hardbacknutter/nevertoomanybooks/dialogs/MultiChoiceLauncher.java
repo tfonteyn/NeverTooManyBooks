@@ -66,19 +66,27 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         this.resultListener = resultListener;
     }
 
+    /**
+     * Create one of the predefined launchers based on the given request-key.
+     *
+     * @param key            of the predefined launcher
+     * @param resultListener results listener
+     *
+     * @return new instance
+     */
     @NonNull
     public static <T extends Parcelable & Entity> MultiChoiceLauncher<T> create(
-            @NonNull final String requestKey,
+            @NonNull final String key,
             @NonNull final ResultListener resultListener) {
         //noinspection SwitchStatementWithTooFewBranches
-        switch (requestKey) {
+        switch (key) {
             case DBKey.FK_BOOKSHELF:
-                return new MultiChoiceLauncher<>(requestKey,
+                return new MultiChoiceLauncher<>(key,
                                                  MultiChoiceDialogFragment::new,
                                                  MultiChoiceBottomSheet::new,
                                                  resultListener);
             default:
-                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+                throw new IllegalArgumentException("Unsupported requestKey=" + key);
         }
     }
 

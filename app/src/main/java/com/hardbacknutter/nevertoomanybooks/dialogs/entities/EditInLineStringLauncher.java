@@ -75,44 +75,44 @@ public final class EditInLineStringLauncher
     /**
      * Create one of the predefined launchers based on the given request-key.
      *
-     * @param requestKey     to lookup
+     * @param key            of the predefined launcher
      * @param resultListener callback for results
      *
      * @return new instance
      */
     @SuppressWarnings("DuplicateBranchesInSwitch")
     @NonNull
-    public static EditInLineStringLauncher create(@NonNull final String requestKey,
+    public static EditInLineStringLauncher create(@NonNull final String key,
                                                   @NonNull final ResultListener resultListener) {
         // Android Studio thinks these are all the same 'case's .... sigh
-        switch (requestKey) {
+        switch (key) {
             case DBKey.COLOR:
-                return new EditInLineStringLauncher(requestKey,
+                return new EditInLineStringLauncher(key,
                                                     EditColorDialogFragment::new,
                                                     EditColorBottomSheet::new,
                                                     resultListener);
             case DBKey.FORMAT:
-                return new EditInLineStringLauncher(requestKey,
+                return new EditInLineStringLauncher(key,
                                                     EditFormatDialogFragment::new,
                                                     EditFormatBottomSheet::new,
                                                     resultListener);
             case DBKey.GENRE:
-                return new EditInLineStringLauncher(requestKey,
+                return new EditInLineStringLauncher(key,
                                                     EditGenreDialogFragment::new,
                                                     EditGenreBottomSheet::new,
                                                     resultListener);
             case DBKey.LANGUAGE:
-                return new EditInLineStringLauncher(requestKey,
+                return new EditInLineStringLauncher(key,
                                                     EditLanguageDialogFragment::new,
                                                     EditLanguageBottomSheet::new,
                                                     resultListener);
             case DBKey.LOCATION:
-                return new EditInLineStringLauncher(requestKey,
+                return new EditInLineStringLauncher(key,
                                                     EditLocationDialogFragment::new,
                                                     EditLocationBottomSheet::new,
                                                     resultListener);
             default:
-                throw new IllegalArgumentException("Unsupported requestKey=" + requestKey);
+                throw new IllegalArgumentException("Unsupported requestKey=" + key);
         }
     }
 
