@@ -34,7 +34,8 @@ public class EditColorDialogFragment
      * No-arg constructor for OS use.
      */
     EditColorDialogFragment() {
-        super(R.layout.dialog_edit_string, R.layout.dialog_edit_string_content);
+        super(R.layout.dialog_edit_book_inline_string,
+              R.layout.dialog_edit_book_inline_string_content);
     }
 
     @Override

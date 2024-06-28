@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookInlineStringContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
@@ -67,7 +67,7 @@ class EditInLineStringDelegate
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
-    private DialogEditStringContentBinding vb;
+    private DialogEditBookInlineStringContentBinding vb;
     @Nullable
     private Toolbar toolbar;
 
@@ -104,14 +104,14 @@ class EditInLineStringDelegate
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
-        vb = DialogEditStringContentBinding.inflate(inflater, container, false);
+        vb = DialogEditBookInlineStringContentBinding.inflate(inflater, container, false);
         toolbar = vb.dialogToolbar;
         return vb.getRoot();
     }
 
     @Override
     public void onCreateView(@NonNull final View view) {
-        vb = DialogEditStringContentBinding.bind(view.findViewById(R.id.dialog_content));
+        vb = DialogEditBookInlineStringContentBinding.bind(view.findViewById(R.id.dialog_content));
         toolbar = vb.dialogToolbar;
     }
 

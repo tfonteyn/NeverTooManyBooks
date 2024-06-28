@@ -34,7 +34,8 @@ public class EditFormatDialogFragment
      * No-arg constructor for OS use.
      */
     EditFormatDialogFragment() {
-        super(R.layout.dialog_edit_string, R.layout.dialog_edit_string_content);
+        super(R.layout.dialog_edit_book_inline_string,
+              R.layout.dialog_edit_book_inline_string_content);
     }
 
     @Override

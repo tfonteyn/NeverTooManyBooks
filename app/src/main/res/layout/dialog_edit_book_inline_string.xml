@@ -43,5 +43,5 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
-        layout="@layout/dialog_edit_string_content" />
+        layout="@layout/dialog_edit_book_inline_string_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
