@@ -20,14 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
-
-import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 
 public final class PreferenceDialogFactory {
 
@@ -43,37 +43,22 @@ public final class PreferenceDialogFactory {
      */
     @NonNull
     public static DialogFragment create(@NonNull final Preference preference) {
-        final DialogMode dialogMode = DialogMode.getMode(preference.getContext());
-        switch (dialogMode) {
-            case Dialog:
-                return createDialog(preference);
-            case BottomSheet:
-                // TODO: add BottomSheet support
-                return createDialog(preference);
-            default:
-                throw new IllegalArgumentException("preference=" + preference.getKey()
-                                                   + ", type=" + dialogMode);
-        }
-    }
-
-    @NonNull
-    private static DialogFragment createDialog(@NonNull final Preference preference) {
-        final DialogFragment f;
-
+        final DialogFragment fragment;
         if (preference instanceof EditTextPreference) {
-            f = ExtEditTextPreferenceDialogFragment.newInstance(preference.getKey());
+            fragment = new ExtEditTextPreferenceDialogFragment();
         } else if (preference instanceof ListPreference) {
-            f = ExtListPreferenceDialogFragment.newInstance(preference.getKey());
+            fragment = new ExtListPreferenceDialogFragment();
         } else if (preference instanceof MultiSelectListPreference) {
-            f = ExtMultiSelectListPreferenceDialogFragment.newInstance(preference.getKey());
+            fragment = new ExtMultiSelectListPreferenceDialogFragment();
         } else {
             throw new IllegalArgumentException(
-                    "Cannot display dialog for an unknown Preference type: "
-                    + preference.getClass().getSimpleName()
-                    + ". Make sure to implement onPreferenceDisplayDialog() to handle "
-                    + "displaying a custom dialog for this Preference.");
+                    "Unknown Preference type: " + preference.getClass().getSimpleName());
         }
 
-        return f;
+        final String key = preference.getKey();
+        final Bundle b = new Bundle(1);
+        b.putString(Ext2PreferenceViewModel.ARG_KEY, key);
+        fragment.setArguments(b);
+        return fragment;
     }
 }

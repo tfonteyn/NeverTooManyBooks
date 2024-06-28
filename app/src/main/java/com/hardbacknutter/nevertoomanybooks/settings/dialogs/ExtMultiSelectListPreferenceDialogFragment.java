@@ -37,24 +37,6 @@ import java.util.Objects;
 public class ExtMultiSelectListPreferenceDialogFragment
         extends MultiSelectListPreferenceDialogFragmentCompat {
 
-    /**
-     * Constructor.
-     *
-     * @param key for the preference
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static ExtMultiSelectListPreferenceDialogFragment newInstance(
-            @NonNull final String key) {
-        final ExtMultiSelectListPreferenceDialogFragment fragment =
-                new ExtMultiSelectListPreferenceDialogFragment();
-        final Bundle b = new Bundle(1);
-        b.putString(ARG_KEY, key);
-        fragment.setArguments(b);
-        return fragment;
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {

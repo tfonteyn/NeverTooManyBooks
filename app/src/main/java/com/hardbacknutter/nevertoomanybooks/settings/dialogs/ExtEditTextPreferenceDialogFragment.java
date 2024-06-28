@@ -53,23 +53,6 @@ public class ExtEditTextPreferenceDialogFragment
     private EditText editText;
     private long showRequestTime = NOT_SCHEDULED;
 
-    /**
-     * Constructor.
-     *
-     * @param key for the preference
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static ExtEditTextPreferenceDialogFragment newInstance(@NonNull final String key) {
-        final ExtEditTextPreferenceDialogFragment
-                fragment = new ExtEditTextPreferenceDialogFragment();
-        final Bundle b = new Bundle(1);
-        b.putString(ARG_KEY, key);
-        fragment.setArguments(b);
-        return fragment;
-    }
-
     @SuppressWarnings("deprecation")
     @NonNull
     @Override

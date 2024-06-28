@@ -37,23 +37,6 @@ import java.util.Objects;
 public class ExtListPreferenceDialogFragment
         extends ListPreferenceDialogFragmentCompat {
 
-    /**
-     * Constructor.
-     *
-     * @param key for the preference
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static ExtListPreferenceDialogFragment newInstance(@NonNull final String key) {
-        final ExtListPreferenceDialogFragment fragment =
-                new ExtListPreferenceDialogFragment();
-        final Bundle b = new Bundle(1);
-        b.putString(ARG_KEY, key);
-        fragment.setArguments(b);
-        return fragment;
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
