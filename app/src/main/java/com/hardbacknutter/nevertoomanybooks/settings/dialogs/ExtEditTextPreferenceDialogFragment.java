@@ -68,10 +68,15 @@ public class ExtEditTextPreferenceDialogFragment
         onClick(null, DialogInterface.BUTTON_NEGATIVE);
 
         // use TextInputLayout/TextInputEditText
-        preference.setDialogLayoutResource(R.layout.ext_preference_dialog_edittext);
+        preference.setDialogLayoutResource(R.layout.dialog_edit_simple_text);
         final View contentView = onCreateDialogView(requireContext());
         //noinspection DataFlowIssue
         editText = contentView.findViewById(android.R.id.edit);
+        // Ensure the drag handle is hidden.
+        contentView.findViewById(R.id.drag_handle).setVisibility(View.GONE);
+        // Not using the dedicated title field
+        contentView.findViewById(R.id.title).setVisibility(View.GONE);
+
         onBindDialogView(contentView);
 
         final Dialog dialog = new MaterialAlertDialogBuilder(requireContext())
