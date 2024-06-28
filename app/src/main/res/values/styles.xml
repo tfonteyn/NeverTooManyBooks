@@ -160,6 +160,7 @@
         <item name="android:gravity">start|center_vertical</item>
         <!-- icon space is 48dp, minus the icon of 24dp, divided by 2 -->
         <item name="iconPadding">12dp</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <!-- textAppearance; not a full style -->
