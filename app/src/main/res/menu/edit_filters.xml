@@ -23,9 +23,21 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools">
     <item
-        android:id="@id/MENU_ACTION_CONFIRM"
+        android:id="@id/MENU_ACTION_CLEAR"
         android:title="x"
-        app:actionLayout="@layout/toolbar_menu_buttons_edit_filters"
+        app:actionLayout="@layout/toolbar_menu_button_clear"
+        app:showAsAction="always"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@id/MENU_ACTION_ADD"
+        android:title="x"
+        app:actionLayout="@layout/toolbar_menu_button_add"
+        app:showAsAction="always"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@id/MENU_ACTION_SELECT"
+        android:title="x"
+        app:actionLayout="@layout/toolbar_menu_button_select"
         app:showAsAction="always"
         tools:ignore="HardcodedText" />
 </menu>

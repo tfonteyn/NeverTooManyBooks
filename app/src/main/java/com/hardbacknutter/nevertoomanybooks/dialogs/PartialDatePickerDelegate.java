@@ -194,7 +194,6 @@ class PartialDatePickerDelegate
                                            container, false);
         reorderPickers(view);
         vb = DialogPartialDatePickerContentBinding.bind(view);
-        toolbar = vb.dialogToolbar;
         return vb.getRoot();
     }
 
@@ -203,13 +202,11 @@ class PartialDatePickerDelegate
         // Ensure components match current Locale order BEFORE we bind the views.
         reorderPickers(view);
         vb = DialogPartialDatePickerContentBinding.bind(view.findViewById(R.id.dialog_content));
-        toolbar = vb.dialogToolbar;
     }
 
     @Override
     public void setToolbar(@Nullable final Toolbar toolbar) {
         this.toolbar = toolbar;
-
     }
 
     @Override

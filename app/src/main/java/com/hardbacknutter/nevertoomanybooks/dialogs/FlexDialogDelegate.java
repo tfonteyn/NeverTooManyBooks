@@ -68,11 +68,19 @@ public interface FlexDialogDelegate
     void onCreateView(@NonNull View view);
 
     /**
-     * {@link DialogMode#Dialog} ONLY.
-     * <p>
      * Called from {@link Fragment#onViewCreated(View, Bundle)}.
+     * <p>
+     * There are 4 potential types of toolbar:
+     * <ul>
+     *     <li>None at all; pass in a {@code null}</li>
+     *     <li>Fullscreen/top toolbar with all the menus as configured in xml</li>
+     *     <li>BottomSheet toolbar with all the menus as configured in xml</li>
+     *     <li>Dialog toolbar where the 'positive', 'negative' and 'neutral'
+     *         menu options <strong>should</strong> be removed
+     *         in favour of using the bottom button panel for those.</li>
+     * </ul>
      *
-     * @param toolbar to set (either the fullscreen or the floating dialog toolbar)
+     * @param toolbar optional Toolbar to show
      */
     void setToolbar(@Nullable Toolbar toolbar);
 

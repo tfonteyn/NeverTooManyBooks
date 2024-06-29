@@ -105,20 +105,17 @@ class EditInLineStringDelegate
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
         vb = DialogEditBookInlineStringContentBinding.inflate(inflater, container, false);
-        toolbar = vb.dialogToolbar;
         return vb.getRoot();
     }
 
     @Override
     public void onCreateView(@NonNull final View view) {
         vb = DialogEditBookInlineStringContentBinding.bind(view.findViewById(R.id.dialog_content));
-        toolbar = vb.dialogToolbar;
     }
 
     @Override
     public void setToolbar(@Nullable final Toolbar toolbar) {
         this.toolbar = toolbar;
-
     }
 
     @Override

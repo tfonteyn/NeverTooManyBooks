@@ -23,9 +23,9 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools">
     <item
-        android:id="@id/MENU_ACTION_CONFIRM"
+        android:id="@id/MENU_ACTION_SAVE"
         android:title="x"
-        app:actionLayout="@layout/toolbar_menu_buttons_save"
+        app:actionLayout="@layout/toolbar_menu_button_save"
         app:showAsAction="always"
         tools:ignore="HardcodedText" />
 </menu>

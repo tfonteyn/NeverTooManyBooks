@@ -214,34 +214,35 @@ public abstract class BaseFFDialogFragment
         final View buttonPanel = view.findViewById(R.id.button_panel_layout);
 
         if (fullscreen) {
-            // Hidden in fullscreen mode
+            // Hide the dialog toolbar
             if (floatingToolbar != null) {
                 floatingToolbar.setVisibility(View.GONE);
-            }
-            // Hidden in fullscreen mode
-            if (buttonPanel != null) {
-                buttonPanel.setVisibility(View.GONE);
             }
             delegate.setToolbar(Objects.requireNonNull(view.findViewById(R.id.toolbar),
                                                        "R.id.toolbar"));
 
-        } else {
-            if (floatingToolbar != null) {
-                // Show the toolbar, but hide the menu
-                floatingToolbar.setVisibility(View.VISIBLE);
-                // It's easier to set the menu from xml,
-                // and clear it here than doing the opposite.
-                floatingToolbar.getMenu().clear();
-            }
+            // Hide the button bar at the bottom of the dialog
             if (buttonPanel != null) {
-                // Show the button bar at the bottom of the dialog
+                buttonPanel.setVisibility(View.GONE);
+            }
+        } else {
+            // Show the dialog toolbar
+            if (floatingToolbar != null) {
+                floatingToolbar.setVisibility(View.VISIBLE);
+            }
+            // can be null, that's ok
+            delegate.setToolbar(floatingToolbar);
+
+            // Show the button bar at the bottom of the dialog
+            if (buttonPanel != null) {
                 buttonPanel.setVisibility(View.VISIBLE);
                 Button button;
-                // The cancel button is always hooked up with #onToolbarNavigationClick
+                // The negative/cancel button is always hooked up with #onToolbarNavigationClick
                 button = buttonPanel.findViewById(R.id.btn_negative);
                 if (button != null) {
                     button.setOnClickListener(delegate::onToolbarNavigationClick);
                 }
+                // The positive and neutral buttons are hooked up with #onToolbarButtonClick
                 button = buttonPanel.findViewById(R.id.btn_positive);
                 if (button != null) {
                     button.setOnClickListener(delegate::onToolbarButtonClick);
@@ -251,9 +252,6 @@ public abstract class BaseFFDialogFragment
                     button.setOnClickListener(delegate::onToolbarButtonClick);
                 }
             }
-
-            // can be null, that's ok
-            delegate.setToolbar(floatingToolbar);
         }
 
         delegate.onViewCreated();

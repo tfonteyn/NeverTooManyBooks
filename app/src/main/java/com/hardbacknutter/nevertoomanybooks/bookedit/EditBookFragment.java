@@ -370,7 +370,7 @@ public class EditBookFragment
                                  @NonNull final MenuInflater menuInflater) {
             menuInflater.inflate(R.menu.toolbar_action_save, menu);
 
-            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_SAVE);
             //noinspection DataFlowIssue
             final Button button = menuItem.getActionView().findViewById(R.id.btn_save);
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
@@ -380,7 +380,7 @@ public class EditBookFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final int menuItemId = menuItem.getItemId();
 
-            if (menuItemId == R.id.MENU_ACTION_CONFIRM) {
+            if (menuItemId == R.id.MENU_ACTION_SAVE) {
                 prepareSave(true);
                 return true;
             }

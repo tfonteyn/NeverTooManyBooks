@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 public interface FlexToolbar {
 
@@ -62,29 +61,30 @@ public interface FlexToolbar {
     /**
      * Setup the Toolbar listeners.
      *
-     * @param toolbar   to process
+     * @param toolbar to process
      */
     default void initToolbar(@NonNull final Toolbar toolbar) {
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         // Simple menu items; i.e. non-action view.
         toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
 
-        // Hookup any/all buttons in the action-view to use #onToolbarButtonClick
-        final MenuItem menuItem = toolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-        if (menuItem != null) {
-            final View actionView = menuItem.getActionView();
+        // Hookup all menu items with action views to use #onToolbarButtonClick
+        final Menu menu = toolbar.getMenu();
+        for (int i = 0; i < menu.size(); i++) {
+            final View actionView = menu.getItem(i).getActionView();
+            if (actionView != null) {
+                if (actionView instanceof Button) {
+                    // Single button as top-level view
+                    actionView.setOnClickListener(this::onToolbarButtonClick);
 
-            if (actionView instanceof Button) {
-                // Single button as top-level view
-                actionView.setOnClickListener(this::onToolbarButtonClick);
-
-            } else if (actionView instanceof ViewGroup) {
-                // A ViewGroup with multiple Buttons.
-                final ViewGroup av = (ViewGroup) actionView;
-                for (int c = 0; c < av.getChildCount(); c++) {
-                    final View child = av.getChildAt(c);
-                    if (child instanceof Button) {
-                        child.setOnClickListener(this::onToolbarButtonClick);
+                } else if (actionView instanceof ViewGroup) {
+                    // A ViewGroup with multiple Buttons.
+                    final ViewGroup av = (ViewGroup) actionView;
+                    for (int c = 0; c < av.getChildCount(); c++) {
+                        final View child = av.getChildAt(c);
+                        if (child instanceof Button) {
+                            child.setOnClickListener(this::onToolbarButtonClick);
+                        }
                     }
                 }
             }

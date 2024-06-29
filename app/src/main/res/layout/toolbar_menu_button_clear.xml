@@ -18,29 +18,13 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<LinearLayout
+<Button
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:id="@+id/btn_clear"
+    style="@style/Toolbar.Button"
+    android:contentDescription="@string/action_clear"
+    app:icon="@drawable/clear_all_24px"
     tools:viewBindingIgnore="true"
-    >
-
-    <Button
-        android:id="@+id/btn_add_details"
-        style="@style/Toolbar.Button"
-        android:contentDescription="@string/action_add_with_details"
-        app:icon="@drawable/add_card_24px"
-        />
-
-    <Button
-        android:id="@+id/btn_add"
-        style="@style/Toolbar.Button"
-        android:layout_marginStart="@dimen/toolbar_button_start_margin_last_button"
-        android:contentDescription="@string/action_add"
-        app:icon="@drawable/add_24px"
-        />
-</LinearLayout>
+    />

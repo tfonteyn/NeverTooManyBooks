@@ -83,12 +83,14 @@ public class BaseBottomSheetDialogFragment
         if (dragHandle != null) {
             dragHandle.setVisibility(View.VISIBLE);
         }
-        // Ensure the (optional) BaseFFDialogFragment button panel is hidden.
+        // Hide the button bar at the bottom of the dialog
         final View buttonPanel = view.findViewById(R.id.button_panel_layout);
         if (buttonPanel != null) {
             buttonPanel.setVisibility(View.GONE);
         }
 
+        // the dialog toolbar == bottom-sheet toolbar; can be null, that's ok
+        delegate.setToolbar(view.findViewById(R.id.dialog_toolbar));
         delegate.onViewCreated();
     }
 

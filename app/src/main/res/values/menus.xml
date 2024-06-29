@@ -353,8 +353,17 @@
     <!-- Toolbar menu -->
     <item name="MENU_RESET"
           type="id" />
-    <!-- Toolbar menu with an "app:actionLayout" -->
-    <item name="MENU_ACTION_CONFIRM"
+
+    <!-- Toolbar menu items with an "app:actionLayout" -->
+    <item name="MENU_ACTION_CLEAR"
+          type="id" />
+    <item name="MENU_ACTION_SAVE"
+          type="id" />
+    <item name="MENU_ACTION_SELECT"
+          type="id" />
+    <item name="MENU_ACTION_ADD"
+          type="id" />
+    <item name="MENU_ACTION_ADD_DETAILS"
           type="id" />
 
     <!-- debug options for the SQLite shell activity. -->

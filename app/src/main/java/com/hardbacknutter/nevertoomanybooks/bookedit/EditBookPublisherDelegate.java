@@ -80,10 +80,6 @@ class EditBookPublisherDelegate
     private final EditAction action;
     /** View Binding. */
     private DialogEditBookPublisherContentBinding vb;
-    /**
-     * Defaults to the {@code vb.dialogToolbar}.
-     * Fullscreen dialogs will override with the with the fullscreen toolbar.
-     */
     @Nullable
     private Toolbar toolbar;
 
@@ -105,14 +101,12 @@ class EditBookPublisherDelegate
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
         vb = DialogEditBookPublisherContentBinding.inflate(inflater, container, false);
-        toolbar = vb.dialogToolbar;
         return vb.getRoot();
     }
 
     @Override
     public void onCreateView(@NonNull final View view) {
         vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
-        toolbar = vb.dialogToolbar;
     }
 
     @Override

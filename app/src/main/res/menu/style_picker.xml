@@ -35,9 +35,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@id/MENU_ACTION_CONFIRM"
+        android:id="@id/MENU_ACTION_SELECT"
         android:title="x"
-        app:actionLayout="@layout/toolbar_menu_buttons_select"
+        app:actionLayout="@layout/toolbar_menu_button_select"
         app:showAsAction="always"
         tools:ignore="HardcodedText" />
 </menu>

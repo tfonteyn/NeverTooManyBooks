@@ -78,10 +78,6 @@ class BookshelfFiltersDelegate
 
     /** View Binding. */
     private DialogEditBookshelfFiltersContentBinding vb;
-    /**
-     * Defaults to the {@code vb.dialogToolbar}.
-     * Fullscreen dialogs will override with the with the fullscreen toolbar.
-     */
     @Nullable
     private Toolbar toolbar;
 
@@ -95,26 +91,23 @@ class BookshelfFiltersDelegate
     }
 
     @Override
-    public void onCreateView(@NonNull final View view) {
-        this.vb = DialogEditBookshelfFiltersContentBinding
-                .bind(view.findViewById(R.id.dialog_content));
-        toolbar = vb.dialogToolbar;
-    }
-
-    @Override
     @NonNull
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
         vb = DialogEditBookshelfFiltersContentBinding
                 .inflate(inflater, container, false);
-        toolbar = vb.dialogToolbar;
         return vb.getRoot();
+    }
+
+    @Override
+    public void onCreateView(@NonNull final View view) {
+        this.vb = DialogEditBookshelfFiltersContentBinding
+                .bind(view.findViewById(R.id.dialog_content));
     }
 
     @Override
     public void setToolbar(@Nullable final Toolbar toolbar) {
         this.toolbar = toolbar;
-
     }
 
     @Override
