@@ -29,7 +29,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseMultipleBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
 
 public class MultiChoiceDialogFragment
         extends DialogFragment {
@@ -46,10 +46,12 @@ public class MultiChoiceDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        final DialogChooseMultipleBinding vb = DialogChooseMultipleBinding.inflate(
+        final DialogSelectMultipleBinding vb = DialogSelectMultipleBinding.inflate(
                 getLayoutInflater(), null, false);
         // Ensure the drag handle is hidden.
         vb.dragHandle.setVisibility(View.GONE);
+        // Ensure the unused title field is hidden
+        vb.title.setVisibility(View.GONE);
 
         delegate.onViewCreated(vb);
 

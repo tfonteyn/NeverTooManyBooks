@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseMultipleBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 /**
@@ -93,7 +93,7 @@ class MultiChoiceDelegate {
         return dialogTitle;
     }
 
-    public void onViewCreated(@NonNull final DialogChooseMultipleBinding vb) {
+    public void onViewCreated(@NonNull final DialogSelectMultipleBinding vb) {
 
         final Context context = vb.getRoot().getContext();
 
@@ -104,19 +104,15 @@ class MultiChoiceDelegate {
             vb.message.setVisibility(View.GONE);
         }
 
-        final ChecklistRecyclerAdapter<Long> adapter =
-                new ChecklistRecyclerAdapter<>(context,
-                                               items,
-                                               itemLabels::get,
-                                               vm.getSelectedItems(),
-                                               (id, checked) -> {
-                                                   if (checked) {
-                                                       vm.getSelectedItems().add(id);
-                                                   } else {
-                                                       vm.getSelectedItems().remove(id);
-                                                   }
-                                               });
-
+        final ChecklistRecyclerAdapter<Long> adapter = new ChecklistRecyclerAdapter<>(
+                context, items, itemLabels::get, vm.getSelectedItems(),
+                (id, checked) -> {
+                    if (checked) {
+                        vm.getSelectedItems().add(id);
+                    } else {
+                        vm.getSelectedItems().remove(id);
+                    }
+                });
         vb.itemList.setAdapter(adapter);
     }
 

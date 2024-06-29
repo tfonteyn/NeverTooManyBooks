@@ -35,7 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseOneBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
 
 /**
  * Note that {@link #onDismiss(DialogInterface)} will <strong>save</strong> the selection.
@@ -44,7 +44,7 @@ public class SingleChoiceBottomSheet
         extends BottomSheetDialogFragment {
 
     private SingleChoiceDelegate delegate;
-    private DialogChooseOneBinding vb;
+    private DialogSelectOneBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class SingleChoiceBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = DialogChooseOneBinding.inflate(inflater, container, false);
+        vb = DialogSelectOneBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -67,6 +67,7 @@ public class SingleChoiceBottomSheet
         super.onViewCreated(view, savedInstanceState);
         // Ensure the drag handle is visible.
         vb.dragHandle.setVisibility(View.VISIBLE);
+        vb.title.setText(delegate.getDialogTitle());
         delegate.onViewCreated(vb);
     }
 
@@ -74,16 +75,14 @@ public class SingleChoiceBottomSheet
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
-        // Paranoia...
-        if (dialog instanceof BottomSheetDialog) {
-            // Due to multi-use of the layouts, we don't set these in xml:
-            final BottomSheetBehavior<FrameLayout> behavior =
-                    ((BottomSheetDialog) dialog).getBehavior();
-            // Close fully when the user is dragging us down
-            behavior.setSkipCollapsed(true);
-            // Open fully when started.
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        }
+
+        // Due to multi-use of the layouts, we don't set these in xml:
+        final BottomSheetBehavior<FrameLayout> behavior =
+                ((BottomSheetDialog) dialog).getBehavior();
+        // Close fully when the user is dragging us down
+        behavior.setSkipCollapsed(true);
+        // Open fully when started.
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         return dialog;
     }

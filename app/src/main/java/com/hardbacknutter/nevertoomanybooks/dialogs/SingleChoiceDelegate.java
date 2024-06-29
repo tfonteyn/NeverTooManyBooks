@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseOneBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 /**
@@ -93,7 +93,7 @@ class SingleChoiceDelegate {
         return dialogTitle;
     }
 
-    public void onViewCreated(@NonNull final DialogChooseOneBinding vb) {
+    public void onViewCreated(@NonNull final DialogSelectOneBinding vb) {
 
         final Context context = vb.getRoot().getContext();
 
@@ -104,11 +104,8 @@ class SingleChoiceDelegate {
             vb.message.setVisibility(View.GONE);
         }
 
-        final RadioGroupRecyclerAdapter<Long> adapter =
-                new RadioGroupRecyclerAdapter<>(context, itemIds, itemLabels::get,
-                                                vm.getSelectedItem(),
-                                                vm::setSelectedItem);
-
+        final RadioGroupRecyclerAdapter<Long> adapter = new RadioGroupRecyclerAdapter<>(
+                context, itemIds, itemLabels::get, vm.getSelectedItem(), vm::setSelectedItem);
         vb.itemList.setAdapter(adapter);
     }
 

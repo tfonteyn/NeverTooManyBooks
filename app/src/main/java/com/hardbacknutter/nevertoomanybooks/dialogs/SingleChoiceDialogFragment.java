@@ -29,7 +29,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseOneBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
 
 /**
  * FIXME: not in use right now
@@ -52,10 +52,12 @@ public class SingleChoiceDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        final DialogChooseOneBinding vb = DialogChooseOneBinding.inflate(
+        final DialogSelectOneBinding vb = DialogSelectOneBinding.inflate(
                 getLayoutInflater(), null, false);
         // Ensure the drag handle is hidden.
         vb.dragHandle.setVisibility(View.GONE);
+        // Ensure the unused title field is hidden
+        vb.title.setVisibility(View.GONE);
 
         delegate.onViewCreated(vb);
 

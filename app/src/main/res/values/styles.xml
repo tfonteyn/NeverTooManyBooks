@@ -44,28 +44,60 @@
     <!-- *************************************************************************************** -->
     <!-- Read-only, informative text -->
     <!-- *************************************************************************************** -->
-    <style name="Text"
+    <style name="Base.Text"
            parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <style name="Text.Header">
+    <!-- A generic header; at the top of a screen, section, ... -->
+    <style name="Text.Header"
+           parent="Base.Text">
         <item name="android:layout_marginTop">@dimen/section_margin_top</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="Text.Body">
+    <style name="Text.Body"
+           parent="Base.Text">
     </style>
 
-    <style name="Text.Error">
+    <style name="Text.Error"
+           parent="Base.Text">
         <item name="android:textColor">?attr/colorError</item>
     </style>
 
+    <!-- A header message which MIMICS the PreferenceCategory style.
+         This is for use on screen which themselves MIMIC a preference screen.
+    -->
     <style name="Text.Header.PreferenceCategory">
         <item name="android:layout_marginStart">@dimen/preference_header_margin_start</item>
+        <!-- NOT textColorSecondary! -->
         <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <!-- The title at the top of a Dialog which has NO toolbar -->
+    <style name="Dialog.Header.Title"
+           parent="">
+        <item name="android:textAppearance">?attr/textAppearanceTitleLarge</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- A message (not the body) at the top of a Dialog. -->
+    <style name="Dialog.Header.Message"
+           parent="">
+        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+
+        <item name="android:layout_marginTop">@dimen/section_margin_top</item>
+        <item name="android:layout_marginStart">24dp</item>
+        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:layout_marginBottom">48dp</item>
+
+        <item name="android:textIsSelectable">true</item>
     </style>
 
     <!-- *************************************************************************************** -->

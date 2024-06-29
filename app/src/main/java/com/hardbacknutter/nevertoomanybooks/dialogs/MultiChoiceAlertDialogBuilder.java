@@ -37,9 +37,17 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogChooseMultipleBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
+/**
+ * This is a pure dialog/listener construct.
+ * It will <strong>NOT</strong> survive device rotations.
+ * <p>
+ * For rotation-safe behaviour, use {@link MultiChoiceDialogFragment}.
+ *
+ * @param <T>
+ */
 public class MultiChoiceAlertDialogBuilder<T extends Number> {
 
     @NonNull
@@ -157,10 +165,12 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         Objects.requireNonNull(itemLabels);
         Objects.requireNonNull(positiveButtonConsumer);
 
-        final DialogChooseMultipleBinding vb = DialogChooseMultipleBinding.inflate(
+        final DialogSelectMultipleBinding vb = DialogSelectMultipleBinding.inflate(
                 layoutInflater, null, false);
-        // Layouts supporting BottomSheet have a drag-handle. Just hide it.
+        // Ensure the drag handle is hidden.
         vb.dragHandle.setVisibility(View.GONE);
+        // Ensure the unused title field is hidden
+        vb.title.setVisibility(View.GONE);
 
         if (dialogMessage != null && dialogMessage.length() > 0) {
             vb.message.setText(dialogMessage);
@@ -169,17 +179,15 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
             vb.message.setVisibility(View.GONE);
         }
 
-        final ChecklistRecyclerAdapter<T> adapter =
-                new ChecklistRecyclerAdapter<>(context, items,
-                                               position -> itemLabels.get(position),
-                                               selectedItems,
-                                               (id, checked) -> {
-                                                   if (checked) {
-                                                       selectedItems.add(id);
-                                                   } else {
-                                                       selectedItems.remove(id);
-                                                   }
-                                               });
+        final ChecklistRecyclerAdapter<T> adapter = new ChecklistRecyclerAdapter<>(
+                context, items, position -> itemLabels.get(position), selectedItems,
+                (id, checked) -> {
+                    if (checked) {
+                        selectedItems.add(id);
+                    } else {
+                        selectedItems.remove(id);
+                    }
+                });
         vb.itemList.setAdapter(adapter);
 
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
