@@ -37,6 +37,49 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 
+/**
+ * HOST = hosting fragment or activity which has the reference to the launcher.
+ * DIALOG = either a plain DialogFragment or a BottomSheetDialogFragment.
+ * <p>
+ * Initialization phase:
+ * <ol>
+ *     <li>The HOST creates a new instance of (child-class of) DialogLauncher</li>
+ *     <li>A dedicated listener (interface) is set in the constructor so we can later send
+ *         the results from the DialogLauncher back to the HOST.</li>
+ *     <li>The HOST calls {@link #registerForFragmentResult(FragmentManager, LifecycleOwner)}
+ *         to indicate the DialogLauncher wants to receive the results from
+ *         the FragmentManager.</li>
+ * </ol>
+ * <p>
+ * Launch phase:
+ * <ol>
+ *     <li>The HOST calls 'launch' on the launcher</li>
+ *     <li>Depending on the DialogMode, the method {@link #showDialog(Context, Bundle)}
+ *         will create either a BottomSheetDialogFragment or a plain DialogFragment
+ *         and show it</li>
+ * </ol>
+ * <p>
+ * Results phase:
+ * <ol>
+ *     <li>The DIALOG uses a dedicated ViewModel for state</li>
+ *     <li>When done, it calls a <strong>static</strong> "setResult" method on the launcher</li>
+ *     <li>This "setResult" method packs the results in a Bundle, and forwards
+ *         it to the FragmentManager.</li>
+ *     <li>The FragmentManager results Bundle is returned to the active instance
+ *         of the launcher in {@link #onFragmentResult}</li>
+ *     <li>The Bundle is unpacked and these results are send to the listener</li>
+ *     <li>The final results arrive in the listener instance in the HOST</li>
+ * </ol>
+ * <p>
+ * Note that we never have to deal with a dead-listener reference because
+ * for example when a device rotation triggers a restart of all the fragments:
+ * <ol>
+ *     <li>the DIALOG restarts and uses its ViewModel to restore state</li>
+ *     <li>the HOST restarts and (re)creates the DialogLauncher and
+ *         sets the listener(s) for the results.</li>
+ *     <li>The launcher is re-registered to receive the dialog results</li>
+ * </ol>
+ */
 public abstract class DialogLauncher
         implements FragmentResultListener {
 
