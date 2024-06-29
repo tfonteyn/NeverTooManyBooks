@@ -67,6 +67,7 @@ public class BitmaskHolder
 
             // This will potentially be called upon from inside a BottomSheet.
             // Hence we stick with using a Dialog.
+            // - Note this is NOT rotation-safe
             new MultiChoiceAlertDialogBuilder<Integer>(context)
                     .setTitle(R.string.lbl_edition)
                     .setItems(ids, labels)

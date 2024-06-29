@@ -304,6 +304,7 @@ public class MaintenanceFragment
         // We're keeping this as a Dialog:
         // - the user will/should very seldom need this (◔_◔)
         // - It's more explicit in offering a textual OK/Cancel choice.
+        // - Note this is NOT rotation-safe
         new MultiChoiceAlertDialogBuilder<Integer>(context)
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.debug)

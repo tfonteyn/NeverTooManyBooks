@@ -69,6 +69,7 @@ public class EntityListHolder<T extends Entity>
 
             // This will potentially be called upon from inside a BottomSheet.
             // Hence we stick with using a Dialog.
+            // - Note this is NOT rotation-safe
             new MultiChoiceAlertDialogBuilder<Long>(context)
                     .setTitle(filter.getLabel(context))
                     .setItems(ids, labels)
