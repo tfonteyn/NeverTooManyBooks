@@ -120,14 +120,8 @@
          (parent is '?attr/materialIconButtonFilledTonalStyle).
 
           FIXME: there is a problem with the "backgroundTint"
-          The parent style sets it to "colorContainer" (a 'teal' color).
-          Widget.Material3.Button.IconButton.Filled.Tonal
-          Widget.Material3.Button.IconButton.Filled
-          <item name="backgroundTint">@color/m3_filled_icon_button_container_color_selector</item>
-          Default, Enabled state
-          <item android:color="?attr/colorContainer"/>
-
-           When used in a BottomSheet, it will correctly be applied.
+          BottomSheet + Fullscreen dialogs, it will correctly be applied
+          ('teal' variations in both dark/light modes).
 
            When used in a floating dialog, it will reset to "colorOnSurface" (a 'grey' color)
            When using the layout-inspector it shows "teal" being applied, but its "grey"
@@ -138,7 +132,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
-        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -204,8 +198,6 @@
            parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- override to make it better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- A button in a list of action-options. -->
@@ -270,7 +262,14 @@
            parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+        <!-- The default for an IconButton.Outlined seems to be "colorPrimary"
+             which is fine in "light" but not visible in "dark" mode.
+             This problem does not occur for an IconButton.Filled
+             as Android uses a ThemeOverlay where they correct the iconTint
+             But Outlined does not have such a ThemeOverlay set (bug?)
+             Overriding with colorOnSurfaceVariant is a workaround.
+        -->
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="icon">@drawable/more_vert_24px</item>
         <item name="android:contentDescription">@string/action_show_options</item>
         <item name="android:scaleX">@dimen/context_menu_button_scale</item>
@@ -291,7 +290,7 @@
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:backgroundTint">?attr/colorSurfaceContainer</item>
-        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="android:scaleX">@dimen/context_menu_button_scale</item>
         <item name="android:scaleY">@dimen/context_menu_button_scale</item>
     </style>
