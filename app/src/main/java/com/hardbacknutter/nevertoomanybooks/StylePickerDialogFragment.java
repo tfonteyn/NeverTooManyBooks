@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -57,6 +58,14 @@ public class StylePickerDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adjustWindowSize(((StylePickerDelegate) delegate).getRecyclerView(), 0.33f);
+        final StylePickerDelegate pickerDelegate = (StylePickerDelegate) delegate;
+        adjustWindowSize(pickerDelegate.getRecyclerView(), 0.33f);
+
+        if (!isFullscreen()) {
+            // The floating dialog toolbar menu must
+            // hide these duplicate buttons in favour of the bottom button-bar
+            final Menu menu = pickerDelegate.getToolbar().getMenu();
+            menu.findItem(R.id.MENU_ACTION_SELECT).setVisible(false);
+        }
     }
 }
