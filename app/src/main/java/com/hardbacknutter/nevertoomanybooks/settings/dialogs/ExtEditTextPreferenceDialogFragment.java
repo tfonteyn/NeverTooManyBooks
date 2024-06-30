@@ -38,8 +38,6 @@ import androidx.preference.EditTextPreferenceDialogFragmentCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 
 public class ExtEditTextPreferenceDialogFragment
@@ -53,32 +51,38 @@ public class ExtEditTextPreferenceDialogFragment
     private EditText editText;
     private long showRequestTime = NOT_SCHEDULED;
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        // Override the layout BEFORE the super onCreate reads it.
+        getPreference().setDialogLayoutResource(R.layout.dialog_edit_simple_text);
+        super.onCreate(savedInstanceState);
+    }
+
     @SuppressWarnings("deprecation")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
-        final DialogPreference.TargetFragment fragment = Objects.requireNonNull(
-                (DialogPreference.TargetFragment) getTargetFragment());
-        final String key = Objects.requireNonNull(requireArguments().getString(ARG_KEY));
-        final DialogPreference preference = Objects.requireNonNull(fragment.findPreference(key));
-
         // equivalent of: mWhichButtonClicked = DialogInterface.BUTTON_NEGATIVE;
         //noinspection DataFlowIssue
         onClick(null, DialogInterface.BUTTON_NEGATIVE);
 
-        // use TextInputLayout/TextInputEditText
-        preference.setDialogLayoutResource(R.layout.dialog_edit_simple_text);
         final View contentView = onCreateDialogView(requireContext());
         //noinspection DataFlowIssue
         editText = contentView.findViewById(android.R.id.edit);
         // Ensure the drag handle is hidden.
-        contentView.findViewById(R.id.drag_handle).setVisibility(View.GONE);
+        final View dragHandle = contentView.findViewById(R.id.drag_handle);
+        if (dragHandle != null) {
+            dragHandle.setVisibility(View.GONE);
+        }
         // Not using the dedicated title field
-        contentView.findViewById(R.id.title).setVisibility(View.GONE);
+        final View titleView = contentView.findViewById(R.id.title);
+        if (titleView != null) {
+            titleView.setVisibility(View.GONE);
+        }
 
         onBindDialogView(contentView);
 
+        final DialogPreference preference = getPreference();
         final Dialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(preference.getDialogTitle())
                 .setIcon(preference.getDialogIcon())

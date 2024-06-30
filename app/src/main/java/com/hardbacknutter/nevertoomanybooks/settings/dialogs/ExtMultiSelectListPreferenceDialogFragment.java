@@ -32,24 +32,17 @@ import androidx.preference.MultiSelectListPreferenceDialogFragmentCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.Objects;
-
 public class ExtMultiSelectListPreferenceDialogFragment
         extends MultiSelectListPreferenceDialogFragmentCompat {
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
-        final DialogPreference.TargetFragment fragment = Objects.requireNonNull(
-                (DialogPreference.TargetFragment) getTargetFragment());
-        final String key = Objects.requireNonNull(requireArguments().getString(ARG_KEY));
-        final DialogPreference preference = Objects.requireNonNull(fragment.findPreference(key));
-
         // equivalent of: mWhichButtonClicked = DialogInterface.BUTTON_NEGATIVE;
         //noinspection DataFlowIssue
         onClick(null, DialogInterface.BUTTON_NEGATIVE);
 
+        final DialogPreference preference = getPreference();
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(preference.getDialogTitle())
                 .setIcon(preference.getDialogIcon())
