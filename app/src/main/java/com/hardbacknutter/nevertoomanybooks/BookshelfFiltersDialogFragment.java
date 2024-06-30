@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,17 @@ public class BookshelfFiltersDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adjustWindowSize(((BookshelfFiltersDelegate) delegate).getRecyclerView(), 0.33f);
+        final BookshelfFiltersDelegate filtersDelegate = (BookshelfFiltersDelegate) delegate;
+
+        adjustWindowSize(filtersDelegate.getRecyclerView(), 0.33f);
+
+        if (!isFullscreen()) {
+            // The floating dialog toolbar menu must display
+            //     R.id.MENU_ACTION_ADD
+            // but hide these duplicate buttons in favour of the bottom button-bar
+            final Menu menu = filtersDelegate.getToolbar().getMenu();
+            menu.findItem(R.id.MENU_ACTION_CLEAR).setVisible(false);
+            menu.findItem(R.id.MENU_ACTION_SELECT).setVisible(false);
+        }
     }
 }

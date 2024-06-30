@@ -161,6 +161,10 @@ public abstract class BaseFFDialogFragment
         }
     }
 
+    protected boolean isFullscreen() {
+        return fullscreen;
+    }
+
     /**
      * Final. Override {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
      * and/or {@link #onViewCreated(View, Bundle)} instead.

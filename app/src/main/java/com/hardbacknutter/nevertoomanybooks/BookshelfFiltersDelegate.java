@@ -110,6 +110,11 @@ class BookshelfFiltersDelegate
         this.toolbar = toolbar;
     }
 
+    @NonNull
+    Toolbar getToolbar() {
+        return Objects.requireNonNull(toolbar);
+    }
+
     @Override
     public void onViewCreated() {
         if (toolbar != null) {

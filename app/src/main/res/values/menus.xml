@@ -354,7 +354,7 @@
     <item name="MENU_RESET"
           type="id" />
 
-    <!-- Toolbar menu items with an "app:actionLayout" -->
+    <!-- Toolbar menu items with an "app:actionLayout" containing a highlighted Button. -->
     <item name="MENU_ACTION_CLEAR"
           type="id" />
     <item name="MENU_ACTION_SAVE"
