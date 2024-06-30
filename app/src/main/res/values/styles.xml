@@ -76,6 +76,87 @@
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
+    <!-- *************************************************************************************** -->
+    <!-- Toolbars -->
+    <!-- *************************************************************************************** -->
+
+    <!-- An Activity primary/top toolbar -->
+    <style name="Toolbar.Activity"
+           parent="Widget.Material3.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
+    </style>
+
+    <!-- A fullscreen Dialog primary/top toolbar with a 'close' icon. -->
+    <style name="Toolbar.Dialog.Fullscreen"
+           parent="Widget.Material3.Toolbar.Surface">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="navigationIcon">@drawable/close_24px</item>
+    </style>
+
+    <!-- A floating Dialog or BottomSheet toolbar
+
+        We could use the parent="...OnSurface" which only differs from "Surface"
+        that the latter applies a background color set to "?attr/colorSurface".
+        We're choosing to use "Surface" and override/remove the background on purpose,
+        as we might switch to using app wide styles set by:
+          ?attr/toolbarStyle
+          ?attr/toolbarSurfaceStyle
+        ... and there is none for "OnSurface"
+    -->
+    <style name="Toolbar.Dialog.Floating"
+           parent="Widget.Material3.Toolbar.Surface">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="colorSurface">@color/red_600</item>
+    </style>
+
+    <!-- A highlighted button placed in toolbars menus as an "actionLayout"
+         (parent is '?attr/materialIconButtonFilledTonalStyle).
+
+          FIXME: there is a problem with the "backgroundTint"
+          The parent style sets it to "colorContainer" (a 'teal' color).
+          Widget.Material3.Button.IconButton.Filled.Tonal
+          Widget.Material3.Button.IconButton.Filled
+          <item name="backgroundTint">@color/m3_filled_icon_button_container_color_selector</item>
+          Default, Enabled state
+          <item android:color="?attr/colorContainer"/>
+
+           When used in a BottomSheet, it will correctly be applied.
+
+           When used in a floating dialog, it will reset to "colorOnSurface" (a 'grey' color)
+           When using the layout-inspector it shows "teal" being applied, but its "grey"
+           in the device/emulator.
+          -->
+    <style name="Toolbar.Button"
+           parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Activity navigation drawer/view -->
+    <!-- *************************************************************************************** -->
+    <style name="NavigationView"
+           parent="Widget.Material3.NavigationView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginTop">?attr/actionBarSize</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="headerLayout">@layout/nav_header_main</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Dialogs -->
+    <!-- *************************************************************************************** -->
+
     <!-- The title at the top of a Dialog which has NO toolbar -->
     <style name="Dialog.Header.Title"
            parent="">
@@ -99,59 +180,6 @@
 
         <item name="android:textIsSelectable">true</item>
     </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- Toolbar / TabBar / NavBar -->
-    <!-- *************************************************************************************** -->
-
-    <!-- An Activity primary/top toolbar -->
-    <style name="Toolbar.Activity"
-           parent="Widget.Material3.Toolbar">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
-    </style>
-
-    <!-- A fullscreen Dialog primary/top toolbar with a 'close' icon. -->
-    <style name="Toolbar.Dialog.Fullscreen"
-           parent="Widget.Material3.Toolbar.Surface">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="navigationIcon">@drawable/close_24px</item>
-    </style>
-
-    <!-- A floating Dialog primary/top toolbar -->
-    <style name="Toolbar.Dialog.Content"
-           parent="Widget.Material3.Toolbar.Surface">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">@android:color/transparent</item>
-    </style>
-
-    <!-- A highlighted button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->
-    <style name="Toolbar.Button"
-           parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
-    </style>
-
-    <style name="NavigationView"
-           parent="Widget.Material3.NavigationView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginTop">?attr/actionBarSize</item>
-        <item name="android:layout_gravity">start</item>
-        <item name="headerLayout">@layout/nav_header_main</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- Dialogs -->
-    <!-- *************************************************************************************** -->
 
     <!-- The root view for the Dialog content. -->
     <style name="Dialog.Content"
