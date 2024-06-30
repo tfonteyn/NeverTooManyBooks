@@ -307,7 +307,7 @@ public class MaintenanceFragment
         // - Note this is NOT rotation-safe
         new MultiChoiceAlertDialogBuilder<Integer>(context)
                 .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.debug)
+                .setTitle(R.string.option_bug_report)
                 .setMessage(R.string.debug_select_items)
                 .setSelectedItems(Set.of(MaintenanceViewModel.DBG_SEND_LOGFILES,
                                          MaintenanceViewModel.DBG_SEND_PREFERENCES))

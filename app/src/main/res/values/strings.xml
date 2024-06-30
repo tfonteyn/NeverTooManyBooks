@@ -1423,7 +1423,7 @@
         param 1: type of item; param 2: item name.
          e.g.: "Clear the node status for Bookshelf “ToRead” -->
     <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s”?</string>
-    <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
+    <!-- [VERIFIED]  Collect debug information and prepare a zip file to send to the developer -->
     <string name="option_bug_report">Bug report</string>
     <!-- The user can choose which files to include in a debug report. -->
     <string name="option_bug_report_database"
