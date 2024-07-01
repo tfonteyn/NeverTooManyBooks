@@ -23,11 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/section_margin_top"
-    android:minHeight="?attr/listPreferredItemHeightSmall"
-    >
+    style="@style/RowEditor.Container.Filter">
 
     <Button
         android:id="@+id/btn_del"
@@ -41,6 +37,7 @@
         android:id="@id/ROW_ONCLICK_TARGET"
         style="@style/RowEditor.TextSection"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_del"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -55,9 +52,9 @@
         <TextView
             android:id="@+id/filter"
             style="@style/RowEditor.Text.Secondary"
+            android:layout_width="match_parent"
             android:layout_marginStart="@dimen/field_margin_start"
             tools:ignore="SelectableText"
-            tools:text="@string/warning_nothing_selected"
             />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

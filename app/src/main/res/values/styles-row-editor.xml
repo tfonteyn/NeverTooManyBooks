@@ -107,4 +107,16 @@
         <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
         <item name="android:layout_marginStart">8dp</item>
     </style>
+
+    <style name="RowEditor.Container"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/listPreferredItemHeightSmall</item>
+    </style>
+
+    <style name="RowEditor.Container.Filter">
+        <item name="android:layout_marginBottom">@dimen/section_margin_top</item>
+    </style>
+
 </resources>

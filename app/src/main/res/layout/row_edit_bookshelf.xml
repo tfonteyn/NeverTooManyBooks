@@ -23,11 +23,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_highlight_when_selected"
-    android:minHeight="?attr/listPreferredItemHeightSmall"
-    >
+    style="@style/RowEditor.Container"
+    android:background="@drawable/bg_highlight_when_selected">
 
     <LinearLayout
         android:id="@id/ROW_ONCLICK_TARGET"

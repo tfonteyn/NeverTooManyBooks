@@ -166,6 +166,7 @@
         <item name="android:layout_width">@dimen/til_fixed_width_language</item>
     </style>
 
+    <!-- A FilledBox to match the other filters which use a simple TextView/Dialog. -->
     <style name="TIL.Filter.AutoCompleteTextView"
            parent="Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>

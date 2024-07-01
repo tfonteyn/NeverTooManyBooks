@@ -23,11 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/section_margin_top"
-    android:minHeight="?attr/listPreferredItemHeightSmall"
-    >
+    style="@style/RowEditor.Container.Filter">
 
     <Button
         android:id="@+id/btn_del"
@@ -47,6 +43,8 @@
         tools:text="@string/action_select"
         />
 
+    <!-- This is NOT a boolean-switch; as it's a choice
+         between 2 values which are not necessarily on/off options. -->
     <RadioGroup
         android:id="@+id/filter"
         android:layout_width="wrap_content"
