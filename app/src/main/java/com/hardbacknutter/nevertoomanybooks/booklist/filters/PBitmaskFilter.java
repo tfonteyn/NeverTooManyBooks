@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -36,9 +35,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.BitmaskHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -203,12 +199,5 @@ public class PBitmaskFilter
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_bitmask;
-    }
-
-    @NonNull
-    @Override
-    public PFilterHolder createHolder(@NonNull final View view,
-                                      @NonNull final ModificationListener modificationListener) {
-        return new BitmaskHolder(view, modificationListener);
     }
 }

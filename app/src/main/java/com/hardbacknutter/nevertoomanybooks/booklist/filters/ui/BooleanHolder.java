@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters.ui;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -30,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBo
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class BooleanHolder
-        extends PFilterHolder
+        extends PFilterViewHolder
         implements BindableViewHolder<PBooleanFilter> {
 
     @NonNull
@@ -39,13 +38,13 @@ public class BooleanHolder
     /**
      * Constructor.
      *
-     * @param itemView the view specific for this holder
+     * @param vb       view-binding
      * @param listener for update events
      */
-    public BooleanHolder(@NonNull final View itemView,
+    public BooleanHolder(@NonNull final RowEditBookshelfFilterBooleanBinding vb,
                          @NonNull final ModificationListener listener) {
-        super(itemView, listener);
-        vb = RowEditBookshelfFilterBooleanBinding.bind(itemView);
+        super(vb.getRoot(), listener);
+        this.vb = vb;
     }
 
     public void onBind(@NonNull final PBooleanFilter filter) {

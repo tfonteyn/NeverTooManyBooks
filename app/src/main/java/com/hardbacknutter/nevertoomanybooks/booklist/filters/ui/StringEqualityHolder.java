@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters.ui;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterSt
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class StringEqualityHolder
-        extends PFilterHolder
+        extends PFilterViewHolder
         implements BindableViewHolder<PStringEqualityFilter> {
 
     @NonNull
@@ -43,13 +42,13 @@ public class StringEqualityHolder
     /**
      * Constructor.
      *
-     * @param itemView the view specific for this holder
+     * @param vb       view-binding
      * @param listener for update events
      */
-    public StringEqualityHolder(@NonNull final View itemView,
+    public StringEqualityHolder(@NonNull final RowEditBookshelfFilterStringEqualityBinding vb,
                                 @NonNull final ModificationListener listener) {
-        super(itemView, listener);
-        vb = RowEditBookshelfFilterStringEqualityBinding.bind(itemView);
+        super(vb.getRoot(), listener);
+        this.vb = vb;
     }
 
     public void onBind(@NonNull final PStringEqualityFilter filter) {

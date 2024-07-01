@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -38,9 +37,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.EntityListHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -187,12 +183,5 @@ public class PEntityListFilter<T extends Entity>
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_entity_list;
-    }
-
-    @NonNull
-    @Override
-    public PFilterHolder createHolder(@NonNull final View view,
-                                      @NonNull final ModificationListener modificationListener) {
-        return new EntityListHolder<>(view, modificationListener);
     }
 }

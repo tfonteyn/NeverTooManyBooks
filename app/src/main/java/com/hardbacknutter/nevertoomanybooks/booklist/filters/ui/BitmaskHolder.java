@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters.ui;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -36,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilde
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class BitmaskHolder
-        extends PFilterHolder
+        extends PFilterViewHolder
         implements BindableViewHolder<PBitmaskFilter> {
 
     @NonNull
@@ -45,13 +44,13 @@ public class BitmaskHolder
     /**
      * Constructor.
      *
-     * @param itemView the view specific for this holder
+     * @param vb       view-binding
      * @param listener for update events
      */
-    public BitmaskHolder(@NonNull final View itemView,
+    public BitmaskHolder(@NonNull final RowEditBookshelfFilterBitmaskBinding vb,
                          @NonNull final ModificationListener listener) {
-        super(itemView, listener);
-        vb = RowEditBookshelfFilterBitmaskBinding.bind(itemView);
+        super(vb.getRoot(), listener);
+        this.vb = vb;
     }
 
     @Override

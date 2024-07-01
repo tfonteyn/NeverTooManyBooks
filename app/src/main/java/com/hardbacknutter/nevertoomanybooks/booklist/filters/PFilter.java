@@ -20,15 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 /**
@@ -64,6 +61,8 @@ public interface PFilter<T>
 
     /**
      * Set the stringified version value of the value as loaded from the database table.
+     *
+     * @param value to set
      */
     void setPersistedValue(@Nullable String value);
 
@@ -79,6 +78,8 @@ public interface PFilter<T>
 
     /**
      * Set the typed value.
+     *
+     * @param value to set
      */
     void setValue(@Nullable T value);
 
@@ -117,15 +118,12 @@ public interface PFilter<T>
     /**
      * UI usage: get the layout id for use in the Filter setup dialog.
      * <p>
-     * Warning: also used as row view-type in the adapter.
+     * Dev. note: we needed a unique id for filter types to use
+     * as the viewType in the adapter. Instead of inventing one... the layout id is
+     * already unique so we're using that.
      *
      * @return layout res id
      */
     @LayoutRes
     int getPrefLayoutId();
-
-    @NonNull
-    PFilterHolder createHolder(@NonNull View view,
-                               @NonNull ModificationListener
-                                       modificationListener);
 }

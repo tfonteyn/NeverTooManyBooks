@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -34,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class PFilterListAdapter
-        extends RecyclerView.Adapter<PFilterHolder> {
+        extends RecyclerView.Adapter<PFilterViewHolder> {
 
     @NonNull
     private final List<PFilter<?>> filters;
@@ -59,20 +58,14 @@ public class PFilterListAdapter
 
     @NonNull
     @Override
-    public PFilterHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                            final int viewType) {
-        final View view = layoutInflater.inflate(viewType, parent, false);
-
-        return filters
-                .stream()
-                .filter(pFilter -> pFilter.getPrefLayoutId() == viewType)
-                .map(pFilter -> pFilter.createHolder(view, listener))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown viewType"));
+    public PFilterViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                final int viewType) {
+        return PFilterViewHolderFactory.create(layoutInflater, parent,
+                                               viewType, listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final PFilterHolder holder,
+    public void onBindViewHolder(@NonNull final PFilterViewHolder holder,
                                  final int position) {
         final PFilter<?> pFilter = filters.get(position);
         //noinspection unchecked

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public class PFilterHolder
+public class PFilterViewHolder
         extends RecyclerView.ViewHolder {
 
     @NonNull
@@ -40,8 +40,8 @@ public class PFilterHolder
      * @param itemView the view specific for this holder
      * @param listener for update events
      */
-    PFilterHolder(@NonNull final View itemView,
-                  @NonNull final ModificationListener listener) {
+    PFilterViewHolder(@NonNull final View itemView,
+                      @NonNull final ModificationListener listener) {
         super(itemView);
 
         this.listener = listener;

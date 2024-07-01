@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.LayoutRes;
@@ -31,9 +30,6 @@ import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.BooleanHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
@@ -146,12 +142,5 @@ public class PBooleanFilter
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_boolean;
-    }
-
-    @NonNull
-    @Override
-    public PFilterHolder createHolder(@NonNull final View view,
-                                      @NonNull final ModificationListener modificationListener) {
-        return new BooleanHolder(view, modificationListener);
     }
 }

@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters.ui;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -35,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class EntityListHolder<T extends Entity>
-        extends PFilterHolder
+        extends PFilterViewHolder
         implements BindableViewHolder<PEntityListFilter<T>> {
 
     @NonNull
@@ -44,13 +43,13 @@ public class EntityListHolder<T extends Entity>
     /**
      * Constructor.
      *
-     * @param itemView the view specific for this holder
+     * @param vb       view-binding
      * @param listener for update events
      */
-    public EntityListHolder(@NonNull final View itemView,
+    public EntityListHolder(@NonNull final RowEditBookshelfFilterEntityListBinding vb,
                             @NonNull final ModificationListener listener) {
-        super(itemView, listener);
-        vb = RowEditBookshelfFilterEntityListBinding.bind(itemView);
+        super(vb.getRoot(), listener);
+        this.vb = vb;
     }
 
     public void onBind(@NonNull final PEntityListFilter<T> filter) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -31,9 +30,6 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.StringEqualityHolder;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -202,12 +198,5 @@ public class PStringEqualityFilter
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_string_equality;
-    }
-
-    @NonNull
-    @Override
-    public PFilterHolder createHolder(@NonNull final View view,
-                                      @NonNull final ModificationListener modificationListener) {
-        return new StringEqualityHolder(view, modificationListener);
     }
 }
