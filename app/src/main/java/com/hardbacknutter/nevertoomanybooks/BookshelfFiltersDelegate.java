@@ -64,7 +64,10 @@ class BookshelfFiltersDelegate
             new ModificationListener() {
                 @Override
                 public void onModified(final int pos) {
-                    adapter.notifyItemChanged(pos);
+                    // Note1: Do NOT update the adapter in this method!
+                    //        There is NO need (the filters are updated in situ)
+                    //        + it plays havoc with any TextWatchers
+                    // Note2: we don't really need the 'pos' here...
                     vm.setModified(true);
                 }
 

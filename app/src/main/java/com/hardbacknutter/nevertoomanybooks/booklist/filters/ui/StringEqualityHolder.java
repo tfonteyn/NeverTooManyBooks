@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,8 @@ public class StringEqualityHolder
 
     @NonNull
     private final RowEditBookshelfFilterStringEqualityBinding vb;
+    @Nullable
+    private ExtTextWatcher currentTextWatcher;
 
     /**
      * Constructor.
@@ -52,6 +54,11 @@ public class StringEqualityHolder
     }
 
     public void onBind(@NonNull final PStringEqualityFilter filter) {
+        // Remove any previous listener before modifying the field
+        if (currentTextWatcher != null) {
+            vb.filter.removeTextChangedListener(currentTextWatcher);
+        }
+
         final Context context = itemView.getContext();
         vb.lblFilter.setText(filter.getLabel(context));
         vb.filter.setText(filter.getValueText(context));
@@ -63,9 +70,11 @@ public class StringEqualityHolder
                 .createAdapter(context, filter.getDBKey());
         // likewise, always set the adapter even when null
         vb.filter.setAdapter(adapter);
-        vb.filter.addTextChangedListener((ExtTextWatcher) s -> {
-            filter.setValueText(context, s.toString());
+        // Now that the value has been set, enable a listener to detect user made changes.
+        currentTextWatcher = s -> {
+            filter.setValue(context, s.toString());
             listener.onModified(getBindingAdapterPosition());
-        });
+        };
+        vb.filter.addTextChangedListener(currentTextWatcher);
     }
 }
