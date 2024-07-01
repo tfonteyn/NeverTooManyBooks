@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -100,6 +101,7 @@ public class BooklistHeader {
                     .stream()
                     .filter(f -> f.isActive(context))
                     .map(filter -> filter.getValueText(context))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.joining(", "));
 
             if (!text.isEmpty()) {

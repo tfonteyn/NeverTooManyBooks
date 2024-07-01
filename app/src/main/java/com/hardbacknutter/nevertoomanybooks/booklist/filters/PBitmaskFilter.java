@@ -171,13 +171,11 @@ public class PBitmaskFilter
     }
 
     @Override
-    @NonNull
+    @Nullable
     public String getValueText(@NonNull final Context context,
                                @Nullable final Set<Integer> value) {
-        if (value == null) {
-            return context.getString(R.string.bob_empty_field);
-        } else if (value.isEmpty()) {
-            return context.getString(R.string.btn_all_books);
+        if (value == null || value.isEmpty()) {
+            return null;
         } else {
             return mapSupplier.get()
                               .entrySet()

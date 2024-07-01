@@ -47,9 +47,11 @@
         style="@style/TIL.Filter.AutoCompleteTextView"
         android:layout_marginStart="@dimen/field_margin_start"
         android:layout_marginEnd="@dimen/field_margin_end"
+        app:expandedHintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_filter"
         app:layout_constraintTop_toBottomOf="@id/lbl_filter"
+        app:placeholderText="@string/bob_empty_field"
         >
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView

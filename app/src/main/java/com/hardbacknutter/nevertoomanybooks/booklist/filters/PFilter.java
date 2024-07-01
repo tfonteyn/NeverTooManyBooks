@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,18 +99,26 @@ public interface PFilter<T>
     }
 
     /**
-     * UI usage: get the text to show the user representing the value.
+     * UI usage: get the text to show the user representing the given value.
+     * The current filter value is not modified.
      *
      * @param context Current context
      * @param value   to stringify
      *
      * @return string
      */
-    @NonNull
+    @Nullable
     String getValueText(@NonNull Context context,
                         @Nullable T value);
 
-    @NonNull
+    /**
+     * UI usage: get the text to show the user representing the current value.
+     *
+     * @param context Current context
+     *
+     * @return string
+     */
+    @Nullable
     default String getValueText(@NonNull final Context context) {
         return getValueText(context, getValue());
     }

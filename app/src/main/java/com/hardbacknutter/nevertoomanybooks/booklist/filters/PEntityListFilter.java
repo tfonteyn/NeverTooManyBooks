@@ -152,11 +152,11 @@ public class PEntityListFilter<T extends Entity>
     }
 
     @Override
-    @NonNull
+    @Nullable
     public String getValueText(@NonNull final Context context,
                                @Nullable final Set<Long> value) {
         if (value == null || value.isEmpty()) {
-            return context.getString(R.string.bob_empty_field);
+            return null;
         } else {
             if (entityMap == null) {
                 entityMap = listSupplier

@@ -127,6 +127,8 @@ public class PStringEqualityFilter
 
     /**
      * UI support.
+     *
+     * @param supplier optional formatter supplier
      */
     public void setFormatter(@Nullable final Function<Context, FieldFormatter<String>> supplier) {
         this.formatterSupplier = supplier;
@@ -147,12 +149,12 @@ public class PStringEqualityFilter
         return formatter;
     }
 
-    @NonNull
+    @Nullable
     @Override
     public String getValueText(@NonNull final Context context,
                                @Nullable final String value) {
-        if (value == null || value.isEmpty()) {
-            return context.getString(R.string.bob_empty_field);
+        if (value == null || value.isBlank()) {
+            return null;
         } else {
             final FieldFormatter<String> fmt = getFormatter(context);
             if (fmt != null) {
@@ -166,18 +168,21 @@ public class PStringEqualityFilter
     /**
      * UI support.
      *
-     * @param context Current context
+     * @param context   Current context
+     * @param valueText to set; if there is a formatter set, an attempt
+     *                  will be made to extract the value,
+     *                  otherwise it's set as-is.
      */
     public void setValueText(@NonNull final Context context,
-                             @Nullable final String value) {
-        if (value == null) {
+                             @Nullable final String valueText) {
+        if (valueText == null) {
             setValue(null);
         } else {
             final FieldFormatter<String> fmt = getFormatter(context);
             if (fmt instanceof EditFieldFormatter) {
-                setValue(((EditFieldFormatter<String>) fmt).extract(context, value));
+                setValue(((EditFieldFormatter<String>) fmt).extract(context, valueText));
             } else {
-                setValue(value);
+                setValue(valueText);
             }
         }
     }

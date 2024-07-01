@@ -54,6 +54,7 @@
             style="@style/RowEditor.Text.Secondary"
             android:layout_width="match_parent"
             android:layout_marginStart="@dimen/field_margin_start"
+            android:hint="@string/bob_empty_field"
             tools:ignore="SelectableText"
             />
     </LinearLayout>

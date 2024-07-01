@@ -55,6 +55,7 @@
             android:layout_width="match_parent"
             android:layout_marginStart="@dimen/field_margin_start"
             tools:ignore="SelectableText"
+            android:hint="@string/bob_empty_field"
             />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
