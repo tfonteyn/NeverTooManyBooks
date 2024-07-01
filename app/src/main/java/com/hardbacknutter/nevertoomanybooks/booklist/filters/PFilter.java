@@ -79,9 +79,11 @@ public interface PFilter<T>
     /**
      * Set the typed value.
      *
-     * @param value to set
+     * @param context Current context
+     * @param value   to set
      */
-    void setValue(@Nullable T value);
+    void setValue(@NonNull Context context,
+                  @Nullable T value);
 
 
     /**

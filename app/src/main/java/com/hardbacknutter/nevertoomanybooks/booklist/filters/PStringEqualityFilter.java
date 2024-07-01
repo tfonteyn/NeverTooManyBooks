@@ -120,9 +120,27 @@ public class PStringEqualityFilter
         return value;
     }
 
+    /**
+     * Set the typed value.
+     *
+     * @param context   Current context
+     * @param valueText to set; if there is a formatter set, an attempt
+     *                  will be made to extract the value,
+     *                  otherwise it's set as-is.
+     */
     @Override
-    public void setValue(@Nullable final String value) {
-        this.value = value;
+    public void setValue(@NonNull final Context context,
+                         @Nullable final String valueText) {
+        if (valueText == null) {
+            this.value = null;
+        } else {
+            final FieldFormatter<String> fmt = getFormatter(context);
+            if (fmt instanceof EditFieldFormatter) {
+                this.value = ((EditFieldFormatter<String>) fmt).extract(context, valueText);
+            } else {
+                this.value = valueText;
+            }
+        }
     }
 
     /**
@@ -161,28 +179,6 @@ public class PStringEqualityFilter
                 return fmt.format(context, value);
             } else {
                 return value;
-            }
-        }
-    }
-
-    /**
-     * UI support.
-     *
-     * @param context   Current context
-     * @param valueText to set; if there is a formatter set, an attempt
-     *                  will be made to extract the value,
-     *                  otherwise it's set as-is.
-     */
-    public void setValueText(@NonNull final Context context,
-                             @Nullable final String valueText) {
-        if (valueText == null) {
-            setValue(null);
-        } else {
-            final FieldFormatter<String> fmt = getFormatter(context);
-            if (fmt instanceof EditFieldFormatter) {
-                setValue(((EditFieldFormatter<String>) fmt).extract(context, valueText));
-            } else {
-                setValue(valueText);
             }
         }
     }

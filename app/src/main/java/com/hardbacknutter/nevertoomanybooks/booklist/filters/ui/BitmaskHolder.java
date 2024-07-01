@@ -72,7 +72,7 @@ public class BitmaskHolder
                     .setItems(ids, labels)
                     .setSelectedItems(filter.getValue())
                     .setPositiveButton(android.R.string.ok, value -> {
-                        filter.setValue(value);
+                        filter.setValue(context, value);
                         vb.filter.setText(filter.getValueText(context));
                         listener.onModified(getBindingAdapterPosition());
                     })

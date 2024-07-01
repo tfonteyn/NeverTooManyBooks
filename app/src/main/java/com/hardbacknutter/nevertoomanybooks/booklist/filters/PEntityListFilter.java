@@ -144,7 +144,8 @@ public class PEntityListFilter<T extends Entity>
     }
 
     @Override
-    public void setValue(@Nullable final Set<Long> value) {
+    public void setValue(@NonNull final Context context,
+                         @Nullable final Set<Long> value) {
         this.value.clear();
         if (value != null && !value.isEmpty()) {
             this.value.addAll(value);

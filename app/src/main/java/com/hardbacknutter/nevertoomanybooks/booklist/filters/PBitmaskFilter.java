@@ -166,7 +166,8 @@ public class PBitmaskFilter
     }
 
     @Override
-    public void setValue(@Nullable final Set<Integer> value) {
+    public void setValue(@NonNull final Context context,
+                         @Nullable final Set<Integer> value) {
         this.value = value;
     }
 

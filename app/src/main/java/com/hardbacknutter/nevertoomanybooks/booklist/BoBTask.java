@@ -480,7 +480,7 @@ public class BoBTask
 
                     final Set<Long> list = new HashSet<>(pFilter.getValue());
                     list.add(bookshelf.getId());
-                    pFilter.setValue(list);
+                    pFilter.setValue(context, list);
 
                 } else {
                     // Filter on the current one only

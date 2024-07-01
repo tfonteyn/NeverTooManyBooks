@@ -53,6 +53,7 @@ public class BooleanHolder
         vb.valueTrue.setText(filter.getValueText(context, true));
         vb.valueFalse.setText(filter.getValueText(context, false));
 
+        // Before we bind the initial value, remove the listener from the RadioGroup
         vb.filter.setOnCheckedChangeListener(null);
         final Boolean value = filter.getValue();
         if (value == null) {
@@ -62,11 +63,12 @@ public class BooleanHolder
             vb.valueFalse.setChecked(!value);
         }
 
+        // Now that the value has been set, enable a listener to detect user made changes.
         vb.filter.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == -1) {
-                filter.setValue(null);
+                filter.setValue(context, null);
             } else {
-                filter.setValue(checkedId == vb.valueTrue.getId());
+                filter.setValue(context, checkedId == vb.valueTrue.getId());
             }
             listener.onModified(getBindingAdapterPosition());
         });

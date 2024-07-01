@@ -116,7 +116,8 @@ public class PBooleanFilter
     }
 
     @Override
-    public void setValue(@Nullable final Boolean value) {
+    public void setValue(@NonNull final Context context,
+                         @Nullable final Boolean value) {
         this.value = value;
     }
 
