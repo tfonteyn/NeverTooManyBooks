@@ -22,10 +22,14 @@ Draft notes for next version:
 
 NEW:
 - option to replace the authors on all entries in a TOC with the books main author
+- consolidated language together will other UI options
+- preference dialog updated to M3
 
 FIXES:
+- filters for color etc no longer jump on manual edits
 - always show loanee on book-details when globally enabled
 - language selection no longer cached which sometime led to wrongly displayed
+- various fixes to toolbar menus on dialogs and bottomsheets
 
 REMOVED:
 
