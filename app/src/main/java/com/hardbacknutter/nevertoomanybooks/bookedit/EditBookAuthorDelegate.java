@@ -166,7 +166,7 @@ class EditBookAuthorDelegate
         toolbar.setSubtitle(vm.getBook().getTitle());
     }
 
-    private void setupRealAuthorField(final Context context) {
+    private void setupRealAuthorField(@NonNull final Context context) {
         if (authorVm.showRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);

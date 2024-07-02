@@ -137,7 +137,7 @@ class PartialDatePickerDelegate
      *
      * @param root Root view
      */
-    void reorderPickers(@NonNull final View root) {
+    private void reorderPickers(@NonNull final View root) {
         final char[] order;
         try {
             // This actually throws exception in some versions of Android, specifically when
