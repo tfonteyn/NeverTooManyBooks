@@ -32,7 +32,6 @@
     <!-- The ISBN keypad number keys -->
     <dimen name="isbn_keypad_number_text_size">22sp</dimen>
     <!-- The ISBN keypad search key -->
-    <dimen name="isbn_keypad_search_text_size">12sp</dimen>
     <dimen name="isbn_keypad_search_icon_size">24dp</dimen>
     <dimen name="isbn_keypad_search_stroke_width">2dp</dimen>
 

@@ -216,8 +216,6 @@
 
     <!-- Buttons *on* the toolbar get extra spacing for ease of use. -->
     <dimen name="toolbar_button_start_margin">4dp</dimen>
-    <!-- The confirm/select (etc) button at the "end" gets more space. -->
-    <dimen name="toolbar_button_start_margin_last_button">8dp</dimen>
 
     <!-- the scaleX/scaleY scaling factor for the "3-dot" context menu button on a row. -->
     <item name="context_menu_button_scale"

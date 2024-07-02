@@ -220,12 +220,6 @@
            parent="TextAppearance.Material3.TitleMedium">
     </style>
 
-    <!-- textAppearance; not a full style -->
-    <style name="Button.Menu.Info"
-           parent="TextAppearance.Material3.TitleSmall">
-        <item name="android:textSize">12sp</item>
-    </style>
-
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->
     <style name="Button.Action.Submit"
            parent="Widget.Material3.Button">
