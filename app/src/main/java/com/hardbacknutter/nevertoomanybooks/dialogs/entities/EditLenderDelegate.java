@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -150,11 +149,6 @@ class EditLenderDelegate
     @Override
     public void onToolbarNavigationClick(@NonNull final View v) {
         owner.dismiss();
-    }
-
-    @Override
-    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
-        return false;
     }
 
     @Override

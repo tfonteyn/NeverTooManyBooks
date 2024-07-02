@@ -47,7 +47,9 @@ public interface FlexToolbar {
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    boolean onToolbarMenuItemClick(@Nullable MenuItem menuItem);
+    default boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        return false;
+    }
 
     /**
      * Called when the user clicks a button on the toolbar or the dialog (bottom) button-bar.
