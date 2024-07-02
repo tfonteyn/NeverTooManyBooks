@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Debug;
 import android.os.StrictMode;
 
@@ -88,10 +89,16 @@ public class App
                                                    .build());
             }
 
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                                           .detectLeakedSqlLiteObjects()
-                                           .detectLeakedClosableObjects()
-                                           .detectActivityLeaks()
+            final StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .detectActivityLeaks();
+
+            // https://developer.android.com/about/versions/15/behavior-changes-15#safer-intents
+            if (Build.VERSION.SDK_INT >= 31) {
+                vmPolicyBuilder.detectUnsafeIntentLaunch();
+            }
+            StrictMode.setVmPolicy(vmPolicyBuilder
                                            .penaltyLog()
                                            .build());
 
