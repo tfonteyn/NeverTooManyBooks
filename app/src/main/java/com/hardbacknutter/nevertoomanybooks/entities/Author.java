@@ -304,22 +304,6 @@ public class Author
     }
 
     /**
-     * Constructor.
-     *
-     * @param familyName Family name
-     * @param givenNames Given names
-     * @param isComplete whether an Author is completed, i.e if the user has all they
-     *                   want from this Author.
-     */
-    public Author(@NonNull final String familyName,
-                  @Nullable final String givenNames,
-                  final boolean isComplete) {
-        this.familyName = familyName.trim();
-        this.givenNames = givenNames == null ? "" : givenNames.trim();
-        complete = isComplete;
-    }
-
-    /**
      * Full constructor.
      *
      * @param id      ID of the Author in the database.

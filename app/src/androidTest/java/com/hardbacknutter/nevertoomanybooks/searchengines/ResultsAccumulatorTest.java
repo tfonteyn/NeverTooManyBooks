@@ -111,7 +111,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.LANGUAGE, "eng");
 
         book.setToc(List.of(
-                new TocEntry(new Author("Pratchett", "Terry", false),
+                new TocEntry(new Author("Pratchett", "Terry"),
                              "The Shepherd's Crown",
                              new PartialDate("2015-01-01"))));
 
@@ -131,8 +131,8 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.PRICE_LISTED, "7.99");
 
         book.setAuthors(List.of(
-                new Author("Pratchett", "Terry", false),
-                new Author("Kidby", "Paul", false)
+                new Author("Pratchett", "Terry"),
+                new Author("Kidby", "Paul")
                         .setType(Author.TYPE_ARTIST)
         ));
 
@@ -182,7 +182,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.TITLE, "The Shepherd's Crown: A Discworld Novel, Volume 41");
         book.putString(DBKey.PRICE_LISTED, "7.29");
         book.setAuthors(List.of(
-                new Author("Pratchett", "Terry", false)
+                new Author("Pratchett", "Terry")
                         .setType(Author.TYPE_WRITER)));
         book.setPublishers(List.of(new Publisher("Corgi Childrens")));
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
@@ -250,11 +250,11 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.PRICE_LISTED, "8.87");
 
         book.setAuthors(List.of(
-                new Author("Pratchett", "Terry", false)
+                new Author("Pratchett", "Terry")
                         .setType(Author.TYPE_WRITER),
-                new Author("Kidby", "Paul", false)
+                new Author("Kidby", "Paul")
                         .setType(Author.TYPE_ARTIST),
-                new Author("Ellen Andersen", "Laura", false)
+                new Author("Ellen Andersen", "Laura")
                         .setType(Author.TYPE_ARTIST)
         ));
 
@@ -350,7 +350,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.DESCRIPTION, "Data from Amazon UK as of 2016-09-07");
         book.putString(DBKey.LANGUAGE, "eng");
         book.setToc(List.of(
-                new TocEntry(new Author("Pratchett", "Terry", false),
+                new TocEntry(new Author("Pratchett", "Terry"),
                              "The Shepherd's Crown",
                              new PartialDate("2015-01-01"))));
 
@@ -372,16 +372,16 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.PRICE_LISTED, "7.99");
 
         book.setAuthors(List.of(
-                new Author("Pratchett", "Terry", false),
-                new Author("Kidby", "Paul", false)
+                new Author("Pratchett", "Terry"),
+                new Author("Kidby", "Paul")
                         .setType(Author.TYPE_ARTIST),
-                new Author("Pratchett", "Terry", false)
+                new Author("Pratchett", "Terry")
                         .setType(Author.TYPE_WRITER),
-                new Author("Pratchett", "Terry", false)
+                new Author("Pratchett", "Terry")
                         .setType(Author.TYPE_WRITER),
-                new Author("Kidby", "Paul", false)
+                new Author("Kidby", "Paul")
                         .setType(Author.TYPE_ARTIST),
-                new Author("Ellen Andersen", "Laura", false)
+                new Author("Ellen Andersen", "Laura")
                         .setType(Author.TYPE_ARTIST)
         ));
 
