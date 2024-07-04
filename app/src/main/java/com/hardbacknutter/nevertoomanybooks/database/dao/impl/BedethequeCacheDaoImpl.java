@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public class BedethequeCacheDaoImpl
                        @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoInsertException, DaoUpdateException {
 
-        if (Build.VERSION.SDK_INT < 30) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             insertApiPre30(locale, recordSupplier);
             return;
         }

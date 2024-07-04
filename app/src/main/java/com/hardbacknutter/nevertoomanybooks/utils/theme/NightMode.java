@@ -50,8 +50,9 @@ public final class NightMode {
      */
     private static final int[] NIGHT_MODES = {
             // follow the system setting
-            Build.VERSION.SDK_INT >= 29 ? AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                                        : AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY,
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+            ? AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            : AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY,
             // light
             AppCompatDelegate.MODE_NIGHT_NO,
             // dark

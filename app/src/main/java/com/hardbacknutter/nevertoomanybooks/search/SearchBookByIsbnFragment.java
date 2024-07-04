@@ -219,7 +219,7 @@ public class SearchBookByIsbnFragment
         switch (key) {
             case KEY_SEARCH: {
                 // The search button
-                if (Build.VERSION.SDK_INT >= 30) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     view.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
                 } else {
                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -229,7 +229,7 @@ public class SearchBookByIsbnFragment
                 break;
             }
             case KEY_STOP_SCANNING: {
-                if (Build.VERSION.SDK_INT >= 30) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     view.performHapticFeedback(HapticFeedbackConstants.REJECT);
                 } else {
                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);

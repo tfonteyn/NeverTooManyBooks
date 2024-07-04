@@ -662,7 +662,7 @@ public class CoverHandler {
             final Context context = fragmentView.getContext();
 
             final int surfaceRotation;
-            if (Build.VERSION.SDK_INT >= 30) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 //noinspection DataFlowIssue
                 surfaceRotation = context.getDisplay().getRotation();
             } else {

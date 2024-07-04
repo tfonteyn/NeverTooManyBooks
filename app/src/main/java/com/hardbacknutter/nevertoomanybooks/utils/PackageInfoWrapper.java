@@ -83,7 +83,7 @@ public final class PackageInfoWrapper {
     @NonNull
     public static PackageInfoWrapper createWithSignatures(@NonNull final Context context) {
         final PackageInfoWrapper info;
-        if (Build.VERSION.SDK_INT >= 28) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             info = new PackageInfoWrapper(context, PackageManager.GET_SIGNING_CERTIFICATES);
         } else {
             info = new PackageInfoWrapper(context, PackageManager.GET_SIGNATURES);
@@ -107,7 +107,7 @@ public final class PackageInfoWrapper {
      * @return the version
      */
     public long getVersionCode() {
-        if (Build.VERSION.SDK_INT >= 28) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return info.getLongVersionCode();
         } else {
             //noinspection deprecation
@@ -122,6 +122,7 @@ public final class PackageInfoWrapper {
      */
     @NonNull
     public String getVersionName() {
+        //noinspection DataFlowIssue
         return info.versionName;
     }
 

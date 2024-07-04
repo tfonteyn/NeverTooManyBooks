@@ -95,7 +95,7 @@ public class App
                     .detectActivityLeaks();
 
             // https://developer.android.com/about/versions/15/behavior-changes-15#safer-intents
-            if (Build.VERSION.SDK_INT >= 31) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 vmPolicyBuilder.detectUnsafeIntentLaunch();
             }
             StrictMode.setVmPolicy(vmPolicyBuilder

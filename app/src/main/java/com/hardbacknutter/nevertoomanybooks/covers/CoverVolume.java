@@ -202,7 +202,7 @@ public final class CoverVolume {
         final Logger logger = LoggerFactory.getLogger();
         final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
         for (final StorageVolume sv : storageVolumes) {
-            if (Build.VERSION.SDK_INT >= 30) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 logger.d(TAG, "init",
                          "uuid=" + sv.getUuid()
                          + "|sv.getDescription=" + sv.getDescription(context)

@@ -85,7 +85,7 @@ public final class FileUtils {
                             @NonNull final OutputStream os)
             throws IOException {
 
-        if (Build.VERSION.SDK_INT >= 29) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             android.os.FileUtils.copy(is, os);
 
         } else {

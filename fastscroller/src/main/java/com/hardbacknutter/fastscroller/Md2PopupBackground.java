@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -172,7 +172,7 @@ class Md2PopupBackground
 
     @Override
     public void getOutline(@NonNull final Outline outline) {
-        if (Build.VERSION.SDK_INT < 29 && !mPath.isConvex()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !mPath.isConvex()) {
             // The outline path must be convex before Q (==29), but we may run into floating
             // point error caused by calculation involving sqrt(2) or OEM implementation
             // difference, so in this case we just omit the shadow instead of crashing.

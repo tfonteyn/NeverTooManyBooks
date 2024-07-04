@@ -55,10 +55,10 @@ public class PickVisualMediaContract
      */
     @SuppressLint({"ClassVerificationFailure", "NewApi"})
     private static boolean isPhotoPickerAvailable() {
-        if (Build.VERSION.SDK_INT >= 33) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // Android 13
             return true;
-        } else if (Build.VERSION.SDK_INT >= 30) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // Android 11/12 with SdkExtensions level 2 or up
             return SdkExtensions.getExtensionVersion(Build.VERSION_CODES.R) >= 2;
         } else {
