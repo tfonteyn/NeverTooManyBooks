@@ -198,20 +198,6 @@ public class Series
     }
 
     /**
-     * Constructor.
-     *
-     * @param title    of the Series
-     * @param complete whether a Series is completed, i.e if the user has all
-     *                 they want from this Series.
-     */
-    public Series(@NonNull final String title,
-                  final boolean complete) {
-        this.title = title;
-        this.complete = complete;
-        number = "";
-    }
-
-    /**
      * Full constructor with optional book number.
      *
      * @param id      ID of the Series in the database.

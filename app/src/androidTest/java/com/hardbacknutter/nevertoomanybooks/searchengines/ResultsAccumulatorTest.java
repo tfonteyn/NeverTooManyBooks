@@ -171,8 +171,7 @@ public class ResultsAccumulatorTest
         // list_price_currency=GBP}]}
 
         final Book book = new Book();
-        book.setSeries(List.of(
-                new Series("Discworld Novels", false)
+        book.setSeries(List.of(new Series("Discworld Novels")
         ));
         book.putString(DBKey.LANGUAGE, "English");
         book.putString(DBKey.FORMAT, "Paperback");
@@ -230,8 +229,7 @@ public class ResultsAccumulatorTest
         // list_price_currency=EUR}]}
 
         final Book book = new Book();
-        book.setSeries(List.of(
-                new Series("Discworld Novels", false)));
+        book.setSeries(List.of(new Series("Discworld Novels")));
         book.putString(DBKey.DESCRIPTION,
                        "An old enemy is gathering strength. This is a time of endings and beginnings, old friends and new, a blurring of edges and a shifting of power. Now Tiffany stands between the light and the dark, the good and the bad. As the fairy horde prepares for invasion, Tiffany must summon all the witches to stand with her.");
         book.putString(DBKey.LANGUAGE, "en");
@@ -345,8 +343,8 @@ public class ResultsAccumulatorTest
 
         final Book book = new Book();
         book.setSeries(List.of(
-                new Series("Discworld Novels", false),
-                new Series("Discworld Novels", false)));
+                new Series("Discworld Novels"),
+                new Series("Discworld Novels")));
         book.putString(DBKey.DESCRIPTION, "Data from Amazon UK as of 2016-09-07");
         book.putString(DBKey.LANGUAGE, "eng");
         book.setToc(List.of(
