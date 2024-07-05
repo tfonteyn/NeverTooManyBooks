@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.acra.dialog.CrashReportDialogHelper;
-import org.json.JSONException;
 
 @SuppressWarnings("WeakerAccess")
 public class AcraCustomDialogViewModel
@@ -117,7 +116,9 @@ public class AcraCustomDialogViewModel
 
                 bw.write(crashReportHelper.getReportData().toJSON());
 
-            } catch (@NonNull final IOException | JSONException e) {
+            } catch (@NonNull final IOException | org.json.JSONException e) {
+                // org.json.JSONException and NOT our repacked version;
+                // We're only logging it here so this is fins
                 LoggerFactory.getLogger().e(TAG, e);
                 FileUtils.delete(tmpFile);
                 return false;
