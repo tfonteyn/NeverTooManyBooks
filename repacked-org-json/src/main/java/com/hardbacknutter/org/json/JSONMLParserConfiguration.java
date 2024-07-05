@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,21 +23,19 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
+import androidx.annotation.NonNull;
+
 /**
  * Configuration object for the XML to JSONML parser. The configuration is immutable.
  */
 @SuppressWarnings("ALL")
-public class JSONMLParserConfiguration {
-    /**
-     * Used to indicate there's no defined limit to the maximum nesting depth when parsing a XML
-     * document to JSONML.
-     */
-    public static final int UNDEFINED_MAXIMUM_NESTING_DEPTH = -1;
+public class JSONMLParserConfiguration
+        extends ParserConfiguration {
 
     /**
-     * The default maximum nesting depth when parsing a XML document to JSONML.
+     * We can override the default maximum nesting depth if needed.
      */
-    public static final int DEFAULT_MAXIMUM_NESTING_DEPTH = 512;
+    public static final int DEFAULT_MAXIMUM_NESTING_DEPTH = ParserConfiguration.DEFAULT_MAXIMUM_NESTING_DEPTH;
 
     /** Original Configuration of the XML to JSONML Parser. */
     public static final JSONMLParserConfiguration ORIGINAL
@@ -47,40 +45,29 @@ public class JSONMLParserConfiguration {
             = new JSONMLParserConfiguration().withKeepStrings(true);
 
     /**
-     * When parsing the XML into JSONML, specifies if values should be kept as strings (<code>true</code>), or if
-     * they should try to be guessed into JSON values (numeric, boolean, string)
-     */
-    private boolean keepStrings;
-
-    /**
-     * The maximum nesting depth when parsing a XML document to JSONML.
-     */
-    private int maxNestingDepth = DEFAULT_MAXIMUM_NESTING_DEPTH;
-
-    /**
      * Default parser configuration. Does not keep strings (tries to implicitly convert values).
      */
     public JSONMLParserConfiguration() {
-        this.keepStrings = false;
+        super();
+        this.maxNestingDepth = DEFAULT_MAXIMUM_NESTING_DEPTH;
     }
 
     /**
      * Configure the parser string processing and use the default CDATA Tag Name as "content".
-     *
-     * @param keepStrings     <code>true</code> to parse all values as string.
-     *                        <code>false</code> to try and convert XML string values into a JSON value.
+     * @param keepStrings <code>true</code> to parse all values as string.
+     *      <code>false</code> to try and convert XML string values into a JSON value.
      * @param maxNestingDepth <code>int</code> to limit the nesting depth
      */
-    private JSONMLParserConfiguration(final boolean keepStrings,
-                                      final int maxNestingDepth) {
-        this.keepStrings = keepStrings;
-        this.maxNestingDepth = maxNestingDepth;
+    protected JSONMLParserConfiguration(final boolean keepStrings,
+                                        final int maxNestingDepth) {
+        super(keepStrings, maxNestingDepth);
     }
 
     /**
      * Provides a new instance of the same configuration.
      */
     @Override
+    @NonNull
     protected JSONMLParserConfiguration clone() {
         // future modifications to this method should always ensure a "deep"
         // clone in the case of collections. i.e. if a Map is added as a configuration
@@ -93,60 +80,17 @@ public class JSONMLParserConfiguration {
         );
     }
 
-    /**
-     * When parsing the XML into JSONML, specifies if values should be kept as strings (<code>true</code>), or if
-     * they should try to be guessed into JSON values (numeric, boolean, string)
-     *
-     * @return The <code>keepStrings</code> configuration value.
-     */
-    public boolean isKeepStrings() {
-        return this.keepStrings;
-    }
-
-    /**
-     * When parsing the XML into JSONML, specifies if values should be kept as strings (<code>true</code>), or if
-     * they should try to be guessed into JSON values (numeric, boolean, string)
-     *
-     * @param newVal new value to use for the <code>keepStrings</code> configuration option.
-     *
-     * @return The existing configuration will not be modified. A new configuration is returned.
-     */
+    @SuppressWarnings("unchecked")
+    @Override
+    @NonNull
     public JSONMLParserConfiguration withKeepStrings(final boolean newVal) {
-        JSONMLParserConfiguration newConfig = this.clone();
-        newConfig.keepStrings = newVal;
-        return newConfig;
+        return super.withKeepStrings(newVal);
     }
 
-    /**
-     * The maximum nesting depth that the parser will descend before throwing an exception
-     * when parsing the XML into JSONML.
-     *
-     * @return the maximum nesting depth set for this configuration
-     */
-    public int getMaxNestingDepth() {
-        return maxNestingDepth;
-    }
-
-    /**
-     * Defines the maximum nesting depth that the parser will descend before throwing an exception
-     * when parsing the XML into JSONML. The default max nesting depth is 512, which means the parser
-     * will throw a JsonException if the maximum depth is reached.
-     * Using any negative value as a parameter is equivalent to setting no limit to the nesting depth,
-     * which means the parses will go as deep as the maximum call stack size allows.
-     *
-     * @param maxNestingDepth the maximum nesting depth allowed to the XML parser
-     *
-     * @return The existing configuration will not be modified. A new configuration is returned.
-     */
+    @SuppressWarnings("unchecked")
+    @Override
+    @NonNull
     public JSONMLParserConfiguration withMaxNestingDepth(int maxNestingDepth) {
-        JSONMLParserConfiguration newConfig = this.clone();
-
-        if (maxNestingDepth > UNDEFINED_MAXIMUM_NESTING_DEPTH) {
-            newConfig.maxNestingDepth = maxNestingDepth;
-        } else {
-            newConfig.maxNestingDepth = UNDEFINED_MAXIMUM_NESTING_DEPTH;
-        }
-
-        return newConfig;
+        return super.withMaxNestingDepth(maxNestingDepth);
     }
 }

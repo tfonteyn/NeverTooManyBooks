@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,6 +41,12 @@ import java.util.Iterator;
 @SuppressWarnings("ALL")
 public class XML {
 
+    /**
+     * Constructs a new XML object.
+     */
+    public XML() {
+    }
+
     /** The Character '&amp;'. */
     public static final Character AMP = '&';
 
@@ -73,6 +79,9 @@ public class XML {
      */
     public static final String NULL_ATTR = "xsi:nil";
 
+    /**
+     * Represents the XML attribute name for specifying type information.
+     */
     public static final String TYPE_ATTR = "xsi:type";
 
     /**
@@ -84,7 +93,7 @@ public class XML {
      * which is available in Java8 and above.
      *
      * @see <a href=
-     *         "http://stackoverflow.com/a/21791059/6030888">http://stackoverflow.com/a/21791059/6030888</a>
+     *      "http://stackoverflow.com/a/21791059/6030888">http://stackoverflow.com/a/21791059/6030888</a>
      */
     private static Iterable<Integer> codePointIterator(final String string) {
         return new Iterable<Integer>() {
@@ -126,8 +135,8 @@ public class XML {
      * &apos; (single quote / apostrophe) is replaced by &amp;apos;
      * }</pre>
      *
-     * @param string The string to be escaped.
-     *
+     * @param string
+     *            The string to be escaped.
      * @return The escaped string.
      */
     public static String escape(String string) {
@@ -164,7 +173,6 @@ public class XML {
 
     /**
      * @param cp code point to test
-     *
      * @return true if the code point is not valid for an XML
      */
     private static boolean mustEscape(int cp) {
@@ -192,8 +200,8 @@ public class XML {
     /**
      * Removes XML escapes from the string.
      *
-     * @param string string to remove escapes from
-     *
+     * @param string
+     *            string to remove escapes from
      * @return string with converted entities
      */
     public static String unescape(String string) {
@@ -224,8 +232,8 @@ public class XML {
      * Throw an exception if the string contains whitespace. Whitespace is not
      * allowed in tagNames and attributes.
      *
-     * @param string A string.
-     *
+     * @param string
+     *            A string.
      * @throws JSONException Thrown if the string contains whitespace or is empty.
      */
     public static void noSpace(String string)
@@ -245,14 +253,17 @@ public class XML {
     /**
      * Scan the content following the named tag, attaching it to the context.
      *
-     * @param x                   The XMLTokener containing the source string.
-     * @param context             The JSONObject that will include the new material.
-     * @param name                The tag name.
-     * @param config              The XML parser configuration.
-     * @param currentNestingDepth The current nesting depth.
-     *
+     * @param x
+     *            The XMLTokener containing the source string.
+     * @param context
+     *            The JSONObject that will include the new material.
+     * @param name
+     *            The tag name.
+     * @param config
+     *            The XML parser configuration.
+     * @param currentNestingDepth
+     *            The current nesting depth.
      * @return true if the close tag is processed.
-     *
      * @throws JSONException Thrown if any parsing error occurs.
      */
     private static boolean parse(XMLTokener x,
@@ -456,9 +467,12 @@ public class XML {
                                     } else if (jsonObject.length() == 1
                                                && jsonObject.opt(
                                             config.getcDataTagName()) != null) {
-                                        context.accumulate(tagName, jsonObject.opt(
-                                                config.getcDataTagName()));
+                                        context.accumulate(tagName,
+                                                           jsonObject.opt(config.getcDataTagName()));
                                     } else {
+                                        if (!config.shouldTrimWhiteSpace()) {
+                                            removeEmpty(jsonObject, config);
+                                        }
                                         context.accumulate(tagName, jsonObject);
                                     }
                                 }
@@ -472,6 +486,120 @@ public class XML {
                 }
             }
         }
+    }
+    /**
+     * This method removes any JSON entry which has the key set by XMLParserConfiguration.cDataTagName
+     * and contains whitespace as this is caused by whitespace between tags. See test XMLTest.testNestedWithWhitespaceTrimmingDisabled.
+     * @param jsonObject JSONObject which may require deletion
+     * @param config The XMLParserConfiguration which includes the cDataTagName
+     */
+    private static void removeEmpty(final JSONObject jsonObject,
+                                    final XMLParserConfiguration config) {
+        if (jsonObject.has(config.getcDataTagName())) {
+            final Object s = jsonObject.get(config.getcDataTagName());
+            if (s instanceof String) {
+                if (isStringAllWhiteSpace(s.toString())) {
+                    jsonObject.remove(config.getcDataTagName());
+                }
+            } else if (s instanceof JSONArray) {
+                final JSONArray sArray = (JSONArray) s;
+                for (int k = sArray.length() - 1; k >= 0; k--) {
+                    final Object eachString = sArray.get(k);
+                    if (eachString instanceof String) {
+                        String s1 = (String) eachString;
+                        if (isStringAllWhiteSpace(s1)) {
+                            sArray.remove(k);
+                        }
+                    }
+                }
+                if (sArray.isEmpty()) {
+                    jsonObject.remove(config.getcDataTagName());
+                }
+            }
+        }
+    }
+
+    private static boolean isStringAllWhiteSpace(final String s) {
+        for (int k = 0; k < s.length(); k++) {
+            final char eachChar = s.charAt(k);
+            if (!Character.isWhitespace(eachChar)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * direct copy of {@link JSONObject#stringToNumber(String)} to maintain Android support.
+     */
+    private static Number stringToNumber(final String val)
+            throws NumberFormatException {
+        char initial = val.charAt(0);
+        if ((initial >= '0' && initial <= '9') || initial == '-') {
+            // decimal representation
+            if (isDecimalNotation(val)) {
+                // Use a BigDecimal all the time so we keep the original
+                // representation. BigDecimal doesn't support -0.0, ensure we
+                // keep that by forcing a decimal.
+                try {
+                    BigDecimal bd = new BigDecimal(val);
+                    if (initial == '-' && BigDecimal.ZERO.compareTo(bd) == 0) {
+                        return Double.valueOf(-0.0);
+                    }
+                    return bd;
+                } catch (NumberFormatException retryAsDouble) {
+                    // this is to support "Hex Floats" like this: 0x1.0P-1074
+                    try {
+                        Double d = Double.valueOf(val);
+                        if (d.isNaN() || d.isInfinite()) {
+                            throw new NumberFormatException(
+                                    "val [" + val + "] is not a valid number.");
+                        }
+                        return d;
+                    } catch (NumberFormatException ignore) {
+                        throw new NumberFormatException("val [" + val + "] is not a valid number.");
+                    }
+                }
+            }
+            // block items like 00 01 etc. Java number parsers treat these as Octal.
+            if (initial == '0' && val.length() > 1) {
+                char at1 = val.charAt(1);
+                if (at1 >= '0' && at1 <= '9') {
+                    throw new NumberFormatException("val [" + val + "] is not a valid number.");
+                }
+            } else if (initial == '-' && val.length() > 2) {
+                char at1 = val.charAt(1);
+                char at2 = val.charAt(2);
+                if (at1 == '0' && at2 >= '0' && at2 <= '9') {
+                    throw new NumberFormatException("val [" + val + "] is not a valid number.");
+                }
+            }
+            // integer representation.
+            // This will narrow any values to the smallest reasonable Object representation
+            // (Integer, Long, or BigInteger)
+
+            // BigInteger down conversion: We use a similar bitLength compare as
+            // BigInteger#intValueExact uses. Increases GC, but objects hold
+            // only what they need. i.e. Less runtime overhead if the value is
+            // long lived.
+            BigInteger bi = new BigInteger(val);
+            if (bi.bitLength() <= 31){
+                return Integer.valueOf(bi.intValue());
+            }
+            if (bi.bitLength() <= 63){
+                return Long.valueOf(bi.longValue());
+            }
+            return bi;
+        }
+        throw new NumberFormatException("val [" + val + "] is not a valid number.");
+    }
+
+    /**
+     * direct copy of {@link JSONObject#isDecimalNotation(String)} to maintain Android support.
+     */
+    private static boolean isDecimalNotation(final String val) {
+        return val.indexOf('.') > -1 || val.indexOf('e') > -1
+               || val.indexOf('E') > -1 || "-0".equals(val);
     }
 
     /**
@@ -532,80 +660,6 @@ public class XML {
     }
 
     /**
-     * direct copy of {@link JSONObject#stringToNumber(String)} to maintain Android support.
-     */
-    private static Number stringToNumber(final String val)
-            throws NumberFormatException {
-        char initial = val.charAt(0);
-        if ((initial >= '0' && initial <= '9') || initial == '-') {
-            // decimal representation
-            if (isDecimalNotation(val)) {
-                // Use a BigDecimal all the time so we keep the original
-                // representation. BigDecimal doesn't support -0.0, ensure we
-                // keep that by forcing a decimal.
-                try {
-                    BigDecimal bd = new BigDecimal(val);
-                    if (initial == '-' && BigDecimal.ZERO.compareTo(bd) == 0) {
-                        return Double.valueOf(-0.0);
-                    }
-                    return bd;
-                } catch (NumberFormatException retryAsDouble) {
-                    // this is to support "Hex Floats" like this: 0x1.0P-1074
-                    try {
-                        Double d = Double.valueOf(val);
-                        if (d.isNaN() || d.isInfinite()) {
-                            throw new NumberFormatException(
-                                    "val [" + val + "] is not a valid number.");
-                        }
-                        return d;
-                    } catch (NumberFormatException ignore) {
-                        throw new NumberFormatException("val [" + val + "] is not a valid number.");
-                    }
-                }
-            }
-            // block items like 00 01 etc. Java number parsers treat these as Octal.
-            if (initial == '0' && val.length() > 1) {
-                char at1 = val.charAt(1);
-                if (at1 >= '0' && at1 <= '9') {
-                    throw new NumberFormatException("val [" + val + "] is not a valid number.");
-                }
-            } else if (initial == '-' && val.length() > 2) {
-                char at1 = val.charAt(1);
-                char at2 = val.charAt(2);
-                if (at1 == '0' && at2 >= '0' && at2 <= '9') {
-                    throw new NumberFormatException("val [" + val + "] is not a valid number.");
-                }
-            }
-            // integer representation.
-            // This will narrow any values to the smallest reasonable Object representation
-            // (Integer, Long, or BigInteger)
-
-            // BigInteger down conversion: We use a similar bitLength compare as
-            // BigInteger#intValueExact uses. Increases GC, but objects hold
-            // only what they need. i.e. Less runtime overhead if the value is
-            // long lived.
-            BigInteger bi = new BigInteger(val);
-            if (bi.bitLength() <= 31) {
-                return Integer.valueOf(bi.intValue());
-            }
-            if (bi.bitLength() <= 63) {
-                return Long.valueOf(bi.longValue());
-            }
-            return bi;
-        }
-        throw new NumberFormatException("val [" + val + "] is not a valid number.");
-    }
-
-    /**
-     * direct copy of {@link JSONObject#isDecimalNotation(String)} to maintain Android support.
-     */
-    private static boolean isDecimalNotation(final String val) {
-        return val.indexOf('.') > -1 || val.indexOf('e') > -1
-               || val.indexOf('E') > -1 || "-0".equals(val);
-    }
-
-
-    /**
      * Convert a well-formed (but not necessarily valid) XML string into a
      * JSONObject. Some information may be lost in this transformation because
      * JSON is a data format and XML is a document format. XML uses elements,
@@ -617,14 +671,12 @@ public class XML {
      * &lt;[ [ ]]>}</pre>
      * are ignored.
      *
-     * @param string The source string.
-     *
+     * @param string
+     *            The source string.
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
-    public static JSONObject toJSONObject(String string)
-            throws JSONException {
+    public static JSONObject toJSONObject(String string) throws JSONException {
         return toJSONObject(string, XMLParserConfiguration.ORIGINAL);
     }
 
@@ -641,13 +693,10 @@ public class XML {
      * are ignored.
      *
      * @param reader The XML source reader.
-     *
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
-    public static JSONObject toJSONObject(Reader reader)
-            throws JSONException {
+    public static JSONObject toJSONObject(Reader reader) throws JSONException {
         return toJSONObject(reader, XMLParserConfiguration.ORIGINAL);
     }
 
@@ -662,22 +711,20 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     * <p>
+     *
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
-     * @param reader      The XML source reader.
+     * @param reader The XML source reader.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *                    or numeric values and will instead be left as strings
-     *
+     *  or numeric values and will instead be left as strings
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(Reader reader,
                                           boolean keepStrings)
             throws JSONException {
-        if (keepStrings) {
+        if(keepStrings) {
             return toJSONObject(reader, XMLParserConfiguration.KEEP_STRINGS);
         }
         return toJSONObject(reader, XMLParserConfiguration.ORIGINAL);
@@ -694,25 +741,22 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     * <p>
+     *
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
      * @param reader The XML source reader.
      * @param config Configuration options for the parser
-     *
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(Reader reader,
-                                          XMLParserConfiguration config)
-            throws JSONException {
+                                          XMLParserConfiguration config) throws JSONException {
         JSONObject jo = new JSONObject();
-        XMLTokener x = new XMLTokener(reader);
+        XMLTokener x = new XMLTokener(reader, config);
         while (x.more()) {
             x.skipPast("<");
-            if (x.more()) {
+            if(x.more()) {
                 parse(x, jo, null, config, 0);
             }
         }
@@ -730,21 +774,19 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     * <p>
+     *
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
-     * @param string      The source string.
+     * @param string
+     *            The source string.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *                    or numeric values and will instead be left as strings
-     *
+     *  or numeric values and will instead be left as strings
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(String string,
-                                          boolean keepStrings)
-            throws JSONException {
+                                          boolean keepStrings) throws JSONException {
         return toJSONObject(new StringReader(string), keepStrings);
     }
 
@@ -759,61 +801,57 @@ public class XML {
      * "content" member. Comments, prologs, DTDs, and <pre>{@code
      * &lt;[ [ ]]>}</pre>
      * are ignored.
-     * <p>
+     *
      * All values are converted as strings, for 1, 01, 29.0 will not be coerced to
      * numbers but will instead be the exact value as seen in the XML document.
      *
-     * @param string The source string.
+     * @param string
+     *            The source string.
      * @param config Configuration options for the parser.
-     *
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(String string,
-                                          XMLParserConfiguration config)
-            throws JSONException {
+                                          XMLParserConfiguration config) throws JSONException {
         return toJSONObject(new StringReader(string), config);
     }
 
     /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
      *
-     * @param object A JSONObject.
-     *
+     * @param object
+     *            A JSONObject.
      * @return A string.
-     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
-    public static String toString(Object object)
-            throws JSONException {
+    public static String toString(Object object) throws JSONException {
         return toString(object, null, XMLParserConfiguration.ORIGINAL);
     }
 
     /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
      *
-     * @param object  A JSONObject.
-     * @param tagName The optional name of the enclosing tag.
-     *
+     * @param object
+     *            A JSONObject.
+     * @param tagName
+     *            The optional name of the enclosing tag.
      * @return A string.
-     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
-    public static String toString(final Object object,
-                                  final String tagName) {
+    public static String toString(final Object object, final String tagName) {
         return toString(object, tagName, XMLParserConfiguration.ORIGINAL);
     }
 
     /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
      *
-     * @param object  A JSONObject.
-     * @param tagName The optional name of the enclosing tag.
-     * @param config  Configuration that can control output to XML.
-     *
+     * @param object
+     *            A JSONObject.
+     * @param tagName
+     *            The optional name of the enclosing tag.
+     * @param config
+     *            Configuration that can control output to XML.
      * @return A string.
-     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
     public static String toString(final Object object,
@@ -827,21 +865,23 @@ public class XML {
      * Convert a JSONObject into a well-formed, element-normal XML string,
      * either pretty print or single-lined depending on indent factor.
      *
-     * @param object       A JSONObject.
-     * @param tagName      The optional name of the enclosing tag.
-     * @param config       Configuration that can control output to XML.
-     * @param indentFactor The number of spaces to add to each level of indentation.
-     * @param indent       The current ident level in spaces.
-     *
+     * @param object
+     *            A JSONObject.
+     * @param tagName
+     *            The optional name of the enclosing tag.
+     * @param config
+     *            Configuration that can control output to XML.
+     * @param indentFactor
+     *            The number of spaces to add to each level of indentation.
+     * @param indent
+     *            The current ident level in spaces.
      * @return
-     *
      * @throws JSONException
      */
     private static String toString(final Object object,
                                    final String tagName,
                                    final XMLParserConfiguration config,
-                                   int indentFactor,
-                                   int indent)
+                                   int indentFactor, int indent)
             throws JSONException {
         StringBuilder sb = new StringBuilder();
         JSONArray ja;
@@ -856,7 +896,7 @@ public class XML {
                 sb.append('<');
                 sb.append(tagName);
                 sb.append('>');
-                if (indentFactor > 0) {
+                if(indentFactor > 0){
                     sb.append("\n");
                     indent += indentFactor;
                 }
@@ -911,12 +951,25 @@ public class XML {
                         }
                     }
                 } else if ("".equals(value)) {
-                    sb.append(indent(indent));
-                    sb.append('<');
-                    sb.append(key);
-                    sb.append("/>");
-                    if (indentFactor > 0) {
-                        sb.append("\n");
+                    if (config.isCloseEmptyTag()) {
+                        sb.append(indent(indent));
+                        sb.append('<');
+                        sb.append(key);
+                        sb.append(">");
+                        sb.append("</");
+                        sb.append(key);
+                        sb.append(">");
+                        if (indentFactor > 0) {
+                            sb.append("\n");
+                        }
+                    } else {
+                        sb.append(indent(indent));
+                        sb.append('<');
+                        sb.append(key);
+                        sb.append("/>");
+                        if (indentFactor > 0) {
+                            sb.append("\n");
+                        }
                     }
 
                     // Emit a new tag <k>
@@ -932,7 +985,7 @@ public class XML {
                 sb.append("</");
                 sb.append(tagName);
                 sb.append('>');
-                if (indentFactor > 0) {
+                if(indentFactor > 0){
                     sb.append("\n");
                 }
             }
@@ -953,73 +1006,72 @@ public class XML {
                 // XML does not have good support for arrays. If an array
                 // appears in a place where XML is lacking, synthesize an
                 // <array> element.
-                sb.append(toString(val, tagName == null ? "array" : tagName, config, indentFactor,
-                                   indent));
+                sb.append(toString(val, tagName == null ? "array" : tagName, config, indentFactor, indent));
             }
             return sb.toString();
         }
 
 
         string = (object == null) ? "null" : escape(object.toString());
-
+        String indentationSuffix = (indentFactor > 0) ? "\n" : "";
         if (tagName == null) {
-            return indent(indent) + "\"" + string + "\"" + ((indentFactor > 0) ? "\n" : "");
+            return indent(indent) + "\"" + string + "\"" + indentationSuffix;
         } else if (string.length() == 0) {
-            return indent(indent) + "<" + tagName + "/>" + ((indentFactor > 0) ? "\n" : "");
+            return indent(indent) + "<" + tagName + "/>" + indentationSuffix;
         } else {
             return indent(indent) + "<" + tagName
-                   + ">" + string + "</" + tagName + ">" + ((indentFactor > 0) ? "\n" : "");
+                   + ">" + string + "</" + tagName + ">" + indentationSuffix;
         }
     }
 
     /**
      * Convert a JSONObject into a well-formed, pretty printed element-normal XML string.
      *
-     * @param object       A JSONObject.
-     * @param indentFactor The number of spaces to add to each level of indentation.
-     *
+     * @param object
+     *            A JSONObject.
+     * @param indentFactor
+     *            The number of spaces to add to each level of indentation.
      * @return A string.
-     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
-    public static String toString(Object object,
-                                  int indentFactor) {
+    public static String toString(Object object, int indentFactor){
         return toString(object, null, XMLParserConfiguration.ORIGINAL, indentFactor);
     }
 
     /**
      * Convert a JSONObject into a well-formed, pretty printed element-normal XML string.
      *
-     * @param object       A JSONObject.
-     * @param tagName      The optional name of the enclosing tag.
-     * @param indentFactor The number of spaces to add to each level of indentation.
-     *
+     * @param object
+     *            A JSONObject.
+     * @param tagName
+     *            The optional name of the enclosing tag.
+     * @param indentFactor
+     *            The number of spaces to add to each level of indentation.
      * @return A string.
-     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
     public static String toString(final Object object,
-                                  final String tagName,
-                                  int indentFactor) {
+                                  final String tagName, int indentFactor) {
         return toString(object, tagName, XMLParserConfiguration.ORIGINAL, indentFactor);
     }
 
     /**
      * Convert a JSONObject into a well-formed, pretty printed element-normal XML string.
      *
-     * @param object       A JSONObject.
-     * @param tagName      The optional name of the enclosing tag.
-     * @param config       Configuration that can control output to XML.
-     * @param indentFactor The number of spaces to add to each level of indentation.
-     *
+     * @param object
+     *            A JSONObject.
+     * @param tagName
+     *            The optional name of the enclosing tag.
+     * @param config
+     *            Configuration that can control output to XML.
+     * @param indentFactor
+     *            The number of spaces to add to each level of indentation.
      * @return A string.
-     *
      * @throws JSONException Thrown if there is an error parsing the string
      */
     public static String toString(final Object object,
                                   final String tagName,
-                                  final XMLParserConfiguration config,
-                                  int indentFactor)
+                                  final XMLParserConfiguration config, int indentFactor)
             throws JSONException {
         return toString(object, tagName, config, indentFactor, 0);
     }
@@ -1027,8 +1079,8 @@ public class XML {
     /**
      * Return a String consisting of a number of space characters specified by indent
      *
-     * @param indent The number of spaces to be appended to the String.
-     *
+     * @param indent
+     *          The number of spaces to be appended to the String.
      * @return
      */
     private static final String indent(int indent) {

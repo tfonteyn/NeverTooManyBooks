@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD})
 public @interface JSONPropertyName {
     /**
+     * The value of the JSON property.
      * @return The name of the property as to be used in the JSON Object.
      */
     String value();

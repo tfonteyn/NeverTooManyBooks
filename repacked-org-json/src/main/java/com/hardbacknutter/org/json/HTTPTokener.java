@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ Public Domain.
 /**
  * The HTTPTokener extends the JSONTokener to provide additional methods
  * for the parsing of HTTP headers.
- *
  * @author JSON.org
  * @version 2015-12-09
  */
@@ -37,7 +36,6 @@ public class HTTPTokener
 
     /**
      * Construct an HTTPTokener from a string.
-     *
      * @param string A source string.
      */
     public HTTPTokener(String string) {
@@ -47,9 +45,7 @@ public class HTTPTokener
 
     /**
      * Get the next token or string. This is used in parsing HTTP headers.
-     *
      * @return A String.
-     *
      * @throws JSONException if a syntax error occurs
      */
     public String nextToken()

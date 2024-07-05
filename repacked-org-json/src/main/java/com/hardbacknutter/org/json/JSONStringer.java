@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,8 @@ package com.hardbacknutter.org.json;
 /*
 Public Domain.
 */
+
+import androidx.annotation.Nullable;
 
 import java.io.StringWriter;
 
@@ -53,7 +55,6 @@ import java.io.StringWriter;
  * you. Objects and arrays can be nested up to 200 levels deep.
  * <p>
  * This can sometimes be easier than using a JSONObject to build a string.
- *
  * @author JSON.org
  * @version 2015-12-09
  */
@@ -73,10 +74,10 @@ public class JSONStringer
      * problem in the construction of the JSON text (such as the calls to
      * <code>array</code> were not properly balanced with calls to
      * <code>endArray</code>).
-     *
      * @return The JSON text.
      */
     @Override
+    @Nullable
     public String toString() {
         return this.mode == 'd' ? this.writer.toString() : null;
     }

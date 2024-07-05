@@ -20,26 +20,32 @@
 
 package com.hardbacknutter.org.json;
 
-/*
-Public Domain.
-*/
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import androidx.annotation.NonNull;
 
 /**
- * Use this annotation on a getter method to override the Bean name
- * parser for Bean -&gt; JSONObject mapping. If this annotation is
- * present at any level in the class hierarchy, then the method will
- * not be serialized from the bean into the JSONObject.
+ * Configuration object for the JSON parser. The configuration is immutable.
  */
-@SuppressWarnings("ALL")
-@Documented
-@Retention(RUNTIME)
-@Target({METHOD})
-public @interface JSONPropertyIgnore {
+public class JSONParserConfiguration
+        extends ParserConfiguration {
+
+    /**
+     * Configuration with the default values.
+     */
+    public JSONParserConfiguration() {
+        super();
+    }
+
+    @Override
+    @NonNull
+    protected JSONParserConfiguration clone() {
+        return new JSONParserConfiguration();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @NonNull
+    public JSONParserConfiguration withMaxNestingDepth(final int maxNestingDepth) {
+        return super.withMaxNestingDepth(maxNestingDepth);
+    }
+
 }

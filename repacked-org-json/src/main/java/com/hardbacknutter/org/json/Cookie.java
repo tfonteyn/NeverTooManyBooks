@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,12 +30,17 @@ Public Domain.
  * Convert a web browser cookie specification to a JSONObject and back.
  * JSON and Cookies are both notations for name/value pairs.
  * See also: <a href="https://tools.ietf.org/html/rfc6265">https://tools.ietf.org/html/rfc6265</a>
- *
  * @author JSON.org
  * @version 2015-12-09
  */
 @SuppressWarnings("ALL")
 public class Cookie {
+
+    /**
+     * Constructs a new Cookie object.
+     */
+    public Cookie() {
+    }
 
     /**
      * Produce a copy of a string in which the characters '+', '%', '=', ';'
@@ -46,9 +51,7 @@ public class Cookie {
      * only a convention, not a standard. Often, cookies are expected to have
      * encoded values. We encode '=' and ';' because we must. We encode '%' and
      * '+' because they are meta characters in URL encoding.
-     *
      * @param string The source string.
-     *
      * @return The escaped result.
      */
     public static String escape(String string) {
@@ -83,22 +86,19 @@ public class Cookie {
      * a JSONObject. All attribute names are converted to lower case keys in the
      * JSONObject (HttpOnly =&gt; httponly). If an attribute is specified more than
      * once, only the value found closer to the end of the cookie-string is kept.
-     *
      * @param string The cookie specification string.
-     *
      * @return A JSONObject containing "name", "value", and possibly other
-     *         members.
-     *
+     *  members.
      * @throws JSONException If there is an error parsing the Cookie String.
-     *                       Cookie strings must have at least one '=' character and the 'name'
-     *                       portion of the cookie must not be blank.
+     * Cookie strings must have at least one '=' character and the 'name'
+     * portion of the cookie must not be blank.
      */
     public static JSONObject toJSONObject(String string) {
         final JSONObject jo = new JSONObject();
         String name;
         Object value;
-
-
+        
+        
         JSONTokener x = new JSONTokener(string);
 
         name = unescape(x.nextTo('=').trim());
@@ -146,11 +146,8 @@ public class Cookie {
      * specification string. User-Agents are instructed to ignore unknown attributes,
      * so ensure your JSONObject is using only known attributes.
      * See also: <a href="https://tools.ietf.org/html/rfc6265">https://tools.ietf.org/html/rfc6265</a>
-     *
      * @param jo A JSONObject
-     *
      * @return A cookie specification string
-     *
      * @throws JSONException thrown if the cookie has no name.
      */
     public static String toString(JSONObject jo)
@@ -208,11 +205,9 @@ public class Cookie {
     /**
      * Convert <code>%</code><i>hh</i> sequences to single characters, and
      * convert plus to space.
-     *
      * @param string A string that may contain
-     *               <code>+</code>&nbsp;<small>(plus)</small> and
-     *               <code>%</code><i>hh</i> sequences.
-     *
+     *      <code>+</code>&nbsp;<small>(plus)</small> and
+     *      <code>%</code><i>hh</i> sequences.
      * @return The unescaped string.
      */
     public static String unescape(String string) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,17 +34,21 @@ Public Domain.
  */
 @SuppressWarnings("ALL")
 public class JSONML {
+
+    /**
+     * Constructs a new JSONML object.
+     */
+    public JSONML() {
+    }
+
     /**
      * Parse XML values and store them in a JSONArray.
-     *
-     * @param x           The XMLTokener containing the source string.
-     * @param arrayForm   true if array form, false if object form.
-     * @param ja          The JSONArray that is containing the current tag or null
-     *                    if we are at the outermost level.
-     * @param keepStrings Don't type-convert text nodes and attribute values
-     *
+     * @param x       The XMLTokener containing the source string.
+     * @param arrayForm true if array form, false if object form.
+     * @param ja      The JSONArray that is containing the current tag or null
+     *     if we are at the outermost level.
+     * @param keepStrings    Don't type-convert text nodes and attribute values
      * @return A JSONArray if the value is the outermost tag, otherwise null.
-     *
      * @throws JSONException if a parsing error occurs
      */
     private static Object parse(
@@ -62,17 +66,14 @@ public class JSONML {
 
     /**
      * Parse XML values and store them in a JSONArray.
-     *
-     * @param x         The XMLTokener containing the source string.
+     * @param x       The XMLTokener containing the source string.
      * @param arrayForm true if array form, false if object form.
-     * @param ja        The JSONArray that is containing the current tag or null
-     *                  if we are at the outermost level.
-     * @param config    The parser configuration:
-     *                  JSONMLParserConfiguration.ORIGINAL is the default behaviour;
-     *                  JSONMLParserConfiguration.KEEP_STRINGS means Don't type-convert text nodes and attribute values.
-     *
+     * @param ja      The JSONArray that is containing the current tag or null
+     *     if we are at the outermost level.
+     * @param config  The parser configuration:
+     *     JSONMLParserConfiguration.ORIGINAL is the default behaviour;
+     *     JSONMLParserConfiguration.KEEP_STRINGS means Don't type-convert text nodes and attribute values.
      * @return A JSONArray if the value is the outermost tag, otherwise null.
-     *
      * @throws JSONException if a parsing error occurs
      */
     private static Object parse(
@@ -284,11 +285,8 @@ public class JSONML {
      * name/value pairs. If the tag contains children, then strings and
      * JSONArrays will represent the child tags.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
      * @param string The source string.
-     *
      * @return A JSONArray containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
     public static JSONArray toJSONArray(String string)
@@ -309,13 +307,10 @@ public class JSONML {
      * any text node or attribute value to any type
      * but just leaves it as a string.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
-     * @param string      The source string.
+     * @param string The source string.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *                    or numeric values and will instead be left as strings
-     *
+     *  or numeric values and will instead be left as strings
      * @return A JSONArray containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
     public static JSONArray toJSONArray(String string,
@@ -323,6 +318,7 @@ public class JSONML {
             throws JSONException {
         return (JSONArray) parse(new XMLTokener(string), true, null, keepStrings, 0);
     }
+
 
 
     /**
@@ -336,15 +332,12 @@ public class JSONML {
      * any text node or attribute value to any type
      * but just leaves it as a string.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
      * @param string The source string.
-     * @param config The parser configuration:
-     *               JSONMLParserConfiguration.ORIGINAL is the default behaviour;
-     *               JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
-     *               or numeric values and will instead be left as strings
-     *
+     * @param config  The parser configuration:
+     *     JSONMLParserConfiguration.ORIGINAL is the default behaviour;
+     *     JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
+     *       or numeric values and will instead be left as strings
      * @return A JSONArray containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
     public static JSONArray toJSONArray(String string,
@@ -365,15 +358,12 @@ public class JSONML {
      * any text node or attribute value to any type
      * but just leaves it as a string.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
-     * @param x      An XMLTokener.
-     * @param config The parser configuration:
-     *               JSONMLParserConfiguration.ORIGINAL is the default behaviour;
-     *               JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
-     *               or numeric values and will instead be left as strings
-     *
+     * @param x An XMLTokener.
+     * @param config  The parser configuration:
+     *     JSONMLParserConfiguration.ORIGINAL is the default behaviour;
+     *     JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
+     *       or numeric values and will instead be left as strings
      * @return A JSONArray containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
     public static JSONArray toJSONArray(XMLTokener x,
@@ -394,13 +384,10 @@ public class JSONML {
      * any text node or attribute value to any type
      * but just leaves it as a string.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
-     * @param x           An XMLTokener.
+     * @param x An XMLTokener.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *                    or numeric values and will instead be left as strings
-     *
+     *  or numeric values and will instead be left as strings
      * @return A JSONArray containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
     public static JSONArray toJSONArray(XMLTokener x,
@@ -418,11 +405,8 @@ public class JSONML {
      * name/value pairs. If the tag contains children, then strings and
      * JSONArrays will represent the child content and tags.
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
      * @param x An XMLTokener.
-     *
      * @return A JSONArray containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
     public static JSONArray toJSONArray(XMLTokener x)
@@ -438,12 +422,10 @@ public class JSONML {
      * the attributes will be in the JSONObject as properties. If the tag
      * contains children, the object will have a "childNodes" property which
      * will be an array of strings and JsonML JSONObjects.
+
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
      * @param string The XML source text.
-     *
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
     public static JSONObject toJSONObject(String string)
@@ -459,15 +441,12 @@ public class JSONML {
      * the attributes will be in the JSONObject as properties. If the tag
      * contains children, the object will have a "childNodes" property which
      * will be an array of strings and JsonML JSONObjects.
-     * <p>
+
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
-     * @param string      The XML source text.
+     * @param string The XML source text.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *                    or numeric values and will instead be left as strings
-     *
+     *  or numeric values and will instead be left as strings
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
     public static JSONObject toJSONObject(String string,
@@ -484,16 +463,14 @@ public class JSONML {
      * the attributes will be in the JSONObject as properties. If the tag
      * contains children, the object will have a "childNodes" property which
      * will be an array of strings and JsonML JSONObjects.
+
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
      * @param string The XML source text.
-     * @param config The parser configuration:
-     *               JSONMLParserConfiguration.ORIGINAL is the default behaviour;
-     *               JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
-     *               or numeric values and will instead be left as strings
-     *
+     * @param config  The parser configuration:
+     *     JSONMLParserConfiguration.ORIGINAL is the default behaviour;
+     *     JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
+     *       or numeric values and will instead be left as strings
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
     public static JSONObject toJSONObject(String string,
@@ -510,12 +487,10 @@ public class JSONML {
      * the attributes will be in the JSONObject as properties. If the tag
      * contains children, the object will have a "childNodes" property which
      * will be an array of strings and JsonML JSONObjects.
+
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
      * @param x An XMLTokener of the XML source text.
-     *
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
     public static JSONObject toJSONObject(XMLTokener x)
@@ -531,15 +506,12 @@ public class JSONML {
      * the attributes will be in the JSONObject as properties. If the tag
      * contains children, the object will have a "childNodes" property which
      * will be an array of strings and JsonML JSONObjects.
-     * <p>
+
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
-     * @param x           An XMLTokener of the XML source text.
+     * @param x An XMLTokener of the XML source text.
      * @param keepStrings If true, then values will not be coerced into boolean
-     *                    or numeric values and will instead be left as strings
-     *
+     *  or numeric values and will instead be left as strings
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
     public static JSONObject toJSONObject(XMLTokener x,
@@ -556,17 +528,14 @@ public class JSONML {
      * the attributes will be in the JSONObject as properties. If the tag
      * contains children, the object will have a "childNodes" property which
      * will be an array of strings and JsonML JSONObjects.
-     * <p>
+
      * Comments, prologs, DTDs, and <pre>{@code &lt;[ [ ]]>}</pre> are ignored.
-     *
-     * @param x      An XMLTokener of the XML source text.
-     * @param config The parser configuration:
-     *               JSONMLParserConfiguration.ORIGINAL is the default behaviour;
-     *               JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
-     *               or numeric values and will instead be left as strings
-     *
+     * @param x An XMLTokener of the XML source text.
+     * @param config  The parser configuration:
+     *     JSONMLParserConfiguration.ORIGINAL is the default behaviour;
+     *     JSONMLParserConfiguration.KEEP_STRINGS means values will not be coerced into boolean
+     *       or numeric values and will instead be left as strings
      * @return A JSONObject containing the structured data from the XML string.
-     *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
     public static JSONObject toJSONObject(XMLTokener x,
@@ -578,11 +547,8 @@ public class JSONML {
 
     /**
      * Reverse the JSONML transformation, making an XML text from a JSONArray.
-     *
      * @param ja A JSONArray.
-     *
      * @return An XML string.
-     *
      * @throws JSONException Thrown on error converting to a string
      */
     public static String toString(JSONArray ja)
@@ -663,11 +629,8 @@ public class JSONML {
      * The JSONObject must contain a "tagName" property. If it has children,
      * then it must have a "childNodes" property containing an array of objects.
      * The other properties are attributes with string values.
-     *
      * @param jo A JSONObject.
-     *
      * @return An XML string.
-     *
      * @throws JSONException Thrown on error converting to a string
      */
     public static String toString(JSONObject jo)

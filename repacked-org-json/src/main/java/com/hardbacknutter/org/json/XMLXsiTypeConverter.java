@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,12 +58,18 @@ Public Domain.
  *      });
  * }
  * </pre>
- *
- * @param <T> return type of convert method
- *
  * @author kumar529
+ * @param <T> return type of convert method
  */
 @SuppressWarnings("ALL")
 public interface XMLXsiTypeConverter<T> {
+
+    /**
+     * Converts an XML xsi:type attribute value to the specified type {@code T}.
+     *
+     * @param value The string representation of the XML xsi:type attribute value to be converted.
+     *
+     * @return An object of type {@code T} representing the converted value.
+     */
     T convert(String value);
 }

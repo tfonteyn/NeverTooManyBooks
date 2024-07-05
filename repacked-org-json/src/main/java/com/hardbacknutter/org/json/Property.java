@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,22 +29,25 @@ import java.util.Properties;
 
 /**
  * Converts a Property file data into JSONObject and back.
- *
  * @author JSON.org
  * @version 2015-05-05
  */
 @SuppressWarnings("ALL")
 public class Property {
+
+    /**
+     * Constructs a new Property object.
+     */
+    public Property() {
+    }
+
     /**
      * Converts a property file object into a JSONObject. The property file object is a table of name value pairs.
-     *
      * @param properties java.util.Properties
-     *
      * @return JSONObject
-     *
      * @throws JSONException if a called function has an error
      */
-    public static JSONObject toJSONObject(java.util.Properties properties)
+    public static JSONObject toJSONObject(Properties properties)
             throws JSONException {
         // can't use the new constructor for Android support
         // JSONObject jo = new JSONObject(properties == null ? 0 : properties.size());
@@ -61,11 +64,8 @@ public class Property {
 
     /**
      * Converts the JSONObject into a property file object.
-     *
      * @param jo JSONObject
-     *
      * @return java.util.Properties
-     *
      * @throws JSONException if a called function has an error
      */
     public static Properties toProperties(JSONObject jo)
