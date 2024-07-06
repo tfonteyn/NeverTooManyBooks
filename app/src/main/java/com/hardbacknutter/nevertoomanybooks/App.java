@@ -94,6 +94,11 @@ public class App
                     .detectLeakedClosableObjects()
                     .detectActivityLeaks();
 
+
+            // https://developer.android.com/guide/app-compatibility/restrictions-non-sdk-interfaces#test-strictmode-api
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                vmPolicyBuilder.detectNonSdkApiUsage();
+            }
             // https://developer.android.com/about/versions/15/behavior-changes-15#safer-intents
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 vmPolicyBuilder.detectUnsafeIntentLaunch();
