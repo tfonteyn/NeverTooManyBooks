@@ -15,7 +15,7 @@ https://apilevels.com/
 9.0      90.2
 8.1      92.1
 8.0      95.1
-----------------------------------------------------------------------------------------------------
+====================================================================================================
 Draft notes for next version:
 
 ### 6.2.0
@@ -29,16 +29,69 @@ FIXES:
 - filters for color etc no longer jump on manual edits
 - always show loanee on book-details when globally enabled
 - language selection no longer cached which sometime led to wrong preference summary text
-- various fixes to toolbar menus on dialogs and bottomsheets
+- various fixes to toolbar menus on dialogs and BottomSheets
 
 REMOVED:
 
+====================================================================================================
+Android 15 insets / edge-to-edge
+https://developer.android.com/develop/ui/views/layout/insets
+
+Testing on the emulator shows that out of the box, we do NOT draw behind
+the status-bar nor behind the bottom navigation-bar.
+good: no changes needed, all UI elements display fine.
+bad: no edge-to-edge.... but does this really matter ?
+
 ----------------------------------------------------------------------------------------------------
+https://developer.android.com/develop/ui/views/layout/edge-to-edge#cutout-insets
+
+Display cutouts (camera etc): we don't take any of those into account.
+So they CAN overlap our content.
+
+Added the below listener + vb.content.list view: android:clipToPadding="false"
+Neither seems to make any difference. The camera cutout on the Pixel 8a emulator
+is still overlapping the list.
+//        ViewCompat.setOnApplyWindowInsetsListener(vb.content.list, (v, windowInsets) -> {
+//            final Insets insets = windowInsets.getInsets(
+//                    WindowInsetsCompat.Type.systemBars()
+//                    | WindowInsetsCompat.Type.displayCutout()
+//            );
+//            v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+//            return WindowInsetsCompat.CONSUMED;
+//        });
+
+----------------------------------------------------------------------------------------------------
+https://developer.android.com/develop/ui/views/layout/insets/rounded-corners
+Rounded corner displays: not taken into account.
+Based on emulator tests... it's not perfect, but should not be an issue
+as long as we're not drawing behind the system-bars anyhow we more or less avoid the rounded
+device corners automatically.
+
+----------------------------------------------------------------------------------------------------
+// https://developer.android.com/develop/ui/views/layout/edge-to-edge#system-gesture-insets
+According to the docs, we should apply this to the ViewPager2 usage and BottomSheets.
+
+Tried it out for the ViewPager2 usage:
+- book details + book edit
+  Effect is not really visible, but touching area is indeed as per gesture docs.
+  Not sure this is really useful on these screens.
+  Not enabling for now.
+- search-admin (settings)
+  Effect is very visible making the site lists narrow.
+  Not enabling for now.
+
+BottomSheets:
+  I don't see the need... BottomSheet is the "focus". If the user decides they
+  want to go 'back' while a BottomSheet is displayed, then can first close the BottomSheet.
+
+
+====================================================================================================
 Amazon... or "why are these sites not supported?"
  * Goodreads is owned by Amazon and has shut their API down.
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is shut down.
  * Amazon and the above are now using Captcha to blocks app access.
-----------------------------------------------------------------------------------------------------
+
+====================================================================================================
 
 ENHANCE: ISSN (serials) lookups?
 
@@ -72,8 +125,8 @@ ENHANCE Pseudonyms on ISFDB:
  Problem: if it's the real-author anyhow, then loading
  that url can become very slow if the author has many books.
  Alternative: lookup Author names individually.
-----------------------------------------------------------------------------------------------------
 
+====================================================================================================
 Known issues:
 
 The node-management, i.e. storing the tree-state of the nodes in the booklist
