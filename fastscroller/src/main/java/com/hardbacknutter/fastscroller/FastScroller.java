@@ -152,7 +152,7 @@ public final class FastScroller {
     public interface OverlayProvider {
 
         /**
-         * Called to draw the overlay.
+         * Draw the overlay.
          *
          * @param isDragging  flag
          * @param thumbCenter the offset from the top to the center of the thumb/drag-handle
