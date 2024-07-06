@@ -23,11 +23,15 @@ package com.hardbacknutter.nevertoomanybooks.widgets;
 import android.app.Activity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
@@ -42,7 +46,15 @@ public final class NavDrawer {
     private final DrawerLayout drawerLayout;
     @NonNull
     private final NavigationView navigationView;
+    private final int initialTopMargin;
+    private final int initialBottomMargin;
 
+    /**
+     * Constructor.
+     *
+     * @param drawerLayout the top-level layout of the Activity
+     * @param listener     for menu selection
+     */
     private NavDrawer(@NonNull final DrawerLayout drawerLayout,
                       @NonNull final NavigationView.OnNavigationItemSelectedListener listener) {
         this.drawerLayout = drawerLayout;
@@ -52,6 +64,27 @@ public final class NavDrawer {
 
         navigationView.setItemMaxLines(2);
         navigationView.setNavigationItemSelectedListener(listener);
+
+        // The margins as configured in the xml view.
+        // We'll ADD to this the space needed for the status- and bottom-nav-bar
+        final ViewGroup.MarginLayoutParams ilp = (ViewGroup.MarginLayoutParams)
+                navigationView.getLayoutParams();
+        initialTopMargin = ilp.topMargin;
+        initialBottomMargin = ilp.bottomMargin;
+
+        ViewCompat.setOnApplyWindowInsetsListener(navigationView, (v, windowInsets) -> {
+            final Insets insets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                    | WindowInsetsCompat.Type.displayCutout());
+
+            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                    v.getLayoutParams();
+            lp.topMargin = initialTopMargin + insets.top;
+            lp.bottomMargin = initialBottomMargin + insets.bottom;
+            v.setLayoutParams(lp);
+
+            return WindowInsetsCompat.CONSUMED;
+        });
     }
 
     /**
