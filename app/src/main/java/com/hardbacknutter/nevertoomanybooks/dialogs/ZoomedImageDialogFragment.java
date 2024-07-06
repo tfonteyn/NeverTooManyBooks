@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,35 +99,36 @@ public class ZoomedImageDialogFragment
     public void onResume() {
         super.onResume();
 
-        // IMPORTANT reminder:
-        // DisplayMetrics gives us TOTAL screen size
-        // Configuration gives us the AVAILABLE size. <== what we need.
+        // No longer using getResources().getConfiguration() as
+        // in Android 15 it no longer excludes the system-bars
 
-        // Example:
-        // |metrics.widthPixels=1080|metrics.heightPixels=1920
-        // |configuration.screenWidth=1080.0|configuration.screenHeight=1848.0
-        // |configuration.screenWidthDp=360|configuration.screenHeightDp=616
-        // |screenHwRatio=1.711111068725586
-        // |maxWidth=1026|maxHeight=1755
+        // Android docs say this is the preferred way of getting the metric
+        // but this requires API 30...
+        //        final WindowMetrics windowMetrics = ((WindowManager)
+        //                getContext().getSystemService(Context.WINDOW_SERVICE))
+        //                .getCurrentWindowMetrics();
 
+        // So we just use the DisplayMetrics
+        // In portrait mode, this is perfectly fine.
+        // In Landscape mode, we're almost certainly going to overlap the bottom-navigation bar.
+        // .. oh well...
         final Resources res = getResources();
-        final Configuration configuration = res.getConfiguration();
         final DisplayMetrics metrics = res.getDisplayMetrics();
 
-        final double screenHwRatio = ((float) configuration.screenHeightDp)
-                                     / ((float) configuration.screenWidthDp);
+        final double screenHwRatio = ((float) metrics.heightPixels)
+                                     / ((float) metrics.widthPixels);
 
         // Use a percentage of the total screen space, to create a (dimmed) border
         final int percentage = res.getInteger(R.integer.cover_zoom_screen_percentage);
-        final float multiplier = metrics.density * ((float) percentage / 100);
+        final float multiplier = (float) percentage / 100;
         final int maxWidth;
         final int maxHeight;
 
-        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            maxWidth = (int) (multiplier * configuration.screenWidthDp);
+        if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            maxWidth = (int) (multiplier * metrics.widthPixels);
             maxHeight = (int) (maxWidth * screenHwRatio);
         } else {
-            maxHeight = (int) (multiplier * configuration.screenHeightDp);
+            maxHeight = (int) (multiplier * metrics.heightPixels);
             maxWidth = (int) (maxHeight / screenHwRatio);
         }
 
