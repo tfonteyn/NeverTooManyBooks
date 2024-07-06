@@ -20,9 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.text.InputType;
 import android.view.View;
 
@@ -211,11 +211,10 @@ public class CalibrePreferencesFragment
             final X509Certificate ca = CalibreContentServer.getCertificate(context);
             ca.checkValidity();
 
-            final Configuration configuration = context.getResources().getConfiguration();
-
+            final LocaleList locales = context.getResources().getConfiguration().getLocales();
             final DateTimeFormatter formatter = DateTimeFormatter
                     .ofLocalizedDate(FormatStyle.MEDIUM)
-                    .withLocale(configuration.getLocales().get(0));
+                    .withLocale(locales.get(0));
 
             final String from = formatter.format(ca.getNotBefore()
                                                    .toInstant()
