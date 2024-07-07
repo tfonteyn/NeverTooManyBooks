@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -927,19 +926,7 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    final Optional<Money> money =
-                                            getMoneyParser(context, siteLocale).parse(tmpString);
-                                    if (money.isPresent()) {
-                                        book.putMoney(DBKey.PRICE_LISTED, money.get());
-                                    } else {
-                                        // parsing failed, store the string as-is;
-                                        // no separate currency!
-                                        book.putString(DBKey.PRICE_LISTED, tmpString);
-                                        // log this as we need to understand WHY it failed
-                                        LoggerFactory.getLogger().w(TAG, "Failed to parse",
-                                                                    DBKey.PRICE_LISTED,
-                                                                    "text=" + tmpString);
-                                    }
+                                    processPriceListed(context, siteLocale, tmpString, book);
                                 }
                             }
                             break;

@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -446,18 +445,7 @@ public class AmazonSearchEngine
             }
         }
 
-        final Optional<Money> money = getMoneyParser(context, siteLocale).parse(priceText);
-        if (money.isPresent()) {
-            book.putMoney(DBKey.PRICE_LISTED, money.get());
-        } else {
-            // parsing failed, store the string as-is;
-            // no separate currency!
-            book.putString(DBKey.PRICE_LISTED, priceText);
-            // log this as we need to understand WHY it failed
-            LoggerFactory.getLogger().w(TAG, "Failed to parse",
-                                        DBKey.PRICE_LISTED,
-                                        "text=" + priceText);
-        }
+        processPriceListed(context, siteLocale, priceText, book);
 
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");

@@ -53,8 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -489,6 +491,32 @@ public abstract class SearchEngineBase
                     .parse(dateStr)
                     .ifPresent(book::setPublicationDate);
 
+        }
+    }
+
+    /**
+     * Process the price-listed field according to the given site locale.
+     *
+     * @param context    Current context
+     * @param siteLocale for parsing
+     * @param priceStr   the field as retrieved
+     * @param book       Bundle to update
+     */
+    public void processPriceListed(@NonNull final Context context,
+                                   @NonNull final Locale siteLocale,
+                                   @NonNull final String priceStr,
+                                   @NonNull final Book book) {
+        final Optional<Money> money = getMoneyParser(context, siteLocale).parse(priceStr);
+        if (money.isPresent()) {
+            book.putMoney(DBKey.PRICE_LISTED, money.get());
+        } else {
+            // parsing failed, store the string as-is;
+            // no separate currency!
+            book.putString(DBKey.PRICE_LISTED, priceStr);
+            // log this as we need to understand WHY it failed
+            LoggerFactory.getLogger().w(TAG, "Failed to parse",
+                                        DBKey.PRICE_LISTED,
+                                        "text=" + priceStr);
         }
     }
 }
