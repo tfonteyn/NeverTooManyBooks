@@ -37,7 +37,7 @@ public interface DateParser {
      * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */
     @NonNull
-    Optional<LocalDateTime> parse(@Nullable String dateStr);
+    Optional<LocalDateTime> parse(@Nullable CharSequence dateStr);
 
     /**
      * Attempt to parse a date string.
@@ -51,7 +51,7 @@ public interface DateParser {
      * @return Resulting date if successfully parsed, otherwise {@code Optional.empty()}
      */
     @NonNull
-    default Optional<LocalDateTime> parse(@Nullable final String dateStr,
+    default Optional<LocalDateTime> parse(@Nullable final CharSequence dateStr,
                                           @Nullable final Locale locale) {
         return parse(dateStr);
     }

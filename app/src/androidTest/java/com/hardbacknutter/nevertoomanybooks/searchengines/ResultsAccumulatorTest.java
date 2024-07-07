@@ -113,7 +113,7 @@ public class ResultsAccumulatorTest
         book.setToc(List.of(
                 new TocEntry(new Author("Pratchett", "Terry"),
                              "The Shepherd's Crown",
-                             new PartialDate("2015-01-01"))));
+                             new PartialDate(2015, 1, 1))));
 
         book.putString(DBKey.FORMAT, "tp");
         book.putString(DBKey.FIRST_PUBLICATION__DATE, "2015");
@@ -350,7 +350,7 @@ public class ResultsAccumulatorTest
         book.setToc(List.of(
                 new TocEntry(new Author("Pratchett", "Terry"),
                              "The Shepherd's Crown",
-                             new PartialDate("2015-01-01"))));
+                             new PartialDate(2015, 1, 1))));
 
         book.putString(DBKey.FORMAT, "Trade Paperback");
         book.putFloat(DBKey.RATING, 4.8f);

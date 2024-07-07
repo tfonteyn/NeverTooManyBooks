@@ -127,7 +127,7 @@ public class FullDateParser
      */
     @NonNull
     @Override
-    public Optional<LocalDateTime> parse(@Nullable final String dateStr) {
+    public Optional<LocalDateTime> parse(@Nullable final CharSequence dateStr) {
         return parse(dateStr, null);
     }
 
@@ -142,9 +142,9 @@ public class FullDateParser
      */
     @NonNull
     @Override
-    public Optional<LocalDateTime> parse(@Nullable final String dateStr,
+    public Optional<LocalDateTime> parse(@Nullable final CharSequence dateStr,
                                          @Nullable final Locale locale) {
-        if (dateStr == null || dateStr.isEmpty()) {
+        if (dateStr == null || dateStr.length() == 0) {
             return Optional.empty();
         }
 

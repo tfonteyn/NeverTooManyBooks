@@ -186,12 +186,10 @@ class EditTocEntryDelegate
     }
 
     private void viewToModel() {
-        final TocEntry currentEdit = vm.getCurrentEdit();
         //noinspection DataFlowIssue
-        currentEdit.setTitle(vb.title.getText().toString().trim());
+        vm.setTitle(vb.title.getText().toString().trim());
         //noinspection DataFlowIssue
-        currentEdit.setFirstPublicationDate(new PartialDate(
-                vb.firstPublication.getText().toString().trim()));
+        vm.setFirstPublicationDate(vb.firstPublication.getText().toString().trim());
 
         if (vm.isAnthology()) {
             vm.setCurrentAuthorName(vb.author.getText().toString().trim());

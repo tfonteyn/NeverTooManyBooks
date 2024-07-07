@@ -78,11 +78,11 @@ public class TocEntryTest
         list.add(tocEntry);
 
         // keep, position 1
-        tocEntry = new TocEntry(author0, "title 2", new PartialDate("2019"));
+        tocEntry = new TocEntry(author0, "title 2", new PartialDate(2019, 0, 0));
         list.add(tocEntry);
 
         // discard after merging with position 0
-        tocEntry = new TocEntry(author0, "title 1", new PartialDate("1978"));
+        tocEntry = new TocEntry(author0, "title 1", new PartialDate(1978, 0, 0));
         list.add(tocEntry);
 
         // discard in favour of position 1
@@ -125,15 +125,15 @@ public class TocEntryTest
 
         // id's are set, results same as if id's were all 0
 
-        tocEntry = new TocEntry(1, author0, "title 1", null, 0);
+        tocEntry = new TocEntry(1, author0, "title 1", PartialDate.NOT_SET, 0);
         list.add(tocEntry);
 
-        tocEntry = new TocEntry(2, author0, "title 2", "2019", 0);
+        tocEntry = new TocEntry(2, author0, "title 2", new PartialDate(2019, 0, 0), 0);
         list.add(tocEntry);
 
-        tocEntry = new TocEntry(1, author0, "title 1", "1978", 0);
+        tocEntry = new TocEntry(1, author0, "title 1", new PartialDate(1978, 0, 0), 0);
         list.add(tocEntry);
-        tocEntry = new TocEntry(2, author0, "title 2", null, 0);
+        tocEntry = new TocEntry(2, author0, "title 2", PartialDate.NOT_SET, 0);
         list.add(tocEntry);
 
         // pruning will reset the id's to 0 as the entries don't exist in the db
@@ -175,36 +175,36 @@ public class TocEntryTest
         TocEntry tocEntry;
 
         // keep, position 0, but merged with entry 3 -> "1978"
-        tocEntry = new TocEntry(1, author0, "title 1", null, 0);
+        tocEntry = new TocEntry(1, author0, "title 1", PartialDate.NOT_SET, 0);
         list.add(tocEntry);
 
         // keep, position 1, merged with entry 4 -> id=2
-        tocEntry = new TocEntry(0, author0, "title 2", "2019", 0);
+        tocEntry = new TocEntry(0, author0, "title 2", new PartialDate(2019, 0, 0), 0);
         list.add(tocEntry);
 
         // dropped, merged with position 0
-        tocEntry = new TocEntry(0, author0, "title 1", "1978", 0);
+        tocEntry = new TocEntry(0, author0, "title 1", new PartialDate(1978, 0, 0), 0);
         list.add(tocEntry);
 
         // dropped, merged with position 1
-        tocEntry = new TocEntry(2, author0, "title 2", null, 0);
+        tocEntry = new TocEntry(2, author0, "title 2", PartialDate.NOT_SET, 0);
         list.add(tocEntry);
 
         // keep, position 2, with id reset to 0 because of conflict with position 1
-        tocEntry = new TocEntry(2, author0, "title 2", "1880", 0);
+        tocEntry = new TocEntry(2, author0, "title 2", new PartialDate(1880, 0, 0), 0);
         list.add(tocEntry);
 
         // keep, position 3
-        tocEntry = new TocEntry(0, author0, "title 3", "1955", 0);
+        tocEntry = new TocEntry(0, author0, "title 3", new PartialDate(1955, 0, 0), 0);
         list.add(tocEntry);
 
         // keep, position 4, with id reset to 0 because base data matches position 3
         // but still kept because extra data (the year) is different from position 3
-        tocEntry = new TocEntry(4, author0, "title 3", "1965", 0);
+        tocEntry = new TocEntry(4, author0, "title 3", new PartialDate(1965, 0, 0), 0);
         list.add(tocEntry);
 
         // keep, position 5
-        tocEntry = new TocEntry(0, author0, "title 3", "1975", 0);
+        tocEntry = new TocEntry(0, author0, "title 3", new PartialDate(1975, 0, 0), 0);
         list.add(tocEntry);
 
         final boolean modified = tocEntryDao.pruneList(context, list, item -> bookLocale);

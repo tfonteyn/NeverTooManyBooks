@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -226,7 +227,7 @@ public class IsfdbSearchEngine
     private String bookTitle;
     /** with some luck we'll get these as well. */
     @Nullable
-    private String firstPublicationYear;
+    private PartialDate firstPublicationYear;
     /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
     private String searchForIsbn;
     @Nullable
@@ -438,9 +439,10 @@ public class IsfdbSearchEngine
      * }
      * </pre>
      *
-     * @param context  Current context
-     * @param document to parse
-     * @param book     Bundle to update
+     * @param context           Current context
+     * @param document          to parse
+     * @param book              Bundle to update
+     * @param partialDateParser we can use
      *
      * @return the toc list
      */
@@ -448,7 +450,8 @@ public class IsfdbSearchEngine
     @NonNull
     private List<TocEntry> parseToc(@NonNull final Context context,
                                     @NonNull final Document document,
-                                    @NonNull final Book book) {
+                                    @NonNull final Book book,
+                                    @NonNull final PartialDateParser partialDateParser) {
 
         final boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
                                                           .getBoolean(PK_SERIES_FROM_TOC, false);
@@ -585,20 +588,29 @@ public class IsfdbSearchEngine
                     title = "";
                 }
 
-                // scan for first occurrence of "• (1234)"
-                final Matcher matcher = YEAR_PATTERN.matcher(liAsString);
-                final String year = matcher.find() ? matcher.group(2) : "";
-                // see if we can use it as the first publication year for the book.
-                // i.e. if this entry has the same title as the book title
-                if ((firstPublicationYear == null || firstPublicationYear.isEmpty())
-                    && title.equalsIgnoreCase(bookTitle)) {
-                    firstPublicationYear = SearchEngineUtils.digits(year);
-                }
-
-                //TODO: like the year above, we could scan for
+                //TODO: using similar logic as for the year (here below),
+                // we could scan for a translation/language:
                 // "trans. of abc def 1976)" and use it as the DBKey.TITLE_ORIGINAL_LANG
 
-                toc.add(new TocEntry(author, title, new PartialDate(year)));
+                // scan for first occurrence of "• (1234)"
+                final Matcher matcher = YEAR_PATTERN.matcher(liAsString);
+                @NonNull
+                PartialDate tocDate = PartialDate.NOT_SET;
+                if (matcher.find()) {
+                    final String yearStr = SearchEngineUtils.digits(matcher.group(2));
+                    final Optional<PartialDate> oTocDate = partialDateParser.parse(yearStr, false);
+                    if (oTocDate.isPresent()) {
+                        tocDate = oTocDate.get();
+                        // If this entry has the same title as the book title
+                        // and we did not find the date in a previous toc entry,
+                        // use it as the first publication year for the book.
+                        if (title.equalsIgnoreCase(bookTitle) && firstPublicationYear == null) {
+                            firstPublicationYear = tocDate;
+                        }
+                    }
+                }
+
+                toc.add(new TocEntry(author, title, tocDate));
             }
         }
         return toc;
@@ -1031,8 +1043,9 @@ public class IsfdbSearchEngine
         }
 
         // post-process all found data.
+        final PartialDateParser partialDateParser = new PartialDateParser();
 
-        final List<TocEntry> toc = parseToc(context, document, book);
+        final List<TocEntry> toc = parseToc(context, document, book, partialDateParser);
         if (!toc.isEmpty()) {
             // We always store the toc even if there is only a single entry.
             // ISFDB provides the *original* publication year in the toc which we want to preserve.
@@ -1055,10 +1068,11 @@ public class IsfdbSearchEngine
             // if the content table has only one entry,
             // then this will have the first publication year for sure
             book.setFirstPublicationDate(toc.get(0).getFirstPublicationDate());
+
         } else if (toc.size() > 1) {
             // we gamble and take what we found while parsing the TOC (first entry with a year)
-            if (firstPublicationYear != null) {
-                book.setFirstPublicationDate(new PartialDate(firstPublicationYear));
+            if (firstPublicationYear != null && firstPublicationYear.isPresent()) {
+                book.setFirstPublicationDate(firstPublicationYear);
             }
         }
 
@@ -1351,7 +1365,7 @@ public class IsfdbSearchEngine
      * <p>
      * Much more information can be found on the
      * <a href="https://www.isfdb.org/wiki/index.php/Sources_of_Bibliographic_Information">
-     *     ISFDB Wiki</a>
+     * ISFDB Wiki</a>
      *
      * @param elements LI elements
      * @param book     to update

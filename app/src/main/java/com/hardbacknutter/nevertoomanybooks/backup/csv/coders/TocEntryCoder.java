@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -50,6 +51,9 @@ public class TocEntryCoder
      * <p>
      * The pattern finds (1987), (1978-04) or (1987-04-22)
      * Result is found in group 1.
+     * <p>
+     * This is done so we can easily remove the string from the title.
+     * Actual date parsing is don with the {@link #partialDateParser}.
      */
     private static final Pattern DATE_PATTERN =
             Pattern.compile("\\("
@@ -57,6 +61,7 @@ public class TocEntryCoder
                             + "|[1|2]\\d\\d\\d-\\d\\d"
                             + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
                             + "\\)");
+    private final PartialDateParser partialDateParser = new PartialDateParser();
 
     TocEntryCoder() {
     }
@@ -92,7 +97,11 @@ public class TocEntryCoder
             if (g1 != null) {
                 // strip out the found pattern (including the brackets)
                 title = title.replace(g1, "").trim();
-                return new TocEntry(author, title, new PartialDate(matcher.group(1)));
+
+                final PartialDate firstPublicationDate = partialDateParser
+                        .parse(matcher.group(1), false)
+                        .orElse(PartialDate.NOT_SET);
+                return new TocEntry(author, title, firstPublicationDate);
             }
         }
         return new TocEntry(author, title);

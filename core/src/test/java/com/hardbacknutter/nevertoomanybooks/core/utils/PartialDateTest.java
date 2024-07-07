@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,26 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PartialDateTest {
 
     @Test
-    void t01() {
-        PartialDate date;
-
-        date = new PartialDate(2020, 9, 17);
+    void noParser() {
+        final PartialDate date = new PartialDate(2020, 9, 17);
         assertEquals("2020-09-17", date.getIsoString());
-
-        date = new PartialDate("2020-09-17");
-        assertEquals("2020-09-17", date.getIsoString());
-        date = new PartialDate("2020-09");
-        assertEquals("2020-09", date.getIsoString());
-        date = new PartialDate("2020");
-        assertEquals("2020", date.getIsoString());
-
-        // No support for single digit date parts
-        date = new PartialDate("2020-9-17");
-        assertEquals("", date.getIsoString());
-        date = new PartialDate("2020-9");
-        assertEquals("", date.getIsoString());
-
-        date = new PartialDate("1941");
-        assertEquals("1941", date.getIsoString());
     }
 }

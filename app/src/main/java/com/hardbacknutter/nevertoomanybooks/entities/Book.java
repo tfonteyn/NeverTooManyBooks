@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -218,6 +219,8 @@ public class Book
      */
     @Nullable
     private ValidatorConfig validatorConfig;
+
+    private PartialDateParser partialDateParser = new PartialDateParser();
 
     /**
      * Constructor.
@@ -525,7 +528,8 @@ public class Book
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
-        return new PartialDate(getString(DBKey.FIRST_PUBLICATION__DATE));
+        return partialDateParser.parse(getString(DBKey.FIRST_PUBLICATION__DATE), false)
+                                .orElse(PartialDate.NOT_SET);
     }
 
     /**

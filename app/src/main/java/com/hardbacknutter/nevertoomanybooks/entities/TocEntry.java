@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -74,7 +75,11 @@ public class TocEntry
             return new TocEntry[size];
         }
     };
-    /** in-memory use only. Number of books this TocEntry appears in. */
+    /**
+     * Number of books this TocEntry appears in.
+     * This value is calculated at SELECT time from the database.
+     * It is NOT stored.
+     */
     private final int bookCount;
     /** Row ID. */
     private long id;
@@ -93,7 +98,7 @@ public class TocEntry
      */
     public TocEntry(@NonNull final Author author,
                     @NonNull final String title) {
-        this(author, title, new PartialDate(null));
+        this(author, title, PartialDate.NOT_SET);
     }
 
     /**
@@ -113,7 +118,7 @@ public class TocEntry
     }
 
     /**
-     * Constructor.
+     * Constructor - for testing only.
      *
      * @param id                   row id
      * @param author               Author of title
@@ -125,12 +130,12 @@ public class TocEntry
     TocEntry(final long id,
              @NonNull final Author author,
              @NonNull final String title,
-             @Nullable final String firstPublicationDate,
+             @NonNull final PartialDate firstPublicationDate,
              final int bookCount) {
         this.id = id;
         this.author = author;
         this.title = title.trim();
-        this.firstPublicationDate = new PartialDate(firstPublicationDate);
+        this.firstPublicationDate = firstPublicationDate;
         this.bookCount = bookCount;
     }
 
@@ -158,8 +163,10 @@ public class TocEntry
         this.id = id;
         this.author = author;
         this.title = rowData.getString(DBKey.TITLE);
-        this.firstPublicationDate = new PartialDate(
-                rowData.getString(DBKey.FIRST_PUBLICATION__DATE));
+        // FIXME: optimize this by moving the PartialDateParser to the caller
+        this.firstPublicationDate = new PartialDateParser()
+                .parse(rowData.getString(DBKey.FIRST_PUBLICATION__DATE), false)
+                .orElse(PartialDate.NOT_SET);
         this.bookCount = rowData.getInt(DBKey.BOOK_COUNT);
     }
 

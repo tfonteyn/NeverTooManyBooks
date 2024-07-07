@@ -674,7 +674,7 @@ public class EditBookViewModel
     @NonNull
     private List<String> getDefaultCurrencies() {
         // sure, this is very crude and discriminating - oh well
-        return List.of(MoneyParser.EUR, MoneyParser.GBP, MoneyParser.USD);
+        return List.of(MoneyParser.EUR, MoneyParser.GBP, MoneyParser.USD, MoneyParser.CNY);
     }
 
     /**

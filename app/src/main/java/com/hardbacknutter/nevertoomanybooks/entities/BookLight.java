@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -78,8 +79,10 @@ public class BookLight
         this.title = rowData.getString(DBKey.TITLE);
         this.language = rowData.getString(DBKey.LANGUAGE);
         this.primaryAuthor = primaryAuthor;
-        this.firstPublicationDate = new PartialDate(
-                rowData.getString(DBKey.FIRST_PUBLICATION__DATE));
+        // FIXME: optimize this by moving the PartialDateParser to the caller
+        this.firstPublicationDate = new PartialDateParser()
+                .parse(rowData.getString(DBKey.FIRST_PUBLICATION__DATE), false)
+                .orElse(PartialDate.NOT_SET);
     }
 
     @Override

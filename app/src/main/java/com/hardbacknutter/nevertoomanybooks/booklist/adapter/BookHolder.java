@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
@@ -87,6 +87,9 @@ public class BookHolder
     @NonNull
     private final RealNumberParser realNumberParser;
     @NonNull
+    private final PartialDateParser partialDateParser;
+
+    @NonNull
     private final Style style;
     @Nullable
     private final CoverHelper coverHelper;
@@ -119,6 +122,7 @@ public class BookHolder
 
         this.style = style;
         this.realNumberParser = realNumberParser;
+        this.partialDateParser = new PartialDateParser();
 
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
@@ -452,10 +456,13 @@ public class BookHolder
         String date = null;
         if (showPubDate) {
             final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
-            date = new PartialDate(dateStr).toDisplay(itemView.getContext().getResources()
-                                                              .getConfiguration().getLocales()
-                                                              .get(0),
-                                                      dateStr);
+            date = partialDateParser
+                    .parse(dateStr, false)
+                    .map(d -> d.toDisplay(itemView.getContext().getResources()
+                                                  .getConfiguration().getLocales()
+                                                  .get(0),
+                                          dateStr))
+                    .orElse("");
             showDate = !date.isBlank();
         }
 

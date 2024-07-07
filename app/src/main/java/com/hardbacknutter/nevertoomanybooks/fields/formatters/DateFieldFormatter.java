@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.TextViewField;
@@ -54,6 +55,9 @@ public class DateFieldFormatter
     private final Locale locale;
     private final boolean isUtc;
 
+    @NonNull
+    private final PartialDateParser parser;
+
     /**
      * Constructor.
      *
@@ -67,6 +71,8 @@ public class DateFieldFormatter
                               final boolean isUtc) {
         this.locale = locale;
         this.isUtc = isUtc;
+
+        parser = new PartialDateParser();
     }
 
     /**
@@ -78,11 +84,9 @@ public class DateFieldFormatter
     @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final String rawValue) {
-        if (rawValue == null || rawValue.isEmpty()) {
-            return "";
-        } else {
-            return new PartialDate(rawValue, isUtc).toDisplay(locale, rawValue);
-        }
+        return parser.parse(rawValue, isUtc)
+                     .map(date -> date.toDisplay(locale, rawValue))
+                     .orElse("");
     }
 
     /**
@@ -94,6 +98,8 @@ public class DateFieldFormatter
     @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return new PartialDate(text, isUtc).getIsoString();
+        return parser.parse(text, isUtc)
+                     .map(PartialDate::getIsoString)
+                     .orElse("");
     }
 }
