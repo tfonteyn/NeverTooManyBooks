@@ -383,6 +383,8 @@
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_german_catalogue">German; Catalogue</string>
     <!-- website info: languages; type; specifics. -->
+    <string name="site_description_chinese_catalogue">Chinese; Catalogue</string>
+    <!-- website info: languages; type; specifics. -->
     <string name="site_description_english_catalogue_FSF">English and more; Catalogue; Fantasy and Science Fiction</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_french_catalogue_eu_comics">French and more; Catalogue; European Comics</string>

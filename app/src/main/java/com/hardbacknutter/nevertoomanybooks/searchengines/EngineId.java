@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeS
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
@@ -178,6 +179,15 @@ public enum EngineId
         new Locale("de", "DE"),
         DnbSearchEngine.class,
         BuildConfig.ENABLE_DNB_DE),
+
+    /** Chinese language books & comics. */
+    Douban("douban",
+           R.string.site_douban,
+           R.string.site_info_douban,
+           "https://search.douban.com",
+           Locale.CHINA,
+           DoubanSearchEngine.class,
+           BuildConfig.ENABLE_DOUBAN),
 
     /** Only used for {@link SearchEngine.ViewBookByExternalId}. */
     Goodreads("goodreads",
@@ -375,6 +385,14 @@ public enum EngineId
             BookFinder.createConfiguration()
                       .build();
         }
+        if (Dnb.isEnabled()) {
+            Dnb.createConfiguration()
+               .build();
+        }
+        if (Douban.isEnabled()) {
+            Douban.createConfiguration()
+                  .build();
+        }
         if (Goodreads.isEnabled()) {
             Goodreads.createConfiguration()
                      .setDomainKey(DBKey.SID_GOODREADS_BOOK)
@@ -382,10 +400,6 @@ public enum EngineId
                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
                                       R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
                      .build();
-        }
-        if (Dnb.isEnabled()) {
-            Dnb.createConfiguration()
-               .build();
         }
         if (GoogleBooks.isEnabled()) {
             GoogleBooks.createConfiguration()
@@ -468,6 +482,7 @@ public enum EngineId
 
         // Certain sites should only be enabled by default if the device or user set language
         // matches the site language.
+        final boolean activateIfChinese = languages.isUserLanguage(context, "zho");
         final boolean activateIfDutch = languages.isUserLanguage(context, "nld");
         final boolean activateIfFrench = languages.isUserLanguage(context, "fra");
         final boolean activateIfGerman = languages.isUserLanguage(context, "deu");
@@ -500,6 +515,7 @@ public enum EngineId
                 type.addSite(Bol, activateIfDutch);
 
                 type.addSite(Dnb, activateIfGerman);
+                type.addSite(Douban, activateIfChinese);
                 break;
             }
             case Covers: {
