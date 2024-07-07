@@ -36,9 +36,14 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
 public class MoneyParser {
+    /** European Union Euro. */
     public static final String EUR = "EUR";
+    /** British Pound. */
     public static final String GBP = "GBP";
+    /** US Dollar. */
     public static final String USD = "USD";
+    /** Chinese Yuan. */
+    public static final String CNY = "CNY";
 
     /** For prefixed currencies, split on first digit, but leave it in the second part. */
     private static final Pattern CURRENCY_AS_PREFIX_PATTERN = Pattern.compile("(?=\\d)");
@@ -170,11 +175,12 @@ public class MoneyParser {
         CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
         CURRENCY_MAP.put("₺", "TRY"); // Turkish Lira
         CURRENCY_MAP.put("₫", "VND"); // Vietnamese đồng
-        CURRENCY_MAP.put("đ", "VND"); // Vietnamese đồng
+        CURRENCY_MAP.put("đ", "VND"); // Vietnamese đồng (a different symbol!)
+        CURRENCY_MAP.put("元", CNY);  // Chinese Yuan
 
         // some others
         CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
-        CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
+        CURRENCY_MAP.put("kr", "DKK"); // Danish Krone
         CURRENCY_MAP.put("ft", "HUF"); // Hungarian Forint
         CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
         CURRENCY_MAP.put("kn", "HRK");  // Croatian Kuna
