@@ -103,7 +103,7 @@ public class DoubanSearchEngine
                                 @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // assume multi-result at first, and parse for a book-url
+        // The result is always a list, even if only one book found.
         final Optional<String> oUrl = parseMultiResult(document);
         if (oUrl.isPresent()) {
             final Document d = loadDocument(context, oUrl.get(), null);
@@ -111,6 +111,7 @@ public class DoubanSearchEngine
                 parse(context, d, fetchCovers, book);
             }
         } else {
+            // Keep this as a fallback, but we're unlikely to get here.
             parse(context, document, fetchCovers, book);
         }
     }
@@ -183,13 +184,15 @@ public class DoubanSearchEngine
         //  <meta property="book:author" content="刘慈欣" />
         //  <meta property="book:isbn" content="9787536692930" />
 
-        String frontCoverUrl = null;
-        int id = 0;
+        int id;
 
         final Elements metaElements = document.head().select("meta");
         for (final Element meta : metaElements) {
             final String property = meta.attr("property");
             final String content = meta.attr("content");
+            // There is also "og:image" with a cover url.
+            // These can be VERY large and lead to java.net.SocketTimeoutException
+            // We'll grab the thumbnail instead.
             switch (property) {
                 case "og:title":
                     book.putString(DBKey.TITLE, content);
@@ -202,22 +205,16 @@ public class DoubanSearchEngine
                 case "og:description":
                     // The description in the meta element is shortened.
                     // We copy it while we have it, but will overwrite when we
-                    // can (should) get the full description later on
+                    // can (should) get the full description later on.
                     book.putString(DBKey.DESCRIPTION, content);
-                    break;
-
-                case "og:image":
-                    if (!content.isBlank()) {
-                        frontCoverUrl = content;
-                    }
                     break;
 
                 case "og:url": {
                     // content="https://book.douban.com/subject/36874304/"
                     final String[] parts = content.split("/");
                     // Sanity check;
-                    // Make sure it's an int as we need it for more parsing,
-                    // but store in the book as a string
+                    // Make sure it's an int as we might need it for more parsing,
+                    // but store it in the book as a string as per usual with SID values
                     if (parts.length >= 5) {
                         try {
                             id = Integer.parseInt(parts[4]);
@@ -233,7 +230,7 @@ public class DoubanSearchEngine
             }
         }
 
-        final Element infoTable = document.selectFirst("div[id=\"info\"]");
+        final Element infoTable = document.selectFirst("div#info");
         if (infoTable == null) {
             return;
         }
@@ -248,7 +245,15 @@ public class DoubanSearchEngine
                     // Author
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        book.add(Author.from(a.text()));
+                        // 刘慈欣 ==> Liu Cixin
+                        // [法] 保罗·霍尔特   ==>  [France] Paul Holt
+                        // URGENT: for the "[.] ." format, we end up with the [.] becoming the given name.
+                        //  Need to decide how to handle the country prefix
+                        //  Two options: drop it altogether, or move it to the end and use "(country)"
+                        //  as we can handle a round-bracket section as a suffix already.
+                        final String text = a.text();
+                        final Author author = Author.from(text);
+                        book.add(author);
                     }
                     break;
                 }
@@ -262,6 +267,24 @@ public class DoubanSearchEngine
                 }
                 case "出品方:": {
                     // Producer (printer?) ... not used
+                    break;
+                }
+                case "原作名:": {
+                    // Original title
+                    final Node n = label.nextSibling();
+                    if (n != null) {
+                        book.putString(DBKey.TITLE_ORIGINAL_LANG, n.toString().strip());
+                    }
+                    break;
+                }
+                case "译者": {
+                    // Translator
+                    final Element a = label.nextElementSibling();
+                    if (a != null && "a".equals(a.tagName())) {
+                        final Author author = Author.from(a.text());
+                        author.setType(Author.TYPE_TRANSLATOR);
+                        book.add(author);
+                    }
                     break;
                 }
                 case "出版年:": {
@@ -281,8 +304,7 @@ public class DoubanSearchEngine
                     // Pages
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        final String pagesStr = n.toString().strip();
-                        book.putString(DBKey.PAGE_COUNT, pagesStr);
+                        book.putString(DBKey.PAGE_COUNT, n.toString().strip());
                     }
                     break;
                 }
@@ -290,8 +312,7 @@ public class DoubanSearchEngine
                     // List price
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        final String priceStr = n.toString().strip();
-                        processPriceListed(context, siteLocale, priceStr, book);
+                        processPriceListed(context, siteLocale, n.toString().strip(), book);
                     }
                     break;
                 }
@@ -299,8 +320,7 @@ public class DoubanSearchEngine
                     // Format
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        final String formatStr = n.toString().strip();
-                        book.putString(DBKey.FORMAT, formatStr);
+                        book.putString(DBKey.FORMAT, n.toString().strip());
                     }
                     break;
                 }
@@ -324,16 +344,26 @@ public class DoubanSearchEngine
         // The meta element was shortened, overwrite if we find the full description
         final Element relInfo = document.selectFirst("div.related_info");
         if (relInfo != null) {
-            final Element descElement = relInfo.selectFirst("div.intro");
-            if (descElement != null) {
-                book.putString(DBKey.DESCRIPTION, descElement.html().strip());
+            // Then can be multiple "intro" blocks, as this is used for description, author, ...
+            // We normally grab the first with the description only,
+            // but check for an "a" element with javascript to "Expand".
+            // If found, this means the text was very long, and was partially hidden.
+            // In that case we grad the 2nd "intro" block which is the full description.
+            final Elements introElements = relInfo.select("div.intro");
+            if (!introElements.isEmpty()) {
+                Element intro = introElements.get(0);
+                if (intro.selectFirst("a.a_show_full") != null
+                    && introElements.size() > 1) {
+                    intro = introElements.get(1);
+                }
+                book.putString(DBKey.DESCRIPTION, intro.html().strip());
             }
         }
 
         // The content table - in the example we used, it's the chapter list.
         // TODO: check if there is a way of detecting chapter-list versus actual content-list
 //        if (id > 0) {
-//            final Element tocElement = document.selectFirst("div[id=\"dir_" + id + "_full\"]");
+//            final Element tocElement = document.selectFirst("div#dir_" + id + "_full");
 //            if (tocElement != null) {
 //                final String[] content = PATTERN_BR.split(tocElement.html());
 //                 .... numbered lines with chapter-titles
@@ -346,11 +376,22 @@ public class DoubanSearchEngine
             book.putString(DBKey.LANGUAGE, "zho");
         }
 
-        if (fetchCovers[0] && frontCoverUrl != null) {
+        if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
             if (!isbn.isEmpty()) {
-                saveImage(context, frontCoverUrl, isbn, 0, null).ifPresent(
-                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+                // "div#mainpic > a" element will have as the href a large version of the image.
+                // "div#mainpic > a > img" will have "src" point to a thumbnail
+                // We found the large image to result in socket-timeouts
+                // (without modifying our default timeout)
+                // Choosing to get the thumbnail here:
+                final Element img = document.selectFirst("div#mainpic > a > img");
+                if (img != null) {
+                    final String src = img.attr("src");
+                    if (!src.isEmpty()) {
+                        saveImage(context, src, isbn, 0, null).ifPresent(
+                                fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+                    }
+                }
             }
         }
     }
