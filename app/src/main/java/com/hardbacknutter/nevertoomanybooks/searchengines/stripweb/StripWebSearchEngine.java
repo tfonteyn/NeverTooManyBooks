@@ -381,10 +381,11 @@ public class StripWebSearchEngine
         final Element stars = details.selectFirst("div.stars");
         if (stars != null) {
             final Elements nr = stars.select("i.text-yellow");
+            // Rating is simply the amount of stars, i.e. 0..5
+            // Only add if at least 1 star (and max 5 as sanity check)
             final int rating = nr.size();
-            // only add if at least 1 star (and max 5 as sanity check)
             if (rating > 0 && rating < 6) {
-                book.putInt(DBKey.RATING, rating);
+                book.putFloat(DBKey.RATING, rating);
             }
         }
     }

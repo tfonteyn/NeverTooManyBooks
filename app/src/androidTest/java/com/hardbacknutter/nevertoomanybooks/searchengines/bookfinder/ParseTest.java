@@ -69,7 +69,11 @@ public class ParseTest
     public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.bookfinder.com/isbn/9780441020348/?st=sr&ac=qr&mode=basic&author=&title=&isbn=978-0-441-02034-8&lang=en&destination=gb&currency=USD&binding=*&keywords=&publisher=&min_year=&max_year=&minprice=&maxprice=";
+        final String locationHeader = "https://www.bookfinder.com/isbn/9780441020348/"
+                                      + "?st=sr&ac=qr&mode=basic&author=&title="
+                                      + "&isbn=978-0-441-02034-8&lang=en&destination=gb"
+                                      + "&currency=USD&binding=*&keywords=&publisher="
+                                      + "&min_year=&max_year=&minprice=&maxprice=";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bookfinder_9780441020348;
 
@@ -86,7 +90,7 @@ public class ParseTest
         assertEquals("2011", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(3.75f, book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
 
         assertEquals("<b>\"The most spectacular science fiction writer of recent years"
                      + "\" (Vernor Vinge, author of <i>Rainbows End</i>)"

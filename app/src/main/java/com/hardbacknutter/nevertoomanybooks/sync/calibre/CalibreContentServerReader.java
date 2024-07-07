@@ -623,6 +623,7 @@ public class CalibreContentServerReader
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.RATING)) {
+            // The rating is a simple int 0..5
             final int rating = calibreBook.getInt(CalibreBookJsonKey.RATING);
             // don't overwrite the local value with a remote 'not-set' value
             if (rating > 0) {

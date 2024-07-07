@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -398,7 +398,7 @@ public class ParseTest
         assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4.8f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
         assertEquals(new Money(BigDecimal.valueOf(18.09d), Money.EURO),
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 

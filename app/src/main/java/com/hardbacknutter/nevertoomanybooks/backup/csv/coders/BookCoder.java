@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.math.MathUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -104,6 +104,8 @@ public class BookCoder {
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
 
+    private final RatingParser ratingParser;
+
     /**
      * Constructor.
      *
@@ -126,6 +128,8 @@ public class BookCoder {
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
         dateParser = new FullDateParser(systemLocale, locales);
+
+        ratingParser = new RatingParser(5);
     }
 
     /**
@@ -427,7 +431,7 @@ public class BookCoder {
 
     /**
      * Process the list of Bookshelves.
-     *  <p>
+     * <p>
      * Database access is strictly limited to fetching ID's.
      *
      * @param book to process
@@ -510,28 +514,16 @@ public class BookCoder {
 
     private void processRating(@NonNull final Book book) {
         if (!book.contains(DBKey.RATING) && book.contains(Goodreads.MY_RATING)) {
-            try {
-                final int rating = Integer.parseInt(
-                        book.getString(Goodreads.MY_RATING));
-                if (rating > 0) {
-                    book.putFloat(DBKey.RATING, MathUtils.clamp(rating, 1, 5));
-                }
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
+            ratingParser.parse(book.getString(Goodreads.MY_RATING)).ifPresent(
+                    rating -> book.putFloat(DBKey.RATING, rating));
+
             book.remove(Goodreads.MY_RATING);
         }
 
         if (!book.contains(DBKey.RATING) && book.contains(Goodreads.AVERAGE_RATING)) {
-            try {
-                final float rating = (float) Math.round(2 * Float.parseFloat(
-                        book.getString(Goodreads.AVERAGE_RATING))) / 2;
-                if (rating > 0) {
-                    book.putFloat(DBKey.RATING, MathUtils.clamp(rating, (float) 0.5, (float) 5));
-                }
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
+            ratingParser.parse(book.getString(Goodreads.AVERAGE_RATING)).ifPresent(
+                    rating -> book.putFloat(DBKey.RATING, rating));
+
             book.remove(Goodreads.AVERAGE_RATING);
         }
     }

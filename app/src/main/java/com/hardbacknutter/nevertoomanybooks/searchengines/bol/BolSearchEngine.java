@@ -37,6 +37,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -406,16 +407,13 @@ public class BolSearchEngine
 
     private void parseRating(@NonNull final Document document,
                              @NonNull final Book book,
-                             final RealNumberParser realNumberParser) {
+                             @NonNull final RealNumberParser realNumberParser) {
+        final RatingParser ratingParser = new RatingParser(realNumberParser, 5);
+
         final Element ratingElement = document.selectFirst("div.reviews-summary__avg-score");
         if (ratingElement != null) {
-            //noinspection OverlyBroadCatchBlock
-            try {
-                final float rating = realNumberParser.parseFloat(ratingElement.text());
-                book.putFloat(DBKey.RATING, rating);
-            } catch (@NonNull final IllegalArgumentException ignore) {
-                // ignore
-            }
+            ratingParser.parse(ratingElement.text()).ifPresent(
+                    rating -> book.putFloat(DBKey.RATING, rating));
         }
     }
 
@@ -535,7 +533,7 @@ public class BolSearchEngine
      *     }
      * </pre>
      *
-     * @param context           Current context
+     * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param book        to update

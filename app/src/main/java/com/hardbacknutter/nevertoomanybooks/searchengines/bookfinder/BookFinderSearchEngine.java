@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -70,6 +71,8 @@ public class BookFinderSearchEngine
                                           + "&minprice="
                                           + "&maxprice=";
 
+    private final RatingParser ratingParser;
+
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
@@ -80,6 +83,8 @@ public class BookFinderSearchEngine
     public BookFinderSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        ratingParser = new RatingParser(5);
     }
 
     @NonNull
@@ -139,13 +144,9 @@ public class BookFinderSearchEngine
         final Element ratingElement = bookInfo.selectFirst("div.rating"
                                                            + " > span.book-rating-average");
         if (ratingElement != null) {
-            try {
-                final String text = ratingElement.text();
-                final float rating = realNumberParser.toFloat(text);
-                book.putFloat(DBKey.RATING, rating);
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
+            final String[] s = ratingElement.text().split(" ", 2);
+            ratingParser.parse(s[0]).ifPresent(
+                    rating -> book.putFloat(DBKey.RATING, rating));
         }
 
         final Elements details = bookInfo.select("div > strong");

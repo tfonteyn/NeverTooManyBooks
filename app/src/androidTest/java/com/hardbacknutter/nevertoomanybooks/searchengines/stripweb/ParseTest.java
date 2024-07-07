@@ -170,7 +170,7 @@ public class ParseTest
         assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4, book.getLong(DBKey.RATING));
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
 
         assertEquals("<p>met tekeningen van Philippe Xavier, Iouri Jigounov, Joël Callède," +
                      " Gontran Toussaint, Mikaël, Alain Henriet. *een extra katern leveren" +

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,10 +24,10 @@ import android.content.Context;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.math.MathUtils;
 
 import java.math.BigDecimal;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -60,6 +60,8 @@ class CollectionParser {
     @Nullable
     private final Bookshelf digitalBooksBookshelf;
 
+    private final RatingParser ratingParser;
+
     /**
      * Constructor.
      *
@@ -69,6 +71,8 @@ class CollectionParser {
     @AnyThread
     CollectionParser(@NonNull final Context context,
                      @NonNull final BookshelfMapper bookshelfMapper) {
+
+        ratingParser = new RatingParser(10);
 
         ownedBooksBookshelf = bookshelfMapper.getOwnedBooksBookshelf(context).orElse(null);
         digitalBooksBookshelf = bookshelfMapper.getDigitalBooksBookshelf(context).orElse(null);
@@ -170,10 +174,11 @@ class CollectionParser {
     void parseRating(@NonNull final Element root,
                      @NonNull final String nameAttr,
                      @NonNull final Book book) {
-        // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
-        jSoupHelper.getPositiveInt(root, nameAttr).ifPresent(
-                value -> book.putFloat(DBKey.RATING,
-                                       MathUtils.clamp(((float) value) / 2, 0.5f, 5f)));
+        final Element element = root.getElementById(nameAttr);
+        if (element != null) {
+            ratingParser.parse(element.val()).ifPresent(
+                    rating -> book.putFloat(DBKey.RATING, rating));
+        }
     }
 
     @AnyThread

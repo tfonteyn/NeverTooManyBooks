@@ -25,7 +25,6 @@ import android.content.Context;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.math.MathUtils;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -33,6 +32,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -62,6 +62,8 @@ public class DoubanSearchEngine
     private static final String SEARCH_URL = "/book/subject_search?search_text=%1$s";
     private static final Pattern PATTERN_BR = Pattern.compile("<br>");
 
+    private final RatingParser ratingParser;
+
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
@@ -72,6 +74,8 @@ public class DoubanSearchEngine
     public DoubanSearchEngine(@NonNull final Context appContext,
                               @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        ratingParser = new RatingParser(10);
     }
 
     @NonNull
@@ -311,19 +315,10 @@ public class DoubanSearchEngine
             }
         }
 
-        final Element ratingElement = document.selectFirst("strong.ll rating_num");
+        final Element ratingElement = document.selectFirst("div.rating_self > strong.rating_num ");
         if (ratingElement != null) {
-            final String ratingStr = ratingElement.text();
-            try {
-                // Rating are 0..10 with 1 decimal
-                // round to x.0 or x.5
-                final float rating = (float) Math.round(2 * Float.parseFloat(ratingStr)) / 2;
-                if (rating > 0) {
-                    book.putFloat(DBKey.RATING, MathUtils.clamp(rating, (float) 0.5, (float) 5));
-                }
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
+            ratingParser.parse(ratingElement.text()).ifPresent(
+                    rating -> book.putFloat(DBKey.RATING, rating));
         }
 
         // The meta element was shortened, overwrite if we find the full description

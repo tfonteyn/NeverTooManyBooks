@@ -78,6 +78,8 @@ import org.jsoup.select.Elements;
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
  * <p>
  * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
+ *
+ * TODO: grab book rating value
  */
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
