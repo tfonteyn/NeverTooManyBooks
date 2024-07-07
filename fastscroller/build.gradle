@@ -40,11 +40,10 @@ android {
                     "proguard-rules.pro")
         }
         beta {
-            initWith(release)
+            minifyEnabled false
         }
         debug {
-            // Enforce testing the proguard rules during debug-builds.
-            initWith(release)
+            minifyEnabled false
         }
     }
 
