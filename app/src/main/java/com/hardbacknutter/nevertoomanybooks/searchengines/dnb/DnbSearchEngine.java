@@ -77,6 +77,11 @@ public class DnbSearchEngine
                                              "&sortA=bez" +
                                              "&pr=0" +
                                              "&v=plist";
+
+    /**
+     * Suffixes we try to detect and remove from the title field.
+     * Ths list of suffixes is presumed to be much larger of course.
+     */
     private static final String[] TITLE_SUFFIXES = {
             ": Roman",
             ": Thriller",

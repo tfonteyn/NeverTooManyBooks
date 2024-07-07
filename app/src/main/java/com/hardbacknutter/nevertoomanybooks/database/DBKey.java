@@ -70,6 +70,8 @@ public final class DBKey {
     public static final String SID_BEDETHEQUE = "bdt_book_id";
 
     //NEWTHINGS: adding a new search engine: optional: add external id KEY
+    // ENHANCE: instead of adding a column for each SID,
+    //  we need to add a single column with a JSON value containing all SID's
 
     /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
     public static final String SID_ASIN = "asin";

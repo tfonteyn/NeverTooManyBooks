@@ -69,6 +69,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * <p>
  * To add a new site to search, follow these steps:
  * <ol>
+ *     <li>Add a buildConfigField to build.gradle in th defaultConfig section
+ *         and if needed in buildTypes/release</li>
+ *
  *     <li>Add a string resource with the name of the site engine in:
  *         "src/main/res/values/donottranslate.xml" (look for existing entries named 'site_*')
  *     </li>
@@ -128,6 +131,7 @@ public enum EngineId
            R.string.site_info_amazon,
            // amazon.com, amazon.ca : blocked by captcha
            "https://www.amazon.co.uk",
+           // The Locale will be dynamically set depending on the country site
            Locale.US,
            AmazonSearchEngine.class,
            BuildConfig.ENABLE_AMAZON),
