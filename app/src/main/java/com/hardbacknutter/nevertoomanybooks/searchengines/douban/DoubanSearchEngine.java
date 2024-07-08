@@ -24,13 +24,17 @@ import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -40,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -56,12 +61,17 @@ public class DoubanSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
+    @VisibleForTesting
+    public static final String PK_USE_NEWEST_RESULT = EngineId.Douban.getPreferenceKey()
+                                                      + ".search.result.order.by.date";
     /**
      * param 1: the ISBN
      */
     private static final String SEARCH_URL = "/book/subject_search?search_text=%1$s";
     private static final Pattern PATTERN_BR = Pattern.compile("<br>");
-
+    /** Support for foreign author names in the format: [法] 保罗·霍尔特   ==>  [France] Paul Holt */
+    private static final Pattern PATTERN_FOREIGN_AUTHOR = Pattern.compile("\\[(.+)] (.+)");
+    @NonNull
     private final RatingParser ratingParser;
 
     /**
@@ -90,60 +100,58 @@ public class DoubanSearchEngine
         final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            processDocument(context, document, fetchCovers, book);
+            // The result is always a list, even if only one book found.
+            final Optional<String> oUrl = parseMultiResult(context, document, validIsbn);
+            if (oUrl.isPresent()) {
+                final Document d = loadDocument(context, oUrl.get(), null);
+                if (!isCancelled()) {
+                    parse(context, d, fetchCovers, book);
+                }
+            } else {
+                // Keep this as a fallback, but we're unlikely to ever get here.
+                parse(context, document, fetchCovers, book);
+            }
         }
 
         return book;
     }
 
-    @VisibleForTesting
-    public void processDocument(@NonNull final Context context,
-                                @NonNull final Document document,
-                                @NonNull final boolean[] fetchCovers,
-                                @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
-
-        // The result is always a list, even if only one book found.
-        final Optional<String> oUrl = parseMultiResult(document);
-        if (oUrl.isPresent()) {
-            final Document d = loadDocument(context, oUrl.get(), null);
-            if (!isCancelled()) {
-                parse(context, d, fetchCovers, book);
-            }
-        } else {
-            // Keep this as a fallback, but we're unlikely to get here.
-            parse(context, document, fetchCovers, book);
-        }
-    }
-
     /**
-     * Parse the given document for being a multi-result. If found, extract
-     * the first result and return the book url.
+     * Parse the given multi-result document.
      *
-     * @param document to parse
+     * @param context    Current context
+     * @param document   to parse
+     * @param searchIsbn the ISBN we searched for
      *
      * @return url for the book details page
      */
     @VisibleForTesting
     @NonNull
-    public Optional<String> parseMultiResult(@NonNull final Document document) {
-        // Look for a script
-        // with the text: window.__DATA__ = {"co...
-        // Grab the part after the first equal sign
-        // and parse as a JSON string
-        // First element of the "items" array
-        // item should contain: "url": "https://book.douban.com/subject/36874304/"
+    public Optional<String> parseMultiResult(@NonNull final Context context,
+                                             @NonNull final Document document,
+                                             @NonNull final String searchIsbn) {
         final Elements elements = document.select("script[type=\"text/javascript\"]");
         for (final Element element : elements) {
             final String s = element.html().strip();
             if (s.startsWith("window.__DATA__ =")) {
+                // Grab the part after the first equal sign and parse as a JSON string.
                 final String[] sa = s.split("=", 2);
                 if (sa.length > 1) {
-                    final JSONArray items = new JSONObject(sa[1]).optJSONArray("items");
-                    if (items != null) {
+                    JSONArray items = new JSONObject(sa[1]).optJSONArray("items");
+                    if (items != null && !items.isEmpty()) {
+                        // First remove any invalid entries
+                        items = filter(items, searchIsbn);
                         if (!items.isEmpty()) {
-                            final String url = items.getJSONObject(0)
-                                                    .optString("url", null);
+                            final JSONObject reference;
+                            // Depending on user setting:
+                            if (useNewestResult(context)) {
+                                reference = findNewest(items);
+                            } else {
+                                // Use the first one found
+                                reference = items.getJSONObject(0);
+                            }
+
+                            final String url = reference.optString("url", null);
                             if (url != null) {
                                 return Optional.of(url);
                             }
@@ -156,17 +164,87 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Parse a book-details page.
+     * Find the newest book in the given array by assuming
+     * that the highest numerical id is the latest added to the site.
      *
-     * @param context
-     * @param document
-     * @param fetchCovers
-     * @param book
+     * @param items to parse
      *
-     * @throws StorageException
-     * @throws SearchException
-     * @throws CredentialsException
+     * @return item found
      */
+    @NonNull
+    private JSONObject findNewest(@NonNull final JSONArray items) {
+        JSONObject result = null;
+        int highestId = 0;
+        for (int i = 0; i < items.length(); i++) {
+            final JSONObject item = items.getJSONObject(i);
+            final int id = item.optInt("id");
+            if (id > highestId) {
+                highestId = id;
+                result = item;
+            }
+        }
+
+        // Paranoia...
+        if (result == null) {
+            // Use the first one found
+            result = items.getJSONObject(0);
+        }
+        return result;
+    }
+
+    /**
+     * Filter/remove any 'empty' entries by copying the valid ones to a new array.
+     *
+     * @param items      to filter
+     * @param searchIsbn the ISBN we searched for
+     *
+     * @return the filtered array
+     */
+    @NonNull
+    private JSONArray filter(@NonNull final JSONArray items,
+                             @NonNull final String searchIsbn) {
+        final JSONArray result = new JSONArray();
+        for (int i = 0; i < items.length(); i++) {
+            final JSONObject item = items.getJSONObject(i);
+            if (isProbableValid(item)) {
+                result.put(item);
+            }
+        }
+        return result;
+    }
+
+    private boolean isProbableValid(@Nullable final JSONObject item) {
+        if (item == null) {
+            return false;
+        }
+        final String title = item.optString("title", null);
+        if (title == null) {
+            return false;
+        }
+        // 'empty' entries seem to have a title containing just an isbn number
+        for (int i = 0; i < title.length(); i++) {
+            // As soon as we find a non-digit, assume it's a valid title
+            if (!Character.isDigit(title.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Does the user prefer to always use the newest book from the site?
+     * Or do they prefer to just grab the first one found?
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if the newest book is preferred,
+     *         {@code false} to grab the first one found
+     */
+    private boolean useNewestResult(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_USE_NEWEST_RESULT, true);
+    }
+
     @VisibleForTesting
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
@@ -174,61 +252,7 @@ public class DoubanSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // As meta tags in the HEAD:
-        //  <meta property="og:title" content="三体" />
-        //  <meta property="og:description" content="军方探寻外星文明的绝秘计划“红岸工程”取得了突破性进展。但在按下发射键的那一刻，历经劫难的叶文洁没有意识到，她彻底改变了人类的命运。地球文明向宇宙发出的第一声啼鸣，以太阳为中心，以光速向宇宙深处飞驰…..." />
-        //  <meta property="og:site_name" content="豆瓣" />
-        //  <meta property="og:url" content="https://book.douban.com/subject/36874304/" />
-        //  <meta property="og:image" content="https://img1.doubanio.com/view/subject/l/public/s34850048.jpg" />
-        //  <meta property="og:type" content="book" />
-        //  <meta property="book:author" content="刘慈欣" />
-        //  <meta property="book:isbn" content="9787536692930" />
-
-        int id;
-
-        final Elements metaElements = document.head().select("meta");
-        for (final Element meta : metaElements) {
-            final String property = meta.attr("property");
-            final String content = meta.attr("content");
-            // There is also "og:image" with a cover url.
-            // These can be VERY large and lead to java.net.SocketTimeoutException
-            // We'll grab the thumbnail instead.
-            switch (property) {
-                case "og:title":
-                    book.putString(DBKey.TITLE, content);
-                    break;
-
-                case "book:isbn":
-                    book.putString(DBKey.BOOK_ISBN, content);
-                    break;
-
-                case "og:description":
-                    // The description in the meta element is shortened.
-                    // We copy it while we have it, but will overwrite when we
-                    // can (should) get the full description later on.
-                    book.putString(DBKey.DESCRIPTION, content);
-                    break;
-
-                case "og:url": {
-                    // content="https://book.douban.com/subject/36874304/"
-                    final String[] parts = content.split("/");
-                    // Sanity check;
-                    // Make sure it's an int as we might need it for more parsing,
-                    // but store it in the book as a string as per usual with SID values
-                    if (parts.length >= 5) {
-                        try {
-                            id = Integer.parseInt(parts[4]);
-                            if (id > 0) {
-                                book.putString(DBKey.SID_DOUBAN, String.valueOf(id));
-                            }
-                        } catch (@NonNull final NumberFormatException ignore) {
-                            // ignore
-                        }
-                    }
-                    break;
-                }
-            }
-        }
+        parseMetaTags(document, book);
 
         final Element infoTable = document.selectFirst("div#info");
         if (infoTable == null) {
@@ -245,15 +269,17 @@ public class DoubanSearchEngine
                     // Author
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        // 刘慈欣 ==> Liu Cixin
-                        // [法] 保罗·霍尔特   ==>  [France] Paul Holt
-                        // URGENT: for the "[.] ." format, we end up with the [.] becoming the given name.
-                        //  Need to decide how to handle the country prefix
-                        //  Two options: drop it altogether, or move it to the end and use "(country)"
-                        //  as we can handle a round-bracket section as a suffix already.
                         final String text = a.text();
-                        final Author author = Author.from(text);
-                        book.add(author);
+                        final Matcher matcher = PATTERN_FOREIGN_AUTHOR.matcher(text);
+                        if (matcher.find()) {
+                            // [法] 保罗·霍尔特   ==>  [France] Paul Holt
+                            // Move the country prefix to the end to allow
+                            // sorting on author names to work.
+                            final String name = matcher.group(2) + " [" + matcher.group(1) + "]";
+                            addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
+                        } else {
+                            addAuthor(Author.from(text), Author.TYPE_UNKNOWN, book);
+                        }
                     }
                     break;
                 }
@@ -266,7 +292,11 @@ public class DoubanSearchEngine
                     break;
                 }
                 case "出品方:": {
-                    // Producer (printer?) ... not used
+                    // Producer (printer?). Ignored for now.
+                    break;
+                }
+                case "副标题:": {
+                    // Subtitle. Ignored for now.
                     break;
                 }
                 case "原作名:": {
@@ -310,7 +340,8 @@ public class DoubanSearchEngine
                     // List price
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        addPriceListed(context, siteLocale, n.toString().strip(), null, book);
+                        addPriceListed(context, siteLocale, n.toString().strip(),
+                                       MoneyParser.CNY, book);
                     }
                     break;
                 }
@@ -339,6 +370,95 @@ public class DoubanSearchEngine
                     rating -> book.putFloat(DBKey.RATING, rating));
         }
 
+        parseDescription(document, book);
+
+        // The content table - in the example we used, it's the chapter list.
+        // TODO: check if there is a way of detecting chapter-list versus actual content-list
+//        final String sid = book.getString(DBKey.SID_DOUBAN, null);
+//        if (sid != null) {
+//            final Element tocElement = document.selectFirst("div#dir_" + sid + "_full");
+//            if (tocElement != null) {
+//                final String[] content = PATTERN_BR.split(tocElement.html());
+//                 .... numbered lines with chapter-titles
+//            }
+//        }
+
+        // There is no language listed, we're assuming Simplified Chinese
+        if (!book.contains(DBKey.LANGUAGE)) {
+            book.putString(DBKey.LANGUAGE, "zho");
+        }
+
+        if (fetchCovers[0]) {
+            fetchCover(context, document, book);
+        }
+    }
+
+    /**
+     * <pre>{@code
+     *     <meta property="og:title" content="三体" />
+     *     <meta property="og:description" content="军方探寻外星文明的绝秘计划“..." />
+     *     <meta property="og:site_name" content="豆瓣" />
+     *     <meta property="og:url" content="https://book.douban.com/subject/36874304/" />
+     *     <meta property="og:image"
+     *           content="https://img1.doubanio.com/view/subject/l/public/s34850048.jpg" />
+     *     <meta property="og:type" content="book" />
+     *     <meta property="book:author" content="刘慈欣" />
+     *     <meta property="book:isbn" content="9787536692930" />
+     *     }
+     * </pre>
+     *
+     * @param document to parse
+     * @param book     Bundle to update
+     */
+    private void parseMetaTags(@NonNull final Document document,
+                               @NonNull final Book book) {
+        final Elements metaElements = document.head().select("meta");
+        for (final Element meta : metaElements) {
+            final String property = meta.attr("property");
+            final String content = meta.attr("content");
+            // There is also "og:image" with a cover url.
+            // These can be VERY large and lead to java.net.SocketTimeoutException
+            // We'll grab the thumbnail instead.
+            switch (property) {
+                case "og:title":
+                    book.putString(DBKey.TITLE, content);
+                    break;
+
+                case "book:isbn":
+                    book.putString(DBKey.BOOK_ISBN, content);
+                    break;
+
+                case "og:description":
+                    // The description in the meta element is shortened.
+                    // We copy it while we have it, but will overwrite when we
+                    // can (should) get the full description later on.
+                    book.putString(DBKey.DESCRIPTION, content);
+                    break;
+
+                case "og:url": {
+                    // content="https://book.douban.com/subject/36874304/"
+                    final String[] parts = content.split("/");
+                    // Sanity check;
+                    // Make sure it's an int as we might need it for more parsing,
+                    // but store it in the book as a string as per usual with SID values
+                    if (parts.length >= 5) {
+                        try {
+                            final int id = Integer.parseInt(parts[4]);
+                            if (id > 0) {
+                                book.putString(DBKey.SID_DOUBAN, String.valueOf(id));
+                            }
+                        } catch (@NonNull final NumberFormatException ignore) {
+                            // ignore
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    private void parseDescription(@NonNull final Document document,
+                                  @NonNull final Book book) {
         // The meta element was shortened, overwrite if we find the full description
         final Element relInfo = document.selectFirst("div.related_info");
         if (relInfo != null) {
@@ -357,38 +477,34 @@ public class DoubanSearchEngine
                 book.putString(DBKey.DESCRIPTION, intro.html().strip());
             }
         }
+    }
 
-        // The content table - in the example we used, it's the chapter list.
-        // TODO: check if there is a way of detecting chapter-list versus actual content-list
-//        if (id > 0) {
-//            final Element tocElement = document.selectFirst("div#dir_" + id + "_full");
-//            if (tocElement != null) {
-//                final String[] content = PATTERN_BR.split(tocElement.html());
-//                 .... numbered lines with chapter-titles
-//            }
-//        }
-
-
-        // There is no language listed, we're assuming Simplified Chinese
-        if (!book.contains(DBKey.LANGUAGE)) {
-            book.putString(DBKey.LANGUAGE, "zho");
-        }
-
-        if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
-            if (!isbn.isEmpty()) {
-                // "div#mainpic > a" element will have as the href a large version of the image.
-                // "div#mainpic > a > img" will have "src" point to a thumbnail
-                // We found the large image to result in socket-timeouts
-                // (without modifying our default timeout)
-                // Choosing to get the thumbnail here:
-                final Element img = document.selectFirst("div#mainpic > a > img");
-                if (img != null) {
-                    final String src = img.attr("src");
-                    if (!src.isEmpty()) {
-                        saveImage(context, src, isbn, 0, null).ifPresent(
-                                fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-                    }
+    /**
+     * Fetch the front cover thumbnail.
+     *
+     * @param context  Current context
+     * @param document to parse
+     * @param book     Bundle to update
+     *
+     * @throws StorageException The covers directory is not available
+     */
+    private void fetchCover(@NonNull final Context context,
+                            @NonNull final Document document,
+                            @NonNull final Book book)
+            throws StorageException {
+        final String isbn = book.getString(DBKey.BOOK_ISBN);
+        if (!isbn.isEmpty()) {
+            // "div#mainpic > a" element will have as the href a large version of the image.
+            // "div#mainpic > a > img" will have "src" point to a thumbnail
+            // We found the large image to result in socket-timeouts
+            // (without modifying our default timeout)
+            // Choosing to get the thumbnail here:
+            final Element img = document.selectFirst("div#mainpic > a > img");
+            if (img != null) {
+                final String src = img.attr("src");
+                if (!src.isEmpty()) {
+                    saveImage(context, src, isbn, 0, null).ifPresent(
+                            fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
                 }
             }
         }

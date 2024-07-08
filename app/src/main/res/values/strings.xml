@@ -1819,5 +1819,8 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="anonymous_author"
             translatable="false">[Anonymous]</string>
+    <string name="pt_search_result_order">Use the newest book, or use the first one found</string>
+    <string name="pe_search_result_order_newest">Newest by date</string>
+    <string name="pe_search_result_order_first">First match found</string>
 
 </resources>
