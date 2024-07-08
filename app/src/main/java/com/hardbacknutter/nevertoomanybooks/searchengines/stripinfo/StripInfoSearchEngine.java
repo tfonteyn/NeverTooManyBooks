@@ -77,7 +77,7 @@ import org.jsoup.select.Elements;
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
  * <p>
  * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
- *
+ * <p>
  * TODO: grab book rating value
  */
 public class StripInfoSearchEngine
@@ -537,7 +537,7 @@ public class StripInfoSearchEngine
         // find and process the description
         final Element item = document.selectFirst("div.item > section.grid > div.row");
         if (item != null) {
-            processDescription(item, book);
+            parseDescription(item, book);
         }
 
         // are we logged in ? Then look for any user data.
@@ -983,12 +983,12 @@ public class StripInfoSearchEngine
      * <strong>Note:</strong> the description sometimes contains a TOC (solely,
      * or in addition to the page TOC) but it's not in a standard format so we cannot
      * capture it.
-     *  @param item     description element, containing 1+ sections
      *
+     * @param item description element, containing 1+ sections
      * @param book Bundle to update
      */
-    private void processDescription(@NonNull final Element item,
-                                    @NonNull final Book book) {
+    private void parseDescription(@NonNull final Element item,
+                                  @NonNull final Book book) {
         final Elements sections = item.select("section.c4");
         if (!sections.isEmpty()) {
             final StringBuilder content = new StringBuilder();
