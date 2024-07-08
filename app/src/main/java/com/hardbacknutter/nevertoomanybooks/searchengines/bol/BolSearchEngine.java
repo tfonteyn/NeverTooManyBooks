@@ -431,8 +431,10 @@ public class BolSearchEngine
                 //    <sup class="promo-price__fraction" data-test="price-fraction">99</sup>
                 // </span>
                 // text() will get "22 99", so add a "," as decimal separator and parse as normal
-                final String priceText = priceElement.text().replace(" ", ",");
-                final double price = realNumberParser.parseDouble(priceText);
+                final String priceStr = priceElement.text().replace(" ", ",");
+                // The currency is not part of the string, so just parse it as a number
+                // and than add the EURO.
+                final double price = realNumberParser.parseDouble(priceStr);
                 book.putMoney(DBKey.PRICE_LISTED,
                               new Money(BigDecimal.valueOf(price), Money.EURO));
 
