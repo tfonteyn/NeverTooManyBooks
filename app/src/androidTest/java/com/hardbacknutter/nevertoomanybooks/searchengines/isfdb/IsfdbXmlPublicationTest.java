@@ -37,7 +37,6 @@ import javax.xml.parsers.SAXParserFactory;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -86,13 +85,9 @@ public class IsfdbXmlPublicationTest
         final RealNumberParser realNumberParser =
                 new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
-        final MoneyParser moneyParser = new MoneyParser(searchEngine.getLocale(context),
-                                                        realNumberParser);
-
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, searchEngine,
-                                                new boolean[]{false, false},
-                                                1, moneyParser);
+                                                new boolean[]{false, false}, 1);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final SAXParser parser = factory.newSAXParser();

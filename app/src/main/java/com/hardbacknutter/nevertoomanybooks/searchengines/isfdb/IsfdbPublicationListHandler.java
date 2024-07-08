@@ -28,12 +28,9 @@ import androidx.annotation.Nullable;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -41,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -134,8 +130,7 @@ class IsfdbPublicationListHandler
     /** The resulting list of books collected by this class. */
     @NonNull
     private final List<Book> bookList = new ArrayList<>();
-    @NonNull
-    private final MoneyParser moneyParser;
+
     private int maxRecords;
     private boolean inPublication;
     /** The current book we're parsing data for. Will be added to the {@link #bookList}. */
@@ -158,19 +153,16 @@ class IsfdbPublicationListHandler
      * @param fetchCovers  Set to {@code true} if we want to get covers
      *                     The array is guaranteed to have at least one element.
      * @param maxRecords   the maximum number of "Publication" records to fetch
-     * @param moneyParser  for parsing
      */
     IsfdbPublicationListHandler(@NonNull final Context context,
                                 @NonNull final IsfdbSearchEngine searchEngine,
                                 @NonNull final boolean[] fetchCovers,
-                                final int maxRecords,
-                                @NonNull final MoneyParser moneyParser) {
+                                final int maxRecords) {
         this.context = context;
         this.searchEngine = searchEngine;
 
         this.fetchCovers = fetchCovers;
         this.maxRecords = maxRecords;
-        this.moneyParser = moneyParser;
     }
 
     @NonNull
@@ -326,19 +318,9 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_PRICE: {
-                    final String tmpString = builder.toString().trim();
-                    final Optional<Money> money = moneyParser.parse(tmpString);
-                    if (money.isPresent()) {
-                        book.putMoney(DBKey.PRICE_LISTED, money.get());
-                    } else {
-                        // parsing failed, store the string as-is;
-                        // no separate currency!
-                        addIfNotPresent(DBKey.PRICE_LISTED, tmpString);
-                        // log this as we need to understand WHY it failed
-                        LoggerFactory.getLogger().w(TAG, "Failed to parse",
-                                                    DBKey.PRICE_LISTED,
-                                                    "text=" + tmpString);
-                    }
+                    final String priceStr = builder.toString().strip();
+                    searchEngine.processPriceListed(context, searchEngine.getLocale(context),
+                                                    priceStr, book);
                     break;
                 }
                 case XML_PAGES: {

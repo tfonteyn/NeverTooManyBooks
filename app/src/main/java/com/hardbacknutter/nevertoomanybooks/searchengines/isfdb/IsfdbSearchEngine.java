@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -1507,10 +1506,7 @@ public class IsfdbSearchEngine
         //    return 0
         final String url = getHostUrl(context) + String.format(REST_BY_EXTERNAL_ID, externalId);
 
-        final MoneyParser moneyParser = getMoneyParser(context, getLocale(context));
-
-        final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1,
-                                                              moneyParser);
+        final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1);
         if (publicationsList.isEmpty()) {
             return new Book();
         } else {
@@ -1577,8 +1573,6 @@ public class IsfdbSearchEngine
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
      * @param maxRecords  the maximum number of "Publication" records to fetch
-     * @param moneyParser shared parser
-     *
      * @return list of books found
      *
      * @throws StorageException      on storage related failures
@@ -1589,15 +1583,13 @@ public class IsfdbSearchEngine
     private List<Book> fetchPublications(@NonNull final Context context,
                                          @NonNull final String url,
                                          @NonNull final boolean[] fetchCovers,
-                                         @SuppressWarnings("SameParameterValue") final int maxRecords,
-                                         @NonNull final MoneyParser moneyParser)
+                                         @SuppressWarnings("SameParameterValue") final int maxRecords)
             throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest(context);
 
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(context, this, fetchCovers,
-                                                maxRecords, moneyParser);
+                new IsfdbPublicationListHandler(context, this, fetchCovers, maxRecords);
 
         final SAXParser parser;
         try {
