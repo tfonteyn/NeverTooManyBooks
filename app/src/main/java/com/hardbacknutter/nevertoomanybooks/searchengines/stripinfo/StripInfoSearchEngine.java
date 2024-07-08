@@ -378,7 +378,11 @@ public class StripInfoSearchEngine
                 // use the title header to determine we are in a book row.
                 final Element titleHeader = row.selectFirst("h2.title");
                 if (titleHeader != null) {
-                    primarySeriesBookNr = titleHeader.textNodes().get(0).text().strip();
+                    final Element issueNumber = titleHeader
+                            .selectFirst("span[itemprop=\"issueNumber\"]");
+                    if (issueNumber != null) {
+                        primarySeriesBookNr = issueNumber.text().strip();
+                    }
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     if (titleUrlElement != null) {
