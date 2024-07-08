@@ -146,7 +146,7 @@ class KbNlBookHandler
 
             case "Year":
             case "Jaar":
-                processDatePublished(currentData);
+                parseDatePublished(currentData);
                 break;
 
             case "Extent":
@@ -180,7 +180,7 @@ class KbNlBookHandler
 
             case "Contains":
             case "Bevat / omvat":
-                processDescription(currentData);
+                parseDescription(currentData);
                 break;
 
             case "Note":
@@ -496,7 +496,7 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processDatePublished(@NonNull final List<String> currentData) {
+    private void parseDatePublished(@NonNull final List<String> currentData) {
         if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
             // Grab the first bit before a comma, and strip it for digits + hope for the best
             final String year = SearchEngineUtils.digits(currentData.get(0).split(",")[0]);
@@ -566,10 +566,13 @@ class KbNlBookHandler
         }
     }
 
-    private void processDescription(final List<String> currentData) {
-        book.putString(DBKey.DESCRIPTION, currentData
+    private void parseDescription(@NonNull final List<String> currentData) {
+        final String desc = currentData
                 .stream()
                 .filter(name -> !name.isEmpty())
-                .collect(Collectors.joining(" ")));
+                .collect(Collectors.joining(" "));
+        if (!desc.isBlank()) {
+            book.putString(DBKey.DESCRIPTION, desc);
+        }
     }
 }
