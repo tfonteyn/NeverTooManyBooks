@@ -60,8 +60,6 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * This class replaces {@link OpenLibrarySearchEngine} which was using the now legacy books API.
- * <p>
  * <a href="https://openlibrary.org/dev/docs/api/search">Open Library Search API</a>
  * <p>
  * ENHANCE: {@link SearchEngine.ByText} could be added now by using
