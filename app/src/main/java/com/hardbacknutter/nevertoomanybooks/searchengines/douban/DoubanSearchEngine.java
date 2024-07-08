@@ -294,9 +294,7 @@ public class DoubanSearchEngine
                         // Dates are listed as yyyy-MM; use a PartialDate parser.
                         final String dateStr = n.toString().strip();
                         final PartialDateParser parser = new PartialDateParser();
-                        parser.parse(dateStr, false).ifPresent(
-                                partialDate -> book.putString(DBKey.BOOK_PUBLICATION__DATE,
-                                                              partialDate.getIsoString()));
+                        parser.parse(dateStr, false).ifPresent(book::setPublicationDate);
                     }
                     break;
                 }

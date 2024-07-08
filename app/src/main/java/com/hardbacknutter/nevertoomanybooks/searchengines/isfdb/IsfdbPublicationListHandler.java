@@ -29,6 +29,7 @@ import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -90,8 +91,6 @@ import org.xml.sax.helpers.DefaultHandler;
 class IsfdbPublicationListHandler
         extends DefaultHandler {
 
-    private static final String TAG = "IsfdbPublicationListHan";
-
     private static final String XML_PUBLICATION = "Publication";
     private static final String XML_AUTHORS = "Authors";
     private static final String XML_COVER_ARTISTS = "CoverArtists";
@@ -130,7 +129,7 @@ class IsfdbPublicationListHandler
     /** The resulting list of books collected by this class. */
     @NonNull
     private final List<Book> bookList = new ArrayList<>();
-
+    private final PartialDateParser partialDateParser = new PartialDateParser();
     private int maxRecords;
     private boolean inPublication;
     /** The current book we're parsing data for. Will be added to the {@link #bookList}. */
@@ -281,13 +280,11 @@ class IsfdbPublicationListHandler
                     }
                     break;
                 }
-
                 case XML_YEAR: {
                     if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
-                        final String text = builder.toString().strip();
-                        searchEngine.processPublicationDate(context,
-                                                            searchEngine.getLocale(context),
-                                                            text, book);
+                        final String dateStr = builder.toString().strip();
+                        partialDateParser.parse(dateStr, false)
+                                         .ifPresent(book::setPublicationDate);
                     }
                     break;
                 }

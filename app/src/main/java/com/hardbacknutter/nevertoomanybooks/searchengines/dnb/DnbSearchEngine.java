@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -91,11 +92,9 @@ public class DnbSearchEngine
     private static final Pattern PATTERN_SLASH = Pattern.compile("/");
     private static final Pattern PAGE_NUMBER_PATTERN = Pattern.compile("\\d+");
 
-    // URGENT: extend the PartialDate parser to handle multiple formats
-    private static final Pattern PUB_DATE_MM_YYYY = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
-    private static final Pattern PUB_DATE_YYYY = Pattern.compile("\\d\\d\\d\\d");
-
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
+
+    private final PartialDateParser partialDateParser = new PartialDateParser();
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -189,7 +188,7 @@ public class DnbSearchEngine
                                 break;
                             case "Erschienen":
                             case "Published":
-                                processPublisher(context, td, book);
+                                processPublisher(td, book);
                                 break;
                             case "Umfang":
                             case "Extent":
@@ -365,8 +364,7 @@ public class DnbSearchEngine
      *   ==> "2024"
      * </pre>
      */
-    private void processPublisher(@NonNull final Context context,
-                                  @NonNull final Element td,
+    private void processPublisher(@NonNull final Element td,
                                   @NonNull final Book book) {
         final List<Node> nodes = td.childNodes();
         if (!nodes.isEmpty()) {
@@ -385,21 +383,8 @@ public class DnbSearchEngine
             // node.get(1) should be the br tag which we skip.
 
             if (nodes.size() > 2) {
-                String dateStr = nodes.get(2).toString().strip();
-                Matcher matcher;
-                matcher = PUB_DATE_MM_YYYY.matcher(dateStr);
-                if (matcher.find()) {
-                    dateStr = matcher.group();
-                    // Flip them around to "YYYY-MM"
-                    dateStr = dateStr.substring(3) + "-" + dateStr.substring(0, 2);
-                    book.putString(DBKey.BOOK_PUBLICATION__DATE, dateStr);
-                    return;
-                }
-                matcher = PUB_DATE_YYYY.matcher(dateStr);
-                if (matcher.find()) {
-                    book.putString(DBKey.BOOK_PUBLICATION__DATE, matcher.group());
-                    return;
-                }
+                final String dateStr = nodes.get(2).toString().strip();
+                partialDateParser.parse(dateStr, false).ifPresent(book::setPublicationDate);
             }
         }
     }
