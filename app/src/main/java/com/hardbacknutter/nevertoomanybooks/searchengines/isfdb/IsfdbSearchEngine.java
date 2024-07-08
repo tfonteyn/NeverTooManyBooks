@@ -859,9 +859,7 @@ public class IsfdbSearchEngine
                         case "Author:":
                         case "Authors:": {
                             for (final Element a : li.select("a")) {
-                                final Author author = Author.from(a.text());
-                                // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                processAuthor(author, Author.TYPE_UNKNOWN, book);
+                                addAuthor(Author.from(a.text()), Author.TYPE_UNKNOWN, book);
                             }
                             break;
                         }
@@ -934,7 +932,7 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    processPriceListed(context, siteLocale, tmpString, null, book);
+                                    addPriceListed(context, siteLocale, tmpString, null, book);
                                 }
                             }
                             break;
@@ -974,14 +972,9 @@ public class IsfdbSearchEngine
                         }
                         case "Cover:": {
                             final Elements as = li.select("a");
-                            //TODO: if there are multiple art/artists... will this barf ?
-                            // book.putString(SiteField.BOOK_COVER_ART_TXT, as.text());
                             if (as.size() > 1) {
-                                // Cover artist
                                 final Element a = as.get(1);
-                                final Author author = Author.from(a.text());
-                                // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
-                                processAuthor(author, Author.TYPE_COVER_ARTIST, book);
+                                addAuthor(Author.from(a.text()), Author.TYPE_COVER_ARTIST, book);
                             }
                             break;
                         }
@@ -992,9 +985,7 @@ public class IsfdbSearchEngine
                         }
                         case "Editors:": {
                             for (final Element a : li.select("a")) {
-                                final Author author = Author.from(a.text());
-                                // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                processAuthor(author, Author.TYPE_EDITOR, book);
+                                addAuthor(Author.from(a.text()), Author.TYPE_EDITOR, book);
                             }
                             break;
                         }
@@ -1622,13 +1613,6 @@ public class IsfdbSearchEngine
      * ISFDB specific field names we add to the bundle based on parsed XML data.
      */
     static final class SiteField {
-        // private static final String AUTHOR_ID = "__ISFDB_AUTHORS_ID";
-        // private static final String SERIES_ID = "__ISFDB_SERIES_ID";
-        // private static final String PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";
-        // private static final String EDITORS_ID = "__ISFDB_EDITORS_ID";
-        // private static final String BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID";
-        // private static final String BOOK_COVER_ART_TXT = "__BOOK_COVER_ART_TXT";
-
         static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
         static final String ISBN_2 = "__ISFDB_ISBN2";
         static final String BOOK_TAG = "__TAG";

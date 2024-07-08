@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -438,21 +437,21 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Tekenaar": {
-                        processAuthor(td, Author.TYPE_ARTIST, book);
+                        parseAuthor(td, Author.TYPE_ARTIST, book);
                         break;
                     }
                     case "Scenarist": {
-                        processAuthor(td, Author.TYPE_WRITER, book);
+                        parseAuthor(td, Author.TYPE_WRITER, book);
                         break;
                     }
                     case "Uitgeverij":
-                        processPublisher(td, book);
+                        parsePublisher(td, book);
                         break;
 
                     case "Jaar":
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
-                            processPublicationDate(context, getLocale(context), text, book);
+                            addPublicationDate(context, getLocale(context), text, book);
                         }
                         break;
 
@@ -605,12 +604,12 @@ public class LastDodoSearchEngine
      * @param type of this entry
      * @param book Bundle to update
      */
-    private void processAuthor(@NonNull final Element td,
-                               @Author.Type final int type,
-                               @NonNull final Book book) {
+    private void parseAuthor(@NonNull final Element td,
+                             @Author.Type final int type,
+                             @NonNull final Book book) {
 
         for (final Element a : td.select("a")) {
-            processAuthor(Author.from(a.text()), type, book);
+            addAuthor(Author.from(a.text()), type, book);
         }
     }
 
@@ -638,15 +637,10 @@ public class LastDodoSearchEngine
      * @param td   data td
      * @param book Bundle to update
      */
-    private void processPublisher(@NonNull final Element td,
-                                  @NonNull final Book book) {
+    private void parsePublisher(@NonNull final Element td,
+                                @NonNull final Book book) {
         for (final Element a : td.select("a")) {
-            final String name = SearchEngineUtils.cleanText(a.text());
-            final Publisher currentPublisher = Publisher.from(name);
-            // add if not already present
-            if (book.getPublishers().stream().noneMatch(pub -> pub.equals(currentPublisher))) {
-                book.add(currentPublisher);
-            }
+            addPublisher(SearchEngineUtils.cleanText(a.text()), book);
         }
     }
 

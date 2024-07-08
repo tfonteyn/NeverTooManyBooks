@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -400,49 +399,49 @@ public class StripInfoSearchEngine
                             switch (label) {
                                 case "Scenario":
                                 case "Naar":
-                                    i += processAuthor(td, Author.TYPE_WRITER, book);
+                                    i += parseAuthor(td, Author.TYPE_WRITER, book);
                                     break;
 
                                 case "Tekeningen":
-                                    i += processAuthor(td, Author.TYPE_ARTIST, book);
+                                    i += parseAuthor(td, Author.TYPE_ARTIST, book);
                                     break;
 
                                 case "Kleuren":
-                                    i += processAuthor(td, Author.TYPE_COLORIST, book);
+                                    i += parseAuthor(td, Author.TYPE_COLORIST, book);
                                     break;
                                 case "Inkting":
-                                    i += processAuthor(td, Author.TYPE_INKING, book);
+                                    i += parseAuthor(td, Author.TYPE_INKING, book);
                                     break;
 
                                 case "Cover":
-                                    i += processAuthor(td, Author.TYPE_COVER_ARTIST, book);
+                                    i += parseAuthor(td, Author.TYPE_COVER_ARTIST, book);
                                     break;
 
                                 case "Inkting cover":
-                                    i += processAuthor(td, Author.TYPE_COVER_INKING, book);
+                                    i += parseAuthor(td, Author.TYPE_COVER_INKING, book);
                                     break;
 
                                 case "Vertaling":
-                                    i += processAuthor(td, Author.TYPE_TRANSLATOR, book);
+                                    i += parseAuthor(td, Author.TYPE_TRANSLATOR, book);
                                     break;
 
                                 case "Storyboard":
-                                    i += processAuthor(td, Author.TYPE_STORYBOARD, book);
+                                    i += parseAuthor(td, Author.TYPE_STORYBOARD, book);
                                     break;
 
                                 case "Lettering":
-                                    i += processAuthor(td, Author.TYPE_LETTERING, book);
+                                    i += parseAuthor(td, Author.TYPE_LETTERING, book);
                                     break;
 
                                 case "Uitgever(s)":
-                                    i += processPublisher(td, book);
+                                    i += parsePublisher(td, book);
                                     break;
 
                                 case "Jaar": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        processPublicationDate(context, getLocale(context),
-                                                               text, book);
+                                        addPublicationDate(context, getLocale(context),
+                                                           text, book);
                                         i++;
                                     }
                                     break;
@@ -870,17 +869,15 @@ public class StripInfoSearchEngine
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processAuthor(@NonNull final Element td,
-                              @Author.Type final int type,
-                              @NonNull final Book book) {
+    private int parseAuthor(@NonNull final Element td,
+                            @Author.Type final int type,
+                            @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
                 final String name = as.get(i).text();
-                final Author currentAuthor = Author.from(name);
-
-                processAuthor(currentAuthor, type, book);
+                addAuthor(Author.from(name), type, book);
             }
             return 1;
         }
@@ -962,21 +959,13 @@ public class StripInfoSearchEngine
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processPublisher(@NonNull final Element td,
-                                 @NonNull final Book book) {
+    private int parsePublisher(@NonNull final Element td,
+                               @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             final Elements aas = dataElement.select("a");
             for (int i = 0; i < aas.size(); i++) {
-                final String name = SearchEngineUtils.cleanText(aas.get(i).text());
-                final Publisher currentPublisher = Publisher.from(name);
-                // check if already present
-                if (book.getPublishers().stream()
-                        .anyMatch(pub -> pub.equals(currentPublisher))) {
-                    return 1;
-                }
-                // just add
-                book.add(currentPublisher);
+                addPublisher(SearchEngineUtils.cleanText(aas.get(i).text()), book);
             }
             return 1;
         }

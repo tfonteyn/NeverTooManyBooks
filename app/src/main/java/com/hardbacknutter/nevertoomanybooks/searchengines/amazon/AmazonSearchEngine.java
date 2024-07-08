@@ -445,7 +445,7 @@ public class AmazonSearchEngine
             }
         }
 
-        processPriceListed(context, siteLocale, priceText, null, book);
+        addPriceListed(context, siteLocale, priceText, null, book);
 
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
@@ -527,7 +527,7 @@ public class AmazonSearchEngine
 
                             final String pubDate = matcher.group(2);
                             if (pubDate != null) {
-                                processPublicationDate(context, siteLocale, pubDate.strip(), book);
+                                addPublicationDate(context, siteLocale, pubDate.strip(), book);
                             }
                         }
 
@@ -610,7 +610,7 @@ public class AmazonSearchEngine
                         }
                     }
 
-                    processAuthor(author, type, book);
+                    addAuthor(author, type, book);
                 }
             }
         }

@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public abstract class SearchEngineBase
@@ -434,9 +435,9 @@ public abstract class SearchEngineBase
      * @param currentAuthorType type
      * @param book              Bundle to update
      */
-    public void processAuthor(@NonNull final Author currentAuthor,
-                              @Author.Type final int currentAuthorType,
-                              @NonNull final Book book) {
+    public void addAuthor(@NonNull final Author currentAuthor,
+                          @Author.Type final int currentAuthorType,
+                          @NonNull final Book book) {
         boolean add = true;
         // check if already present
         for (final Author author : book.getAuthors()) {
@@ -451,6 +452,25 @@ public abstract class SearchEngineBase
         if (add) {
             currentAuthor.setType(currentAuthorType);
             book.add(currentAuthor);
+        }
+    }
+
+    /**
+     * Process the given name and add as {@link Publisher} if appropriate.
+     *
+     * @param name of a publisher
+     * @param book Bundle to update
+     */
+    public void addPublisher(@Nullable final String name,
+                             @NonNull final Book book) {
+        if (name == null || name.isBlank()) {
+            return;
+        }
+
+        final Publisher currentPublisher = Publisher.from(name);
+        // add if not already present
+        if (book.getPublishers().stream().noneMatch(pub -> pub.equals(currentPublisher))) {
+            book.add(currentPublisher);
         }
     }
 
@@ -470,28 +490,30 @@ public abstract class SearchEngineBase
      * @param dateStr the date field as retrieved
      * @param book    Bundle to update
      */
-    public void processPublicationDate(@NonNull final Context context,
-                                       @NonNull final Locale locale,
-                                       @Nullable final String dateStr,
-                                       @NonNull final Book book) {
+    public void addPublicationDate(@NonNull final Context context,
+                                   @NonNull final Locale locale,
+                                   @Nullable final String dateStr,
+                                   @NonNull final Book book) {
 
-        if (dateStr != null && !dateStr.isBlank()) {
-            if (dateStr.length() == 4) {
-                // we have a 4-digit year, use the simplified notation.
-                try {
-                    book.setPublicationDate(Integer.parseInt(dateStr));
-                    return;
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore and continue with full parsing
-                }
-            }
-
-            // error or not 4 digits? Do a full parse.
-            getDateParser(context, locale)
-                    .parse(dateStr)
-                    .ifPresent(book::setPublicationDate);
-
+        if (dateStr == null || dateStr.isBlank()) {
+            return;
         }
+
+        if (dateStr.length() == 4) {
+            // we have a 4-digit year, use the simplified notation.
+            try {
+                book.setPublicationDate(Integer.parseInt(dateStr));
+                return;
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore and continue with full parsing
+            }
+        }
+
+        // error or not 4 digits? Do a full parse.
+        getDateParser(context, locale)
+                .parse(dateStr)
+                .ifPresent(book::setPublicationDate);
+
     }
 
     /**
@@ -503,11 +525,11 @@ public abstract class SearchEngineBase
      * @param currencyStr optional currency string to parse when the priceStr does not have one
      * @param book        Bundle to update
      */
-    public void processPriceListed(@NonNull final Context context,
-                                   @NonNull final Locale locale,
-                                   @NonNull final String priceStr,
-                                   @Nullable final String currencyStr,
-                                   @NonNull final Book book) {
+    public void addPriceListed(@NonNull final Context context,
+                               @NonNull final Locale locale,
+                               @NonNull final String priceStr,
+                               @Nullable final String currencyStr,
+                               @NonNull final Book book) {
         final Optional<Money> money;
         if (currencyStr == null || currencyStr.isBlank()) {
             money = getMoneyParser(context, locale).parse(priceStr);

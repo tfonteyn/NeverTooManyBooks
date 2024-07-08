@@ -274,9 +274,9 @@ class IsfdbPublicationListHandler
                 }
                 case XML_AUTHOR: {
                     if (inAuthors) {
-                        searchEngine.processAuthor(Author.from(builder.toString().strip()),
-                                                   Author.TYPE_UNKNOWN,
-                                                   book);
+                        searchEngine.addAuthor(Author.from(builder.toString().strip()),
+                                               Author.TYPE_UNKNOWN,
+                                               book);
                     }
                     break;
                 }
@@ -316,8 +316,8 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String priceStr = builder.toString().strip();
-                    searchEngine.processPriceListed(context, searchEngine.getLocale(context),
-                                                    priceStr, null, book);
+                    searchEngine.addPriceListed(context, searchEngine.getLocale(context),
+                                                priceStr, null, book);
                     break;
                 }
                 case XML_PAGES: {
@@ -359,9 +359,9 @@ class IsfdbPublicationListHandler
                 }
                 case XML_ARTIST: {
                     if (inCoverArtists) {
-                        searchEngine.processAuthor(Author.from(builder.toString().strip()),
-                                                   Author.TYPE_COVER_ARTIST,
-                                                   book);
+                        searchEngine.addAuthor(Author.from(builder.toString().strip()),
+                                               Author.TYPE_COVER_ARTIST,
+                                               book);
                     }
                     break;
                 }

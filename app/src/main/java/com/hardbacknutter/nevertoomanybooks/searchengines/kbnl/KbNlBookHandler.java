@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
@@ -105,12 +104,12 @@ class KbNlBookHandler
 
             case "Author":
             case "Auteur":
-                processAuthor(currentData, Author.TYPE_WRITER);
+                parseAuthor(currentData, Author.TYPE_WRITER);
                 break;
 
             case "Collaborator":
             case "Medewerker":
-                processAuthor(currentData, Author.TYPE_CONTRIBUTOR);
+                parseAuthor(currentData, Author.TYPE_CONTRIBUTOR);
                 break;
 
             case "Artist":
@@ -119,15 +118,15 @@ class KbNlBookHandler
             case "Illustrator":
                 // illustrator (label is same in dutch) is for books
                 // Just put them both down as artists
-                processAuthor(currentData, Author.TYPE_ARTIST);
+                parseAuthor(currentData, Author.TYPE_ARTIST);
                 break;
 
             case "Colorist":
-                processAuthor(currentData, Author.TYPE_COLORIST);
+                parseAuthor(currentData, Author.TYPE_COLORIST);
                 break;
             case "Translator":
             case "Vertaler":
-                processAuthor(currentData, Author.TYPE_TRANSLATOR);
+                parseAuthor(currentData, Author.TYPE_TRANSLATOR);
                 break;
 
             case "Series":
@@ -142,7 +141,7 @@ class KbNlBookHandler
 
             case "Publisher":
             case "Uitgever":
-                processPublisher(currentData);
+                parsePublisher(currentData);
                 break;
 
             case "Year":
@@ -300,8 +299,8 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      * @param type        the author type
      */
-    private void processAuthor(@NonNull final Iterable<String> currentData,
-                               @Author.Type final int type) {
+    private void parseAuthor(@NonNull final Iterable<String> currentData,
+                             @Author.Type final int type) {
         for (final String text : currentData) {
             // remove any "(..)" parts in the name
             final String cleanedString = text.split("\\(")[0].strip();
@@ -310,7 +309,7 @@ class KbNlBookHandler
                 return;
             }
 
-            searchEngine.processAuthor(Author.from(cleanedString), type, book);
+            searchEngine.addAuthor(Author.from(cleanedString), type, book);
         }
     }
 
@@ -454,7 +453,7 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processPublisher(@NonNull final List<String> currentData) {
+    private void parsePublisher(@NonNull final List<String> currentData) {
         String publisherName = currentData.stream()
                                           .filter(name -> !name.isEmpty())
                                           .collect(Collectors.joining(" "));
@@ -462,7 +461,7 @@ class KbNlBookHandler
         if (publisherName.contains(":")) {
             publisherName = publisherName.split(":")[1].strip();
         }
-        book.add(Publisher.from(publisherName));
+        searchEngine.addPublisher(publisherName, book);
     }
 
     /**

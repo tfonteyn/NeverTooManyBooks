@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -265,20 +264,20 @@ public class KbNlHtmlSearchEngine
                             break;
 
                         case "Auteur:":
-                            processAuthor(td, Author.TYPE_WRITER, book);
+                            parseAuthor(td, Author.TYPE_WRITER, book);
                             break;
                         case "Medewerker:":
-                            processAuthor(td, Author.TYPE_CONTRIBUTOR, book);
+                            parseAuthor(td, Author.TYPE_CONTRIBUTOR, book);
                             break;
                         case "Kunstenaar:":
-                            processAuthor(td, Author.TYPE_ARTIST, book);
+                            parseAuthor(td, Author.TYPE_ARTIST, book);
                             break;
 
                         case "Colorist:":
-                            processAuthor(td, Author.TYPE_COLORIST, book);
+                            parseAuthor(td, Author.TYPE_COLORIST, book);
                             break;
                         case "Vertaler:":
-                            processAuthor(td, Author.TYPE_TRANSLATOR, book);
+                            parseAuthor(td, Author.TYPE_TRANSLATOR, book);
                             break;
 
                         case "Reeks:":
@@ -290,7 +289,7 @@ public class KbNlHtmlSearchEngine
                             break;
 
                         case "Uitgever:":
-                            processPublisher(td, book);
+                            parsePublisher(td, book);
                             break;
 
                         case "Jaar:":
@@ -378,9 +377,9 @@ public class KbNlHtmlSearchEngine
         }
     }
 
-    private void processAuthor(@NonNull final Element td,
-                               final int type,
-                               @NonNull final Book book) {
+    private void parseAuthor(@NonNull final Element td,
+                             @Author.Type final int type,
+                             @NonNull final Book book) {
         final Elements aas = td.select("a");
         if (!aas.isEmpty()) {
             for (final Element a : aas) {
@@ -391,7 +390,7 @@ public class KbNlHtmlSearchEngine
                     return;
                 }
 
-                processAuthor(Author.from(cleanedString), type, book);
+                addAuthor(Author.from(cleanedString), type, book);
             }
         }
     }
@@ -447,8 +446,8 @@ public class KbNlHtmlSearchEngine
         }
     }
 
-    private void processPublisher(@NonNull final Element td,
-                                  @NonNull final Book book) {
+    private void parsePublisher(@NonNull final Element td,
+                                @NonNull final Book book) {
         final Elements spans = td.select("span");
         if (!spans.isEmpty()) {
             String publisherName = spans.stream()
@@ -458,7 +457,7 @@ public class KbNlHtmlSearchEngine
             if (publisherName.contains(":")) {
                 publisherName = publisherName.split(":")[1].trim();
             }
-            book.add(Publisher.from(publisherName));
+            addPublisher(publisherName, book);
         }
     }
 

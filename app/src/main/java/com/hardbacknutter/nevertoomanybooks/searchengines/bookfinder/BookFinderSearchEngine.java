@@ -138,8 +138,7 @@ public class BookFinderSearchEngine
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");
         if (authorElement != null) {
-            final Author author = Author.from(authorElement.text());
-            processAuthor(author, Author.TYPE_UNKNOWN, book);
+            addAuthor(Author.from(authorElement.text()), Author.TYPE_UNKNOWN, book);
         }
         final Element ratingElement = bookInfo.selectFirst("div.rating"
                                                            + " > span.book-rating-average");
@@ -169,8 +168,8 @@ public class BookFinderSearchEngine
                             if (s.length > 0 && !s[0].isBlank()) {
                                 book.add(Publisher.from(s[0].strip()));
                                 if (s.length > 1 && !s[1].isBlank()) {
-                                    processPublicationDate(context, getLocale(context),
-                                                           s[1].strip(), book);
+                                    addPublicationDate(context, getLocale(context),
+                                                       s[1].strip(), book);
                                 }
                             }
                             break;

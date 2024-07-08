@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -248,7 +248,7 @@ public class BedethequeSearchEngine
                 if (text.isBlank() && lastAuthorType != -1) {
                     final Element span = label.nextElementSibling();
                     if (span != null) {
-                        processAuthor(context, span.text(), lastAuthorType, book);
+                        parseAuthor(context, span.text(), lastAuthorType, book);
                     }
                     continue;
                 }
@@ -298,7 +298,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_WRITER;
-                            processAuthor(context, a.text(), Author.TYPE_WRITER, book);
+                            parseAuthor(context, a.text(), Author.TYPE_WRITER, book);
                         }
                         break;
                     }
@@ -306,7 +306,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_ARTIST;
-                            processAuthor(context, a.text(), Author.TYPE_ARTIST, book);
+                            parseAuthor(context, a.text(), Author.TYPE_ARTIST, book);
                         }
                         break;
                     }
@@ -314,7 +314,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_INKING;
-                            processAuthor(context, a.text(), Author.TYPE_INKING, book);
+                            parseAuthor(context, a.text(), Author.TYPE_INKING, book);
                         }
                         break;
                     }
@@ -330,8 +330,8 @@ public class BedethequeSearchEngine
                                         .substring(1, colorOrColorist.length() - 1));
                             } else {
                                 // it's a real name
-                                processAuthor(context, colorOrColorist, Author.TYPE_COLORIST,
-                                              book);
+                                parseAuthor(context, colorOrColorist, Author.TYPE_COLORIST,
+                                            book);
                             }
                         }
                         break;
@@ -340,7 +340,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_COVER_ARTIST;
-                            processAuthor(context, a.text(), Author.TYPE_COVER_ARTIST, book);
+                            parseAuthor(context, a.text(), Author.TYPE_COVER_ARTIST, book);
                         }
                         break;
                     }
@@ -348,7 +348,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_FOREWORD;
-                            processAuthor(context, a.text(), Author.TYPE_FOREWORD, book);
+                            parseAuthor(context, a.text(), Author.TYPE_FOREWORD, book);
                         }
                         break;
                     }
@@ -356,7 +356,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_TRANSLATOR;
-                            processAuthor(context, a.text(), Author.TYPE_TRANSLATOR, book);
+                            parseAuthor(context, a.text(), Author.TYPE_TRANSLATOR, book);
                         }
                         break;
                     }
@@ -364,7 +364,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_CONTRIBUTOR;
-                            processAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR, book);
+                            parseAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR, book);
                         }
                         break;
                     }
@@ -377,7 +377,7 @@ public class BedethequeSearchEngine
                                 // Flip to "YYYY-MM" (or use as-is)
                                 date = date.substring(3) + "-" + date.substring(0, 2);
                             }
-                            processPublicationDate(context, getLocale(context), date, book);
+                            addPublicationDate(context, getLocale(context), date, book);
                         }
                         break;
                     }
@@ -608,10 +608,10 @@ public class BedethequeSearchEngine
      * @param type    the Author type
      * @param book    Bundle to update
      */
-    private void processAuthor(@NonNull final Context context,
-                               @NonNull final String text,
-                               @Author.Type final int type,
-                               @NonNull final Book book) {
+    private void parseAuthor(@NonNull final Context context,
+                             @NonNull final String text,
+                             @Author.Type final int type,
+                             @NonNull final Book book) {
 
         // REMOVE potential "<>" as we really don't want fake html tags
         String names = text;
@@ -622,8 +622,6 @@ public class BedethequeSearchEngine
             names = names.substring(0, names.length() - 1);
         }
 
-        final Author currentAuthor;
-
         // colors - handled by "Couleurs"
         //"<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>"
         // scenario author for an art-book; ignore
@@ -633,7 +631,7 @@ public class BedethequeSearchEngine
         switch (names) {
             case "Indéterminé":
             case "Anonyme":
-                currentAuthor = Author.createUnknownAuthor(context);
+                addAuthor(Author.createUnknownAuthor(context), type, book);
                 break;
 
             case "Art Book":
@@ -643,10 +641,9 @@ public class BedethequeSearchEngine
 
             case "Collectif":
             default:
-                currentAuthor = Author.from(names);
+                addAuthor(Author.from(names), type, book);
+                ;
                 break;
         }
-
-        processAuthor(currentAuthor, type, book);
     }
 }

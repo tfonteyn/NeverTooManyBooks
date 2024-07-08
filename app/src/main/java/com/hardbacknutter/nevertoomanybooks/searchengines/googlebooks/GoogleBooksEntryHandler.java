@@ -370,9 +370,9 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                searchEngine.processAuthor(Author.from(builder.toString()),
-                                           Author.TYPE_UNKNOWN,
-                                           book);
+                searchEngine.addAuthor(Author.from(builder.toString()),
+                                       Author.TYPE_UNKNOWN,
+                                       book);
                 break;
 
             case XML_PUBLISHER:
@@ -382,8 +382,8 @@ class GoogleBooksEntryHandler
             case XML_DATE_PUBLISHED:
                 if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
                     final String text = builder.toString().strip();
-                    searchEngine.processPublicationDate(context, searchEngine.getLocale(context),
-                                                        text, book);
+                    searchEngine.addPublicationDate(context, searchEngine.getLocale(context),
+                                                    text, book);
                 }
                 break;
 

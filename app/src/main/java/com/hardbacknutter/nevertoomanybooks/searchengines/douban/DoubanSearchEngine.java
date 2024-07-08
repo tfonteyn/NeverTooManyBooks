@@ -310,7 +310,7 @@ public class DoubanSearchEngine
                     // List price
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        processPriceListed(context, siteLocale, n.toString().strip(), null, book);
+                        addPriceListed(context, siteLocale, n.toString().strip(), null, book);
                     }
                     break;
                 }

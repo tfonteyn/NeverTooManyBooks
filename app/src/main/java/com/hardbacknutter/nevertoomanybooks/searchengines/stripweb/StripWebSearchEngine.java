@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -271,24 +270,24 @@ public class StripWebSearchEngine
                     case "Verschijningsdatum": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
-                            processPublicationDate(context, getLocale(context), text, book);
+                            addPublicationDate(context, getLocale(context), text, book);
                         }
                         break;
                     }
                     case "Tekenaars":
-                        processAuthor(td, Author.TYPE_ARTIST, book);
+                        parseAuthor(td, Author.TYPE_ARTIST, book);
                         break;
                     case "Scenarist":
-                        processAuthor(td, Author.TYPE_WRITER, book);
+                        parseAuthor(td, Author.TYPE_WRITER, book);
                         break;
                     case "Inkleuring":
-                        processAuthor(td, Author.TYPE_COLORIST, book);
+                        parseAuthor(td, Author.TYPE_COLORIST, book);
                         break;
                     case "Cover artiest":
-                        processAuthor(td, Author.TYPE_COVER_ARTIST, book);
+                        parseAuthor(td, Author.TYPE_COVER_ARTIST, book);
                         break;
                     case "Uitgeverij":
-                        processPublisher(td, book);
+                        parsePublisher(td, book);
                         break;
 
                     case "Afmetingen":
@@ -439,7 +438,7 @@ public class StripWebSearchEngine
                 final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
                 final String priceStr = price.text().strip();
-                processPriceListed(context, siteLocale, priceStr, MoneyParser.EUR, book);
+                addPriceListed(context, siteLocale, priceStr, MoneyParser.EUR, book);
             }
         }
     }
@@ -469,9 +468,9 @@ public class StripWebSearchEngine
      * @param type of this entry
      * @param book Bundle to update
      */
-    private void processAuthor(@NonNull final Element td,
-                               @Author.Type final int type,
-                               @NonNull final Book book) {
+    private void parseAuthor(@NonNull final Element td,
+                             @Author.Type final int type,
+                             @NonNull final Book book) {
 
         // Most books list the authors as "a" elements
         final Elements aas = td.select("a");
@@ -479,19 +478,19 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
             for (final String name : names) {
-                processAuthor(book, type, name);
+                parseAuthor(book, type, name);
             }
         } else {
             for (final Element a : aas) {
                 final String name = SearchEngineUtils.cleanText(a.text());
-                processAuthor(book, type, name);
+                parseAuthor(book, type, name);
             }
         }
     }
 
-    private void processAuthor(@NonNull final Book book,
-                               @Author.Type final int type,
-                               @NonNull final String name) {
+    private void parseAuthor(@NonNull final Book book,
+                             @Author.Type final int type,
+                             @NonNull final String name) {
         // The site actually uses "lastname firstname" or just "lastname".
         // This create additional issues with names like "Van Hamme" which is a "lastname"
         // with a space in... nice mess...
@@ -502,7 +501,8 @@ public class StripWebSearchEngine
         final String family = author.getGivenNames();
         // but only swap when there ARE two names....
         if (!family.isEmpty()) {
-            // and apply a HACK.... which is NOT exhaustive but better than nothing...
+            // and apply a HACK.... for some common flemish names
+            // which is NOT exhaustive but better than nothing...
             if ("van".equalsIgnoreCase(family) || "de".equalsIgnoreCase(family)) {
                 author.setName(family + " " + author.getFamilyName(), "");
             } else {
@@ -510,7 +510,7 @@ public class StripWebSearchEngine
             }
         }
         // Add/merge or skip if already present
-        processAuthor(author, type, book);
+        addAuthor(author, type, book);
     }
 
     /**
@@ -552,30 +552,21 @@ public class StripWebSearchEngine
      * @param td   data td
      * @param book Bundle to update
      */
-    private void processPublisher(@NonNull final Element td,
-                                  @NonNull final Book book) {
+    private void parsePublisher(@NonNull final Element td,
+                                @NonNull final Book book) {
         // Most books list the publishers as "a" elements
         final Elements aas = td.select("a");
         if (aas.isEmpty()) {
             // but some are plain text separated by commas
             final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
             for (final String name : names) {
-                processPublisher(book, name);
+                addPublisher(name, book);
             }
         } else {
             for (final Element a : aas) {
                 final String name = SearchEngineUtils.cleanText(a.text());
-                processPublisher(book, name);
+                addPublisher(name, book);
             }
-        }
-    }
-
-    private void processPublisher(@NonNull final Book book,
-                                  @NonNull final String name) {
-        final Publisher currentPublisher = Publisher.from(name);
-        // add if not already present
-        if (book.getPublishers().stream().noneMatch(pub -> pub.equals(currentPublisher))) {
-            book.add(currentPublisher);
         }
     }
 

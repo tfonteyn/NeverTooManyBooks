@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -184,11 +183,11 @@ public class DnbSearchEngine
                                 break;
                             case "Beteiligt":
                             case "Involved":
-                                processAuthor(context, td, book);
+                                parseAuthor(context, td, book);
                                 break;
                             case "Erschienen":
                             case "Published":
-                                processPublisher(td, book);
+                                parsePublisher(td, book);
                                 break;
                             case "Umfang":
                             case "Extent":
@@ -287,9 +286,9 @@ public class DnbSearchEngine
         }
     }
 
-    private void processAuthor(final Context context,
-                               @NonNull final Element td,
-                               @NonNull final Book book) {
+    private void parseAuthor(@NonNull final Context context,
+                             @NonNull final Element td,
+                             @NonNull final Book book) {
         final Iterator<Element> it = td.children().iterator();
         while (it.hasNext()) {
             @Nullable
@@ -311,7 +310,7 @@ public class DnbSearchEngine
                         @Author.Type
                         final int authorType = authorTypeMapper
                                 .map(getLocale(context), authorTypeText);
-                        processAuthor(Author.from(name), authorType, book);
+                        addAuthor(Author.from(name), authorType, book);
                         if (it.hasNext()) {
                             // The tag AFTER the "small" can be a "br" or an "a"
                             e = it.next();
@@ -319,7 +318,7 @@ public class DnbSearchEngine
                         }
                     }
                     if (e.nameIs("br")) {
-                        processAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
+                        addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
                         if (it.hasNext()) {
                             e = it.next();
                             continue;
@@ -364,21 +363,16 @@ public class DnbSearchEngine
      *   ==> "2024"
      * </pre>
      */
-    private void processPublisher(@NonNull final Element td,
-                                  @NonNull final Book book) {
+    private void parsePublisher(@NonNull final Element td,
+                                @NonNull final Book book) {
         final List<Node> nodes = td.childNodes();
         if (!nodes.isEmpty()) {
-            final String publisherName = nodes.get(0).toString().strip();
+            String publisherName = nodes.get(0).toString().strip();
             if (publisherName.contains(":")) {
                 final String[] parts = publisherName.split(":", 2);
-                if (parts.length == 2) {
-                    book.add(Publisher.from(parts[1]));
-                } else {
-                    book.add(Publisher.from(parts[0]));
-                }
-            } else {
-                book.add(Publisher.from(publisherName));
+                publisherName = parts[parts.length - 1];
             }
+            addPublisher(publisherName, book);
 
             // node.get(1) should be the br tag which we skip.
 

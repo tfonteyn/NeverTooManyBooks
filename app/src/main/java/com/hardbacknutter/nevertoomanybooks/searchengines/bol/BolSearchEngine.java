@@ -295,7 +295,7 @@ public class BolSearchEngine
                     case "Date de sortie initiale": {
                         final String text = SearchEngineUtils.cleanText(value.text());
                         if (!text.isEmpty()) {
-                            processPublicationDate(context, getLocale(context), text, book);
+                            addPublicationDate(context, getLocale(context), text, book);
                         }
                         break;
                     }
@@ -308,33 +308,33 @@ public class BolSearchEngine
                     case "Auteur principal":
                     case "Tweede Auteur":
                     case "Deuxième auteur": {
-                        processAuthor(value, Author.TYPE_WRITER, book);
+                        parseAuthor(value, Author.TYPE_WRITER, book);
                         break;
                     }
                     case "Hoofdillustrator":
                     case "Illustrateur en chef":
                     case "Tweede Illustrator":
                     case "Deuxième illustrateur": {
-                        processAuthor(value, Author.TYPE_ARTIST, book);
+                        parseAuthor(value, Author.TYPE_ARTIST, book);
                         break;
                     }
                     case "Hoofdredacteur":
                     case "Rédacteur en chef":
                     case "Tweede Redacteur":
                     case "Deuxième rédacteur": {
-                        processAuthor(value, Author.TYPE_EDITOR, book);
+                        parseAuthor(value, Author.TYPE_EDITOR, book);
                         break;
                     }
                     case "Eerste Vertaler":
                     case "Tweede Vertaler":
                     case "Premier traducteur":
                     case "Deuxième traducteur": {
-                        processAuthor(value, Author.TYPE_TRANSLATOR, book);
+                        parseAuthor(value, Author.TYPE_TRANSLATOR, book);
                         break;
                     }
                     case "Verteller":
                     case "Narrateur": {
-                        processAuthor(value, Author.TYPE_NARRATOR, book);
+                        parseAuthor(value, Author.TYPE_NARRATOR, book);
                         break;
                     }
                     case "Originele titel":
@@ -385,12 +385,12 @@ public class BolSearchEngine
         }
     }
 
-    private void processAuthor(@NonNull final Element value,
-                               @Author.Type final int type,
-                               @NonNull final Book book) {
+    private void parseAuthor(@NonNull final Element value,
+                             @Author.Type final int type,
+                             @NonNull final Book book) {
         final Element a = value.selectFirst("a");
         if (a != null) {
-            processAuthor(Author.from(a.text()), type, book);
+            addAuthor(Author.from(a.text()), type, book);
         }
     }
 

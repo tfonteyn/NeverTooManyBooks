@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -273,7 +272,7 @@ public class OpenLibrary2SearchEngine
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest(context);
 
@@ -525,7 +524,7 @@ public class OpenLibrary2SearchEngine
                @NonNull final JSONObject document,
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
-            throws StorageException, IOException, SearchException, CredentialsException {
+            throws StorageException, IOException {
 
         JSONObject element;
         JSONArray a;
@@ -533,12 +532,12 @@ public class OpenLibrary2SearchEngine
         final int i;
 
         // "/books/OL22853304M"
-        s = document.optString("key");
+        s = document.optString("key", null);
         if (s != null && !s.isEmpty()) {
             book.putString(DBKey.SID_OPEN_LIBRARY, s.substring("/books/".length()));
         }
 
-        s = document.optString("title");
+        s = document.optString("title", null);
         if (s != null && !s.isEmpty()) {
             book.putString(DBKey.TITLE, s);
         }
@@ -550,7 +549,7 @@ public class OpenLibrary2SearchEngine
         // "authors" contains structured Author data
         a = document.optJSONArray("authors");
         if (a != null && !a.isEmpty()) {
-            processAuthors(context, a, book);
+            parseAuthors(context, a, book);
         }
         // "by_statement" contains NON-structured author data:
         //     "by John Miedema."
@@ -559,17 +558,17 @@ public class OpenLibrary2SearchEngine
         // In the above example "John Miedema." will be created WITH the "." at the end.
         // There are just to many inconsistencies to catch them all, so we leave those
         // to the user.
-        s = document.optString("by_statement");
+        s = document.optString("by_statement", null);
         if (s != null && !s.isEmpty()) {
             // These are gambles.... we don't have enough data samples
             if (s.startsWith("by ") && s.length() > 3) {
                 s = s.substring(3);
-                processAuthor(Author.from(s), Author.TYPE_UNKNOWN, book);
+                addAuthor(Author.from(s), Author.TYPE_UNKNOWN, book);
             }
             if (s.contains(",")) {
                 final String[] split = s.split(",");
                 if (split.length > 0) {
-                    processAuthor(Author.from(split[0]), Author.TYPE_UNKNOWN, book);
+                    addAuthor(Author.from(split[0]), Author.TYPE_UNKNOWN, book);
                 }
             }
         }
@@ -586,7 +585,7 @@ public class OpenLibrary2SearchEngine
             book.putString(DBKey.PAGE_COUNT, String.valueOf(i));
         }
 
-        s = document.optString("physical_format");
+        s = document.optString("physical_format", null);
         if (s != null && !s.isEmpty()) {
             book.putString(DBKey.FORMAT, s);
         }
@@ -612,12 +611,12 @@ public class OpenLibrary2SearchEngine
 
         a = document.optJSONArray("publishers");
         if (a != null && !a.isEmpty()) {
-            processPublishers(a, book);
+            parsePublishers(a, book);
         }
 
-        s = document.optString("publish_date");
+        s = document.optString("publish_date", null);
         if (s != null && !s.isEmpty()) {
-            processPublicationDate(context, getLocale(context), s, book);
+            addPublicationDate(context, getLocale(context), s, book);
         }
 
         // "subjects": [
@@ -638,14 +637,14 @@ public class OpenLibrary2SearchEngine
         if (element != null) {
             // Sanity check, no idea if there are others types
             if ("/type/text".equals(element.optString("type"))) {
-                s = element.optString("value");
+                s = element.optString("value", null);
                 if (s != null && !s.isEmpty()) {
                     book.putString(DBKey.DESCRIPTION, s);
                 }
             }
         } else {
             // Try the plain string format
-            s = document.optString("notes");
+            s = document.optString("notes", null);
             if (s != null && !s.isEmpty()) {
                 book.putString(DBKey.DESCRIPTION, s);
             }
@@ -691,7 +690,7 @@ public class OpenLibrary2SearchEngine
                                @NonNull final Book book) {
         String name;
         for (int ai = 0; ai < a.length(); ai++) {
-            name = a.optString(ai);
+            name = a.optString(ai, null);
             if (name != null && !name.isEmpty()) {
                 book.add(Series.from(name));
             }
@@ -735,9 +734,9 @@ public class OpenLibrary2SearchEngine
      * @param a       array with author elements
      * @param book    destination
      */
-    private void processAuthors(@NonNull final Context context,
-                                @NonNull final JSONArray a,
-                                @NonNull final Book book)
+    private void parseAuthors(@NonNull final Context context,
+                              @NonNull final JSONArray a,
+                              @NonNull final Book book)
             throws StorageException, IOException {
 
         // depending how we got here, we might not have GET build
@@ -749,15 +748,15 @@ public class OpenLibrary2SearchEngine
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
             if (element != null) {
-                final String key = element.optString("key");
+                final String key = element.optString("key", null);
                 if (key != null && !key.isEmpty()) {
                     final String authorUrl = getHostUrl(context) + key + ".json";
                     final String response = futureHttpGet.get(authorUrl, (con, is) ->
                             readResponseStream(is));
                     final JSONObject jsonObject = new JSONObject(response);
-                    final String name = jsonObject.optString("name");
+                    final String name = jsonObject.optString("name", null);
                     if (name != null && !name.isEmpty()) {
-                        processAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
+                        addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
                     }
                 }
             }
@@ -770,10 +769,10 @@ public class OpenLibrary2SearchEngine
         for (int ai = 0; ai < a.length(); ai++) {
             final JSONObject c = a.optJSONObject(ai);
             if (c != null) {
-                final String name = c.optString("name");
+                final String name = c.optString("name", null);
                 if (name != null) {
                     final Author author = Author.from(name);
-                    final String role = c.optString("role");
+                    final String role = c.optString("role", null);
                     if (role != null) {
                         author.setType(authorTypeMapper.map(getLocale(context), role));
                     }
@@ -787,21 +786,17 @@ public class OpenLibrary2SearchEngine
                                   @NonNull final Book book) {
         final JSONObject element = a.optJSONObject(0);
         if (element != null) {
-            final String s = element.optString("key");
+            final String s = element.optString("key", null);
             if (s != null && s.startsWith("/languages/")) {
                 book.putString(DBKey.LANGUAGE, s.substring("/languages/".length()));
             }
         }
     }
 
-    private void processPublishers(@NonNull final JSONArray a,
-                                   @NonNull final Book book) {
-        String name;
+    private void parsePublishers(@NonNull final JSONArray a,
+                                 @NonNull final Book book) {
         for (int ai = 0; ai < a.length(); ai++) {
-            name = a.optString(ai);
-            if (name != null && !name.isEmpty()) {
-                book.add(Publisher.from(name));
-            }
+            addPublisher(a.optString(ai), book);
         }
     }
 
@@ -870,7 +865,7 @@ public class OpenLibrary2SearchEngine
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
             if (element != null) {
-                final String title = element.optString("title");
+                final String title = element.optString("title", null);
                 if (title != null && !title.isEmpty()) {
                     toc.add(new TocEntry(tocAuthor, title));
                 }
@@ -910,7 +905,7 @@ public class OpenLibrary2SearchEngine
     @Override
     public List<AltEditionOpenLibrary> searchAlternativeEditions(@NonNull final Context context,
                                                                  @NonNull final String validIsbn)
-            throws SearchException, CredentialsException {
+            throws SearchException {
 
         return fetchEditionsByIsbn(context, validIsbn);
     }
@@ -1035,7 +1030,7 @@ public class OpenLibrary2SearchEngine
                 JSONArray a;
                 JSONObject o;
 
-                olid = work.optString("key");
+                olid = work.optString("key", null);
                 if (olid != null && olid.startsWith("/books/")) {
                     olid = olid.substring("/books/".length());
                 }
@@ -1055,7 +1050,7 @@ public class OpenLibrary2SearchEngine
                 if (a != null && !a.isEmpty()) {
                     o = a.optJSONObject(0);
                     if (o != null) {
-                        langIso3 = o.optString("key");
+                        langIso3 = o.optString("key", null);
                         if (langIso3 != null && langIso3.startsWith("/languages/")) {
                             langIso3 = langIso3.substring("/languages/".length());
                         }
