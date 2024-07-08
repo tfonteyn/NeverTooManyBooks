@@ -77,8 +77,7 @@ public class ParseTest
     public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.stripinfo.be/reeks/strip"
-                                      + "/336348_Hauteville_House_14_De_37ste_parallel";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/336348_Hauteville_House_14_De_37ste_parallel";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_336348_hauteville_house_14_de_37ste_parallel;
 
@@ -145,9 +144,7 @@ public class ParseTest
     public void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.stripinfo.be/reeks/strip"
-                                      + "/2060_De_boom_van_de_twee_lentes_1"
-                                      + "_De_boom_van_de_twee_lentes";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_2060_de_boom_van_de_twee_lentes_1_de_boom_van_de_twee_lentes;
 
@@ -183,18 +180,94 @@ public class ParseTest
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(20, authors.size());
-
-        Author author = authors.get(0);
+        assertEquals(21, authors.size());
+        int a = 0;
+        Author author;
+        author = authors.get(a++);
         assertEquals("Miel", author.getFamilyName());
         assertEquals("Rudi", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = authors.get(1);
+        author = authors.get(a++);
         assertEquals("Batem", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
-        // there are more...
+        author = authors.get(a++);
+        assertEquals("Colman", author.getFamilyName());
+        assertEquals("Stéphane", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Dany", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Derib", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Fournier", author.getFamilyName());
+        assertEquals("Jean-Claude", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Frank", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Franz", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Geerts", author.getFamilyName());
+        assertEquals("André", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Hardy", author.getFamilyName());
+        assertEquals("Marc", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Hausman", author.getFamilyName());
+        assertEquals("René", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Hermann", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Le Gall", author.getFamilyName());
+        assertEquals("Frank", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Loisel", author.getFamilyName());
+        assertEquals("Régis", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Maltaite", author.getFamilyName());
+        assertEquals("Eric", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Mézières", author.getFamilyName());
+        assertEquals("Jean-Claude", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Plessix", author.getFamilyName());
+        assertEquals("Michel", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Roba", author.getFamilyName());
+        assertEquals("Jean", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Walthéry", author.getFamilyName());
+        assertEquals("François", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Wasterlain", author.getFamilyName());
+        assertEquals("Marc", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(a++);
+        assertEquals("Will", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -213,9 +286,7 @@ public class ParseTest
     public void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.stripinfo.be/reeks/strip"
-                                      + "/181604_Okiya_het_huis_van_verboden_geneugten"
-                                      + "_1_Het_huis_van_verboden_geneugten";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/181604_Okiya_het_huis_van_verboden_geneugten_1_Het_huis_van_verboden_geneugten";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_181604_mat_cover;
 
@@ -258,7 +329,7 @@ public class ParseTest
 
         author = authors.get(1);
         assertEquals("Jung", author.getFamilyName());
-        assertEquals("Jun Sik", author.getGivenNames());
+        assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
@@ -277,8 +348,7 @@ public class ParseTest
     public void parseIntegrale()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
-                                      + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_316016_johan_en_pirrewiet_int_5_de_integrale_5;
 
@@ -307,8 +377,8 @@ public class ParseTest
 
         assertEquals("14 De horde van de raaf", tocs.get(0).getTitle());
         assertEquals("15 De troubadours van Steenbergen", tocs.get(1).getTitle());
-        assertEquals("16 De nacht van de Magiërs", tocs.get(2).getTitle());
-        assertEquals("17 De Woestijnroos", tocs.get(3).getTitle());
+        assertEquals("16 De nacht van de magiërs", tocs.get(2).getTitle());
+        assertEquals("17 De woestijnroos", tocs.get(3).getTitle());
 
         assertEquals("Culliford", tocs.get(0).getPrimaryAuthor().getFamilyName());
 
@@ -340,8 +410,7 @@ public class ParseTest
     public void parseIntegrale2()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
-                                      + "17030_Comanche_1_Red_Dust";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/17030_Comanche_1_Red_Dust";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_17030_comanche_1_red_dust;
 
@@ -400,8 +469,7 @@ public class ParseTest
     public void parseFavReeks2()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
-                                      + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripinfo_8155_de_avonturen_van_de_3l_7_spoken_in_de_grot;
 
@@ -458,9 +526,9 @@ public class ParseTest
     public void parseMultiResult()
             throws SearchException, CredentialsException, StorageException, IOException {
 
-        final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
+        final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=chant+du+pluvier";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.stripinfo_multi_result_pluvi;
+                .R.raw.stripinfo_multi_result_le_chant_du_pluvier;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
