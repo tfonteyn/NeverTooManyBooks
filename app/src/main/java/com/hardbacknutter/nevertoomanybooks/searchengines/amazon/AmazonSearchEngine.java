@@ -551,16 +551,16 @@ public class AmazonSearchEngine
 
     @NonNull
     protected DateParser getDateParser(@NonNull final Context context,
-                                       @NonNull final Locale siteLocale) {
+                                       @NonNull final Locale locale) {
         final List<Locale> locales;
 
         // Hack to support the Portuguese site which does a redirect to the Spanish one
-        if ("es".equals(siteLocale.getLanguage())) {
-            locales = new ArrayList<>(LocaleListUtils.asList(context, siteLocale));
+        if ("es".equals(locale.getLanguage())) {
+            locales = new ArrayList<>(LocaleListUtils.asList(context, locale));
             // Not verified but let's hope "pt_BR" uses the same spelling for month names
             locales.add(1, new Locale("pt"));
         } else {
-            locales = LocaleListUtils.asList(context, siteLocale);
+            locales = LocaleListUtils.asList(context, locale);
         }
         final Locale systemLocale = ServiceLocator
                 .getInstance().getSystemLocaleList().get(0);

@@ -182,21 +182,21 @@ public abstract class SearchEngineBase
 
     @NonNull
     protected RealNumberParser getRealNumberParser(@NonNull final Context context,
-                                                   @NonNull final Locale siteLocale) {
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+                                                   @NonNull final Locale locale) {
+        final List<Locale> locales = LocaleListUtils.asList(context, locale);
         return new RealNumberParser(locales);
     }
 
     @NonNull
     protected MoneyParser getMoneyParser(@NonNull final Context context,
-                                         @NonNull final Locale siteLocale) {
-        return new MoneyParser(siteLocale, getRealNumberParser(context, siteLocale));
+                                         @NonNull final Locale locale) {
+        return new MoneyParser(locale, getRealNumberParser(context, locale));
     }
 
     @NonNull
     protected DateParser getDateParser(@NonNull final Context context,
-                                       @NonNull final Locale siteLocale) {
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+                                       @NonNull final Locale locale) {
+        final List<Locale> locales = LocaleListUtils.asList(context, locale);
         final Locale systemLocale = ServiceLocator
                 .getInstance().getSystemLocaleList().get(0);
         return new FullDateParser(systemLocale, locales);
@@ -465,13 +465,13 @@ public abstract class SearchEngineBase
      * or a full-date string in one of the supported formats.
      * Partial date-strings will <strong>FAIL</strong>
      *
-     * @param context    Current context
-     * @param siteLocale for parsing
-     * @param dateStr    the date field as retrieved
-     * @param book       Bundle to update
+     * @param context Current context
+     * @param locale  for parsing
+     * @param dateStr the date field as retrieved
+     * @param book    Bundle to update
      */
     public void processPublicationDate(@NonNull final Context context,
-                                       @NonNull final Locale siteLocale,
+                                       @NonNull final Locale locale,
                                        @Nullable final String dateStr,
                                        @NonNull final Book book) {
 
@@ -487,7 +487,7 @@ public abstract class SearchEngineBase
             }
 
             // error or not 4 digits? Do a full parse.
-            getDateParser(context, siteLocale)
+            getDateParser(context, locale)
                     .parse(dateStr)
                     .ifPresent(book::setPublicationDate);
 
@@ -497,10 +497,10 @@ public abstract class SearchEngineBase
     /**
      * Process the price-listed field according to the given site locale.
      *
-     * @param context    Current context
-     * @param siteLocale for parsing
-     * @param priceStr   the field as retrieved
-     * @param book       Bundle to update
+     * @param context  Current context
+     * @param locale   for parsing
+     * @param priceStr the field as retrieved
+     * @param book     Bundle to update
      *
      * @return {@code true} if parsing the value and currency was successful.
      *         and stored as {@code Money}
@@ -508,10 +508,10 @@ public abstract class SearchEngineBase
      *         stored as a {@code String}
      */
     public boolean processPriceListed(@NonNull final Context context,
-                                      @NonNull final Locale siteLocale,
+                                      @NonNull final Locale locale,
                                       @NonNull final String priceStr,
                                       @NonNull final Book book) {
-        final Optional<Money> money = getMoneyParser(context, siteLocale).parse(priceStr);
+        final Optional<Money> money = getMoneyParser(context, locale).parse(priceStr);
         if (money.isPresent()) {
             book.putMoney(DBKey.PRICE_LISTED, money.get());
             return true;
