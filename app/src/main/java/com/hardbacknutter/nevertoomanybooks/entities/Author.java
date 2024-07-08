@@ -214,18 +214,19 @@ public class Author
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Handles recognition of a trailing bracket section.
+     * Handles recognition of a bracket section with optional text before and after.
      * <p>
      * 1. "Robert Velter (Rob-vel,Bozz)"
      * 2. "Robert Velter (Rob Vel)"
      * 3. "Ange (1/2)"
      * 4. "Don (*3)"
-     * above examples are from the lastdodo site (see the search-engine for lastdodo
-     * for more comments on handling these).
+     * 5. [法] 保罗·霍尔特   ==>  [France] Paul Holt
+     *
      * <p>
      * 1+2: The () part are pseudonyms.
      * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
      * 4: presumably there are 3 Don's?
+     * 5: the [] part is the country/nationality of the Author
      * <p>
      * For backwards compatibility, we also handle "(*3), Don",
      * i.e. in older versions we treated above 4 as having a given name == "Don"
@@ -236,9 +237,11 @@ public class Author
      * <p>
      * Hence, for now, we stick with decoding the whole text, and then sticking
      * the bracket section back on behind the family name.
+     * <p>
+     * group 2, if found, <strong>includes</strong> the {@code []} or {@code ()} bracket pair.
      */
-    private static final Pattern NAME_BRACKET_TEXT_BRACKET_TEXT =
-            Pattern.compile("(.*)\\((.*)\\)(.*)",
+    private static final Pattern PATTERN_BRACKETS =
+            Pattern.compile("(.*)([(\\[].+[)\\]])(.*)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /*
@@ -329,7 +332,7 @@ public class Author
     /**
      * Copy constructor.
      *
-     * @param author to copy
+     * @param author            to copy
      * @param includeBookFields Flag to force copying the Book related fields as well
      */
     public Author(@NonNull final Author author,
@@ -380,10 +383,10 @@ public class Author
             return new Author(familyName, givenNames);
 
         } else if (familyName.isEmpty()) {
-            return new Author("(" + bracketSection + ")", givenNames);
+            return new Author(bracketSection, givenNames);
 
         } else {
-            return new Author(familyName + " (" + bracketSection + ")", givenNames);
+            return new Author(familyName + " " + bracketSection, givenNames);
         }
     }
 
@@ -406,7 +409,7 @@ public class Author
      * If the string contains a comma (and the part after it is not a recognised suffix)
      * then the string is assumed to be in the format of "family, given-names"
      * All other formats are decoded as complete as possible.
-     * Also see {@link #NAME_BRACKET_TEXT_BRACKET_TEXT} on how brackets are handled.
+     * Also see {@link #PATTERN_BRACKETS} on how brackets are handled.
      * <p>
      * Recognised pre/suffixes: see {@link #FAMILY_NAME_PREFIX_PATTERN}
      * and {@link #FAMILY_NAME_SUFFIX_PATTERN}
@@ -426,11 +429,11 @@ public class Author
     public static Author from(@NonNull final String name) {
         String uName = StringCoder.unEscape(name);
 
-        // First step, check for a trailing bracket section.
+        // First step, check for a bracket section.
         String bracketSection = null;
-        final Matcher brackets = NAME_BRACKET_TEXT_BRACKET_TEXT.matcher(uName);
+        final Matcher brackets = PATTERN_BRACKETS.matcher(uName);
         if (brackets.find()) {
-            // Grab he full string before the brackets for further decoding as the name
+            // Grab the full string before the brackets for further decoding as the name
             String group = brackets.group(1);
             if (group != null) {
                 uName = group.strip();
@@ -454,8 +457,7 @@ public class Author
                         if (uName.isEmpty() && bracketSection != null && group.startsWith(", ")) {
                             // assume it's the format "(blah), name" and decode
                             // BACKWARDS compatible:
-                            return new Author("(" + bracketSection + ")",
-                                              group.substring(2));
+                            return new Author(bracketSection, group.substring(2));
                         } else {
                             // this is far to complicated to make sense...
                             // Just concat with the name part
