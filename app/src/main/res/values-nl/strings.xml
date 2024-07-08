@@ -716,6 +716,7 @@
     <string name="site_description_dutch_catalogue_eu_comics">Nederlands en meer; Catalogus; Europese Strips</string>
     <string name="site_description_dutch_shopping">Nederlands en meer; Winkelen</string>
     <string name="site_description_english_catalogue">Engels en meer; Catalogus</string>
+    <string name="site_description_chinese_catalogue">Chinees; Catalogus</string>
     <string name="site_description_english_catalogue_FSF">Engels en meer; Catalogus; Fantasy en Science Fiction</string>
     <string name="site_description_french_catalogue_eu_comics">Frans en meer; Catalogus; Europese Strips</string>
     <string name="site_description_general_shopping">Algemeen; Winkelen</string>
@@ -783,4 +784,8 @@
     <string name="pe_ui_theme_colors_blue_grey">Blauw/Grijs</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamische kleuren</string>
     <string name="warning_requires_android_x">Android %1$d of hoger vereist</string>
+    <string name="anonymous_author">[Anoniem]</string>
+    <string name="pt_search_result_order">Zoekopdrachten geven het meest recente boek of het eerste gevonden boek terug</string>
+    <string name="pe_search_result_order_most_recent">Meest recente boek gevonden</string>
+    <string name="pe_search_result_order_first_found">Eerste boek gevonden</string>
 </resources>

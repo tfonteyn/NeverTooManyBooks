@@ -338,6 +338,7 @@
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_english_catalogue">Tiếng Anh và hơn thế nữa; Bảng tổng kê</string>
     <!-- website info: languages; type; specifics. -->
+    <string name="site_description_chinese_catalogue">Người Trung Quốc; Mục lục</string>
     <string name="site_description_english_catalogue_FSF">Tiếng Anh và hơn thế nữa; Bảng tổng kê; Giả tưởng và khoa học viễn tưởng</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_french_catalogue_eu_comics">Tiếng Pháp và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>
@@ -1524,4 +1525,7 @@
     <string name="pe_ui_theme_colors_blue_grey">Xanh xám</string>
     <string name="pe_ui_theme_colors_dynamic">Màu sắc năng động</string>
     <string name="warning_requires_android_x">Yêu cầu Android %1$d trở lên</string>
+    <string name="pt_search_result_order">Tìm kiếm sẽ trả về cuốn sách gần đây nhất hoặc cuốn sách đầu tiên được tìm thấy.</string>
+    <string name="pe_search_result_order_most_recent">Cuốn sách gần đây nhất được tìm thấy</string>
+    <string name="pe_search_result_order_first_found">Cuốn sách đầu tiên được tìm thấy</string>
 </resources>

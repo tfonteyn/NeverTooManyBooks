@@ -725,6 +725,7 @@
     <string name="site_description_dutch_catalogue_eu_comics">Nizozemština a další; Katalog; Evropský komiks</string>
     <string name="site_description_dutch_shopping">Nizozemština a další; Nakupování</string>
     <string name="site_description_english_catalogue">Angličtina a další; Katalog</string>
+    <string name="site_description_chinese_catalogue">Čínština; katalog</string>
     <string name="site_description_english_catalogue_FSF">Angličtina a více; Katalog; Fantasy a science fiction</string>
     <string name="site_description_french_catalogue_eu_comics">Francouzština a další; Katalog; Evropský komiks</string>
     <string name="site_description_general_shopping">Obecné; Nakupování</string>
@@ -801,4 +802,8 @@
     <string name="pe_ui_theme_colors_blue_grey">Modrošedá</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamické barvy</string>
     <string name="warning_requires_android_x">Vyžaduje systém Android %1$d nebo vyšší</string>
+    <string name="anonymous_author">[Anonym]</string>
+    <string name="pt_search_result_order">Vyhledávání vrací nejnovější knihu nebo první nalezenou knihu.</string>
+    <string name="pe_search_result_order_most_recent">Nejnovější nalezená kniha</string>
+    <string name="pe_search_result_order_first_found">První nalezená kniha</string>
 </resources>

@@ -715,6 +715,7 @@
     <string name="site_description_dutch_catalogue_eu_comics">Ολλανδικά και άλλα; Κατάλογος; Ευρωπαϊκά κόμικς</string>
     <string name="site_description_dutch_shopping">Ολλανδικά και άλλα; Αγορές</string>
     <string name="site_description_english_catalogue">Αγγλικά και άλλα; Κατάλογος</string>
+    <string name="site_description_chinese_catalogue">Κινέζικα; Κατάλογος</string>
     <string name="site_description_english_catalogue_FSF">Φαντασία και επιστημονική φαντασία</string>
     <string name="site_description_french_catalogue_eu_comics">Γαλλικά και άλλα- Κατάλογος- Ευρωπαϊκά κόμικς</string>
     <string name="site_description_general_shopping">Γενικά- Αγορές</string>
@@ -782,4 +783,8 @@
     <string name="pe_ui_theme_colors_blue_grey">Μπλε-γκρι</string>
     <string name="pe_ui_theme_colors_dynamic">Δυναμικά χρώματα</string>
     <string name="warning_requires_android_x">Απαιτεί Android %1$d ή νεότερη έκδοση</string>
+    <string name="anonymous_author">[Ανώνυμος]</string>
+    <string name="pt_search_result_order">Οι αναζητήσεις επιστρέφουν το πιο πρόσφατο βιβλίο ή το πρώτο που βρέθηκε</string>
+    <string name="pe_search_result_order_most_recent">Βρέθηκε το πιο πρόσφατο βιβλίο</string>
+    <string name="pe_search_result_order_first_found">Πρώτο βιβλίο που βρέθηκε</string>
 </resources>

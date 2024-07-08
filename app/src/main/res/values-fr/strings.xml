@@ -719,6 +719,7 @@
     <string name="site_description_dutch_catalogue_eu_comics">Néerlandais et plus ; Catalogue ; Bandes dessinées européennes</string>
     <string name="site_description_dutch_shopping">Néerlandais et plus ; Shopping</string>
     <string name="site_description_english_catalogue">Anglais et plus ; Catalogue</string>
+    <string name="site_description_chinese_catalogue">Chinois ; Catalogue</string>
     <string name="site_description_english_catalogue_FSF">Anglais et plus ; Catalogue ; Fantasy et Science Fiction</string>
     <string name="site_description_french_catalogue_eu_comics">Français et plus ; Catalogue ; Bandes dessinées européennes</string>
     <string name="site_description_general_shopping">Général ; Shopping</string>
@@ -786,4 +787,8 @@
     <string name="pe_ui_theme_colors_blue_grey">Bleu-gris</string>
     <string name="pe_ui_theme_colors_dynamic">Couleurs dynamiques</string>
     <string name="warning_requires_android_x">Nécessite Android %1$d ou une version plus récente</string>
+    <string name="anonymous_author">[Anonyme]</string>
+    <string name="pt_search_result_order">Les recherches renvoient le livre le plus récent ou le premier livre trouvé.</string>
+    <string name="pe_search_result_order_most_recent">Livre le plus récent trouvé</string>
+    <string name="pe_search_result_order_first_found">Premier livre trouvé</string>
 </resources>

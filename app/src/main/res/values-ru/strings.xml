@@ -726,6 +726,7 @@
     <string name="site_description_dutch_catalogue_eu_comics">Голландский и не только; Каталог; Европейские комиксы</string>
     <string name="site_description_dutch_shopping">Голландский и не только; Покупки</string>
     <string name="site_description_english_catalogue">Английский и не только; Каталог</string>
+    <string name="site_description_chinese_catalogue">Китайский язык; Каталог</string>
     <string name="site_description_english_catalogue_FSF">Английский и более; Каталог; Фэнтези и научная фантастика</string>
     <string name="site_description_french_catalogue_eu_comics">Французский и более; Каталог; Европейские комиксы</string>
     <string name="site_description_general_shopping">Общий; Покупки</string>
@@ -802,4 +803,8 @@
     <string name="pe_ui_theme_colors_blue_grey">Сине-серый</string>
     <string name="pe_ui_theme_colors_dynamic">Динамические цвета</string>
     <string name="warning_requires_android_x">Требуется Android %1$d или более поздняя версия</string>
+    <string name="anonymous_author">[Аноним]</string>
+    <string name="pt_search_result_order">Поиск возвращает последнюю найденную книгу или первую найденную.</string>
+    <string name="pe_search_result_order_most_recent">Самая последняя найденная книга</string>
+    <string name="pe_search_result_order_first_found">Первая найденная книга</string>
 </resources>

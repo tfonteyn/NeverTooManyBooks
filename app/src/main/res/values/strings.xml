@@ -1720,6 +1720,11 @@
     <!-- Specifically used for an unknown book author (mostly in import/export logic).
          Translations must add the [] around the string. -->
     <string name="unknown_author">[Unknown author]</string>
+    <!-- Specifically used for an anonymous book author.
+         i.e. the Author is genuinely unknown to anyone and not due to a failure to lookup.
+         Examples: https://www.gutenberg.org/ebooks/author/216
+         Translations must add the [] around the string. -->
+    <string name="anonymous_author">[Anonymous]</string>
     <!-- Default 'name' for anything that has a name -->
     <string name="lbl_name">Name</string>
     <!-- The number (how many) of books. -->
@@ -1812,15 +1817,9 @@
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
-    <!-- Specifically used for an anonymous book author.
-     i.e. the Author is genuinely unknown to anyone and not due to a failure to lookup.
-     Examples: https://www.gutenberg.org/ebooks/author/216
-     Translations must add the [] around the string. -->
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="anonymous_author"
-            translatable="false">[Anonymous]</string>
-    <string name="pt_search_result_order">Use the newest book, or use the first one found</string>
-    <string name="pe_search_result_order_newest">Newest by date</string>
-    <string name="pe_search_result_order_first">First match found</string>
+
+    <string name="pt_search_result_order">Searches return the most recent book, or the first one found</string>
+    <string name="pe_search_result_order_most_recent">Most recent book found</string>
+    <string name="pe_search_result_order_first_found">First book found</string>
 
 </resources>

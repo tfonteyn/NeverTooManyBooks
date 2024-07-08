@@ -88,6 +88,8 @@
     <string name="site_description_dutch_shopping">荷蘭語和更多；商店</string>
     <string name="site_description_dutch_comics_shopping">荷蘭語和更多；漫畫；商店</string>
     <string name="site_description_english_catalogue">英語和更多；目錄</string>
+    <string name="site_description_german_catalogue">德語;目錄</string>
+    <string name="site_description_chinese_catalogue">中國人;目錄</string>
     <string name="site_description_english_catalogue_FSF">英語和更多；目錄；奇幻與科幻小說</string>
     <string name="site_description_general_shopping">一般；商店</string>
     <string name="tip_reset_all">重置提示</string>
