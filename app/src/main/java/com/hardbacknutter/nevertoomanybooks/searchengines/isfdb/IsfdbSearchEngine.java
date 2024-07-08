@@ -805,6 +805,7 @@ public class IsfdbSearchEngine
         }
 
         final Locale siteLocale = getLocale(context);
+        final PartialDateParser partialDateParser = new PartialDateParser();
 
         final Element contentBox = allContentBoxes.first();
         // sanity check
@@ -870,14 +871,10 @@ public class IsfdbSearchEngine
                                 // dates are in fact displayed as YYYY-MM-DD which is very nice.
                                 tmpString = nextSibling.toString().trim();
                                 // except that ISFDB uses 00 for the day/month when unknown ...
-                                // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
+                                // e.g. "1975-04-00" or "1974-00-00"
+                                // Cut those parts off.
                                 tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
-                                // and we're paranoid...
-                                // Note that partial dates, e.g. "1987", "1978-03"
-                                // will get 'completed' to "1987-01-01", "1978-03-01"
-                                // This should be acceptable IMHO.
-                                getDateParser(context, siteLocale)
-                                        .parse(tmpString, siteLocale)
+                                partialDateParser.parse(tmpString, false)
                                         .ifPresent(book::setPublicationDate);
                             }
                             break;
@@ -1042,7 +1039,6 @@ public class IsfdbSearchEngine
         }
 
         // post-process all found data.
-        final PartialDateParser partialDateParser = new PartialDateParser();
 
         final List<TocEntry> toc = parseToc(context, document, book, partialDateParser);
         if (!toc.isEmpty()) {

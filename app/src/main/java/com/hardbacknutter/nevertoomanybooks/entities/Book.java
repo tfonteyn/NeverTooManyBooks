@@ -220,7 +220,7 @@ public class Book
     @Nullable
     private ValidatorConfig validatorConfig;
 
-    private PartialDateParser partialDateParser = new PartialDateParser();
+    private final PartialDateParser partialDateParser = new PartialDateParser();
 
     /**
      * Constructor.
@@ -507,6 +507,19 @@ public class Book
         if (date != null) {
             putString(DBKey.BOOK_PUBLICATION__DATE,
                       date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        } else {
+            remove(DBKey.BOOK_PUBLICATION__DATE);
+        }
+    }
+
+    /**
+     * Set or remove the publication-date for this book.
+     *
+     * @param date to set; {@code null} to remove
+     */
+    public void setPublicationDate(@Nullable final PartialDate date) {
+        if (date != null) {
+            putString(DBKey.BOOK_PUBLICATION__DATE, date.getIsoString());
         } else {
             remove(DBKey.BOOK_PUBLICATION__DATE);
         }
