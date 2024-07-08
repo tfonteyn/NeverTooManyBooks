@@ -792,4 +792,5 @@
     <string name="pe_ui_theme_colors_blue_grey">Mavi-gri</string>
     <string name="pe_ui_theme_colors_dynamic">Dinamik Renkler</string>
     <string name="warning_requires_android_x">Android %1$d veya üstü gerektirir</string>
+    <string name="site_description_chinese_catalogue">Çince; Katalog</string>
 </resources>
