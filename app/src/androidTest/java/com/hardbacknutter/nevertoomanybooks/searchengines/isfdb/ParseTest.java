@@ -99,8 +99,7 @@ public class ParseTest
 
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
         assertEquals(112781L, book.getLong(DBKey.SID_ISFDB));
-        // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
-        assertEquals("1986-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1986-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("0413600106", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("9780413600103", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
         assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
