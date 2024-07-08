@@ -501,14 +501,20 @@ public abstract class SearchEngineBase
      * @param siteLocale for parsing
      * @param priceStr   the field as retrieved
      * @param book       Bundle to update
+     *
+     * @return {@code true} if parsing the value and currency was successful.
+     *         and stored as {@code Money}
+     *         {@code false} if parsing failed, and the raw price string was
+     *         stored as a {@code String}
      */
-    public void processPriceListed(@NonNull final Context context,
-                                   @NonNull final Locale siteLocale,
-                                   @NonNull final String priceStr,
-                                   @NonNull final Book book) {
+    public boolean processPriceListed(@NonNull final Context context,
+                                      @NonNull final Locale siteLocale,
+                                      @NonNull final String priceStr,
+                                      @NonNull final Book book) {
         final Optional<Money> money = getMoneyParser(context, siteLocale).parse(priceStr);
         if (money.isPresent()) {
             book.putMoney(DBKey.PRICE_LISTED, money.get());
+            return true;
         } else {
             // parsing failed, store the string as-is;
             // no separate currency!
@@ -517,6 +523,7 @@ public abstract class SearchEngineBase
             LoggerFactory.getLogger().w(TAG, "Failed to parse",
                                         DBKey.PRICE_LISTED,
                                         "text=" + priceStr);
+            return false;
         }
     }
 }
