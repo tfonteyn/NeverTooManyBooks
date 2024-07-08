@@ -34,6 +34,10 @@ public final class BooleanParser {
 
     /**
      * Translate the passed Object to a boolean value.
+     * <p>
+     * This is a wrapper around {@link #parseBoolean(String, boolean)} which will check
+     * for the given source to be convertible to a {@code boolean} before parsing
+     * as a {@code String}.
      *
      * @param source Object to convert
      *

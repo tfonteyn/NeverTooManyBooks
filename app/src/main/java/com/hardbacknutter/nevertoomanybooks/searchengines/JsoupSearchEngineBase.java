@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,17 +35,20 @@ import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 
 import org.jsoup.nodes.Document;
 
+/**
+ * A thin layer between the {@link SearchEngineBase} and the actual engine implementation.
+ * This class provides {@link #loadDocument(Context, String, Map)} for JSoup based engines.
+ */
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
 
+    @NonNull
+    protected final CookieManager cookieManager;
     @Nullable
     private final String charSetName;
     /** Responsible for loading and parsing the web page. */
     @Nullable
     private JsoupLoader jsoupLoader;
-
-    @NonNull
-    protected final CookieManager cookieManager;
 
     /**
      * Constructor.

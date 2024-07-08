@@ -62,16 +62,19 @@ public class PartialDateParser {
      * <p>
      * Parsing is restricted to these formats:
      * <ul>
-     *     <li>yyyy</li>
-     *     <li>yyyy-M  where M is 1..9 as the equivalent of 01..09</li>
-     *     <li>yyyy-MM</li>
      *     <li>yyyy-MM-dd[...]</li>
+     *     <li>yyyy-MM with MM being 1 or 2 digit </li>
+     *     <li>yyyy</li>
+     *     <li>digit dividers can be {@code -} or {@code /}</li>
+     *     <li>Month {@code MM} can be one or two digits; 01..12  or 1..9</li>
+     *     <li>Day {@code dd} can be one or two digits; 01..31  or 1..9</li>
      * </ul>
      *
      * @param dateStr a pattern as above, or {@code null}, or {@code ""}
-     *                The date is used as-is, i.e. in the current timezone.
-     * @param isUtc   set to {@code true} if dates are to be converted from UTC
+     * @param isUtc   Set to {@code true} if dates are to be converted from UTC
      *                to the local timezone.
+     *                Set to {@code false} to use the date is used as-is,
+     *                i.e. in the current timezone.
      *
      * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */

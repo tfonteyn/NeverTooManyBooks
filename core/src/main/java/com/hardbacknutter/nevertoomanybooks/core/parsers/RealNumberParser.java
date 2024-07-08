@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,10 +111,13 @@ public class RealNumberParser
 
     /**
      * Translate the passed Object to a {@code float} value.
+     * <p>
+     * This is a wrapper around {@link #parseFloat(String)} which will check
+     * for the given source to be convertible to a {@code float} before parsing as a {@code String}.
      *
      * @param source Object to convert
      *
-     * @return Resulting value ({@code null} or empty string becomes 0)
+     * @return Resulting value; {@code null} or empty string becomes 0
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -173,10 +176,13 @@ public class RealNumberParser
 
     /**
      * Translate the passed Object to a {@code double} value.
+     * <p>
+     * This is a wrapper around {@link #parseDouble(String)} which will check
+     * for the given source to be convertible to a {@code double} before parsing as a {@code String}.
      *
      * @param source Object to convert
      *
-     * @return Resulting value ({@code null} or empty string becomes {@code 0})
+     * @return Resulting value; {@code null} or empty string becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
