@@ -1000,10 +1000,10 @@ public class ISBN {
                 }
 
                 // Validity.Strict, or we decided we can clean up anyhow.
-                final String cleaned = cleanText(text);
-                if (!cleaned.equals(text)) {
+                final String isbnText = cleanText(text);
+                if (!isbnText.equals(text)) {
                     editText.removeTextChangedListener(this);
-                    editable.replace(0, editable.length(), cleaned);
+                    editable.replace(0, editable.length(), isbnText);
                     editText.addTextChangedListener(this);
                 }
             }

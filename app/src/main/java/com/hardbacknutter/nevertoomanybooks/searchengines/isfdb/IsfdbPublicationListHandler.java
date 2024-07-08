@@ -289,12 +289,18 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_ISBN: {
-                    addIfNotPresent(DBKey.BOOK_ISBN, ISBN.cleanText(builder.toString().strip()));
+                    final String isbnText = ISBN.cleanText(builder.toString().strip());
+                    if (!isbnText.isEmpty()) {
+                        addIfNotPresent(DBKey.BOOK_ISBN, isbnText);
+                    }
                     break;
                 }
                 case XML_CATALOG: {
                     // use the ISBN if we have one, otherwise the catalog id
-                    addIfNotPresent(DBKey.BOOK_ISBN, builder.toString().strip());
+                    final String text = builder.toString().strip();
+                    if (!text.isBlank()) {
+                        addIfNotPresent(DBKey.BOOK_ISBN, text);
+                    }
                     break;
                 }
                 case XML_PUBLISHER: {

@@ -205,14 +205,16 @@ public class BookCoder {
             book.remove(Goodreads.ISBN10);
         }
 
-        // ALWAYS clean the ISBN here. We've seen Goodreads csv file with
-        // nightmares like this: "=""9789027409294"""  and "="""""
         if (book.contains(DBKey.BOOK_ISBN)) {
-            final String cleanText = ISBN.cleanText(book.getString(DBKey.BOOK_ISBN));
-            if (cleanText.isEmpty()) {
+            // ALWAYS clean the ISBN here. We've seen Goodreads csv file with
+            // nightmares like this: "=""9789027409294"""  and "="""""
+            // Note that we clean the string, but do NOT check on the length here.
+            // We want non-isbn string with simple numerical values to pass through
+            final String isbnText = ISBN.cleanText(book.getString(DBKey.BOOK_ISBN));
+            if (isbnText.isEmpty()) {
                 book.remove(DBKey.BOOK_ISBN);
             } else {
-                book.putString(DBKey.BOOK_ISBN, cleanText);
+                book.putString(DBKey.BOOK_ISBN, isbnText);
             }
         }
     }

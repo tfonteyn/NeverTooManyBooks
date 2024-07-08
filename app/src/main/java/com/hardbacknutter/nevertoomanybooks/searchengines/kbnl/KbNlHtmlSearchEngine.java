@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -301,7 +302,7 @@ public class KbNlHtmlSearchEngine
                             break;
 
                         case "ISBN:":
-                            processIsbn(td, book);
+                            parseIsbn(td, book);
                             break;
 
                         case "Illustratie:":
@@ -418,18 +419,18 @@ public class KbNlHtmlSearchEngine
         }
     }
 
-    private void processIsbn(@NonNull final Element td,
-                             @NonNull final Book book) {
+    private void parseIsbn(@NonNull final Element td,
+                           @NonNull final Book book) {
         if (!book.contains(DBKey.BOOK_ISBN)) {
             final Elements spans = td.select("span");
             if (!spans.isEmpty()) {
                 // oh boy... aside of actual/valid ISBN numbers we've also seen things like
                 // " : 42.00F"
-                final String digits = SearchEngineUtils.isbn(spans.get(0).text());
+                final String isbnText = ISBN.cleanText(spans.get(0).text());
                 // so we do a crude test on the length and hope for the best
                 // (don't do a full ISBN test here, no need)
-                if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
-                    book.putString(DBKey.BOOK_ISBN, digits);
+                if (isbnText.length() == 10 || isbnText.length() == 13) {
+                    book.putString(DBKey.BOOK_ISBN, isbnText);
                 }
                 if (spans.size() > 1) {
                     if (!book.contains(DBKey.FORMAT)) {

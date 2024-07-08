@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -48,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
 
@@ -194,7 +194,7 @@ public class DnbSearchEngine
                                 processPageNumber(td, book);
                                 break;
                             case "ISBN":
-                                processIsbn(td, book);
+                                parseIsbn(td, book);
                                 break;
                             case "Sprache":
                             case "Language":
@@ -275,13 +275,14 @@ public class DnbSearchEngine
         book.putString(DBKey.TITLE, text);
     }
 
-    private void processIsbn(@NonNull final Element td,
-                             @NonNull final Book book) {
+    private void parseIsbn(@NonNull final Element td,
+                           @NonNull final Book book) {
+        // Only add if not already there
         if (!book.contains(DBKey.BOOK_ISBN)) {
-            final String digits = SearchEngineUtils.isbn(td.text());
+            final String isbnText = ISBN.cleanText(td.text());
             // (don't do a full ISBN test here, no need)
-            if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
-                book.putString(DBKey.BOOK_ISBN, digits);
+            if (isbnText.length() == 10 || isbnText.length() == 13) {
+                book.putString(DBKey.BOOK_ISBN, isbnText);
             }
         }
     }

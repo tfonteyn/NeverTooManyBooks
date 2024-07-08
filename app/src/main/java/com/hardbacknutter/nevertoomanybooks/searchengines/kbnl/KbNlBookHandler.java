@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -155,7 +156,7 @@ class KbNlBookHandler
                 break;
 
             case "ISBN":
-                processIsbn(currentData);
+                parseIsbn(currentData);
                 break;
 
             case "Illustration":
@@ -403,15 +404,15 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processIsbn(@NonNull final List<String> currentData) {
+    private void parseIsbn(@NonNull final List<String> currentData) {
         for (final String text : currentData) {
             if (Character.isDigit(text.charAt(0))) {
                 if (!book.contains(DBKey.BOOK_ISBN)) {
-                    final String digits = SearchEngineUtils.isbn(text.split(":")[0]);
+                    final String isbnText = ISBN.cleanText(text.split(":")[0]);
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)
-                    if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
-                        book.putString(DBKey.BOOK_ISBN, digits);
+                    if (isbnText.length() == 10 || isbnText.length() == 13) {
+                        book.putString(DBKey.BOOK_ISBN, isbnText);
                     }
                 }
             } else if (text.charAt(0) == '(') {
