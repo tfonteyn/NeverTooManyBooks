@@ -903,7 +903,6 @@ public class IsfdbSearchEngine
                         case "Publisher:": {
                             for (final Element a : li.select("a")) {
                                 final Publisher publisher = Publisher.from(a.text());
-                                // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
                                 book.add(publisher);
                             }
                             break;
@@ -911,7 +910,6 @@ public class IsfdbSearchEngine
                         case "Pub. Series:": {
                             for (final Element a : li.select("a")) {
                                 final Series series = Series.from(a.text());
-                                // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
                                 book.add(series);
                             }
                             break;
