@@ -934,7 +934,7 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    processPriceListed(context, siteLocale, tmpString, book);
+                                    processPriceListed(context, siteLocale, tmpString, null, book);
                                 }
                             }
                             break;

@@ -497,33 +497,38 @@ public abstract class SearchEngineBase
     /**
      * Process the price-listed field according to the given site locale.
      *
-     * @param context  Current context
-     * @param locale   for parsing
-     * @param priceStr the field as retrieved
-     * @param book     Bundle to update
-     *
-     * @return {@code true} if parsing the value and currency was successful.
-     *         and stored as {@code Money}
-     *         {@code false} if parsing failed, and the raw price string was
-     *         stored as a {@code String}
+     * @param context     Current context
+     * @param locale      for parsing
+     * @param priceStr    the field as retrieved with or without currency embedded
+     * @param currencyStr optional currency string to parse when the priceStr does not have one
+     * @param book        Bundle to update
      */
-    public boolean processPriceListed(@NonNull final Context context,
-                                      @NonNull final Locale locale,
-                                      @NonNull final String priceStr,
-                                      @NonNull final Book book) {
-        final Optional<Money> money = getMoneyParser(context, locale).parse(priceStr);
+    public void processPriceListed(@NonNull final Context context,
+                                   @NonNull final Locale locale,
+                                   @NonNull final String priceStr,
+                                   @Nullable final String currencyStr,
+                                   @NonNull final Book book) {
+        final Optional<Money> money;
+        if (currencyStr == null || currencyStr.isBlank()) {
+            money = getMoneyParser(context, locale).parse(priceStr);
+        } else {
+            money = getMoneyParser(context, locale).parse(priceStr, currencyStr);
+        }
+
         if (money.isPresent()) {
             book.putMoney(DBKey.PRICE_LISTED, money.get());
-            return true;
         } else {
             // parsing failed, store the string as-is;
             // no separate currency!
             book.putString(DBKey.PRICE_LISTED, priceStr);
+            if (currencyStr != null && !currencyStr.isBlank()) {
+                book.putString(DBKey.PRICE_LISTED_CURRENCY, currencyStr);
+            }
+
             // log this as we need to understand WHY it failed
-            LoggerFactory.getLogger().w(TAG, "Failed to parse",
-                                        DBKey.PRICE_LISTED,
-                                        "text=" + priceStr);
-            return false;
+            LoggerFactory.getLogger().w(TAG, "processPriceListed Failed to parse",
+                                        "currencyStr=" + currencyStr,
+                                        "priceStr=" + priceStr);
         }
     }
 }

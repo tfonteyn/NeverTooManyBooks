@@ -445,7 +445,7 @@ public class AmazonSearchEngine
             }
         }
 
-        processPriceListed(context, siteLocale, priceText, book);
+        processPriceListed(context, siteLocale, priceText, null, book);
 
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");

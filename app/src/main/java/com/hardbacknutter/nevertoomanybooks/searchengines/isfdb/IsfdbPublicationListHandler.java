@@ -317,7 +317,7 @@ class IsfdbPublicationListHandler
                 case XML_PRICE: {
                     final String priceStr = builder.toString().strip();
                     searchEngine.processPriceListed(context, searchEngine.getLocale(context),
-                                                    priceStr, book);
+                                                    priceStr, null, book);
                     break;
                 }
                 case XML_PAGES: {

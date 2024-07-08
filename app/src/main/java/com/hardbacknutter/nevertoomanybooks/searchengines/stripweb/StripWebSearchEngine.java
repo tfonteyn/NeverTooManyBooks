@@ -439,11 +439,7 @@ public class StripWebSearchEngine
                 final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
                 final String priceStr = price.text().strip();
-                final boolean full = processPriceListed(context, siteLocale, priceStr, book);
-                // Processing the price is unlikely to fail, but if it does, just add EURO
-                if (!full) {
-                    book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
-                }
+                processPriceListed(context, siteLocale, priceStr, MoneyParser.EUR, book);
             }
         }
     }
