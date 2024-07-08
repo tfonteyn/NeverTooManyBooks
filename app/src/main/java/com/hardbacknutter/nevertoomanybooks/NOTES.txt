@@ -21,12 +21,17 @@ Draft notes for next version:
 ### 6.2.0
 
 NEW:
+- Android 15 support
+- Douban website support for Chinese books
 - option to replace the authors on all entries in a TOC with the books main author
-- consolidated language together with other UI options
-- preference dialogs updated to M3
+- consolidated language together with other UI options in a single settings screen
+- preference dialogs custom implementation with Material styling + BottomSheet support.
+- updated all icons for Material style consistency
+- improved partial-date handling/formats for a number of websites
+- StripInfo.be parsing updated
 
 FIXES:
-- filters for color etc no longer jump on manual edits
+- text-based filters no longer jump on manual edits
 - always show loanee on book-details when globally enabled
 - language selection no longer cached which sometime led to wrong preference summary text
 - various fixes to toolbar menus on dialogs and BottomSheets
