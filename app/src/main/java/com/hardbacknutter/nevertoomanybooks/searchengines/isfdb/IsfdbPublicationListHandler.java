@@ -236,7 +236,7 @@ class IsfdbPublicationListHandler
             throws SAXException {
         if (XML_RECORDS.equals(qName)) {
             // Top level number of Publication records
-            final String tmpString = builder.toString().trim();
+            final String tmpString = builder.toString().strip();
             try {
                 final int n = Integer.parseInt(tmpString);
                 if (n < maxRecords) {
@@ -274,16 +274,16 @@ class IsfdbPublicationListHandler
                 }
 
                 case XML_RECORD: {
-                    addIfNotPresent(DBKey.SID_ISFDB, builder.toString());
+                    addIfNotPresent(DBKey.SID_ISFDB, builder.toString().strip());
                     break;
                 }
                 case XML_TITLE: {
-                    addIfNotPresent(DBKey.TITLE, builder.toString());
+                    addIfNotPresent(DBKey.TITLE, builder.toString().strip());
                     break;
                 }
                 case XML_AUTHOR: {
                     if (inAuthors) {
-                        searchEngine.processAuthor(Author.from(builder.toString()),
+                        searchEngine.processAuthor(Author.from(builder.toString().strip()),
                                                    Author.TYPE_UNKNOWN,
                                                    book);
                     }
@@ -300,26 +300,26 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_ISBN: {
-                    addIfNotPresent(DBKey.BOOK_ISBN, ISBN.cleanText(builder.toString()));
+                    addIfNotPresent(DBKey.BOOK_ISBN, ISBN.cleanText(builder.toString().strip()));
                     break;
                 }
                 case XML_CATALOG: {
                     // use the ISBN if we have one, otherwise the catalog id
-                    addIfNotPresent(DBKey.BOOK_ISBN, builder.toString());
+                    addIfNotPresent(DBKey.BOOK_ISBN, builder.toString().strip());
                     break;
                 }
                 case XML_PUBLISHER: {
-                    final Publisher publisher = Publisher.from(builder.toString());
+                    final Publisher publisher = Publisher.from(builder.toString().strip());
                     book.add(publisher);
                     break;
                 }
                 case XML_PUB_SERIES: {
-                    final Series series = Series.from(builder.toString());
+                    final Series series = Series.from(builder.toString().strip());
                     book.add(series);
                     break;
                 }
                 case XML_PUB_SERIES_NUM: {
-                    final String tmpString = builder.toString().trim();
+                    final String tmpString = builder.toString().strip();
                     // assume that if we get here, then we added a "PubSeries" as last one.
                     final List<Series> seriesList = book.getSeries();
                     seriesList.get(seriesList.size() - 1).setNumber(tmpString);
@@ -342,15 +342,15 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_PAGES: {
-                    addIfNotPresent(DBKey.PAGE_COUNT, builder.toString());
+                    addIfNotPresent(DBKey.PAGE_COUNT, builder.toString().strip());
                     break;
                 }
                 case XML_BINDING: {
-                    addIfNotPresent(DBKey.FORMAT, builder.toString());
+                    addIfNotPresent(DBKey.FORMAT, builder.toString().strip());
                     break;
                 }
                 case XML_TYPE: {
-                    final String tmpString = builder.toString().trim();
+                    final String tmpString = builder.toString().strip();
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
                     final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
@@ -359,12 +359,13 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_TAG: {
-                    addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TAG, builder.toString());
+                    addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TAG,
+                                    builder.toString().strip());
                     break;
                 }
                 case XML_IMAGE: {
                     if (fetchCovers[0]) {
-                        final String tmpString = builder.toString().trim();
+                        final String tmpString = builder.toString().strip();
                         try {
                             final String isbn = book.getString(DBKey.BOOK_ISBN);
                             searchEngine.saveImage(context, tmpString, isbn, 0, null)
@@ -379,7 +380,7 @@ class IsfdbPublicationListHandler
                 }
                 case XML_ARTIST: {
                     if (inCoverArtists) {
-                        searchEngine.processAuthor(Author.from(builder.toString()),
+                        searchEngine.processAuthor(Author.from(builder.toString().strip()),
                                                    Author.TYPE_COVER_ARTIST,
                                                    book);
                     }
@@ -388,18 +389,18 @@ class IsfdbPublicationListHandler
                 case XML_NOTE: {
                     // can contain html tags!
                     addIfNotPresent(DBKey.DESCRIPTION,
-                                    SearchEngineUtils.cleanText(builder.toString()));
+                                    SearchEngineUtils.cleanText(builder.toString().strip()));
                     break;
                 }
                 case XML_ID_TYPE: {
                     if (inExternalId) {
-                        externalIdType = builder.toString();
+                        externalIdType = builder.toString().strip();
                     }
                     break;
                 }
                 case XML_ID_VALUE: {
                     if (inExternalId) {
-                        externalId = builder.toString();
+                        externalId = builder.toString().strip();
                     }
                     break;
                 }
@@ -456,7 +457,7 @@ class IsfdbPublicationListHandler
                                  @NonNull final String value) {
         final String test = book.getString(key, null);
         if (test == null || test.isEmpty()) {
-            book.putString(key, value.trim());
+            book.putString(key, value.strip());
         }
     }
 }
