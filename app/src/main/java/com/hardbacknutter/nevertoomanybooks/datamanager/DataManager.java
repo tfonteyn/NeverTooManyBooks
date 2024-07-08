@@ -35,7 +35,9 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -684,5 +686,58 @@ public class DataManager
         return "DataManager{"
                + "rawData=" + rawData
                + '}';
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final DataManager that = (DataManager) o;
+
+        return equalBundles(rawData, that.rawData);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(rawData);
+    }
+
+    private boolean equalBundles(@NonNull final Bundle b1,
+                                 @NonNull final Bundle b2) {
+
+        if (b1.size() != b2.size()) {
+            return false;
+        }
+
+        final Set<String> allKeys = new HashSet<>(b1.keySet());
+        allKeys.addAll(b2.keySet());
+
+        Object valueOne;
+        Object valueTwo;
+
+        for (final String key : allKeys) {
+            if (!b1.containsKey(key) || !b2.containsKey(key)) {
+                return false;
+            }
+
+            valueOne = b1.get(key);
+            valueTwo = b2.get(key);
+            if (valueOne instanceof Bundle && valueTwo instanceof Bundle &&
+                !equalBundles((Bundle) valueOne, (Bundle) valueTwo)) {
+                return false;
+            } else if (valueOne == null) {
+                if (valueTwo != null) {
+                    return false;
+                }
+            } else if (!valueOne.equals(valueTwo)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

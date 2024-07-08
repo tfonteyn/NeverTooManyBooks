@@ -367,7 +367,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.BOOK_ISBN, "9780552574471");
         book.putString(DBKey.PAGE_COUNT, "332");
         book.putString(DBKey.TITLE, "The Shepherd's Crown");
-        book.putString(DBKey.PRICE_LISTED, "7.99");
+        book.putDouble(DBKey.PRICE_LISTED, 7.99);
 
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry"),
