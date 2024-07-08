@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -522,7 +523,8 @@ public abstract class SearchEngineBase
      * @param context     Current context
      * @param locale      for parsing
      * @param priceStr    the field as retrieved with or without currency embedded
-     * @param currencyStr optional currency string to parse when the priceStr does not have one
+     * @param currencyStr optional default currency string to use
+     *                    when the priceStr does not have one
      * @param book        Bundle to update
      */
     public void addPriceListed(@NonNull final Context context,
@@ -530,27 +532,41 @@ public abstract class SearchEngineBase
                                @NonNull final String priceStr,
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
-        final Optional<Money> money;
-        if (currencyStr == null || currencyStr.isBlank()) {
-            money = getMoneyParser(context, locale).parse(priceStr);
-        } else {
-            money = getMoneyParser(context, locale).parse(priceStr, currencyStr);
-        }
 
-        if (money.isPresent()) {
-            book.putMoney(DBKey.PRICE_LISTED, money.get());
-        } else {
-            // parsing failed, store the string as-is;
-            // no separate currency!
-            book.putString(DBKey.PRICE_LISTED, priceStr);
-            if (currencyStr != null && !currencyStr.isBlank()) {
-                book.putString(DBKey.PRICE_LISTED_CURRENCY, currencyStr);
+        final MoneyParser parser = getMoneyParser(context, locale);
+        // TODO: maybe move this logic to the MoneyParser class ?
+        // First ignore the given currency string (if any) and try parsing
+        final Optional<Money> oMoney = parser.parse(priceStr);
+        if (oMoney.isPresent()) {
+            Money money = oMoney.get();
+            if (money.getCurrency() != null) {
+                // We have parsed both the value and the currency from the input string.
+                book.putMoney(DBKey.PRICE_LISTED, money);
+                return;
+
+            } else if (currencyStr != null && !currencyStr.isBlank()) {
+                try {
+                    // use the given currency string, and the value from the previous parse result
+                    final Currency currency = Currency.getInstance(currencyStr);
+                    money = new Money(money.getValue(), currency);
+                    book.putMoney(DBKey.PRICE_LISTED, money);
+                    return;
+                } catch (@NonNull final IllegalArgumentException ignore) {
+                    // ignore
+                }
             }
-
-            // log this as we need to understand WHY it failed
-            LoggerFactory.getLogger().w(TAG, "processPriceListed Failed to parse",
-                                        "currencyStr=" + currencyStr,
-                                        "priceStr=" + priceStr);
         }
+
+        // Parsing failed, store the input string as-is.
+        book.putString(DBKey.PRICE_LISTED, priceStr);
+        // Add the default currency if any
+        if (currencyStr != null && !currencyStr.isBlank()) {
+            book.putString(DBKey.PRICE_LISTED_CURRENCY, currencyStr);
+        }
+
+        // log this as we need to understand WHY it failed
+        LoggerFactory.getLogger().w(TAG, "processPriceListed Failed to parse",
+                                    "currencyStr=" + currencyStr,
+                                    "priceStr=" + priceStr);
     }
 }
