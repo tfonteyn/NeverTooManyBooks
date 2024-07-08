@@ -32,7 +32,6 @@ import androidx.preference.PreferenceManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -55,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -440,18 +437,12 @@ public class StripWebSearchEngine
             final Element price = cartForm.selectFirst("span[itemprop='price']");
             if (price != null) {
                 final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
-                final Optional<Money> money = getMoneyParser(context, siteLocale)
-                        .parse(price.text().strip(), MoneyParser.EUR);
-                if (money.isPresent()) {
-                    book.putMoney(DBKey.PRICE_LISTED, money.get());
-                } else {
-                    // parsing failed, store the string as-is;
-                    book.putString(DBKey.PRICE_LISTED, price.text().strip());
+
+                final String priceStr = price.text().strip();
+                final boolean full = processPriceListed(context, siteLocale, priceStr, book);
+                // Processing the price is unlikely to fail, but if it does, just add EURO
+                if (!full) {
                     book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
-                    // log this as we need to understand WHY it failed
-                    LoggerFactory.getLogger().w(TAG, "Failed to parse",
-                                                DBKey.PRICE_LISTED,
-                                                "text=" + price.text().strip());
                 }
             }
         }
