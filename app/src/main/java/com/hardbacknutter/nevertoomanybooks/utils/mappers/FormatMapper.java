@@ -50,7 +50,7 @@ public final class FormatMapper
 
     // use all lowercase keys!
     static {
-        // ### Plain hardcover ###
+        // ################## Plain hardcover ##################
         MAPPINGS.put("hc", R.string.book_format_hardcover);
         MAPPINGS.put("hardcover", R.string.book_format_hardcover);
         MAPPINGS.put("hardback", R.string.book_format_hardcover);
@@ -62,12 +62,12 @@ public final class FormatMapper
         MAPPINGS.put("couverture rigide", R.string.book_format_hardcover);
         // french - Stripweb
         MAPPINGS.put("relié", R.string.book_format_hardcover);
-
         // portuguese
         MAPPINGS.put("capa dura", R.string.book_format_hardcover);
+        // simplified chinese - Douban
+        MAPPINGS.put("精装", R.string.book_format_hardcover);
 
-
-        // ### Plain paperback ###
+        // ################## Plain paperback ##################
 
         MAPPINGS.put("mmpb", R.string.book_format_paperback);
         MAPPINGS.put("mass market paperback", R.string.book_format_paperback);
@@ -81,27 +81,34 @@ public final class FormatMapper
         MAPPINGS.put("broché", R.string.book_format_paperback);
         // portuguese
         MAPPINGS.put("capa mole", R.string.book_format_paperback);
+        // simplified chinese - Douban
+        MAPPINGS.put("平装", R.string.book_format_paperback);
 
-        // ### Mid-size (a.k.a 'trade') format paperback ###
+
+        // ################## Mid-size (a.k.a 'trade') format paperback ##################
         MAPPINGS.put("tp", R.string.book_format_paperback_large);
         MAPPINGS.put("tpb", R.string.book_format_paperback_large);
 
 
-        // ### Large format softcover ###
+        // ################## Large format softcover ##################
         // dutch - stripinfo.be
         MAPPINGS.put("softcover", R.string.book_format_softcover);
 
 
-        // ### e-books ### Do not add "Kindle Edition", leave it as-is
+        // ################## e-books ##################
+        // Do not add "Kindle Edition" to this list, leave it as-is!
         MAPPINGS.put("ebook", R.string.book_format_ebook);
         MAPPINGS.put("e-book", R.string.book_format_ebook);
         // dutch - stripinfo.be
         MAPPINGS.put("digitaal", R.string.book_format_ebook);
         // french - BOL
         MAPPINGS.put("livre numérique", R.string.book_format_ebook);
+        // simplified chinese - Douban
+        MAPPINGS.put("电子图书", R.string.book_format_ebook);
+        MAPPINGS.put("电子书", R.string.book_format_ebook);
 
 
-        // ### Audio-books ###
+        // ################## Audio-books ##################
         MAPPINGS.put("audiobook", R.string.book_format_audiobook);
         MAPPINGS.put("audio cassette", R.string.book_format_audiobook);
         MAPPINGS.put("audio cd", R.string.book_format_audiobook);
@@ -113,7 +120,7 @@ public final class FormatMapper
         MAPPINGS.put("audiolivro", R.string.book_format_audiobook);
 
 
-        // ### Special ###
+        // ################## Special ##################
         MAPPINGS.put("digest", R.string.book_format_digest);
         MAPPINGS.put("unknown", R.string.unknown);
         // english - GoogleBooks
