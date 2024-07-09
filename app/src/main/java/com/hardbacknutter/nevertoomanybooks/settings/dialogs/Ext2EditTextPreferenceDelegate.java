@@ -90,6 +90,8 @@ class Ext2EditTextPreferenceDelegate
         vb.edit.setSelection(vb.edit.getText().length());
 
         // ENHANCE: this uses reflection, some day we need to fix this.
+        // https://issuetracker.google.com/issues/351994240
+        //
         // The listener is typically used to force TEXT/PASSWORD input types
         try {
             final EditTextPreference p = getPreference();
@@ -125,8 +127,9 @@ class Ext2EditTextPreferenceDelegate
     }
 
     private boolean hasPendingShowSoftInputRequest() {
-        return (showRequestTime != -1 && ((showRequestTime + Ext2EditTextPreferenceDelegate.SHOW_REQUEST_TIMEOUT)
-                                          > SystemClock.currentThreadTimeMillis()));
+        return (showRequestTime != -1 &&
+                ((showRequestTime + Ext2EditTextPreferenceDelegate.SHOW_REQUEST_TIMEOUT)
+                 > SystemClock.currentThreadTimeMillis()));
     }
 
     private void setPendingShowSoftInputRequest(final boolean pendingShowSoftInputRequest) {
