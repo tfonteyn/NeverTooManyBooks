@@ -40,7 +40,7 @@
     </array>
 
     <!-- Application icon size on the nav panel and startup splash-->
-    <dimen name="app_logo">60dp</dimen>
+    <dimen name="app_logo">64dp</dimen>
 
     <!-- Maximum space a zoomed cover can use of the screen; 0..100 -->
     <integer name="cover_zoom_screen_percentage">95</integer>
