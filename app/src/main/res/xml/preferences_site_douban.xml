@@ -29,8 +29,8 @@
             android:defaultValue="false"
             android:icon="@drawable/barcode_24px"
             android:key="douban.search.result.order.by.date"
-            android:summaryOff="@string/pe_search_result_order_first"
-            android:summaryOn="@string/pe_search_result_order_newest"
+            android:summaryOff="@string/pe_search_result_order_first_found"
+            android:summaryOn="@string/pe_search_result_order_most_recent"
             android:title="@string/pt_search_result_order" />
 
         <SwitchPreference

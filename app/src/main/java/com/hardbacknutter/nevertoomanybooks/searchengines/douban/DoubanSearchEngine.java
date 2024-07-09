@@ -62,7 +62,7 @@ public class DoubanSearchEngine
         implements SearchEngine.ByIsbn {
 
     @VisibleForTesting
-    public static final String PK_USE_NEWEST_RESULT = EngineId.Douban.getPreferenceKey()
+    public static final String PK_FETCH_MOST_RECENT = EngineId.Douban.getPreferenceKey()
                                                       + ".search.result.order.by.date";
     /**
      * param 1: the ISBN
@@ -144,8 +144,8 @@ public class DoubanSearchEngine
                         if (!items.isEmpty()) {
                             final JSONObject reference;
                             // Depending on user setting:
-                            if (useNewestResult(context)) {
-                                reference = findNewest(items);
+                            if (useMostRecentResult(context)) {
+                                reference = findMostRecent(items);
                             } else {
                                 // Use the first one found
                                 reference = items.getJSONObject(0);
@@ -164,7 +164,7 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Find the newest book in the given array by assuming
+     * Find the most recent book in the given array by assuming
      * that the highest numerical id is the latest added to the site.
      *
      * @param items to parse
@@ -172,7 +172,7 @@ public class DoubanSearchEngine
      * @return item found
      */
     @NonNull
-    private JSONObject findNewest(@NonNull final JSONArray items) {
+    private JSONObject findMostRecent(@NonNull final JSONArray items) {
         JSONObject result = null;
         int highestId = 0;
         for (int i = 0; i < items.length(); i++) {
@@ -232,17 +232,17 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Does the user prefer to always use the newest book from the site?
+     * Does the user prefer to always use the most recent book from the site?
      * Or do they prefer to just grab the first one found?
      *
      * @param context Current context
      *
-     * @return {@code true} if the newest book is preferred,
+     * @return {@code true} if the most recent book is preferred,
      *         {@code false} to grab the first one found
      */
-    private boolean useNewestResult(@NonNull final Context context) {
+    private boolean useMostRecentResult(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_USE_NEWEST_RESULT, true);
+                                .getBoolean(PK_FETCH_MOST_RECENT, true);
     }
 
     @VisibleForTesting

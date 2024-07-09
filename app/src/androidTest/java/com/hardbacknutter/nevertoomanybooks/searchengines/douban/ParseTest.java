@@ -73,9 +73,9 @@ public class ParseTest
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 
-    private void setOrderNewestFirst(final boolean value) {
+    private void setFetchMostRecent(final boolean value) {
         PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putBoolean(DoubanSearchEngine.PK_USE_NEWEST_RESULT, value).apply();
+                         .edit().putBoolean(DoubanSearchEngine.PK_FETCH_MOST_RECENT, value).apply();
     }
 
     /**
@@ -170,12 +170,12 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         Optional<String> oUrl;
 
-        setOrderNewestFirst(false);
+        setFetchMostRecent(false);
         oUrl = searchEngine.parseMultiResult(context, document, "9787536692930");
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36874304/", oUrl.get());
 
-        setOrderNewestFirst(true);
+        setFetchMostRecent(true);
         oUrl = searchEngine.parseMultiResult(context, document, "9787536692930");
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36892731/", oUrl.get());
@@ -484,13 +484,13 @@ public class ParseTest
 
         // The first item with id="25930607" is an 'empty' book and will be rejected.
         // Instead we'll should return the second item
-        setOrderNewestFirst(false);
+        setFetchMostRecent(false);
         oUrl = searchEngine.parseMultiResult(context, document, "9787532190294");
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
 
-        // The newest is a valid book
-        setOrderNewestFirst(true);
+        // The most recent one is a valid book
+        setFetchMostRecent(true);
         oUrl = searchEngine.parseMultiResult(context, document, "9787532190294");
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
