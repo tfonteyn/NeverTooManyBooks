@@ -78,10 +78,10 @@ android {
         // NEWTHINGS: add app language,
         // Keep the two sub-lists in alphabetic order
         def supportedLocales = [
-                // Primary translations - done by native speaker or pretty good.
-                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "vi", "zh_CN",
+                // Primary translations - done/checked by native speaker or pretty good.
+                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "tr", "vi", "zh_CN",
                 // Secondary translations - These really need checking by a native speaker
-                "cs", "el", "pl", "ru", "tr"]
+                "cs", "el", "pl", "ru"]
         resourceConfigurations += supportedLocales
 
         buildConfigField("String[]", "SUPPORTED_LOCALES",
