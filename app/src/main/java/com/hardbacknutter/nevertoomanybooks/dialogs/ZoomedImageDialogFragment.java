@@ -21,15 +21,17 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import java.io.File;
 
@@ -99,36 +101,38 @@ public class ZoomedImageDialogFragment
     public void onResume() {
         super.onResume();
 
-        // No longer using getResources().getConfiguration() as
-        // in Android 15 it no longer excludes the system-bars
-
-        // Android docs say this is the preferred way of getting the metric
-        // but this requires API 30...
-        //        final WindowMetrics windowMetrics = ((WindowManager)
-        //                getContext().getSystemService(Context.WINDOW_SERVICE))
-        //                .getCurrentWindowMetrics();
-
-        // So we just use the DisplayMetrics
+        // The WindowMetricsCalculator only provides insets when API >= 30
         // In portrait mode, this is perfectly fine.
-        // In Landscape mode, we're almost certainly going to overlap the bottom-navigation bar.
-        // .. oh well...
-        final Resources res = getResources();
-        final DisplayMetrics metrics = res.getDisplayMetrics();
+        // In Landscape mode, we overlap the bottom-navigation bar. Oh well...
 
-        final double screenHwRatio = ((float) metrics.heightPixels)
-                                     / ((float) metrics.widthPixels);
+        //noinspection DataFlowIssue
+        final Rect bounds = WindowMetricsCalculator
+                .getOrCreate()
+                .computeCurrentWindowMetrics(getContext())
+                .getBounds();
+        @Dimension
+        final int windowHeightInPx = bounds.height();
+        @Dimension
+        final int windowWidthInPx = bounds.width();
+
+        final double screenHwRatio = ((float) windowHeightInPx)
+                                     / ((float) windowWidthInPx);
+
+        final Resources res = getResources();
 
         // Use a percentage of the total screen space, to create a (dimmed) border
         final int percentage = res.getInteger(R.integer.cover_zoom_screen_percentage);
         final float multiplier = (float) percentage / 100;
+        @Dimension
         final int maxWidth;
+        @Dimension
         final int maxHeight;
 
         if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            maxWidth = (int) (multiplier * metrics.widthPixels);
+            maxWidth = (int) (multiplier * windowWidthInPx);
             maxHeight = (int) (maxWidth * screenHwRatio);
         } else {
-            maxHeight = (int) (multiplier * metrics.heightPixels);
+            maxHeight = (int) (multiplier * windowHeightInPx);
             maxWidth = (int) (maxHeight / screenHwRatio);
         }
 
