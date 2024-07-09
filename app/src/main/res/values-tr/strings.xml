@@ -796,4 +796,5 @@
     <string name="pt_search_result_order">Aramalar en son kitabı veya bulunan ilk kitabı döndürür.</string>
     <string name="pe_search_result_order_most_recent">Bulunan en son kitap</string>
     <string name="pe_search_result_order_first_found">İlk kitap bulundu</string>
+    <string name="anonymous_author">[Anonim]</string>
 </resources>
