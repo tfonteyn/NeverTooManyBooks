@@ -57,7 +57,7 @@
         android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="@id/app_name"
         app:layout_constraintTop_toBottomOf="@id/app_name"
-        tools:text="a.b.c"
+        tools:text="x.y.z"
         />
 
     <androidx.constraintlayout.widget.Barrier
@@ -167,7 +167,6 @@
     <TextView
         android:id="@+id/debug_version"
         style="@style/About.DebugVersion"
-        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="a7 d13 b2020-11-01"
