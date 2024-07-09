@@ -788,7 +788,7 @@
     <string name="pe_ui_theme_colors_dynamic">Dynamische Farben</string>
     <string name="warning_requires_android_x">Erfordert Android %1$d oder höher</string>
     <string name="anonymous_author">[Anonym]</string>
-    <string name="pt_search_result_order">Die Suche gibt das letzte oder das erste gefundene Buch zurück</string>
+    <string name="pt_search_result_order">Die Suche gibt das letzte oder das erste gefundene Buch zurück.</string>
     <string name="pe_search_result_order_most_recent">Letztes gefundenes Buch</string>
     <string name="pe_search_result_order_first_found">Erstes gefundenes Buch</string>
 </resources>

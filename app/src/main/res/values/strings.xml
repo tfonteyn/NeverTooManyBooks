@@ -1818,7 +1818,7 @@
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
 
-    <string name="pt_search_result_order">Searches return the most recent book, or the first one found</string>
+    <string name="pt_search_result_order">Searches return the most recent book, or the first one found.</string>
     <string name="pe_search_result_order_most_recent">Most recent book found</string>
     <string name="pe_search_result_order_first_found">First book found</string>
 

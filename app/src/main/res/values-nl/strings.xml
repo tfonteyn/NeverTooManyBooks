@@ -785,7 +785,7 @@
     <string name="pe_ui_theme_colors_dynamic">Dynamische kleuren</string>
     <string name="warning_requires_android_x">Android %1$d of hoger vereist</string>
     <string name="anonymous_author">[Anoniem]</string>
-    <string name="pt_search_result_order">Zoekopdrachten geven het meest recente boek of het eerste gevonden boek terug</string>
+    <string name="pt_search_result_order">Zoekopdrachten geven het meest recente boek of het eerste gevonden boek terug.</string>
     <string name="pe_search_result_order_most_recent">Meest recente boek gevonden</string>
     <string name="pe_search_result_order_first_found">Eerste boek gevonden</string>
 </resources>
