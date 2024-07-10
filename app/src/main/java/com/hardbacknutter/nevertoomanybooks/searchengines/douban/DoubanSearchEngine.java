@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -58,6 +59,18 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+/**
+ * {@link SearchEngine.CoverByIsbn} is not implemented for now.
+ * Searching for alternative covers poses a problem here.
+ * <p>
+ * It seems that Chinese publishers reuse ISBN numbers for different editions of the same book.
+ * This sort-of violates the intention of an ISBN:
+ * - reuse for different print-runs is ok
+ * - reuse for different edition is normally a big NO.
+ * <p>
+ * This also means that {@link Site.Type#AltEditions} is not really feasible here.
+ * TODO: revisit the reuse of ISBN numbers versus edition/cover searches.
+ */
 public class DoubanSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
@@ -145,8 +158,8 @@ public class DoubanSearchEngine
     /**
      * Parse the given multi-result document.
      *
-     * @param context    Current context
-     * @param document   to parse
+     * @param context  Current context
+     * @param document to parse
      */
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
@@ -170,8 +183,8 @@ public class DoubanSearchEngine
      * Parse the given Document for the embedded javascript element containing
      * the list of books found.
      *
-     * @param context    Current context
-     * @param document   to parse
+     * @param context  Current context
+     * @param document to parse
      *
      * @return url for the book details page
      */
@@ -179,6 +192,37 @@ public class DoubanSearchEngine
     @NonNull
     public Optional<String> parseMultiResultForBookUrl(@NonNull final Context context,
                                                        @NonNull final Document document) {
+        final Optional<JSONArray> oItems = extractItemList(document);
+        if (oItems.isPresent()) {
+            final JSONArray items = oItems.get();
+
+            final JSONObject reference;
+            // Depending on user setting:
+            if (useMostRecentResult(context)) {
+                reference = findMostRecent(items);
+            } else {
+                // Use the first one found
+                reference = items.getJSONObject(0);
+            }
+
+            final String url = reference.optString("url", null);
+            if (url != null) {
+                return Optional.of(url);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Parse the given Document for the embedded javascript element containing
+     * the list of books found.
+     *
+     * @param document to parse
+     *
+     * @return the item list; when found, the array is guaranteed to contain at least one item.
+     */
+    @NonNull
+    private Optional<JSONArray> extractItemList(@NonNull final Document document) {
         final Elements elements = document.select("script[type=\"text/javascript\"]");
         for (final Element element : elements) {
             final String s = element.html().strip();
@@ -188,22 +232,10 @@ public class DoubanSearchEngine
                 if (sa.length > 1) {
                     JSONArray items = new JSONObject(sa[1]).optJSONArray("items");
                     if (items != null && !items.isEmpty()) {
-                        // First remove any invalid entries
+                        // Remove any invalid entries
                         items = filter(items);
                         if (!items.isEmpty()) {
-                            final JSONObject reference;
-                            // Depending on user setting:
-                            if (useMostRecentResult(context)) {
-                                reference = findMostRecent(items);
-                            } else {
-                                // Use the first one found
-                                reference = items.getJSONObject(0);
-                            }
-
-                            final String url = reference.optString("url", null);
-                            if (url != null) {
-                                return Optional.of(url);
-                            }
+                            return Optional.of(items);
                         }
                     }
                 }
