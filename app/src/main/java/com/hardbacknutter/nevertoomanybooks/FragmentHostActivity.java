@@ -57,7 +57,7 @@ public class FragmentHostActivity
      * Allows passing in {@link AppBarLayout.LayoutParams}#SCROLL_FLAG_*
      * which will be set on the (optional) Activity toolbar.
      *
-     * @see #initOptionalToolbar()
+     * @see #initToolbar()
      */
     public static final String BKEY_TOOLBAR_SCROLL_FLAGS = TAG + ":tbf";
 
@@ -112,8 +112,8 @@ public class FragmentHostActivity
         final int activityResId = getIntent().getIntExtra(BKEY_ACTIVITY, 0);
         setContentView(activityResId);
 
-        initOptionalNavDrawer();
-        initOptionalToolbar();
+        initNavDrawer();
+        initToolbar();
 
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
@@ -131,7 +131,7 @@ public class FragmentHostActivity
         addFirstFragment(R.id.main_fragment, fragmentClass, classname);
     }
 
-    private void initOptionalNavDrawer() {
+    private void initNavDrawer() {
         navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
         if (navDrawer != null) {
             manageBookshelvesLauncher = registerForActivityResult(
@@ -143,14 +143,10 @@ public class FragmentHostActivity
         }
     }
 
-    private void initOptionalToolbar() {
+    private void initToolbar() {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
-            if (isTaskRoot()) {
-                toolbar.setNavigationIcon(R.drawable.menu_24px);
-            } else {
-                toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
-            }
+            setNavIcon(toolbar);
 
             final int flags = getIntent().getIntExtra(BKEY_TOOLBAR_SCROLL_FLAGS, -1);
             if (flags >= 0) {
@@ -169,6 +165,14 @@ public class FragmentHostActivity
                     getOnBackPressedDispatcher().onBackPressed();
                 }
             });
+        }
+    }
+
+    private void setNavIcon(@NonNull final Toolbar toolbar) {
+        if (isTaskRoot()) {
+            toolbar.setNavigationIcon(R.drawable.menu_24px);
+        } else {
+            toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
         }
     }
 
