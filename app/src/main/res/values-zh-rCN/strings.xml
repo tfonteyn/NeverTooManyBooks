@@ -815,4 +815,8 @@
     <string name="warning_requires_android_x">需要 Android %1$d 或更高版本</string>
     <string name="site_description_german_catalogue">德语；目录</string>
     <string name="site_description_chinese_catalogue">中文；目录</string>
+    <string name="anonymous_author">[匿名]</string>
+    <string name="pe_search_result_order_first_found">找到的第一本书</string>
+    <string name="pe_search_result_order_most_recent">找到的最新书籍</string>
+    <string name="pt_search_result_order">搜索返回最新书籍或者第找到的第一本.</string>
 </resources>
