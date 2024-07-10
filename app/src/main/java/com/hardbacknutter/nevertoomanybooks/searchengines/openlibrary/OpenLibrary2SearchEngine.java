@@ -907,14 +907,6 @@ public class OpenLibrary2SearchEngine
                                                                  @NonNull final String validIsbn)
             throws SearchException {
 
-        return fetchEditionsByIsbn(context, validIsbn);
-    }
-
-    @VisibleForTesting
-    @NonNull
-    List<AltEditionOpenLibrary> fetchEditionsByIsbn(@NonNull final Context context,
-                                                    @NonNull final String validIsbn)
-            throws SearchException {
         futureHttpGet = createFutureGetRequest(context);
 
         String url = getHostUrl(context) + "/isbn/" + validIsbn + ".json";

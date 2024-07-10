@@ -58,7 +58,7 @@ public class AltEditionsTest
     public void fetchEditionsByIsbnTest()
             throws SearchException {
         final List<AltEditionOpenLibrary> isbnList = searchEngine
-                .fetchEditionsByIsbn(context, "9780141339092");
+                .searchAlternativeEditions(context, "9780141339092");
 
         Log.d(TAG, isbnList.toString());
 
