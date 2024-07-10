@@ -84,7 +84,8 @@
     <style name="Toolbar.Activity"
            parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
     </style>
@@ -93,7 +94,8 @@
     <style name="Toolbar.Dialog.Fullscreen"
            parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="navigationIcon">@drawable/close_24px</item>
     </style>
@@ -111,7 +113,8 @@
     <style name="Toolbar.Dialog.Floating"
            parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="colorSurface">@color/red_600</item>
     </style>
