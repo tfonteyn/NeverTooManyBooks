@@ -123,7 +123,7 @@ public class SearchAdminFragment
                                      Lifecycle.State.RESUMED);
 
         tabAdapter = new TabAdapter(getActivity(), vm.getTypes());
-        tabPanel = getActivity().findViewById(R.id.tab_panel);
+        tabPanel = view.findViewById(R.id.tab_panel);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());

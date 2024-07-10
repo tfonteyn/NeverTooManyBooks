@@ -62,7 +62,7 @@ public class SearchSitesSingleListContract
         listKey = list.get(0).getType().getBundleKey();
 
         return FragmentHostActivity
-                .createIntent(context, R.layout.activity_admin_search, SearchAdminFragment.class)
+                .createIntent(context, R.layout.activity_main, SearchAdminFragment.class)
                 .putParcelableArrayListExtra(SearchAdminViewModel.BKEY_LIST,
                                              new ArrayList<>(list));
     }
