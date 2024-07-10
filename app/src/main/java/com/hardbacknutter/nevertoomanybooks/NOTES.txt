@@ -39,13 +39,30 @@ FIXES:
 REMOVED:
 
 ====================================================================================================
-Android 15 insets / edge-to-edge
+Android 15 insets / Edge2Edge
 https://developer.android.com/develop/ui/views/layout/insets
 
-Testing on the emulator shows that out of the box, we do NOT draw behind
-the status-bar nor behind the bottom navigation-bar.
-good: no changes needed, all UI elements display fine.
-bad: no edge-to-edge.... but does this really matter ?
+----------------------------------------------------------------------------------------------------
+https://medium.com/androiddevelopers/windowinsets-listeners-to-layouts-8f9ccc8fa4d1
+https://medium.com/androiddevelopers/why-would-i-want-to-fitssystemwindows-4e26d9ce1eec
+https://developer.android.com/codelabs/edge-to-edge#4
+    fitsSystemWindows="true":
+        system-bar and bottom-nav-bar
+        will ALWAYS be fixed/visible
+
+    fitsSystemWindows="false":
+        content scrolls BEHIND those bars
+
+    Do NOT add it to AppBarLayout itself, the system-bars will
+    have the wrong color!
+
+    2024-07-10: stick to using "true" on ALL screens which use DrawerLayout
+    i.e.: BoB, book-details, book-edit.
+
+----------------------------------------------------------------------------------------------------
+The navigation View:  do NOT manually set the insets, recommendation is to have
+display top/bottom of the screen drawing behind the system-bars on all Android versions,
+providing fitsSystemWindows="true" is set on the DrawerLayout (see above)
 
 ----------------------------------------------------------------------------------------------------
 https://developer.android.com/develop/ui/views/layout/edge-to-edge#cutout-insets
@@ -53,6 +70,7 @@ https://developer.android.com/develop/ui/views/layout/edge-to-edge#cutout-insets
 Display cutouts (camera etc): we don't take any of those into account.
 So they CAN overlap our content.
 
+Edge2Edge
 Added the below listener + vb.content.list view: android:clipToPadding="false"
 Neither seems to make any difference. The camera cutout on the Pixel 8a emulator
 is still overlapping the list.
