@@ -171,12 +171,12 @@ public class ParseTest
         Optional<String> oUrl;
 
         setFetchMostRecent(false);
-        oUrl = searchEngine.parseMultiResult(context, document, "9787536692930");
+        oUrl = searchEngine.parseMultiResultForBookUrl(context, document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36874304/", oUrl.get());
 
         setFetchMostRecent(true);
-        oUrl = searchEngine.parseMultiResult(context, document, "9787536692930");
+        oUrl = searchEngine.parseMultiResultForBookUrl(context, document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36892731/", oUrl.get());
     }
@@ -308,7 +308,7 @@ public class ParseTest
 
         // There is only one result.
         final Optional<String> oUrl =
-                searchEngine.parseMultiResult(context, document, "9787549641864");
+                searchEngine.parseMultiResultForBookUrl(context, document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36665775/", oUrl.get());
     }
@@ -485,13 +485,13 @@ public class ParseTest
         // The first item with id="25930607" is an 'empty' book and will be rejected.
         // Instead we'll should return the second item
         setFetchMostRecent(false);
-        oUrl = searchEngine.parseMultiResult(context, document, "9787532190294");
+        oUrl = searchEngine.parseMultiResultForBookUrl(context, document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
 
         // The most recent one is a valid book
         setFetchMostRecent(true);
-        oUrl = searchEngine.parseMultiResult(context, document, "9787532190294");
+        oUrl = searchEngine.parseMultiResultForBookUrl(context, document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
     }

@@ -30,6 +30,7 @@ import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,7 +60,8 @@ import org.jsoup.select.Elements;
 
 public class DoubanSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn {
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText {
 
     @VisibleForTesting
     public static final String PK_FETCH_MOST_RECENT = EngineId.Douban.getPreferenceKey()
@@ -100,19 +102,43 @@ public class DoubanSearchEngine
         final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            // The result is always a list, even if only one book found.
-            final Optional<String> oUrl = parseMultiResult(context, document, validIsbn);
-            if (oUrl.isPresent()) {
-                final Document d = loadDocument(context, oUrl.get(), null);
-                if (!isCancelled()) {
-                    parse(context, d, fetchCovers, book);
-                }
-            } else {
-                // Keep this as a fallback, but we're unlikely to ever get here.
-                parse(context, document, fetchCovers, book);
-            }
+            // it's ALWAYS multi-result, even if only one result is returned.
+            parseMultiResult(context, document, fetchCovers, book);
+        }
+        return book;
+    }
+
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @Nullable final String code,
+                       @Nullable final String author,
+                       @Nullable final String title,
+                       @Nullable final String publisher,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        final StringJoiner words = new StringJoiner(" ");
+        if (author != null && !author.isEmpty()) {
+            words.add(author);
+        }
+        if (title != null && !title.isEmpty()) {
+            words.add(title);
+        }
+        if (publisher != null && !publisher.isEmpty()) {
+            words.add(publisher);
+        }
+        if (code != null && !code.isEmpty()) {
+            words.add(code);
         }
 
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, words);
+        final Document document = loadDocument(context, url, null);
+        final Book book = new Book();
+        if (!isCancelled()) {
+            // it's ALWAYS multi-result, even if only one result is returned.
+            parseMultiResult(context, document, fetchCovers, book);
+        }
         return book;
     }
 
@@ -121,15 +147,38 @@ public class DoubanSearchEngine
      *
      * @param context    Current context
      * @param document   to parse
-     * @param searchIsbn the ISBN we searched for
+     */
+    private void parseMultiResult(@NonNull final Context context,
+                                  @NonNull final Document document,
+                                  @NonNull final boolean[] fetchCovers,
+                                  @NonNull final Book book)
+            throws SearchException, CredentialsException, StorageException {
+        final Optional<String> oUrl = parseMultiResultForBookUrl(context, document);
+        if (oUrl.isPresent()) {
+            final Document d = loadDocument(context, oUrl.get(), null);
+            if (!isCancelled()) {
+                parse(context, d, fetchCovers, book);
+            }
+        } else {
+            // Keep this as a fallback, but we're unlikely to ever get here.
+            parse(context, document, fetchCovers, book);
+        }
+    }
+
+
+    /**
+     * Parse the given Document for the embedded javascript element containing
+     * the list of books found.
+     *
+     * @param context    Current context
+     * @param document   to parse
      *
      * @return url for the book details page
      */
     @VisibleForTesting
     @NonNull
-    public Optional<String> parseMultiResult(@NonNull final Context context,
-                                             @NonNull final Document document,
-                                             @NonNull final String searchIsbn) {
+    public Optional<String> parseMultiResultForBookUrl(@NonNull final Context context,
+                                                       @NonNull final Document document) {
         final Elements elements = document.select("script[type=\"text/javascript\"]");
         for (final Element element : elements) {
             final String s = element.html().strip();
@@ -140,7 +189,7 @@ public class DoubanSearchEngine
                     JSONArray items = new JSONObject(sa[1]).optJSONArray("items");
                     if (items != null && !items.isEmpty()) {
                         // First remove any invalid entries
-                        items = filter(items, searchIsbn);
+                        items = filter(items);
                         if (!items.isEmpty()) {
                             final JSONObject reference;
                             // Depending on user setting:
@@ -195,14 +244,12 @@ public class DoubanSearchEngine
     /**
      * Filter/remove any 'empty' entries by copying the valid ones to a new array.
      *
-     * @param items      to filter
-     * @param searchIsbn the ISBN we searched for
+     * @param items to filter
      *
      * @return the filtered array
      */
     @NonNull
-    private JSONArray filter(@NonNull final JSONArray items,
-                             @NonNull final String searchIsbn) {
+    private JSONArray filter(@NonNull final JSONArray items) {
         final JSONArray result = new JSONArray();
         for (int i = 0; i < items.length(); i++) {
             final JSONObject item = items.getJSONObject(i);
