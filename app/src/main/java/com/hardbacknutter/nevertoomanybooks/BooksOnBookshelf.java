@@ -691,6 +691,8 @@ public class BooksOnBookshelf
         }
     }
 
+    // We could override isTaskRoot() but that might be risky
+    // as the call is also used by Android internals
     private boolean isRootActivity() {
         return isTaskRoot() && vm.getSearchCriteria().isEmpty();
     }
