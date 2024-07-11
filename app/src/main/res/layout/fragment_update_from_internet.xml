@@ -43,6 +43,7 @@
         android:id="@+id/field_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         android:layout_margin="@dimen/container_margin"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="@integer/span_count_update_from_internet"
