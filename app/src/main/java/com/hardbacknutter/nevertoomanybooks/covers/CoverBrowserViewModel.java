@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -129,8 +130,8 @@ public class CoverBrowserViewModel
             }
         }
     };
-    /** Indicates cancel has been requested. */
-    private boolean cancelled;
+    /** Indicates cancel has been requested (user dismissed the dialog). */
+    private final AtomicBoolean cancelled = new AtomicBoolean();
 
     /**
      * The selected (i.e. displayed in the preview) file.
@@ -179,16 +180,12 @@ public class CoverBrowserViewModel
         }
     }
 
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
     /**
      * Cancel all active tasks; called before we're dismissed in any way.
      */
     void cancelAllTasks() {
         // prevent new tasks being started.
-        cancelled = true;
+        cancelled.set(true);
 
         if (selectedImageTask != null) {
             selectedImageTask.cancel();
@@ -246,7 +243,7 @@ public class CoverBrowserViewModel
     // TODO: if there is only a single edition, we should skip the displaying and just use it
     @NonNull
     public List<AltEdition> getEditions() {
-        // used directly
+        // used directly, the caller can remove items
         return editions;
     }
 
@@ -315,6 +312,11 @@ public class CoverBrowserViewModel
      * @param edition to search
      */
     void fetchGalleryImage(@NonNull final AltEdition edition) {
+        if (cancelled.get()) {
+            // abort
+            return;
+        }
+
         synchronized (galleryTasks) {
             if (!galleryTasks.containsKey(edition)) {
                 final FetchImageTask task =
@@ -360,6 +362,11 @@ public class CoverBrowserViewModel
      * @param imageFileInfo of the selected image
      */
     void fetchSelectedImage(@NonNull final ImageFileInfo imageFileInfo) {
+        if (cancelled.get()) {
+            // abort
+            return;
+        }
+
         if (selectedImageTask != null) {
             selectedImageTask.cancel();
         }
