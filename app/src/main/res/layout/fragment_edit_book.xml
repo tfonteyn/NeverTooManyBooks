@@ -28,6 +28,16 @@
     tools:context=".FragmentHostActivity"
     >
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpeakableTextPresentCheck"
+        />
+
     <!--
     FIXME: 2024-01-21: bug in android framework causing a TransactionTooLargeException
 
@@ -47,8 +57,11 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tab_panel"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

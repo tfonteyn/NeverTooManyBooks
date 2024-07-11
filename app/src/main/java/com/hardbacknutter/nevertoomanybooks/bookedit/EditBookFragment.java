@@ -41,7 +41,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.lang.reflect.InvocationTargetException;
@@ -124,9 +123,7 @@ public class EditBookFragment
         tabAdapter = new TabAdapter(getActivity());
         vb.pager.setAdapter(tabAdapter);
 
-        final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
-
-        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
+        new TabLayoutMediator(vb.tabPanel, vb.pager, (tab, position) -> {
             final TabAdapter.TabInfo tabInfo = tabAdapter.getTabInfo(position);
             tab.setText(tabInfo.titleId);
             tab.setContentDescription(tabInfo.contentDescriptionId);
