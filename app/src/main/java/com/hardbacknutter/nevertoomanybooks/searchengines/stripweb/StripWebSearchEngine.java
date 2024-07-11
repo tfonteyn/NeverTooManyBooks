@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,7 @@ import androidx.preference.PreferenceManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -350,10 +352,11 @@ public class StripWebSearchEngine
             return;
         }
 
-        if (fetchCovers[0] || fetchCovers[1]) {
+        if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
             // start from 'main' !
-            parseCovers(context, main, isbn, fetchCovers, book);
+            parseCover(context, main, isbn, 0).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
@@ -570,25 +573,38 @@ public class StripWebSearchEngine
         }
     }
 
-    private void parseCovers(@NonNull final Context context,
-                             @NonNull final Element document,
-                             @Nullable final String isbn,
-                             @NonNull final boolean[] fetchCovers,
-                             @NonNull final Book book)
+    /**
+     * Parses the given {@link Element} for the cover and fetches it when present.
+     *
+     * @param context Current context
+     * @param main    the "main.content" element to parse
+     * @param bookId  (optional) isbn or native id of the book,
+     *                will only be used for the temporary cover filename
+     * @param cIdx    0..n image index
+     *
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
+     */
+    @WorkerThread
+    @NonNull
+    private Optional<String> parseCover(@NonNull final Context context,
+                                        @NonNull final Element main,
+                                        @Nullable final String bookId,
+                                        @SuppressWarnings("SameParameterValue")
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        if (fetchCovers[0]) {
-            final Element cover = document.selectFirst("a.d-block");
-            if (cover != null) {
-                String url = cover.attr("href");
-                // Sanity check; the url is supposed to be relative
-                if (url.startsWith("/")) {
-                    url = getHostUrl(context) + url;
-                }
-                saveImage(context, url, isbn, 0, null).ifPresent(
-                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-            }
+        final Element cover = main.selectFirst("a.d-block");
+        if (cover == null) {
+            return Optional.empty();
         }
+        String url = cover.attr("href");
+        // Sanity check; the url is supposed to be relative
+        if (url.startsWith("/")) {
+            url = getHostUrl(context) + url;
+        }
+        return saveImage(context, url, bookId, cIdx, null);
     }
 
     public static final class SiteField {
