@@ -356,7 +356,7 @@ public final class FileUtils {
     public static String buildValidFilename(@Nullable final String name)
             throws FileNotFoundException {
         if (name == null || name.isEmpty() || ".".equals(name) || "..".equals(name)) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("name=`" + name + '`');
         }
 
         final StringBuilder sb = new StringBuilder(name.length());
