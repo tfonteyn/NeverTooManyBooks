@@ -81,7 +81,7 @@ public final class PreferenceDialogFactory {
     /**
      * Create a new instance. The classes <strong>replace</strong> the androidx.preference
      * dialog classes, giving us M3 (floating) dialogs and full support for BottomSheets.
-     *
+     * <p>
      * Fullscreen dialogs (for devices with small screens) are NOT implemented.
      *
      * @param preference to provide the dialog for
