@@ -642,7 +642,6 @@ public class BedethequeSearchEngine
             case "Collectif":
             default:
                 addAuthor(Author.from(names), type, book);
-                ;
                 break;
         }
     }
