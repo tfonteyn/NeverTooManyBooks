@@ -100,11 +100,16 @@ public class IsfdbXmlPublicationTest
             // So wrap in InputSource and manually set the encoding.
             final InputSource inputSource = new InputSource(is);
             inputSource.setEncoding("iso-8859-1");
+
+            // The parser is EXPECTED to throw a new SAXException(new EOFException())
+            // when it is done.
+            // For a reason not understood, this test will always throw it,
+            // instead of letting the catch swallow the EOFException and we get
+            // E TestRunner: failed: singleByExtId(com.hardbacknutter.nevertoomanybooks
+            //                       .searchengines.isfdb.IsfdbXmlPublicationTest)
             parser.parse(inputSource, listHandler);
-        } catch (@NonNull final SAXException e) {
-            // In testing, this logic is not working. And we get
-            // TestRunner: failed: singleByExtId(com.hardbacknutter.nevertoomanybooks.searchengines
-            // .isfdb.IsfdbXmlPublicationTest)
+
+        } catch (@NonNull final SAXException | EOFException e) {
             if (!(e.getCause() instanceof EOFException)) {
                 throw e;
             }
