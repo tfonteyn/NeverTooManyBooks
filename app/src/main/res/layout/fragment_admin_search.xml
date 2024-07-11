@@ -39,6 +39,7 @@
         tools:ignore="SpeakableTextPresentCheck"
         />
 
+    <!-- Note the "center_horizontal" which is there for larger screens -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
         android:layout_width="match_parent"
