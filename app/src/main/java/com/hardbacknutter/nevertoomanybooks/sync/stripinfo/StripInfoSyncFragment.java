@@ -122,7 +122,8 @@ public class StripInfoSyncFragment
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_STRIP_INFO_SETTING, 0,
                      R.string.lbl_settings)
-                .setIcon(R.drawable.settings_24px);
+                .setIcon(R.drawable.settings_24px)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         @Override

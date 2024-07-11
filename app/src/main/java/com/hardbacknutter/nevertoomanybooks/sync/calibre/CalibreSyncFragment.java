@@ -125,7 +125,8 @@ public class CalibreSyncFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_CALIBRE_SETTINGS, 0, R.string.lbl_settings)
-                .setIcon(R.drawable.settings_24px);
+                .setIcon(R.drawable.settings_24px)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         @Override
