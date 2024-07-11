@@ -681,12 +681,12 @@ public class OpenLibrary2SearchEngine
         // ]
         a = document.optJSONArray("covers");
         if (a != null && !a.isEmpty()) {
-            parseCovers(context, a, fetchCovers, book);
+            fetchCovers(context, a, fetchCovers, book);
         }
     }
 
 
-    private void parseCovers(@NonNull final Context context,
+    private void fetchCovers(@NonNull final Context context,
                              @NonNull final JSONArray coverIds,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
