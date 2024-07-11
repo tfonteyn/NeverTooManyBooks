@@ -162,8 +162,7 @@ public class ParseTest
     public void parseMulti9787536692930()
             throws IOException {
 
-        final String locationHeader = "https://search.douban.com/book/subject_search"
-                                      + "?search_text=9787536692930";
+        final String locationHeader = "https://search.douban.com/book/subject_search?search_text=9787536692930";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.douban_multi_9787536692930;
 

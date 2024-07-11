@@ -22,12 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -39,18 +43,20 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -60,22 +66,25 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
- * {@link SearchEngine.CoverByIsbn} is not implemented for now.
- * Searching for alternative covers poses a problem here.
- * <p>
  * It seems that Chinese publishers reuse ISBN numbers for different editions of the same book.
  * This sort-of violates the intention of an ISBN:
  * - reuse for different print-runs is ok
  * - reuse for different edition is normally a big NO.
- * <p>
- * This also means that {@link Site.Type#AltEditions} is not really feasible here.
- * TODO: revisit the reuse of ISBN numbers versus edition/cover searches.
+ * We try to workaround this limitation.
  */
 public class DoubanSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.CoverByEdition,
+                   SearchEngine.AlternativeEditions<AltEditionDouban> {
 
+    /**
+     * Preference key: whether to select the most-recent book {@code true}
+     * or the first one found {@code false} from the multi-result list.
+     * <p>
+     * Type: {@code boolean}
+     */
     @VisibleForTesting
     public static final String PK_FETCH_MOST_RECENT = EngineId.Douban.getPreferenceKey()
                                                       + ".search.result.order.by.date";
@@ -216,6 +225,64 @@ public class DoubanSearchEngine
     /**
      * Parse the given Document for the embedded javascript element containing
      * the list of books found.
+     *
+     * <pre>
+     *         window.__DATA__ = {
+     *         "count": 15,
+     *         "error_info": "",
+     *         "items": [
+     *             {
+     *                 "abstract": "",
+     *                 "abstract_2": "",
+     *                 "cover_url": "https://img1.doubanio.com/cuphead/book-static/pics/book-default-lpic.gif",
+     *                 "extra_actions": [],
+     *                 "id": 25930607,
+     *                 "interest": null,
+     *                 "label_actions": [],
+     *                 "labels": [],
+     *                 "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',subject_id:'25930607',query:'9787532190294',i:'0',cat_id:'1001'})\"",
+     *                 "rating": {
+     *                     "count": 0,
+     *                     "rating_info": "\u76ee\u524d\u65e0\u4eba\u8bc4\u4ef7",
+     *                     "star_count": 0,
+     *                     "value": 0
+     *                 },
+     *                 "title": "9787539190594",
+     *                 "topics": [],
+     *                 "tpl_name": "search_subject",
+     *                 "url": "https://book.douban.com/subject/25930607/"
+     *             },
+     *             {
+     *                 "abstract": "[\u82f1] \u83f2\u5229\u666e\u00b7\u9ad8\u592b / \u5085\u661f\u6e90 / \u4e0a\u6d77\u6587\u827a\u51fa\u7248\u793e / 2024-6 / 58",
+     *                 "abstract_2": "",
+     *                 "cover_url": "https://img1.doubanio.com/view/subject/m/public/s34875559.jpg",
+     *                 "extra_actions": [],
+     *                 "id": 36897178,
+     *                 "interest": null,
+     *                 "label_actions": [],
+     *                 "labels": [],
+     *                 "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',subject_id:'36897178',query:'9787532190294',i:'1',cat_id:'1001'})\"",
+     *                 "rating": {
+     *                     "count": 0,
+     *                     "rating_info": "\u8bc4\u4ef7\u4eba\u6570\u4e0d\u8db3",
+     *                     "star_count": 0,
+     *                     "value": 0
+     *                 },
+     *                 "title": "\u4f3d\u5229\u7565\u7684\u9519\u8bef : \u4e3a\u4e00\u79cd\u65b0\u7684\u610f\u8bc6\u79d1\u5b66\u5960\u57fa",
+     *                 "topics": [],
+     *                 "tpl_name": "search_subject",
+     *                 "url": "https://book.douban.com/subject/36897178/"
+     *             }
+     *         ],
+     *         "report": {
+     *             "qtype": "195",
+     *             "tags": "\u8bfb\u4e66"
+     *         },
+     *         "start": 0,
+     *         "text": "9787532190294",
+     *         "total": 2
+     *     };
+     * </pre>
      *
      * @param document to parse
      *
@@ -468,7 +535,9 @@ public class DoubanSearchEngine
         }
 
         if (fetchCovers[0]) {
-            fetchCover(context, document, book);
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            parseCovers(context, document, isbn, 0).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
@@ -559,33 +628,105 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Fetch the front cover thumbnail.
+     * Parses the downloaded {@link Document} for the cover and fetches it when present.
      *
      * @param context  Current context
      * @param document to parse
-     * @param book     Bundle to update
+     * @param bookId   (optional) isbn or native id of the book,
+     *                 will only be used for the temporary cover filename
+     * @param cIdx     0..n image index
      *
-     * @throws StorageException The covers directory is not available
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
      */
-    private void fetchCover(@NonNull final Context context,
-                            @NonNull final Document document,
-                            @NonNull final Book book)
+    @NonNull
+    private Optional<String> parseCovers(@NonNull final Context context,
+                                         @NonNull final Document document,
+                                         @Nullable final String bookId,
+                                         @SuppressWarnings("SameParameterValue")
+                                         @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
-        final String isbn = book.getString(DBKey.BOOK_ISBN);
-        if (!isbn.isEmpty()) {
-            // "div#mainpic > a" element will have as the href a large version of the image.
-            // "div#mainpic > a > img" will have "src" point to a thumbnail
-            // We found the large image to result in socket-timeouts
-            // (without modifying our default timeout)
-            // Choosing to get the thumbnail here:
-            final Element img = document.selectFirst("div#mainpic > a > img");
-            if (img != null) {
-                final String src = img.attr("src");
-                if (!src.isEmpty()) {
-                    saveImage(context, src, isbn, 0, null).ifPresent(
-                            fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-                }
+        // "div#mainpic > a" element will have as the href a large version of the image.
+        // "div#mainpic > a > img" will have "src" point to a thumbnail
+        // We found the large image to result in socket-timeouts
+        // (without modifying our default timeout)
+        // Choosing to get the thumbnail here:
+        final Element img = document.selectFirst("div#mainpic > a > img");
+        if (img != null) {
+            final String src = img.attr("src");
+            if (!src.isEmpty()) {
+                return saveImage(context, src, bookId, 0, null);
             }
         }
+        return Optional.empty();
+    }
+
+    @NonNull
+    @Override
+    public List<AltEditionDouban> searchAlternativeEditions(@NonNull final Context context,
+                                                            @NonNull final String validIsbn)
+            throws SearchException, CredentialsException {
+
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
+        final Document document = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            final Optional<JSONArray> oItems = extractItemList(document);
+            if (oItems.isPresent()) {
+                final JSONArray items = oItems.get();
+                if (items.isEmpty()) {
+                    return List.of();
+                }
+                final List<AltEditionDouban> editionList = new ArrayList<>();
+
+                for (int i = 0; i < items.length(); i++) {
+                    final JSONObject item = items.getJSONObject(i);
+
+                    final int id = item.optInt("id");
+                    final String bookUrl = item.optString("url");
+                    final String coverUrl = item.optString("cover_url");
+
+                    editionList.add(new AltEditionDouban(id, bookUrl, coverUrl));
+                }
+
+                return editionList;
+            }
+        }
+        return List.of();
+    }
+
+    @NonNull
+    public Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                                 @NonNull final AltEdition altEdition,
+                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @Nullable final Size size)
+            throws SearchException, CredentialsException, StorageException {
+
+        if (altEdition instanceof AltEditionDouban) {
+            final AltEditionDouban edition = (AltEditionDouban) altEdition;
+
+            final String bookUrl = edition.getBookUrl();
+            if (bookUrl != null && !bookUrl.isEmpty()) {
+                final Document document = loadDocument(context, bookUrl, null);
+                if (!isCancelled()) {
+                    return parseCovers(context, document, String.valueOf(edition.getId()), cIdx)
+                            // let the system resolve any path variations
+                            .map(fileSpec -> new File(fileSpec).getAbsolutePath());
+                }
+            }
+        } else if (altEdition instanceof AltEditionIsbn) {
+            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+
+            final String isbn = edition.getIsbn();
+            final String url = getHostUrl(context) + String.format(SEARCH_URL, isbn);
+            final Document document = loadDocument(context, url, null);
+            if (!isCancelled()) {
+                return parseCovers(context, document, isbn, cIdx)
+                        // let the system resolve any path variations
+                        .map(fileSpec -> new File(fileSpec).getAbsolutePath());
+            }
+        }
+
+        return Optional.empty();
     }
 }
