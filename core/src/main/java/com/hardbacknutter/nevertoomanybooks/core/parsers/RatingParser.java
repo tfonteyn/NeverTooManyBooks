@@ -72,7 +72,7 @@ public class RatingParser {
      */
     @NonNull
     public Optional<Float> parse(@Nullable final String s) {
-        if (s == null || s.isBlank()) {
+        if (s == null || s.isBlank() || "0".equals(s) || "0.0".equals(s)) {
             return Optional.empty();
         }
 
@@ -80,15 +80,13 @@ public class RatingParser {
             float rating = parser.apply(s);
             if (rating > 0) {
                 if (divBy2) {
-                    // 0.0 to 10.0 becomes an int 1..10
-                    // then divide by 2 to get 0..5
-                    rating = (float) Math.round(rating);
-                    // Now pretend we divide by 2... and then use ceil on 2*
-                    rating = (float) Math.ceil(rating) / 2;
+                    // 0.0 to 10.0 becomes an int 0..10
+                    // then divide by 2 to get 0.0..5.0
+                    rating = (float) Math.round(rating) / 2;
                 } else {
                     // 0.0 to 5.0 becomes 0.0 to 10.0 which becomes an int 1..10
                     // then divide by 2 to get 0..5
-                    rating = (float) Math.ceil(2 * rating) / 2;
+                    rating = (float) Math.round(2 * rating) / 2;
                 }
                 // paranoia
                 rating = MathUtils.clamp(rating, (float) 0, (float) 5);

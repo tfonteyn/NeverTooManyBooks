@@ -27,6 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class RatingParserTest {
@@ -36,7 +37,19 @@ public class RatingParserTest {
         final RatingParser equalizer = new RatingParser(5);
         Optional<Float> convert;
 
+        // Anything less than 0.251 becomes 0, which we reject
+        convert = equalizer.parse("0.1");
+        assertFalse(convert.isPresent());
+
+        convert = equalizer.parse("0.4");
+        assertTrue(convert.isPresent());
+        assertEquals(0.5, convert.get(), 0.1);
+
         convert = equalizer.parse("3");
+        assertTrue(convert.isPresent());
+        assertEquals(3, convert.get(), 0.1);
+
+        convert = equalizer.parse("3.1");
         assertTrue(convert.isPresent());
         assertEquals(3, convert.get(), 0.1);
 
@@ -50,6 +63,10 @@ public class RatingParserTest {
 
         convert = equalizer.parse("3.6");
         assertTrue(convert.isPresent());
+        assertEquals(3.5, convert.get(), 0.1);
+
+        convert = equalizer.parse("3.9");
+        assertTrue(convert.isPresent());
         assertEquals(4, convert.get(), 0.1);
 
         convert = equalizer.parse("5.0");
@@ -62,31 +79,39 @@ public class RatingParserTest {
         final RatingParser equalizer = new RatingParser(10);
         Optional<Float> convert;
 
+        // Anything less than 0.5 becomes 0, which we reject
+        convert = equalizer.parse("0.1");
+        assertFalse(convert.isPresent());
+
+        convert = equalizer.parse("0.6");
+        assertTrue(convert.isPresent());
+        assertEquals(0.5, convert.get(), 0.1);
+
         convert = equalizer.parse("6");
         assertTrue(convert.isPresent());
         assertEquals(3, convert.get(), 0.1);
 
-        convert = equalizer.parse("6.3");
+        convert = equalizer.parse("6.1");
+        assertTrue(convert.isPresent());
+        assertEquals(3, convert.get(), 0.1);
+
+        convert = equalizer.parse("6.4");
         assertTrue(convert.isPresent());
         assertEquals(3.0, convert.get(), 0.1);
 
-        convert = equalizer.parse("6.8");
+        convert = equalizer.parse("6.5");
         assertTrue(convert.isPresent());
         assertEquals(3.5, convert.get(), 0.1);
 
-        convert = equalizer.parse("7");
+        convert = equalizer.parse("6.6");
         assertTrue(convert.isPresent());
         assertEquals(3.5, convert.get(), 0.1);
 
-        convert = equalizer.parse("8.20");
+        convert = equalizer.parse("6.9");
         assertTrue(convert.isPresent());
-        assertEquals(4, convert.get(), 0.1);
+        assertEquals(3.5, convert.get(), 0.1);
 
         convert = equalizer.parse("10.0");
-        assertTrue(convert.isPresent());
-        assertEquals(5, convert.get(), 0.1);
-
-        convert = equalizer.parse("10");
         assertTrue(convert.isPresent());
         assertEquals(5, convert.get(), 0.1);
     }

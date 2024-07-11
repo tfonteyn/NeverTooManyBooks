@@ -142,6 +142,7 @@ public class GoodreadsCsvImportTest
 
             assertEquals("Jack van de Schaduwen", book.getTitle());
             assertEquals("9789027406927", book.getString(DBKey.BOOK_ISBN));
+            // "my_rating" was set to 5; "average_rating" of 3.99 is ignored
             assertEquals(5, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
             assertEquals("Paperback", book.getString(DBKey.FORMAT));
             assertEquals("172", book.getString(DBKey.PAGE_COUNT));
@@ -185,6 +186,7 @@ public class GoodreadsCsvImportTest
 
             assertEquals("The Three-Body Problem", book.getTitle());
             assertEquals("", book.getString(DBKey.BOOK_ISBN));
+            // "my_rating" 0f 0 is ignored; "average_rating" of 4.09
             assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
             assertEquals("Hardcover", book.getString(DBKey.FORMAT));
             assertEquals("472", book.getString(DBKey.PAGE_COUNT));
