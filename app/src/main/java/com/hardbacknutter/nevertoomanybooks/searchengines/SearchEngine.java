@@ -198,7 +198,7 @@ public interface SearchEngine
          * @param context     Current context
          * @param externalId  the external id (as a String) for this particular search site.
          * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have at least one element.
+         *                    The array is guaranteed to have 2 elements.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -248,7 +248,7 @@ public interface SearchEngine
          * @param context     Current context
          * @param validIsbn   to search for, <strong>will</strong> be valid.
          * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have at least one element.
+         *                    The array is guaranteed to have 2 elements.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -281,7 +281,7 @@ public interface SearchEngine
          * @param context     Current context
          * @param barcode     to search for, <strong>will</strong> be valid.
          * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have at least one element.
+         *                    The array is guaranteed to have 2 elements.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -323,7 +323,7 @@ public interface SearchEngine
          *                    i.e. author and/or title must be valid;
          *                    only then the publisher is taken into account.
          * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have at least one element.
+         *                    The array is guaranteed to have 2 elements.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
