@@ -232,7 +232,7 @@ public class DnbSearchEngine
 
             if (fetchCovers[0]) {
                 final String isbn = book.getString(DBKey.BOOK_ISBN);
-                parseCovers(context, document, isbn, 0).ifPresent(
+                parseCover(context, document, isbn, 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }
         }
@@ -403,7 +403,7 @@ public class DnbSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     * Parses the given {@link Document} for the cover and fetches it when present.
      *
      * @param context  Current context
      * @param document to parse
@@ -418,26 +418,26 @@ public class DnbSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private Optional<String> parseCovers(@NonNull final Context context,
-                                         @NonNull final Document document,
-                                         @Nullable final String bookId,
-                                         @SuppressWarnings("SameParameterValue")
-                                         @IntRange(from = 0, to = 1) final int cIdx)
+    private Optional<String> parseCover(@NonNull final Context context,
+                                        @NonNull final Document document,
+                                        @Nullable final String bookId,
+                                        @SuppressWarnings("SameParameterValue")
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        final Element image = document.selectFirst(
+        final Element img = document.selectFirst(
                 "div.c-catalog-result__image-wrapper > div > span > img");
-        if (image != null) {
-            String url = image.attr("src");
-            if (!url.isBlank()) {
-                // sanity check
-                if (!url.startsWith("https")) {
-                    url = getHostUrl(context) + url;
-                }
-                return saveImage(context, url, bookId, cIdx, null);
-            }
+        if (img == null) {
+            return Optional.empty();
         }
-
-        return Optional.empty();
+        String url = img.attr("src");
+        if (url.isEmpty()) {
+            return Optional.empty();
+        }
+        // sanity check
+        if (!url.startsWith("https")) {
+            url = getHostUrl(context) + url;
+        }
+        return saveImage(context, url, bookId, cIdx, null);
     }
 }
