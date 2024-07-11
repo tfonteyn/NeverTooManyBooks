@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
  *      <li>{@link ByIsbn}</li>
  *      <li>{@link ByText}</li>
  * </ul>
- * and if the site supports fetching images by ISBN: {@link CoverByIsbn}.
+ * and if the site supports fetching images by {@link AltEdition}: {@link CoverByEdition}.
  * <p>
  * ENHANCE: most implementations can return multiple book bundles quite easily.
  * <p>
@@ -114,7 +114,7 @@ public interface SearchEngine
     Locale getLocale(@NonNull Context context);
 
     /**
-     * {@link SearchEngine.CoverByIsbn} only.
+     * {@link CoverByEdition} only.
      * <p>
      * A site can support a single (default) or multiple sizes.
      *
@@ -152,6 +152,19 @@ public interface SearchEngine
                    SocketTimeoutException,
                    MalformedURLException;
 
+    /**
+     * Maps the {@link Site.Type#Data} search interface classes to an enum.
+     * <p>
+     * This allows us to use them in for example a switch() statement
+     * and other places where using the interface class itself is not possible.
+     * <p>
+     * Dev. note: this is really a kludge... there must be a better way of doing this...
+     *
+     * @see ByExternalId
+     * @see ByIsbn
+     * @see ByBarcode
+     * @see ByText
+     */
     enum SearchBy {
         ExternalId(ByExternalId.class),
         Isbn(ByIsbn.class),
@@ -171,7 +184,11 @@ public interface SearchEngine
         }
     }
 
-    /** Optional. */
+    /**
+     * Optional.
+     *
+     * @see SearchBy#ExternalId
+     */
     interface ByExternalId
             extends SearchEngine {
 
@@ -217,7 +234,11 @@ public interface SearchEngine
                                 @NonNull String externalId);
     }
 
-    /** Optional. But every engine should really implement this. */
+    /**
+     * Optional. But every engine should really implement this.
+     *
+     * @see SearchBy#Isbn
+     */
     interface ByIsbn
             extends SearchEngine {
 
@@ -248,6 +269,8 @@ public interface SearchEngine
     /**
      * Optional.
      * Implement if the engine can search generic bar codes, aside of strict ISBN only.
+     *
+     * @see SearchBy#Barcode
      */
     interface ByBarcode
             extends ByIsbn {
@@ -279,6 +302,8 @@ public interface SearchEngine
     /**
      * Optional.
      * The engine can search by author/title/... without a valid ISBN.
+     *
+     * @see SearchBy#Text
      */
     interface ByText
             extends SearchEngine {
@@ -320,8 +345,8 @@ public interface SearchEngine
     }
 
     /** Optional. */
-    @FunctionalInterface
-    interface AlternativeEditions<T extends AltEdition> {
+    interface AlternativeEditions<T extends AltEdition>
+            extends SearchEngine {
 
         /**
          * Find alternative editions for the given ISBN.
@@ -337,28 +362,31 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         List<T> searchAlternativeEditions(@NonNull Context context,
-                                               @NonNull String validIsbn)
+                                          @NonNull String validIsbn)
                 throws SearchException,
                        CredentialsException;
     }
 
     /** Optional. */
-    interface CoverByIsbn
+    interface CoverByEdition
             extends SearchEngine {
 
         /**
          * Get a single cover image of the specified size.
          * <p>
+         * If the given {@link AltEdition} type is not supported, this method
+         * <strong>MUST</strong> return {@code Optional.empty()}.
+         * <p>
          * <strong>Important</strong> this method should never throw any {@link RuntimeException}.
          * For the latter, simply return {@code Optional.empty()} when an error occurs
          * after logging the error.
          * <p>
-         * See {@link #searchBestCoverByIsbn} for sites with support for multiple cover sizes.
+         * See {@link #searchBestCoverByEdition} for sites with support for multiple cover sizes.
          *
-         * @param context   Current context
-         * @param validIsbn to search for, <strong>must</strong> be valid.
-         * @param cIdx      0..n image index
-         * @param size      of image to get.
+         * @param context Current context
+         * @param edition to search for
+         * @param cIdx    0..n image index
+         * @param size    of image to get.
          *
          * @return fileSpec
          *
@@ -368,23 +396,23 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        Optional<String> searchCoverByIsbn(@NonNull Context context,
-                                           @NonNull String validIsbn,
-                                           @IntRange(from = 0, to = 1) int cIdx,
-                                           @Nullable Size size)
+        Optional<String> searchCoverByEdition(@NonNull Context context,
+                                              @NonNull AltEdition edition,
+                                              @IntRange(from = 0, to = 1) int cIdx,
+                                              @Nullable Size size)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
 
         /**
          * Helper method for sites which support multiple image sizes.
-         * It's a wrapper around {@link #searchCoverByIsbn} which
+         * It's a wrapper around {@link #searchCoverByEdition} which
          * will try to get an image in order of large, medium, small.
          * i.e. the 'best' image being the largest we can find.
          *
-         * @param context   Current context
-         * @param validIsbn to search for, <strong>must</strong> be valid.
-         * @param cIdx      0..n image index
+         * @param context Current context
+         * @param edition to search for
+         * @param cIdx    0..n image index
          *
          * @return fileSpec
          *
@@ -394,18 +422,19 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        default Optional<String> searchBestCoverByIsbn(@NonNull final Context context,
-                                                       @NonNull final String validIsbn,
-                                                       @IntRange(from = 0, to = 1) final int cIdx)
+        default Optional<String> searchBestCoverByEdition(
+                @NonNull final Context context,
+                @NonNull final AltEdition edition,
+                @IntRange(from = 0, to = 1) final int cIdx)
                 throws StorageException,
                        SearchException,
                        CredentialsException {
 
-            Optional<String> oFileSpec = searchCoverByIsbn(context, validIsbn, cIdx, Size.Large);
+            Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
             if (oFileSpec.isEmpty() && supportsMultipleCoverSizes()) {
-                oFileSpec = searchCoverByIsbn(context, validIsbn, cIdx, Size.Medium);
+                oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
                 if (oFileSpec.isEmpty()) {
-                    oFileSpec = searchCoverByIsbn(context, validIsbn, cIdx, Size.Small);
+                    oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);
                 }
             }
             return oFileSpec;

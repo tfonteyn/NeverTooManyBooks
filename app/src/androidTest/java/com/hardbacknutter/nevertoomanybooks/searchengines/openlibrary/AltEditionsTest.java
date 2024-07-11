@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
-import android.util.Log;
-
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -55,16 +53,16 @@ public class AltEditionsTest
     }
 
     @Test
-    public void fetchEditionsByIsbnTest()
+    public void searchAlternativeEditionsTest()
             throws SearchException {
-        final List<AltEditionOpenLibrary> isbnList = searchEngine
+        final List<AltEditionOpenLibrary> editions = searchEngine
                 .searchAlternativeEditions(context, "9780141339092");
 
-        Log.d(TAG, isbnList.toString());
+        //Log.d(TAG, editions.toString());
 
         // 2024-05-01: returned 87 results; the first was "9783551357793"
         // but as we're fetching live data, this might change of course.
-        assertTrue("size=" + isbnList.size(), isbnList.size() > 1);
-        assertEquals("9783551357793", isbnList.get(0).getIsbn());
+        assertTrue("size=" + editions.size(), editions.size() > 1);
+        assertEquals("9783551357793", editions.get(0).getIsbn());
     }
 }

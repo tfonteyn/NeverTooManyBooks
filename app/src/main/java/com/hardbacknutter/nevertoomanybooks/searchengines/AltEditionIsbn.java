@@ -20,19 +20,10 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.util.Optional;
-
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
 
 public class AltEditionIsbn
         implements AltEdition {
@@ -51,34 +42,30 @@ public class AltEditionIsbn
             return new AltEditionIsbn[size];
         }
     };
-    @Nullable
+
+    @NonNull
     private final String isbn;
 
-    public AltEditionIsbn(@Nullable final String isbn) {
-        this.isbn = isbn;
+    /**
+     * Constructor.
+     *
+     * @param validIsbn <strong>must</strong> be valid.
+     */
+    public AltEditionIsbn(@NonNull final String validIsbn) {
+        this.isbn = validIsbn;
     }
 
     private AltEditionIsbn(@NonNull final Parcel in) {
+        //noinspection DataFlowIssue
         isbn = in.readString();
     }
 
+    /**
+     * The ISBN for this edition
+     *
+     * @return isbn
+     */
     @NonNull
-    @Override
-    public Optional<String> searchCover(@NonNull final Context context,
-                                        @NonNull final SearchEngine.CoverByIsbn searchEngine,
-                                        @IntRange(from = 0, to = 1) final int cIdx,
-                                        @Nullable final Size size)
-            throws SearchException, CredentialsException, StorageException {
-
-        if (isbn != null) {
-            return searchEngine.searchCoverByIsbn(context, isbn, cIdx, size);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    @Nullable
     public String getIsbn() {
         return isbn;
     }

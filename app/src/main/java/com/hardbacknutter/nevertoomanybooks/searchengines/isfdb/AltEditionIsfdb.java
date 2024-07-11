@@ -19,32 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Optional;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
 
-/**
- * A value class for holding the ISFDB book id and its (optional) Document (web page).
- * <p>
- * IMPORTANT: {@link #document} is NOT parcelled. This is acceptable as all code
- * will assume the it's potentially {@code null} and (re)fetch it when needed.
- */
 public class AltEditionIsfdb
         implements AltEdition {
 
@@ -71,10 +55,14 @@ public class AltEditionIsfdb
     private final String publisher;
     @Nullable
     private final String langIso3;
+
     /**
      * If a fetch of editions resulted in a single book returned (via redirects),
      * then the doc is kept here for immediate processing.
      * If we get (at least) 2 editions, then this will always be {@code null}.
+     * <p>
+     * IMPORTANT: the document is NOT parcelled. This is acceptable as all code
+     * will assume the it's potentially {@code null} and (re)fetch it when needed.
      */
     @Nullable
     private Document document;
@@ -99,7 +87,8 @@ public class AltEditionIsfdb
     }
 
     /**
-     * Constructor: we found a single edition, the doc contains the book for further processing.
+     * Constructor: we found a single edition,
+     * the document contains the book for further processing.
      *
      * @param isfdbId  of the edition we found
      * @param isbn     we <strong>searched on</strong>
@@ -116,73 +105,48 @@ public class AltEditionIsfdb
     }
 
     private AltEditionIsfdb(@NonNull final Parcel in) {
-        isbn = in.readString();
         isfdbId = in.readLong();
+        isbn = in.readString();
         publisher = in.readString();
         langIso3 = in.readString();
     }
-
-    @NonNull
-    @Override
-    public Optional<String> searchCover(@NonNull final Context context,
-                                        @NonNull final SearchEngine.CoverByIsbn searchEngine,
-                                        @IntRange(from = 0, to = 1) final int cIdx,
-                                        @Nullable final Size size)
-            throws SearchException, CredentialsException, StorageException {
-
-        // The id should always be valid, but paranoia...
-        if (isfdbId != 0) {
-            if (BuildConfig.DEBUG /* always */) {
-                if (!(searchEngine instanceof IsfdbSearchEngine)) {
-                    throw new IllegalArgumentException("Not an IsfdbSearchEngine");
-                }
-            }
-            return ((IsfdbSearchEngine) searchEngine).searchCoverByEdition(context, this);
-
-        } else if (isbn != null) {
-            return searchEngine.searchCoverByIsbn(context, isbn, cIdx, size);
-        } else {
-            return Optional.empty();
-        }
-    }
-
 
     @Nullable
     public Document getDocument() {
         return document;
     }
 
+    /**
+     * Remove the document to reduce memory usage.
+     */
     void clearDocument() {
         document = null;
-    }
-
-    @Override
-    @Nullable
-    public String getIsbn() {
-        return isbn;
     }
 
     long getIsfdbId() {
         return isfdbId;
     }
 
-    @Override
+    @Nullable
+    public String getIsbn() {
+        return isbn;
+    }
+
+    @Nullable
+    public String getLangIso3() {
+        return langIso3;
+    }
+
     @Nullable
     public String getPublisher() {
         return publisher;
     }
 
     @Override
-    @Nullable
-    public String getLangIso3() {
-        return langIso3;
-    }
-
-    @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeString(isbn);
         dest.writeLong(isfdbId);
+        dest.writeString(isbn);
         dest.writeString(publisher);
         dest.writeString(langIso3);
     }

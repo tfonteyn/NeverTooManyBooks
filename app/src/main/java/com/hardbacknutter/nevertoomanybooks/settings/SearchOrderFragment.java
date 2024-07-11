@@ -167,7 +167,7 @@ public class SearchOrderFragment
             // only show the info for Data lists. Irrelevant for others.
             if (site.getType() == Site.Type.Data) {
                 final EngineId engineId = site.getEngineId();
-                // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
+                // do not list SearchEngine.CoverByEdition, it's irrelevant to the user.
                 final Collection<String> capabilities = new ArrayList<>();
                 if (engineId.supports(SearchEngine.SearchBy.Isbn)) {
                     capabilities.add(context.getString(R.string.lbl_isbn));

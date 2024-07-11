@@ -50,22 +50,21 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Given an ISBN, this class uses the list of {@link SearchEngine}s to
- * find a matching book and download cover images as needed.
+ * Given an {@link AltEdition}, this class uses the list of {@link SearchEngine}s to
+ * search for a matching book and download cover images as needed.
  * Downloaded images are checked for suitability.
  * Unused downloads are cleaned up.
  */
-public class FileManager {
+class FileManager {
 
     /** Log tag. */
     private static final String TAG = "FileManager";
 
     /**
      * Downloaded files.
-     * key = isbn
      */
     @NonNull
-    private final Map<AltEdition, ImageFileInfo> files =
+    private final Map<AltEdition, ImageFileInfo> downloads =
             Collections.synchronizedMap(new HashMap<>());
 
     /** The sites the user wants to search for cover images. */
@@ -91,7 +90,7 @@ public class FileManager {
     @Nullable
     @AnyThread
     ImageFileInfo getFileInfo(@NonNull final AltEdition edition) {
-        return files.get(edition);
+        return downloads.get(edition);
     }
 
     /**
@@ -138,7 +137,7 @@ public class FileManager {
             }
 
             // Do we already have a file previously downloaded?
-            final ImageFileInfo previous = files.get(edition);
+            final ImageFileInfo previous = downloads.get(edition);
             if (previous != null && previous.isUsable(size)) {
                 return previous;
             }
@@ -152,12 +151,12 @@ public class FileManager {
                     }
 
                     // Is this Site's SearchEngine available and suitable?
-                    if (engineId.supports(SearchEngine.SearchBy.Isbn)) {
+                    if (engineId.supports(SearchEngine.CoverByEdition.class)) {
 
-                        SearchEngine.CoverByIsbn se = (SearchEngine.CoverByIsbn)
+                        SearchEngine.CoverByEdition se = (SearchEngine.CoverByEdition)
                                 engineCache.get(engineId);
                         if (se == null) {
-                            se = (SearchEngine.CoverByIsbn) engineId.createSearchEngine(context);
+                            se = (SearchEngine.CoverByEdition) engineId.createSearchEngine(context);
                             // caller is the FetchImageTask
                             se.setCaller(progressListener);
                             engineCache.put(engineId, se);
@@ -173,14 +172,16 @@ public class FileManager {
                         }
 
                         try {
+                            // Note that the SearchEngine might not support the given edition
+                            // type in which case, it will simply return an Optional.empty()
                             final Optional<String> oFileSpec =
-                                    edition.searchCover(context, se, cIdx, size);
+                                    se.searchCoverByEdition(context, edition, cIdx, size);
 
                             if (oFileSpec.isPresent()) {
-                                final ImageFileInfo imageFileInfo =
-                                        new ImageFileInfo(edition, oFileSpec.get(), size,
-                                                          engineId);
-                                files.put(edition, imageFileInfo);
+                                final ImageFileInfo imageFileInfo = new ImageFileInfo(
+                                        edition, oFileSpec.get(), size, engineId);
+
+                                downloads.put(edition, imageFileInfo);
 
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                     LoggerFactory.getLogger()
@@ -234,7 +235,7 @@ public class FileManager {
 
         // Failed to find any size on all sites, record the failure to prevent future attempt
         final ImageFileInfo failure = new ImageFileInfo(edition);
-        files.put(edition, failure);
+        downloads.put(edition, failure);
         return failure;
     }
 
@@ -242,14 +243,13 @@ public class FileManager {
      * Clean up all files we handled in this class.
      */
     public void purge() {
-        files.values()
-             .stream()
-             .filter(Objects::nonNull)
-             .map(ImageFileInfo::getFile)
-             .forEach(file -> file.ifPresent(FileUtils::delete));
+        downloads.values()
+                 .stream()
+                 .filter(Objects::nonNull)
+                 .map(ImageFileInfo::getFile)
+                 .forEach(file -> file.ifPresent(FileUtils::delete));
 
         // not strictly needed, but future-proof
-        files.clear();
+        downloads.clear();
     }
-
 }

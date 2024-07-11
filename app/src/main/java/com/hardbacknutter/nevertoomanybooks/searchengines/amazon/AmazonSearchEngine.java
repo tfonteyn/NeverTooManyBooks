@@ -51,6 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -100,7 +102,7 @@ import org.jsoup.nodes.Element;
 public class AmazonSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByBarcode,
-                   SearchEngine.CoverByIsbn {
+                   SearchEngine.CoverByEdition {
 
     /** Preferences - Type: {@code String}. */
     public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
@@ -311,24 +313,29 @@ public class AmazonSearchEngine
 
     @NonNull
     @Override
-    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
-                                              @NonNull final String validIsbn,
-                                              @IntRange(from = 0, to = 1) final int cIdx,
-                                              @Nullable final Size size)
+    public Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                                 @NonNull final AltEdition altEdition,
+                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
+        if (altEdition instanceof AltEditionIsbn) {
+            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+            final String isbn = edition.getIsbn();
 
-        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, validIsbn);
-        final Document document = loadDocument(context, url, null);
+            final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, isbn);
+            final Document document = loadDocument(context, url, null);
 
-        checkCaptcha(context, url, document);
+            checkCaptcha(context, url, document);
 
-        if (isCancelled()) {
-            return Optional.empty();
+            if (isCancelled()) {
+                return Optional.empty();
+            }
+
+            return parseCovers(context, document, isbn, 0)
+                    // let the system resolve any path variations
+                    .map(fileSpec -> new File(fileSpec).getAbsolutePath());
         }
-
-        return parseCovers(context, document, validIsbn, 0)
-                // let the system resolve any path variations
-                .map(fileSpec -> new File(fileSpec).getAbsolutePath());
+        return Optional.empty();
     }
 
     /**

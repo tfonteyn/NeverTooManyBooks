@@ -49,7 +49,7 @@ public class SearchEditionsTask
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
     /** the book to look up. */
-    private String isbn;
+    private String validIsbn;
 
     /**
      * Constructor.
@@ -70,7 +70,7 @@ public class SearchEditionsTask
             ISBN.requireValidIsbn(validIsbn);
         }
 
-        isbn = validIsbn;
+        this.validIsbn = validIsbn;
 
         execute();
     }
@@ -86,7 +86,7 @@ public class SearchEditionsTask
         // keep the order, but eliminate duplicates.
         final Collection<AltEdition> editions = new LinkedHashSet<>();
         // Always add the original isbn!
-        editions.add(new AltEditionIsbn(isbn));
+        editions.add(new AltEditionIsbn(validIsbn));
 
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             throw new NetworkUnavailableException(this.getClass().getName());
@@ -97,15 +97,14 @@ public class SearchEditionsTask
                 .stream()
                 .filter(Site::isActive)
                 .map(site -> site.getEngineId().createSearchEngine(context))
+                .map(se -> ((SearchEngine.AlternativeEditions<? extends AltEdition>) se))
                 .forEach(searchEngine -> {
                     searchEngine.setCaller(this);
-                    //noinspection CheckStyle
                     try {
                         // can we reach the site ?
                         searchEngine.ping(context);
-
-                        editions.addAll(((SearchEngine.AlternativeEditions<? extends AltEdition>)
-                                searchEngine).searchAlternativeEditions(context, isbn));
+                        // search for and add the editions
+                        editions.addAll(searchEngine.searchAlternativeEditions(context, validIsbn));
 
                     } catch (@NonNull final IOException
                                             | CredentialsException

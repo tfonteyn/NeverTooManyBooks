@@ -20,22 +20,15 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 
 /**
  * Edition data is returned by {@code https://openlibrary.org/works/OL5725956W/editions.json}
@@ -146,48 +139,34 @@ public class AltEditionOpenLibrary
         in.readLongArray(covers);
     }
 
-    @NonNull
-    @Override
-    public Optional<String> searchCover(@NonNull final Context context,
-                                        @NonNull final SearchEngine.CoverByIsbn searchEngine,
-                                        @IntRange(from = 0, to = 1) final int cIdx,
-                                        @Nullable final Size size)
-            throws StorageException {
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (!(searchEngine instanceof OpenLibrary2SearchEngine)) {
-                throw new IllegalArgumentException("Not an OpenLibrary2SearchEngine");
-            }
-        }
-
-        if (covers[cIdx] != 0) {
-            return ((OpenLibrary2SearchEngine) searchEngine)
-                    .searchCoverByKey(context, "id", String.valueOf(covers[cIdx]), cIdx, size);
-        }
-        return Optional.empty();
-    }
-
     @Override
     public boolean mayHaveCover() {
         return covers[0] != 0;
     }
 
-    @Override
+    @NonNull
+    public String getOLID() {
+        return olid;
+    }
+
     @Nullable
     public String getIsbn() {
         return isbn;
     }
 
-    @Override
     @Nullable
     public String getLangIso3() {
         return langIso3;
     }
 
-    @Override
     @Nullable
     public String getPublisher() {
         return publisher;
+    }
+
+    @NonNull
+    public long[] getCovers() {
+        return covers;
     }
 
     @Override

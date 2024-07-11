@@ -64,6 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -90,7 +92,7 @@ public class IsfdbSearchEngine
                    SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
-                   SearchEngine.CoverByIsbn,
+                   SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionIsfdb> {
 
     /** Preferences - Type: {@code boolean}. */
@@ -378,7 +380,8 @@ public class IsfdbSearchEngine
                                                            @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
 
-        // We strip the potential document (which can be large) as the caller does not use it.
+        // We strip the potential document (which can be large)
+        // as the caller does not use it for now
         final List<AltEditionIsfdb> list = fetchEditionsByIsbn(context, validIsbn);
         list.forEach(AltEditionIsfdb::clearDocument);
 
@@ -386,33 +389,37 @@ public class IsfdbSearchEngine
     }
 
     @NonNull
-    @Override
-    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
-                                              @NonNull final String validIsbn,
-                                              @IntRange(from = 0, to = 1) final int cIdx,
-                                              @Nullable final Size size)
-            throws StorageException, SearchException, CredentialsException {
-
-        final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, validIsbn);
-        if (editions.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return searchCoverByEdition(context, editions.get(0));
-    }
-
-    @NonNull
-    Optional<String> searchCoverByEdition(@NonNull final Context context,
-                                          @NonNull final AltEditionIsfdb edition)
+    public Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                                 @NonNull final AltEdition altEdition,
+                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @Nullable final Size size)
             throws SearchException, CredentialsException, StorageException {
-        final Document document = loadDocumentByEdition(context, edition);
-        if (isCancelled()) {
-            return Optional.empty();
+
+        if (altEdition instanceof AltEditionIsfdb) {
+            final AltEditionIsfdb edition = (AltEditionIsfdb) altEdition;
+            final long isfdbId = edition.getIsfdbId();
+
+            // The id should always be valid, but paranoia...
+            if (isfdbId > 0) {
+                final Document document = loadDocumentByEdition(context, edition);
+                if (!isCancelled()) {
+                    return parseCovers(context, document, String.valueOf(isfdbId), cIdx)
+                            // let the system resolve any path variations
+                            .map(fileSpec -> new File(fileSpec).getAbsolutePath());
+                }
+            }
+        } else if (altEdition instanceof AltEditionIsbn) {
+            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+            final String isbn = edition.getIsbn();
+
+            final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, isbn);
+            if (!editions.isEmpty() && !isCancelled()) {
+                // Grab the first edition found and search again by isfdb id
+                return searchCoverByEdition(context, editions.get(0), cIdx, size);
+            }
         }
 
-        return parseCovers(context, document, String.valueOf(edition.getIsfdbId()), 0)
-                // let the system resolve any path variations
-                .map(fileSpec -> new File(fileSpec).getAbsolutePath());
+        return Optional.empty();
     }
 
     /**
@@ -873,7 +880,7 @@ public class IsfdbSearchEngine
                                 // Cut those parts off.
                                 tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
                                 partialDateParser.parse(tmpString, false)
-                                        .ifPresent(book::setPublicationDate);
+                                                 .ifPresent(book::setPublicationDate);
                             }
                             break;
                         }
@@ -1558,6 +1565,7 @@ public class IsfdbSearchEngine
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
      * @param maxRecords  the maximum number of "Publication" records to fetch
+     *
      * @return list of books found
      *
      * @throws StorageException      on storage related failures

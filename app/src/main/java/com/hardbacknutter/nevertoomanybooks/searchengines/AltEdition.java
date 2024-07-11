@@ -20,65 +20,16 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.content.Context;
 import android.os.Parcelable;
-
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.util.Optional;
-
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
 
 public interface AltEdition
         extends Parcelable {
 
     /**
-     * Get a single cover image of the specified size.
-     *
-     * @param context      Current context
-     * @param searchEngine to use
-     * @param cIdx         0..n image index
-     * @param size         of image to get.
-     *
-     * @return fileSpec
-     *
-     * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     */
-    @NonNull
-    Optional<String> searchCover(@NonNull Context context,
-                                 @NonNull SearchEngine.CoverByIsbn searchEngine,
-                                 @IntRange(from = 0, to = 1) int cIdx,
-                                 @Nullable Size size)
-            throws SearchException, CredentialsException, StorageException;
-
-    @Nullable
-    default String getIsbn() {
-        return null;
-    }
-
-    @Nullable
-    default String getPublisher() {
-        return null;
-    }
-
-    @Nullable
-    default String getLangIso3() {
-        return null;
-    }
-
-    /**
      * This edition <strong>MAY</strong> have a cover.
-     * In other words, do NOT call {@link #searchCover} if this method returns {@code false}.
      *
      * @return {@code false} if we are certain this edition has no cover.
-     *         {@code true} if we need to call {@link #searchCover}
-     *         to find out whether there is a cover
+     *         {@code true} if a search should be done
      */
     default boolean mayHaveCover() {
         return true;

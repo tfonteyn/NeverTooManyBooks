@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -61,7 +63,7 @@ import org.jsoup.select.Elements;
 public class KbNlHtmlSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.CoverByIsbn {
+                   SearchEngine.CoverByEdition {
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -186,7 +188,8 @@ public class KbNlHtmlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            searchBestCoverByIsbn(context, validIsbn, 0).ifPresent(
+            final AltEdition edition = new AltEditionIsbn(validIsbn);
+            searchBestCoverByEdition(context, edition, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
         return book;
@@ -204,6 +207,7 @@ public class KbNlHtmlSearchEngine
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread
     @VisibleForTesting
@@ -238,6 +242,7 @@ public class KbNlHtmlSearchEngine
      * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
      *                              secondary sites.
@@ -509,30 +514,37 @@ public class KbNlHtmlSearchEngine
      */
     @NonNull
     @Override
-    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
-                                              @NonNull final String validIsbn,
-                                              @IntRange(from = 0, to = 1) final int cIdx,
-                                              @Nullable final Size size)
+    public Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                                 @NonNull final AltEdition altEdition,
+                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @Nullable final Size size)
             throws StorageException {
-        final String sizeParam;
-        if (size == null) {
-            sizeParam = "large";
-        } else {
-            switch (size) {
-                case Small:
-                    sizeParam = "small";
-                    break;
-                case Medium:
-                    sizeParam = "medium";
-                    break;
-                case Large:
-                default:
-                    sizeParam = "large";
-                    break;
-            }
-        }
 
-        final String url = String.format(BASE_URL_COVERS, validIsbn, sizeParam);
-        return saveImage(context, url, validIsbn, cIdx, size);
+        if (altEdition instanceof AltEditionIsbn) {
+            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+            final String isbn = edition.getIsbn();
+
+            final String sizeParam;
+            if (size == null) {
+                sizeParam = "large";
+            } else {
+                switch (size) {
+                    case Small:
+                        sizeParam = "small";
+                        break;
+                    case Medium:
+                        sizeParam = "medium";
+                        break;
+                    case Large:
+                    default:
+                        sizeParam = "large";
+                        break;
+                }
+            }
+
+            final String url = String.format(BASE_URL_COVERS, isbn, sizeParam);
+            return saveImage(context, url, isbn, cIdx, size);
+        }
+        return Optional.empty();
     }
 }

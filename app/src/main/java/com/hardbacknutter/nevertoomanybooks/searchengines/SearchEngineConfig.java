@@ -76,7 +76,7 @@ public final class SearchEngineConfig {
     private final Throttler throttler;
 
     private final boolean prefersIsbn10;
-    /** {@link SearchEngine.CoverByIsbn} only. */
+    /** {@link SearchEngine.CoverByEdition} only. */
     private final boolean supportsMultipleCoverSizes;
 
     /**
@@ -234,7 +234,7 @@ public final class SearchEngineConfig {
     }
 
     /**
-     * {@link SearchEngine.CoverByIsbn} only.
+     * {@link SearchEngine.CoverByEdition} only.
      * <p>
      * A site can support a single (default) or multiple sizes.
      *
@@ -392,7 +392,7 @@ public final class SearchEngineConfig {
         /** The DEFAULT for the engine. */
         private int throttlerTimeoutMs = THROTTLER_DEFAULT_MS;
 
-        /** {@link SearchEngine.CoverByIsbn} only. */
+        /** {@link SearchEngine.CoverByEdition} only. */
         private boolean supportsMultipleCoverSizes;
 
         /** The DEFAULT for the engine: {@code false}. */

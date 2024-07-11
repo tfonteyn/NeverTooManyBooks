@@ -26,7 +26,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -72,7 +73,7 @@ public class OpenLibrary2SearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
-                   SearchEngine.CoverByIsbn,
+                   SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
     private static final String BASE_BOOK_URL = "/search.json?q=%1$s" +
@@ -173,36 +174,46 @@ public class OpenLibrary2SearchEngine
      * @see #searchBestCoverByKey(Context, String, String, int)
      */
     @NonNull
-    @Override
-    @WorkerThread
-    public Optional<String> searchCoverByIsbn(@NonNull final Context context,
-                                              @NonNull final String validIsbn,
-                                              @IntRange(from = 0, to = 1) final int cIdx,
-                                              @Nullable final Size size)
+    public Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                                 @NonNull final AltEdition altEdition,
+                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @Nullable final Size size)
             throws StorageException {
-        if (cIdx == 1) {
-            // ENHANCE: we cannot return a back-cover here, as we need to native
-            //  OL cover-id ( != OLID book id) which we do not store locally.
-            //  We'd basically need to do a new book search (2 requests) here,
-            //  extract the cover-id(s) and run 2 more requests.
-            //  For now, users can get the back-cover when doing an "Internet update"
-            return Optional.empty();
+
+        if (altEdition instanceof AltEditionOpenLibrary) {
+            final AltEditionOpenLibrary edition = (AltEditionOpenLibrary) altEdition;
+            final long[] covers = edition.getCovers();
+
+            // The cover should always be valid, but paranoia...
+            if (covers[cIdx] > 0) {
+                return searchCoverByKey(context, "id", String.valueOf(covers[cIdx]), cIdx, size);
+            }
+        } else if (altEdition instanceof AltEditionIsbn) {
+            if (cIdx == 1) {
+                // ENHANCE: we cannot return a back-cover here, as we need to native
+                //  OL cover-id ( != OLID book id) which we do not store locally.
+                //  We'd basically need to do a new book search (2 requests) here,
+                //  extract the cover-id(s) and run 2 more requests.
+                //  For now, users can get the back-cover when doing an "Internet update"
+                return Optional.empty();
+            }
+
+            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+            final String isbn = edition.getIsbn();
+
+            // Frontcover as usual
+            return searchCoverByKey(context, "isbn", isbn, 0, size);
         }
 
-        //noinspection DataFlowIssue
-        getEngineId().getConfig().getThrottler().waitUntilRequestAllowed(
-                COVER_BY_ISBN_REQUEST_DELAY);
-
-        // Frontcover as usual
-        return searchCoverByKey(context, "isbn", validIsbn, 0, size);
+        return Optional.empty();
     }
 
     @NonNull
-    public Optional<String> searchCoverByKey(@NonNull final Context context,
-                                             @NonNull final String key,
-                                             @NonNull final String id,
-                                             @IntRange(from = 0, to = 1) final int cIdx,
-                                             @Nullable final Size size)
+    private Optional<String> searchCoverByKey(@NonNull final Context context,
+                                              @NonNull final String key,
+                                              @NonNull final String id,
+                                              @IntRange(from = 0, to = 1) final int cIdx,
+                                              @Nullable final Size size)
             throws StorageException {
         final String sizeParam;
         if (size == null) {
@@ -226,6 +237,12 @@ public class OpenLibrary2SearchEngine
 
         // see {@link FutureHttpGetBase#setEnable404Redirect(boolean)}
         imageDownloader404redirect = true;
+
+        if ("isbn".equals(key)) {
+            //noinspection DataFlowIssue
+            getEngineId().getConfig().getThrottler().waitUntilRequestAllowed(
+                    COVER_BY_ISBN_REQUEST_DELAY);
+        }
         return saveImage(context, url, id, cIdx, size);
     }
 
