@@ -289,9 +289,9 @@ public class AmazonSearchEngine
         // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
         final ISBN tmp = new ISBN(validIsbn, true);
         final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
+        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, asin);
 
-        return genericSearch(context, getHostUrl(context) + String.format(BY_EXTERNAL_ID, asin),
-                             fetchCovers);
+        return genericSearch(context, url, fetchCovers);
     }
 
     @NonNull
@@ -302,9 +302,8 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
-            return genericSearch(context,
-                                 getHostUrl(context) + String.format(BY_EXTERNAL_ID, barcode),
-                                 fetchCovers);
+            final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, barcode);
+            return genericSearch(context, url, fetchCovers);
         } else {
             // not supported
             return new Book();
@@ -331,7 +330,7 @@ public class AmazonSearchEngine
                 return Optional.empty();
             }
 
-            return parseCovers(context, document, isbn, 0)
+            return parseCover(context, document, isbn, 0)
                     // let the system resolve any path variations
                     .map(fileSpec -> new File(fileSpec).getAbsolutePath());
         }
@@ -397,7 +396,7 @@ public class AmazonSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            parseCovers(context, document, isbn, 0).ifPresent(
+            parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
 
         }
@@ -624,11 +623,12 @@ public class AmazonSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     * Parses the given {@link Document} for the cover and fetches it when present.
      *
      * @param context  Current context
      * @param document to parse
-     * @param isbn     (optional) ISBN of the book, will be used for the cover filename
+     * @param bookId   (optional) isbn or native id of the book,
+     *                 will only be used for the temporary cover filename
      * @param cIdx     0..n image index
      *
      * @return fileSpec
@@ -636,31 +636,30 @@ public class AmazonSearchEngine
      * @throws StorageException on storage related failures
      */
     @WorkerThread
-    @VisibleForTesting
     @NonNull
-    private Optional<String> parseCovers(@NonNull final Context context,
-                                         @NonNull final Document document,
-                                         @Nullable final String isbn,
-                                         @SuppressWarnings("SameParameterValue")
-                                         @IntRange(from = 0, to = 1) final int cIdx)
+    private Optional<String> parseCover(@NonNull final Context context,
+                                        @NonNull final Document document,
+                                        @Nullable final String bookId,
+                                        @SuppressWarnings("SameParameterValue")
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        final Element coverElement = document.selectFirst("img#imgBlkFront");
-        if (coverElement == null) {
+        final Element img = document.selectFirst("img#imgBlkFront");
+        if (img == null) {
             return Optional.empty();
         }
 
         String url;
         try {
             // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
-            final String tmp = coverElement.attr("data-a-dynamic-image");
+            final String tmp = img.attr("data-a-dynamic-image");
             final JSONObject json = new JSONObject(tmp);
             // just grab the first key
             url = json.keys().next();
 
         } catch (@NonNull final JSONException e) {
             // the src attribute contains a low quality picture in base64 format.
-            String srcUrl = coverElement.attr("src");
+            String srcUrl = img.attr("src");
             // annoying... the url seems to start with a \n. Cut it off.
             if (srcUrl.startsWith("\n")) {
                 srcUrl = srcUrl.substring(1);
@@ -668,7 +667,7 @@ public class AmazonSearchEngine
             url = srcUrl;
         }
 
-        return saveImage(context, url, isbn, cIdx, null);
+        return saveImage(context, url, bookId, cIdx, null);
     }
 
     @NonNull
