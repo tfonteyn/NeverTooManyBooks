@@ -42,7 +42,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
@@ -90,7 +89,6 @@ public class SearchAdminFragment
                     }
                 }
             };
-    private TabLayout tabPanel;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -123,13 +121,12 @@ public class SearchAdminFragment
                                      Lifecycle.State.RESUMED);
 
         tabAdapter = new TabAdapter(getActivity(), vm.getTypes());
-        tabPanel = view.findViewById(R.id.tab_panel);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
         vb.pager.setAdapter(tabAdapter);
-        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
+        new TabLayoutMediator(vb.tabPanel, vb.pager, (tab, position) -> {
             if (WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {
@@ -147,9 +144,9 @@ public class SearchAdminFragment
         super.onResume();
 
         if (vm.getTypes().size() == 1) {
-            tabPanel.setVisibility(View.GONE);
+            vb.tabPanel.setVisibility(View.GONE);
         } else {
-            tabPanel.setVisibility(View.VISIBLE);
+            vb.tabPanel.setVisibility(View.VISIBLE);
         }
     }
 
@@ -219,7 +216,7 @@ public class SearchAdminFragment
                 final SiteConfigPreferenceFragment fragment =
                         new SiteConfigPreferenceFragment();
 
-                tabPanel.setVisibility(View.GONE);
+                vb.tabPanel.setVisibility(View.GONE);
 
                 getParentFragmentManager()
                         .beginTransaction()
