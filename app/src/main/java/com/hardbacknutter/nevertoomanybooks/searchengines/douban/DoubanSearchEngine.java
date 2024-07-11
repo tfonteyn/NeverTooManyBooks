@@ -175,7 +175,7 @@ public class DoubanSearchEngine
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
-        final Optional<String> oUrl = parseMultiResultForBookUrl(context, document);
+        final Optional<String> oUrl = extractBookUrl(context, document);
         if (oUrl.isPresent()) {
             final Document d = loadDocument(context, oUrl.get(), null);
             if (!isCancelled()) {
@@ -190,7 +190,7 @@ public class DoubanSearchEngine
 
     /**
      * Parse the given Document for the embedded javascript element containing
-     * the list of books found.
+     * the list of books found and extract the best suited book (url).
      *
      * @param context  Current context
      * @param document to parse
@@ -199,8 +199,8 @@ public class DoubanSearchEngine
      */
     @VisibleForTesting
     @NonNull
-    public Optional<String> parseMultiResultForBookUrl(@NonNull final Context context,
-                                                       @NonNull final Document document) {
+    public Optional<String> extractBookUrl(@NonNull final Context context,
+                                           @NonNull final Document document) {
         final Optional<JSONArray> oItems = extractItemList(document);
         if (oItems.isPresent()) {
             final JSONArray items = oItems.get();
@@ -352,14 +352,14 @@ public class DoubanSearchEngine
         final JSONArray result = new JSONArray();
         for (int i = 0; i < items.length(); i++) {
             final JSONObject item = items.getJSONObject(i);
-            if (isProbableValid(item)) {
+            if (isProbablyValid(item)) {
                 result.put(item);
             }
         }
         return result;
     }
 
-    private boolean isProbableValid(@Nullable final JSONObject item) {
+    private boolean isProbablyValid(@Nullable final JSONObject item) {
         if (item == null) {
             return false;
         }
@@ -536,7 +536,7 @@ public class DoubanSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            parseCovers(context, document, isbn, 0).ifPresent(
+            parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -628,24 +628,24 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     * Parses the given {@link Document} for the cover and fetches it when present.
      *
-     * @param context  Current context
-     * @param document to parse
-     * @param bookId   (optional) isbn or native id of the book,
-     *                 will only be used for the temporary cover filename
-     * @param cIdx     0..n image index
+     * @param context Current context
+     * @param document    to parse
+     * @param bookId  (optional) isbn or native id of the book,
+     *                will only be used for the temporary cover filename
+     * @param cIdx    0..n image index
      *
      * @return fileSpec
      *
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private Optional<String> parseCovers(@NonNull final Context context,
-                                         @NonNull final Document document,
-                                         @Nullable final String bookId,
-                                         @SuppressWarnings("SameParameterValue")
-                                         @IntRange(from = 0, to = 1) final int cIdx)
+    private Optional<String> parseCover(@NonNull final Context context,
+                                        @NonNull final Document document,
+                                        @Nullable final String bookId,
+                                        @SuppressWarnings("SameParameterValue")
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
         // "div#mainpic > a" element will have as the href a large version of the image.
         // "div#mainpic > a > img" will have "src" point to a thumbnail
@@ -653,13 +653,14 @@ public class DoubanSearchEngine
         // (without modifying our default timeout)
         // Choosing to get the thumbnail here:
         final Element img = document.selectFirst("div#mainpic > a > img");
-        if (img != null) {
-            final String src = img.attr("src");
-            if (!src.isEmpty()) {
-                return saveImage(context, src, bookId, 0, null);
-            }
+        if (img == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        final String src = img.attr("src");
+        if (src.isEmpty()) {
+            return Optional.empty();
+        }
+        return saveImage(context, src, bookId, cIdx, null);
     }
 
     @NonNull
@@ -709,7 +710,7 @@ public class DoubanSearchEngine
             if (bookUrl != null && !bookUrl.isEmpty()) {
                 final Document document = loadDocument(context, bookUrl, null);
                 if (!isCancelled()) {
-                    return parseCovers(context, document, String.valueOf(edition.getId()), cIdx)
+                    return parseCover(context, document, String.valueOf(edition.getId()), cIdx)
                             // let the system resolve any path variations
                             .map(fileSpec -> new File(fileSpec).getAbsolutePath());
                 }
@@ -721,7 +722,7 @@ public class DoubanSearchEngine
             final String url = getHostUrl(context) + String.format(SEARCH_URL, isbn);
             final Document document = loadDocument(context, url, null);
             if (!isCancelled()) {
-                return parseCovers(context, document, isbn, cIdx)
+                return parseCover(context, document, isbn, cIdx)
                         // let the system resolve any path variations
                         .map(fileSpec -> new File(fileSpec).getAbsolutePath());
             }
