@@ -243,7 +243,7 @@ public class DoubanSearchEngine
      *                 "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',subject_id:'25930607',query:'9787532190294',i:'0',cat_id:'1001'})\"",
      *                 "rating": {
      *                     "count": 0,
-     *                     "rating_info": "\u76ee\u524d\u65e0\u4eba\u8bc4\u4ef7",
+     *                     "rating_info": "目前无人评价",
      *                     "star_count": 0,
      *                     "value": 0
      *                 },
@@ -253,7 +253,7 @@ public class DoubanSearchEngine
      *                 "url": "https://book.douban.com/subject/25930607/"
      *             },
      *             {
-     *                 "abstract": "[\u82f1] \u83f2\u5229\u666e\u00b7\u9ad8\u592b / \u5085\u661f\u6e90 / \u4e0a\u6d77\u6587\u827a\u51fa\u7248\u793e / 2024-6 / 58",
+     *                 "abstract": "[英] 菲利普·高夫 / 傅星源 / 上海文艺出版社 / 2024-6 / 58",
      *                 "abstract_2": "",
      *                 "cover_url": "https://img1.doubanio.com/view/subject/m/public/s34875559.jpg",
      *                 "extra_actions": [],
@@ -264,11 +264,11 @@ public class DoubanSearchEngine
      *                 "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',subject_id:'36897178',query:'9787532190294',i:'1',cat_id:'1001'})\"",
      *                 "rating": {
      *                     "count": 0,
-     *                     "rating_info": "\u8bc4\u4ef7\u4eba\u6570\u4e0d\u8db3",
+     *                     "rating_info": "评价人数不足",
      *                     "star_count": 0,
      *                     "value": 0
      *                 },
-     *                 "title": "\u4f3d\u5229\u7565\u7684\u9519\u8bef : \u4e3a\u4e00\u79cd\u65b0\u7684\u610f\u8bc6\u79d1\u5b66\u5960\u57fa",
+     *                 "title": "伽利略的错误 : 为一种新的意识科学奠基",
      *                 "topics": [],
      *                 "tpl_name": "search_subject",
      *                 "url": "https://book.douban.com/subject/36897178/"
@@ -276,7 +276,7 @@ public class DoubanSearchEngine
      *         ],
      *         "report": {
      *             "qtype": "195",
-     *             "tags": "\u8bfb\u4e66"
+     *             "tags": "读书"
      *         },
      *         "start": 0,
      *         "text": "9787532190294",
