@@ -36,6 +36,7 @@ import java.net.HttpCookie;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -445,8 +446,20 @@ public class BedethequeSearchEngine
                 return;
             }
 
-            if (fetchCovers[0] || fetchCovers[1]) {
-                parseCovers(context, document, fetchCovers, book);
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
+
+            if (fetchCovers[0]) {
+                parseCover(context, document, isbn, 0).ifPresent(
+                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+            }
+
+            if (isCancelled()) {
+                return;
+            }
+
+            if (fetchCovers.length > 1 && fetchCovers[1]) {
+                parseCover(context, document, isbn, 1).ifPresent(
+                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 1, fileSpec));
             }
         }
     }
@@ -568,36 +581,39 @@ public class BedethequeSearchEngine
         return new Series(seriesName);
     }
 
-    private void parseCovers(@NonNull final Context context,
-                             @NonNull final Document document,
-                             @NonNull final boolean[] fetchCovers,
-                             @NonNull final Book book)
+    /**
+     * Parses the given {@link Document} for the cover and fetches it when present.
+     *
+     * @param context  Current context
+     * @param document to parse
+     * @param bookId   (optional) isbn or native id of the book,
+     *                 will only be used for the temporary cover filename
+     * @param cIdx     0..n image index
+     *
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
+     */
+    @WorkerThread
+    @NonNull
+    private Optional<String> parseCover(@NonNull final Context context,
+                                        @NonNull final Document document,
+                                        @Nullable final String bookId,
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        if (fetchCovers[0]) {
-            final Element a = document.selectFirst(
-                    "div.bandeau-principal > div.bandeau-image > a");
-            parseCover(context, a, 0, book);
-        }
-
-        if (fetchCovers[1]) {
+        Element a = null;
+        if (cIdx == 0) {
+            a = document.selectFirst("div.bandeau-principal > div.bandeau-image > a");
+        } else if (cIdx == 1) {
             // bandeau-vignette contains a list, each "li" contains an "a"
-            final Element a = document.select("div.bandeau-vignette a").last();
-            parseCover(context, a, 1, book);
+            a = document.select("div.bandeau-vignette a").last();
         }
-    }
-
-    private void parseCover(@NonNull final Context context,
-                            @Nullable final Element a,
-                            @IntRange(from = 0, to = 1) final int cIdx,
-                            @NonNull final Book book)
-            throws StorageException {
-        if (a != null) {
-            final String url = a.attr("href");
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
-            saveImage(context, url, isbn, cIdx, null).ifPresent(
-                    fileSpec -> CoverFileSpecArray.setFileSpec(book, cIdx, fileSpec));
+        if (a == null) {
+            return Optional.empty();
         }
+        final String url = a.attr("href");
+        return saveImage(context, url, bookId, cIdx, null);
     }
 
     /**
