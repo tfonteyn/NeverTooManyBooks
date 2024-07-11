@@ -403,7 +403,7 @@ public class IsfdbSearchEngine
             if (isfdbId > 0) {
                 final Document document = loadDocumentByEdition(context, edition);
                 if (!isCancelled()) {
-                    return parseCovers(context, document, String.valueOf(isfdbId), cIdx)
+                    return parseCover(context, document, String.valueOf(isfdbId), cIdx)
                             // let the system resolve any path variations
                             .map(fileSpec -> new File(fileSpec).getAbsolutePath());
                 }
@@ -1073,13 +1073,13 @@ public class IsfdbSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            parseCovers(context, document, isbn, 0).ifPresent(
+            parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
     /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     * Parses the given {@link Document} for the cover and fetches it when present.
      *
      * @param context  Current context
      * @param document to parse
@@ -1094,10 +1094,10 @@ public class IsfdbSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private Optional<String> parseCovers(@NonNull final Context context,
-                                         @NonNull final Document document,
-                                         @Nullable final String bookId,
-                                         @SuppressWarnings("SameParameterValue")
+    private Optional<String> parseCover(@NonNull final Context context,
+                                        @NonNull final Document document,
+                                        @Nullable final String bookId,
+                                        @SuppressWarnings("SameParameterValue")
                                          @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
         /* First "ContentBox" contains all basic details.
@@ -1128,14 +1128,15 @@ public class IsfdbSearchEngine
          */
 
         final Element contentBox = document.selectFirst(CSS_Q_DIV_CONTENTBOX);
-        if (contentBox != null) {
-            final Element img = contentBox.selectFirst("img");
-            if (img != null) {
-                final String url = img.attr("src");
-                return saveImage(context, url, bookId, cIdx, null);
-            }
+        if (contentBox == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        final Element img = contentBox.selectFirst("img");
+        if (img == null) {
+            return Optional.empty();
+        }
+        final String url = img.attr("src");
+        return saveImage(context, url, bookId, cIdx, null);
     }
 
     /**
