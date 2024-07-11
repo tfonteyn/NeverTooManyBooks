@@ -565,6 +565,8 @@ public class BooksOnBookshelf
     private void initToolbar() {
         setNavIcon();
 
+        applyInsetsToPadding(vb.toolbar, false, true, false, false);
+
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {
                 // Show or hide the synchronization menu.
@@ -601,6 +603,8 @@ public class BooksOnBookshelf
     }
 
     private void createFabMenu() {
+        applyInsetsToMargin(vb.fab, false, false, true, true);
+
         fabMenu = new FabMenu(vb.fab, vb.fabOverlay,
                               vb.fab0ScanBarcode,
                               vb.fab0ScanBarcodeBatch,
