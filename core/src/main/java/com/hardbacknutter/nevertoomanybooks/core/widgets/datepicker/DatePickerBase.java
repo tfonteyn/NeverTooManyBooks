@@ -119,7 +119,7 @@ abstract class DatePickerBase<S>
      * @return 'selection' value, otherwise {@code null}
      */
     @Nullable
-    Long parseDate(@Nullable final String value,
+    Long parseDate(@Nullable final CharSequence value,
                    final boolean todayIfNone) {
         Objects.requireNonNull(dateParser, "dateParser was NULL, call setDateParser() first");
         final Optional<LocalDateTime> date = dateParser.parse(value);
@@ -144,8 +144,8 @@ abstract class DatePickerBase<S>
      * @return Pair with 'selection' values, both of which can be {@code null}
      */
     @NonNull
-    Pair<Long, Long> parseRange(@Nullable final String startDate,
-                                @Nullable final String endDate,
+    Pair<Long, Long> parseRange(@Nullable final CharSequence startDate,
+                                @Nullable final CharSequence endDate,
                                 final boolean todayIfNone) {
         final Long startSelection = parseDate(startDate, todayIfNone);
         final Long endSelection = parseDate(endDate, todayIfNone);

@@ -176,7 +176,7 @@ public final class WrappedMaterialDatePicker<S>
          * @return 'selection' value, otherwise {@code null}
          */
         @Nullable
-        private Long parseToInstant(@Nullable final String value,
+        private Long parseToInstant(@Nullable final CharSequence value,
                                     final boolean todayIfNone) {
             final Optional<LocalDateTime> date = dateParser.parse(value);
             if (date.isPresent()) {
@@ -200,7 +200,7 @@ public final class WrappedMaterialDatePicker<S>
          */
         public void launch(@StringRes final int titleResId,
                            @IdRes final int fieldId,
-                           @Nullable final String value,
+                           @Nullable final CharSequence value,
                            final boolean todayIfNone) {
 
             final Long selection = parseToInstant(value, todayIfNone);
@@ -252,9 +252,9 @@ public final class WrappedMaterialDatePicker<S>
          */
         public void launch(@StringRes final int titleResId,
                            @IdRes final int startFieldId,
-                           @Nullable final String timeStart,
+                           @Nullable final CharSequence timeStart,
                            @IdRes final int endFieldId,
-                           @Nullable final String timeEnd,
+                           @Nullable final CharSequence timeEnd,
                            final boolean todayIfNone) {
 
             Long startSelection = parseToInstant(timeStart, todayIfNone);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,8 +60,8 @@ public class DateRangePicker
      * @param endDate   current end-selection (a parsable date string), or {@code null} for none
      * @param listener  which will receive the result
      */
-    public void launch(@Nullable final String startDate,
-                       @Nullable final String endDate,
+    public void launch(@Nullable final CharSequence startDate,
+                       @Nullable final CharSequence endDate,
                        @NonNull final DatePickerListener listener) {
 
         this.listener = new WeakReference<>(listener);

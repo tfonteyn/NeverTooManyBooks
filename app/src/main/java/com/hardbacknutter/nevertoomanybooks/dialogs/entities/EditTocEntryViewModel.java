@@ -118,7 +118,7 @@ public class EditTocEntryViewModel
         currentEdit.setTitle(title);
     }
 
-    public void setFirstPublicationDate(@NonNull final String dateStr) {
+    public void setFirstPublicationDate(@NonNull final CharSequence dateStr) {
         currentEdit.setFirstPublicationDate(partialDateParser.parse(dateStr, false)
                                                              .orElse(PartialDate.NOT_SET));
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public class SingleDatePicker
      * @param value    current selection (a parsable date string), or {@code null} for none
      * @param listener to receive the results
      */
-    public void launch(@Nullable final String value,
+    public void launch(@Nullable final CharSequence value,
                        @NonNull final DatePickerListener listener) {
         launch(parseDate(value, todayIfNone), listener);
     }
