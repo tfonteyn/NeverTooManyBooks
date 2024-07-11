@@ -586,25 +586,35 @@ public class BolSearchEngine
         }
     }
 
+    /**
+     * @param context     Current context
+     * @param currentItem
+     * @param bookId      (optional) isbn or native id of the book,
+     *                    will only be used for the temporary cover filename
+     * @param fetchCovers
+     * @param book
+     *
+     * @throws StorageException on storage related failures
+     */
     private void parseCovers(@NonNull final Context context,
                              @NonNull final JSONObject currentItem,
-                             @NonNull final String isbn,
+                             @NonNull final String bookId,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
         // The site uses several possible keys, loop until found or exhausted
         for (final String key : FRONT_COVER_KEYS) {
-            final String coverImageUrl = currentItem.optString(key);
-            if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
-                final Optional<String> fileSpec = saveImage(context, coverImageUrl, isbn, 0, null);
-                if (fileSpec.isPresent()) {
-                    CoverFileSpecArray.setFileSpec(book, 0, fileSpec.get());
+            final String coverUrl = currentItem.optString(key);
+            if (coverUrl != null && !coverUrl.isEmpty()) {
+                final Optional<String> oFileSpec = saveImage(context, coverUrl, bookId, 0, null);
+                if (oFileSpec.isPresent()) {
+                    CoverFileSpecArray.setFileSpec(book, 0, oFileSpec.get());
                     // only attempt to get the back-cover if we got a front-cover
                     // and (obv.) we want one.
                     if (fetchCovers.length > 1 && fetchCovers[1]) {
                         final String url = currentItem.optString("backImageUrl");
                         if (url != null && !url.isEmpty()) {
-                            saveImage(context, url, isbn, 1, null).ifPresent(
+                            saveImage(context, url, bookId, 1, null).ifPresent(
                                     fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
                         }
                     }
