@@ -480,18 +480,21 @@ public enum EngineId
                               @NonNull final Site.Type type,
                               @NonNull final Languages languages) {
 
-        // Certain sites should only be enabled by default if the device or user set language
-        // matches the site language.
-        final boolean activateIfChinese = languages.isUserLanguage(context, "zho");
-        final boolean activateIfDutch = languages.isUserLanguage(context, "nld");
-        final boolean activateIfFrench = languages.isUserLanguage(context, "fra");
-        final boolean activateIfGerman = languages.isUserLanguage(context, "deu");
+        // Site activation is partially done depending on the device or user set language
+        // matching the site language.
+        final boolean isChinese = languages.isUserLanguage(context, "zho");
+        final boolean isDutch = languages.isUserLanguage(context, "nld");
+        final boolean isFrench = languages.isUserLanguage(context, "fra");
+        final boolean isGerman = languages.isUserLanguage(context, "deu");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 
         // The order added here is the default order they will be used, but the user
         // can reorder the lists in preferences.
 
+        // We're assuming chinese users will predominantly want to use Douban.
+        // Of course, the user can manually enable them whenever they want.
+        // TODO: optimize the lists depending on language
         switch (type) {
             case Data: {
                 // Only add sites here that implement one or more of
@@ -500,44 +503,75 @@ public enum EngineId
                 // {@link SearchEngine.ByBarcode}
                 // {@link SearchEngine.ByText}
 
+                if (isChinese) {
+                    type.addSite(Douban, true);
+                }
                 type.addSite(Amazon, true);
                 type.addSite(GoogleBooks, true);
                 type.addSite(Isfdb, true);
                 type.addSite(BookFinder, true);
                 type.addSite(OpenLibrary, true);
 
-                type.addSite(StripInfoBe, activateIfDutch);
-                type.addSite(LastDodoNl, activateIfDutch);
-                type.addSite(StripWebBe, activateIfDutch);
-                type.addSite(Bedetheque, activateIfFrench);
+                type.addSite(StripInfoBe, isDutch);
+                type.addSite(LastDodoNl, isDutch);
+                type.addSite(StripWebBe, isDutch);
+                type.addSite(Bedetheque, isFrench);
 
-                type.addSite(KbNl, activateIfDutch);
-                type.addSite(Bol, activateIfDutch);
+                type.addSite(KbNl, isDutch);
+                type.addSite(Bol, isDutch || isFrench);
 
-                type.addSite(Dnb, activateIfGerman);
-                type.addSite(Douban, activateIfChinese);
+                type.addSite(Dnb, isGerman);
+
+                if (!isChinese) {
+                    type.addSite(Douban, false);
+                }
                 break;
             }
             case Covers: {
-                // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
+                // Only add sites here that implement {@link SearchEngine.CoverByEdition}.
+
+                // Try to optimize by putting the most-likely-wanted at the top
+                if (isChinese) {
+                    type.addSite(Douban, true);
+                }
+                if (isDutch) {
+                    type.addSite(KbNl, true);
+                }
+
+                // All sites unless added above
                 type.addSite(Amazon, true);
                 type.addSite(Isfdb, true);
                 type.addSite(OpenLibrary, true);
-                type.addSite(KbNl, activateIfDutch);
+                if (!isDutch) {
+                    type.addSite(KbNl, false);
+                }
+                if (!isChinese) {
+                    type.addSite(Douban, false);
+                }
                 break;
             }
             case AltEditions: {
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
+
+                // Try to optimize by putting the most-likely-wanted at the top
+                if (isChinese) {
+                    type.addSite(Douban, true);
+                }
+
+                // All sites unless added above
                 type.addSite(OpenLibrary, true);
                 type.addSite(Isfdb, true);
+                if (!isChinese) {
+                    type.addSite(Douban, false);
+                }
                 break;
             }
 
             case ViewOnSite: {
                 // The order is irrelevant; just add all compliant ones
                 for (final EngineId engineId : values()) {
-                    if (engineId.isEnabled() && SearchEngine.ViewBookByExternalId.class
-                            .isAssignableFrom(engineId.clazz)) {
+                    if (engineId.isEnabled()
+                        && engineId.supports(SearchEngine.ViewBookByExternalId.class)) {
                         type.addSite(engineId, true);
                     }
                 }
@@ -728,6 +762,10 @@ public enum EngineId
         return by.getSearchEngineClass().isAssignableFrom(clazz);
     }
 
+    public boolean supports(@NonNull final Class<? extends SearchEngine> by) {
+        return by.isAssignableFrom(clazz);
+    }
+
     /**
      * Create a SearchEngine instance based on the registered configuration for the given id.
      *
@@ -873,8 +911,8 @@ public enum EngineId
     @NonNull
     public String toString() {
         return "EngineId{"
-               + "key='" + key + '\''
-               + ", defaultUrl='" + defaultUrl + '\''
+               + "key=`" + key + '`'
+               + ", defaultUrl=`" + defaultUrl + '`'
                + ", locale=" + defaultLocale
                + ", clazz=" + clazz.getName()
                + ", enabled=" + enabled
