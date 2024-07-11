@@ -22,8 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -32,7 +34,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -133,8 +134,6 @@ public class BookFinderSearchEngine
         final String title = titleElement.text();
         book.putString(DBKey.TITLE, title);
 
-        final RealNumberParser realNumberParser = getRealNumberParser(context, getLocale(context));
-
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");
         if (authorElement != null) {
@@ -200,36 +199,39 @@ public class BookFinderSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCovers(context, document, book).ifPresent(
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
     /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     * Parses the given {@link Document} for the cover and fetches it when present.
      *
      * @param context  Current context
      * @param document to parse
-     * @param book     to update
+     * @param bookId   (optional) isbn or native id of the book,
+     *                 will only be used for the temporary cover filename
+     * @param cIdx     0..n image index
      *
      * @return fileSpec
      *
      * @throws StorageException on storage related failures
      */
     @WorkerThread
-    @VisibleForTesting
     @NonNull
-    private Optional<String> parseCovers(@NonNull final Context context,
-                                         @NonNull final Document document,
-                                         @NonNull final Book book)
+    private Optional<String> parseCover(@NonNull final Context context,
+                                        @NonNull final Document document,
+                                        @Nullable final String bookId,
+                                        @SuppressWarnings("SameParameterValue")
+                                        @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
         final Element img = document.selectFirst("div#header-img > img");
-        if (img != null) {
-            final String url = img.attr("src");
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
-            return saveImage(context, url, isbn, 0, null);
+        if (img == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        final String url = img.attr("src");
+        return saveImage(context, url, bookId, cIdx, null);
     }
 }
