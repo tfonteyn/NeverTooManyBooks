@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,10 +99,10 @@ public class BdtAuthor {
     public String toString() {
         return "BdtAuthor{"
                + "id=" + id
-               + ", name='" + name + '\''
-               + ", url='" + url + '\''
+               + ", name=`" + name + '`'
+               + ", url=`" + url + '`'
                + ", resolved=" + resolved
-               + ", resolvedName='" + resolvedName + '\''
+               + ", resolvedName=`" + resolvedName + '`'
                + '}';
     }
 }
