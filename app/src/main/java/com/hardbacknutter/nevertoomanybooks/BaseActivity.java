@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,6 +73,9 @@ public abstract class BaseActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState,
                          @Nullable final PersistableBundle persistentState) {
+        // https://developer.android.com/develop/ui/views/layout/edge-to-edge#enable-edge-to-edge-display
+        // No idea why, but this does not seem to have any effect ?
+        // FIXME: ede2edge on Android pre-15
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState, persistentState);
     }
@@ -83,14 +87,14 @@ public abstract class BaseActivity
     }
 
     @Override
-    public void setContentView(final int layoutResID) {
+    public void setContentView(@LayoutRes final int layoutResID) {
         super.setContentView(layoutResID);
         handleEdge2Edge();
     }
 
     @Override
-    public void setContentView(final View view,
-                               final ViewGroup.LayoutParams params) {
+    public void setContentView(@NonNull final View view,
+                               @Nullable final ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
         handleEdge2Edge();
     }
@@ -114,11 +118,12 @@ public abstract class BaseActivity
         }
     }
 
-    public void applyInsetsToPadding(@NonNull final View view,
-                                     final boolean left,
-                                     final boolean top,
-                                     final boolean right,
-                                     final boolean bottom) {
+    @SuppressWarnings("SameParameterValue")
+    void applyInsetsToPadding(@NonNull final View view,
+                              final boolean left,
+                              final boolean top,
+                              final boolean right,
+                              final boolean bottom) {
 
         final Insets initialInsets = Insets.of(view.getPaddingLeft(), view.getPaddingTop(),
                                                view.getPaddingRight(), view.getPaddingBottom());
@@ -136,11 +141,12 @@ public abstract class BaseActivity
         });
     }
 
-    public void applyInsetsToMargin(@NonNull final View view,
-                                    final boolean left,
-                                    final boolean top,
-                                    final boolean right,
-                                    final boolean bottom) {
+    @SuppressWarnings("SameParameterValue")
+    void applyInsetsToMargin(@NonNull final View view,
+                             final boolean left,
+                             final boolean top,
+                             final boolean right,
+                             final boolean bottom) {
 
         final ViewGroup.MarginLayoutParams ilp =
                 (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -182,7 +188,7 @@ public abstract class BaseActivity
         }
     }
 
-    protected boolean isRecreating() {
+    boolean isRecreating() {
         return recreateVm.isRecreating();
     }
 }
