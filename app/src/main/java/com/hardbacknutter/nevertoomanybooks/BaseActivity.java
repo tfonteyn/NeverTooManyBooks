@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -71,13 +70,14 @@ public abstract class BaseActivity
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState,
-                         @Nullable final PersistableBundle persistentState) {
-        // https://developer.android.com/develop/ui/views/layout/edge-to-edge#enable-edge-to-edge-display
-        // No idea why, but this does not seem to have any effect ?
-        // FIXME: ede2edge on Android pre-15
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+        // ede2edge on Android pre-15
         EdgeToEdge.enable(this);
-        super.onCreate(savedInstanceState, persistentState);
+
+        recreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
+        recreateVm.onCreate();
+
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -168,15 +168,6 @@ public abstract class BaseActivity
 
             return WindowInsetsCompat.CONSUMED;
         });
-    }
-
-
-    @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        recreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
-        recreateVm.onCreate();
-
-        super.onCreate(savedInstanceState);
     }
 
     @Override
