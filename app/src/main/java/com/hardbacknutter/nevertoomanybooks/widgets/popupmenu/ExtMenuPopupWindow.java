@@ -237,19 +237,21 @@ public class ExtMenuPopupWindow {
                      @NonNull final MenuMode menuMode) {
         switch (menuMode) {
             case Start:
+                // 2024-07-12: 'Start' is not in use; this may be used in the future
                 popupWindow.showAtLocation(view, Gravity.START, xOffset, 0);
                 break;
             case End:
+                // 2024-07-12: 'End' is not in use; this may be used in the future
                 popupWindow.showAtLocation(view, Gravity.END, xOffset, 0);
                 break;
             case Center:
                 popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
                 break;
             case Anchored: {
-//                final int[] wh = calculatePopupWindowWidthAndHeight();
-//                popupWindow.setWidth(wh[0]);
-//                popupWindow.setHeight(wh[1]);
-                popupWindow.showAsDropDown(view, xOffset, 0);
+                final int[] wh = calculatePopupWindowWidthAndHeight();
+                popupWindow.setWidth(wh[0]);
+                popupWindow.setHeight(wh[1]);
+                popupWindow.showAsDropDown(view, 0, 0);
                 break;
             }
             default:
