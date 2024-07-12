@@ -280,6 +280,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:${androidxConstraintlayoutVersion}")
     implementation("androidx.coordinatorlayout:coordinatorlayout:${androidxCoordinatorlayoutVersion}")
     implementation("androidx.core:core-ktx:${androidxCoreVersion}")
+    implementation("androidx.core:core-splashscreen:${androidxCoreSplashscreenVersion}")
     implementation("androidx.customview:customview:${androidxCustomviewVersion}")
     implementation("androidx.documentfile:documentfile:${androidxDocumentfileVersion}")
     implementation("androidx.drawerlayout:drawerlayout:${androidxDrawerlayoutVersion}")

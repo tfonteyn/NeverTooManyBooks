@@ -58,6 +58,7 @@ ext {
     androidxConstraintlayoutVersion = "2.1.4"
     androidxCoordinatorlayoutVersion = "1.2.0"
     androidxCoreVersion = '1.13.1'
+    androidxCoreSplashscreenVersion = '1.0.1'
     androidxCustomviewVersion = "1.2.0-alpha02"
     androidxDocumentfileVersion = "1.1.0-alpha01"
     androidxDrawerlayoutVersion = "1.2.0"

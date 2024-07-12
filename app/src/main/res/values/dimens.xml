@@ -231,7 +231,7 @@
     <!-- See the tab adapter used in EditBookFragment -->
     <bool name="combine_book_edit_tabs">false</bool>
 
-    <dimen name="startup_splash_border">8dp</dimen>
+    <dimen name="startup_splash_border">16dp</dimen>
     <dimen name="startup_splash_min_width">300dp</dimen>
     <dimen name="startup_splash_max_width">340dp</dimen>
 </resources>

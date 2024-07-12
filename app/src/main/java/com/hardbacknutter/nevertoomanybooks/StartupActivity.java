@@ -30,6 +30,8 @@ import android.os.storage.StorageVolume;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -67,6 +69,8 @@ public class StartupActivity
     private ActivityStartupBinding vb;
 
     private int volumeChangedOptionChosen;
+    // Keep a reference while this Activity is displaying
+    private SplashScreen splashScreen;
 
     /**
      * Kludge to allow the database open-helper to get a reference to the currently running
@@ -87,6 +91,9 @@ public class StartupActivity
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
+        // Prevent the system-splash screen from displaying
+        splashScreen = SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
 
         // Are we going through a hot/warm start ?
@@ -100,8 +107,12 @@ public class StartupActivity
         vm = new ViewModelProvider(this).get(StartupViewModel.class);
         vm.init(this);
 
+        // We have to set the background on the actual window, as our theme is Dialog based.
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_outline_rounded);
         vb = ActivityStartupBinding.inflate(getLayoutInflater());
-        setContentView(vb.getRoot());
+        final ConstraintLayout root = vb.getRoot();
+        root.setClipToOutline(true);
+        setContentView(root);
 
         // Display the version.
         final PackageInfoWrapper info = PackageInfoWrapper.create(this);
