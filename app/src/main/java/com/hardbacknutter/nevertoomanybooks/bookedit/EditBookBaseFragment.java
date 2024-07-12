@@ -353,9 +353,12 @@ public abstract class EditBookBaseFragment
         field.setValue(dateStr);
         field.notifyIfChanged(previous);
 
-        // special case, if a read-end date is set, then obviously we must set the read-flag
-        if (fieldId == R.id.read_end) {
-            vm.setRead(true);
+        // If we are setting the read-end date,
+        // then we must set the read-flag/progress accordingly
+        if (fieldId == R.id.read_end && !dateStr.isEmpty()) {
+            final Book book = vm.getBook();
+            book.putBoolean(DBKey.READ__BOOL, true);
+            book.putString(DBKey.READ_PROGRESS, "");
         }
     }
 
