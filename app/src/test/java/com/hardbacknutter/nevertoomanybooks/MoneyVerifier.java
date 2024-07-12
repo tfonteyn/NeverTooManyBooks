@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,8 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class MoneyVerifier {
     private MoneyVerifier() {
@@ -44,14 +44,14 @@ public final class MoneyVerifier {
         final Bundle rawData = dataManager.getRawData();
 
         final Object v = rawData.get(DBKey.PRICE_LISTED);
-        assertTrue(v instanceof Double);
+        assertInstanceOf(Double.class, v);
         assertEquals(value.doubleValue(), (double) v);
 
         final Object c = rawData.get(DBKey.PRICE_LISTED_CURRENCY);
         if (currency == null) {
             assertNull(c);
         } else {
-            assertTrue(c instanceof String);
+            assertInstanceOf(String.class, c);
             assertEquals(currency, c);
         }
     }
