@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,6 +69,10 @@ public class AboutFragment
                             + " b" + BuildConfig.TIMESTAMP
                             + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
         vb.debugVersion.setText(code);
+        // edge2edge: Make sure it's not hidden by the bottom-system-bar
+        //noinspection DataFlowIssue
+        ((BaseActivity) getActivity()).applyInsetsToMargin(vb.debugVersion, true, false, true,
+                                                           true);
 
         vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_project_url)))));
