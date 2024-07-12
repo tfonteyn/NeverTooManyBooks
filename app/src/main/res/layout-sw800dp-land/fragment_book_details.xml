@@ -216,7 +216,7 @@
             android:id="@+id/description_scroller"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/bg_outline"
+            android:background="@drawable/bg_outline_sharp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toTopOf="@id/toc_frame"
             app:layout_constraintEnd_toEndOf="parent"

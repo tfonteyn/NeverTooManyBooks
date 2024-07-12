@@ -222,7 +222,7 @@
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
-            android:background="@drawable/bg_outline"
+            android:background="@drawable/bg_outline_sharp"
             app:layout_constraintEnd_toStartOf="@id/toc_frame"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/genre"
