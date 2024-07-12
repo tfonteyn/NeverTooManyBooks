@@ -27,6 +27,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.Serializable;
@@ -120,6 +121,11 @@ public class DataManager
         rawData.clear();
     }
 
+    /**
+     * Check if this instance is empty.
+     *
+     * @return flag
+     */
     public boolean isEmpty() {
         return rawData.isEmpty();
     }
@@ -284,7 +290,14 @@ public class DataManager
         }
     }
 
+    /**
+     * Get the unprotected, underlying Bundle with the raw data.
+     * Use for testing only.
+     *
+     * @return data
+     */
     @VisibleForTesting
+    @RestrictTo(RestrictTo.Scope.TESTS)
     @NonNull
     public Bundle getRawData() {
         return rawData;
@@ -526,7 +539,8 @@ public class DataManager
      * @return value or {@code null} if parsing did not produce a {@link LocalDateTime} object
      */
     @NonNull
-    protected Optional<LocalDateTime> getLocalDateTime(@NonNull final String key,
+    protected Optional<LocalDateTime> getLocalDateTime(@SuppressWarnings("SameParameterValue")
+                                                       @NonNull final String key,
                                                        @NonNull final DateParser dateParser) {
         if (rawData.containsKey(key)) {
             return dateParser.parse(rawData.getString(key));
@@ -541,7 +555,8 @@ public class DataManager
      * @param key      Key of data object
      * @param dateTime to store
      */
-    protected void putLocalDateTime(@NonNull final String key,
+    protected void putLocalDateTime(@SuppressWarnings("SameParameterValue")
+                                    @NonNull final String key,
                                     @NonNull final LocalDateTime dateTime) {
         rawData.putString(key, SqlEncode.date(dateTime));
     }
@@ -620,6 +635,14 @@ public class DataManager
         }
     }
 
+    /**
+     * Get a {@link Parcelable} object from the collection.
+     *
+     * @param key Key of data object
+     * @param <T> type of objects in the list
+     *
+     * @return The data
+     */
     @Nullable
     public <T extends Parcelable> T getParcelable(@NonNull final String key) {
         return rawData.getParcelable(key);
