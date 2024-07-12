@@ -55,7 +55,7 @@ public class ReadProgressFragment
         final FragmentManager fm = getChildFragmentManager();
 
         editLauncher = new ReadingProgressLauncher(
-                read -> vm.setRead(read),
+                read -> vm.setReadNow(read),
                 readingProgress -> vm.setReadingProgress(readingProgress));
         editLauncher.registerForFragmentResult(fm, this);
     }

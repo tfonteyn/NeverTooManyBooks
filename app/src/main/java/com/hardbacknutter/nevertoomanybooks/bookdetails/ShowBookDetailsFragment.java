@@ -674,7 +674,7 @@ public class ShowBookDetailsFragment
             } else if (menuItemId == R.id.MENU_BOOK_SET_READ
                        || menuItemId == R.id.MENU_BOOK_SET_UNREAD) {
                 // toggle the status
-                vm.setRead(!book.isRead());
+                vm.setReadNow(!book.isRead());
                 return true;
 
             } else if (menuItemId == R.id.MENU_BOOK_LOAN_ADD) {

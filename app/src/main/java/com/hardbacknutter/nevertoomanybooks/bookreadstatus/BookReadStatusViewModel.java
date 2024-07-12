@@ -37,12 +37,14 @@ public interface BookReadStatusViewModel {
 
     /**
      * Set the Read/Unread status of the book we're currently displaying/editing.
+     * <p>
+     * If set to {@code true}, the read-end date will be set to {@code now}.
      *
      * @param read flag
      *
      * @see #onReadStatusChanged()
      */
-    void setRead(boolean read);
+    void setReadNow(boolean read);
 
     /**
      * Get the ReadingProgress status of the book we're currently displaying/editing.
@@ -54,6 +56,8 @@ public interface BookReadStatusViewModel {
 
     /**
      * Set the ReadingProgress status of the book we're currently displaying/editing.
+     * <p>
+     * If set to {@code true}, the read-end date will be set to {@code now}.
      *
      * @param readingProgress to set
      *
@@ -63,12 +67,12 @@ public interface BookReadStatusViewModel {
 
     /**
      * Triggered after a call to
-     * {@link #setRead(boolean)} and
+     * {@link #setReadNow(boolean)} and
      * {@link #setReadingProgress(ReadingProgress)}.
      *
      * @return void; indicates the UI should update the read-status related fields.
      *
-     * @see #setRead(boolean)
+     * @see #setReadNow(boolean)
      * @see #setReadingProgress(ReadingProgress)
      */
     @NonNull

@@ -72,6 +72,17 @@ public interface BookDao {
                 @NonNull Set<BookFlag> flags)
             throws StorageException, DaoWriteException;
 
+    /**
+     * Create a new {@link Book}.
+     *
+     * @param context Current context
+     * @param book    object to insert. Will be updated with the id.
+     *
+     * @return the row id of the newly inserted row
+     *
+     * @throws StorageException  The covers directory is not available
+     * @throws DaoWriteException on failure
+     */
     @IntRange(from = 1)
     default long insert(@NonNull final Context context,
                         @NonNull final Book /* in/out */ book)
@@ -97,6 +108,18 @@ public interface BookDao {
                 @NonNull Set<BookFlag> flags)
             throws StorageException, DaoWriteException;
 
+    /**
+     * Update the given {@link Book}.
+     * This will update <strong>ONLY</strong> the fields present in the passed in Book.
+     * Non-present fields will not be touched. i.e. this is a delta operation.
+     *
+     * @param context Current context
+     * @param book    A collection with the columns to be set.
+     *                May contain extra data which will be ignored.
+     *
+     * @throws StorageException  The covers directory is not available
+     * @throws DaoWriteException on failure
+     */
     default void update(@NonNull final Context context,
                         @NonNull final Book book)
             throws StorageException, DaoWriteException {
@@ -160,13 +183,13 @@ public interface BookDao {
      * <p>
      * If successful, the book object will have been updated with the new status.
      *
-     * @param book         to update
+     * @param book            to update
      * @param readingProgress the progress data to set
      *
      * @return {@code true} for success.
      */
-    boolean setReadProgress(@NonNull Book book,
-                            @NonNull ReadingProgress readingProgress);
+    boolean setReadingProgress(@NonNull Book book,
+                               @NonNull ReadingProgress readingProgress);
 
     /**
      * Count all books.

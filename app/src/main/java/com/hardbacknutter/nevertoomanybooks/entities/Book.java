@@ -1085,13 +1085,15 @@ public class Book
     /**
      * Set the Read/Unread status.
      * Related fields are updated as needed.
+     * <p>
+     * If set to {@code true}, the read-end date will be set to {@code now}.
      *
      * @param read flag
      */
-    public void setRead(final boolean read) {
+    public void setReadNow(final boolean read) {
         final String now = SqlEncode.date(LocalDateTime.now());
         final String endDate = read ? now : "";
-        internalSetReadingProgress(now, read, endDate);
+        internalSetReadingProgress(read, endDate);
     }
 
     /**
@@ -1135,6 +1137,8 @@ public class Book
     /**
      * Set the progress the reader has made on this book.
      * Related fields are updated as needed.
+     * <p>
+     * If set to {@code read/completed}, the read-end date will be set to {@code now}.
      *
      * @param progress to set
      */
@@ -1152,47 +1156,42 @@ public class Book
             pageCount = String.valueOf(progress.getTotalPages());
         }
 
-        internalSetReadingProgress(now, progress, read, endDate, pageCount);
+        internalSetReadingProgress(progress, endDate, pageCount);
     }
-
 
     /**
      * <strong>WARNING</strong> this method only to be used by
-     * {@link #setRead(boolean)} and
+     * {@link #setReadNow(boolean)} and
      * {@link BookDao#setRead(Book, boolean)}.
+     * <p>
+     * Dev. note: using this method forces us to keep a the related fields in a consistent state.
      *
-     * @param now     date-time-stamp
-     * @param read    the status to set
+     * @param read    value for {@link DBKey#READ__BOOL}
      * @param endDate value for {@link DBKey#READ_END__DATE}
      */
-    public void internalSetReadingProgress(@NonNull final String now,
-                                           final boolean read,
+    public void internalSetReadingProgress(final boolean read,
                                            @NonNull final String endDate) {
         putBoolean(DBKey.READ__BOOL, read);
         putString(DBKey.READ_END__DATE, endDate);
-        putString(DBKey.DATE_LAST_UPDATED__UTC, now);
         putString(DBKey.READ_PROGRESS, "");
     }
 
     /**
      * <strong>WARNING</strong> this method only to be used by
      * {@link #setReadingProgress(ReadingProgress)} and
-     * {@link BookDao#setReadProgress(Book, ReadingProgress)}.
+     * {@link BookDao#setReadingProgress(Book, ReadingProgress)}.
+     * <p>
+     * Dev. note: using this method forces us to keep a the related fields in a consistent state.
      *
-     * @param now             date-time-stamp when the data was stored
      * @param readingProgress value for {@link DBKey#READ_PROGRESS}
-     * @param read            value for {@link DBKey#READ__BOOL}
      * @param endDate         value for {@link DBKey#READ_END__DATE}
      * @param pageCount       value for {@link DBKey#PAGE_COUNT}
      */
-    public void internalSetReadingProgress(@NonNull final String now,
-                                           @NonNull final ReadingProgress readingProgress,
-                                           final boolean read,
+    public void internalSetReadingProgress(@NonNull final ReadingProgress readingProgress,
                                            @NonNull final String endDate,
                                            @NonNull final String pageCount) {
-        putBoolean(DBKey.READ__BOOL, read);
+        putBoolean(DBKey.READ__BOOL, readingProgress.isRead());
         putString(DBKey.READ_END__DATE, endDate);
-        putString(DBKey.DATE_LAST_UPDATED__UTC, now);
         putString(DBKey.READ_PROGRESS, readingProgress.toJson());
         putString(DBKey.PAGE_COUNT, pageCount);
     }
@@ -1375,6 +1374,9 @@ public class Book
     /**
      * Set the last date-time that this book was modified.
      * If not set, a default of 'now' will be used when saved.
+     * <p>
+     * <strong>WARNING</strong> this method only to be used by the DAO or by synchronization
+     * services (e.g. Calibre...)
      *
      * @param dateTime to use
      */

@@ -175,7 +175,7 @@ public class BookDaoHelper {
      * copy the value across.
      * We do NOT overwrite existing {@link DBKey#PAGE_COUNT} values!
      *
-     * @see BookDaoImpl#setReadProgress(Book, ReadingProgress)
+     * @see BookDaoImpl#setReadingProgress(Book, ReadingProgress)
      */
     private void processReadProgress() {
         final ReadingProgress readingProgress = book.getReadingProgress();

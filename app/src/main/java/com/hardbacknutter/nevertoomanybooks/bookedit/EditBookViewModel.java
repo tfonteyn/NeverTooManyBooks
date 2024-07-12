@@ -348,8 +348,8 @@ public class EditBookViewModel
     }
 
     @Override
-    public void setRead(final boolean read) {
-        book.setRead(read);
+    public void setReadNow(final boolean read) {
+        book.setReadNow(read);
         onReadStatusChanged.setValue(null);
     }
 

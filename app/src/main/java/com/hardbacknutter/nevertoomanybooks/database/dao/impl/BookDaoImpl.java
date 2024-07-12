@@ -573,20 +573,19 @@ public class BookDaoImpl
         }
 
         if (success) {
-            book.internalSetReadingProgress(now, read, endDate);
+            book.internalSetReadingProgress(read, endDate);
+            book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
         }
 
         return success;
     }
 
     @Override
-    public boolean setReadProgress(@NonNull final Book book,
-                                   @NonNull final ReadingProgress readingProgress) {
-
-        final boolean read = readingProgress.isRead();
+    public boolean setReadingProgress(@NonNull final Book book,
+                                      @NonNull final ReadingProgress progress) {
 
         final String now = SqlEncode.date(LocalDateTime.now());
-        final String endDate = read ? now : "";
+        final String endDate = progress.isRead() ? now : "";
 
         final boolean success;
 
@@ -594,23 +593,24 @@ public class BookDaoImpl
         // set it as well.
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoHelper#processReadProgress()} !
         String pageCount = book.getString(DBKey.PAGE_COUNT);
-        if (!readingProgress.asPercentage() && pageCount.isEmpty()) {
-            pageCount = String.valueOf(readingProgress.getTotalPages());
+        if (!progress.asPercentage() && pageCount.isEmpty()) {
+            pageCount = String.valueOf(progress.getTotalPages());
         }
 
         // We might be updating the page-count needlessly, but no harm done.
         try (SynchronizedStatement stmt = db.compileStatement(
                 Sql.UPDATE_READ_PROGRESS_AND_PAGE_COUNT)) {
-            stmt.bindBoolean(1, read);
+            stmt.bindBoolean(1, progress.isRead());
             stmt.bindString(2, endDate);
-            stmt.bindString(3, readingProgress.toJson());
+            stmt.bindString(3, progress.toJson());
             stmt.bindString(4, pageCount);
             stmt.bindLong(5, book.getId());
             success = 0 < stmt.executeUpdateDelete();
         }
 
         if (success) {
-            book.internalSetReadingProgress(now, readingProgress, read, endDate, pageCount);
+            book.internalSetReadingProgress(progress, endDate, pageCount);
+            book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
         }
 
         return success;

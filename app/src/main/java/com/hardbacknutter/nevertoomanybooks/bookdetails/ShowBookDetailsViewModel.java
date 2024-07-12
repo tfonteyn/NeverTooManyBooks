@@ -230,7 +230,7 @@ public class ShowBookDetailsViewModel
         return book.isRead();
     }
 
-    public void setRead(final boolean read) {
+    public void setReadNow(final boolean read) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         ServiceLocator.getInstance().getBookDao().setRead(book, read);
         onReadStatusChanged.setValue(null);
@@ -238,7 +238,7 @@ public class ShowBookDetailsViewModel
 
     public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        ServiceLocator.getInstance().getBookDao().setReadProgress(book, readingProgress);
+        ServiceLocator.getInstance().getBookDao().setReadingProgress(book, readingProgress);
         onReadStatusChanged.setValue(null);
     }
 

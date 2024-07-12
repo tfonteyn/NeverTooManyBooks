@@ -68,7 +68,7 @@ public class ReadStatusFragment
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
 
         reload();
-        vb.read.setOnClickListener(v -> vm.setRead(!vm.isRead()));
+        vb.read.setOnClickListener(v -> vm.setReadNow(!vm.isRead()));
     }
 
     private void reload() {
