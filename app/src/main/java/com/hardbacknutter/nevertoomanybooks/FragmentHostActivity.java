@@ -31,6 +31,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -44,6 +45,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.MarginWindowInsetListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.PaddingWindowInsetsListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 
 /**
@@ -148,7 +151,8 @@ public class FragmentHostActivity
     private void initFab() {
         final FloatingActionButton fab = findViewById(R.id.fab);
         if (fab != null) {
-            applyInsetsToMargin(fab, false, false, true, true);
+            ViewCompat.setOnApplyWindowInsetsListener(fab, new MarginWindowInsetListener(
+                    fab, false, false, true, true));
         }
     }
 
@@ -164,7 +168,8 @@ public class FragmentHostActivity
                 lp.setScrollFlags(flags);
             }
 
-            applyInsetsToPadding(toolbar, false, true, false, false);
+            ViewCompat.setOnApplyWindowInsetsListener(toolbar, new PaddingWindowInsetsListener(
+                    toolbar, false, true, false, false));
 
             toolbar.setNavigationOnClickListener(v -> {
                 if (isTaskRoot()) {

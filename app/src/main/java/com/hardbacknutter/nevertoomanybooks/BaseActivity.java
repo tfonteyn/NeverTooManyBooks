@@ -31,9 +31,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -116,59 +113,6 @@ public abstract class BaseActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getWindow().setNavigationBarContrastEnforced(false);
         }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    void applyInsetsToPadding(@NonNull final View view,
-                              final boolean left,
-                              final boolean top,
-                              final boolean right,
-                              final boolean bottom) {
-
-        final Insets padding = Insets.of(view.getPaddingLeft(), view.getPaddingTop(),
-                                         view.getPaddingRight(), view.getPaddingBottom());
-
-        ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
-            final Insets insets = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.systemBars()
-                    | WindowInsetsCompat.Type.displayCutout());
-
-            v.setPadding(padding.left + (left ? insets.left : 0),
-                         padding.top + (top ? insets.top : 0),
-                         padding.right + (right ? insets.right : 0),
-                         padding.bottom + (bottom ? insets.bottom : 0));
-
-            return WindowInsetsCompat.CONSUMED;
-        });
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    void applyInsetsToMargin(@NonNull final View view,
-                             final boolean left,
-                             final boolean top,
-                             final boolean right,
-                             final boolean bottom) {
-
-        final ViewGroup.MarginLayoutParams ilp =
-                (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        final Insets margins = Insets.of(ilp.leftMargin, ilp.topMargin,
-                                         ilp.rightMargin, ilp.bottomMargin);
-
-        ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
-            final Insets insets = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.systemBars()
-                    | WindowInsetsCompat.Type.displayCutout());
-
-            final ViewGroup.MarginLayoutParams lp =
-                    (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            lp.setMargins(margins.left + (left ? insets.left : 0),
-                          margins.top + (top ? insets.top : 0),
-                          margins.right + (right ? insets.right : 0),
-                          margins.bottom + (bottom ? insets.bottom : 0));
-            v.setLayoutParams(lp);
-
-            return WindowInsetsCompat.CONSUMED;
-        });
     }
 
     @Override

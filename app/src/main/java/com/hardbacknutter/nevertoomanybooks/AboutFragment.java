@@ -29,7 +29,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
 
+import com.hardbacknutter.nevertoomanybooks.core.widgets.MarginWindowInsetListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -70,9 +72,8 @@ public class AboutFragment
                             + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
         vb.debugVersion.setText(code);
         // edge2edge: Make sure it's not hidden by the bottom-system-bar
-        //noinspection DataFlowIssue
-        ((BaseActivity) getActivity()).applyInsetsToMargin(vb.debugVersion, true, false, true,
-                                                           true);
+        ViewCompat.setOnApplyWindowInsetsListener(vb.debugVersion, new MarginWindowInsetListener(
+                vb.debugVersion, true, false, true, true));
 
         vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_project_url)))));
