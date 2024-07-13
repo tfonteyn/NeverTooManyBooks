@@ -21,15 +21,16 @@ Draft notes for next version:
 ### 6.2.0
 
 NEW:
-- Douban.com website support for looking up Chinese books.
-- option to replace the authors on all entries in a TOC with the books main author.
-- improved partial-date handling/formats for a number of websites.
+- Douban.com site added for looking up Chinese books.
+- improved partial-date handling/formats for a number of sites.
 - StripInfo.be parsing updated.
+- option to replace the authors on all entries in a TOC with the books main author.
 
-- consolidated language together with other UI options in a single settings screen.
+- consolidated language setting together with other UI options in a single screen.
 - preference dialogs custom implementation with Material styling + BottomSheet support.
 - updated all icons for Material style consistency.
-- Android 15 support (based on beta-3).
+- Edge-to-Edge support
+- Android 15 tested/supported (based on beta-3).
 
 FIXES:
 - #72: during edit, set 'read' as needed, without changing the read-end
@@ -50,13 +51,9 @@ https://developer.android.com/codelabs/edge-to-edge#4
 ----------------------------------------------------------------------------------------------------
 https://developer.android.com/develop/ui/views/layout/edge-to-edge#cutout-insets
 
-Display cutouts (camera etc): we don't take any of those into account.
-So they CAN overlap our content.
+Display cutouts (camera etc): TODO: test on real device.
 
-Edge2Edge
-Added the below listener + vb.content.list view: android:clipToPadding="false"
-Neither seems to make any difference. The camera cutout on the Pixel 8a emulator
-is still overlapping the list. Note tested on a real device yet (I don't have a Pixel).
+The camera cutout on the Pixel 8a emulator is still overlapping the content.
 //        ViewCompat.setOnApplyWindowInsetsListener(vb.content.list, (v, windowInsets) -> {
 //            final Insets insets = windowInsets.getInsets(
 //                    WindowInsetsCompat.Type.systemBars()
@@ -69,14 +66,14 @@ is still overlapping the list. Note tested on a real device yet (I don't have a 
 ----------------------------------------------------------------------------------------------------
 https://developer.android.com/develop/ui/views/layout/insets/rounded-corners
 Rounded corner displays: not taken into account.
-Based on emulator tests... it's not perfect, but should not be an issue
-as long as we're not drawing behind the system-bars anyhow we more or less avoid the rounded
-device corners automatically.
+Based on emulator tests... it's not perfect, but should not be an issue.
 
 ----------------------------------------------------------------------------------------------------
 // https://developer.android.com/develop/ui/views/layout/edge-to-edge#system-gesture-insets
-According to the docs, we should apply this to the ViewPager2 usage and BottomSheets.
 
+Need to make a decision on adding WindowInsetsCompat.Type.systemGestures()
+
+According to the docs, we should apply this to the ViewPager2 usage and BottomSheets.
 Tried it out for the ViewPager2 usage:
 - book details + book edit
   Effect is not really visible, but touching area is indeed as per gesture docs.
