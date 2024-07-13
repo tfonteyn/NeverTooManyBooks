@@ -35,24 +35,25 @@
  */
 package com.hardbacknutter.fastscroller;
 
-import android.graphics.Rect;
 import android.view.View;
-import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.WindowInsetsCompat;
 
 /**
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
  * https://github.com/zhanghai/AndroidFastScroll</a>.
  */
 class ScrollingViewOnApplyWindowInsetsListener
-        implements View.OnApplyWindowInsetsListener {
+        implements OnApplyWindowInsetsListener {
 
     @NonNull
-    private final Rect mPadding = new Rect();
+    private final Insets padding;
     @Nullable
-    private final FastScroller.OverlayProvider mOverlayProvider;
+    private final OverlayProvider overlayProvider;
 
     /**
      * Constructor.
@@ -60,35 +61,30 @@ class ScrollingViewOnApplyWindowInsetsListener
      * @param view            the scrolling view
      * @param overlayProvider (optional) overlay for the view
      */
-    ScrollingViewOnApplyWindowInsetsListener(
-            @Nullable final View view,
-            @Nullable final FastScroller.OverlayProvider overlayProvider) {
+    ScrollingViewOnApplyWindowInsetsListener(@NonNull final View view,
+                                             @Nullable final OverlayProvider overlayProvider) {
 
-        if (view != null) {
-            mPadding.set(view.getPaddingLeft(),
-                         view.getPaddingTop(),
-                         view.getPaddingRight(),
-                         view.getPaddingBottom());
-        }
-        mOverlayProvider = overlayProvider;
+        padding = Insets.of(view.getPaddingLeft(), view.getPaddingTop(),
+                            view.getPaddingRight(), view.getPaddingBottom());
+        this.overlayProvider = overlayProvider;
     }
 
     @NonNull
     @Override
-    public WindowInsets onApplyWindowInsets(@NonNull final View view,
-                                            @NonNull final WindowInsets insets) {
+    public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v,
+                                                  @NonNull final WindowInsetsCompat windowInsets) {
+        final Insets insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                | WindowInsetsCompat.Type.displayCutout());
 
-        view.setPadding(mPadding.left + insets.getSystemWindowInsetLeft(),
-                        mPadding.top,
-                        mPadding.right + insets.getSystemWindowInsetRight(),
-                        mPadding.bottom + insets.getSystemWindowInsetBottom());
+        v.setPadding(padding.left + insets.left,
+                     padding.top,
+                     padding.right + insets.right,
+                     padding.bottom + insets.bottom);
 
-        if (mOverlayProvider != null) {
-            mOverlayProvider.setPadding(insets.getSystemWindowInsetLeft(),
-                                        0,
-                                        insets.getSystemWindowInsetRight(),
-                                        insets.getSystemWindowInsetBottom());
+        if (overlayProvider != null) {
+            overlayProvider.setPadding(insets.left, 0, insets.right, insets.bottom);
         }
-        return insets;
+        return windowInsets;
     }
 }

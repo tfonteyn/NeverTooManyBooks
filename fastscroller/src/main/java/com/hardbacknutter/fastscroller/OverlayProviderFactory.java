@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -146,9 +146,9 @@ public final class OverlayProviderFactory {
     }
 
     @Nullable
-    static FastScroller.OverlayProvider create(@OverlayType final int id,
-                                               final int thumbWidth,
-                                               @NonNull final RecyclerView recyclerView) {
+    static OverlayProvider create(@OverlayType final int id,
+                                  final int thumbWidth,
+                                  @NonNull final RecyclerView recyclerView) {
         switch (id) {
             case TYPE_MD2:
                 return new FastScrollerOverlay(recyclerView, null, thumbWidth, MD2);

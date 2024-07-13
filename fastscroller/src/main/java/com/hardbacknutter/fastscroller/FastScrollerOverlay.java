@@ -46,7 +46,7 @@ import java.util.function.Consumer;
  * zhanghai: FastScroller; but removed thumb/track handling.
  */
 class FastScrollerOverlay
-        implements FastScroller.OverlayProvider {
+        implements OverlayProvider {
 
     @NonNull
     private final RecyclerView mRecyclerView;
@@ -149,7 +149,7 @@ class FastScrollerOverlay
                     first = ((ConcatAdapter) adapter)
                     .getAdapters()
                     .stream()
-                    .filter(a -> a instanceof FastScroller.PopupTextProvider)
+                    .filter(a -> a instanceof PopupTextProvider)
                     .findFirst();
 
             if (first.isPresent()) {
@@ -157,7 +157,7 @@ class FastScrollerOverlay
             }
         }
 
-        if (!(adapter instanceof FastScroller.PopupTextProvider)) {
+        if (!(adapter instanceof PopupTextProvider)) {
             return;
         }
 
@@ -171,7 +171,7 @@ class FastScrollerOverlay
             return;
         }
 
-        final CharSequence[] popupLines = ((FastScroller.PopupTextProvider) adapter)
+        final CharSequence[] popupLines = ((PopupTextProvider) adapter)
                 .getPopupText(position);
 
         // Do we have at least one line of text ?

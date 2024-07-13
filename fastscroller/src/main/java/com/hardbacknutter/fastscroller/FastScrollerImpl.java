@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,7 +121,7 @@ public class FastScrollerImpl
     };
     // RVFastScroller - ADDED
     @Nullable
-    private FastScroller.OverlayProvider mOverlayProvider;
+    private OverlayProvider mOverlayProvider;
 
     private int mRecyclerViewWidth = 0;
     private int mRecyclerViewHeight = 0;
@@ -181,7 +181,7 @@ public class FastScrollerImpl
     }
 
     // RVFastScroller - ADDED
-    void setOverlayProvider(@Nullable final FastScroller.OverlayProvider overlayProvider) {
+    void setOverlayProvider(@Nullable final OverlayProvider overlayProvider) {
         mOverlayProvider = overlayProvider;
     }
 

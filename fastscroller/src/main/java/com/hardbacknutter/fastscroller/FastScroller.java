@@ -26,12 +26,16 @@ import android.graphics.drawable.StateListDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * This is the glue class which hooks up the {@link RecyclerView} with the actual
  * {@link FastScrollerImpl} and an optional {@link OverlayProvider}.
+ * <p>
+ * This solves the following Android bugs:
  * <p>
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
  * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
@@ -81,7 +85,7 @@ public final class FastScroller {
     /**
      * Constructor.
      * <p>
-     * The drawables can be overridden byt setting these Theme by attributes:
+     * The drawables can be overridden by setting these Theme attributes:
      * <ul>
      *     <li>{@code android:fastScrollTrackDrawable="@drawable/your_track"}</li>
      *     <li>{@code android:fastScrollThumbDrawable="@drawable/your_thumb"}</li>
@@ -89,9 +93,13 @@ public final class FastScroller {
      *
      * @param recyclerView the View to hook up
      * @param overlayType  Optional overlay
+     *
+     * @throws IllegalArgumentException if the {@link RecyclerView.LayoutManager} is
+     *                                  not a {@link LinearLayoutManager}
      */
     public static void attach(@NonNull final RecyclerView recyclerView,
-                              @OverlayProviderFactory.OverlayType final int overlayType) {
+                              @OverlayProviderFactory.OverlayType final int overlayType)
+            throws IllegalArgumentException {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("Not a LinearLayoutManager");
@@ -119,59 +127,14 @@ public final class FastScroller {
                 resources.getDimensionPixelSize(R.dimen.fs_minimal_thumb_size)
         );
 
-        final OverlayProvider overlay = OverlayProviderFactory
+        @Nullable
+        final OverlayProvider overlayProvider = OverlayProviderFactory
                 .create(overlayType, thumbDrawable.getIntrinsicWidth(), recyclerView);
 
-        fastScroller.setOverlayProvider(overlay);
+        fastScroller.setOverlayProvider(overlayProvider);
 
-        recyclerView.setOnApplyWindowInsetsListener(
-                new ScrollingViewOnApplyWindowInsetsListener(recyclerView, overlay));
-    }
-
-
-    /**
-     * The adapter should implement this interface.
-     * The OverlayProvider will call the method to get the text to display.
-     */
-    @FunctionalInterface
-    public interface PopupTextProvider {
-
-        /**
-         * Get the popup text lines for the given position.
-         *
-         * @param position to use
-         *
-         * @return an array with the lines. The length of the array is variable.
-         *         The array itself <strong>CAN BE {@code null}</strong>.
-         *         and individual lines in the array <strong>CAN BE {@code null}</strong>.
-         */
-        @Nullable
-        CharSequence[] getPopupText(int position);
-    }
-
-    public interface OverlayProvider {
-
-        /**
-         * Draw the overlay.
-         *
-         * @param isDragging  flag
-         * @param thumbCenter the offset from the top to the center of the thumb/drag-handle
-         */
-        void showOverlay(boolean isDragging,
-                         int thumbCenter);
-
-        /**
-         * Set the padding.
-         *
-         * @param left   padding
-         * @param top    padding
-         * @param right  padding
-         * @param bottom padding
-         */
-        void setPadding(int left,
-                        int top,
-                        int right,
-                        int bottom);
-
+        final OnApplyWindowInsetsListener listener =
+                new ScrollingViewOnApplyWindowInsetsListener(recyclerView, overlayProvider);
+        ViewCompat.setOnApplyWindowInsetsListener(recyclerView, listener);
     }
 }
