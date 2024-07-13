@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.fastscroller.OverlayProvider;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 public class TocAdapter
         extends RecyclerView.Adapter<TocAdapter.AuthorWorkHolder>
-        implements FastScroller.PopupTextProvider {
+        implements OverlayProvider.PopupTextProvider {
 
     /** x/y offsets more or less arbitrary. */
     private static final int XOFF = 24;

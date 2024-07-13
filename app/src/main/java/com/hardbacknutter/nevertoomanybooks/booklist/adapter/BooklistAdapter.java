@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.fastscroller.OverlayProvider;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
@@ -64,7 +64,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class BooklistAdapter
         extends RecyclerView.Adapter<RowViewHolder>
-        implements FastScroller.PopupTextProvider {
+        implements OverlayProvider.PopupTextProvider {
 
     /** Log tag. */
     private static final String TAG = "BooklistAdapter";
