@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,14 +59,14 @@ public class AuthorLookupTest
     public void lookup01()
             throws SearchException, CredentialsException {
 
-        final boolean lookup;
+        final boolean modified;
         final Author author;
         final Author realAuthor;
 
         author = new Author("Leloup", "Roger");
-        lookup = resolver.resolve(author);
+        modified = resolver.resolve(author);
         // no pen-name
-        Assert.assertFalse(lookup);
+        Assert.assertFalse(modified);
         Assert.assertEquals("Leloup", author.getFamilyName());
         Assert.assertEquals("Roger", author.getGivenNames());
         realAuthor = author.getRealAuthor();
@@ -77,14 +77,14 @@ public class AuthorLookupTest
     public void lookup02()
             throws SearchException, CredentialsException {
 
-        final boolean lookup;
+        final boolean modified;
         final Author author;
         final Author realAuthor;
 
         author = new Author("<Indéterminé>", "");
-        lookup = resolver.resolve(author);
+        modified = resolver.resolve(author);
         // no pen-name
-        Assert.assertFalse(lookup);
+        Assert.assertFalse(modified);
         Assert.assertEquals("<Indéterminé>", author.getFamilyName());
         realAuthor = author.getRealAuthor();
         Assert.assertNull(realAuthor);
@@ -94,13 +94,13 @@ public class AuthorLookupTest
     public void lookup10()
             throws SearchException, CredentialsException {
 
-        final boolean lookup;
+        final boolean modified;
         final Author author;
         final Author realAuthor;
 
         author = new Author("Jije", "");
-        lookup = resolver.resolve(author);
-        Assert.assertTrue(lookup);
+        modified = resolver.resolve(author);
+        Assert.assertTrue(modified);
         Assert.assertEquals("Jijé", author.getFamilyName());
         realAuthor = author.getRealAuthor();
         Assert.assertNotNull(realAuthor);
@@ -113,13 +113,13 @@ public class AuthorLookupTest
     public void lookup11()
             throws SearchException, CredentialsException {
 
-        final boolean lookup;
+        final boolean modified;
         final Author author;
         final Author realAuthor;
 
         author = new Author("61Chi", "");
-        lookup = resolver.resolve(author);
-        Assert.assertTrue(lookup);
+        modified = resolver.resolve(author);
+        Assert.assertTrue(modified);
         Assert.assertEquals("61Chi", author.getFamilyName());
         realAuthor = author.getRealAuthor();
         Assert.assertNotNull(realAuthor);
