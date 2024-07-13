@@ -1048,7 +1048,7 @@ public class SearchCoordinator
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
                 final EngineId engineId = entry.getKey();
-                final String engineName = engineId.getPreferenceKey();
+                final String engineName = engineId.name();
 
                 final long start = entry.getValue();
                 final Long end = searchTasksEndTime.get(engineId);
