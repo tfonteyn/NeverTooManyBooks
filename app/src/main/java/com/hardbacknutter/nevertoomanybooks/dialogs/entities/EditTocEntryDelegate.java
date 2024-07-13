@@ -99,7 +99,7 @@ class EditTocEntryDelegate
 
         final TocEntry currentEdit = vm.getCurrentEdit();
 
-        //ENHANCE: should we provide a TocAdapter to aid manually adding TOC titles?
+        //ENHANCE: should we provide a AuthorWorksAdapter to aid manually adding TOC titles?
         // What about the publication year?
         vb.title.setText(currentEdit.getTitle());
         TilUtil.autoRemoveError(vb.title, vb.lblTitle);

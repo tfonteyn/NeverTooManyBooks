@@ -46,7 +46,7 @@ import java.util.List;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.TocAdapter;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -97,7 +97,7 @@ public class AuthorWorksFragment
     private DisplayBookLauncher displayBookLauncher;
     private ExtMenuLauncher menuLauncher;
     /** The Adapter. */
-    private TocAdapter adapter;
+    private AuthorWorksAdapter adapter;
     /** View Binding. */
     private FragmentAuthorWorksBinding vb;
     private Menu rowMenu;
@@ -212,7 +212,8 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.authorWorks, overlayType);
 
-        adapter = new TocAdapter(context, vm.getStyle(), List.of(vm.getAuthor()), vm.getWorks());
+        adapter = new AuthorWorksAdapter(context, vm.getStyle(), List.of(vm.getAuthor()),
+                                         vm.getWorks());
 
         // click -> get the book(s) for that entry and display.
         adapter.setOnRowClickListener(

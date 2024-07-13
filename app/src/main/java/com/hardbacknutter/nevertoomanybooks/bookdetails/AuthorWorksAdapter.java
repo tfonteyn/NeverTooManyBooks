@@ -49,8 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
-public class TocAdapter
-        extends RecyclerView.Adapter<TocAdapter.AuthorWorkHolder>
+public class AuthorWorksAdapter
+        extends RecyclerView.Adapter<AuthorWorksAdapter.AuthorWorkHolder>
         implements OverlayProvider.PopupTextProvider {
 
     /** x/y offsets more or less arbitrary. */
@@ -81,11 +81,10 @@ public class TocAdapter
      * @param authors the author who 'owns' the works list
      * @param works   to show
      */
-    @SuppressLint("UseCompatLoadingForDrawables")
-    public TocAdapter(@NonNull final Context context,
-                      @NonNull final Style style,
-                      @NonNull final List<Author> authors,
-                      @NonNull final List<AuthorWork> works) {
+    public AuthorWorksAdapter(@NonNull final Context context,
+                              @NonNull final Style style,
+                              @NonNull final List<Author> authors,
+                              @NonNull final List<AuthorWork> works) {
         inflater = LayoutInflater.from(context);
         this.contextMenuMode = ExtMenuButton.getPreferredMode(context);
         this.style = style;

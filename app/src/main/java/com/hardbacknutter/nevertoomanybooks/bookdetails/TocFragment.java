@@ -71,7 +71,7 @@ public class TocFragment
     private DisplayBookLauncher displayBookLauncher;
 
     /** The Adapter. */
-    private TocAdapter adapter;
+    private AuthorWorksAdapter adapter;
 
     @NonNull
     public static Fragment create(@NonNull final Book book,
@@ -142,7 +142,7 @@ public class TocFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 
-        adapter = new TocAdapter(context, aVm.getStyle(), vm.getAuthors(), vm.getWorks());
+        adapter = new AuthorWorksAdapter(context, aVm.getStyle(), vm.getAuthors(), vm.getWorks());
         adapter.setOnRowClickListener((v, position) -> {
             // If there's only one book, there is no point doing this
             // as we're already on the book.
