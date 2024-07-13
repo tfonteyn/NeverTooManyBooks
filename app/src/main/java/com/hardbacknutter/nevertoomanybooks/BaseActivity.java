@@ -125,18 +125,19 @@ public abstract class BaseActivity
                               final boolean right,
                               final boolean bottom) {
 
-        final Insets initialInsets = Insets.of(view.getPaddingLeft(), view.getPaddingTop(),
-                                               view.getPaddingRight(), view.getPaddingBottom());
+        final Insets padding = Insets.of(view.getPaddingLeft(), view.getPaddingTop(),
+                                         view.getPaddingRight(), view.getPaddingBottom());
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
             final Insets insets = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars()
                     | WindowInsetsCompat.Type.displayCutout());
 
-            v.setPadding(initialInsets.left + (left ? insets.left : 0),
-                         initialInsets.top + (top ? insets.top : 0),
-                         initialInsets.right + (right ? insets.right : 0),
-                         initialInsets.bottom + (bottom ? insets.bottom : 0));
+            v.setPadding(padding.left + (left ? insets.left : 0),
+                         padding.top + (top ? insets.top : 0),
+                         padding.right + (right ? insets.right : 0),
+                         padding.bottom + (bottom ? insets.bottom : 0));
+
             return WindowInsetsCompat.CONSUMED;
         });
     }
@@ -150,8 +151,8 @@ public abstract class BaseActivity
 
         final ViewGroup.MarginLayoutParams ilp =
                 (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        final Insets initialInsets = Insets.of(ilp.leftMargin, ilp.topMargin,
-                                               ilp.rightMargin, ilp.bottomMargin);
+        final Insets margins = Insets.of(ilp.leftMargin, ilp.topMargin,
+                                         ilp.rightMargin, ilp.bottomMargin);
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
             final Insets insets = windowInsets.getInsets(
@@ -160,10 +161,10 @@ public abstract class BaseActivity
 
             final ViewGroup.MarginLayoutParams lp =
                     (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            lp.setMargins(initialInsets.left + (left ? insets.left : 0),
-                          initialInsets.top + (top ? insets.top : 0),
-                          initialInsets.right + (right ? insets.right : 0),
-                          initialInsets.bottom + (bottom ? insets.bottom : 0));
+            lp.setMargins(margins.left + (left ? insets.left : 0),
+                          margins.top + (top ? insets.top : 0),
+                          margins.right + (right ? insets.right : 0),
+                          margins.bottom + (bottom ? insets.bottom : 0));
             v.setLayoutParams(lp);
 
             return WindowInsetsCompat.CONSUMED;
