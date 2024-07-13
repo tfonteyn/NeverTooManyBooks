@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +44,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -55,13 +53,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
@@ -87,7 +85,6 @@ public class StripInfoSearchEngine
                    SearchEngine.ByBarcode {
 
     public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
-    static final String PK_RESOLVE_AUTHORS_ON_BEDETHEQUE = "stripinfo.resolve.authors.bedetheque";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
     /** Color string values as used on the site. Complete 2019-10-29. */
@@ -141,15 +138,9 @@ public class StripInfoSearchEngine
         super(appContext, config);
     }
 
-    @Nullable
-    private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, false)) {
-            return new BedethequeAuthorResolver(context, this);
-        } else {
-            return null;
-        }
+    @NonNull
+    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
+        return AuthorResolverFactory.getResolvers(context, this);
     }
 
     @NonNull
@@ -220,7 +211,7 @@ public class StripInfoSearchEngine
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book, getAuthorResolver(context));
+            parse(context, document, fetchCovers, book, getAuthorResolvers(context));
         }
         return book;
     }
@@ -257,7 +248,7 @@ public class StripInfoSearchEngine
         if (isMultiResult(document)) {
             parseMultiResult(context, document, fetchCovers, book);
         } else {
-            parse(context, document, fetchCovers, book, getAuthorResolver(context));
+            parse(context, document, fetchCovers, book, getAuthorResolvers(context));
         }
 
         // Finally, try and replace potential invalid ISBN numbers
@@ -314,7 +305,7 @@ public class StripInfoSearchEngine
                 if (!isCancelled()) {
                     // prevent looping.
                     if (!isMultiResult(redirected)) {
-                        parse(context, redirected, fetchCovers, book, getAuthorResolver(context));
+                        parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
                     }
                 }
                 return;
@@ -338,12 +329,13 @@ public class StripInfoSearchEngine
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param context        Current context
-     * @param document       to parse
-     * @param fetchCovers    Set to {@code true} if we want to get covers
-     *                       The array is guaranteed to have at least one element.
-     * @param book           Bundle to update
-     * @param authorResolver (optional) {@link AuthorResolver} to use
+     * @param context         Current context
+     * @param document        to parse
+     * @param fetchCovers     Set to {@code true} if we want to get covers
+     *                        The array is guaranteed to have at least one element.
+     * @param book            Bundle to update
+     * @param authorResolvers {@link AuthorResolver}s to use
+     *                        (passed in for easy testing)
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -357,7 +349,7 @@ public class StripInfoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book,
-                      @Nullable final AuthorResolver authorResolver)
+                      @NonNull final List<AuthorResolver> authorResolvers)
             throws StorageException, SearchException, CredentialsException {
 
         // extracted from the page header.
@@ -565,9 +557,9 @@ public class StripInfoSearchEngine
             }
         }
 
-        if (authorResolver != null) {
+        for (final AuthorResolver resolver : authorResolvers) {
             for (final Author author : book.getAuthors()) {
-                authorResolver.resolve(author);
+                resolver.resolve(author);
             }
         }
 
@@ -586,7 +578,6 @@ public class StripInfoSearchEngine
         if (fetchCovers[0]) {
             parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-            ;
         }
 
         if (isCancelled()) {
@@ -597,7 +588,6 @@ public class StripInfoSearchEngine
         if (fetchCovers.length > 1 && fetchCovers[1]) {
             parseCover(context, document, isbn, 1).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 1, fileSpec));
-            ;
         }
     }
 

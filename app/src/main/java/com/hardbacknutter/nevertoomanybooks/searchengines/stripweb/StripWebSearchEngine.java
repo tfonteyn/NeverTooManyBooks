@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -47,13 +45,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -62,9 +60,6 @@ import org.jsoup.select.Elements;
 public class StripWebSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByBarcode {
-
-    static final String PK_RESOLVE_AUTHORS_ON_BEDETHEQUE = "stripweb.resolve.authors.bedetheque";
-
 
     /**
      * Param 1: ISBN.
@@ -103,15 +98,9 @@ public class StripWebSearchEngine
         super(appContext, config);
     }
 
-    @Nullable
-    private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, false)) {
-            return new BedethequeAuthorResolver(context, this);
-        } else {
-            return null;
-        }
+    @NonNull
+    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
+        return AuthorResolverFactory.getResolvers(context, this);
     }
 
     @NonNull
@@ -178,7 +167,7 @@ public class StripWebSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book, getAuthorResolver(context));
+                    parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
                 }
             }
         }
@@ -193,7 +182,8 @@ public class StripWebSearchEngine
      * @param fetchCovers    Set to {@code true} if we want to get covers
      *                       The array is guaranteed to have at least one element.
      * @param book           Bundle to update
-     * @param authorResolver (optional) {@link AuthorResolver} to use
+     * @param authorResolvers {@link AuthorResolver}s to use
+     *                        (passed in for easy testing)
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -207,7 +197,7 @@ public class StripWebSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book,
-                      @Nullable final AuthorResolver authorResolver)
+                      @NonNull final List<AuthorResolver> authorResolvers)
             throws StorageException, SearchException, CredentialsException {
 
         final Element main = document.selectFirst("main.content");
@@ -342,9 +332,9 @@ public class StripWebSearchEngine
             //}
         }
 
-        if (authorResolver != null) {
+        for (final AuthorResolver resolver : authorResolvers) {
             for (final Author author : book.getAuthors()) {
-                authorResolver.resolve(author);
+                resolver.resolve(author);
             }
         }
 

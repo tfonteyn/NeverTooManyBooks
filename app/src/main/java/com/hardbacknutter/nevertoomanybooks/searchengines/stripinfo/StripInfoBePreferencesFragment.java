@@ -55,7 +55,7 @@ public class StripInfoBePreferencesFragment
         final boolean useRealAuthor = ServiceLocator.getInstance()
                                                     .isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
         //noinspection DataFlowIssue
-        findPreference(StripInfoSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
+        findPreference("stripinfo.resolve.authors.bedetheque")
                 .setEnabled(useRealAuthor);
 
         //noinspection DataFlowIssue

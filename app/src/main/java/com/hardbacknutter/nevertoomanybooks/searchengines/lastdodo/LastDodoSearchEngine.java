@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,13 +45,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -66,8 +65,6 @@ public class LastDodoSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
-
-    static final String PK_RESOLVE_AUTHORS_ON_BEDETHEQUE = "lastdodo.resolve.authors.bedetheque";
 
     /**
      * Param 1: external book ID; really a 'long'.
@@ -165,15 +162,9 @@ public class LastDodoSearchEngine
         }
     }
 
-    @Nullable
-    private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, false)) {
-            return new BedethequeAuthorResolver(context, this);
-        } else {
-            return null;
-        }
+    @NonNull
+    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
+        return AuthorResolverFactory.getResolvers(context, this);
     }
 
     @NonNull
@@ -194,7 +185,7 @@ public class LastDodoSearchEngine
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book, getAuthorResolver(context));
+            parse(context, document, fetchCovers, book, getAuthorResolvers(context));
         }
         return book;
     }
@@ -254,7 +245,7 @@ public class LastDodoSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book, getAuthorResolver(context));
+                    parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
                 }
             }
         }
@@ -359,12 +350,13 @@ public class LastDodoSearchEngine
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param context        Current context
-     * @param document       to parse
-     * @param fetchCovers    Set to {@code true} if we want to get covers
-     *                       The array is guaranteed to have at least one element.
-     * @param book           Bundle to update
-     * @param authorResolver (optional) {@link AuthorResolver} to use
+     * @param context         Current context
+     * @param document        to parse
+     * @param fetchCovers     Set to {@code true} if we want to get covers
+     *                        The array is guaranteed to have at least one element.
+     * @param book            Bundle to update
+     * @param authorResolvers {@link AuthorResolver}s to use
+     *                        (passed in for easy testing)
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -378,7 +370,7 @@ public class LastDodoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book,
-                      @Nullable final AuthorResolver authorResolver)
+                      @NonNull final List<AuthorResolver> authorResolvers)
             throws StorageException, SearchException, CredentialsException {
 
         //noinspection NonConstantStringShouldBeStringBuffer
@@ -541,9 +533,9 @@ public class LastDodoSearchEngine
             }
         }
 
-        if (authorResolver != null) {
+        for (final AuthorResolver resolver : authorResolvers) {
             for (final Author author : book.getAuthors()) {
-                authorResolver.resolve(author);
+                resolver.resolve(author);
             }
         }
 

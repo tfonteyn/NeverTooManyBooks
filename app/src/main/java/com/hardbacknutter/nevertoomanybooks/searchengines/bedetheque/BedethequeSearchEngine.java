@@ -41,7 +41,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -67,7 +67,6 @@ public class BedethequeSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
-    static final String PK_RESOLVE_AUTHORS_ON_BEDETHEQUE = "bedetheque.resolve.authors.bedetheque";
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
     private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES = "bedetheque.resolve.formats";
 
@@ -104,15 +103,9 @@ public class BedethequeSearchEngine
         extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext) + SEARCH_URL);
     }
 
-    @Nullable
-    private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, true)) {
-            return new BedethequeAuthorResolver(context, this);
-        } else {
-            return null;
-        }
+    @NonNull
+    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
+        return AuthorResolverFactory.getResolvers(context, this);
     }
 
     @NonNull
@@ -202,7 +195,7 @@ public class BedethequeSearchEngine
                 if (!url.isBlank()) {
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, book, getAuthorResolver(context));
+                        parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
                     }
                 }
             }
@@ -213,12 +206,13 @@ public class BedethequeSearchEngine
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param context        Current context
-     * @param document       to parse
-     * @param fetchCovers    Set to {@code true} if we want to get covers
-     *                       The array is guaranteed to have at least one element.
-     * @param book           Bundle to update
-     * @param authorResolver (optional) {@link AuthorResolver} to use
+     * @param context         Current context
+     * @param document        to parse
+     * @param fetchCovers     Set to {@code true} if we want to get covers
+     *                        The array is guaranteed to have at least one element.
+     * @param book            Bundle to update
+     * @param authorResolvers {@link AuthorResolver}s to use
+     *                        (passed in for easy testing)
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -232,7 +226,7 @@ public class BedethequeSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book,
-                      @Nullable final AuthorResolver authorResolver)
+                      @NonNull final List<AuthorResolver> authorResolvers)
             throws StorageException, SearchException, CredentialsException {
 
         final Element section = document.selectFirst(
@@ -431,9 +425,9 @@ public class BedethequeSearchEngine
                 book.putString(DBKey.DESCRIPTION, description.text());
             }
 
-            if (authorResolver != null) {
+            for (final AuthorResolver resolver : authorResolvers) {
                 for (final Author author : book.getAuthors()) {
-                    authorResolver.resolve(author);
+                    resolver.resolve(author);
                 }
             }
 

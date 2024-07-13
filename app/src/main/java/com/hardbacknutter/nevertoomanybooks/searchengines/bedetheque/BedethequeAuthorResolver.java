@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -64,25 +65,26 @@ public class BedethequeAuthorResolver
     private final Locale locale;
 
     /**
-     * Constructor used by the {@link BedethequeSearchEngine} itself.
+     * Private Constructor.
      *
      * @param context      Current context
      * @param searchEngine the engine
      */
-    BedethequeAuthorResolver(@NonNull final Context context,
-                             @NonNull final BedethequeSearchEngine searchEngine) {
+    private BedethequeAuthorResolver(@NonNull final Context context,
+                                     @NonNull final BedethequeSearchEngine searchEngine) {
         this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
     }
 
     /**
-     * Constructor to use by 'other' search engines.
+     * Private Constructor.
      *
      * @param context Current context
      * @param caller  a {@link Cancellable} which can forward requests
      *                to the (internal) {@link BedethequeSearchEngine}
      */
+    @VisibleForTesting
     public BedethequeAuthorResolver(@NonNull final Context context,
                                     @Nullable final Cancellable caller) {
         this.context = context;
@@ -90,6 +92,26 @@ public class BedethequeAuthorResolver
         searchEngine.setCaller(caller);
         locale = searchEngine.getLocale(context);
     }
+
+    /**
+     * Constructor.
+     *
+     * @param context      Current context
+     * @param searchEngine the engine which is requesting this resolver
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static AuthorResolver create(@NonNull final Context context,
+                                        @NonNull final SearchEngine searchEngine) {
+        if (searchEngine instanceof BedethequeSearchEngine) {
+            return new BedethequeAuthorResolver(context,
+                                                (BedethequeSearchEngine) searchEngine);
+        } else {
+            return new BedethequeAuthorResolver(context, searchEngine);
+        }
+    }
+
 
     /**
      * Take the first character from the given name and normalize it to [0A-Z]

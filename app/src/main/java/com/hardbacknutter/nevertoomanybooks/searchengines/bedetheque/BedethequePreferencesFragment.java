@@ -50,7 +50,7 @@ public class BedethequePreferencesFragment
         final boolean useRealAuthor = ServiceLocator.getInstance()
                                                     .isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
         //noinspection DataFlowIssue
-        findPreference(BedethequeSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
+        findPreference("bedetheque.resolve.authors.bedetheque")
                 .setEnabled(useRealAuthor);
 
         final Preference purgeCache = findPreference(PSK_CLEAR_AUTHOR_CACHE);

@@ -42,7 +42,7 @@ public class StripWebPreferencesFragment
         final boolean useRealAuthor = ServiceLocator.getInstance()
                                                     .isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
         //noinspection DataFlowIssue
-        findPreference(StripWebSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
+        findPreference("stripweb.resolve.authors.bedetheque")
                 .setEnabled(useRealAuthor);
     }
 }
