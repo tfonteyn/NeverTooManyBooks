@@ -27,23 +27,19 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Copied 2020-01-27 (180adcc54a6fde799c17f6ce3bc035cae3db4f53) from
- * <a href="https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/recyclerview/recyclerview/src/main/java/androidx/recyclerview/widget/FastScroller.java">
- * google source</a>
- * <p>
- * Current link:
+ * Copied/updated: 2024-07-13 (96438a56ed99d5f5d5917672dc433c864432ab08 ) from
  * <a href="https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/recyclerview/recyclerview/src/main/java/androidx/recyclerview/widget/FastScroller.java">
  * HEAD</a>
  * Class responsible to animate and provide a fast scroller.
@@ -236,7 +232,7 @@ public class FastScrollerImpl
     }
 
     private boolean isLayoutRTL() {
-        return ViewCompat.getLayoutDirection(mRecyclerView) == ViewCompat.LAYOUT_DIRECTION_RTL;
+        return mRecyclerView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     public boolean isDragging() {
