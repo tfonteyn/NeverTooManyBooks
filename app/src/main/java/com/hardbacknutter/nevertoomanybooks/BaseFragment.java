@@ -33,6 +33,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 
 public abstract class BaseFragment
@@ -78,8 +79,8 @@ public abstract class BaseFragment
     protected FloatingActionButton getFab() {
         if (fab == null) {
             //noinspection DataFlowIssue
-            fab = Objects.requireNonNull(getActivity().findViewById(R.id.fab),
-                                         "R.id.fab");
+            fab = Objects.requireNonNull(getActivity().findViewById(R.id.fab), "R.id.fab");
+            WindowInsetListenerFactory.init(fab);
         }
         return fab;
     }
