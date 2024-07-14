@@ -67,25 +67,31 @@ public class DnbSearchEngine
 
 
     /**
-     * param 1: the ISBN
+     * param 1: the ISBN.
      */
-    private static final String SEARCH_URL = "/DE/list.html?" +
-                                             "key=num&" +
-                                             "key.GROUP=1&" +
-                                             "t=%1$s" +
-                                             "&sortD=-dat" +
-                                             "&sortA=bez" +
-                                             "&pr=0" +
-                                             "&v=plist";
+    private static final String SEARCH_URL = "/DE/list.html?"
+                                             + "key=num&"
+                                             + "key.GROUP=1&"
+                                             + "t=%1$s"
+                                             + "&sortD=-dat"
+                                             + "&sortA=bez"
+                                             + "&pr=0"
+                                             + "&v=plist";
 
     /**
      * Suffixes we try to detect and remove from the title field.
-     * Ths list of suffixes is presumed to be much larger of course.
+     * Although we've not found others... it's presumed there are more.
+     * Will be added when needed.
      */
     private static final String[] TITLE_SUFFIXES = {
             ": Roman",
             ": Thriller",
-            "Kriminalroman"};
+            ": Psychothriller",
+            ": Kriminalroman",
+            // We've seen this suffix without the ": " as well.
+            "Kriminalroman"
+    };
+
     private static final Pattern PATTERN_SERIES_NR = Pattern.compile(" ; ");
     private static final Pattern PATTERN_BAR = Pattern.compile("\\|");
     private static final Pattern PATTERN_SLASH = Pattern.compile("/");
