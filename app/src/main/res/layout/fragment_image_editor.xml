@@ -49,11 +49,13 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
+        style="@style/Widget.Material3.FloatingActionButton.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/action_crop"
         android:src="@drawable/crop_24px"
         app:layout_anchor="@id/bottom_app_bar"
+        app:layout_anchorGravity="center_vertical|end"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

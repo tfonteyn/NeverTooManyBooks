@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.MarginWindowInsetListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImageEditorBinding;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -69,10 +71,6 @@ public class CropImageFragment
     /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
     private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
 
-    private FragmentImageEditorBinding vb;
-    // do NOT delete the destination file in case source and destination was the same file
-    private String destinationPath;
-
     /** A back-press is always a "cancel". */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -82,6 +80,9 @@ public class CropImageFragment
                     getActivity().finish();
                 }
             };
+    private FragmentImageEditorBinding vb;
+    // do NOT delete the destination file in case source and destination was the same file
+    private String destinationPath;
 
     @Nullable
     @Override
@@ -136,10 +137,22 @@ public class CropImageFragment
             destinationPath = Objects.requireNonNull(args.getString(
                     CropImageContract.BKEY_DESTINATION), CropImageContract.BKEY_DESTINATION);
 
+            // do NOT set a listener on the vb.bottomAppBar/vb.fab
+            // The former does that automatically, and the latter is anchored to the bar.
+            ViewCompat.setOnApplyWindowInsetsListener(
+                    vb.coverImage0, new MarginWindowInsetListener(
+                            vb.coverImage0, true, true, true, true));
+
             vb.coverImage0.setInitialBitmap(bitmap);
 
             // the FAB button saves the image
             vb.fab.setOnClickListener(v -> onSave());
+
+            // FIXME: 2024-07-14: if the device is displaying a 3-button soft-nav-bar,
+            //  we'll have two 'back' buttons just above each other. ...
+            //  I tried to detect a) visibility of navbar; b) if gesture-nav is enable
+            //  using various unsubstantiated/dated posts on the web...
+            //  none of them worked. So we have two buttons.... better than none I suppose.
             // Back is cancel
             vb.bottomAppBar.setNavigationOnClickListener(v -> getActivity().finish());
             // Reset/undo but stay here editing
