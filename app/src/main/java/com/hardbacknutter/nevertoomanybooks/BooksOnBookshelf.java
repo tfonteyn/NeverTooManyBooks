@@ -807,7 +807,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_ABOUT) {
-            startActivity(IntentFactory.createAboutIntent(this));
+            startActivity(FragmentHostActivity.createIntent(this, AboutFragment.class));
             return true;
         }
 

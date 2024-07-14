@@ -55,14 +55,6 @@ public class FragmentHostActivity
 
     private static final String TAG = "FragmentHostActivity";
 
-    /**
-     * Allows passing in {@link AppBarLayout.LayoutParams}#SCROLL_FLAG_*
-     * which will be set on the (optional) Activity toolbar.
-     *
-     * @see #initToolbar()
-     */
-    public static final String BKEY_TOOLBAR_SCROLL_FLAGS = TAG + ":tbf";
-
     private static final String BKEY_ACTIVITY = TAG + ":a";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
@@ -115,7 +107,6 @@ public class FragmentHostActivity
         setContentView(activityResId);
 
         initNavDrawer();
-        initFab();
         initToolbar();
 
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
@@ -158,13 +149,6 @@ public class FragmentHostActivity
         if (toolbar != null) {
             setNavIcon(toolbar);
             WindowInsetListenerFactory.init(toolbar);
-
-            final int flags = getIntent().getIntExtra(BKEY_TOOLBAR_SCROLL_FLAGS, -1);
-            if (flags >= 0) {
-                final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
-                        toolbar.getLayoutParams();
-                lp.setScrollFlags(flags);
-            }
 
             toolbar.setNavigationOnClickListener(v -> {
                 if (isTaskRoot()) {
@@ -252,7 +236,7 @@ public class FragmentHostActivity
             return true;
 
         } else if (menuItemId == R.id.MENU_ABOUT) {
-            startActivity(IntentFactory.createAboutIntent(this));
+            startActivity(createIntent(this, AboutFragment.class));
             return true;
         }
 

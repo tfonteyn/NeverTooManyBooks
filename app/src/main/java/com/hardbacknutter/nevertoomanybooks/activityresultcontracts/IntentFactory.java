@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,10 +26,6 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.material.appbar.AppBarLayout;
-
-import com.hardbacknutter.nevertoomanybooks.AboutFragment;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -50,13 +46,5 @@ public final class IntentFactory {
     public static Intent createGithubIssueIntent(@NonNull final Context context) {
         return new Intent(Intent.ACTION_VIEW,
                           Uri.parse(context.getString(R.string.github_issues_url)));
-    }
-
-    @NonNull
-    public static Intent createAboutIntent(@NonNull final Context context) {
-        final Intent intent = FragmentHostActivity.createIntent(context, AboutFragment.class);
-        intent.putExtra(FragmentHostActivity.BKEY_TOOLBAR_SCROLL_FLAGS,
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
-        return intent;
     }
 }

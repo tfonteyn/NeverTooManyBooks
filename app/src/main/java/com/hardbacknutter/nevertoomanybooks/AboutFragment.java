@@ -31,6 +31,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.MarginWindowInsetListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
@@ -58,6 +60,11 @@ public class AboutFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_about);
+
+        // Don't scroll
+        final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
+                toolbar.getLayoutParams();
+        lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
 
         //noinspection DataFlowIssue
         final PackageInfoWrapper packageInfoWrapper =
