@@ -41,7 +41,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
-import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -91,10 +90,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.MarginWindowInsetListener;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.PaddingWindowInsetsListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
@@ -568,9 +566,7 @@ public class BooksOnBookshelf
 
     private void initToolbar() {
         setNavIcon();
-
-        ViewCompat.setOnApplyWindowInsetsListener(vb.toolbar, new PaddingWindowInsetsListener(
-                vb.toolbar, false, true, false, false));
+        WindowInsetListenerFactory.init(vb.toolbar);
 
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {
@@ -608,8 +604,7 @@ public class BooksOnBookshelf
     }
 
     private void createFabMenu() {
-        ViewCompat.setOnApplyWindowInsetsListener(vb.fab, new MarginWindowInsetListener(
-                vb.fab, false, false, true, true));
+        WindowInsetListenerFactory.init(vb.fab);
 
         fabMenu = new FabMenu(vb.fab, vb.fabOverlay,
                               vb.fab0ScanBarcode,

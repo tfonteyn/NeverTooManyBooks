@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.widgets;
+package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
 
 import android.view.View;
 
@@ -30,12 +30,23 @@ import androidx.core.view.WindowInsetsCompat;
 public class PaddingWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
+    private static final int TYPE_MASK = WindowInsetsCompat.Type.systemBars()
+                                         | WindowInsetsCompat.Type.displayCutout();
     private final Insets base;
     private final boolean left;
     private final boolean top;
     private final boolean right;
     private final boolean bottom;
 
+    /**
+     * Constructor.
+     *
+     * @param view   to add the listener to
+     * @param left   {@code true} to apply insets on the left border
+     * @param top    {@code true} to apply insets on the left top
+     * @param right  {@code true} to apply insets on the left right
+     * @param bottom {@code true} to apply insets on the left bottom
+     */
     @SuppressWarnings("SameParameterValue")
     public PaddingWindowInsetsListener(@NonNull final View view,
                                        final boolean left,
@@ -54,9 +65,7 @@ public class PaddingWindowInsetsListener
     @Override
     public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v,
                                                   @NonNull final WindowInsetsCompat windowInsets) {
-        final Insets insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                | WindowInsetsCompat.Type.displayCutout());
+        final Insets insets = windowInsets.getInsets(TYPE_MASK);
 
         v.setPadding(base.left + (left ? insets.left : 0),
                      base.top + (top ? insets.top : 0),

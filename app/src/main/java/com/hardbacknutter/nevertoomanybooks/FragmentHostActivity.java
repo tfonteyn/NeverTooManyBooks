@@ -31,7 +31,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -45,8 +44,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.MarginWindowInsetListener;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.PaddingWindowInsetsListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 
 /**
@@ -151,8 +149,7 @@ public class FragmentHostActivity
     private void initFab() {
         final FloatingActionButton fab = findViewById(R.id.fab);
         if (fab != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(fab, new MarginWindowInsetListener(
-                    fab, false, false, true, true));
+            WindowInsetListenerFactory.init(fab);
         }
     }
 
@@ -160,6 +157,7 @@ public class FragmentHostActivity
         final Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setNavIcon(toolbar);
+            WindowInsetListenerFactory.init(toolbar);
 
             final int flags = getIntent().getIntExtra(BKEY_TOOLBAR_SCROLL_FLAGS, -1);
             if (flags >= 0) {
@@ -167,9 +165,6 @@ public class FragmentHostActivity
                         toolbar.getLayoutParams();
                 lp.setScrollFlags(flags);
             }
-
-            ViewCompat.setOnApplyWindowInsetsListener(toolbar, new PaddingWindowInsetsListener(
-                    toolbar, false, true, false, false));
 
             toolbar.setNavigationOnClickListener(v -> {
                 if (isTaskRoot()) {
