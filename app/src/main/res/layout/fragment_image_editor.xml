@@ -37,7 +37,7 @@
         />
 
     <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
+        android:id="@+id/bottom_app_bar"
         style="@style/Widget.Material3.BottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/action_crop"
         android:src="@drawable/crop_24px"
-        app:layout_anchor="@id/bottomAppBar"
+        app:layout_anchor="@id/bottom_app_bar"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

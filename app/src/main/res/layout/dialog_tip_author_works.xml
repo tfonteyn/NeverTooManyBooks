@@ -28,7 +28,7 @@
     >
 
     <TextView
-        android:id="@+id/fixedContent"
+        android:id="@+id/fixed_content"
         style="@style/Text.Header"
         android:text="@string/tip_authors_works"
         tools:ignore="SelectableText"

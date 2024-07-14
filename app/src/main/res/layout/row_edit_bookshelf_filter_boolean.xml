@@ -55,7 +55,7 @@
         >
 
         <RadioButton
-            android:id="@+id/valueTrue"
+            android:id="@+id/value_true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:checked="true"
@@ -63,7 +63,7 @@
             />
 
         <RadioButton
-            android:id="@+id/valueFalse"
+            android:id="@+id/value_false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="@string/disabled"

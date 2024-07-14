@@ -101,7 +101,7 @@
 
         <com.google.android.material.divider.MaterialDivider
             style="@style/Widget.Material3.MaterialDivider"
-            android:id="@+id/formatDivider"
+            android:id="@+id/format_divider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/cbx_covers"
@@ -114,7 +114,7 @@
             android:layout_marginTop="@dimen/field_margin_top"
             android:hint="@string/lbl_archive_format"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/formatDivider"
+            app:layout_constraintTop_toBottomOf="@id/format_divider"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView

@@ -31,7 +31,7 @@
     </style>
 
     <!-- 'medium' detail field; for example Series title, ...
-    Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
+    Set app:layout_constraintStart_toStartOf="@id/this_field_label"
     -->
     <style name="Field.Generic" parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>

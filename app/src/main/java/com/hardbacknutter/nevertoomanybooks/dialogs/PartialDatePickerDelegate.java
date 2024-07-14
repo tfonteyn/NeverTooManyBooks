@@ -161,11 +161,11 @@ class PartialDatePickerDelegate
         }
 
         // Remove the 3 pickers from their parent and add them back in the required order.
-        final ViewGroup parent = root.findViewById(R.id.dateSelector);
+        final ViewGroup parent = root.findViewById(R.id.date_selector);
         // Get the three views
-        final ConstraintLayout y = parent.findViewById(R.id.yearSelector);
-        final ConstraintLayout m = parent.findViewById(R.id.monthSelector);
-        final ConstraintLayout d = parent.findViewById(R.id.daySelector);
+        final ConstraintLayout y = parent.findViewById(R.id.year_selector);
+        final ConstraintLayout m = parent.findViewById(R.id.month_selector);
+        final ConstraintLayout d = parent.findViewById(R.id.day_selector);
         // Remove them
         parent.removeAllViews();
         // Re-add in the correct order.

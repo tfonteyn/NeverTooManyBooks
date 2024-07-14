@@ -49,7 +49,7 @@
     nice with view binding.
      -->
     <LinearLayout
-        android:id="@+id/dateSelector"
+        android:id="@+id/date_selector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -62,7 +62,7 @@
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/yearSelector"
+            android:id="@+id/year_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             >
@@ -86,7 +86,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/monthSelector"
+            android:id="@+id/month_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             >
@@ -110,7 +110,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/daySelector"
+            android:id="@+id/day_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             >
@@ -139,7 +139,7 @@
         style="@style/ButtonPanel.Container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dateSelector">
+        app:layout_constraintTop_toBottomOf="@id/date_selector">
 
         <!--        <Button-->
         <!--            android:id="@+id/btn_neutral"-->

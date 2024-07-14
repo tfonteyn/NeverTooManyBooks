@@ -72,7 +72,7 @@
 
         <!-- used to intercept click events when the FAB menu is showing. -->
         <View
-            android:id="@+id/fabOverlay"
+            android:id="@+id/fab_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"

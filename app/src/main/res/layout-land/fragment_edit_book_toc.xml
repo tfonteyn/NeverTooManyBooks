@@ -65,7 +65,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tocList"
+            android:id="@+id/toc_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/field_margin_start"

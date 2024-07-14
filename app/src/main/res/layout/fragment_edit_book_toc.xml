@@ -53,7 +53,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tocList"
+            android:id="@+id/toc_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/section_margin_top"

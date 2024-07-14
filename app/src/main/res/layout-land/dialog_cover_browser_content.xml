@@ -105,7 +105,7 @@
         tools:visibility="visible" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/previewProgressBar"
+        android:id="@+id/preview_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"

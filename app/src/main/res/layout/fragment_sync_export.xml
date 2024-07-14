@@ -102,7 +102,7 @@
 
         <com.google.android.material.divider.MaterialDivider
             style="@style/Widget.Material3.MaterialDivider"
-            android:id="@+id/formatDivider"
+            android:id="@+id/format_divider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/cbx_covers"
@@ -116,7 +116,7 @@
             android:checked="false"
             android:text="@string/option_delete_removed_books"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/formatDivider"
+            app:layout_constraintTop_toBottomOf="@id/format_divider"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
