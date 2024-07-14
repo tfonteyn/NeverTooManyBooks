@@ -183,33 +183,21 @@
         <!--<module name="JavadocTagContinuationIndentation" />-->
         <!--<module name="JavadocStyle" />-->
         <module name="JavadocType" />
-        <!--        <module name="JavadocVariable" />-->
+        <!--<module name="JavadocVariable" />-->
         <module name="NonEmptyAtclauseDescription" />
         <module name="SingleLineJavadoc" />
         <module name="SummaryJavadocCheck" />
 
         <!-- ========== Metrics ========== -->
         <module name="BooleanExpressionComplexity" />
-        <!-- Measures the number of instantiations of other classes within the given class.  -->
-        <!--        <module name="ClassDataAbstractionCoupling" />-->
-        <!-- Checks the number of other classes a given class relies on. -->
-        <!--        <module name="ClassFanOutComplexity">-->
-        <!--            <property name="excludedPackages"-->
-        <!--                      value="java, android, androidx" />-->
-        <!--        </module>-->
-        <!-- a measure of the minimum number of possible paths through the source and
-             therefore the number of required tests. -->
-        <!--        <module name="CyclomaticComplexity" />-->
-        <!-- Rationale: Too large methods and classes are hard to read and costly to maintain.
-            A large NCSS number often means that a method or class has too many responsibilities
-            which should be decomposed into smaller units. -->
-        <module name="JavaNCSS" />
+        <!-- IDEA checks this now-->
+        <!-- <module name="JavaNCSS" />-->
         <!-- The NPATH metric computes the number of possible execution paths through a function.
          -->
-        <!--        <module name="NPathComplexity">-->
-        <!--            <property name="max"-->
-        <!--                      value="5000" />-->
-        <!--        </module>-->
+        <!-- <module name="NPathComplexity">-->
+        <!--     <property name="max"-->
+        <!--               value="5000" />-->
+        <!-- </module>-->
 
         <!-- ========== Miscellaneous ========== -->
         <module name="ArrayTypeStyle" />
