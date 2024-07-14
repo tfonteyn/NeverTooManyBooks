@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshel
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
@@ -199,6 +200,7 @@ public class EditBookshelvesFragment
 
         vb.list.setHasFixedSize(true);
         vb.list.setAdapter(adapter);
+        WindowInsetListenerFactory.init(vb.list);
     }
 
     @Override

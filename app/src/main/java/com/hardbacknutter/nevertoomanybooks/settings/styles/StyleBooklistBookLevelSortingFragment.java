@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
@@ -187,6 +188,7 @@ public class StyleBooklistBookLevelSortingFragment
         vb.columnList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.columnList.setHasFixedSize(true);
+        WindowInsetListenerFactory.init(vb.columnList);
 
         // setup the adapters
 

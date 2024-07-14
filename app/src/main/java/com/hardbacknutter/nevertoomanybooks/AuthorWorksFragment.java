@@ -47,6 +47,7 @@ import java.util.List;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -211,6 +212,8 @@ public class AuthorWorksFragment
         // Optional overlay
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.authorWorks, overlayType);
+
+        WindowInsetListenerFactory.init(vb.authorWorks);
 
         adapter = new AuthorWorksAdapter(context, vm.getStyle(), List.of(vm.getAuthor()),
                                          vm.getWorks());

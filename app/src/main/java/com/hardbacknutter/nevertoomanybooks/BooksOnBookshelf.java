@@ -686,8 +686,10 @@ public class BooksOnBookshelf
             final int overlayType = Prefs.getFastScrollerOverlayType(this);
             FastScroller.attach(vb.content.list, overlayType);
         }
-        // attach the scroll-listener
+        // attach the FAB scroll-listener which will hide the FAB while scrolling
         fabMenu.attach(vb.content.list);
+
+        WindowInsetListenerFactory.init(vb.content.list);
 
         vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
         vb.content.list.setDrawingCacheEnabled(true);

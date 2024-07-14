@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -140,6 +141,8 @@ public class CalibreLibraryMappingFragment
                 ErrorDialog.show(getContext(), TAG, e);
             }
         });
+
+        WindowInsetListenerFactory.init(vb.virtualLibraries);
 
         // We're only using the meta-data task, so just check if we already have libraries
         if (vm.getLibraries().isEmpty()) {

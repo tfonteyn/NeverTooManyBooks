@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -232,6 +233,7 @@ public class PreferredStylesFragment
         vb.list.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.list.setHasFixedSize(true);
+        WindowInsetListenerFactory.init(vb.list);
         vb.list.setAdapter(listAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =

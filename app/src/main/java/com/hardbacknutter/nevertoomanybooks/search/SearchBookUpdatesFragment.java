@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesS
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -170,6 +171,8 @@ public class SearchBookUpdatesFragment
                 new GridDividerItemDecoration(getContext(), false, true);
         vb.fieldList.addItemDecoration(columnDivider);
         vb.fieldList.setHasFixedSize(true);
+        WindowInsetListenerFactory.init(vb.fieldList);
+
         initAdapter();
 
         if (savedInstanceState == null) {

@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 
-import com.hardbacknutter.nevertoomanybooks.core.widgets.MarginWindowInsetListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.MarginWindowInsetListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;

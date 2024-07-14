@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
@@ -265,6 +266,8 @@ public class EditBookTocFragment
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.tocList.setAdapter(adapter);
+
+        WindowInsetListenerFactory.init(vb.tocList);
 
         vb.tocList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
