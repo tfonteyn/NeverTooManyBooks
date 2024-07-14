@@ -36,7 +36,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 
 /**
- * Base class for all Activity's (except the startup and the crop activity)
+ * Base class for all Activity's (except the startup and ACRA activity)
  * providing the recreation mechanism.
  * FIXME: reimplement recreation using the same mechanism as the
  *  {@link com.hardbacknutter.nevertoomanybooks.utils.theme.ThemeColorController}
