@@ -38,7 +38,7 @@ public final class WindowInsetListenerFactory {
     public static void init(@NonNull final Toolbar view) {
         ViewCompat.setOnApplyWindowInsetsListener(
                 view, new PaddingWindowInsetsListener(
-                        view, false, true, false, false));
+                        view, true, true, true, false));
     }
 
     public static void init(@NonNull final RecyclerView view) {
@@ -52,6 +52,4 @@ public final class WindowInsetListenerFactory {
                 view, new MarginWindowInsetListener(
                         view, false, false, true, true));
     }
-
-
 }
