@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
@@ -166,6 +167,7 @@ class CoverBrowserDelegate
                                             positionHandler,
                                             vm.getGalleryDisplayExecutor());
         vb.gallery.setAdapter(galleryAdapter);
+        WindowInsetListenerFactory.init(vb.gallery);
 
         vm.onGalleryImage().observe(owner.getViewLifecycleOwner(), this::setGalleryImage);
         vm.onShowGalleryProgress().observe(owner.getViewLifecycleOwner(), show -> {

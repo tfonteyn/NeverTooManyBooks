@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
@@ -107,6 +108,7 @@ class SingleChoiceDelegate {
         final RadioGroupRecyclerAdapter<Long> adapter = new RadioGroupRecyclerAdapter<>(
                 context, itemIds, itemLabels::get, vm.getSelectedItem(), vm::setSelectedItem);
         vb.itemList.setAdapter(adapter);
+        WindowInsetListenerFactory.init(vb.itemList);
     }
 
     void saveChanges() {
