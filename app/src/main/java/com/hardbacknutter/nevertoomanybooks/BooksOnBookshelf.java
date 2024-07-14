@@ -364,6 +364,7 @@ public class BooksOnBookshelf
         createHandlers();
 
         // Always present
+        //noinspection DataFlowIssue
         navDrawer = NavDrawer.create(this, menuItem ->
                 onNavigationItemSelected(menuItem.getItemId()));
 
@@ -635,39 +636,45 @@ public class BooksOnBookshelf
         // and remember it. See #onResume where we need to check/compare it again
         vm.setCurrentLayout(layout);
 
+        final RecyclerView.LayoutManager layoutManager;
         switch (layout) {
             case List: {
-                final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-                vb.content.list.setLayoutManager(layoutManager);
+                layoutManager = new LinearLayoutManager(this);
                 break;
             }
             case Grid: {
-                final int spanCount = vm.getStyle().getCoverScale().getGridSpanCount(this);
-                final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
-                layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                    @Override
-                    public int getSpanSize(final int position) {
-                        final int dataPosition = position - headerAdapter.getItemCount();
-                        if (dataPosition >= 0) {
-                            //noinspection DataFlowIssue
-                            final DataHolder rowData = adapter.readDataAt(dataPosition);
-                            //noinspection DataFlowIssue
-                            if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                                // A book, i.e. a cover, is always 1 cell.
-                                return 1;
-                            }
-                        }
-                        // all other BooklistGroup's use the full width.
-                        return spanCount;
-                    }
-                });
-
-                vb.content.list.setLayoutManager(layoutManager);
+                layoutManager = createGridLayoutManager();
                 break;
             }
             default:
                 throw new IllegalArgumentException(String.valueOf(layout));
         }
+        vb.content.list.setLayoutManager(layoutManager);
+    }
+
+    @NonNull
+    private GridLayoutManager createGridLayoutManager() {
+        final int spanCount = vm.getStyle().getCoverScale().getGridSpanCount(this);
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(final int position) {
+                final int dataPosition = position - headerAdapter.getItemCount();
+                if (dataPosition >= 0) {
+                    //noinspection DataFlowIssue
+                    final DataHolder rowData = adapter.readDataAt(dataPosition);
+                    //noinspection DataFlowIssue
+                    if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                        // A book, i.e. a cover, is always 1 cell.
+                        return 1;
+                    }
+                }
+                // all other BooklistGroup's use the full width.
+                return spanCount;
+            }
+        });
+        return layoutManager;
     }
 
     private void createBooklistView() {
