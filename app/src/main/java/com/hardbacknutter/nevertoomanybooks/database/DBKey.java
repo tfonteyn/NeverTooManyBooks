@@ -83,6 +83,8 @@ public final class DBKey {
     public static final String SID_LCCN = "lccn_book_id";
     /** External Site id. - Long. ENHANCE: set by search engines when found; not stored yet. */
     public static final String SID_DOUBAN = "douban_book_id";
+    /** External Site id. - Long. ENHANCE: set by search engines when found; not stored yet. */
+    public static final String SID_DNB = "dnb_book_id";
 
     /**
      * {@link DBDefinitions#TBL_BOOKS}.

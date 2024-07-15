@@ -30,7 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -95,7 +94,8 @@ public class DnbSearchEngine
     private static final Pattern PATTERN_SERIES_NR = Pattern.compile(" ; ");
     private static final Pattern PATTERN_BAR = Pattern.compile("\\|");
     private static final Pattern PATTERN_SLASH = Pattern.compile("/");
-    private static final Pattern PAGE_NUMBER_PATTERN = Pattern.compile("\\d+");
+    private static final Pattern PATTERN_PAGE_NUMBER = Pattern.compile("\\d+");
+    private static final Pattern PATTERN_BR = Pattern.compile("<br>");
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
 
@@ -164,7 +164,7 @@ public class DnbSearchEngine
         final Element titleElement = document
                 .selectFirst("h3.c-catalog-result__ueberschrift > span");
         if (titleElement != null) {
-            processTitle(titleElement, book);
+            parseTitle(titleElement, book);
         }
 
         final Element tableElement = document.selectFirst("table.c-catalog-table__table");
@@ -182,34 +182,40 @@ public class DnbSearchEngine
                         // english ones despite the "DE" in the url. So... check on both!
                         switch (s) {
                             case "Titel":
-                            case "Title":
+                            case "Title": {
                                 if (!book.contains(DBKey.TITLE)) {
-                                    processTitle(td, book);
+                                    parseTitle(td, book);
                                 }
                                 break;
+                            }
                             case "Beteiligt":
-                            case "Involved":
+                            case "Involved": {
                                 parseAuthor(context, td, book);
                                 break;
+                            }
                             case "Erschienen":
-                            case "Published":
+                            case "Published": {
                                 parsePublisher(td, book);
                                 break;
+                            }
                             case "Umfang":
-                            case "Extent":
-                                processPageNumber(td, book);
+                            case "Extent": {
+                                parsePageNumber(td, book);
                                 break;
-                            case "ISBN":
+                            }
+                            case "ISBN": {
                                 parseIsbn(td, book);
                                 break;
+                            }
                             case "Sprache":
-                            case "Language":
+                            case "Language": {
                                 final String lang = ServiceLocator
                                         .getInstance().getLanguages()
                                         .getISO3FromDisplayLanguage(context, locale, td.text());
                                 book.putString(DBKey.LANGUAGE, lang);
                                 break;
-                            case "Genre":
+                            }
+                            case "Genre": {
                                 // there is also:
                                 // Themen­gebiet / Topic
                                 // Thema / Subject
@@ -217,15 +223,33 @@ public class DnbSearchEngine
                                     book.putString(DBKey.GENRE, td.text());
                                 }
                                 break;
+                            }
                             case "Werk":
-                            case "Work":
+                            case "Work": {
                                 // This looks like it's the original title for a translated book
                                 book.putString(DBKey.TITLE_ORIGINAL_LANG, td.text());
                                 break;
+                            }
+                            case "Teil von":
+                            case "Part of":
+                                parsePartOf(td, book);
+                                break;
 
                             case "Reihe":
-                            case "Series":
-                                processSeries(td, book);
+                            case "Series": {
+                                parseSeries(td, book);
+                                break;
+                            }
+                            case "Datensatz-ID":
+                            case "Record ID": {
+                                book.putString(DBKey.SID_DNB, td.text());
+                                break;
+                            }
+                            case "Originalsprache":
+                            case "Original language":
+                            case "Land":
+                            case "Country":
+                                // ignored for now as we don't have a field for it.
                                 break;
                         }
                     }
@@ -260,8 +284,8 @@ public class DnbSearchEngine
      * 978-3-96584-423-0
      * Der Glukose-Masterplan / Ernährungs-Doc Dr. med. Matthias Riedl ; mit Texten von Franziska Pfeiffer und Rezepten von Inga Pfannebecker
      */
-    private void processTitle(@NonNull final Element element,
-                              @NonNull final Book book) {
+    private void parseTitle(@NonNull final Element element,
+                            @NonNull final Book book) {
 
         String text = element.text();
         if (text.contains("/")) {
@@ -338,8 +362,61 @@ public class DnbSearchEngine
         }
     }
 
-    private void processSeries(@NonNull final Element td,
-                               @NonNull final Book book) {
+    /**
+     * Part-of. Seems to overlap with the above "Series" field?
+     * <pre>
+     *     {@code
+     *     <td class="c-catalog-table__content">
+     *         <p>
+     *             <a href="DE/resource.html?id=1300481129&amp;pr=0&amp;sortA=bez&amp;sortD=-dat&amp;v=plist">
+     *                 <span>Star Wars Thrawn - der Aufstieg</span>
+     *             </a> ; 3
+     *         </p></td>
+     *     }
+     * </pre>
+     *
+     * @param td   to parse
+     * @param book to update
+     *
+     * @see #parseSeries(Element, Book)
+     */
+    private void parsePartOf(@NonNull final Element td,
+                             @NonNull final Book book) {
+        final Element a = td.selectFirst("a");
+        if (a != null) {
+            final String title = a.text();
+            if (!title.isBlank()) {
+                final Series series = Series.from(title);
+                final Node node = a.nextSibling();
+                if (node != null) {
+                    final String nrText = node.outerHtml();
+                    if (nrText.startsWith(" ; ") && nrText.length() > 3) {
+                        series.setNumber(nrText.substring(3));
+                    }
+                }
+                book.add(series);
+            }
+        }
+    }
+
+    /**
+     * Series. Seems to overlap with the above "Part of" field?
+     *
+     * <pre>
+     *     {@code
+     *     <td class="c-catalog-table__content">
+     *         <p>Die Foundation-Saga</p>
+     *     </td>
+     *     }
+     * </pre>
+     *
+     * @param td   to parse
+     * @param book to update
+     *
+     * @see #parsePartOf(Element, Book)
+     */
+    private void parseSeries(@NonNull final Element td,
+                             @NonNull final Book book) {
         final String text = td.text();
         if (text.contains(" ; ")) {
             final String[] split = PATTERN_SERIES_NR.split(text);
@@ -352,57 +429,90 @@ public class DnbSearchEngine
     }
 
     /**
+     * Publisher and publication-date. Prefixed by the city/region.
+     *
      * <pre>
-     *     "München: Knaur
-     *     2024"
-     *   ==> "2024"
-     *     "München: Wilhelm Heyne Verlag
-     *     01/2023"
-     *   ==> "2023-01"
-     *     "Schwarzenbek: newart medien & design GbR
-     *     [2019]"
-     *   ==> "2019"
+     *     {@code
+     *     <td class="c-catalog-table__content"><p>München: Wilhelm Heyne Verlag<br>01/2023</p></td>
+     *     }
+     * </pre>
+     * <pre>
+     *     {@code
+     *     <td class="c-catalog-table__content"><p>München: Knaur<br>Juni 2024</p></td>
+     *     }
+     * </pre>
+     * <pre>
+     *     {@code
+     *     <td class="c-catalog-table__content"><p>München: Blanvalet<br>[2023]</p></td>
+     *     }
+     * </pre>
+     *
+     * <pre>
      *     "Bamberg: Karl-May-Verlag
      *     to be released in November 2024"
-     *   ==> "2024"
-     *     "Hamburg: Rowohlt Polaris
-     *     Mai 2024"
-     *   ==> "2024"
+     *   ==> date parsing will fail.
      * </pre>
+     *
+     * @param td   to parse
+     * @param book to update
      */
     private void parsePublisher(@NonNull final Element td,
                                 @NonNull final Book book) {
-        final List<Node> nodes = td.childNodes();
-        if (!nodes.isEmpty()) {
-            String publisherName = nodes.get(0).toString().strip();
-            if (publisherName.contains(":")) {
-                final String[] parts = publisherName.split(":", 2);
-                publisherName = parts[parts.length - 1];
-            }
-            addPublisher(publisherName, book);
+        final Element p = td.selectFirst("p");
+        if (p != null) {
+            final String html = p.html();
 
-            // node.get(1) should be the br tag which we skip.
+            String publisherName = null;
+            // The part before '<br>' is a city/region name followed by ':' and the pub. name
+            // The part after '<br>' is the publishing date
+            final String[] brSplit = PATTERN_BR.split(html);
 
-            if (nodes.size() > 2) {
-                final String dateStr = nodes.get(2).toString().strip();
-                partialDateParser.parse(dateStr, false).ifPresent(book::setPublicationDate);
+            if (brSplit.length > 0 && !brSplit[0].isBlank()) {
+                if (brSplit[0].contains(":")) {
+                    final String[] parts = brSplit[0].split(":", 2);
+                    publisherName = parts[parts.length - 1];
+                } else {
+                    publisherName = brSplit[0];
+                }
+
+                if (publisherName != null && !publisherName.isBlank()) {
+                    addPublisher(publisherName, book);
+                }
+
+                if (brSplit.length > 1) {
+                    // strip to remove line-feeds and other blanks
+                    String dateStr = brSplit[1].strip();
+                    if (!dateStr.isBlank()) {
+                        // Handle "[text]" with text a minimum of 4 characters, i.e. a year
+                        if (dateStr.length() > 5
+                            && dateStr.startsWith("[")
+                            && dateStr.endsWith("]")) {
+                            dateStr = dateStr.substring(1, dateStr.length() - 1);
+                        }
+                        partialDateParser.parse(dateStr, false)
+                                         .ifPresent(book::setPublicationDate);
+                    }
+                }
             }
         }
     }
 
     /**
-     * Patterns seen:
+     * Page number. Patterns seen:
      * <pre>
      * "123 Seiten"
      * "182 Seiten : Illustrationen"
      * "Online-Ressource, 224 Seiten"
      * </pre>
      * We grab the first set of digit's we find.
+     *
+     * @param td   to parse
+     * @param book to update
      */
-    private void processPageNumber(@NonNull final Element td,
-                                   @NonNull final Book book) {
+    private void parsePageNumber(@NonNull final Element td,
+                                 @NonNull final Book book) {
 
-        final Matcher matcher = PAGE_NUMBER_PATTERN.matcher(td.text());
+        final Matcher matcher = PATTERN_PAGE_NUMBER.matcher(td.text());
         if (matcher.find()) {
             book.putString(DBKey.PAGE_COUNT, matcher.group());
         }

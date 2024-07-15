@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -46,8 +47,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ParseTest
         extends BaseDBTest {
@@ -66,17 +67,16 @@ public class ParseTest
     }
 
     @Test
-    public void parseBook01()
+    public void parse9783453321892()
             throws IOException, SearchException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://katalog.dnb.de/DE/list.html?t=978-3-453-32189-2" +
-                                      "&v=plist&key.GROUP=1&sortA=bez&sortD=-dat&key=all&pr=0";
+        final String locationHeader = "https://katalog.dnb.de/DE/list.html?t=978-3-453-32189-2&v=plist&key.GROUP=1&sortA=bez&sortD=-dat&key=all&pr=0";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_9783453321892;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
@@ -105,25 +105,30 @@ public class ParseTest
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
-        assertFalse(series.isEmpty());
+        assertEquals(1, series.size());
+
         final Series expectedSeries;
         expectedSeries = new Series("Die Foundation-Saga");
-        TestCase.assertEquals(expectedSeries, series.get(0));
+        TestCase.assertTrue(expectedSeries.isIdentical(series.get(0)));
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
+                                          + "_9783453321892_0_.jpg"));
     }
 
     @Test
-    public void parseBook02()
+    public void parse9783426226681()
             throws IOException, SearchException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://katalog.dnb.de/EN/list.html?key=num&" +
-                                      "key.GROUP=1&t=978-3-426-22668-1&sortD=-dat&sortA=bez&" +
-                                      "pr=0&v=plist&submit.x=19&submit.y=24";
+        final String locationHeader = "https://katalog.dnb.de/EN/list.html?key=num&key.GROUP=1&t=978-3-426-22668-1&sortD=-dat&sortA=bez&pr=0&v=plist&submit.x=19&submit.y=24";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_9783426226681;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Totholz : Was vergraben ist, ist nicht vergessen.",
@@ -149,12 +154,74 @@ public class ParseTest
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
-        assertFalse(series.isEmpty());
+        assertEquals(1, series.size());
+
         final Series expectedSeries;
         expectedSeries = new Series("Ein Wallner & Kreuthner Krimi");
         expectedSeries.setNumber("11");
-        TestCase.assertEquals(expectedSeries, series.get(0));
+        TestCase.assertTrue(expectedSeries.isIdentical(series.get(0)));
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
+                                          + "_9783426226681_0_.jpg"));
     }
 
+    @Test
+    public void parse9783734163296()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader = "https://katalog.dnb.de/DE/list.html?key=all&key.GROUP=1&t=9783734163296&sortD=-dat&sortA=bez&v=plist&submit.x=24&submit.y=20&pr=0";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.dnb_9783734163296;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Teurer Sieg", book.getString(DBKey.TITLE, null));
+        assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("747", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("9783734163296", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("Science Fiction, Fantasy", book.getString(DBKey.GENRE, null));
+        assertEquals("Lesser evil", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        TestCase.assertEquals(1, allPublishers.size());
+
+        TestCase.assertEquals("Blanvalet", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+
+        Author author;
+        author = authors.get(0);
+        assertEquals("Zahn", author.getFamilyName());
+        assertEquals("Timothy", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        author = authors.get(1);
+        assertEquals("Kasprzak", author.getFamilyName());
+        assertEquals("Andreas", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(1, series.size());
+
+        final Series expectedSeries;
+        expectedSeries = new Series("Star Wars Thrawn - der Aufstieg");
+        expectedSeries.setNumber("3");
+        TestCase.assertTrue(expectedSeries.isIdentical(series.get(0)));
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
+                                          + "_9783734163296_0_.jpg"));
+    }
 
 }
