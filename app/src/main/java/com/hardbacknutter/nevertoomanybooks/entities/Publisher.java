@@ -194,16 +194,25 @@ public class Publisher
     }
 
     /**
-     * Equality.
-     * <ol>
-     * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     *     AND the names are equal</li>
-     * <li>if both are 'new' check if family/given-names are equal</li>
-     * </ol>
+     * {@link #equals(Object)} checks the basic fields.
+     * This method additionally checks any user and book fields.
      *
+     * @param that to compare to
+     *
+     * @return {@code true} if <strong>all</strong> fields are equal
+     */
+    public boolean isIdentical(@Nullable final Publisher that) {
+        // No other fields for now
+        return equals(that);
+    }
+
+    /**
+     * Equality: <strong>id, name</strong>.
+     * <p>
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.
+     *
+     * @see #isIdentical(Publisher)
      */
     @Override
     public boolean equals(@Nullable final Object obj) {

@@ -560,14 +560,30 @@ public class Series
     }
 
     /**
+     * {@link #equals(Object)} checks the basic fields.
+     * This method additionally checks any user and book fields.
+     *
+     * @param that to compare to
+     *
+     * @return {@code true} if <strong>all</strong> fields are equal
+     */
+    public boolean isIdentical(@Nullable final Series that) {
+        return equals(that)
+               && complete == that.complete
+               && Objects.equals(number, that.number);
+    }
+
+    /**
      * Equality: <strong>id, title</strong>.
      * <ul>
-     *   <li>'number' is a book field and is ignored here.</li>
      *   <li>'isComplete' is a user setting and is ignored here.</li>
+     *   <li>'number' is a book field and is ignored here.</li>
      * </ul>
      *
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.
+     *
+     * @see #isIdentical(Series)
      */
     @Override
     public boolean equals(@Nullable final Object obj) {

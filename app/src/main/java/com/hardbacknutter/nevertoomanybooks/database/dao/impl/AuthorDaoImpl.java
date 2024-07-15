@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -450,7 +450,8 @@ public class AuthorDaoImpl
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that author
                     // while not needed.
                     final Optional<Author> found = findById(author.getId());
-                    if (found.isPresent() && !found.get().equals(author)) {
+                    // Check for being identical!
+                    if (found.isPresent() && !found.get().isIdentical(author)) {
                         update(context, author, locale);
                     }
                 }

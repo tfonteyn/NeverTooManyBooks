@@ -271,7 +271,8 @@ public class PublisherDaoImpl
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that publisher
                     // while not needed.
                     final Optional<Publisher> found = findById(publisher.getId());
-                    if (found.isPresent() && !found.get().equals(publisher)) {
+                    // Check for being identical!
+                    if (found.isPresent() && !found.get().isIdentical(publisher)) {
                         update(context, publisher, locale);
                     }
                 }

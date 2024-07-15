@@ -319,7 +319,8 @@ public class SeriesDaoImpl
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that series
                     // while not needed.
                     final Optional<Series> found = findById(series.getId());
-                    if (found.isPresent() && !found.get().equals(series)) {
+                    // Check for being identical!
+                    if (found.isPresent() && !found.get().isIdentical(series)) {
                         update(context, series, locale);
                     }
                 }
