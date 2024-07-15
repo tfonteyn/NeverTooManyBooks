@@ -69,7 +69,10 @@ public abstract class BaseActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // ede2edge on Android pre-15
-        EdgeToEdge.enable(this);
+        // FIXME: normally no SDK test needed, but there are insets listener issues on 28/29
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            EdgeToEdge.enable(this);
+        }
 
         recreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
         recreateVm.onCreate();
@@ -110,7 +113,11 @@ public abstract class BaseActivity
         //
         //This has NO effect when fitsSystemWindows="true" is set,
         // as that flag will overrule the below flag.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+        // FIXME: normally test on Q (29) ... but we limit edge2egde to API 30 due
+        //  to the insets listener issue with api 28/29
+        //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getWindow().setNavigationBarContrastEnforced(false);
         }
     }
