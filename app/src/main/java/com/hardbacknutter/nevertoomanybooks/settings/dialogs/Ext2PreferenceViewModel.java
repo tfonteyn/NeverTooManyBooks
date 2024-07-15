@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.DialogPreference;
 
-/** @noinspection WeakerAccess */
+@SuppressWarnings("WeakerAccess")
 public class Ext2PreferenceViewModel
         extends ViewModel {
 
@@ -40,10 +40,15 @@ public class Ext2PreferenceViewModel
 
     private boolean initDone;
 
+    @Nullable
     private BitmapDrawable dialogIcon;
+    @Nullable
     private CharSequence dialogTitle;
+    @Nullable
     private CharSequence dialogMessage;
+    @Nullable
     private CharSequence negativeButtonText;
+    @Nullable
     private CharSequence positiveButtonText;
 
     /**

@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 /**
  * Configuration object for the JSON parser. The configuration is immutable.
  */
+@SuppressWarnings("ALL")
 public class JSONParserConfiguration
         extends ParserConfiguration {
 

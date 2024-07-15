@@ -23,11 +23,13 @@ package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
 
 public class Ext2EditTextViewModel
         extends Ext2PreferenceViewModel {
 
+    @Nullable
     private CharSequence text;
 
     void init(@NonNull final Context context,
@@ -39,7 +41,7 @@ public class Ext2EditTextViewModel
         }
     }
 
-    @NonNull
+    @Nullable
     public CharSequence getText() {
         return text;
     }

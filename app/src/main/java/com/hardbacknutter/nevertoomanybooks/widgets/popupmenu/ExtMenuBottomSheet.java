@@ -49,7 +49,9 @@ public class ExtMenuBottomSheet
 
     private PopupMenuBinding vb;
     private List<ExtMenuItem> menuList;
+    @Nullable
     private String title;
+    @Nullable
     private String message;
     private String requestKey;
     private int menuOwner;
@@ -80,7 +82,7 @@ public class ExtMenuBottomSheet
 
         title = args.getString(ExtMenuLauncher.BKEY_TITLE);
         message = args.getString(ExtMenuLauncher.BKEY_MESSAGE);
-        menuList = args.getParcelableArrayList(ExtMenuLauncher.BKEY_MENU);
+        menuList = Objects.requireNonNull(args.getParcelableArrayList(ExtMenuLauncher.BKEY_MENU));
         menuOwner = args.getInt(ExtMenuLauncher.BKEY_MENU_OWNER);
     }
 
@@ -99,7 +101,6 @@ public class ExtMenuBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
 
         if (title != null) {
             vb.title.setText(title);
