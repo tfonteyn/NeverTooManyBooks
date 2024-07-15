@@ -448,7 +448,8 @@ public class EditBookSeriesListDialogFragment
         public void onBind(@NonNull final Series series) {
             final Context context = itemView.getContext();
             seriesView.setText(series.getLabel(context));
-
+            final int dc = series.isComplete() ? R.drawable.done_all_24px : 0;
+            seriesView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, dc, 0);
         }
     }
 

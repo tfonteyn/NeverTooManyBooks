@@ -471,6 +471,8 @@ public class EditBookAuthorListDialogFragment
         @Override
         public void onBind(@NonNull final Author author) {
             formatter.apply(author, authorView);
+            final int dc = author.isComplete() ? R.drawable.done_all_24px : 0;
+            authorView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, dc, 0);
         }
     }
 

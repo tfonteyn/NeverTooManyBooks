@@ -38,6 +38,9 @@
         <TextView
             android:id="@+id/row_series"
             style="@style/RowEditor.Text.Primary"
+            android:drawablePadding="@dimen/field_margin_inline"
+            app:drawableTint="?attr/colorSecondary"
+            tools:drawableEnd="@drawable/done_all_24px"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/series/title_nr"
             />
