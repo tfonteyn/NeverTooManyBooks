@@ -95,10 +95,12 @@ public class App
                     .detectActivityLeaks();
 
 
+            // Disabled, we ran with it for a while and detected no issues with OUR code
+            // but we get many reports from Android not following their own rules... oh well...
             // https://developer.android.com/guide/app-compatibility/restrictions-non-sdk-interfaces#test-strictmode-api
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                vmPolicyBuilder.detectNonSdkApiUsage();
-            }
+            //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            //                vmPolicyBuilder.detectNonSdkApiUsage();
+            //            }
             // https://developer.android.com/about/versions/15/behavior-changes-15#safer-intents
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 vmPolicyBuilder.detectUnsafeIntentLaunch();
