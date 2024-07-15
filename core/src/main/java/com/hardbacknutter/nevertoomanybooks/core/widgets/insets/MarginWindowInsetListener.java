@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,11 +29,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+
 public class MarginWindowInsetListener
         implements OnApplyWindowInsetsListener {
 
     private static final int TYPE_MASK = WindowInsetsCompat.Type.systemBars()
                                          | WindowInsetsCompat.Type.displayCutout();
+    private static final String TAG = "MarginWindowInsetListen";
     private final Insets base;
     private final boolean left;
     private final boolean top;
@@ -72,6 +76,12 @@ public class MarginWindowInsetListener
 
         final ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+
+        // FIXME: Android API 28/29 does not always call the listener. Trying to find why...
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "view=" + v.getResources().getResourceEntryName(v.getId()));
+        }
+
         lp.setMargins(base.left + (left ? insets.left : 0),
                       base.top + (top ? insets.top : 0),
                       base.right + (right ? insets.right : 0),

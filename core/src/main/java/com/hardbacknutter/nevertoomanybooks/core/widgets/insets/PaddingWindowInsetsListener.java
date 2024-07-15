@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -27,11 +28,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+
 public class PaddingWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
     private static final int TYPE_MASK = WindowInsetsCompat.Type.systemBars()
                                          | WindowInsetsCompat.Type.displayCutout();
+    private static final String TAG = "PaddingWindowInsetsList";
     private final Insets base;
     private final boolean left;
     private final boolean top;
@@ -66,6 +70,11 @@ public class PaddingWindowInsetsListener
     public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v,
                                                   @NonNull final WindowInsetsCompat windowInsets) {
         final Insets insets = windowInsets.getInsets(TYPE_MASK);
+
+        // FIXME: Android API 28/29 does not always call the listener. Trying to find why...
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "view=" + v.getResources().getResourceEntryName(v.getId()));
+        }
 
         v.setPadding(base.left + (left ? insets.left : 0),
                      base.top + (top ? insets.top : 0),
