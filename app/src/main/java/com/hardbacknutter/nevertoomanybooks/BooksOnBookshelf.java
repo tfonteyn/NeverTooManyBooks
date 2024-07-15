@@ -70,8 +70,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -803,7 +803,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_HELP) {
-            startActivity(IntentFactory.createGithubHelpIntent(this));
+            startActivity(GithubIntentFactory.help(this));
             return true;
 
         } else if (menuItemId == R.id.MENU_ABOUT) {

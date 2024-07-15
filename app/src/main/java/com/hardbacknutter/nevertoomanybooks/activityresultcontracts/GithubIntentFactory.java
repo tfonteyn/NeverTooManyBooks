@@ -28,22 +28,33 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-/**
- * Some {@link Intent} creation methods which are used more than once.
- */
-public final class IntentFactory {
+public final class GithubIntentFactory {
 
-    private IntentFactory() {
+    private GithubIntentFactory() {
     }
 
+    /**
+     * Create an Intent to take us to the project help/wiki page on Github.
+     *
+     * @param context Current context
+     *
+     * @return intent
+     */
     @NonNull
-    public static Intent createGithubHelpIntent(@NonNull final Context context) {
+    public static Intent help(@NonNull final Context context) {
         return new Intent(Intent.ACTION_VIEW,
                           Uri.parse(context.getString(R.string.github_help_url)));
     }
 
+    /**
+     * Create an Intent to take us to the project issues page on Github.
+     *
+     * @param context Current context
+     *
+     * @return intent
+     */
     @NonNull
-    public static Intent createGithubIssueIntent(@NonNull final Context context) {
+    public static Intent issue(@NonNull final Context context) {
         return new Intent(Intent.ACTION_VIEW,
                           Uri.parse(context.getString(R.string.github_issues_url)));
     }

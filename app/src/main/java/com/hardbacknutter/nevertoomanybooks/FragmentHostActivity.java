@@ -40,7 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
@@ -223,7 +223,7 @@ public class FragmentHostActivity
             return true;
 
         } else if (menuItemId == R.id.MENU_HELP) {
-            startActivity(IntentFactory.createGithubHelpIntent(this));
+            startActivity(GithubIntentFactory.help(this));
             return true;
 
         } else if (menuItemId == R.id.MENU_ABOUT) {

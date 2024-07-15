@@ -38,7 +38,7 @@ import java.time.format.DateTimeFormatter;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -111,7 +111,7 @@ public class AcraCustomDialog
                         .setTitle(R.string.app_name)
                         .setMessage(R.string.acra_report_saved)
                         .setPositiveButton(R.string.action_report, (d, w) -> {
-                            startActivity(IntentFactory.createGithubIssueIntent(this));
+                            startActivity(GithubIntentFactory.issue(this));
                             finish();
                         })
                         .setNegativeButton(android.R.string.cancel, (d, w) -> finish())
