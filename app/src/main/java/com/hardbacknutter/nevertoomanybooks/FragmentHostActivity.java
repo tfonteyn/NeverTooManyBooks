@@ -43,7 +43,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 
 /**
@@ -141,7 +141,7 @@ public class FragmentHostActivity
         final Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setNavIcon(toolbar);
-            WindowInsetListenerFactory.init(toolbar);
+            InsetsListenerBuilder.apply(toolbar);
 
             toolbar.setNavigationOnClickListener(v -> {
                 if (isTaskRoot()) {
@@ -159,7 +159,7 @@ public class FragmentHostActivity
     private void initFab() {
         final FloatingActionButton fab = findViewById(R.id.fab);
         if (fab != null) {
-            WindowInsetListenerFactory.init(fab);
+            InsetsListenerBuilder.apply(fab);
         }
     }
 

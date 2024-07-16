@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -156,7 +156,7 @@ public class TocFragment
 
         vb.toc.setAdapter(adapter);
         vb.toc.setHasFixedSize(true);
-        WindowInsetListenerFactory.init(vb.toc);
+        InsetsListenerBuilder.apply(vb.toc);
 
         //noinspection NotifyDataSetChanged
         vm.onBookChanged().observe(getViewLifecycleOwner(),

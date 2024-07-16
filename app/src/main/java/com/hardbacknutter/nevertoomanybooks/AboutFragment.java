@@ -29,11 +29,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.ViewCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.MarginWindowInsetListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -79,8 +79,10 @@ public class AboutFragment
                             + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
         vb.debugVersion.setText(code);
         // edge2edge: Make sure it's not hidden by the bottom-system-bar
-        ViewCompat.setOnApplyWindowInsetsListener(vb.debugVersion, new MarginWindowInsetListener(
-                vb.debugVersion, true, false, true, true));
+        InsetsListenerBuilder.create(vb.debugVersion)
+                             .margins()
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
         vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_project_url)))));

@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleGroupsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleGroupsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -141,7 +141,7 @@ public class StyleGroupsFragment
         vb.groupList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.groupList.setHasFixedSize(true);
-        WindowInsetListenerFactory.init(vb.groupList);
+        InsetsListenerBuilder.apply(vb.groupList);
 
         // setup the adapter
         // The adapter for the list.

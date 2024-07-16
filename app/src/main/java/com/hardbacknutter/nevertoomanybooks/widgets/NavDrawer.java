@@ -28,7 +28,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
@@ -36,7 +35,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.PaddingWindowInsetsListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 
 public final class NavDrawer {
@@ -63,9 +62,10 @@ public final class NavDrawer {
         navigationView.setNavigationItemSelectedListener(listener);
 
         // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout.
-        final PaddingWindowInsetsListener insetsListener =
-                new PaddingWindowInsetsListener(navigationView).sides(Side.Left);
-        ViewCompat.setOnApplyWindowInsetsListener(navigationView, insetsListener);
+        InsetsListenerBuilder.create(navigationView)
+                             .padding()
+                             .sides(Side.Left)
+                             .apply();
     }
 
     /**

@@ -92,7 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
@@ -566,7 +566,7 @@ public class BooksOnBookshelf
 
     private void initToolbar() {
         setNavIcon();
-        WindowInsetListenerFactory.init(vb.toolbar);
+        InsetsListenerBuilder.apply(vb.toolbar);
 
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {
@@ -604,7 +604,7 @@ public class BooksOnBookshelf
     }
 
     private void createFabMenu() {
-        WindowInsetListenerFactory.init(vb.fab);
+        InsetsListenerBuilder.apply(vb.fab);
 
         fabMenu = new FabMenu(vb.fab, vb.fabOverlay,
                               vb.fab0ScanBarcode,
@@ -689,7 +689,7 @@ public class BooksOnBookshelf
         // attach the FAB scroll-listener which will hide the FAB while scrolling
         fabMenu.attach(vb.content.list);
 
-        WindowInsetListenerFactory.init(vb.content.list);
+        InsetsListenerBuilder.apply(vb.content.list);
 
         vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
         vb.content.list.setDrawingCacheEnabled(true);

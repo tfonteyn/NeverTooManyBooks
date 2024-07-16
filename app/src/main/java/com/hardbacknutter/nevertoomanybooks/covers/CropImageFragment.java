@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -50,7 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.MarginWindowInsetListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImageEditorBinding;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -139,9 +139,10 @@ public class CropImageFragment
 
             // do NOT set a listener on the vb.bottomAppBar/vb.fab
             // The former does that automatically, and the latter is anchored to the bar.
-            ViewCompat.setOnApplyWindowInsetsListener(
-                    vb.coverImage0, new MarginWindowInsetListener(
-                            vb.coverImage0, true, true, true, true));
+            InsetsListenerBuilder.create(vb.coverImage0)
+                                 .margins()
+                                 .sides(Side.All)
+                                 .apply();
 
             vb.coverImage0.setInitialBitmap(bitmap);
 

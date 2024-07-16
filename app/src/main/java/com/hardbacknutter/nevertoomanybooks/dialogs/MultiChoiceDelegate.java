@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
@@ -115,7 +115,7 @@ class MultiChoiceDelegate {
                     }
                 });
         vb.itemList.setAdapter(adapter);
-        WindowInsetListenerFactory.init(vb.itemList);
+        InsetsListenerBuilder.apply(vb.itemList);
     }
 
     void saveChanges() {

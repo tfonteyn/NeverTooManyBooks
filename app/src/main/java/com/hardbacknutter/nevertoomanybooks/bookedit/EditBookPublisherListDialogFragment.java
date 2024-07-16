@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.WindowInsetListenerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
@@ -216,7 +216,7 @@ public class EditBookPublisherListDialogFragment
         vb.publisherList.setAdapter(adapter);
 
         vb.publisherList.setHasFixedSize(true);
-        WindowInsetListenerFactory.init(vb.publisherList);
+        InsetsListenerBuilder.apply(vb.publisherList);
     }
 
     private void editEntry(final int position) {

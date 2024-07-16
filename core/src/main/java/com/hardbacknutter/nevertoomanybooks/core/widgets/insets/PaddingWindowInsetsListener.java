@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
 
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.View;
 
@@ -28,52 +29,57 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Set;
+
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
 public class PaddingWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
-    private static final int TYPE_MASK = WindowInsetsCompat.Type.systemBars()
-                                         | WindowInsetsCompat.Type.displayCutout();
     private static final String TAG = "PaddingWindowInsetsList";
     private final Insets base;
+    private final int typeMask;
     private final boolean left;
     private final boolean top;
     private final boolean right;
     private final boolean bottom;
 
-    /**
-     * Constructor.
-     *
-     * @param view   to add the listener to
-     * @param left   {@code true} to apply insets on the left border
-     * @param top    {@code true} to apply insets on the left top
-     * @param right  {@code true} to apply insets on the left right
-     * @param bottom {@code true} to apply insets on the left bottom
-     */
-    @SuppressWarnings("SameParameterValue")
-    public PaddingWindowInsetsListener(@NonNull final View view,
-                                       final boolean left,
-                                       final boolean top,
-                                       final boolean right,
-                                       final boolean bottom) {
-        base = Insets.of(view.getPaddingLeft(), view.getPaddingTop(),
-                         view.getPaddingRight(), view.getPaddingBottom());
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
+    PaddingWindowInsetsListener(@NonNull final InsetsListenerBuilder builder) {
+        typeMask = builder.getTypeMask();
+
+        final Set<Side> sides = builder.getSides();
+        if (sides == null || sides.contains(Side.All)) {
+            left = true;
+            top = true;
+            right = true;
+            bottom = true;
+        } else {
+            left = sides.contains(Side.Left);
+            top = sides.contains(Side.Top);
+            right = sides.contains(Side.Right);
+            bottom = sides.contains(Side.Bottom);
+        }
+
+        final View view = builder.getView();
+        base = Insets.of(view.getPaddingLeft(),
+                         view.getPaddingTop(),
+                         view.getPaddingRight(),
+                         view.getPaddingBottom());
     }
 
     @NonNull
     @Override
     public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v,
                                                   @NonNull final WindowInsetsCompat windowInsets) {
-        final Insets insets = windowInsets.getInsets(TYPE_MASK);
+        final Insets insets = windowInsets.getInsets(typeMask);
 
         // FIXME: Android API 28/29 does not always call the listener. Trying to find why...
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "view=" + v.getResources().getResourceEntryName(v.getId()));
+            try {
+                Log.d(TAG, "view=" + v.getResources().getResourceEntryName(v.getId()));
+            } catch (@NonNull final Resources.NotFoundException ignore) {
+                Log.d(TAG, "view=" + v.getClass().getName());
+            }
         }
 
         v.setPadding(base.left + (left ? insets.left : 0),
