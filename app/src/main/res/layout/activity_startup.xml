@@ -19,6 +19,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- Reminder: the background rounded-corner outline is set from code
+     on the window itself. This is needed because the Theme is Dialog based. -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,8 +36,8 @@
 
     <ImageView
         android:id="@+id/app_icon"
-        android:layout_width="@dimen/app_logo"
-        android:layout_height="@dimen/app_logo"
+        android:layout_width="@dimen/app_icon_size"
+        android:layout_height="@dimen/app_icon_size"
         android:scaleX="1.5"
         android:scaleY="1.5"
         android:src="@drawable/launcher_foreground"
@@ -46,11 +48,7 @@
 
     <TextView
         android:id="@+id/app"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:text="@string/app_name"
-        android:fontFamily="cursive"
+        style="@style/About.AppName"
         android:textAppearance="?attr/textAppearanceHeadlineSmall"
         app:layout_constraintBottom_toBottomOf="@id/app_icon"
         app:layout_constraintStart_toEndOf="@id/app_icon"

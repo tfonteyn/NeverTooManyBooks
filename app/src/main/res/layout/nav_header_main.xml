@@ -23,29 +23,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
+    android:layout_height="wrap_content"
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/nav_header_horizontal_padding"
-    android:paddingTop="@dimen/nav_header_vertical_padding"
-    android:paddingRight="@dimen/nav_header_horizontal_padding"
-    android:paddingBottom="@dimen/nav_header_vertical_padding"
+    android:padding="@dimen/nav_header_padding"
     tools:viewBindingIgnore="true"
     >
 
+    <!-- Hardcoded/enlarged top margin to work around edge2edge issues.
+         The value should be sufficient for the system-status-bar
+         and (hopefully) for any camera-insets the device might have.
+         We've tried an insets listener, but there are to many conflicts... -->
     <ImageView
-        android:layout_width="@dimen/nav_header_icon_size"
-        android:layout_height="@dimen/nav_header_icon_size"
-        android:contentDescription="@string/app_name"
-        android:scaleX="2"
-        android:scaleY="2"
-        android:src="@drawable/launcher_foreground"
-        />
+        style="@style/About.AppIcon.Large"
+        android:layout_marginTop="24dp"
+        tools:ignore="ContentDescription" />
 
     <TextView
         style="@style/About.AppName"
-        android:text="@string/app_name"
         tools:text="NeverTooManyBooks"
         />
 </LinearLayout>

@@ -29,8 +29,6 @@
     land:  w640dp h336dp
 -->
 <resources>
-    <dimen name="app_logo">80dp</dimen>
-
     <dimen name="cover_list_padding">2dp</dimen>
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>

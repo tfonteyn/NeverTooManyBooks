@@ -58,13 +58,15 @@
           type="dimen">-2
     </item>
 
-    <!-- Navigation panel header. -->
-    <dimen name="nav_header_horizontal_padding">16dp</dimen>
-    <dimen name="nav_header_vertical_padding">16dp</dimen>
-    <dimen name="nav_header_vertical_spacing">8dp</dimen>
-    <dimen name="nav_header_height">176dp</dimen>
-    <!-- square dimensions of the icon. -->
-    <dimen name="nav_header_icon_size">100dp</dimen>
+    <!-- Navigation panel header padding on all sides. -->
+    <dimen name="nav_header_padding">16dp</dimen>
+
+    <!-- layout_marginStart and layout_marginTop of the icon. -->
+    <dimen name="app_icon_margin">8dp</dimen>
+    <!-- layout_width/layout_height of the icon: About and startup.  -->
+    <dimen name="app_icon_size">64dp</dimen>
+    <!-- layout_width/layout_height of the icon: Navigation drawer.  -->
+    <dimen name="app_icon_size_large">100dp</dimen>
 
 
     <!-- elevation for the progress overlay. -->

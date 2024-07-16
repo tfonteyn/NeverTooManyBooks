@@ -333,36 +333,68 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="About"
+    <style name="Base.AppIcon"
+           parent="">
+        <item name="android:layout_marginStart">@dimen/app_icon_margin</item>
+        <item name="android:layout_marginTop">@dimen/app_icon_margin</item>
+        <item name="android:scaleX">2</item>
+        <item name="android:scaleY">2</item>
+        <item name="android:contentDescription">@string/app_name</item>
+        <item name="android:src">@drawable/launcher_foreground</item>
+    </style>
+
+    <style name="About.AppIcon"
+           parent="Base.AppIcon">
+        <item name="android:layout_width">@dimen/app_icon_size</item>
+        <item name="android:layout_height">@dimen/app_icon_size</item>
+    </style>
+
+    <style name="About.AppIcon.Large"
+           parent="Base.AppIcon">
+        <item name="android:layout_width">@dimen/app_icon_size_large</item>
+        <item name="android:layout_height">@dimen/app_icon_size_large</item>
+    </style>
+
+    <style name="About.AppName"
            parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="About.AppName">
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:text">@string/app_name</item>
         <item name="android:fontFamily">cursive</item>
         <item name="android:textAppearance">?attr/textAppearanceHeadlineMedium</item>
     </style>
 
-    <style name="About.Version">
+    <style name="About.Version"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <style name="About.Label">
+    <style name="About.Label"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/field_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
     </style>
 
-    <style name="About.Statistic">
+    <style name="About.Statistic"
+           parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="android:gravity">end</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
-    <style name="About.DebugVersion">
+    <style name="About.DebugVersion"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:layout_marginBottom">@dimen/section_margin_top</item>
         <item name="android:textIsSelectable">true</item>

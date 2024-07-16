@@ -58,6 +58,12 @@ public final class NavDrawer {
 
         navigationView.setItemMaxLines(2);
         navigationView.setNavigationItemSelectedListener(listener);
+
+        // edg2edge:
+        // Do NOT set a WindowInsetListener on the drawerlayout,
+        // it will affect ALL child-views in ways we don't want.
+        // Setting one on the navigationView will not work either,
+        // as it relies on an internal one.
     }
 
     /**

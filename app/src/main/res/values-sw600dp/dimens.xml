@@ -27,6 +27,8 @@
     land: w683dp h387dp
 -->
 <resources>
+    <dimen name="app_icon_size">120dp</dimen>
+
     <dimen name="progress_margin_top">200dp</dimen>
 
     <dimen name="til_fixed_width_personal_name">360dp</dimen>
