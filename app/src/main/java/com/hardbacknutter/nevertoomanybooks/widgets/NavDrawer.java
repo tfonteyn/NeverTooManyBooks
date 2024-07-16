@@ -28,6 +28,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
@@ -35,6 +36,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.PaddingWindowInsetsListener;
 
 public final class NavDrawer {
 
@@ -59,11 +61,9 @@ public final class NavDrawer {
         navigationView.setItemMaxLines(2);
         navigationView.setNavigationItemSelectedListener(listener);
 
-        // edg2edge:
-        // Do NOT set a WindowInsetListener on the drawerlayout,
-        // it will affect ALL child-views in ways we don't want.
-        // Setting one on the navigationView will not work either,
-        // as it relies on an internal one.
+        // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout.
+        ViewCompat.setOnApplyWindowInsetsListener(navigationView, new PaddingWindowInsetsListener(
+                navigationView, true, false, false, false));
     }
 
     /**
