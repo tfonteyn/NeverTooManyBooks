@@ -37,6 +37,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.PaddingWindowInsetsListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 
 public final class NavDrawer {
 
@@ -62,8 +63,9 @@ public final class NavDrawer {
         navigationView.setNavigationItemSelectedListener(listener);
 
         // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout.
-        ViewCompat.setOnApplyWindowInsetsListener(navigationView, new PaddingWindowInsetsListener(
-                navigationView, true, false, false, false));
+        final PaddingWindowInsetsListener insetsListener =
+                new PaddingWindowInsetsListener(navigationView).sides(Side.Left);
+        ViewCompat.setOnApplyWindowInsetsListener(navigationView, insetsListener);
     }
 
     /**
