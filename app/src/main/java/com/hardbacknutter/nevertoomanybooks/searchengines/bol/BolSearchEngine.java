@@ -62,6 +62,27 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * <a href="https://www.bol.com">www.bol.com</a>
+ * <p>
+ * This site is a company based in The Netherlands and is <strong>NOT</strong>> related to
+ * the german website <a href="https://www.bol.de">www.bol.de</a>.
+ * The latter is a brand name of <a href="https://www.thalia.de">www.thalia.de</a>.
+ * <p>
+ * Accessing bol.com can be done using 4 different suffix combinations
+ * <pre>
+ *      https://www.bol.com/be/nl/
+ *      https://www.bol.com/be/fr/
+ *      https://www.bol.com/be/nl/
+ *      https://www.bol.com/nl/fr/
+ * </pre>
+ * The first suffix is the country: either Belgium (be) or The Netherlands (nl).
+ * The second is the language: either Dutch (nl) or French (fr).
+ * <p>
+ * We support accessing be/nl via a user setting.
+ * We <strong>only</strong> access the site via the dutch language suffix as it makes
+ * no difference at all in getting results.
+ */
 public class BolSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
