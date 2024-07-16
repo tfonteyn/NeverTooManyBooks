@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -46,6 +47,18 @@ public abstract class BaseFragment
     @Nullable
     private FloatingActionButton fab;
 
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final FragmentActivity activity = getActivity();
+        //noinspection DataFlowIssue
+        toolbar = activity.findViewById(R.id.toolbar);
+        fab = activity.findViewById(R.id.fab);
+        progressFrame = activity.findViewById(R.id.progress_frame);
+    }
+
     /**
      * Hide the keyboard.
      *
@@ -57,32 +70,17 @@ public abstract class BaseFragment
 
     @NonNull
     protected View getProgressFrame() {
-        if (progressFrame == null) {
-            //noinspection DataFlowIssue
-            progressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
-                                                   "R.id.progress_frame");
-        }
-        return progressFrame;
+        return Objects.requireNonNull(progressFrame, "R.id.progress_frame");
     }
 
     @NonNull
     protected Toolbar getToolbar() {
-        if (toolbar == null) {
-            //noinspection DataFlowIssue
-            toolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
-                                             "R.id.toolbar");
-        }
-        return toolbar;
+        return Objects.requireNonNull(toolbar, "R.id.toolbar");
     }
 
     @NonNull
     protected FloatingActionButton getFab() {
-        if (fab == null) {
-            //noinspection DataFlowIssue
-            fab = Objects.requireNonNull(getActivity().findViewById(R.id.fab), "R.id.fab");
-            WindowInsetListenerFactory.init(fab);
-        }
-        return fab;
+        return Objects.requireNonNull(fab, "R.id.fab");
     }
 
     /**

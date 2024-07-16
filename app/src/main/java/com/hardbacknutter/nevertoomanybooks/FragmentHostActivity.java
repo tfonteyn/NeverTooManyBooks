@@ -34,6 +34,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.lang.reflect.InvocationTargetException;
@@ -106,6 +107,7 @@ public class FragmentHostActivity
 
         initNavDrawer();
         initToolbar();
+        initFab();
 
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
@@ -151,6 +153,13 @@ public class FragmentHostActivity
                     getOnBackPressedDispatcher().onBackPressed();
                 }
             });
+        }
+    }
+
+    private void initFab() {
+        final FloatingActionButton fab = findViewById(R.id.fab);
+        if (fab != null) {
+            WindowInsetListenerFactory.init(fab);
         }
     }
 
