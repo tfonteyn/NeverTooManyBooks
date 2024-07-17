@@ -38,7 +38,7 @@ public enum DialogMode {
      * <p>
      * {@code int}
      */
-    public static final String PK_UI_DIALOGS_MODE = "ui.dialog.mode";
+    private static final String PK_UI_DIALOGS_MODE = "ui.dialog.mode";
 
     /** Always show as traditional Dialog windows. */
     private static final int UI_DIALOGS_MODE_CLASSIC = 0;

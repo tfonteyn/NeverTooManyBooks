@@ -34,7 +34,7 @@ public enum MenuMode {
     Start,
     /** Show a popup window with {@link Gravity#END}. */
     End,
-    /** Show a popup window with {@link Gravity#CENTER} */
+    /** Show a popup window with {@link Gravity#CENTER}. */
     Center,
     /** Show a popup window anchored to a given view. */
     Anchored,
@@ -46,7 +46,7 @@ public enum MenuMode {
      * <p>
      * {@code int}
      */
-    public static final String PK_UI_CONTEXT_MENUS = "ui.menu.context.mode";
+    private static final String PK_UI_CONTEXT_MENUS = "ui.menu.context.mode";
 
     /** Always show as traditional PopupMenu. */
     private static final int UI_CONTEXT_MENUS_CLASSIC = 0;
@@ -55,7 +55,7 @@ public enum MenuMode {
     /** The default; either as PopupMenu or as BottomSheet depending on screen size. */
     private static final int UI_CONTEXT_MENUS_BY_MENU_SIZE = 2;
 
-    /** Different behavior depending on size < THRESHOLD versus size >= THRESHOLD */
+    /** Different behavior depending on size < THRESHOLD versus size >= THRESHOLD. */
     private static final int MENU_SIZE_THRESHOLD = 5;
 
     /**
