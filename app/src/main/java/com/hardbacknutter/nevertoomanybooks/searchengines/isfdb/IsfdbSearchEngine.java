@@ -1010,16 +1010,7 @@ public class IsfdbSearchEngine
         // publication record.
         final Element recordIDDiv = contentBox.select("span.recordID").first();
         if (recordIDDiv != null) {
-            tmpString = recordIDDiv.ownText();
-            tmpString = SearchEngineUtils.digits(tmpString);
-            if (!tmpString.isEmpty()) {
-                try {
-                    final long record = Long.parseLong(tmpString);
-                    book.putLong(DBKey.SID_ISFDB, record);
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore
-                }
-            }
+            parseRecordId(recordIDDiv, book);
         }
 
         //ENHANCE: it would make much more sense to get the notes from the TITLE_CGI page.
@@ -1079,6 +1070,44 @@ public class IsfdbSearchEngine
     }
 
     /**
+     * Right now we only access the site without a login, but the parser
+     * can cope with both. We could optimize this...
+     * <p>
+     * When NOT logged in:
+     * <pre>
+     *     <span class="recordID"><b>Publication Record # </b>1011520</span>
+     * </pre>
+     * <p>
+     * When logged in:
+     * <pre>
+     *
+     *     {@code
+     *     <span class="recordID">
+     *         <b>Publication Record # </b>
+     *         1011520
+     *         [<a href="https://www.isfdb.org/cgi-bin/edit/editpub.cgi?1011520">Edit</a>]
+     *         [<a href="https://www.isfdb.org/cgi-bin/pub_history.cgi?1011520">Edit History</a>]
+     *     </span>
+     *     }
+     * </pre>
+     *
+     * @param element to parse
+     * @param book    to update
+     */
+    private void parseRecordId(@NonNull final Element element,
+                               @NonNull final Book book) {
+        final String tmp = SearchEngineUtils.digits(element.ownText());
+        if (!tmp.isEmpty()) {
+            try {
+                final long record = Long.parseLong(tmp);
+                book.putLong(DBKey.SID_ISFDB, record);
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
+            }
+        }
+    }
+
+    /**
      * Parses the given {@link Document} for the cover and fetches it when present.
      *
      * @param context  Current context
@@ -1098,7 +1127,7 @@ public class IsfdbSearchEngine
                                         @NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                         @IntRange(from = 0, to = 1) final int cIdx)
+                                            @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
         /* First "ContentBox" contains all basic details.
          * <pre>
