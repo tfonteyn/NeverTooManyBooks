@@ -143,7 +143,7 @@ public class UserInterfacePreferenceFragment
         public CharSequence provideSummary(@NonNull final ListPreference preference) {
             final Context context = preference.getContext();
             if (TextUtils.isEmpty(preference.getEntry())) {
-                return (context.getString(R.string.pt_ui_system_locale));
+                return context.getString(R.string.pt_ui_system_locale);
             } else {
                 final String value = preference.getValue();
                 if (AppLocale.SYSTEM_LANGUAGE.equals(value)) {
