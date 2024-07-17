@@ -470,7 +470,7 @@ public class PreferredStylesFragment
         }
     }
 
-    private class ToolbarMenuProvider
+    private final class ToolbarMenuProvider
             implements MenuProvider {
 
         @Override

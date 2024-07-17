@@ -566,7 +566,7 @@ public class SearchBookByIsbnFragment
         vb.queueGroup.setVisibility(visibility);
     }
 
-    private class ToolbarMenuProvider
+    private final class ToolbarMenuProvider
             implements MenuProvider {
 
         private static final String ANY_URI = "*/*";

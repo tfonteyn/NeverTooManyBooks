@@ -2217,7 +2217,7 @@ public class BooksOnBookshelf
      * unless the user clicks the options menu overflow 3dot button....
      * So we end up calling it manually from all locations which depend on it.
      */
-    private class ToolbarMenuProvider
+    private final class ToolbarMenuProvider
             implements MenuProvider {
 
         // reference to use in #onMenuItemSelected

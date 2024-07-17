@@ -359,7 +359,7 @@ public class EditBookFragment
         }
     }
 
-    private class ToolbarMenuProvider
+    private final class ToolbarMenuProvider
             implements MenuProvider {
 
         @Override

@@ -258,7 +258,7 @@ public class EditBookFieldsFragment
         field.notifyIfChanged(previous);
     }
 
-    private class ToolbarMenuProvider
+    private final class ToolbarMenuProvider
             implements MenuProvider {
 
         @Override

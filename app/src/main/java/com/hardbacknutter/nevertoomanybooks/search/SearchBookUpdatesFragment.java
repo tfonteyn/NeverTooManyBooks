@@ -396,7 +396,7 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private class ToolbarMenuProvider
+    private final class ToolbarMenuProvider
             implements MenuProvider {
 
         @Override
