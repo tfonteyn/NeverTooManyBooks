@@ -635,7 +635,7 @@ public class ShowBookDetailsFragment
             menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
             // Always check LOANEE_NAME usage independent from the style in use.
-            if (aVm.getStyle().isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
+            if (ServiceLocator.getInstance().isFieldEnabled(DBKey.LOANEE_NAME)) {
                 final boolean isLendOut = book.getLoanee().isPresent();
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isLendOut);
