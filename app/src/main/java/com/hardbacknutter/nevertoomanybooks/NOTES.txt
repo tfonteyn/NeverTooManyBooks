@@ -27,17 +27,15 @@ NEW:
 - option to replace the authors on all entries in a Table-Of-Content (TOC)
   with the books main author.
 
-- Edge-to-Edge support (Android 11 and up)
 - Language setting can now be found together with other UI options in a single screen.
 - Settings dialogs now use Material styling and support Bottom-Sheet as per user-preference.
 - Icons have been updated for Material style consistency.
-- Android 15 tested/supported (based on beta-3).
 
 FIXES:
 - #72: during edit, set 'read' as needed, without changing the read-end
-- editing a books author or series and setting "complete" was not saved unless the name was also changed
+- editing a books author or series and setting "complete" was not saved unless the name was changed
 - text-based filters no longer jump on manual edits
-- always show loanee on book-details when globally enabled
+- loanee visibility and filter usage fixes
 - various fixes to toolbar menus on dialogs and BottomSheets
 
 REMOVED:

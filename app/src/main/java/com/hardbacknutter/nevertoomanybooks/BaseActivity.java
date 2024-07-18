@@ -20,12 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -70,9 +68,9 @@ public abstract class BaseActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // ede2edge on Android pre-15
         // FIXME: normally no SDK test needed, but there are insets listener issues on 28/29
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            EdgeToEdge.enable(this);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            EdgeToEdge.enable(this);
+//        }
 
         recreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
         recreateVm.onCreate();
@@ -117,9 +115,9 @@ public abstract class BaseActivity
         // FIXME: normally test on Q (29) ... but we limit edge2egde to API 30 due
         //  to the insets listener issue with api 28/29
         //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().setNavigationBarContrastEnforced(false);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            getWindow().setNavigationBarContrastEnforced(false);
+//        }
     }
 
     @Override
