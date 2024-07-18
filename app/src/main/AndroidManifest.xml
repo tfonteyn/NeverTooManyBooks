@@ -129,6 +129,10 @@
 
         <!-- The real main activity; it's also the one that accepts search requests
          android:launchMode="singleTop": standard system search using a single activity.
+
+         We do NOT set: android:windowSoftInputMode="adjustResize"
+         The keyboard is only needed when either a dialog box, or a BottomSheet shows.
+         The main content does not have to resize.
          -->
         <activity
             android:name=".BooksOnBookshelf"
@@ -145,6 +149,10 @@
                 android:resource="@xml/searchable" />
         </activity>
 
+        <!-- windowSoftInputMode:
+                adjustResize: we need to resize the main content to allow the keyboard to show
+                stateAlwaysHidden: but we only want to show it when the user taps an input field.
+        -->
         <activity
             android:name=".FragmentHostActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
