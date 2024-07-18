@@ -36,6 +36,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Builder for a {@link OnApplyWindowInsetsListener}.
+ * <p>
+ * The default insets always applied : {@link WindowInsetsCompat.Type#systemBars()}
+ * and {@link WindowInsetsCompat.Type#displayCutout()}
+ */
+@SuppressWarnings("unused")
 public final class InsetsListenerBuilder {
 
     @NonNull
@@ -45,8 +52,7 @@ public final class InsetsListenerBuilder {
                            | WindowInsetsCompat.Type.displayCutout();
 
     @Nullable
-    private
-    Set<Side> sides;
+    private Set<Side> sides;
 
     @Nullable
     private Type type;
@@ -119,34 +125,100 @@ public final class InsetsListenerBuilder {
                 .apply();
     }
 
+    /**
+     * Enable {@link WindowInsetsCompat.Type#systemGestures()}.
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public InsetsListenerBuilder systemGestures() {
+        typeMask |= WindowInsetsCompat.Type.systemGestures();
+        return this;
+    }
+
+    /**
+     * Enable {@link WindowInsetsCompat.Type#ime()}.
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public InsetsListenerBuilder ime() {
         typeMask |= WindowInsetsCompat.Type.ime();
         return this;
     }
 
+    /**
+     * Set whether the listener should consume the insets.
+     * The default is {@code true}.
+     *
+     * @param consume flag
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
-    public InsetsListenerBuilder consume(final boolean flag) {
-        consume = flag;
+    public InsetsListenerBuilder consume(final boolean consume) {
+        this.consume = consume;
         return this;
     }
 
+    /**
+     * Set the sides to apply the insets to. If not set, {@link Side#All} is used.
+     *
+     * @param sides list
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public InsetsListenerBuilder sides(@NonNull final Side... sides) {
         this.sides = Set.of(sides);
         return this;
     }
 
+    /**
+     * Create a padding modifier listener.
+     *
+     * @return {@code this} (for chaining)
+     *
+     * @see #margins()
+     */
     @NonNull
     public InsetsListenerBuilder padding() {
         type = Type.Padding;
         return this;
     }
 
+    /**
+     * Create a margins modifier listener.
+     *
+     * @return {@code this} (for chaining)
+     *
+     * @see #padding()
+     */
     @NonNull
     public InsetsListenerBuilder margins() {
         type = Type.Margins;
         return this;
+    }
+
+    /**
+     * Build and apply the listener.
+     */
+    public void apply() {
+        Objects.requireNonNull(type, "Must have a type set");
+
+        final OnApplyWindowInsetsListener listener;
+        switch (type) {
+            case Padding:
+                listener = new PaddingWindowInsetsListener(this);
+                break;
+            case Margins:
+                listener = new MarginWindowInsetsListener(this);
+                break;
+            default:
+                //noinspection CheckStyle
+                throw new IllegalArgumentException("type?");
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
     }
 
     @NonNull
@@ -158,35 +230,13 @@ public final class InsetsListenerBuilder {
         return typeMask;
     }
 
-    public boolean getConsume() {
+    boolean getConsume() {
         return consume;
     }
 
     @Nullable
     Set<Side> getSides() {
         return sides;
-    }
-
-    /**
-     * Build and apply a the listener.
-     */
-    public void apply() {
-        Objects.requireNonNull(type, "Must have a type set");
-        if (sides == null) {
-            sides = Set.of(Side.All);
-        }
-        final OnApplyWindowInsetsListener listener;
-        switch (type) {
-            case Padding:
-                listener = new PaddingWindowInsetsListener(this);
-                break;
-            case Margins:
-                listener = new MarginWindowInsetsListener(this);
-                break;
-            default:
-                throw new IllegalArgumentException("type?");
-        }
-        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
     }
 
     private enum Type {

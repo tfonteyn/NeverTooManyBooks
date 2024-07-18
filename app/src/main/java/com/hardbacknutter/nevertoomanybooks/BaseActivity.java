@@ -20,10 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -66,11 +68,15 @@ public abstract class BaseActivity
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        // ede2edge on Android pre-15
-        // FIXME: normally no SDK test needed, but there are insets listener issues on 28/29
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            EdgeToEdge.enable(this);
-//        }
+        // EdgeToEdge on Android pre-15
+        // There are some serious insets listener issues on API 28/29,
+        // at least in the emulator, I don't have a physical device on those versions.
+        // ViewPager2 also documents a serious bug when using API < 30.
+        // So we are explicitly only support edge-to-edge starting from API-30
+        // being drawn under the bottom 3-btn-nav-bar, i.e. the insets not being passed in.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            EdgeToEdge.enable(this);
+        }
 
         recreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
         recreateVm.onCreate();
@@ -81,43 +87,28 @@ public abstract class BaseActivity
     @Override
     public void setContentView(@NonNull final View view) {
         super.setContentView(view);
-        handleEdge2Edge();
+        handleEdgeToEdge();
     }
 
     @Override
     public void setContentView(@LayoutRes final int layoutResID) {
         super.setContentView(layoutResID);
-        handleEdge2Edge();
+        handleEdgeToEdge();
     }
 
     @Override
     public void setContentView(@NonNull final View view,
                                @Nullable final ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
-        handleEdge2Edge();
+        handleEdgeToEdge();
     }
 
-    private void handleEdge2Edge() {
-        // Edge2Edge
-        // Remove default three-button navigation background protection
-        // https://developer.android.com/codelabs/edge-to-edge#2
-        // The default NavigationBarContrastEnforced==true
-        // ensures that the navigation bar has enough contrast when a fully
-        // transparent background is requested. By setting this attribute to false,
-        // you are effectively setting the three-button navigation background
-        // to transparent. window.isNavigationBarContrastEnforced will only
-        // impact three-button navigation and has no impact on gesture navigation.
-        // MUST be called AFTER super.setContentView
-        //
-        //This has NO effect when fitsSystemWindows="true" is set,
-        // as that flag will overrule the below flag.
-
-        // FIXME: normally test on Q (29) ... but we limit edge2egde to API 30 due
-        //  to the insets listener issue with api 28/29
-        //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            getWindow().setNavigationBarContrastEnforced(false);
-//        }
+    private void handleEdgeToEdge() {
+        // EdgeToEdge
+        // See note in onCreate
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setNavigationBarContrastEnforced(false);
+        }
     }
 
     @Override

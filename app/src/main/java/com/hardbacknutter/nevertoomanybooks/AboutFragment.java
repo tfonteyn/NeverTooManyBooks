@@ -78,7 +78,7 @@ public class AboutFragment
                             + " b" + BuildConfig.TIMESTAMP
                             + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
         vb.debugVersion.setText(code);
-        // edge2edge: Make sure it's not hidden by the bottom-system-bar
+        // EdgeToEdge: Make sure it's not hidden by the bottom-system-bar
         InsetsListenerBuilder.create(vb.debugVersion)
                              .margins()
                              .sides(Side.Left, Side.Right, Side.Bottom)

@@ -40,8 +40,8 @@ ext {
     // see NOTES.txt
     toolChain = 17
     minSdkVersion = 26
-    targetSdkVersion = 34
-    compileSdkVersion = 34
+    targetSdkVersion = 35
+    compileSdkVersion = 35
 
     // https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md
     desugarVersion = '2.0.4'

@@ -29,26 +29,6 @@
     >
 
     <!--
-    https://stackoverflow.com/questions/39438743/tablayoutviewpager-inside-scrollview
-    https://stackoverflow.com/questions/40061259/how-to-make-tablayout-scrollable-in-fragment
-    https://stackoverflow.com/questions/40061259/how-to-make-tablayout-scrollable-in-fragment
-
-    The only way to make the TabLayout scroll off the top of the screen is by
-    putting the TabLayout inside the AppBarLayout (where we had it in the past)
-    with         app:layout_scrollFlags="scroll|enterAlways"
-    But that opens a whole new can of worms with edge-to-edge...
-    -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SpeakableTextPresentCheck"
-        />
-
-    <!--
     FIXME: 2024-01-21: bug in android framework causing a TransactionTooLargeException
 
           Reproducing is very difficult... it involves
@@ -71,7 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tab_panel"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

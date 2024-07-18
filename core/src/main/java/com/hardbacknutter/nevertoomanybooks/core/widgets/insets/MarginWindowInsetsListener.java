@@ -77,12 +77,13 @@ public class MarginWindowInsetsListener
         final ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) v.getLayoutParams();
 
-        // FIXME: Android API 28/29 does not always call the listener. Trying to find why...
         if (BuildConfig.DEBUG /* always */) {
             try {
-                Log.d(TAG, "view=" + v.getResources().getResourceEntryName(v.getId()));
+                Log.d(TAG, "view=" + v.getResources().getResourceEntryName(v.getId())
+                           + "; insets=" + insets);
             } catch (@NonNull final Resources.NotFoundException ignore) {
-                Log.d(TAG, "view=" + v.getClass().getName());
+                Log.d(TAG, "view=" + v.getClass().getName()
+                           + "; insets=" + insets);
             }
         }
 

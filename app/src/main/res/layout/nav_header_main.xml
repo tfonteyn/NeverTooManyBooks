@@ -31,7 +31,7 @@
     tools:viewBindingIgnore="true"
     >
 
-    <!-- Hardcoded/enlarged top margin to work around edge2edge issues.
+    <!-- Hardcoded/enlarged top margin to work around EdgeToEdge issues.
          The value should be sufficient for the system-status-bar
          and (hopefully) for any camera-insets the device might have.
          We've tried an insets listener, but there are to many conflicts... -->

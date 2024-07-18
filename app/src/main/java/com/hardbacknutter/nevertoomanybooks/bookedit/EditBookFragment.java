@@ -42,6 +42,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.lang.reflect.InvocationTargetException;
@@ -90,6 +91,13 @@ public class EditBookFragment
                     setResultsAndFinish();
                 }
             };
+    private final ViewPager2.OnPageChangeCallback pageChange =
+            new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(final int position) {
+                    hideKeyboard(vb.pager);
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -110,22 +118,26 @@ public class EditBookFragment
         return vb.getRoot();
     }
 
-    private final ViewPager2.OnPageChangeCallback pageChange =
-            new ViewPager2.OnPageChangeCallback() {
-                @Override
-                public void onPageSelected(final int position) {
-                    hideKeyboard(vb.pager);
-                }
-            };
-
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //noinspection DataFlowIssue
+        final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
+
+        // Postponing support... added fitsSystemWindows to "activity_edit_book.xml"
+        // Due to the scroll view not scrolling up to show the IME when tapping an EditText.
+        //        // API34, gesture
+        //        // keyboard and camera cutouts
+        //        InsetsListenerBuilder.create(vb.pager)
+        //                             .padding()
+        //                             .sides(Side.Left, Side.Right, Side.Bottom)
+        //                             .ime()
+        //                             .apply();
+
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
-        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -134,7 +146,7 @@ public class EditBookFragment
 
         vb.pager.registerOnPageChangeCallback(pageChange);
 
-        new TabLayoutMediator(vb.tabPanel, vb.pager, (tab, position) -> {
+        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
             final TabAdapter.TabInfo tabInfo = tabAdapter.getTabInfo(position);
             tab.setText(tabInfo.titleId);
             tab.setContentDescription(tabInfo.contentDescriptionId);

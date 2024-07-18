@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.SoftwareKeyboardControllerCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -35,7 +34,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 
 public abstract class BaseFragment
@@ -52,11 +50,6 @@ public abstract class BaseFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // If the fragments root view is scrollable, apply the insets...
-        if (view instanceof NestedScrollView) {
-            InsetsListenerBuilder.apply((NestedScrollView) view);
-        }
 
         final FragmentActivity activity = getActivity();
         //noinspection DataFlowIssue
