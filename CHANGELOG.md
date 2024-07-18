@@ -1,3 +1,26 @@
+### 6.2.0
+
+NEW:
+
+- Douban.com site added for looking up Chinese language books.
+- improved partial-date handling/formats for a number of sites.
+- StripInfo.be parsing updated.
+- option to replace the authors on all entries in a Table-Of-Content (TOC) with the books main
+  author.
+- Language setting can now be found together with other UI options in a single screen.
+- Settings dialogs now use Material styling (BottomSheets to come later)
+- Icons have been updated for Material style consistency.
+
+FIXES:
+
+- #72: during edit, set 'read' as needed, without changing the read-end
+- editing a books author or series and setting "complete" was not saved unless the name was changed
+- text-based filters no longer jump on manual edits
+- loanee visibility and filter usage fixes
+- various fixes to toolbar menus on dialogs and BottomSheets
+
+---
+
 ### 6.1.3
 
 FIXES:
