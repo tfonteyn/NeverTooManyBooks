@@ -283,7 +283,7 @@ public class Bookshelf
      *
      * @param context Current context
      *
-     * @return list of active filters
+     * @return a new list of active filters
      */
     @NonNull
     public List<PFilter<?>> pruneFilters(@NonNull final Context context) {
