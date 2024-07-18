@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -459,8 +458,8 @@ public class BoBTask
     private void addFilters(@NonNull final Context context,
                             @NonNull final BooklistBuilder builder,
                             @NonNull final Style style) {
-        // Prepare the Bookshelf filters
-        final List<PFilter<?>> filters = bookshelf.getFilters();
+        // Prepare the Bookshelf filters; paranoia: make sure we only get the active ones
+        final List<PFilter<?>> filters = bookshelf.pruneFilters(context);
 
         // Add a filter on the current Bookshelf?
         // Only consider doing this if this is NOT the "All books" Bookshelf
@@ -492,9 +491,7 @@ public class BoBTask
         }
 
         // ... and add them
-        builder.addFilter(filters.stream()
-                                 .filter(f -> f.isActive(context))
-                                 .collect(Collectors.toList()));
+        builder.addFilter(filters);
     }
 
     public static class Outcome {

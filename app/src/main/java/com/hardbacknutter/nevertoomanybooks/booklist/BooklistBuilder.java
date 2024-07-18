@@ -218,7 +218,7 @@ class BooklistBuilder {
      *
      * @param filters to add
      */
-    void addFilter(@NonNull final List<Filter> filters) {
+    void addFilter(@NonNull final List<? extends Filter> filters) {
         this.filters.addAll(filters);
     }
 
