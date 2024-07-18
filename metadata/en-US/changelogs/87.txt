@@ -1,0 +1,6 @@
+NEW:
+- Douban.com site added for looking up Chinese books.
+- option to replace the authors on all entries in a Table-Of-Content (TOC)
+  with the books main author.
+- fix #72: during edit, set 'read' as needed, without changing the read-end
+- for more details, see the changelog

@@ -24,9 +24,9 @@ Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
-### Download the latest release: 6.1.3
+### Download the latest release: 6.2.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.1.3/NeverTooManyBooks-6.1.3.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.2.0/NeverTooManyBooks-6.2.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
@@ -37,8 +37,7 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 - Chinese, Dutch, English, French, German, Italian, Portuguese, Spanish, Turkish, Vietnamese.
 - Machine translated, no guarantees for quality: Czech, Greek, Polish, Russian.
 
-Translations are now integrated and editable
-on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
+Translations are editable on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
 
 - Pull-requests with translations are also welcome.
 - Contact me by logging an [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) if you want
@@ -69,6 +68,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **BOL.com** (Dutch and more; Shop)
+- **Douban.com** (Chinese; Catalogue)
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
 - **KB.NL** (Dutch and more; Catalogue)
