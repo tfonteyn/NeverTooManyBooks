@@ -443,6 +443,7 @@ public class BoBTask
             final String loanee = searchCriteria.getLoanee();
             if (loanee != null && !loanee.isBlank()) {
                 builder.addFilter(c -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee)));
+                builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
             }
         } else {
             // Add a where clause for: "AND books._id IN (list)".
@@ -489,6 +490,11 @@ public class BoBTask
                 }
             }
         }
+
+        filters.stream()
+               .filter(pFilter -> DBKey.LOANEE_NAME.equals(pFilter.getDBKey()))
+               .findAny()
+               .ifPresent(pFilter -> builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE));
 
         // ... and add them
         builder.addFilter(filters);

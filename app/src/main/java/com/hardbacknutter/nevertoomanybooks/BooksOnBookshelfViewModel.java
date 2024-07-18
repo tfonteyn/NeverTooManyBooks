@@ -993,9 +993,16 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} if a full rebuild of the list was triggered
      */
     boolean onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
-                                @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
-        if (getStyle().hasGroup(BooklistGroup.LENDING)) {
-            // The book might move to another group - no choice, we must rebuild
+                                @SuppressWarnings("SameParameterValue")
+                                @Nullable final String loanee) {
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
+
+        if (getStyle().hasGroup(BooklistGroup.LENDING)
+            || bookshelf.getFilters().stream()
+                        .anyMatch(pFilter -> DBKey.LOANEE_NAME.equals(pFilter.getDBKey()))) {
+            // The lending status changed and/or
+            // the book might move to another group.
+            // No choice, we must rebuild
             triggerRebuildList.setValue(LiveDataEvent.of(false));
             return true;
         } else {
