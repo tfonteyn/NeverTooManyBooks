@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -124,7 +125,7 @@ class BooklistBuilder {
     private final Bookshelf bookshelf;
 
     @NonNull
-    private final Map<String, TableDefinition> leftOuterJoins = new HashMap<>();
+    private final Set<TableDefinition> leftOuterJoins = new HashSet<>();
 
     /** Collection of 'extra' book level domains requested by caller. */
     @NonNull
@@ -169,21 +170,14 @@ class BooklistBuilder {
 
     /**
      * Add a table to be added as a LEFT OUTER JOIN.
+     * <p>
+     * Adding a duplicate is ignored.
      *
      * @param tableDefinition TableDefinition to add
-     *
-     * @throws IllegalArgumentException if the table was already added
      */
     void addLeftOuterJoin(@SuppressWarnings("SameParameterValue")
                           @NonNull final TableDefinition tableDefinition) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            if (leftOuterJoins.containsKey(tableDefinition.getName())) {
-                // adding a duplicate here is a bug.
-                throw new IllegalArgumentException("Duplicate table=" + tableDefinition.getName());
-            }
-        }
-        leftOuterJoins.put(tableDefinition.getName(), tableDefinition);
+        leftOuterJoins.add(tableDefinition);
     }
 
     /**
@@ -252,7 +246,7 @@ class BooklistBuilder {
         try {
             // Construct the list table and all needed structures.
             final Pair<TableDefinition, TableDefinition> tables = tableBuilder
-                    .build(context, db, leftOuterJoins.values(), bookDomains.values(), filters);
+                    .build(context, db, leftOuterJoins, bookDomains.values(), filters);
 
             final TableDefinition listTable = tables.first;
             final TableDefinition navTable = tables.second;
