@@ -240,6 +240,12 @@ public class EditBookshelvesFragment
     private boolean onMenuItemSelected(final int listIndex,
                                        @IdRes final int menuItemId) {
 
+        // If there is no Bookshelf selected, just quit here.
+        // 2024-07-19: seen this happen, but not sure why - cannot reproduce.
+        if (listIndex < 0) {
+            return true;
+        }
+
         final Bookshelf bookshelf = vm.getBookshelf(listIndex);
 
         if (menuItemId == R.id.MENU_EDIT) {
