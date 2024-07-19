@@ -43,9 +43,11 @@ public class PaddingWindowInsetsListener
     private final boolean top;
     private final boolean right;
     private final boolean bottom;
+    private final boolean consume;
 
     PaddingWindowInsetsListener(@NonNull final InsetsListenerBuilder builder) {
         typeMask = builder.getTypeMask();
+        consume = builder.getConsume();
 
         final Set<Side> sides = builder.getSides();
         if (sides == null || sides.contains(Side.All)) {
@@ -87,6 +89,10 @@ public class PaddingWindowInsetsListener
                      base.right + (right ? insets.right : 0),
                      base.bottom + (bottom ? insets.bottom : 0));
 
-        return WindowInsetsCompat.CONSUMED;
+        if (consume) {
+            return WindowInsetsCompat.CONSUMED;
+        } else {
+            return windowInsets;
+        }
     }
 }

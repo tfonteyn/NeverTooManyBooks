@@ -51,6 +51,8 @@ public final class InsetsListenerBuilder {
     @Nullable
     private Type type;
 
+    private boolean consume = true;
+
     private InsetsListenerBuilder(@NonNull final View view) {
         this.view = view;
     }
@@ -124,6 +126,12 @@ public final class InsetsListenerBuilder {
     }
 
     @NonNull
+    public InsetsListenerBuilder consume(final boolean flag) {
+        consume = flag;
+        return this;
+    }
+
+    @NonNull
     public InsetsListenerBuilder sides(@NonNull final Side... sides) {
         this.sides = Set.of(sides);
         return this;
@@ -148,6 +156,10 @@ public final class InsetsListenerBuilder {
 
     int getTypeMask() {
         return typeMask;
+    }
+
+    public boolean getConsume() {
+        return consume;
     }
 
     @Nullable

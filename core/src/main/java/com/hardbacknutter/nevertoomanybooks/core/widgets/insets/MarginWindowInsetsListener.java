@@ -44,9 +44,11 @@ public class MarginWindowInsetsListener
     private final boolean top;
     private final boolean right;
     private final boolean bottom;
+    private final boolean consume;
 
     MarginWindowInsetsListener(@NonNull final InsetsListenerBuilder builder) {
         typeMask = builder.getTypeMask();
+        consume = builder.getConsume();
 
         final Set<Side> sides = builder.getSides();
         if (sides == null || sides.contains(Side.All)) {
@@ -90,6 +92,10 @@ public class MarginWindowInsetsListener
                       base.bottom + (bottom ? insets.bottom : 0));
         v.setLayoutParams(lp);
 
-        return WindowInsetsCompat.CONSUMED;
+        if (consume) {
+            return WindowInsetsCompat.CONSUMED;
+        } else {
+            return windowInsets;
+        }
     }
 }
