@@ -85,6 +85,9 @@
            parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <!-- padding added for bars with a subtitle which was sticking to the bottom
+             due to using "wrap_content" now. The 4dp seems to work out universally. -->
+        <item name="android:paddingBottom">4dp</item>
         <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
