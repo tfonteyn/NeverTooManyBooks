@@ -39,6 +39,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -109,6 +110,14 @@ public class EditBookFragment
         return vb.getRoot();
     }
 
+    private final ViewPager2.OnPageChangeCallback pageChange =
+            new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(final int position) {
+                    hideKeyboard(vb.pager);
+                }
+            };
+
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -122,6 +131,8 @@ public class EditBookFragment
 
         tabAdapter = new TabAdapter(getActivity());
         vb.pager.setAdapter(tabAdapter);
+
+        vb.pager.registerOnPageChangeCallback(pageChange);
 
         new TabLayoutMediator(vb.tabPanel, vb.pager, (tab, position) -> {
             final TabAdapter.TabInfo tabInfo = tabAdapter.getTabInfo(position);
@@ -151,6 +162,12 @@ public class EditBookFragment
     public void onPause() {
         super.onPause();
         vm.setCurrentTab(vb.pager.getCurrentItem());
+    }
+
+    @Override
+    public void onDestroy() {
+        vb.pager.unregisterOnPageChangeCallback(pageChange);
+        super.onDestroy();
     }
 
     /**
