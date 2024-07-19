@@ -44,7 +44,7 @@ public class SearchSitesAllListsContract
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
         return FragmentHostActivity
-                .createIntent(context, R.layout.activity_main, SearchAdminFragment.class);
+                .createIntent(context, R.layout.activity_admin_search, SearchAdminFragment.class);
     }
 
     @NonNull

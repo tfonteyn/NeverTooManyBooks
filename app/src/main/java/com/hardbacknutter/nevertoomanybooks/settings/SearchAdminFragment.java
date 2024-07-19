@@ -34,6 +34,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -42,6 +43,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
@@ -90,6 +92,8 @@ public class SearchAdminFragment
                 }
             };
 
+    private TabLayout tabPanel;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,16 +121,21 @@ public class SearchAdminFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
-                                     Lifecycle.State.RESUMED);
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_websites);
+        toolbar.setSubtitle("");
+
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
 
         tabAdapter = new TabAdapter(getActivity(), vm.getTypes());
+        tabPanel = getActivity().findViewById(R.id.tab_panel);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
         vb.pager.setAdapter(tabAdapter);
-        new TabLayoutMediator(vb.tabPanel, vb.pager, (tab, position) -> {
+        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
             if (WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {
@@ -144,9 +153,9 @@ public class SearchAdminFragment
         super.onResume();
 
         if (vm.getTypes().size() == 1) {
-            vb.tabPanel.setVisibility(View.GONE);
+            tabPanel.setVisibility(View.GONE);
         } else {
-            vb.tabPanel.setVisibility(View.VISIBLE);
+            tabPanel.setVisibility(View.VISIBLE);
         }
     }
 
@@ -216,7 +225,7 @@ public class SearchAdminFragment
                 final SiteConfigPreferenceFragment fragment =
                         new SiteConfigPreferenceFragment();
 
-                vb.tabPanel.setVisibility(View.GONE);
+                tabPanel.setVisibility(View.GONE);
 
                 getParentFragmentManager()
                         .beginTransaction()
