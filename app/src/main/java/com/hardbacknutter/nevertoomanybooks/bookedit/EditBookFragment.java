@@ -177,9 +177,9 @@ public class EditBookFragment
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         vb.pager.unregisterOnPageChangeCallback(pageChange);
-        super.onDestroy();
+        super.onDestroyView();
     }
 
     /**
