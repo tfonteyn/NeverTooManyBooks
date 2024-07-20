@@ -79,7 +79,7 @@ ext {
     jsoupVersion = '1.18.1'
 
     // https://github.com/tfonteyn/TinyZXingWrapper
-    tinyZxingWrapperVersion = "1.0.0"
+    tinyZxingWrapperVersion = "1.0.1"
 
     // https://github.com/zxing/zxing
     zxingCoreVersion = '3.5.3'
