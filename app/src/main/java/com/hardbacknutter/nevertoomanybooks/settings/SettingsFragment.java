@@ -191,13 +191,13 @@ public class SettingsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.lbl_settings);
-        toolbar.setSubtitle("");
-
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_settings);
+        toolbar.setSubtitle("");
 
         if (storageVolumeHelper != null) {
             vm.onProgress()

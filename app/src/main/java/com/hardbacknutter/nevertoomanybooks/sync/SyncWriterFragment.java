@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -46,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -102,9 +105,15 @@ public class SyncWriterFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Effectively disable edge-to-edge for the root view.
+        InsetsListenerBuilder.create(view)
+                             .padding()
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
+        final Toolbar toolbar = getToolbar();
         //noinspection DataFlowIssue
-        getToolbar().setTitle(vm.getDestinationDisplayName(getContext()));
+        toolbar.setTitle(vm.getDestinationDisplayName(getContext()));
 
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         vm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);

@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookCont
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -110,6 +112,11 @@ public class SearchBookByExternalIdFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Effectively disable edge-to-edge for the root view.
+        InsetsListenerBuilder.create(view)
+                             .padding()
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_add_book_by_external_id);

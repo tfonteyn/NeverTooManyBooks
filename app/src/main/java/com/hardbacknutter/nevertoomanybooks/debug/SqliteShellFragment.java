@@ -33,6 +33,7 @@ import android.webkit.WebSettings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
@@ -45,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBinding;
 
 /**
@@ -115,9 +118,14 @@ public class SqliteShellFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Effectively disable edge-to-edge for the root view.
+        InsetsListenerBuilder.create(view)
+                             .padding()
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
-
-        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         final WebSettings settings = vb.output.getSettings();
         settings.setTextZoom(TEXT_ZOOM);
@@ -231,9 +239,9 @@ public class SqliteShellFragment
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES, 0,
-                     R.string.debug_sq_shell_max_rows)
-                .setIcon(R.drawable.table_rows_24px)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                     R.string.lbl_settings)
+                .setIcon(R.drawable.settings_24px)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         }
 

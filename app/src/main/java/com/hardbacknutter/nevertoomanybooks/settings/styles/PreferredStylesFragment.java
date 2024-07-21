@@ -184,16 +184,17 @@ public class PreferredStylesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        final Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.lbl_styles_long);
-        toolbar.setSubtitle(null);
-
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        InsetsListenerBuilder.apply(vb.list);
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_styles_long);
+        toolbar.setSubtitle(null);
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         //noinspection DataFlowIssue
         listAdapter = new StylesAdapter(getContext(), vm.getStyleList(), positionHandler,
@@ -233,7 +234,6 @@ public class PreferredStylesFragment
         vb.list.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.list.setHasFixedSize(true);
-        InsetsListenerBuilder.apply(vb.list);
         vb.list.setAdapter(listAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =

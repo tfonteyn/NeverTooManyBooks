@@ -21,7 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -34,12 +36,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.settings.dialogs.PreferenceDialogFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
@@ -51,6 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Delay;
  *     <li>custom preference dialogs</li>
  *     <li>auto-scroll key</li>
  * </ul>
+ *
+ * It is the equivalent of the {@link com.hardbacknutter.nevertoomanybooks.BaseFragment}.
  */
 public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
@@ -68,24 +74,38 @@ public abstract class BasePreferenceFragment
     @Nullable
     private Toolbar toolbar;
 
+    @Override
+    @NonNull
+    public RecyclerView onCreateRecyclerView(@NonNull final LayoutInflater inflater,
+                                             @NonNull final ViewGroup parent,
+                                             @Nullable final Bundle savedInstanceState) {
+        final RecyclerView listView =
+                super.onCreateRecyclerView(inflater, parent, savedInstanceState);
+        InsetsListenerBuilder.apply(listView);
+        return listView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        // see onCreateRecyclerView(...)
+
+        final FragmentActivity activity = getActivity();
+        //noinspection DataFlowIssue
+        toolbar = activity.findViewById(R.id.toolbar);
+        progressFrame = activity.findViewById(R.id.progress_frame);
+    }
+
     @NonNull
     protected View getProgressFrame() {
-        if (progressFrame == null) {
-            //noinspection DataFlowIssue
-            progressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
-                                                   "R.id.progress_frame");
-        }
-        return progressFrame;
+        return Objects.requireNonNull(progressFrame, "R.id.progress_frame");
     }
 
     @NonNull
     protected Toolbar getToolbar() {
-        if (toolbar == null) {
-            //noinspection DataFlowIssue
-            toolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
-                                             "R.id.toolbar");
-        }
-        return toolbar;
+        return Objects.requireNonNull(toolbar, "R.id.toolbar");
     }
 
     @Override

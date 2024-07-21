@@ -51,6 +51,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
@@ -116,6 +118,12 @@ public class SearchAdminFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Effectively disable edge-to-edge for the pager and add system gestures.
+        InsetsListenerBuilder.create(vb.pager)
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .systemGestures()
+                             .padding()
+                             .apply();
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
@@ -144,8 +152,7 @@ public class SearchAdminFragment
             // 2024-05-07: this turned out to be a dud...
             // it's not shown when long-pressing the tab?
             tab.setContentDescription(getString(tabAdapter.getTabDescription(position)));
-        })
-                .attach();
+        }).attach();
     }
 
     @Override

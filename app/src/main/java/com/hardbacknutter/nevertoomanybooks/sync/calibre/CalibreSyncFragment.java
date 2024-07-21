@@ -37,6 +37,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncCalibreBinding;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -70,10 +72,15 @@ public class CalibreSyncFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Effectively disable edge-to-edge for the root view.
+        InsetsListenerBuilder.create(view)
+                             .padding()
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
         final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         // Make sure it's GONE, when returning from import/export to this screen
         getFab().setVisibility(View.GONE);

@@ -28,7 +28,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -45,7 +44,7 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public final class InsetsListenerBuilder {
 
-    public static final String ERR_TYPE_ALREADY_SET = "Type already set";
+    private static final String ERR_TYPE_ALREADY_SET = "Type already set";
     @NonNull
     private final View view;
 
@@ -93,13 +92,13 @@ public final class InsetsListenerBuilder {
      *
      * @param view to apply to
      */
-    public static void apply(@NonNull final NestedScrollView view) {
+    public static void apply(@NonNull final FloatingActionButton view) {
         create(view)
-                .padding()
-                .sides(Side.Left, Side.Right, Side.Bottom)
-                .ime()
+                .margins()
+                .sides(Side.Right, Side.Bottom)
                 .apply();
     }
+
 
     /**
      * Apply a predefined listener.
@@ -114,17 +113,6 @@ public final class InsetsListenerBuilder {
                 .apply();
     }
 
-    /**
-     * Apply a predefined listener.
-     *
-     * @param view to apply to
-     */
-    public static void apply(@NonNull final FloatingActionButton view) {
-        create(view)
-                .margins()
-                .sides(Side.Right, Side.Bottom)
-                .apply();
-    }
 
     /**
      * Enable {@link WindowInsetsCompat.Type#systemGestures()}.

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="FragmentRoot.ConstraintLayout"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_margin">@dimen/container_margin</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:maxWidth">@dimen/centered_max_width</item>
+    </style>
+</resources>

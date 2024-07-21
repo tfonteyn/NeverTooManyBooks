@@ -22,13 +22,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TopNestedScroller"
+    style="@style/FragmentRoot.NestedScroller"
     tools:context=".FragmentHostActivity"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content"
-        style="@style/TopCentered"
+        style="@style/FragmentRoot.ConstraintLayout"
         >
 
         <com.google.android.material.textfield.TextInputLayout

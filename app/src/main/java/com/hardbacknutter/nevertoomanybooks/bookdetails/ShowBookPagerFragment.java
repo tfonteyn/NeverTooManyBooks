@@ -64,6 +64,7 @@ public class ShowBookPagerFragment
                     getActivity().finish();
                 }
             };
+    /** Swiping left/right: load the book data for the next page. */
     private final ViewPager2.OnPageChangeCallback pageChange =
             new ViewPager2.OnPageChangeCallback() {
                 @Override
@@ -102,6 +103,7 @@ public class ShowBookPagerFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // We're NOT applying any insets but do that on the individual fragments.
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
@@ -110,7 +112,6 @@ public class ShowBookPagerFragment
         final ShowBookPagerAdapter adapter = new ShowBookPagerAdapter(this);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(vm.getInitialPagerPosition(), false);
-
 
         viewPager.registerOnPageChangeCallback(pageChange);
 

@@ -144,8 +144,14 @@ public class StyleBooklistBookLevelSortingFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final Context context = getContext();
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        InsetsListenerBuilder.apply(vb.columnList);
 
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        final Context context = getContext();
         final Style style = vm.getStyle();
 
         final Toolbar toolbar = getToolbar();
@@ -156,10 +162,6 @@ public class StyleBooklistBookLevelSortingFragment
         }
         //noinspection DataFlowIssue
         toolbar.setSubtitle(style.getLabel(context));
-
-        //noinspection DataFlowIssue
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         final List<StyleViewModel.WrappedBookLevelColumn> groupSortingFields =
                 vm.getStyle()
@@ -188,7 +190,6 @@ public class StyleBooklistBookLevelSortingFragment
         vb.columnList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.columnList.setHasFixedSize(true);
-        InsetsListenerBuilder.apply(vb.columnList);
 
         // setup the adapters
 

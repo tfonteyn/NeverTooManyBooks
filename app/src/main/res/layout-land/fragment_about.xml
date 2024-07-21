@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TopCentered"
+    style="@style/FragmentRoot.ConstraintLayout"
     tools:context=".FragmentHostActivity"
     >
 
@@ -63,7 +63,6 @@
     <TextView
         android:id="@+id/lbl_books"
         style="@style/About.Label"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
         android:text="@string/lbl_books"
         app:layout_constraintStart_toStartOf="parent"

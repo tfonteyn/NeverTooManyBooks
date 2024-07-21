@@ -427,7 +427,8 @@
 
 
     <!-- NestedScrollView -->
-    <style name="TopNestedScroller">
+    <style name="FragmentRoot.NestedScroller"
+           parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:fillViewport">true</item>
@@ -435,12 +436,11 @@
     </style>
 
     <!-- ConstraintLayout -->
-    <style name="TopCentered">
+    <style name="FragmentRoot.ConstraintLayout"
+           parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_margin">@dimen/container_margin</item>
-        <item name="android:maxWidth">@dimen/centered_max_width</item>
     </style>
 
 </resources>

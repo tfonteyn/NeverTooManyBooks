@@ -119,6 +119,8 @@ public class SearchBookUpdatesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        InsetsListenerBuilder.apply(vb.fieldList);
 
         final Bundle args = getArguments();
 
@@ -171,7 +173,6 @@ public class SearchBookUpdatesFragment
                 new GridDividerItemDecoration(getContext(), false, true);
         vb.fieldList.addItemDecoration(columnDivider);
         vb.fieldList.setHasFixedSize(true);
-        InsetsListenerBuilder.apply(vb.fieldList);
 
         initAdapter();
 

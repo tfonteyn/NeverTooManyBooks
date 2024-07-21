@@ -33,6 +33,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -54,6 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContra
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -138,12 +141,18 @@ public class ImportFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        getToolbar().setTitle(R.string.lbl_import);
+        // Effectively disable edge-to-edge for the root view.
+        InsetsListenerBuilder.create(view)
+                             .padding()
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_import);
 
         vm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         vm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
@@ -336,8 +345,8 @@ public class ImportFragment
                             CsvRecordReader.Origin.BKEY);
                     if (origin != null) {
                         info.add(context.getString(R.string.name_colon_value,
-                                                   context.getString(R.string.lbl_archive_format)
-                                , origin.getLabel(context)));
+                                                   context.getString(R.string.lbl_archive_format),
+                                                   origin.getLabel(context)));
                     }
 
                     final Locale systemLocale = ServiceLocator
@@ -403,9 +412,6 @@ public class ImportFragment
         }
     }
 
-    /**
-     * @see #onStartImport()
-     */
     private void startImport() {
         closeProgressDialog();
         //noinspection DataFlowIssue

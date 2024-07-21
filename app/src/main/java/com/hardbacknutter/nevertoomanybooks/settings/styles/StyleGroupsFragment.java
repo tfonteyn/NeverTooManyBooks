@@ -121,7 +121,13 @@ public class StyleGroupsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        InsetsListenerBuilder.apply(vb.groupList);
 
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
+        
         final Style style = vm.getStyle();
 
         final Toolbar toolbar = getToolbar();
@@ -134,14 +140,9 @@ public class StyleGroupsFragment
         //noinspection DataFlowIssue
         toolbar.setSubtitle(style.getLabel(context));
 
-        //noinspection DataFlowIssue
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
-
         vb.groupList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.groupList.setHasFixedSize(true);
-        InsetsListenerBuilder.apply(vb.groupList);
 
         // setup the adapter
         // The adapter for the list.

@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditSearchsiteBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -117,12 +116,12 @@ public class SearchOrderFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Insets are applied to the parent fragment (ViewPager2)
 
         //noinspection DataFlowIssue
         vb.siteList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.siteList.setHasFixedSize(true);
-        InsetsListenerBuilder.apply(vb.siteList);
 
         listAdapter = new SearchSiteListAdapter(getContext(), vm.getList(type),
                                                 vh -> itemTouchHelper.startDrag(vh));

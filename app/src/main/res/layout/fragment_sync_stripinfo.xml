@@ -22,9 +22,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="@dimen/container_margin"
     tools:context=".FragmentHostActivity"
     >
@@ -52,8 +52,8 @@
         style="@style/Button.Menu"
         android:text="@string/action_import"
         app:icon="@drawable/cloud_download_24px"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_lib_map"
         />
 
@@ -62,8 +62,8 @@
         style="@style/Button.Menu"
         android:text="@string/action_export"
         app:icon="@drawable/cloud_upload_24px"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_import"
         />
 

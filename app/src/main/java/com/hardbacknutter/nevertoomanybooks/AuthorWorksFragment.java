@@ -120,7 +120,6 @@ public class AuthorWorksFragment
         menuLauncher.registerForFragmentResult(fm, this);
     }
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -128,6 +127,72 @@ public class AuthorWorksFragment
                              @Nullable final Bundle savedInstanceState) {
         vb = FragmentAuthorWorksBinding.inflate(inflater, container, false);
         return vb.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        InsetsListenerBuilder.apply(vb.authorWorks);
+
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        final Context context = getContext();
+
+        final Toolbar toolbar = getToolbar();
+        //noinspection DataFlowIssue
+        toolbar.setTitle(vm.getScreenTitle(context));
+        toolbar.setSubtitle(vm.getScreenSubtitle(context));
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
+
+        vb.authorWorks.setHasFixedSize(true);
+
+        // Optional overlay
+        final int overlayType = Prefs.getFastScrollerOverlayType(context);
+        FastScroller.attach(vb.authorWorks, overlayType);
+
+        adapter = new AuthorWorksAdapter(context, vm.getStyle(), List.of(vm.getAuthor()),
+                                         vm.getWorks());
+
+        // click -> get the book(s) for that entry and display.
+        adapter.setOnRowClickListener(
+                (v, position) -> displayBookLauncher.launch(
+                        this,
+                        vm.getWorks().get(position),
+                        vm.getStyle(),
+                        vm.isAllBookshelves()));
+
+        final Resources res = getResources();
+        rowMenu = MenuUtils.create(context);
+        rowMenu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                    R.string.action_delete)
+               .setIcon(R.drawable.delete_24px);
+
+        adapter.setOnRowShowMenuListener(
+                ExtMenuButton.getPreferredMode(context),
+                (anchor, position) -> {
+                    final MenuMode menuMode = MenuMode.getMode(getActivity(), rowMenu);
+                    if (menuMode.isPopup()) {
+                        new ExtMenuPopupWindow(anchor.getContext())
+                                .setListener(this::onMenuItemSelected)
+                                .setPosition(position)
+                                .setMenu(rowMenu, true)
+                                .show(anchor, menuMode);
+                    } else {
+                        menuLauncher.launch(getActivity(), position, null, null,
+                                            rowMenu, true);
+                    }
+                }
+        );
+
+        vb.authorWorks.setAdapter(adapter);
+
+        if (savedInstanceState == null) {
+            TipManager.getInstance().display(context, R.string.tip_authors_works, null);
+        }
     }
 
     /**
@@ -187,74 +252,7 @@ public class AuthorWorksFragment
         }
     }
 
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-        final Context context = getContext();
-
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        //noinspection DataFlowIssue
-        toolbar.setTitle(vm.getScreenTitle(context));
-        toolbar.setSubtitle(vm.getScreenSubtitle(context));
-
-        // Popup the search widget when the user starts to type.
-        //noinspection DataFlowIssue
-        getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
-
-        vb.authorWorks.setHasFixedSize(true);
-
-        // Optional overlay
-        final int overlayType = Prefs.getFastScrollerOverlayType(context);
-        FastScroller.attach(vb.authorWorks, overlayType);
-
-        InsetsListenerBuilder.apply(vb.authorWorks);
-
-        adapter = new AuthorWorksAdapter(context, vm.getStyle(), List.of(vm.getAuthor()),
-                                         vm.getWorks());
-
-        // click -> get the book(s) for that entry and display.
-        adapter.setOnRowClickListener(
-                (v, position) -> displayBookLauncher.launch(
-                        this,
-                        vm.getWorks().get(position),
-                        vm.getStyle(),
-                        vm.isAllBookshelves()));
-
-        final Resources res = getResources();
-        rowMenu = MenuUtils.create(context);
-        rowMenu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                    R.string.action_delete)
-               .setIcon(R.drawable.delete_24px);
-
-        adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(context),
-                (anchor, position) -> {
-                    final MenuMode menuMode = MenuMode.getMode(getActivity(), rowMenu);
-                    if (menuMode.isPopup()) {
-                        new ExtMenuPopupWindow(anchor.getContext())
-                                .setListener(this::onMenuItemSelected)
-                                .setPosition(position)
-                                .setMenu(rowMenu, true)
-                                .show(anchor, menuMode);
-                    } else {
-                        menuLauncher.launch(getActivity(), position, null, null,
-                                            rowMenu, true);
-                    }
-                }
-        );
-
-        vb.authorWorks.setAdapter(adapter);
-
-        if (savedInstanceState == null) {
-            TipManager.getInstance().display(context, R.string.tip_authors_works, null);
-        }
-    }
 
     private final class ToolbarMenuProvider
             implements MenuProvider {

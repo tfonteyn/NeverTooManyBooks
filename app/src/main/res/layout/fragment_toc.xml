@@ -34,7 +34,7 @@
         android:id="@+id/lbl_toc"
         style="@style/Label"
         android:text="@string/lbl_table_of_content"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_toc"
         app:layout_constraintTop_toTopOf="parent"
         />
 

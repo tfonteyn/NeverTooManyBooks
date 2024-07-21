@@ -24,7 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ns_edit_book_fields"
-    style="@style/TopNestedScroller"
+    style="@style/FragmentRoot.NestedScroller"
     tools:context=".FragmentHostActivity"
     >
 

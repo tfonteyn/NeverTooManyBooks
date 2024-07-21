@@ -173,14 +173,16 @@ public class EditBookshelvesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        toolbar.setTitle(R.string.lbl_bookshelves);
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        InsetsListenerBuilder.apply(vb.list);
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_bookshelves);
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
@@ -200,7 +202,6 @@ public class EditBookshelvesFragment
 
         vb.list.setHasFixedSize(true);
         vb.list.setAdapter(adapter);
-        InsetsListenerBuilder.apply(vb.list);
     }
 
     @Override

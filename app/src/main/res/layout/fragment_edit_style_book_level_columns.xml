@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TopCentered"
+    style="@style/FragmentRoot.ConstraintLayout"
     tools:context=".FragmentHostActivity"
     >
 
@@ -31,7 +31,7 @@
         android:id="@+id/header"
         style="@style/Text.Header.PreferenceCategory"
         android:text="@string/lbl_sorting"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/column_list"
         app:layout_constraintTop_toTopOf="parent"
         />
 

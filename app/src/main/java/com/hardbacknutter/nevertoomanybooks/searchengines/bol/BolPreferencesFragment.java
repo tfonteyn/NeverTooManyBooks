@@ -41,8 +41,9 @@ public class BolPreferencesFragment
 
     private static final String DEF_COUNTRY = "";
 
-    private final CharSequence[] entries = new CharSequence[3];
+    /** These values are used in the search url as-is. */
     private final CharSequence[] entryValues = {DEF_COUNTRY, "be", "nl"};
+    private final CharSequence[] entries = new CharSequence[entryValues.length];
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -51,6 +52,8 @@ public class BolPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_bol, rootKey);
 
         entries[0] = getString(R.string.lbl_system_default);
+        //FIXME: these will always show in the device language
+        // and not in the user-selected language
         entries[1] = new Locale("nl", "BE").getDisplayCountry();
         entries[2] = new Locale("nl", "NL").getDisplayCountry();
 
@@ -69,11 +72,10 @@ public class BolPreferencesFragment
         }
 
         // We need to set this manually, as the default depends on the user language.
-        final SwitchPreference showShoppingMenu = findPreference(
+        final SwitchPreference pShoppingMenu = findPreference(
                 EngineId.Bol.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        final ShoppingMenuHandler shoppingMenuHandler = new BolMenuHandler(
-        );
+        final ShoppingMenuHandler shoppingMenuHandler = new BolMenuHandler();
         //noinspection DataFlowIssue
-        showShoppingMenu.setChecked(shoppingMenuHandler.isShowMenu(getContext()));
+        pShoppingMenu.setChecked(shoppingMenuHandler.isShowMenu(getContext()));
     }
 }

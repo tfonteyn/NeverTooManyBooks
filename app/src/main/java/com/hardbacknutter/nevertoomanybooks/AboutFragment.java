@@ -57,13 +57,17 @@ public class AboutFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Effectively disable edge-to-edge for the root view.
+        InsetsListenerBuilder.create(view)
+                             .padding()
+                             .sides(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_about);
 
         // Don't scroll
-        final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
-                toolbar.getLayoutParams();
+        final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
 
         //noinspection DataFlowIssue
@@ -71,18 +75,12 @@ public class AboutFragment
                 PackageInfoWrapper.createWithSignatures(getContext());
         // show the version in the header
         vb.version.setText(packageInfoWrapper.getVersionName());
-
         // show the full version + build date in the bottom corner
         final String code = "a" + packageInfoWrapper.getVersionCode()
                             + " d" + DBHelper.DATABASE_VERSION
                             + " b" + BuildConfig.TIMESTAMP
                             + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
         vb.debugVersion.setText(code);
-        // EdgeToEdge: Make sure it's not hidden by the bottom-system-bar
-        InsetsListenerBuilder.create(vb.debugVersion)
-                             .margins()
-                             .sides(Side.Left, Side.Right, Side.Bottom)
-                             .apply();
 
         vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_project_url)))));

@@ -213,7 +213,7 @@
         <item>6dp</item>
     </array>
 
-    <!-- The width for the "@style/TopCentered" and similar -->
+    <!-- The width for "@style/FragmentRoot.*" -->
     <dimen name="centered_max_width">600dp</dimen>
 
     <!-- Buttons *on* the toolbar get extra spacing for ease of use. -->

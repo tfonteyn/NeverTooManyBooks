@@ -136,6 +136,8 @@ public class TocFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
+        InsetsListenerBuilder.apply(vb.toc);
 
         final Context context = getContext();
 
@@ -156,7 +158,6 @@ public class TocFragment
 
         vb.toc.setAdapter(adapter);
         vb.toc.setHasFixedSize(true);
-        InsetsListenerBuilder.apply(vb.toc);
 
         //noinspection NotifyDataSetChanged
         vm.onBookChanged().observe(getViewLifecycleOwner(),
