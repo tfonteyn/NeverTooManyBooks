@@ -29,7 +29,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -64,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
@@ -613,9 +613,8 @@ public class EditBookTocFragment
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            final View rootView = getLayoutInflater()
-                    .inflate(R.layout.dialog_toc_confirm, null, false);
-            final TextView contentView = rootView.findViewById(R.id.content);
+            final DialogTocConfirmBinding vb = DialogTocConfirmBinding
+                    .inflate(getLayoutInflater(), null, false);
 
             final boolean hasToc = tocEntries != null && !tocEntries.isEmpty();
             if (hasToc) {
@@ -626,17 +625,16 @@ public class EditBookTocFragment
                                 .append(tocEntries.stream()
                                                   .map(entry -> entry.getLabel(getContext()))
                                                   .collect(Collectors.joining(", ")));
-                contentView.setText(message);
-
+                vb.tocList.setText(message);
             } else {
-                contentView.setText(R.string.error_auto_toc_population_failed);
+                vb.tocList.setText(R.string.error_auto_toc_population_failed);
             }
 
             //noinspection DataFlowIssue
             final AlertDialog dialog =
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.warning_24px)
-                            .setView(rootView)
+                            .setView(vb.getRoot())
                             .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                             .create();
 

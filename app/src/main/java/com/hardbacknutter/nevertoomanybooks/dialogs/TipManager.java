@@ -281,7 +281,7 @@ public final class TipManager {
             final View root = LayoutInflater.from(context).inflate(layoutId, null);
 
             // Setup the message; this is an optional View but present in the default layout.
-            final TextView messageView = root.findViewById(R.id.content);
+            final TextView messageView = root.findViewById(R.id.message);
             if (messageView != null) {
                 // allow links, start a browser (or whatever)
                 messageView.setText(HtmlFormatter.linkify(text));

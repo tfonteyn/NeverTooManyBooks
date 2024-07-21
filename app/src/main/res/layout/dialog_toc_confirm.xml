@@ -24,11 +24,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Dialog.Content"
     android:orientation="vertical"
-    tools:viewBindingIgnore="true"
     >
 
     <TextView
-        android:id="@+id/content"
+        android:id="@+id/toc_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textAppearance="?attr/textAppearanceBodySmall"

@@ -182,6 +182,5 @@
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         style="@style/NavigationView"
-        app:menu="@menu/bob_nav_view"
-        />
+        app:menu="@menu/bob_nav_view" />
 </androidx.drawerlayout.widget.DrawerLayout>

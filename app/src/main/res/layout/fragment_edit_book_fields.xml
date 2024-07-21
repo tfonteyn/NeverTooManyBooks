@@ -23,13 +23,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ns_edit_book_fields"
+    android:id="@+id/ns_content_body"
     style="@style/FragmentRoot.NestedScroller"
-    tools:context=".FragmentHostActivity"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/ns_content_edit_book_fields"
+        android:id="@+id/content_body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/container_margin"

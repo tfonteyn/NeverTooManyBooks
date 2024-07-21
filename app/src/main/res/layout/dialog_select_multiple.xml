@@ -23,11 +23,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ns_dialog_select_multiple"
+    android:id="@+id/ns_content_body"
     style="@style/Dialog.Content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/dialog_content"
+        android:id="@+id/content_body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
@@ -62,9 +62,9 @@
             android:id="@+id/item_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:nestedScrollingEnabled="true"
             android:paddingTop="@dimen/dialogPreferredPaddingTop"
             android:scrollbars="vertical"
-            android:nestedScrollingEnabled="true"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

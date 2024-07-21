@@ -122,7 +122,7 @@ public class SearchFtsFragment
         vb.btnSearch.setOnClickListener(v -> showFullResults());
 
         // Detect when user touches something.
-        vb.content.setOnTouchListener((v, event) -> {
+        vb.contentBody.setOnTouchListener((v, event) -> {
             userIsActive(false);
             return false;
         });
