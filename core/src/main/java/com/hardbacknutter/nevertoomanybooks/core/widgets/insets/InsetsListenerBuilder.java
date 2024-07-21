@@ -99,7 +99,6 @@ public final class InsetsListenerBuilder {
                 .apply();
     }
 
-
     /**
      * Apply a predefined listener.
      *

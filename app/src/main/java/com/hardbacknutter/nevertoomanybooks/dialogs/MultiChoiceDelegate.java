@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
