@@ -35,8 +35,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
@@ -96,8 +94,7 @@ class MultiChoiceDelegate {
     }
 
     public void onViewCreated(@NonNull final DialogSelectMultipleBinding vb) {
-
-        final Context context = vb.getRoot().getContext();
+        // No insets needed; the surrounding container takes care of all.
 
         if (dialogMessage != null && !dialogMessage.isEmpty()) {
             vb.message.setText(dialogMessage);
@@ -106,6 +103,7 @@ class MultiChoiceDelegate {
             vb.message.setVisibility(View.GONE);
         }
 
+        final Context context = vb.getRoot().getContext();
         final ChecklistRecyclerAdapter<Long> adapter = new ChecklistRecyclerAdapter<>(
                 context, items, itemLabels::get, vm.getSelectedItems(),
                 (id, checked) -> {
@@ -116,7 +114,6 @@ class MultiChoiceDelegate {
                     }
                 });
         vb.itemList.setAdapter(adapter);
-        InsetsListenerBuilder.apply(vb.itemList);
     }
 
     void saveChanges() {
