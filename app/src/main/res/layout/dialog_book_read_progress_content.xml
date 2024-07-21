@@ -123,6 +123,13 @@
         tools:visibility="visible"
         >
 
+        <!-- Setting imeOption="actionNext" is in fact confusing
+             as the user (i.e. myself!) won't see a difference between being on
+             this field or on the 'total-pages' field other than the ime label.
+             Normally the hint (from the TextInputLayout) will show what field we're in,
+             but this won't show when there is a value... which there ALWAYS
+             will be in the 'total-pages'.
+             -->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/current_page"
             style="@style/TIE.Number"
