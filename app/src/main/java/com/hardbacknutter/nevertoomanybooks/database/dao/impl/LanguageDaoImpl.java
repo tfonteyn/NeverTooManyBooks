@@ -94,12 +94,13 @@ public class LanguageDaoImpl
                     iso = languagesSupplier.get().getISO3FromCode(lang);
                 }
 
-                if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger().d(TAG, "bulkUpdate",
-                                                "|from=" + lang,
-                                                "to=" + iso);
-                }
                 if (!iso.equals(lang)) {
+                    if (BuildConfig.DEBUG /* always */) {
+                        LoggerFactory.getLogger().d(TAG, "bulkUpdate",
+                                                    "|from=" + lang,
+                                                    "to=" + iso);
+                    }
+
                     rename(lang, iso);
                 }
             }
