@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,14 +30,19 @@ import android.widget.ImageView;
 import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
@@ -95,28 +101,40 @@ public class ZoomedImageDialogFragment
         super.onViewCreated(view, savedInstanceState);
         imageView = view.findViewById(R.id.cover_image_0);
         imageView.setOnClickListener(v -> dismiss());
+        InsetsListenerBuilder.create(view)
+                             .margins()
+                             .sides(Side.Left, Side.Top, Side.Right, Side.Bottom)
+                             .apply();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        // The WindowMetricsCalculator only provides insets when API >= 30
-        // In portrait mode, this is perfectly fine.
-        // In Landscape mode, we overlap the bottom-navigation bar. Oh well...
-
         //noinspection DataFlowIssue
-        final Rect bounds = WindowMetricsCalculator
+        final WindowMetrics windowMetrics = WindowMetricsCalculator
                 .getOrCreate()
-                .computeCurrentWindowMetrics(getContext())
-                .getBounds();
-        @Dimension
-        final int windowHeightInPx = bounds.height();
-        @Dimension
-        final int windowWidthInPx = bounds.width();
+                .computeCurrentWindowMetrics(getContext());
+        final Rect bounds = windowMetrics.getBounds();
 
-        final double screenHwRatio = ((float) windowHeightInPx)
-                                     / ((float) windowWidthInPx);
+        @Dimension
+        final float windowHeightInPx;
+        @Dimension
+        final float windowWidthInPx;
+
+        // The WindowMetricsCalculator only provides insets when API >= 30
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            final Insets insets = windowMetrics.getWindowInsets().getInsets(
+                    WindowInsetsCompat.Type.statusBars()
+                    | WindowInsetsCompat.Type.displayCutout());
+            windowHeightInPx = bounds.height() - (insets.top + insets.bottom);
+            windowWidthInPx = bounds.width() - (insets.left + insets.right);
+        } else {
+            windowHeightInPx = bounds.height();
+            windowWidthInPx = bounds.width();
+        }
+
+        final double screenHwRatio = windowHeightInPx / windowWidthInPx;
 
         final Resources res = getResources();
 
