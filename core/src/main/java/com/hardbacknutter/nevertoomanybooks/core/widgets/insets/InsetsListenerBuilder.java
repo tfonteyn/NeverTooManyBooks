@@ -45,6 +45,7 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public final class InsetsListenerBuilder {
 
+    public static final String ERR_TYPE_ALREADY_SET = "Type already set";
     @NonNull
     private final View view;
 
@@ -179,10 +180,14 @@ public final class InsetsListenerBuilder {
      *
      * @return {@code this} (for chaining)
      *
+     * @throws IllegalStateException if the type was already set
      * @see #margins()
      */
     @NonNull
     public InsetsListenerBuilder padding() {
+        if (type != null) {
+            throw new IllegalStateException(ERR_TYPE_ALREADY_SET);
+        }
         type = Type.Padding;
         return this;
     }
@@ -192,10 +197,14 @@ public final class InsetsListenerBuilder {
      *
      * @return {@code this} (for chaining)
      *
+     * @throws IllegalStateException if the type was already set
      * @see #padding()
      */
     @NonNull
     public InsetsListenerBuilder margins() {
+        if (type != null) {
+            throw new IllegalStateException(ERR_TYPE_ALREADY_SET);
+        }
         type = Type.Margins;
         return this;
     }
