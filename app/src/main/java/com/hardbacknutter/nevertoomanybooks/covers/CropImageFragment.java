@@ -139,10 +139,10 @@ public class CropImageFragment
 
             // do NOT set a listener on the vb.bottomAppBar/vb.fab
             // The former does that automatically, and the latter is anchored to the bar.
-            InsetsListenerBuilder.create(vb.coverImage0)
+            InsetsListenerBuilder.create()
                                  .margins()
                                  .sides(Side.All)
-                                 .apply();
+                                 .applyTo(vb.coverImage0);
 
             vb.coverImage0.setInitialBitmap(bitmap);
 

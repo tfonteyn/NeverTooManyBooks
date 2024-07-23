@@ -45,8 +45,7 @@ import java.util.Set;
 public final class InsetsListenerBuilder {
 
     private static final String ERR_TYPE_ALREADY_SET = "Type already set";
-    @NonNull
-    private final View view;
+    private View view;
 
     private int typeMask = WindowInsetsCompat.Type.systemBars()
                            | WindowInsetsCompat.Type.displayCutout();
@@ -59,20 +58,17 @@ public final class InsetsListenerBuilder {
 
     private boolean consume = true;
 
-    private InsetsListenerBuilder(@NonNull final View view) {
-        this.view = view;
+    private InsetsListenerBuilder() {
     }
 
     /**
      * Constructor.
      *
-     * @param view to apply to
-     *
      * @return builder
      */
     @NonNull
-    public static InsetsListenerBuilder create(@NonNull final View view) {
-        return new InsetsListenerBuilder(view);
+    public static InsetsListenerBuilder create() {
+        return new InsetsListenerBuilder();
     }
 
     /**
@@ -81,10 +77,10 @@ public final class InsetsListenerBuilder {
      * @param view to apply to
      */
     public static void apply(@NonNull final Toolbar view) {
-        create(view)
+        new InsetsListenerBuilder()
                 .padding()
                 .sides(Side.Left, Side.Top, Side.Right)
-                .apply();
+                .applyTo(view);
     }
 
     /**
@@ -93,10 +89,10 @@ public final class InsetsListenerBuilder {
      * @param view to apply to
      */
     public static void apply(@NonNull final FloatingActionButton view) {
-        create(view)
+        new InsetsListenerBuilder()
                 .margins()
                 .sides(Side.Right, Side.Bottom)
-                .apply();
+                .applyTo(view);
     }
 
     /**
@@ -105,11 +101,11 @@ public final class InsetsListenerBuilder {
      * @param view to apply to
      */
     public static void apply(@NonNull final RecyclerView view) {
-        create(view)
+        new InsetsListenerBuilder()
                 .margins()
                 .sides(Side.Left, Side.Right, Side.Bottom)
                 .ime()
-                .apply();
+                .applyTo(view);
     }
 
 
@@ -198,11 +194,15 @@ public final class InsetsListenerBuilder {
 
     /**
      * Build and apply the listener.
+     *
+     * @param view to apply to
      */
-    public void apply() {
-        Objects.requireNonNull(type, "Must have a type set");
+    public void applyTo(@NonNull final View view) {
+        this.view = view;
 
         final OnApplyWindowInsetsListener listener;
+
+        Objects.requireNonNull(type, "Must have a type set");
         switch (type) {
             case Padding:
                 listener = new PaddingWindowInsetsListener(this);
@@ -214,7 +214,7 @@ public final class InsetsListenerBuilder {
                 //noinspection CheckStyle
                 throw new IllegalArgumentException("type?");
         }
-        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
+        ViewCompat.setOnApplyWindowInsetsListener(this.view, listener);
     }
 
     @NonNull

@@ -80,10 +80,10 @@ public final class NavDrawer {
         // Row 0: the header.
         // We need the padding INSIDE the actual header and NOT on the container that holds
         // the header.
-        InsetsListenerBuilder.create(navigationView.getHeaderView(0))
+        InsetsListenerBuilder.create()
                              .padding()
                              .sides(Side.Left)
-                             .apply();
+                             .applyTo(navigationView.getHeaderView(0));
 
         // Row 1+: the MenuItems
         // Precalculate the default of "28dp" which we have to add to the inset

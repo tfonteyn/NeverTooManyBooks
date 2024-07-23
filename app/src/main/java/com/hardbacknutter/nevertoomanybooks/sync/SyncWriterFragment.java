@@ -106,10 +106,10 @@ public class SyncWriterFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create(view)
+        InsetsListenerBuilder.create()
                              .padding()
                              .sides(Side.Left, Side.Right, Side.Bottom)
-                             .apply();
+                             .applyTo(view);
 
         final Toolbar toolbar = getToolbar();
         //noinspection DataFlowIssue
