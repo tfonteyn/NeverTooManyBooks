@@ -31,6 +31,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 import java.util.Set;
@@ -69,6 +70,15 @@ public final class InsetsListenerBuilder {
     @NonNull
     public static InsetsListenerBuilder create() {
         return new InsetsListenerBuilder();
+    }
+
+    /**
+     * Apply a predefined listener.
+     *
+     * @param view to apply to
+     */
+    public static void apply(@NonNull final NavigationView view) {
+        NavigationViewWindowInsetsListener.apply(view);
     }
 
     /**

@@ -34,6 +34,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 
 public final class NavDrawer {
 
@@ -60,8 +61,8 @@ public final class NavDrawer {
         navigationView.setItemMaxLines(2);
         navigationView.setNavigationItemSelectedListener(listener);
 
-        // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout.
-        NavigationViewWindowInsetsListener.apply(navigationView);
+        // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout here!
+        InsetsListenerBuilder.apply(navigationView);
     }
 
     /**
