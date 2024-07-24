@@ -356,6 +356,14 @@ public class BooksOnBookshelf
         vb = BooksonbookshelfBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
+        // Don't set the insets on the coordinatorContainer.
+        // Set them on the list so we get the padding only at the end of the list,
+        // instead of always underneath the list.
+        InsetsListenerBuilder.apply(vb.drawerLayout, null, vb.toolbar, vb.fab);
+        InsetsListenerBuilder.apply(vb.content.list);
+
+        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
+
         createFragmentLaunchers();
         createViewModel();
         createSyncDelegates();
@@ -383,8 +391,6 @@ public class BooksOnBookshelf
 
         // check & get search text coming from a system search intent
         handleStandardSearchIntent(getIntent());
-
-        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(this, R.string.tip_book_list, null);
@@ -564,8 +570,6 @@ public class BooksOnBookshelf
 
     private void initToolbar() {
         setNavIcon();
-        InsetsListenerBuilder.apply(vb.toolbar);
-
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {
                 // Show or hide the synchronization menu.
@@ -602,8 +606,6 @@ public class BooksOnBookshelf
     }
 
     private void createFabMenu() {
-        InsetsListenerBuilder.apply(vb.fab);
-
         fabMenu = new FabMenu(vb.fab, vb.fabOverlay,
                               vb.fab0ScanBarcode,
                               vb.fab0ScanBarcodeBatch,
@@ -686,8 +688,6 @@ public class BooksOnBookshelf
         }
         // attach the FAB scroll-listener which will hide the FAB while scrolling
         fabMenu.attach(vb.content.list);
-
-        InsetsListenerBuilder.apply(vb.content.list);
 
         vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
         vb.content.list.setDrawingCacheEnabled(true);

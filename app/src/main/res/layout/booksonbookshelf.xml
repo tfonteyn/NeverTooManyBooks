@@ -173,7 +173,6 @@
             android:id="@+id/progress_frame"
             layout="@layout/dialog_progress"
             android:visibility="gone"
-            tools:visibility="visible"
             />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
