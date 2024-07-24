@@ -126,16 +126,6 @@ public class EditBookFragment
         //noinspection DataFlowIssue
         final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
 
-        // Postponing support... added fitsSystemWindows to "activity_edit_book.xml"
-        // Due to the scroll view not scrolling up to show the IME when tapping an EditText.
-        //        // API34, gesture
-        //        // keyboard and camera cutouts
-        //        InsetsListenerBuilder.create(vb.pager)
-        //                             .padding()
-        //                             .sides(Side.Left, Side.Right, Side.Bottom)
-        //                             .ime()
-        //                             .apply();
-
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         getActivity().getOnBackPressedDispatcher()
