@@ -21,20 +21,13 @@
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.app.Activity;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
-import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
@@ -42,8 +35,6 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 
 public final class NavDrawer {
 
@@ -51,9 +42,6 @@ public final class NavDrawer {
     private final DrawerLayout drawerLayout;
     @NonNull
     private final NavigationView navigationView;
-
-    @Px
-    private final int navViewItemPaddingInPx;
 
     /**
      * Constructor.
@@ -72,36 +60,7 @@ public final class NavDrawer {
         navigationView.setNavigationItemSelectedListener(listener);
 
         // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout.
-        // Note that the internal (single) child of the navigationView is a RecyclerView
-        // with the header being a child inside of the row==0 View,
-        // and the other rows being the menu items.
-        // So we need to do two adjustments:
-
-        // Row 0: the header.
-        // We need the padding INSIDE the actual header and NOT on the container that holds
-        // the header.
-        InsetsListenerBuilder.create()
-                             .padding()
-                             .sides(Side.Left)
-                             .applyTo(navigationView.getHeaderView(0));
-
-        // Row 1+: the MenuItems
-        // Precalculate the default of "28dp" which we have to add to the inset
-        final DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        navViewItemPaddingInPx = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 28, metrics);
-        // The insets will be applied to the horizontal padding of the menu-items.
-        // This will add padding on BOTH sides due to the API limitation.
-        ViewCompat.setOnApplyWindowInsetsListener(navigationView, (v, windowInsets) -> {
-            final Insets insets = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.systemBars()
-                    | WindowInsetsCompat.Type.displayCutout());
-
-            ((NavigationView) v).setItemHorizontalPadding(
-                    navViewItemPaddingInPx + insets.left);
-
-            return WindowInsetsCompat.CONSUMED;
-        });
+        NavigationViewWindowInsetsListener.apply(navigationView);
     }
 
     /**
