@@ -25,15 +25,18 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -42,34 +45,28 @@ import java.util.Set;
  * The default insets always applied : {@link WindowInsetsCompat.Type#systemBars()}
  * and {@link WindowInsetsCompat.Type#displayCutout()}
  */
-@SuppressWarnings("unused")
 public final class InsetsListenerBuilder {
 
-    private static final String ERR_TYPE_ALREADY_SET = "Type already set";
-    private View view;
+    private final Set<InsetsModifier> insetsModifierSet = new HashSet<>();
+    @NonNull
+    private final View view;
+    private int insetsTypeMask;
+    private boolean dispatchToChildren;
 
-    private int typeMask = WindowInsetsCompat.Type.systemBars()
-                           | WindowInsetsCompat.Type.displayCutout();
-
-    @Nullable
-    private Set<Side> sides;
-
-    @Nullable
-    private Type type;
-
-    private boolean consume = true;
-
-    private InsetsListenerBuilder() {
+    private InsetsListenerBuilder(@NonNull final View view) {
+        this.view = view;
     }
 
     /**
      * Constructor.
      *
+     * @param view to apply to
+     *
      * @return builder
      */
     @NonNull
-    public static InsetsListenerBuilder create() {
-        return new InsetsListenerBuilder();
+    public static InsetsListenerBuilder create(@NonNull final View view) {
+        return new InsetsListenerBuilder(view);
     }
 
     /**
@@ -87,10 +84,9 @@ public final class InsetsListenerBuilder {
      * @param view to apply to
      */
     public static void apply(@NonNull final Toolbar view) {
-        new InsetsListenerBuilder()
-                .padding()
-                .sides(Side.Left, Side.Top, Side.Right)
-                .applyTo(view);
+        new InsetsListenerBuilder(view)
+                .padding(Side.Left, Side.Top, Side.Right)
+                .apply();
     }
 
     /**
@@ -99,10 +95,9 @@ public final class InsetsListenerBuilder {
      * @param view to apply to
      */
     public static void apply(@NonNull final FloatingActionButton view) {
-        new InsetsListenerBuilder()
-                .margins()
-                .sides(Side.Right, Side.Bottom)
-                .applyTo(view);
+        new InsetsListenerBuilder(view)
+                .margins(Side.Right, Side.Bottom)
+                .apply();
     }
 
     /**
@@ -111,13 +106,82 @@ public final class InsetsListenerBuilder {
      * @param view to apply to
      */
     public static void apply(@NonNull final RecyclerView view) {
-        new InsetsListenerBuilder()
-                .margins()
-                .sides(Side.Left, Side.Right, Side.Bottom)
+        new InsetsListenerBuilder(view)
+                .margins(Side.Left, Side.Right, Side.Bottom)
+                .systemBars()
+                .displayCutout()
                 .ime()
-                .applyTo(view);
+                .apply();
     }
 
+    /**
+     * Apply a predefined listener.
+     *
+     * @param view to apply to
+     */
+    public static void apply(@NonNull final CoordinatorLayout view) {
+        new InsetsListenerBuilder(view)
+                .margins(Side.Bottom)
+                .dispatchToChildren(true)
+                // no systemBars!
+                .displayCutout()
+                .ime()
+                .apply();
+    }
+
+    /**
+     * Apply a predefined listener.
+     *
+     * @param view to apply to
+     */
+    public static void apply(@NonNull final DrawerLayout view) {
+        new InsetsListenerBuilder(view)
+                .dispatchToChildren(true)
+                .apply();
+    }
+
+
+    public static void apply(@Nullable final DrawerLayout drawerLayout,
+                             @Nullable final CoordinatorLayout coordinatorLayout,
+                             @Nullable final MaterialToolbar toolbar,
+                             @Nullable final FloatingActionButton fab) {
+        if (toolbar != null) {
+            new InsetsListenerBuilder(toolbar)
+                    .padding(Side.Top)
+                    .apply();
+        }
+        if (coordinatorLayout != null) {
+            apply(coordinatorLayout);
+        }
+        if (drawerLayout != null) {
+            apply(drawerLayout);
+        }
+        if (fab != null) {
+            apply(fab);
+        }
+    }
+
+    /**
+     * Enable {@link WindowInsetsCompat.Type#systemBars()}.
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public InsetsListenerBuilder systemBars() {
+        insetsTypeMask |= WindowInsetsCompat.Type.systemBars();
+        return this;
+    }
+
+    /**
+     * Enable {@link WindowInsetsCompat.Type#displayCutout()}.
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public InsetsListenerBuilder displayCutout() {
+        insetsTypeMask |= WindowInsetsCompat.Type.displayCutout();
+        return this;
+    }
 
     /**
      * Enable {@link WindowInsetsCompat.Type#systemGestures()}.
@@ -126,7 +190,7 @@ public final class InsetsListenerBuilder {
      */
     @NonNull
     public InsetsListenerBuilder systemGestures() {
-        typeMask |= WindowInsetsCompat.Type.systemGestures();
+        insetsTypeMask |= WindowInsetsCompat.Type.systemGestures();
         return this;
     }
 
@@ -137,116 +201,61 @@ public final class InsetsListenerBuilder {
      */
     @NonNull
     public InsetsListenerBuilder ime() {
-        typeMask |= WindowInsetsCompat.Type.ime();
+        insetsTypeMask |= WindowInsetsCompat.Type.ime();
         return this;
     }
 
-    /**
-     * Set whether the listener should consume the insets.
-     * The default is {@code true}.
-     *
-     * @param consume flag
-     *
-     * @return {@code this} (for chaining)
-     */
     @NonNull
-    public InsetsListenerBuilder consume(final boolean consume) {
-        this.consume = consume;
-        return this;
-    }
-
-    /**
-     * Set the sides to apply the insets to. If not set, {@link Side#All} is used.
-     *
-     * @param sides list
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public InsetsListenerBuilder sides(@NonNull final Side... sides) {
-        this.sides = Set.of(sides);
+    public InsetsListenerBuilder dispatchToChildren(final boolean dispatch) {
+        dispatchToChildren = dispatch;
         return this;
     }
 
     /**
      * Create a padding modifier listener.
      *
+     * @param sides list
+     *
      * @return {@code this} (for chaining)
      *
      * @throws IllegalStateException if the type was already set
-     * @see #margins()
+     * @see #margins(Side...)
      */
     @NonNull
-    public InsetsListenerBuilder padding() {
-        if (type != null) {
-            throw new IllegalStateException(ERR_TYPE_ALREADY_SET);
-        }
-        type = Type.Padding;
+    public InsetsListenerBuilder padding(@NonNull final Side... sides) {
+        insetsModifierSet.add(new InsetsModifier.IMBuilder(view).padding(sides).create());
         return this;
     }
 
     /**
      * Create a margins modifier listener.
      *
+     * @param sides list
+     *
      * @return {@code this} (for chaining)
      *
      * @throws IllegalStateException if the type was already set
-     * @see #padding()
+     * @see #padding(Side...)
      */
     @NonNull
-    public InsetsListenerBuilder margins() {
-        if (type != null) {
-            throw new IllegalStateException(ERR_TYPE_ALREADY_SET);
-        }
-        type = Type.Margins;
+    public InsetsListenerBuilder margins(@NonNull final Side... sides) {
+        insetsModifierSet.add(new InsetsModifier.IMBuilder(view).margins(sides).create());
         return this;
     }
 
     /**
      * Build and apply the listener.
-     *
-     * @param view to apply to
      */
-    public void applyTo(@NonNull final View view) {
-        this.view = view;
-
-        final OnApplyWindowInsetsListener listener;
-
-        Objects.requireNonNull(type, "Must have a type set");
-        switch (type) {
-            case Padding:
-                listener = new PaddingWindowInsetsListener(this);
-                break;
-            case Margins:
-                listener = new MarginWindowInsetsListener(this);
-                break;
-            default:
-                //noinspection CheckStyle
-                throw new IllegalArgumentException("type?");
+    public void apply() {
+        if (insetsTypeMask == 0) {
+            insetsTypeMask = WindowInsetsCompat.Type.systemBars()
+                             | WindowInsetsCompat.Type.displayCutout();
         }
-        ViewCompat.setOnApplyWindowInsetsListener(this.view, listener);
-    }
+        final OnApplyWindowInsetsListener listener =
+                new SimpleWindowInsetsListener(insetsTypeMask,
+                                               insetsModifierSet,
+                                               dispatchToChildren);
 
-    @NonNull
-    View getView() {
-        return view;
-    }
-
-    int getTypeMask() {
-        return typeMask;
-    }
-
-    boolean getConsume() {
-        return consume;
-    }
-
-    @Nullable
-    Set<Side> getSides() {
-        return sides;
-    }
-
-    private enum Type {
-        Padding,
-        Margins
+        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
     }
 }

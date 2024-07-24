@@ -147,10 +147,9 @@ public class SearchBookByIsbnFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create()
-                             .padding()
-                             .sides(Side.Left, Side.Right, Side.Bottom)
-                             .applyTo(view);
+        InsetsListenerBuilder.create(view)
+                             .padding(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
         if (savedInstanceState != null) {
             scannerActivityStarted = savedInstanceState

@@ -24,6 +24,5 @@ public enum Side {
     Left,
     Top,
     Right,
-    Bottom,
-    All
+    Bottom;
 }

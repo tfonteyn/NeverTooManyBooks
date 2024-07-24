@@ -119,11 +119,12 @@ public class SearchAdminFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Effectively disable edge-to-edge for the pager and add system gestures.
-        InsetsListenerBuilder.create()
-                             .sides(Side.Left, Side.Right, Side.Bottom)
+        InsetsListenerBuilder.create(view)
+                             .padding(Side.Left, Side.Right, Side.Bottom)
+                             .systemBars()
+                             .displayCutout()
                              .systemGestures()
-                             .padding()
-                             .applyTo(vb.pager);
+                             .apply();
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()

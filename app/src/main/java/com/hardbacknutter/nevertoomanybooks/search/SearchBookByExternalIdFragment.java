@@ -113,10 +113,9 @@ public class SearchBookByExternalIdFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create()
-                             .padding()
-                             .sides(Side.Left, Side.Right, Side.Bottom)
-                             .applyTo(view);
+        InsetsListenerBuilder.create(view)
+                             .padding(Side.Left, Side.Right, Side.Bottom)
+                             .apply();
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_add_book_by_external_id);
