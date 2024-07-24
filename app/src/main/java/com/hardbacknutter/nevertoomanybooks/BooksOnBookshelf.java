@@ -361,9 +361,7 @@ public class BooksOnBookshelf
         createSyncDelegates();
         createHandlers();
 
-        // Always present
-        //noinspection DataFlowIssue
-        navDrawer = NavDrawer.create(this, menuItem ->
+        navDrawer = new NavDrawer(vb.drawerLayout, menuItem ->
                 onNavigationItemSelected(menuItem.getItemId()));
 
         initToolbar();

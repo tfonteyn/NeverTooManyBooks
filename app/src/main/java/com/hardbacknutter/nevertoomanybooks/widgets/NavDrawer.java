@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
-import android.app.Activity;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -45,12 +44,14 @@ public final class NavDrawer {
 
     /**
      * Constructor.
+     * <p>
+     * Should be done in {@code Activity#onCreate}.
      *
-     * @param drawerLayout the top-level layout of the Activity
-     * @param listener     for menu selection
+     * @param drawerLayout the layout
+     * @param listener     selection listener
      */
-    private NavDrawer(@NonNull final DrawerLayout drawerLayout,
-                      @NonNull final NavigationView.OnNavigationItemSelectedListener listener) {
+    public NavDrawer(@NonNull final DrawerLayout drawerLayout,
+                     @NonNull final NavigationView.OnNavigationItemSelectedListener listener) {
         this.drawerLayout = drawerLayout;
         navigationView = drawerLayout.findViewById(R.id.nav_view);
         // Sanity check
@@ -61,28 +62,6 @@ public final class NavDrawer {
 
         // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout.
         NavigationViewWindowInsetsListener.apply(navigationView);
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * Should be called from {@code Activity#onCreate}.
-     *
-     * @param activity the hosting Activity
-     * @param listener selection listener
-     *
-     * @return new instance
-     */
-    @Nullable
-    public static NavDrawer create(@NonNull final Activity activity,
-                                   @NonNull final NavigationView.OnNavigationItemSelectedListener
-                                           listener) {
-        final DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
-        if (drawerLayout == null) {
-            return null;
-        } else {
-            return new NavDrawer(drawerLayout, listener);
-        }
     }
 
     /**

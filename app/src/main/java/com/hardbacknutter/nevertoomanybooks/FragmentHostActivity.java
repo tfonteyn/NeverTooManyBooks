@@ -126,10 +126,11 @@ public class FragmentHostActivity
     }
 
     private void initNavDrawer() {
-        navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
-        if (navDrawer != null) {
+        final DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        if (drawerLayout != null) {
+            navDrawer = new NavDrawer(drawerLayout, this::onNavigationItemSelected);
             manageBookshelvesLauncher = registerForActivityResult(
-                    new EditBookshelvesContract(), bookshelfId -> {
+                    new EditBookshelvesContract(), optBookshelfId -> {
                     });
 
             editSettingsLauncher = registerForActivityResult(
