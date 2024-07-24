@@ -31,9 +31,12 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -105,9 +108,15 @@ public class FragmentHostActivity
         final int activityResId = getIntent().getIntExtra(BKEY_ACTIVITY, 0);
         setContentView(activityResId);
 
-        initNavDrawer();
-        initToolbar();
-        initFab();
+        final DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        final CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_container);
+        final MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        final FloatingActionButton fab = findViewById(R.id.fab);
+
+        InsetsListenerBuilder.apply(drawerLayout, coordinatorLayout, toolbar, fab);
+
+        initNavDrawer(drawerLayout);
+        initToolbar(toolbar);
 
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
@@ -125,8 +134,7 @@ public class FragmentHostActivity
         addFirstFragment(R.id.main_fragment, fragmentClass, classname);
     }
 
-    private void initNavDrawer() {
-        final DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+    private void initNavDrawer(@Nullable final DrawerLayout drawerLayout) {
         if (drawerLayout != null) {
             navDrawer = new NavDrawer(drawerLayout, this::onNavigationItemSelected);
             manageBookshelvesLauncher = registerForActivityResult(
@@ -138,11 +146,13 @@ public class FragmentHostActivity
         }
     }
 
-    private void initToolbar() {
-        final Toolbar toolbar = findViewById(R.id.toolbar);
+    private void initToolbar(@Nullable final Toolbar toolbar) {
         if (toolbar != null) {
-            setNavIcon(toolbar);
-            InsetsListenerBuilder.apply(toolbar);
+            if (isTaskRoot()) {
+                toolbar.setNavigationIcon(R.drawable.menu_24px);
+            } else {
+                toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
+            }
 
             toolbar.setNavigationOnClickListener(v -> {
                 if (isTaskRoot()) {
@@ -154,21 +164,6 @@ public class FragmentHostActivity
                     getOnBackPressedDispatcher().onBackPressed();
                 }
             });
-        }
-    }
-
-    private void initFab() {
-        final FloatingActionButton fab = findViewById(R.id.fab);
-        if (fab != null) {
-            InsetsListenerBuilder.apply(fab);
-        }
-    }
-
-    private void setNavIcon(@NonNull final Toolbar toolbar) {
-        if (isTaskRoot()) {
-            toolbar.setNavigationIcon(R.drawable.menu_24px);
-        } else {
-            toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
         }
     }
 
