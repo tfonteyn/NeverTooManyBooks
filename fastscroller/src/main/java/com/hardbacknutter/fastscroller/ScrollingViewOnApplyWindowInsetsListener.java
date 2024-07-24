@@ -50,6 +50,8 @@ import androidx.core.view.WindowInsetsCompat;
 class ScrollingViewOnApplyWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
+    private static final int INSETS_TYPE_MASK = WindowInsetsCompat.Type.systemBars()
+                                                | WindowInsetsCompat.Type.displayCutout();
     @NonNull
     private final Insets padding;
     @Nullable
@@ -69,13 +71,11 @@ class ScrollingViewOnApplyWindowInsetsListener
         this.overlayProvider = overlayProvider;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v,
-                                                  @NonNull final WindowInsetsCompat windowInsets) {
-        final Insets insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                | WindowInsetsCompat.Type.displayCutout());
+                                                  @NonNull final WindowInsetsCompat wic) {
+        final Insets insets = wic.getInsets(INSETS_TYPE_MASK);
 
         v.setPadding(padding.left + insets.left,
                      padding.top,
@@ -85,6 +85,6 @@ class ScrollingViewOnApplyWindowInsetsListener
         if (overlayProvider != null) {
             overlayProvider.setPadding(insets.left, 0, insets.right, insets.bottom);
         }
-        return windowInsets;
+        return wic;
     }
 }

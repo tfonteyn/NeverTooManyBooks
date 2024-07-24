@@ -36,7 +36,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -47,9 +48,9 @@ import java.util.Set;
  */
 public final class InsetsListenerBuilder {
 
-    private final Set<InsetsModifier> insetsModifierSet = new HashSet<>();
     @NonNull
     private final View view;
+    private final List<InsetsModifier> modifiers = new ArrayList<>();
     private int insetsTypeMask;
     private boolean dispatchToChildren;
 
@@ -58,24 +59,14 @@ public final class InsetsListenerBuilder {
     }
 
     /**
-     * Constructor.
-     *
-     * @param view to apply to
-     *
-     * @return builder
-     */
-    @NonNull
-    public static InsetsListenerBuilder create(@NonNull final View view) {
-        return new InsetsListenerBuilder(view);
-    }
-
-    /**
      * Apply a predefined listener.
      *
      * @param view to apply to
      */
     public static void apply(@NonNull final NavigationView view) {
-        NavigationViewWindowInsetsListener.apply(view);
+        final OnApplyWindowInsetsListener listener =
+                new NavigationViewWindowInsetsListener(view);
+        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
     }
 
     /**
@@ -140,15 +131,12 @@ public final class InsetsListenerBuilder {
                 .apply();
     }
 
-
     public static void apply(@Nullable final DrawerLayout drawerLayout,
                              @Nullable final CoordinatorLayout coordinatorLayout,
                              @Nullable final MaterialToolbar toolbar,
                              @Nullable final FloatingActionButton fab) {
         if (toolbar != null) {
-            new InsetsListenerBuilder(toolbar)
-                    .padding(Side.Top)
-                    .apply();
+            apply(toolbar);
         }
         if (coordinatorLayout != null) {
             apply(coordinatorLayout);
@@ -159,6 +147,18 @@ public final class InsetsListenerBuilder {
         if (fab != null) {
             apply(fab);
         }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param view to apply to
+     *
+     * @return builder
+     */
+    @NonNull
+    public static InsetsListenerBuilder create(@NonNull final View view) {
+        return new InsetsListenerBuilder(view);
     }
 
     /**
@@ -223,7 +223,7 @@ public final class InsetsListenerBuilder {
      */
     @NonNull
     public InsetsListenerBuilder padding(@NonNull final Side... sides) {
-        insetsModifierSet.add(new InsetsModifier.IMBuilder(view).padding(sides).create());
+        modifiers.add(new PaddingInsetsModifier(view, Set.of(sides)));
         return this;
     }
 
@@ -239,7 +239,7 @@ public final class InsetsListenerBuilder {
      */
     @NonNull
     public InsetsListenerBuilder margins(@NonNull final Side... sides) {
-        insetsModifierSet.add(new InsetsModifier.IMBuilder(view).margins(sides).create());
+        modifiers.add(new MarginsInsetsModifier(view, Set.of(sides)));
         return this;
     }
 
@@ -253,7 +253,7 @@ public final class InsetsListenerBuilder {
         }
         final OnApplyWindowInsetsListener listener =
                 new SimpleWindowInsetsListener(insetsTypeMask,
-                                               insetsModifierSet,
+                                               modifiers,
                                                dispatchToChildren);
 
         ViewCompat.setOnApplyWindowInsetsListener(view, listener);

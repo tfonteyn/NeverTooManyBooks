@@ -29,39 +29,39 @@ import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.util.Set;
+import java.util.List;
 
 class SimpleWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
     private final int insetsTypeMask;
     @NonNull
-    private final Set<InsetsModifier> insetsModifiers;
-    private final boolean children;
+    private final List<InsetsModifier> insetsModifiers;
+    private final boolean dispatchToChildren;
 
     SimpleWindowInsetsListener(final int insetsTypeMask,
-                               @NonNull final Set<InsetsModifier> insetsModifiers,
-                               final boolean children) {
+                               @NonNull final List<InsetsModifier> insetsModifiers,
+                               final boolean dispatchToChildren) {
         this.insetsTypeMask = insetsTypeMask;
         this.insetsModifiers = insetsModifiers;
-        this.children = children;
+        this.dispatchToChildren = dispatchToChildren;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v,
-                                                  @NonNull final WindowInsetsCompat windowInsets) {
+                                                  @NonNull final WindowInsetsCompat wic) {
 
-        if (!insetsModifiers.isEmpty() && insetsTypeMask != 0) {
-            final Insets insets = windowInsets.getInsets(insetsTypeMask);
+        if (insetsTypeMask != 0 && !insetsModifiers.isEmpty()) {
+            final Insets insets = wic.getInsets(insetsTypeMask);
             insetsModifiers.forEach(m -> m.apply(v, insets));
         }
 
-        if (children && v instanceof ViewGroup) {
+        if (dispatchToChildren && v instanceof ViewGroup) {
             final ViewGroup viewGroup = (ViewGroup) v;
             for (int c = 0; c < viewGroup.getChildCount(); c++) {
                 final View child = viewGroup.getChildAt(c);
-                ViewCompat.dispatchApplyWindowInsets(child, windowInsets);
+                ViewCompat.dispatchApplyWindowInsets(child, wic);
             }
         }
 

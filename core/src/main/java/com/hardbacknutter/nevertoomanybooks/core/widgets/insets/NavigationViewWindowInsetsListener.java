@@ -28,22 +28,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.navigation.NavigationView;
 
-final class NavigationViewWindowInsetsListener
+class NavigationViewWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
     /** Default horizontal padding for the menu items. Taken from Material3 resource definition. */
     private static final int DEFAULT_PADDING = 28;
+
+    private static final int INSETS_TYPE_MASK = WindowInsetsCompat.Type.systemBars()
+                                                | WindowInsetsCompat.Type.displayCutout();
     @Px
     private final int navViewItemPadding;
     @Px
     private final int headerPaddingLeft;
 
-    private NavigationViewWindowInsetsListener(@NonNull final NavigationView view) {
+    NavigationViewWindowInsetsListener(@NonNull final NavigationView view) {
         // Row 1+: the MenuItems
         final DisplayMetrics metrics = view.getResources().getDisplayMetrics();
         navViewItemPadding = (int) TypedValue.applyDimension(
@@ -52,24 +54,11 @@ final class NavigationViewWindowInsetsListener
         headerPaddingLeft = view.getHeaderView(0).getPaddingLeft();
     }
 
-    /**
-     * Construct and attach.
-     *
-     * @param view to handle
-     */
-    static void apply(@NonNull final NavigationView view) {
-        final OnApplyWindowInsetsListener listener =
-                new NavigationViewWindowInsetsListener(view);
-        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
-    }
-
-    @NonNull
     @Override
-    public WindowInsetsCompat onApplyWindowInsets(
-            @NonNull final View v,
-            @NonNull final WindowInsetsCompat windowInsets) {
-        final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()
-                                                     | WindowInsetsCompat.Type.displayCutout());
+    @NonNull
+    public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v,
+                                                  @NonNull final WindowInsetsCompat wic) {
+        final Insets insets = wic.getInsets(INSETS_TYPE_MASK);
 
         // The internal (single) child of the navigationView is a RecyclerView
         // with the header being a child inside of the row==0 ViewHolder,
