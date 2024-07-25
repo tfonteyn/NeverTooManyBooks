@@ -32,6 +32,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.navigation.NavigationView;
 
+/**
+ * The internal (single) child of the navigationView is a RecyclerView
+ * with the header being a child inside of the row {@code 0} ViewHolder,
+ * and the other rows being the menu items.
+ */
 class NavigationViewWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
@@ -60,9 +65,6 @@ class NavigationViewWindowInsetsListener
                                                   @NonNull final WindowInsetsCompat wic) {
         final Insets insets = wic.getInsets(INSETS_TYPE_MASK);
 
-        // The internal (single) child of the navigationView is a RecyclerView
-        // with the header being a child inside of the row==0 ViewHolder,
-        // and the other rows being the menu items.
         final NavigationView navigationView = (NavigationView) v;
 
         // Row 0: the header.

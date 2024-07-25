@@ -156,6 +156,7 @@ public class EditBookSeriesListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        InsetsListenerBuilder.apply(vb.seriesList);
 
         initToolbar(vb.toolbar);
         vb.toolbar.setSubtitle(vm.getBook().getTitle());
@@ -214,9 +215,7 @@ public class EditBookSeriesListDialogFragment
 
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.seriesList.setAdapter(adapter);
-
         vb.seriesList.setHasFixedSize(true);
-        InsetsListenerBuilder.apply(vb.seriesList);
     }
 
     private void editEntry(final int position) {

@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.Dimension;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
@@ -55,6 +56,8 @@ public class ZoomedImageDialogFragment
     /** Log tag. */
     private static final String TAG = "ZoomedImageDialogFrag";
     private static final String BKEY_IMAGE_PATH = TAG + ":path";
+    private static final int INSETS_TYPE_MASK = WindowInsetsCompat.Type.statusBars()
+                                                | WindowInsetsCompat.Type.displayCutout();
 
     /** File to display. */
     private File imageFile;
@@ -99,16 +102,25 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        imageView = view.findViewById(R.id.cover_image_0);
-        imageView.setOnClickListener(v -> dismiss());
         InsetsListenerBuilder.create(view)
                              .margins(Side.Left, Side.Top, Side.Right, Side.Bottom)
+                             .systemBars()
+                             .displayCutout()
+                             .systemGestures()
                              .apply();
+
+        imageView = view.findViewById(R.id.cover_image_0);
+        imageView.setOnClickListener(v -> dismiss());
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        @Dimension
+        final float windowWidthInPx;
+        @Dimension
+        final float windowHeightInPx;
 
         //noinspection DataFlowIssue
         final WindowMetrics windowMetrics = WindowMetricsCalculator
@@ -116,21 +128,14 @@ public class ZoomedImageDialogFragment
                 .computeCurrentWindowMetrics(getContext());
         final Rect bounds = windowMetrics.getBounds();
 
-        @Dimension
-        final float windowHeightInPx;
-        @Dimension
-        final float windowWidthInPx;
-
         // The WindowMetricsCalculator only provides insets when API >= 30
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            final Insets insets = windowMetrics.getWindowInsets().getInsets(
-                    WindowInsetsCompat.Type.statusBars()
-                    | WindowInsetsCompat.Type.displayCutout());
-            windowHeightInPx = bounds.height() - (insets.top + insets.bottom);
+            final Insets insets = windowMetrics.getWindowInsets().getInsets(INSETS_TYPE_MASK);
             windowWidthInPx = bounds.width() - (insets.left + insets.right);
+            windowHeightInPx = bounds.height() - (insets.top + insets.bottom);
         } else {
-            windowHeightInPx = bounds.height();
             windowWidthInPx = bounds.width();
+            windowHeightInPx = bounds.height();
         }
 
         final double screenHwRatio = windowHeightInPx / windowWidthInPx;
@@ -138,6 +143,7 @@ public class ZoomedImageDialogFragment
         final Resources res = getResources();
 
         // Use a percentage of the total screen space, to create a (dimmed) border
+        @IntRange(from = 0, to = 100)
         final int percentage = res.getInteger(R.integer.cover_zoom_screen_percentage);
         final float multiplier = (float) percentage / 100;
         @Dimension
@@ -145,6 +151,8 @@ public class ZoomedImageDialogFragment
         @Dimension
         final int maxHeight;
 
+        // Depending on screen orientation, use one dimension as a fixed value,
+        // and calculate the other one based on the screen height/width ratio.
         if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             maxWidth = (int) (multiplier * windowWidthInPx);
             maxHeight = (int) (maxWidth * screenHwRatio);

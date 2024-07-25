@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
@@ -31,6 +32,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.List;
 
+/**
+ * A generic OnApplyWindowInsetsListener which will apply
+ * one or more {@link InsetsModifier} to the view
+ * and optionally dispatch the insets to the view's children.
+ */
 class SimpleWindowInsetsListener
         implements OnApplyWindowInsetsListener {
 
@@ -39,7 +45,14 @@ class SimpleWindowInsetsListener
     private final List<InsetsModifier> insetsModifiers;
     private final boolean dispatchToChildren;
 
-    SimpleWindowInsetsListener(final int insetsTypeMask,
+    /**
+     * Constructor.
+     *
+     * @param insetsTypeMask     the insets bitmask; can be {@code 0} for none.
+     * @param insetsModifiers    to apply
+     * @param dispatchToChildren flag
+     */
+    SimpleWindowInsetsListener(@IntRange(from = 0) final int insetsTypeMask,
                                @NonNull final List<InsetsModifier> insetsModifiers,
                                final boolean dispatchToChildren) {
         this.insetsTypeMask = insetsTypeMask;

@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -107,10 +106,7 @@ public class CalibreLibraryMappingFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create(view)
-                             .padding(Side.Left, Side.Right, Side.Bottom)
-                             .apply();
+        InsetsListenerBuilder.fragmentRootView(view);
 
         vm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         vm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);

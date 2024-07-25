@@ -95,8 +95,7 @@ class SingleChoiceDelegate {
     }
 
     public void onViewCreated(@NonNull final DialogSelectOneBinding vb) {
-
-        final Context context = vb.getRoot().getContext();
+        InsetsListenerBuilder.apply(vb.itemList);
 
         if (dialogMessage != null && !dialogMessage.isEmpty()) {
             vb.message.setText(dialogMessage);
@@ -105,10 +104,10 @@ class SingleChoiceDelegate {
             vb.message.setVisibility(View.GONE);
         }
 
+        final Context context = vb.getRoot().getContext();
         final RadioGroupRecyclerAdapter<Long> adapter = new RadioGroupRecyclerAdapter<>(
                 context, itemIds, itemLabels::get, vm.getSelectedItem(), vm::setSelectedItem);
         vb.itemList.setAdapter(adapter);
-        InsetsListenerBuilder.apply(vb.itemList);
     }
 
     void saveChanges() {

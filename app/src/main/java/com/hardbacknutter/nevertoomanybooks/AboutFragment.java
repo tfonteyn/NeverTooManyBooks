@@ -33,7 +33,6 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.appbar.AppBarLayout;
 
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -57,10 +56,7 @@ public class AboutFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create(view)
-                             .padding(Side.Left, Side.Right, Side.Bottom)
-                             .apply();
+        InsetsListenerBuilder.fragmentRootView(view);
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_about);

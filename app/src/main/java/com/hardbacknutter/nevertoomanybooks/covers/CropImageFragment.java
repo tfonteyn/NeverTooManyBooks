@@ -141,6 +141,10 @@ public class CropImageFragment
             // The former does that automatically, and the latter is anchored to the bar.
             InsetsListenerBuilder.create(vb.coverImage0)
                                  .margins(Side.Left, Side.Top, Side.Right, Side.Bottom)
+                                 .systemBars()
+                                 .displayCutout()
+                                 // final fix for github issue #29
+                                 .systemGestures()
                                  .apply();
 
             vb.coverImage0.setInitialBitmap(bitmap);

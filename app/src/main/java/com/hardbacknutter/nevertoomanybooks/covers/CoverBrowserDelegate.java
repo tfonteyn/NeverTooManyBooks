@@ -157,17 +157,17 @@ class CoverBrowserDelegate
 
     @Override
     public void onViewCreated() {
+        InsetsListenerBuilder.apply(vb.gallery);
+
         if (toolbar != null) {
             initToolbar(toolbar);
         }
 
         final Context context = vb.getRoot().getContext();
-
         galleryAdapter = new GalleryAdapter(context, vm.getEditions(),
                                             positionHandler,
                                             vm.getGalleryDisplayExecutor());
         vb.gallery.setAdapter(galleryAdapter);
-        InsetsListenerBuilder.apply(vb.gallery);
 
         vm.onGalleryImage().observe(owner.getViewLifecycleOwner(), this::setGalleryImage);
         vm.onShowGalleryProgress().observe(owner.getViewLifecycleOwner(), show -> {

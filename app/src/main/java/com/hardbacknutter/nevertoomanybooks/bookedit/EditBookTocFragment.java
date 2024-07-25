@@ -183,17 +183,9 @@ public class EditBookTocFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        InsetsListenerBuilder.apply(vb.tocList);
 
-        final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.add_24px);
-        fab.setOnClickListener(v -> {
-            Author tocAuthor = vm.getBook().getPrimaryAuthor();
-            if (tocAuthor == null) {
-                //noinspection DataFlowIssue
-                tocAuthor = Author.createUnknownAuthor(getContext());
-            }
-            editEntry(new TocEntry(tocAuthor, ""), POS_NEW_ENTRY);
-        });
+        initFab();
 
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
@@ -209,6 +201,19 @@ public class EditBookTocFragment
                 new SimpleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.tocList);
+    }
+
+    private void initFab() {
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.add_24px);
+        fab.setOnClickListener(v -> {
+            Author tocAuthor = vm.getBook().getPrimaryAuthor();
+            if (tocAuthor == null) {
+                //noinspection DataFlowIssue
+                tocAuthor = Author.createUnknownAuthor(getContext());
+            }
+            editEntry(new TocEntry(tocAuthor, ""), POS_NEW_ENTRY);
+        });
     }
 
     private void initIsfdbTocSearchViewModel() {
@@ -267,13 +272,11 @@ public class EditBookTocFragment
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.tocList.setAdapter(adapter);
 
-        InsetsListenerBuilder.apply(vb.tocList);
 
         vb.tocList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.tocList.setHasFixedSize(true);
     }
-
 
     @Override
     public void onDestroyView() {

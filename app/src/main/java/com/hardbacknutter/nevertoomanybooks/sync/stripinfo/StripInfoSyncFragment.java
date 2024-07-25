@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentManager;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncStripinfoBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoBePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
@@ -71,10 +70,7 @@ public class StripInfoSyncFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create(view)
-                             .padding(Side.Left, Side.Right, Side.Bottom)
-                             .apply();
+        InsetsListenerBuilder.fragmentRootView(view);
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.action_synchronize);

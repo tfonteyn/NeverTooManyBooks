@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -231,10 +230,7 @@ public class ShowBookDetailsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create(view)
-                             .padding(Side.Left, Side.Right, Side.Bottom)
-                             .apply();
+        InsetsListenerBuilder.fragmentRootView(view);
 
         final List<Locale> locales = LocaleListUtils.asList(view.getContext());
         realNumberParser = new RealNumberParser(locales);

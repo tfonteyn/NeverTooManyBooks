@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -141,10 +140,7 @@ public class ImportFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Effectively disable edge-to-edge for the root view.
-        InsetsListenerBuilder.create(view)
-                             .padding(Side.Left, Side.Right, Side.Bottom)
-                             .apply();
+        InsetsListenerBuilder.fragmentRootView(view);
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()

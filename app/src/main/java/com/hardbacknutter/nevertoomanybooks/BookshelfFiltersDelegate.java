@@ -120,6 +120,8 @@ class BookshelfFiltersDelegate
 
     @Override
     public void onViewCreated() {
+        InsetsListenerBuilder.apply(vb.filterList);
+
         if (toolbar != null) {
             initToolbar(toolbar);
         }
@@ -130,7 +132,6 @@ class BookshelfFiltersDelegate
         vb.filterList.setAdapter(adapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
-        InsetsListenerBuilder.apply(vb.filterList);
     }
 
     @Override
