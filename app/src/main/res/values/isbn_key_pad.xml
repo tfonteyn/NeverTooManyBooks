@@ -35,8 +35,8 @@
     <dimen name="isbn_keypad_search_icon_size">24dp</dimen>
     <dimen name="isbn_keypad_search_stroke_width">2dp</dimen>
 
-    <!-- The ISBN keypad backspace button width: 2x icon width. -->
-    <dimen name="isbn_keypad_backspace_key_width">48dp</dimen>
+    <!-- The ISBN keypad backspace button width: 3x icon width. -->
+    <dimen name="isbn_keypad_backspace_key_width">72dp</dimen>
     <!-- The ISBN keypad distance between the GUI sections. -->
     <dimen name="isbn_keypad_section_top_margin">12dp</dimen>
 </resources>

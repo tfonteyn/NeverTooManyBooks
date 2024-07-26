@@ -32,37 +32,6 @@
         android:layout_height="match_parent"
         >
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_isbn"
-            style="@style/TIL.Text.Isbn"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toStartOf="@id/isbn_del"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            >
-
-            <com.hardbacknutter.nevertoomanybooks.core.widgets.IsbnTextInputEditText
-                android:id="@+id/isbn"
-                style="@style/TIE.Isbn"
-                tools:ignore="Autofill,LabelFor"
-                tools:text="@sample/data.json/isbn/d13"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- don't align with the bottom of the isbn field.
-            When that fields shows an error message, this button will move downwards.
-            We also must add a small top margin to more or less center
-            this button with the actual EditText field (baseline does not work).
-            -->
-        <Button
-            android:id="@+id/isbn_del"
-            style="@style/IsbnKeyPad.BackspaceButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="5dp"
-            app:layout_constraintStart_toEndOf="@id/lbl_isbn"
-            app:layout_constraintTop_toTopOf="@id/lbl_isbn"
-            />
-
         <androidx.constraintlayout.widget.Group
             android:id="@+id/barcode_scanner_group"
             android:layout_width="wrap_content"
@@ -74,12 +43,13 @@
 
         <FrameLayout
             android:id="@+id/barcode_scanner"
-            android:layout_width="@dimen/camera_preview_width"
+            android:layout_width="0dp"
             android:layout_height="@dimen/camera_preview_height"
-            android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:layout_constraintEnd_toEndOf="@id/keypad"
+            app:layout_constraintStart_toStartOf="@id/keypad"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="@dimen/camera_preview_width"
             >
 
             <androidx.camera.view.PreviewView
@@ -95,13 +65,44 @@
                 />
         </FrameLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/action_stop_scanning"
             app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
             app:layout_constraintStart_toStartOf="@id/barcode_scanner"
             app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_isbn"
+            style="@style/TIL.Text.Isbn"
+            android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@id/isbn_del"
+            app:layout_constraintStart_toStartOf="@id/keypad"
+            app:layout_constraintTop_toBottomOf="@+id/btn_stop_scanning"
+            >
+
+            <com.hardbacknutter.nevertoomanybooks.core.widgets.IsbnTextInputEditText
+                android:id="@+id/isbn"
+                style="@style/TIE.Isbn"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="@sample/data.json/isbn/d13"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Don't align with the bottom of the isbn field but to the top.
+             When the field shows an error message, this button would move downwards.
+             We add a small top margin to align it with the actual TextEdit field.
+            -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/isbn_del"
+            style="@style/IsbnKeyPad.BackspaceButton"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="@id/keypad"
+            app:layout_constraintStart_toEndOf="@id/lbl_isbn"
+            app:layout_constraintTop_toTopOf="@+id/lbl_isbn"
             />
 
         <include
@@ -112,7 +113,7 @@
             android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_stop_scanning"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             />
 
         <androidx.constraintlayout.widget.Group
@@ -124,6 +125,16 @@
             tools:visibility="visible"
             />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_clear_queue"
+            style="@style/IsbnKeyPad.ClearQueueButton"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:text="@string/action_clear_queue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/keypad"
+            />
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/queue"
             android:layout_width="0dp"
@@ -133,7 +144,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/keypad"
+            app:layout_constraintTop_toBottomOf="@id/btn_clear_queue"
             >
             <!-- chips will be added here dynamically -->
             <!--            <com.google.android.material.chip.Chip-->
@@ -158,13 +169,6 @@
             <!--                />-->
         </com.google.android.material.chip.ChipGroup>
 
-        <Button
-            android:id="@+id/btn_clear_queue"
-            style="@style/IsbnKeyPad.ClearQueueButton"
-            android:text="@string/action_clear_queue"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/queue"
-            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

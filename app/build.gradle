@@ -113,7 +113,7 @@ android {
         buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
         buildConfigField("boolean", "ENABLE_DNB_DE", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
-        buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
+        buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "true")
     }
 
     buildTypes {

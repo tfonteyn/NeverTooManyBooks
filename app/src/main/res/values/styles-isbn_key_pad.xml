@@ -40,8 +40,8 @@
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
 
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="strokeWidth">@dimen/isbn_keypad_search_stroke_width</item>
         <item name="icon">@drawable/search_24px</item>
         <item name="iconSize">@dimen/isbn_keypad_search_icon_size</item>
@@ -51,9 +51,11 @@
     <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="icon">@drawable/backspace_24px</item>
-        <item name="android:contentDescription">@string/action_delete</item>
+
         <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="icon">@drawable/backspace_24px</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:contentDescription">@string/action_delete</item>
     </style>
 
     <style name="IsbnKeyPad.ClearQueueButton" parent="Widget.Material3.Button.OutlinedButton">
@@ -61,16 +63,20 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
-        <item name="android:textAppearance">?attr/textAppearanceButton</item>
+
         <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:textAppearance">?attr/textAppearanceButton</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
-    <style name="IsbnKeyPad.StopScanButton" parent="Widget.Material3.Button">
+    <style name="IsbnKeyPad.StopScanButton"
+           parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAllCaps">true</item>
         <item name="android:layout_marginStart">@dimen/camera_preview_button_margin</item>
         <item name="android:layout_marginEnd">@dimen/camera_preview_button_margin</item>
+
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:textAppearance">?attr/textAppearanceButton</item>
     </style>
 </resources>

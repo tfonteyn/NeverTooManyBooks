@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
@@ -73,10 +75,6 @@ import org.acra.ACRA;
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
  * <p>
- * ENHANCE: embedded scanner is UNDER DEVELOPMENT.
- * - need to double check the stop-logic: when is scanner.stop() needed?
- * -> see the DecoderResultListener#onResult in the library.
- * <p>
  * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
  * Each time we format the code, methods and variables jump around.
  * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
@@ -91,6 +89,22 @@ public class SearchBookByIsbnFragment
     private static final char KEY_SEARCH = 's';
     private static final char KEY_DELETE = 'd';
     private static final char KEY_STOP_SCANNING = 'o';
+
+    /**
+     * Flag indicating the scanner Activity is already started so we don't start it a second time
+     * after a device rotation.
+     */
+    private boolean scannerActivityStarted;
+    @Nullable
+    private BarcodeScanner scanner;
+    private boolean embeddedBarcodeScanner;
+
+    /** View Binding. */
+    private FragmentBooksearchByIsbnBinding vb;
+    /** manage the validation check next to the field. */
+    private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
+    private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
+    private SearchBookByIsbnViewModel vm;
 
     /** The user wants to import a list of ISBNs to the queue. */
     private final ActivityResultLauncher<String> openUriLauncher =
@@ -109,20 +123,6 @@ public class SearchBookByIsbnFragment
                 }
             });
 
-    /** flag indicating the scanner Activity is already started. */
-    private boolean scannerActivityStarted;
-
-    /** View Binding. */
-    private FragmentBooksearchByIsbnBinding vb;
-
-    /** manage the validation check next to the field. */
-    private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
-    private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
-    private SearchBookByIsbnViewModel vm;
-
-    @Nullable
-    private BarcodeScanner scanner;
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +130,32 @@ public class SearchBookByIsbnFragment
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
+
+        decideToUseEmbeddedScanner();
+    }
+
+    /**
+     * Check screen size and orientation to decide whether we use the embedded
+     * scanner view, or the separate {@link ScannerContract}.
+     */
+    private void decideToUseEmbeddedScanner() {
+        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
+            //noinspection DataFlowIssue
+            final ScreenSize screenSize = ScreenSize.compute(getActivity());
+            if (getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT) {
+                embeddedBarcodeScanner = screenSize.height == ScreenSize.Value.Expanded;
+            } else {
+                embeddedBarcodeScanner = screenSize.width == ScreenSize.Value.Expanded;
+            }
+        }
+    }
+
+    // Not sure this is really needed, but it does no harm.
+    @Override
+    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        decideToUseEmbeddedScanner();
     }
 
     @Override
@@ -280,7 +306,7 @@ public class SearchBookByIsbnFragment
     }
 
     private void startScanner() {
-        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
+        if (embeddedBarcodeScanner) {
             startScannerEmbedded();
         } else {
             startScannerActivity();
@@ -293,6 +319,7 @@ public class SearchBookByIsbnFragment
     private void startScannerEmbedded() {
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
         if (scanner == null) {
+            // Use the default ScanMode.Single
             //noinspection DataFlowIssue
             scanner = new BarcodeScanner.Builder()
                     .setBarcodeFormats(BarcodeFamily.PRODUCT)
@@ -311,6 +338,7 @@ public class SearchBookByIsbnFragment
                           @Nullable
                           private String lastCode;
 
+                          // ScanMode.Single: the scanner is stopped when we enter this method.
                           @Override
                           public void onResult(@NonNull final Result result) {
                               final String barCode = result.getText();
@@ -348,7 +376,7 @@ public class SearchBookByIsbnFragment
      * the standalone scanner would already be stopped.
      */
     private void switchOffScanner() {
-        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
+        if (embeddedBarcodeScanner) {
             if (scanner != null) {
                 scanner.stop();
             }

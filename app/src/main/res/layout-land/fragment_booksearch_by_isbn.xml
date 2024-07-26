@@ -19,6 +19,12 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+     Known issue:
+       This Landscape layout will not display properly on a "Small Phone".
+       No intention to fix this; users on small phones will have to use
+       portrait mode.
+-->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -43,11 +49,13 @@
 
         <FrameLayout
             android:id="@+id/barcode_scanner"
-            android:layout_width="@dimen/camera_preview_width"
+            android:layout_width="0dp"
             android:layout_height="@dimen/camera_preview_height"
             android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
+            app:layout_constraintEnd_toStartOf="@id/keypad"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="@dimen/camera_preview_width"
             >
 
             <androidx.camera.view.PreviewView
@@ -63,7 +71,7 @@
                 />
         </FrameLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/action_stop_scanning"
@@ -81,6 +89,16 @@
             tools:visibility="visible"
             />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_clear_queue"
+            style="@style/IsbnKeyPad.ClearQueueButton"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:text="@string/action_clear_queue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_stop_scanning"
+            />
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/queue"
             android:layout_width="0dp"
@@ -90,7 +108,7 @@
             app:layout_constraintEnd_toStartOf="@id/keypad"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_stop_scanning"
+            app:layout_constraintTop_toBottomOf="@id/btn_clear_queue"
             >
             <!-- chips will be added here dynamically -->
             <!--            <com.google.android.material.chip.Chip-->
@@ -115,14 +133,6 @@
             <!--                />-->
         </com.google.android.material.chip.ChipGroup>
 
-        <Button
-            android:id="@+id/btn_clear_queue"
-            style="@style/IsbnKeyPad.ClearQueueButton"
-            android:text="@string/action_clear_queue"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/queue"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
             style="@style/TIL.Text.Isbn"
@@ -140,12 +150,17 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <!-- Don't align with the bottom of the isbn field but to the top.
+             When the field shows an error message, this button would move downwards.
+             We add a small top margin to align it with the actual TextEdit field.
+             -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/isbn_del"
             style="@style/IsbnKeyPad.BackspaceButton"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="@id/keypad"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
+            app:layout_constraintTop_toTopOf="@+id/lbl_isbn"
             />
 
         <include

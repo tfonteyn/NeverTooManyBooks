@@ -26,7 +26,7 @@
     android:layout_height="wrap_content"
     >
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_1"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="1"
@@ -36,7 +36,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_2"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="2"
@@ -46,7 +46,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_3"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="3"
@@ -56,7 +56,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_4"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="4"
@@ -66,7 +66,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_5"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="5"
@@ -76,7 +76,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_6"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="6"
@@ -86,7 +86,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_7"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="7"
@@ -96,7 +96,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_8"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="8"
@@ -106,7 +106,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_9"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="9"
@@ -116,7 +116,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_X"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="X"
@@ -126,7 +126,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/key_0"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="0"
@@ -136,7 +136,7 @@
         tools:ignore="HardcodedText"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_search"
         style="@style/IsbnKeyPad.SearchButton"
         android:contentDescription="@android:string/search_go"
