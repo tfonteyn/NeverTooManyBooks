@@ -356,10 +356,24 @@ public class BooksOnBookshelf
         vb = BooksonbookshelfBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
-        // Don't set the insets on the coordinatorContainer.
-        // Set them on the list so we get the padding only at the end of the list,
-        // instead of always underneath the list.
-        InsetsListenerBuilder.apply(vb.drawerLayout, null, vb.toolbar, vb.fab);
+        // fitsSystemWindows is not used:
+        // If we have it on the DrawerLayout or on the CoordinatorLayout
+        // we end up with the status bar being transparent as expected,
+        // but the background of it set to the same as the vb.content.list,
+        // which then of course does NOT match the toolbar.
+        //
+        // The solution applied here:
+        // - The DrawerLayout is told to simply dispatch the insets to all its children.
+        //   It will NOT apply any insets to itself.
+        // - The NavigationView is handled in the NavDrawer class.
+        // - The CoordinatorLayout will NOT adjust for the status bar, but only
+        //   for cutouts (and ime, N/A for this screen but no harm done)
+        // - adjust toolbar/fab as needed
+        // - Set insets on the list so we get the padding only at the end of the list.
+        //
+        // The status bar will still be transparent, but the background will be the same
+        // as the toolbar.
+        InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
         InsetsListenerBuilder.apply(vb.content.list);
 
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);

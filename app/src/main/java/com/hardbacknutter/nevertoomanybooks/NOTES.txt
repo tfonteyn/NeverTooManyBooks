@@ -34,6 +34,7 @@ https://developer.android.com/develop/ui/views/layout/insets
 https://medium.com/androiddevelopers/windowinsets-listeners-to-layouts-8f9ccc8fa4d1
 https://medium.com/androiddevelopers/why-would-i-want-to-fitssystemwindows-4e26d9ce1eec
 https://developer.android.com/codelabs/edge-to-edge#4
+https://medium.com/androiddevelopers/intercepting-everything-with-coordinatorlayout-behaviors-8c6adc140c26
 
 ----------------------------------------------------------------------------------------------------
 https://developer.android.com/develop/ui/views/layout/edge-to-edge#cutout-insets

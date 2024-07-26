@@ -117,14 +117,13 @@ public final class InsetsListenerBuilder {
      * @param view to apply to
      */
     public static void apply(@NonNull final CoordinatorLayout view) {
-        // Draw below system-bars, but not below display cutouts.
+        // Draw below system-bars and display cutouts.
+        // The toolbar will take care of those.
         // Shrink when the keyboard comes up.
         // Dispatch incoming insets to all children.
         new InsetsListenerBuilder(view)
                 .margins(Side.Bottom)
                 .dispatchToChildren(true)
-                // no systemBars!
-                .displayCutout()
                 .ime()
                 .apply();
     }
