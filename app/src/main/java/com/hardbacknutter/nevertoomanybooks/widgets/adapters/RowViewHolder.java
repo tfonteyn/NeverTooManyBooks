@@ -32,7 +32,7 @@ import com.google.android.material.button.MaterialButton;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
@@ -156,9 +156,10 @@ public class RowViewHolder
                 break;
             }
             case IfRoom: {
-                final WindowSizeClass size = WindowSizeClass.getWidth(itemView.getContext());
-                if (size == WindowSizeClass.Medium
-                    || size == WindowSizeClass.Expanded) {
+                final ScreenSize.Value size =
+                        ScreenSize.compute(itemView.getContext()).width;
+                if (size == ScreenSize.Value.Medium
+                    || size == ScreenSize.Value.Expanded) {
                     visibility = View.VISIBLE;
                 } else {
                     visibility = View.GONE;

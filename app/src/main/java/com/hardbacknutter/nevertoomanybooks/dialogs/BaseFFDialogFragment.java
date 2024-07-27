@@ -48,7 +48,7 @@ import java.util.function.IntFunction;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -81,9 +81,11 @@ public abstract class BaseFFDialogFragment
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
     @NonNull
-    private final Set<WindowSizeClass> useFullscreenWidth = EnumSet.of(WindowSizeClass.Compact);
+    private final Set<ScreenSize.Value> useFullscreenWidth = EnumSet.of(
+            ScreenSize.Value.Compact);
     @NonNull
-    private final Set<WindowSizeClass> useFullscreenHeight = EnumSet.of(WindowSizeClass.Compact);
+    private final Set<ScreenSize.Value> useFullscreenHeight = EnumSet.of(
+            ScreenSize.Value.Compact);
 
     /** Must be created/set in {@link #onCreate(Bundle)}. */
     protected FlexDialogDelegate delegate;
@@ -123,15 +125,15 @@ public abstract class BaseFFDialogFragment
      *                            the CoordinatorLayout/AppBarLayout.
      *                            Set this to {@code 0} to <strong>force</strong> fullscreen usage
      *                            on all screen sizes.
-     * @param useFullscreenWidth  set of {@link WindowSizeClass} when to use fullscreen.
+     * @param useFullscreenWidth  set of {@link ScreenSize.Value} when to use fullscreen.
      *                            Ignored when {@code contentLayoutId == 0}
-     * @param useFullscreenHeight set of {@link WindowSizeClass} when to use fullscreen.
+     * @param useFullscreenHeight set of {@link ScreenSize.Value} when to use fullscreen.
      *                            Ignored when {@code contentLayoutId == 0}
      */
     protected BaseFFDialogFragment(@LayoutRes final int fullscreenLayoutId,
                                    @LayoutRes final int contentLayoutId,
-                                   @NonNull final Set<WindowSizeClass> useFullscreenWidth,
-                                   @NonNull final Set<WindowSizeClass> useFullscreenHeight) {
+                                   @NonNull final Set<ScreenSize.Value> useFullscreenWidth,
+                                   @NonNull final Set<ScreenSize.Value> useFullscreenHeight) {
         this(fullscreenLayoutId, contentLayoutId);
         this.useFullscreenWidth.addAll(useFullscreenWidth);
         this.useFullscreenHeight.addAll(useFullscreenHeight);
@@ -144,19 +146,19 @@ public abstract class BaseFFDialogFragment
 
         // fullscreen check must be done here as it's needed by both onCreateDialog/onCreateView
         final FragmentActivity activity = requireActivity();
-        final WindowSizeClass width = WindowSizeClass.getWidth(activity);
-        final WindowSizeClass height = WindowSizeClass.getHeight(activity);
+        final ScreenSize screenSize = ScreenSize.compute(activity);
         // Use fullscreen mode if there is no content layout set,
         // or if the device screen does not match our size requirements as set in the constructor.
         fullscreen = this.contentLayoutId == 0
                      ||
-                     useFullscreenWidth.contains(width) && useFullscreenHeight.contains(height);
+                     useFullscreenWidth.contains(screenSize.width)
+                     && useFullscreenHeight.contains(screenSize.height);
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger().d(getClass().getSimpleName(), "onAttach",
                                         "forceFullscreen=" + (this.contentLayoutId == 0),
-                                        "width=" + width,
-                                        "height=" + height,
+                                        "width=" + screenSize.width,
+                                        "height=" + screenSize.height,
                                         "fullscreen=" + fullscreen);
         }
     }
@@ -286,13 +288,12 @@ public abstract class BaseFFDialogFragment
 
         final FragmentActivity activity = getActivity();
         //noinspection DataFlowIssue
-        final WindowSizeClass width = WindowSizeClass.getWidth(activity);
-        final WindowSizeClass height = WindowSizeClass.getHeight(activity);
+        final ScreenSize screenSize = ScreenSize.compute(activity);
 
         int lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
         int lpHeight = ViewGroup.LayoutParams.MATCH_PARENT;
 
-        if (width == WindowSizeClass.Expanded) {
+        if (screenSize.width == ScreenSize.Value.Expanded) {
             lpWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
 
@@ -311,7 +312,7 @@ public abstract class BaseFFDialogFragment
 
         // So we can't rely on Android being consistent (surprise...)
         // 2023-06-09: patch 4.4.2: adjust the recyclerView manually
-        if (height == WindowSizeClass.Expanded) {
+        if (screenSize.height == ScreenSize.Value.Expanded) {
             lpHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
             if (recyclerView != null) {
                 final ViewGroup.LayoutParams rvLp = recyclerView.getLayoutParams();
@@ -349,8 +350,8 @@ public abstract class BaseFFDialogFragment
                          .d(getClass().getSimpleName(), "adjustWindowSize",
                             "lp.width=" + dbgLp.apply(lp.width),
                             "lp.height=" + dbgLp.apply(lp.height),
-                            "width=" + width,
-                            "height=" + height,
+                            "width=" + screenSize.width,
+                            "height=" + screenSize.height,
                             "lpWidth=" + dbgLp.apply(lpWidth),
                             "lpHeight=" + dbgLp.apply(lpHeight));
         }

@@ -25,7 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 
 public enum DialogMode {
     /** Show a Dialog; Fullscreen or Floating. */
@@ -68,7 +68,7 @@ public enum DialogMode {
                 return BottomSheet;
             }
             case UI_DIALOGS_MODE_BY_SCREEN_SIZE: {
-                if (WindowSizeClass.isLargeScreen(context)) {
+                if (ScreenSize.compute(context).isLargeScreen()) {
                     // Expanded/Expanded.
                     // Expanded/Medium
                     return Dialog;

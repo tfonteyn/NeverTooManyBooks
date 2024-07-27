@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 
 public class PartialDatePickerDialogFragment
         extends BaseFFDialogFragment {
@@ -39,7 +39,7 @@ public class PartialDatePickerDialogFragment
               R.layout.dialog_partial_date_picker_content,
               // Due to the height of this dialog, we must use fullscreen
               // on Medium-width/Compact-height as well
-              Set.of(WindowSizeClass.Medium),
+              Set.of(ScreenSize.Value.Medium),
               Set.of());
     }
 

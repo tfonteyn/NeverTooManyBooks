@@ -112,6 +112,7 @@ dependencies {
     implementation("androidx.documentfile:documentfile:${androidxDocumentfileVersion}")
     implementation("androidx.preference:preference-ktx:${androidxPreferenceVersion}")
     implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")
+    implementation("androidx.window:window:${androidxWindowVersion}")
 
     implementation("com.google.android.material:material:${googleMaterialVersion}")
 

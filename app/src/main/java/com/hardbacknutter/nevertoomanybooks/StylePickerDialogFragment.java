@@ -28,8 +28,8 @@ import androidx.annotation.Nullable;
 
 import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 
 public class StylePickerDialogFragment
@@ -43,8 +43,8 @@ public class StylePickerDialogFragment
               R.layout.dialog_style_picker_content,
               // Fullscreen on Medium screens
               // for consistency with BookshelfFiltersDialogFragment
-              EnumSet.of(WindowSizeClass.Medium),
-              EnumSet.of(WindowSizeClass.Medium));
+              EnumSet.of(ScreenSize.Value.Medium),
+              EnumSet.of(ScreenSize.Value.Medium));
     }
 
     @Override

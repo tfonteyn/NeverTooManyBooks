@@ -51,11 +51,11 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class SearchAdminFragment
         extends BaseFragment {
@@ -145,7 +145,7 @@ public class SearchAdminFragment
 
         vb.pager.setAdapter(tabAdapter);
         new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
-            if (WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.Compact) {
+            if (ScreenSize.compute(getActivity()).width == ScreenSize.Value.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {
                 tab.setText(getString(tabAdapter.getTabDescription(position)));

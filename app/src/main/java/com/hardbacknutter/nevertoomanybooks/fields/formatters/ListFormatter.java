@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
  * A formatter which uses {@link Entity#getLabel(Context, Details, Style)}
@@ -95,12 +95,11 @@ public class ListFormatter<T extends Entity>
         final Details listDetails;
         final Details itemDetails;
         if (details == Details.AutoSelect) {
-            final WindowSizeClass wsc;
             final int orientation = context.getResources().getConfiguration().orientation;
+            final ScreenSize screenSize = ScreenSize.compute(context);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape
-                wsc = WindowSizeClass.getWidth(context);
-                switch (wsc) {
+                switch (screenSize.width) {
                     case Expanded:
                     case Medium:
                         listDetails = Details.Normal;
@@ -113,12 +112,12 @@ public class ListFormatter<T extends Entity>
                         break;
 
                     default:
-                        throw new IllegalArgumentException("WindowSizeClass=" + wsc);
+                        throw new IllegalArgumentException("WindowSizeClass="
+                                                           + screenSize.width);
                 }
             } else {
                 // In portrait
-                wsc = WindowSizeClass.getHeight(context);
-                switch (wsc) {
+                switch (screenSize.height) {
                     case Expanded:
                         listDetails = Details.Full;
                         itemDetails = Details.Full;
@@ -135,7 +134,8 @@ public class ListFormatter<T extends Entity>
                         break;
 
                     default:
-                        throw new IllegalArgumentException("WindowSizeClass=" + wsc);
+                        throw new IllegalArgumentException("WindowSizeClass="
+                                                           + screenSize.height);
                 }
             }
 

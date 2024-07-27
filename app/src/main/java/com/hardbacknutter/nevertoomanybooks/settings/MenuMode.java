@@ -27,7 +27,7 @@ import android.view.Menu;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 
 public enum MenuMode {
     /** Show a popup window with {@link Gravity#START}. */
@@ -83,7 +83,7 @@ public enum MenuMode {
                 return BottomSheet;
             }
             case UI_CONTEXT_MENUS_BY_MENU_SIZE: {
-                if (WindowSizeClass.isLargeScreen(context)) {
+                if (ScreenSize.compute(context).isLargeScreen()) {
                     // Expanded/Expanded.
                     // Expanded/Medium
                     return menu.size() < MENU_SIZE_THRESHOLD ? Anchored : Center;
