@@ -25,7 +25,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.0.0" apply false
     // https://github.com/mannodermaus/android-junit5
     // Don't forget to update ext.mannodermausVersion
-    id("de.mannodermaus.android-junit5") version "1.10.0.0" apply false
+    id("de.mannodermaus.android-junit5") version "1.10.2.0" apply false
 }
 
 tasks.register("clean", Delete) {
@@ -57,8 +57,8 @@ ext {
     androidxConstraintlayoutCoreVersion = "1.0.4"
     androidxConstraintlayoutVersion = "2.1.4"
     androidxCoordinatorlayoutVersion = "1.2.0"
-    androidxCoreVersion = '1.13.1'
     androidxCoreSplashscreenVersion = '1.0.1'
+    androidxCoreVersion = '1.13.1'
     androidxCustomviewVersion = "1.2.0-alpha02"
     androidxDocumentfileVersion = "1.1.0-alpha01"
     androidxDrawerlayoutVersion = "1.2.0"
@@ -68,7 +68,6 @@ ext {
     androidxLifecycleVersion = '2.8.4'
     androidxPreferenceVersion = "1.2.1"
     androidxRecyclerviewVersion = '1.3.2'
-//        androidxSlidingpanelayoutVersion = "1.2.0"
     androidxViewpager2Version = '1.1.0'
     androidxWindowVersion = '1.3.0'
 
@@ -104,5 +103,5 @@ ext {
     // resulting in Duplicate class kotlin.* build problems.
     kotlinxCoroutinesCoreVersion = '1.8.1'
 
-    mannodermausVersion = '1.4.0'
+    mannodermausVersion = '1.5.0'
 }

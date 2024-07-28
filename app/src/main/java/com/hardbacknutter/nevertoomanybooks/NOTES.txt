@@ -97,6 +97,8 @@ FIXME: the dialog-fragment launcher api is increasingly adding overhead.
 TODO: bring some unity to our use of child-fragments (e.g. ReadStatus)
  and helper/handlers (e.g. CoverHandler) and similar constructs
 
+TODO: TEST migrate to JUnit5 for on-device tests as well.
+
 ENHANCE: add rotating functions to the cropper activity. This would allow
  multi-rotate-undo by simply quiting the cropper.
 

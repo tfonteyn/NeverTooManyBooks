@@ -69,7 +69,7 @@ dependencies {
     implementation("androidx.core:core:${androidxCoreVersion}")
     implementation("androidx.customview:customview:${androidxCustomviewVersion}")
     implementation("androidx.interpolator:interpolator:${androidxInterpolatorVersion}")
-
     implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")
+
     implementation("com.google.android.material:material:${googleMaterialVersion}")
 }

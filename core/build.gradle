@@ -106,9 +106,7 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
 
     implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
-    // core is needed for custom constraint helpers
     implementation("androidx.constraintlayout:constraintlayout-core:${androidxConstraintlayoutCoreVersion}")
-
     implementation("androidx.documentfile:documentfile:${androidxDocumentfileVersion}")
     implementation("androidx.preference:preference-ktx:${androidxPreferenceVersion}")
     implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")
@@ -119,7 +117,6 @@ dependencies {
     // See project build.gradle
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
 
-    // local tests use JUnit5
     testImplementation("org.mockito:mockito-core:${mockitoVersion}")
     testImplementation("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
 
@@ -127,10 +124,10 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${jupiterVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-params:${jupiterVersion}")
 
+    androidTestImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")
     androidTestImplementation("de.mannodermaus.junit5:android-test-core:${mannodermausVersion}")
     androidTestRuntimeOnly("de.mannodermaus.junit5:android-test-runner:${mannodermausVersion}")
 
-    // device tests use JUnit4
     androidTestImplementation("androidx.test:core:${androidxTestCoreVersion}")
     androidTestImplementation("androidx.test:runner:${androidxTestRunnerVersion}")
     androidTestImplementation("androidx.test:rules:${androidxTestRulesVersion}")
