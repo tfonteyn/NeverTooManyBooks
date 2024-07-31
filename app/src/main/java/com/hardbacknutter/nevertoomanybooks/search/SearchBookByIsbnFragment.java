@@ -319,7 +319,7 @@ public class SearchBookByIsbnFragment
     private void startScannerEmbedded() {
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
         if (scanner == null) {
-            // Use the default ScanMode.Single
+            // Use the default com. hardbacknutter.tinyzxingwrapper.scanner.ScanMode.Single
             //noinspection DataFlowIssue
             scanner = new BarcodeScanner.Builder()
                     .setBarcodeFormats(BarcodeFamily.PRODUCT)
@@ -338,7 +338,8 @@ public class SearchBookByIsbnFragment
                           @Nullable
                           private String lastCode;
 
-                          // ScanMode.Single: the scanner is stopped when we enter this method.
+                          // com. hardbacknutter.tinyzxingwrapper.scanner.ScanMode.Single:
+                          // the scanner is stopped when we enter this method.
                           @Override
                           public void onResult(@NonNull final Result result) {
                               final String barCode = result.getText();
@@ -382,7 +383,7 @@ public class SearchBookByIsbnFragment
             }
             vb.barcodeScannerGroup.setVisibility(View.GONE);
         }
-        vm.setScannerMode(ScanMode.Off);
+        vm.setScannerMode(Scanning.Off);
     }
 
     /**
@@ -393,7 +394,7 @@ public class SearchBookByIsbnFragment
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         vm.onBookEditingDone(data);
-        if (vm.getScannerMode() == ScanMode.Continuous) {
+        if (vm.getScannerMode() == Scanning.Continuous) {
             // scan another book until the user cancels
             startScanner();
         }
@@ -417,7 +418,7 @@ public class SearchBookByIsbnFragment
                 SoundManager.beepOnBarcodeFound(context);
             }
 
-            if (vm.getScannerMode() == ScanMode.Batch) {
+            if (vm.getScannerMode() == Scanning.Batch) {
                 // batch mode, queue the code, go scan next book
                 vm.addToQueue(context, code);
                 startScanner();
@@ -426,7 +427,7 @@ public class SearchBookByIsbnFragment
                 // Scan mode:
                 // Manual: quit scanning after the search/edit.
                 // Continuous: leave the scanner on, scanning again when the edit is done.
-                if (vm.getScannerMode() == ScanMode.Manual) {
+                if (vm.getScannerMode() == Scanning.Manual) {
                     switchOffScanner();
                 }
                 // Put the code in the field; if the search fails, the user can manually edit it
@@ -439,7 +440,7 @@ public class SearchBookByIsbnFragment
             vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
                                           code.asText()));
 
-            if (vm.getScannerMode() == ScanMode.Batch) {
+            if (vm.getScannerMode() == Scanning.Batch) {
                 // invalid code but we're in batch mode.
                 // Just ignore the bad code and scan the next book.
                 startScanner();
@@ -619,12 +620,12 @@ public class SearchBookByIsbnFragment
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_BARCODE_SCAN) {
-                vm.setScannerMode(ScanMode.getSingleScanMode(requireContext()));
+                vm.setScannerMode(Scanning.getScannerModeSingle(requireContext()));
                 startScanner();
                 return true;
 
             } else if (menuItemId == R.id.MENU_BARCODE_SCAN_BATCH) {
-                vm.setScannerMode(ScanMode.Batch);
+                vm.setScannerMode(Scanning.Batch);
                 startScanner();
                 return true;
 

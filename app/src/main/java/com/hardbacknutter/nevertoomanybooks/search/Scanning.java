@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-public enum ScanMode
+public enum Scanning
         implements Parcelable {
 
     /** Scanner is (set) offline. */
@@ -48,22 +48,22 @@ public enum ScanMode
     Batch(3);
 
     /** {@link Parcelable}. */
-    public static final Creator<ScanMode> CREATOR = new Creator<>() {
+    public static final Creator<Scanning> CREATOR = new Creator<>() {
         @Override
         @NonNull
-        public ScanMode createFromParcel(@NonNull final Parcel in) {
+        public Scanning createFromParcel(@NonNull final Parcel in) {
             return values()[in.readInt()];
         }
 
         @Override
         @NonNull
-        public ScanMode[] newArray(final int size) {
-            return new ScanMode[size];
+        public Scanning[] newArray(final int size) {
+            return new Scanning[size];
         }
     };
     private final int value;
 
-    ScanMode(final int value) {
+    Scanning(final int value) {
         this.value = value;
     }
 
@@ -75,8 +75,8 @@ public enum ScanMode
      * @return scan mode
      */
     @NonNull
-    public static ScanMode getSingleScanMode(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, Prefs.PK_SCAN_MODE_SINGLE,
+    public static Scanning getScannerModeSingle(@NonNull final Context context) {
+        final int value = IntListPref.getInt(context, Prefs.PK_SCANNER_MODE_SINGLE,
                                              Manual.value);
         if (value == Continuous.value) {
             return Continuous;

@@ -85,7 +85,7 @@ public final class Prefs {
     public static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
     public static final String PK_CAMERA_LENS_FACING = "camera.lens.facing";
 
-    public static final String PK_SCAN_MODE_SINGLE = "scan.mode.single";
+    public static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
 
     public static final String PK_IMAGE_UNDO_ENABLED = "image.undo.enabled";
     public static final String PK_IMAGE_CACHE_RESIZED = "image.cache.resized";

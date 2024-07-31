@@ -58,8 +58,8 @@ public class SearchBookByIsbnViewModel
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
 
-    /** The {@link ScanMode} to start in. */
-    public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
+    /** The {@link Scanning} to start in. */
+    public static final String BKEY_SCANNER_MODE = TAG + ":scanning";
 
     /** Storage key into preferences for the current queue. */
     private static final String PREF_SCAN_QUEUE = "scan.queue";
@@ -78,7 +78,7 @@ public class SearchBookByIsbnViewModel
     private Style style;
 
     @NonNull
-    private ScanMode scannerMode = ScanMode.Off;
+    private Scanning scanning = Scanning.Off;
 
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean firstStart = true;
@@ -114,9 +114,9 @@ public class SearchBookByIsbnViewModel
                                    .collect(Collectors.toList()));
 
             if (args != null) {
-                final ScanMode scanMode = args.getParcelable(BKEY_SCAN_MODE);
-                if (scanMode != null) {
-                    scannerMode = scanMode;
+                final Scanning scanning = args.getParcelable(BKEY_SCANNER_MODE);
+                if (scanning != null) {
+                    this.scanning = scanning;
                 }
 
                 // Lookup the provided style or use the default if not found.
@@ -148,7 +148,7 @@ public class SearchBookByIsbnViewModel
      * @return flag
      */
     boolean isAutoStart() {
-        if (scannerMode != ScanMode.Off && firstStart) {
+        if (scanning != Scanning.Off && firstStart) {
             firstStart = false;
             return true;
         }
@@ -234,15 +234,15 @@ public class SearchBookByIsbnViewModel
     }
 
     @NonNull
-    ScanMode getScannerMode() {
-        return scannerMode;
+    Scanning getScannerMode() {
+        return scanning;
     }
 
-    void setScannerMode(@NonNull final ScanMode scannerMode) {
-        this.scannerMode = scannerMode;
+    void setScannerMode(@NonNull final Scanning scanning) {
+        this.scanning = scanning;
 
         // If we're starting a new scan, clear the queue.
-        if (this.scannerMode != ScanMode.Off) {
+        if (this.scanning != Scanning.Off) {
             scanQueue.clear();
         }
         scanQueueUpdate.setValue(scanQueue);

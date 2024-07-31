@@ -87,7 +87,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class ISBN {
 
-    public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
+    private static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
     /** Log tag. */
     private static final String TAG = "ISBN";
@@ -174,35 +174,38 @@ public class ISBN {
 
     /**
      * Constructor.
-     * <p>
-     * With {@code strictIsbn == false}: accepts as valid:
      * <ul>
-     *      <li>{@link Type#Isbn10}</li>
-     *      <li>{@link Type#Isbn13}</li>
-     *      <li>{@link Type#Ean13}</li>
-     *      <li>{@link Type#Issn8}</li>
-     *      <li>{@link Type#Ismn}</li>
-     *      <li>generic {@link Type#UpcA}</li>
-     * </ul>
-     *
-     * <p>
-     * With {@code strictIsbn == true}: accepts as valid:
-     * <ul>
-     *      <li>{@link Type#Isbn10}</li>
-     *      <li>{@link Type#Isbn13}</li>
-     *      <li>{@link Type#UpcA} <strong>if convertible to {@link Type#Isbn10}</strong></li>
-     * </ul>
-     * Rejects as invalid:
-     * <ul>
-     *      <li>{@link Type#Ean13}</li>
-     *      <li>{@link Type#Issn8}</li>
-     *      <li>{@link Type#Ismn}</li>
-     *      <li>generic {@link Type#UpcA}</li>
-     * </ul>
-     * <p>
-     * Accepts {@code null} which results in {@code Type.Invalid}.
-     * <p>
-     * Accepts ' ' and '-' separator characters.
+     *  <li>
+     *      {@code strictIsbn == false}
+     *      <br>accepts as valid:
+     *      <ul>
+     *          <li>{@link Type#Isbn10}</li>
+     *          <li>{@link Type#Isbn13}</li>
+     *          <li>{@link Type#Ean13}</li>
+     *          <li>{@link Type#Issn8}</li>
+     *          <li>{@link Type#Ismn}</li>
+     *          <li>generic {@link Type#UpcA}</li>
+     *      </ul>
+     *  </li>
+     *  <li>
+     *      {@code strictIsbn == true}
+     *      <br>accepts as valid:
+     *      <ul>
+     *          <li>{@link Type#Isbn10}</li>
+     *          <li>{@link Type#Isbn13}</li>
+     *          <li>{@link Type#UpcA} <strong>if convertible to {@link Type#Isbn10}</strong></li>
+     *      </ul>
+     *      Rejects as invalid:
+     *      <ul>
+     *          <li>{@link Type#Ean13}</li>
+     *          <li>{@link Type#Issn8}</li>
+     *          <li>{@link Type#Ismn}</li>
+     *          <li>generic {@link Type#UpcA}</li>
+     *      </ul>
+     *  </li>
+     *  <li>Accepts {@code null} which results in {@code Type.Invalid}.</li>
+     *  <li>Accepts {@code ' '} and {@code '-'} separator characters.</li>
+     *  </ul>
      *
      * @param text       string to digest
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
