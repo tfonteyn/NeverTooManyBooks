@@ -225,29 +225,39 @@ public class ShowBookDetailsViewModel
         }
     }
 
+    @Override
     public boolean isRead() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         return book.isRead();
     }
 
+    @Override
     public void setReadNow(final boolean read) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         ServiceLocator.getInstance().getBookDao().setRead(book, read);
         onReadStatusChanged.setValue(null);
     }
 
-    public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
-        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        ServiceLocator.getInstance().getBookDao().setReadingProgress(book, readingProgress);
+    @Override
+    public void readStatusChanged() {
         onReadStatusChanged.setValue(null);
     }
 
+    @Override
     @NonNull
     public ReadingProgress getReadingProgress() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         return book.getReadingProgress();
     }
 
+    @Override
+    public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
+        ServiceLocator.getInstance().getBookDao().setReadingProgress(book, readingProgress);
+        onReadStatusChanged.setValue(null);
+    }
+
+    @Override
     @NonNull
     public MutableLiveData<Void> onReadStatusChanged() {
         return onReadStatusChanged;

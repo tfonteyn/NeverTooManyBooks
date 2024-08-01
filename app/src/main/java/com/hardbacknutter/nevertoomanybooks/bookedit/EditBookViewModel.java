@@ -353,8 +353,8 @@ public class EditBookViewModel
         onReadStatusChanged.setValue(null);
     }
 
-    @NonNull
     @Override
+    @NonNull
     public ReadingProgress getReadingProgress() {
         return book.getReadingProgress();
     }
@@ -362,6 +362,11 @@ public class EditBookViewModel
     @Override
     public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         book.setReadingProgress(readingProgress);
+        onReadStatusChanged.setValue(null);
+    }
+
+    @Override
+    public void readStatusChanged() {
         onReadStatusChanged.setValue(null);
     }
 

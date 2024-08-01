@@ -66,9 +66,15 @@ public interface BookReadStatusViewModel {
     void setReadingProgress(@NonNull ReadingProgress readingProgress);
 
     /**
+     * Trigger a call to {@link #onReadStatusChanged()}.
+     */
+    void readStatusChanged();
+
+    /**
      * Triggered after a call to
-     * {@link #setReadNow(boolean)} and
-     * {@link #setReadingProgress(ReadingProgress)}.
+     * {@link #setReadNow(boolean)},
+     * {@link #setReadingProgress(ReadingProgress)} or
+     * {@link #readStatusChanged()}.
      *
      * @return void; indicates the UI should update the read-status related fields.
      *
