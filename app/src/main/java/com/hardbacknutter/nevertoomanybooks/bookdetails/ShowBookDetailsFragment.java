@@ -411,7 +411,7 @@ public class ShowBookDetailsFragment
 
         ReadStatusFragmentFactory.bind(getChildFragmentManager(), R.id.fragment_read,
                                        aVm.getStyle(),
-                                       ShowBookDetailsViewModel.class);
+                                       ReadStatusFragmentFactory.Mode.Show);
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);

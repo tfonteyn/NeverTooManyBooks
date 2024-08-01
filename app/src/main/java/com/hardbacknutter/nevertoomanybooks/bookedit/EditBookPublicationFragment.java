@@ -76,7 +76,7 @@ public class EditBookPublicationFragment
 
             ReadStatusFragmentFactory.bind(getChildFragmentManager(), R.id.fragment_read,
                                            vm.getStyle(),
-                                           EditBookViewModel.class);
+                                           ReadStatusFragmentFactory.Mode.Edit);
 
             vm.onReadStatusChanged()
               .observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());

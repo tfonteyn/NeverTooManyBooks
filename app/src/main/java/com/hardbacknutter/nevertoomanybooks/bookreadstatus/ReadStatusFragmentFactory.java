@@ -21,18 +21,17 @@
 package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.View;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookViewModel;
@@ -40,11 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
 public final class ReadStatusFragmentFactory {
 
-    private static final int VIEWMODEL_SHOW = 0;
-    private static final int VIEWMODEL_EDIT = 1;
-
     private static final String TAG = "ReadStatusFragmentFactory";
-    private static final String BKEY_VIEWMODEL = TAG + ":vm";
+    private static final String BKEY_VIEWMODEL_MODE = TAG + ":vm";
 
     private ReadStatusFragmentFactory() {
     }
@@ -55,19 +51,19 @@ public final class ReadStatusFragmentFactory {
      * @param fm                      to use
      * @param fragmentContainerViewId where to add the new fragment
      * @param style                   to use
-     * @param viewModelClass          the required ViewModel class
+     * @param mode                    the required ViewModel mode
      */
-    public static void bind(@NonNull final FragmentManager fm,
-                            @IdRes final int fragmentContainerViewId,
-                            @NonNull final Style style,
-                            final Class<? extends ViewModel> viewModelClass) {
+    public static void create(@NonNull final FragmentManager fm,
+                              @IdRes final int fragmentContainerViewId,
+                              @NonNull final Style style,
+                              @NonNull final Mode mode) {
 
         if (style.useReadProgress()) {
             Fragment fragment = fm.findFragmentByTag(ReadProgressFragment.TAG);
             if (fragment == null) {
                 fragment = new ReadProgressFragment();
                 final Bundle args = new Bundle(1);
-                args.putInt(BKEY_VIEWMODEL, getIntArg(viewModelClass));
+                args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -80,7 +76,7 @@ public final class ReadStatusFragmentFactory {
             if (fragment == null) {
                 fragment = new ReadStatusFragment();
                 final Bundle args = new Bundle(1);
-                args.putInt(BKEY_VIEWMODEL, getIntArg(viewModelClass));
+                args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -88,19 +84,6 @@ public final class ReadStatusFragmentFactory {
                   .commit();
             }
         }
-    }
-
-    @SuppressWarnings("ChainOfInstanceofChecks")
-    private static int getIntArg(final Class<? extends ViewModel> viewModelClass) {
-        final int vm;
-        if (viewModelClass == ShowBookDetailsViewModel.class) {
-            vm = VIEWMODEL_SHOW;
-        } else if (viewModelClass == EditBookViewModel.class) {
-            vm = VIEWMODEL_EDIT;
-        } else {
-            throw new IllegalArgumentException(viewModelClass.getName());
-        }
-        return vm;
     }
 
     /**
@@ -116,26 +99,73 @@ public final class ReadStatusFragmentFactory {
     @NonNull
     static BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
                                                 @NonNull final Bundle args) {
-        @ViewModelClass
-        final int type = args.getInt(BKEY_VIEWMODEL);
-        switch (type) {
-            case VIEWMODEL_SHOW:
-                // https://developer.android.com/guide/fragments/communicate#share_data_between_a_parent_and_child_fragment
-                // MUST be in the PARENT Fragment scope
-                return new ViewModelProvider(fragment.requireParentFragment())
-                        .get(ShowBookDetailsViewModel.class);
-            case VIEWMODEL_EDIT:
-                // MUST be in the Activity scope
-                //noinspection DataFlowIssue
-                return new ViewModelProvider(fragment.getActivity())
-                        .get(EditBookViewModel.class);
-            default:
-                throw new IllegalArgumentException(String.valueOf(type));
-        }
+        final Mode mode = Objects.requireNonNull(args.getParcelable(BKEY_VIEWMODEL_MODE));
+        return mode.getViewModel(fragment);
     }
 
-    @IntDef({VIEWMODEL_SHOW, VIEWMODEL_EDIT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ViewModelClass {
+    /**
+     * The Mode for the ViewModel.
+     * <p>
+     * Reminder: don't try to stick the vm class in the enum instances.
+     * ViewModelProvider#get needs a concrete class
+     */
+    public enum Mode
+            implements Parcelable {
+        Show,
+        Edit;
+
+        /** {@link Parcelable}. */
+        public static final Creator<Mode> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public Mode createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public Mode[] newArray(final int size) {
+                return new Mode[size];
+            }
+        };
+
+        /**
+         * Create the appropriate ViewModel for this mode.
+         *
+         * @param fragment hosting fragment
+         *
+         * @return the ViewModel
+         *
+         * @throws IllegalArgumentException for illegal values
+         */
+        @NonNull
+        BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment) {
+            switch (this) {
+                case Show:
+                    // MUST be in the PARENT Fragment scope
+                    // See class docs for ShowBookDetailsFragment
+                    return new ViewModelProvider(fragment.requireParentFragment())
+                            .get(ShowBookDetailsViewModel.class);
+                case Edit:
+                    // MUST be in the Activity scope
+                    // The editor fragments all exchange data via the Activity.
+                    //noinspection DataFlowIssue
+                    return new ViewModelProvider(fragment.getActivity())
+                            .get(EditBookViewModel.class);
+                default:
+                    throw new IllegalArgumentException(this.toString());
+            }
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(ordinal());
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
     }
 }
