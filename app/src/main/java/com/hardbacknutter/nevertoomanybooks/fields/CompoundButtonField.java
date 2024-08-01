@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -92,13 +92,13 @@ public class CompoundButtonField
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source,
                                 @NonNull final RealNumberParser realNumberParser) {
-        initialValue = source.getBoolean(fieldKey);
+        initialValue = source.getBoolean(getFieldKey());
         setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putBoolean(fieldKey, getValue());
+        target.putBoolean(getFieldKey(), getValue());
     }
 
     @Override

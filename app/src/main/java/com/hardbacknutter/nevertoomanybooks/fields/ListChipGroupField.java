@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -126,13 +126,13 @@ public class ListChipGroupField<T extends Parcelable & Entity>
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source,
                                 @NonNull final RealNumberParser realNumberParser) {
-        initialValue = source.getParcelableArrayList(fieldKey);
+        initialValue = source.getParcelableArrayList(getFieldKey());
         setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putParcelableArrayList(fieldKey, getValue());
+        target.putParcelableArrayList(getFieldKey(), getValue());
     }
 
     @Override

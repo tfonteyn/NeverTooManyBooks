@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,13 +71,13 @@ public class RatingBarField
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source,
                                 @NonNull final RealNumberParser realNumberParser) {
-        initialValue = source.getFloat(fieldKey, realNumberParser);
+        initialValue = source.getFloat(getFieldKey(), realNumberParser);
         setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putFloat(fieldKey, getValue());
+        target.putFloat(getFieldKey(), getValue());
     }
 
     @Override

@@ -179,7 +179,7 @@ public class EditTextField<T, V extends EditText>
                 //
                 // 3. see {@link SearchCoordinator#accumulateStringData}
                 // where some data is transformed into a String regardless
-                LoggerFactory.getLogger().w(TAG, e, "fieldKey=" + fieldKey,
+                LoggerFactory.getLogger().w(TAG, e, "fieldKey=" + getFieldKey(),
                                             "value=" + value,
                                             "text=" + text);
                 text = rawValue != null ? String.valueOf(rawValue) : "";

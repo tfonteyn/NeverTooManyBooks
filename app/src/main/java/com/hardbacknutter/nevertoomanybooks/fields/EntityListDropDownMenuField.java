@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -127,13 +127,13 @@ public class EntityListDropDownMenuField<T extends Entity>
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source,
                                 @NonNull final RealNumberParser realNumberParser) {
-        initialValue = source.getLong(fieldKey);
+        initialValue = source.getLong(getFieldKey());
         setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putLong(fieldKey, getValue());
+        target.putLong(getFieldKey(), getValue());
     }
 
     @Override

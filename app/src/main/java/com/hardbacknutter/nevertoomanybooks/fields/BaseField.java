@@ -66,7 +66,7 @@ public abstract class BaseField<T, V extends View>
      * See {@link #isAutoPopulated()}.
      */
     @NonNull
-    final String fieldKey;
+    private final String fieldKey;
 
     /**
      * The preference key (field-name) to check if this Field is used or not.
@@ -186,6 +186,12 @@ public abstract class BaseField<T, V extends View>
     @IdRes
     public int getFieldViewId() {
         return fieldViewId;
+    }
+
+    @Override
+    @NonNull
+    public String getFieldKey() {
+        return fieldKey;
     }
 
     @Override

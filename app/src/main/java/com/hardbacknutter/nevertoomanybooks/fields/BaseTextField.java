@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,7 +118,7 @@ public abstract class BaseTextField<T, V extends TextView>
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source,
                                 @NonNull final RealNumberParser realNumberParser) {
-        final Object obj = source.get(fieldKey, realNumberParser);
+        final Object obj = source.get(getFieldKey(), realNumberParser);
         if (obj != null) {
             //noinspection unchecked
             initialValue = (T) obj;
@@ -145,7 +145,7 @@ public abstract class BaseTextField<T, V extends TextView>
     void internalPutValue(@NonNull final DataManager target) {
         // We don't know the type <T> so put as Object (DataManager will auto-detect).
         // It will be the original rawValue.
-        target.put(fieldKey, getValue());
+        target.put(getFieldKey(), getValue());
     }
 
     /**

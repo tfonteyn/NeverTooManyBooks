@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,6 +105,14 @@ public interface Field<T, V extends View> {
      */
     @IdRes
     int getFieldViewId();
+
+    /**
+     * Get the key used to load/save values to a {@link DataManager} or {@code Bundle}.
+     *
+     * @return key name; can be {@code ""} indicating all data handling must be done manually.
+     */
+    @NonNull
+    String getFieldKey();
 
     /**
      * Hook up the views.
