@@ -65,13 +65,12 @@ public class ReadStatusFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
+        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
 
-        reload();
         vb.read.setOnClickListener(v -> vm.setReadNow(!vm.isRead()));
     }
 
-    private void reload() {
+    private void onReadStatusChanged() {
         vb.read.setChecked(vm.isRead());
     }
 }

@@ -50,6 +50,7 @@ public class ReadProgressFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         vm = ReadStatusFragmentFactory.getViewModel(this, requireArguments());
 
         final FragmentManager fm = getChildFragmentManager();
@@ -74,15 +75,14 @@ public class ReadProgressFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> reload());
+        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
 
-        reload();
         //noinspection DataFlowIssue
         vb.btnReadProgress.setOnClickListener(v -> editLauncher.launch(getActivity(),
                                                                        vm.getReadingProgress()));
     }
 
-    private void reload() {
+    private void onReadStatusChanged() {
         final ReadingProgress readingProgress = vm.getReadingProgress();
 
         //noinspection DataFlowIssue
