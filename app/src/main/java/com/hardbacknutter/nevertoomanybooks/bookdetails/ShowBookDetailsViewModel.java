@@ -99,10 +99,8 @@ public class ShowBookDetailsViewModel
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }
+
         updateUI();
-        if (!embedded) {
-            onUpdateToolbar.setValue(book);
-        }
     }
 
     /**
@@ -135,22 +133,20 @@ public class ShowBookDetailsViewModel
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
 
         // all fragments in the ViewPager will be called, so only update
-        // the toolbar and current book id if OUR book IS the current one
+        // the toolbar if OUR book is the currently displayed one
         if (book.getId() == bookId) {
-            // storeCurrentBookId(bookId);
             onUpdateToolbar.setValue(book);
         }
     }
 
     private void updateUI() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        // storeCurrentBookId(book.getId());
         onBookLoaded.setValue(book);
+        onReadStatusChanged.setValue(null);
+        if (!embedded) {
+            onUpdateToolbar.setValue(book);
+        }
     }
-
-    //    private void storeCurrentBookId(final long bookId) {
-    //
-    //    }
 
     /**
      * Are we running in embedded mode.
@@ -176,8 +172,7 @@ public class ShowBookDetailsViewModel
      */
     void displayBook() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        book = Book.from(book.getId());
-        updateUI();
+        displayBook(book.getId());
     }
 
     /**

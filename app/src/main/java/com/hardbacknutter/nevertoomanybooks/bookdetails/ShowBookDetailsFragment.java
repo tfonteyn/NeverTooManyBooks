@@ -255,8 +255,9 @@ public class ShowBookDetailsFragment
         }
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
-        vm.onUpdateToolbar().observe(getViewLifecycleOwner(), this::onUpdateToolbar);
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
+
+        vm.onUpdateToolbar().observe(getViewLifecycleOwner(), this::onUpdateToolbar);
     }
 
     /**
@@ -355,6 +356,7 @@ public class ShowBookDetailsFragment
     }
 
     private void onReadStatusChanged() {
+        // needed when running inside the ViewPager to update the activity result data
         aVm.setDataModified();
 
         final Book book = vm.getBook();
@@ -366,8 +368,12 @@ public class ShowBookDetailsFragment
             field.setVisibility(getView(), true, false);
         });
 
+        // needed when running in embedded mode to update the BoB list
         if (bookChangedListener != null) {
-            bookChangedListener.onBookUpdated(book, DBKey.READ__BOOL, DBKey.READ_PROGRESS,
+            bookChangedListener.onBookUpdated(book,
+                                              // just send all possible fields,
+                                              // regardless of mode
+                                              DBKey.READ__BOOL, DBKey.READ_PROGRESS,
                                               DBKey.READ_END__DATE);
         }
     }
@@ -409,9 +415,10 @@ public class ShowBookDetailsFragment
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(context, book, realNumberParser));
 
-        ReadStatusFragmentFactory.bind(getChildFragmentManager(), R.id.fragment_read,
-                                       aVm.getStyle(),
-                                       ReadStatusFragmentFactory.Mode.Show);
+        // We're only creating this here instead of in onViewCreated
+        // so we are sure the book is loaded when the read-progress fragment displays
+        ReadStatusFragmentFactory.create(getChildFragmentManager(), R.id.fragment_read,
+                                         aVm.getStyle(), ReadStatusFragmentFactory.Mode.Show);
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);
