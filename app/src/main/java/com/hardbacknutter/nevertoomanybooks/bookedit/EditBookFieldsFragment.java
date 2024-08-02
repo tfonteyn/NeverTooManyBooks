@@ -253,6 +253,7 @@ public class EditBookFieldsFragment
                   .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
                   .collect(Collectors.toList());
 
+        // Update BOTH the book and the field
         vm.getBook().setBookshelves(selected);
         field.setValue(selected);
         field.notifyIfChanged(previous);
