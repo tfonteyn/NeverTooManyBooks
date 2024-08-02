@@ -348,18 +348,26 @@ public abstract class EditBookBaseFragment
     private void onDateSet(@IdRes final int fieldId,
                            @NonNull final String dateStr) {
 
+        final Book book = vm.getBook();
+
         final Field<String, TextView> field = vm.requireField(fieldId);
         final String previous = field.getValue();
+
+        // Update BOTH the book and the field
+        book.putString(field.getFieldKey(), dateStr);
         field.setValue(dateStr);
         field.notifyIfChanged(previous);
 
         // If we are setting the read-end date,
         // then we must set the read-flag/progress accordingly
         if (fieldId == R.id.read_end && !dateStr.isEmpty()) {
-            final Book book = vm.getBook();
             book.putBoolean(DBKey.READ__BOOL, true);
             book.putString(DBKey.READ_PROGRESS, "");
+            // Update *this* fragment + the ReadStatusFragment
+            vm.readStatusChanged();
         }
+        // Note we're NOT calling vm.readStatusChanged() when the R.id.read_start field
+        // is updated; there is no need
     }
 
     void onReadStatusChanged() {
@@ -368,7 +376,7 @@ public abstract class EditBookBaseFragment
         readEnd.setValue(vm.getBook().getString(DBKey.READ_END__DATE));
     }
 
-    private class MenuHandlersMenuProvider
+    private final class MenuHandlersMenuProvider
             implements MenuProvider {
 
         @Override
