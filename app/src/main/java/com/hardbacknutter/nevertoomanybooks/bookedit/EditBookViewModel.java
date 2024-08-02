@@ -350,7 +350,8 @@ public class EditBookViewModel
     @Override
     public void setReadNow(final boolean read) {
         book.setReadNow(read);
-        onReadStatusChanged.setValue(null);
+        book.setStage(EntityStage.Stage.Dirty);
+        readStatusChanged();
     }
 
     @Override
@@ -362,7 +363,8 @@ public class EditBookViewModel
     @Override
     public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         book.setReadingProgress(readingProgress);
-        onReadStatusChanged.setValue(null);
+        book.setStage(EntityStage.Stage.Dirty);
+        readStatusChanged();
     }
 
     @Override
@@ -769,16 +771,19 @@ public class EditBookViewModel
     }
 
     void updateAuthors(@NonNull final List<Author> list) {
+        // Update BOTH the book and the field
         book.setAuthors(list);
         requireField(R.id.author).setValue(list);
     }
 
     void updateSeries(@NonNull final List<Series> list) {
+        // Update BOTH the book and the field
         book.setSeries(list);
         requireField(R.id.series_title).setValue(list);
     }
 
     void updatePublishers(@NonNull final List<Publisher> list) {
+        // Update BOTH the book and the field
         book.setPublishers(list);
         requireField(R.id.publisher).setValue(list);
     }
@@ -1042,6 +1047,7 @@ public class EditBookViewModel
                                            // Paranoia... parse it to a double.
                                            final double value = realNumberParser.toDouble(
                                                    requireField(R.id.price_listed).getValue());
+                                           // Update BOTH the book and the field
                                            getBook().putDouble(DBKey.PRICE_PAID, value);
                                            destField.setValue(value);
                                        }
@@ -1062,6 +1068,7 @@ public class EditBookViewModel
                                                    requireField(R.id.price_listed_currency)
                                                            .getValue();
                                            if (value != null) {
+                                               // Update BOTH the book and the field
                                                getBook().putString(DBKey.PRICE_PAID_CURRENCY,
                                                                    value);
                                                destField.setValue(value);
