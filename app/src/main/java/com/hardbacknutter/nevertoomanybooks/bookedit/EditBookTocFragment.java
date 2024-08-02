@@ -569,6 +569,7 @@ public class EditBookTocFragment
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (contentType != Book.ContentType.Book) {
             final Field<Long, View> typeField = vm.requireField(R.id.book_type);
+            // Don't bother updating the book, that is done automatically when saving the book
             typeField.setValue(contentType.getId());
         }
 
