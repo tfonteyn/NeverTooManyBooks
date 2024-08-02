@@ -24,13 +24,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.SoftwareKeyboardControllerCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -45,6 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 /**
  * Dialog for the user to update their progress.
  * Supports percentage and "page x of y".
+ * <p>
+ * 2024-08-02: Android Studio is completely [censored]ing up the code formatting in this class!
+ * Each time we format the code, methods and variables jump around.
+ * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
  */
 class ReadingProgressDelegate
         implements FlexDialogDelegate {
@@ -115,6 +123,8 @@ class ReadingProgressDelegate
 
     @Override
     public void onViewCreated() {
+        // URGENT: the toolbar does not really need a "save" button for the BottomSheet any longer.
+        //  keeping it for now for consistency, but we need to review ALL BottomSheet toolbars.
         if (toolbar != null) {
             initToolbar(toolbar);
         }
@@ -123,13 +133,14 @@ class ReadingProgressDelegate
         // Call BEFORE we setup any listeners!
         modelToView();
 
-        vb.rbGroup.setOnCheckedChangeListener(
-                (group, checkedId) -> {
-                    vm.getReadingProgress().setAsPercentage(checkedId == R.id.rb_percentage);
-                    updateUI();
-                });
+        vb.rbGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            vm.getReadingProgress().setAsPercentage(checkedId == R.id.rb_percentage);
+            updateUI();
+        });
 
         addTextWatchers();
+        vb.percentage.setOnEditorActionListener(this::textFieldImeDone);
+        vb.totalPages.setOnEditorActionListener(this::textFieldImeDone);
 
         vb.sliderPercentage.addOnChangeListener((slider, value, fromUser) -> {
             if (fromUser) {
@@ -142,6 +153,39 @@ class ReadingProgressDelegate
                 pagesSliderToText(value);
             }
         });
+    }
+
+    /**
+     * When the user taps the 'done'/'enter' key while in the percentage or total-pages
+     * text field, we save and close the dialog.
+     *
+     * @param v        The view that was clicked.
+     * @param actionId Identifier of the action.
+     * @param event    If triggered by an enter key, this is the event;
+     *                 otherwise, this is {@code null}.
+     *
+     * @return Return true if you have consumed the action, else false.
+     */
+    private boolean textFieldImeDone(@NonNull final TextView v,
+                                     final int actionId,
+                                     @Nullable final KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            hideKeyboard(v);
+            if (saveChanges()) {
+                owner.dismiss();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Hide the keyboard.
+     *
+     * @param v a View from which we can get the window token.
+     */
+    private void hideKeyboard(@NonNull final View v) {
+        new SoftwareKeyboardControllerCompat(v).hide();
     }
 
     private void addTextWatchers() {
@@ -359,6 +403,4 @@ class ReadingProgressDelegate
 
         addTextWatchers();
     }
-
-
 }
