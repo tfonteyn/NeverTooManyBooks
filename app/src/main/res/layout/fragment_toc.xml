@@ -30,11 +30,15 @@
     tools:context=".FragmentHostActivity"
     >
 
+    <!-- reminder: do NOT set constraintStart_toStartOf="@id/lbl_toc"
+         The label will move left so much that it's partially off-screen.
+         Why??
+    -->
     <TextView
         android:id="@+id/lbl_toc"
         style="@style/Label"
         android:text="@string/lbl_table_of_content"
-        app:layout_constraintStart_toStartOf="@id/lbl_toc"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
 
