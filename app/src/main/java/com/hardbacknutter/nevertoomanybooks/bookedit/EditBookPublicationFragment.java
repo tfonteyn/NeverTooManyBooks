@@ -74,12 +74,13 @@ public class EditBookPublicationFragment
         if (vb.notes != null) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
 
-            ReadStatusFragmentFactory.bind(getChildFragmentManager(), R.id.fragment_read,
-                                           vm.getStyle(),
-                                           ReadStatusFragmentFactory.Mode.Edit);
+            vm.onReadStatusChanged().observe(getViewLifecycleOwner(),
+                                             aVoid -> onReadStatusChanged());
 
-            vm.onReadStatusChanged()
-              .observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
+            ReadStatusFragmentFactory.create(getChildFragmentManager(), R.id.fragment_read,
+                                             vm.getStyle(), ReadStatusFragmentFactory.Mode.Edit);
+            // Update *this* fragment + the ReadStatusFragment
+            vm.readStatusChanged();
         }
 
         // Publisher editor (screen)

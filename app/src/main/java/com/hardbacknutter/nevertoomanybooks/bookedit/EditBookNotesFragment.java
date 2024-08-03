@@ -61,11 +61,12 @@ public class EditBookNotesFragment
         //noinspection DataFlowIssue
         vm.initFields(getContext(), FragmentId.Notes, FieldGroup.Notes);
 
-        ReadStatusFragmentFactory.bind(getChildFragmentManager(), R.id.fragment_read,
-                                       vm.getStyle(),
-                                       ReadStatusFragmentFactory.Mode.Edit);
-
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
+
+        ReadStatusFragmentFactory.create(getChildFragmentManager(), R.id.fragment_read,
+                                         vm.getStyle(), ReadStatusFragmentFactory.Mode.Edit);
+        // Update *this* fragment + the ReadStatusFragment
+        vm.readStatusChanged();
     }
 
     @Override
