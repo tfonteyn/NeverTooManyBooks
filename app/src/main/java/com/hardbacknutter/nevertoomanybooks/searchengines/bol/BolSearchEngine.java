@@ -607,16 +607,6 @@ public class BolSearchEngine
         }
     }
 
-    /**
-     * @param context     Current context
-     * @param currentItem
-     * @param bookId      (optional) isbn or native id of the book,
-     *                    will only be used for the temporary cover filename
-     * @param fetchCovers
-     * @param book
-     *
-     * @throws StorageException on storage related failures
-     */
     private void parseCovers(@NonNull final Context context,
                              @NonNull final JSONObject currentItem,
                              @NonNull final String bookId,

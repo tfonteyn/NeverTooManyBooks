@@ -185,6 +185,6 @@ public final class ScreenSize {
     public enum Value {
         Compact,
         Medium,
-        Expanded;
+        Expanded
     }
 }

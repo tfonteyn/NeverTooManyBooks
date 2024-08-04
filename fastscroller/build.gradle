@@ -63,10 +63,10 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
 
-    implementation("androidx.activity:activity:${androidxActivityVersion}")
+    implementation("androidx.activity:activity-ktx:${androidxActivityVersion}")
     implementation("androidx.annotation:annotation:${androidxAnnotationVersion}")
     implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
-    implementation("androidx.core:core:${androidxCoreVersion}")
+    implementation("androidx.core:core-ktx:${androidxCoreVersion}")
     implementation("androidx.customview:customview:${androidxCustomviewVersion}")
     implementation("androidx.interpolator:interpolator:${androidxInterpolatorVersion}")
     implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")

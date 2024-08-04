@@ -25,6 +25,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 
+@FunctionalInterface
 public interface InsetsModifier {
 
     void apply(@NonNull View view,
