@@ -955,23 +955,25 @@ public class Author
     }
 
     /**
-     * {@link #equals(Object)} checks the basic fields.
-     * This method additionally checks any user and book fields.
+     * Enhanced {@link #equals(Object)}.
+     * <p>
+     * <strong>Includes</strong>: user fields.
+     * <p>
+     * <strong>Excludes</strong>: book fields.
      *
      * @param that to compare to
      *
-     * @return {@code true} if <strong>all</strong> fields are equal
+     * @return {@code true} if equals
      */
     public boolean isIdentical(@Nullable final Author that) {
         return equals(that)
-               && complete == that.complete
-               && Objects.equals(type, that.type);
+               && complete == that.complete;
     }
 
     /**
-     * Equality: <strong>id, family and given-names, realAuthor</strong>.
+     * Equality: <strong>id, family and given-names, realAuthor(id,names)</strong>.
      * <ul>
-     *   <li>'isComplete' is a user setting and is ignored here.</li>
+     *   <li>'complete' is a user setting and is ignored here.</li>
      *   <li>'type' is a book field and is ignored here.</li>
      * </ul>
      *

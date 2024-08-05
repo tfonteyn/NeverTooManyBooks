@@ -94,6 +94,9 @@ public interface BookDao {
      * Update the given {@link Book}.
      * This will update <strong>ONLY</strong> the fields present in the passed in Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
+     * <p>
+     * TRIGGERS:
+     * - If the ISBN of a {@link Book} is changed, reset external ID's and sync dates.
      *
      * @param context Current context
      * @param book    A collection with the columns to be set.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -104,7 +104,7 @@ final class Triggers {
         afterDeleteOn(db, TBL_BOOK_LOANEE);
 
         /*
-         * Updating an {@link Author).
+         * Updating an {@link Author}.
          *
          * This is for both actual Books, and for any TocEntry's they have done in anthologies.
          * The latter because a Book might not have the full list of Authors set.
@@ -220,7 +220,7 @@ final class Triggers {
 
 
         /*
-         * Deleting a {@link Book).
+         * Deleting a {@link Book}.
          *
          * <ul>
          * <li>Delete the book from FTS.</li>
@@ -244,7 +244,7 @@ final class Triggers {
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
         /*
-         * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
+         * If the ISBN of a {@link Book} is changed, reset external ID's and sync dates.
          */
         name = "after_update_of_" + DBKey.BOOK_ISBN + "_on_" + TBL_BOOKS.getName();
         body = AFTER_UPDATE_OF_ + DBKey.BOOK_ISBN + " ON " + TBL_BOOKS.getName()
