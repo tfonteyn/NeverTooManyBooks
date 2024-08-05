@@ -1448,9 +1448,9 @@ public class IsfdbSearchEngine
                         // vid=BLVU1&docId=BLL01014057142
                         // British Library
 
-//                    } else if (url.contains("d-nb.info")) {
+                    } else if (url.contains("d-nb.info")) {
                         // http://d-nb.info/986851329
-                        // DEUTSCHEN NATIONALBIBLIOTHEK
+                        book.putString(DBKey.SID_DNB, stripString(url, '/'));
 
 //                    } else if (url.contains("picarta.pica.nl")) {
                         // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
