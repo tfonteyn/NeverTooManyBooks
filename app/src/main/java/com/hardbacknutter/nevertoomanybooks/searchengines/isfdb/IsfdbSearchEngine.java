@@ -907,6 +907,15 @@ public class IsfdbSearchEngine
                             }
                             break;
                         }
+                        case "Catalog ID:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                // <li><b>Catalog ID:</b> catalogID
+                                tmpString = nextSibling.toString().trim();
+                                book.putString(SiteField.CATALOG_ID, tmpString);
+                            }
+                            break;
+                        }
                         case "Publisher:": {
                             for (final Element a : li.select("a")) {
                                 final Publisher publisher = Publisher.from(a.text());
@@ -1651,6 +1660,7 @@ public class IsfdbSearchEngine
     static final class SiteField {
         static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
         static final String ISBN_2 = "__ISFDB_ISBN2";
+        static final String CATALOG_ID = "__CATALOG_ID";
         static final String BOOK_TAG = "__TAG";
 
         private SiteField() {
