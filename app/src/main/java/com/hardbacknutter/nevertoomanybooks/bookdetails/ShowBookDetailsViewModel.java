@@ -132,11 +132,15 @@ public class ShowBookDetailsViewModel
     void updateUIAfterPagerUpdate(final long bookId) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
 
-        // all fragments in the ViewPager will be called, so only update
-        // the toolbar if OUR book is the currently displayed one
-        if (book.getId() == bookId) {
-            onUpdateToolbar.setValue(book);
+        // All fragments in the ViewPager will be called,
+        // only update if the incoming data is OUR book
+        if (book.getId() != bookId) {
+            return;
         }
+
+        // Note that the pager is only active in non-embedded mode
+        // so we don't need to test here for "if (!embedded)"
+        onUpdateToolbar.setValue(book);
     }
 
     private void updateUI() {
