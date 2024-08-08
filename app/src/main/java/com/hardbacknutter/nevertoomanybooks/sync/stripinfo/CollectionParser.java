@@ -188,7 +188,7 @@ class CollectionParser {
         // The edition ("druk") is a text-field
         jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(value -> {
             if ("1".equals(value)) {
-                book.putLong(DBKey.EDITION__BITMASK, Book.Edition.FIRST);
+                book.setEdition(Book.Edition.FIRST);
             } else {
                 final String notes = book.getString(DBKey.PERSONAL_NOTES);
                 book.putString(DBKey.PERSONAL_NOTES, value + '\n' + notes);

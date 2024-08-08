@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,8 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -424,7 +427,7 @@ public class Book
         duplicate.putString(DBKey.DESCRIPTION, getString(DBKey.DESCRIPTION));
 
         // partially edition info, partially use-owned info.
-        duplicate.putLong(DBKey.EDITION__BITMASK, getLong(DBKey.EDITION__BITMASK));
+        duplicate.setEdition(getEdition());
 
         // user data
 
@@ -947,6 +950,40 @@ public class Book
      */
     public void setContentType(@NonNull final ContentType type) {
         putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
+    }
+
+    /**
+     * Check if this book matches the given edition bits.
+     *
+     * @param bitmask to check
+     *
+     * @return {@code true} if the book matches (at least) the required edition
+     */
+    public boolean isEdition(@Edition.Bitmask final long bitmask) {
+        return (getEdition() & bitmask) != 0;
+    }
+
+    /**
+     * Get the edition bitmask value.
+     *
+     * @return edition bitmask
+     *
+     * @see Edition
+     */
+    @Edition.Bitmask
+    public long getEdition() {
+        return getLong(DBKey.EDITION__BITMASK) & Book.Edition.BITMASK_ALL_BITS;
+    }
+
+    /**
+     * Set the edition bitmask value.
+     *
+     * @param bitmask to et
+     *
+     * @see Edition
+     */
+    public void setEdition(@Edition.Bitmask final long bitmask) {
+        putLong(DBKey.EDITION__BITMASK, bitmask & Book.Edition.BITMASK_ALL_BITS);
     }
 
     /**
@@ -1740,6 +1777,13 @@ public class Book
         @NonNull
         public static Map<Integer, Integer> getAll() {
             return new LinkedHashMap<>(ALL);
+        }
+
+        @IntDef(flag = true,
+                value = {UNKNOWN, FIRST, FIRST_IMPRESSION, LIMITED, SLIPCASE, SIGNED, BOOK_CLUB})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface Bitmask {
+
         }
     }
 }

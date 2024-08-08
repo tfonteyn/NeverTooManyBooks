@@ -289,8 +289,7 @@ public class CollectionFormUploader {
 
         // The site only supports numbers 1..x (and changes an empty string into a "1")
         // so we either put "1" for first-edition, or "2" for a reprint.
-        final boolean isFirst = (book.getLong(
-                DBKey.EDITION__BITMASK) & Book.Edition.FIRST) != 0;
+        final boolean isFirst = book.isEdition(Book.Edition.FIRST);
         builder.appendQueryParameter(FF_DRUK, isFirst ? "1" : "2");
 
         // we're only supporting 1 copy and the site does not allow 0 or an empty string.

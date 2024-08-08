@@ -141,14 +141,14 @@ public class BookDaoHelper {
             book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obTitle, bookLocale));
         }
 
-        // store only valid bits. The 'get' will normalise any incorrect 'long' value
+        // normalize/store only valid bits
         if (book.contains(DBKey.BOOK_CONTENT_TYPE)) {
             book.setContentType(book.getContentType());
         }
 
+        // normalize/store only valid bits
         if (book.contains(DBKey.EDITION__BITMASK)) {
-            book.putLong(DBKey.EDITION__BITMASK,
-                         book.getLong(DBKey.EDITION__BITMASK) & Book.Edition.BITMASK_ALL_BITS);
+            book.setEdition(book.getEdition());
         }
 
         // cleanup/build all price related fields
