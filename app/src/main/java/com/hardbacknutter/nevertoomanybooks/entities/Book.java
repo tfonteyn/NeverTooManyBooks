@@ -408,7 +408,7 @@ public class Book
 
         // publication data
         duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
-        duplicate.putLong(DBKey.BOOK_CONTENT_TYPE, getLong(DBKey.BOOK_CONTENT_TYPE));
+        duplicate.setContentType(getContentType());
         duplicate.putString(DBKey.BOOK_PUBLICATION__DATE, getString(DBKey.BOOK_PUBLICATION__DATE));
         duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, realNumberParser));
         duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
@@ -937,7 +937,7 @@ public class Book
      */
     @NonNull
     public ContentType getContentType() {
-        return ContentType.getType(getInt(DBKey.BOOK_CONTENT_TYPE));
+        return ContentType.getType(getLong(DBKey.BOOK_CONTENT_TYPE));
     }
 
     /**
@@ -1588,7 +1588,7 @@ public class Book
      * Database representation of column {@link DBKey#BOOK_CONTENT_TYPE}.
      */
     public enum ContentType
-            implements Entity {
+            implements Entity, Parcelable {
         /** Single work. One or more authors. */
         Book(0, R.string.lbl_book_type_book),
         /** Multiple works, all by a single Author. */
@@ -1596,6 +1596,21 @@ public class Book
         // value 2 not in use.
         /** Multiple works, multiple Authors. */
         Anthology(3, R.string.lbl_book_type_anthology);
+
+        /** {@link Parcelable}. */
+        public static final Creator<ContentType> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public ContentType createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public ContentType[] newArray(final int size) {
+                return new ContentType[size];
+            }
+        };
 
         private final int value;
         @StringRes
@@ -1608,8 +1623,8 @@ public class Book
         }
 
         @NonNull
-        public static ContentType getType(final int value) {
-            switch (value) {
+        public static ContentType getType(final long value) {
+            switch ((int) value) {
                 case 3:
                     return Anthology;
                 case 1:
@@ -1636,6 +1651,17 @@ public class Book
                                @Nullable final Details details,
                                @NonNull final Style style) {
             return context.getString(labelResId);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(ordinal());
         }
     }
 

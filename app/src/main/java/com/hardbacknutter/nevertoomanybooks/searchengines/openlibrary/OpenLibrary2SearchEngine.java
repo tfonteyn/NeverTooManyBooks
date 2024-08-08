@@ -892,8 +892,7 @@ public class OpenLibrary2SearchEngine
         if (!toc.isEmpty()) {
             book.setToc(toc);
             if (toc.size() > 1) {
-                book.putLong(DBKey.BOOK_CONTENT_TYPE,
-                             Book.ContentType.Collection.getId());
+                book.setContentType(Book.ContentType.Collection);
             }
         }
     }

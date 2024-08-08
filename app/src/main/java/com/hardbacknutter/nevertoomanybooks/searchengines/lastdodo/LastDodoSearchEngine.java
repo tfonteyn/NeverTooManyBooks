@@ -527,9 +527,9 @@ public class LastDodoSearchEngine
         if (!toc.isEmpty()) {
             book.setToc(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
-                book.putLong(DBKey.BOOK_CONTENT_TYPE, Book.ContentType.Anthology.getId());
+                book.setContentType(Book.ContentType.Anthology);
             } else {
-                book.putLong(DBKey.BOOK_CONTENT_TYPE, Book.ContentType.Collection.getId());
+                book.setContentType(Book.ContentType.Collection);
             }
         }
 

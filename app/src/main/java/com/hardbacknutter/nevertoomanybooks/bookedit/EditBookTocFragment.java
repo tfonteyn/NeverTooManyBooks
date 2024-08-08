@@ -559,7 +559,7 @@ public class EditBookTocFragment
             // If there are more editions, the neutral button will allow to fetch the next one.
             //noinspection DataFlowIssue
             confirmTocResultsLauncher.launch(getActivity(), bookData.getToc(),
-                                             bookData.getLong(DBKey.BOOK_CONTENT_TYPE),
+                                             bookData.getContentType(),
                                              !isfdbEditions.isEmpty());
         });
     }
@@ -610,7 +610,8 @@ public class EditBookTocFragment
             tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                 Book.BKEY_TOC_LIST);
 
-            bookContentType = Book.ContentType.getType(args.getInt(DBKey.BOOK_CONTENT_TYPE));
+            bookContentType = Objects.requireNonNull(args.getParcelable(DBKey.BOOK_CONTENT_TYPE),
+                                                     DBKey.BOOK_CONTENT_TYPE);
             hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -661,7 +662,6 @@ public class EditBookTocFragment
                 extends DialogLauncher {
 
             private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
-            private static final String BKEY_TOC_BIT_MASK = "tocBitMask";
             private static final String BKEY_TOC_LIST = "tocEntries";
             @NonNull
             private final ResultListener resultListener;
@@ -692,7 +692,7 @@ public class EditBookTocFragment
              *
              * @param fragment        the calling DialogFragment
              * @param requestKey      to use
-             * @param bookContentType bit flags
+             * @param bookContentType the type
              * @param tocEntries      the list of entries
              *
              * @see #onFragmentResult(String, Bundle)
@@ -703,7 +703,7 @@ public class EditBookTocFragment
                                   @NonNull final Book.ContentType bookContentType,
                                   @NonNull final List<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
-                result.putLong(BKEY_TOC_BIT_MASK, bookContentType.getId());
+                result.putParcelable(DBKey.BOOK_CONTENT_TYPE, bookContentType);
                 result.putParcelableArrayList(BKEY_TOC_LIST, new ArrayList<>(tocEntries));
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
@@ -722,17 +722,17 @@ public class EditBookTocFragment
              * @param context          preferably the {@code Activity}
              *                         but another UI {@code Context} will also do.
              * @param toc              the list of TocEntry's
-             * @param bookContentType  the {@link Book.ContentType} ordinal
+             * @param bookContentType  the type
              * @param hasOtherEditions flag
              */
             public void launch(@NonNull final Context context,
                                @NonNull final List<TocEntry> toc,
-                               final long bookContentType,
+                               @NonNull final Book.ContentType bookContentType,
                                final boolean hasOtherEditions) {
 
                 final Bundle args = new Bundle(4);
                 args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
-                args.putLong(DBKey.BOOK_CONTENT_TYPE, bookContentType);
+                args.putParcelable(DBKey.BOOK_CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
                 showDialog(context, args);
@@ -745,7 +745,8 @@ public class EditBookTocFragment
                     onSearchNextListener.searchNextEdition();
                 } else {
                     resultListener.onResult(
-                            Book.ContentType.getType(result.getInt(BKEY_TOC_BIT_MASK)),
+                            Objects.requireNonNull(result.getParcelable(DBKey.BOOK_CONTENT_TYPE),
+                                                   DBKey.BOOK_CONTENT_TYPE),
                             Objects.requireNonNull(result.getParcelableArrayList(BKEY_TOC_LIST),
                                                    BKEY_TOC_LIST));
                 }
@@ -756,7 +757,7 @@ public class EditBookTocFragment
                 /**
                  * Callback handler.
                  *
-                 * @param bookContentType bit flags
+                 * @param bookContentType the type
                  * @param tocEntries      the list of entries
                  */
                 void onResult(@NonNull Book.ContentType bookContentType,

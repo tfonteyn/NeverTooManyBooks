@@ -979,7 +979,7 @@ public class IsfdbSearchEngine
                                 book.putString(SiteField.BOOK_TYPE, tmpString);
                                 final Book.ContentType type = TYPE_MAP.get(tmpString);
                                 if (type != null) {
-                                    book.putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
+                                    book.setContentType(type);
                                 }
                             }
                             break;
@@ -1043,11 +1043,9 @@ public class IsfdbSearchEngine
             book.setToc(toc);
             if (toc.size() > 1) {
                 if (TocEntry.hasMultipleAuthors(toc)) {
-                    book.putLong(DBKey.BOOK_CONTENT_TYPE,
-                                 Book.ContentType.Anthology.getId());
+                    book.setContentType(Book.ContentType.Anthology);
                 } else {
-                    book.putLong(DBKey.BOOK_CONTENT_TYPE,
-                                 Book.ContentType.Collection.getId());
+                    book.setContentType(Book.ContentType.Collection);
                 }
             }
         }
