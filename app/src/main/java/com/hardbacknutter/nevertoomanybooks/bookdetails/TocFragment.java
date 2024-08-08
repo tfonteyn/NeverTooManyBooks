@@ -74,6 +74,15 @@ public class TocFragment
     /** The Adapter. */
     private AuthorWorksAdapter adapter;
 
+    /**
+     * Constructor.
+     *
+     * @param book     to display
+     * @param embedded Whether the fragment is running in embedded mode.
+     * @param style    to use
+     *
+     * @return instance
+     */
     @NonNull
     public static Fragment create(@NonNull final Book book,
                                   final boolean embedded,
@@ -83,6 +92,7 @@ public class TocFragment
         args.putBoolean(BKEY_EMBEDDED, embedded);
         args.putString(DBKey.STYLE_UUID, style.getUuid());
         args.putLong(DBKey.FK_BOOK, book.getId());
+        // TODO: maybe don't bother... and just load the Book again in the vm.init() call?
         args.putString(DBKey.TITLE, book.getTitle());
         args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(book.getToc()));
         args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, new ArrayList<>(book.getAuthors()));
@@ -160,18 +170,20 @@ public class TocFragment
         vb.toc.setHasFixedSize(true);
 
         //noinspection NotifyDataSetChanged
-        vm.onBookChanged().observe(getViewLifecycleOwner(),
-                                   bookId -> adapter.notifyDataSetChanged());
+        vm.onReloadBook().observe(getViewLifecycleOwner(), bookId -> {
+            adapter.notifyDataSetChanged();
+            updateToolbar();
+        });
 
-        if (!vm.isEmbedded()) {
-            final Toolbar toolbar = getToolbar();
-            vm.getScreenTitle(context).ifPresent(toolbar::setTitle);
-            vm.getScreenSubtitle().ifPresent(toolbar::setSubtitle);
-        }
+        updateToolbar();
     }
 
-    // See info in the code calling this.
-    public void reload(@NonNull final Book book) {
-        vm.reload(book);
+    private void updateToolbar() {
+        if (!vm.isEmbedded()) {
+            final Toolbar toolbar = getToolbar();
+            //noinspection DataFlowIssue
+            vm.getScreenTitle(getContext()).ifPresent(toolbar::setTitle);
+            vm.getScreenSubtitle().ifPresent(toolbar::setSubtitle);
+        }
     }
 }

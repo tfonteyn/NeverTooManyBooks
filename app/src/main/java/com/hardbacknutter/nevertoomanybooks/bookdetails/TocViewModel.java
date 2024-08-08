@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class TocViewModel
         extends ViewModel {
 
-    private final MutableLiveData<Long> bookChanged = new MutableLiveData<>();
+    private final MutableLiveData<Long> onReloadBook = new MutableLiveData<>();
 
     /**
      * The list of TOC entries we're displaying.
@@ -56,12 +56,15 @@ public class TocViewModel
      * The list of Author. We normally only use the first one as primary-author.
      * But a side effect is that this forms a permanent reference;
      * the adapter will not need refreshing.
+     * <p>
+     * Also used as the screen title.
      */
     @NonNull
     private final List<Author> authors = new ArrayList<>();
-    /** screen sub title. */
+    /** Used as the screen sub title. */
     @Nullable
     private String bookTitle;
+    /** Whether the fragment is running in embedded mode. */
     private boolean embedded;
 
     /**
@@ -69,11 +72,11 @@ public class TocViewModel
      * <p>
      * In full-screen mode, we get all we need from the arguments.
      * In embedded mode, we don't use any arguments,
-     * but rely on {@link #reload(Book)} being called.
+     * but rely on {@link #reloadBook(Book)} being called.
      *
      * @param args Bundle with arguments
      */
-    public void init(@NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (works.isEmpty()) {
             embedded = args.getBoolean(TocFragment.BKEY_EMBEDDED, false);
 
@@ -92,40 +95,49 @@ public class TocViewModel
         }
     }
 
-    @NonNull
-    public MutableLiveData<Long> onBookChanged() {
-        return bookChanged;
-    }
-
-    public boolean isEmbedded() {
+    /**
+     * Are we running in embedded mode.
+     *
+     * @return flag
+     */
+    boolean isEmbedded() {
         return embedded;
     }
 
-    public void reload(@NonNull final Book book) {
-        bookId = book.getId();
+    @NonNull
+    MutableLiveData<Long> onReloadBook() {
+        return onReloadBook;
+    }
+
+    void reloadBook(@NonNull final Book book) {
+        // All fragments in the ViewPager might/will be called,
+        // only update if the incoming data is OUR book
+        if (book.getId() != bookId) {
+            return;
+        }
+
         bookTitle = book.getTitle();
 
         works.clear();
         works.addAll(book.getToc());
 
-        final List<Author> authorList = book.getAuthors();
         authors.clear();
-        authors.addAll(authorList);
+        authors.addAll(book.getAuthors());
 
-        bookChanged.setValue(bookId);
+        onReloadBook.setValue(bookId);
     }
 
-    public long getBookId() {
+    long getBookId() {
         return bookId;
     }
 
     @NonNull
-    public List<Author> getAuthors() {
+    List<Author> getAuthors() {
         return authors;
     }
 
     @NonNull
-    public List<AuthorWork> getWorks() {
+    List<AuthorWork> getWorks() {
         return works;
     }
 
