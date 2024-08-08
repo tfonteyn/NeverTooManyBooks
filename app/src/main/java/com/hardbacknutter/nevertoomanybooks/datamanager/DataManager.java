@@ -487,7 +487,7 @@ public class DataManager
     /**
      * Get a {@link Money} value.
      * <p>
-     * <strong>NOT for normal use; it's to easy to get this wrong.
+     * <strong>NOT for normal use; it's too easy to get this wrong.
      * Should only used by {@link #get(String, RealNumberParser)} or in tests.</strong>
      * <p>
      * This method should really return an "Either". i.e.

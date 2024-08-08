@@ -363,7 +363,7 @@ public class AmazonSearchEngine
 
         // Fr the some books the title will be "just" the title,
         // for other books they will add the author and more info all in the same string.
-        // It's to difficult to cover all possibilities, we're leaving that to the user.
+        // It's too difficult to cover all possibilities, we're leaving that to the user.
         final Element titleElement = document.selectFirst("h1#title > span#productTitle");
         if (titleElement == null) {
             LoggerFactory.getLogger().w(TAG, "parse", "no title?");
