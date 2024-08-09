@@ -19,8 +19,8 @@
  */
 
 plugins {
-    id("com.android.application") version '8.5.1' apply false
-    id("com.android.library") version '8.5.1' apply false
+    id("com.android.application") version '8.5.2' apply false
+    id("com.android.library") version '8.5.2' apply false
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
     id("org.jetbrains.kotlin.android") version "2.0.0" apply false
     // https://github.com/mannodermaus/android-junit5
@@ -49,11 +49,11 @@ ext {
     // https://developer.android.com/jetpack/androidx/versions
 
     androidxActivityVersion = '1.9.1'
-    androidxAnnotationVersion = '1.8.1'
+    androidxAnnotationVersion = '1.8.2'
     androidxAppcompatVersion = '1.7.0'
     androidxCameraxVersion = '1.3.4'
     androidxCardviewVersion = "1.0.0"
-    androidxCollectionVersion = '1.4.2'
+    androidxCollectionVersion = '1.4.3'
     androidxConstraintlayoutCoreVersion = "1.0.4"
     androidxConstraintlayoutVersion = "2.1.4"
     androidxCoordinatorlayoutVersion = "1.2.0"
