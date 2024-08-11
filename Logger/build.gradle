@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+//file:noinspection LongLine
 
 plugins {
     id 'com.android.library'
@@ -24,12 +25,16 @@ plugins {
 
 android {
     namespace 'com.hardbacknutter.util.logger'
-    compileSdk 34
+    compileSdk rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdk 26
+        minSdk = rootProject.ext.minSdkVersion
+        targetSdk = rootProject.ext.targetSdkVersion
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["runnerBuilder"] =
+                "de.mannodermaus.junit5.AndroidJUnit5Builder"
+
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -74,6 +79,7 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
+
     implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
     // See project build.gradle
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
