@@ -76,33 +76,33 @@ public final class ReadStatusFragmentFactory {
                                final boolean embedded) {
 
         if (style.useReadProgress()) {
-            Fragment fragment = fm.findFragmentByTag(ReadProgressFragment.TAG);
-            if (fragment == null) {
-                fragment = new ReadProgressFragment();
-                final Bundle args = new Bundle(2);
-                args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
-                args.putBoolean(BKEY_EMBEDDED, embedded);
-                fragment.setArguments(args);
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .replace(fragmentContainerViewId, fragment, ReadProgressFragment.TAG)
-                  .commit();
+            if (fm.findFragmentByTag(ReadProgressFragment.TAG) == null) {
+                create(fm, fragmentContainerViewId, ReadProgressFragment.TAG,
+                       new ReadProgressFragment(), mode, embedded);
             }
         } else {
             // Traditional Read/Unread.
-            Fragment fragment = fm.findFragmentByTag(ReadStatusFragment.TAG);
-            if (fragment == null) {
-                fragment = new ReadStatusFragment();
-                final Bundle args = new Bundle(2);
-                args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
-                args.putBoolean(BKEY_EMBEDDED, embedded);
-                fragment.setArguments(args);
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .replace(fragmentContainerViewId, fragment, ReadStatusFragment.TAG)
-                  .commit();
+            if (fm.findFragmentByTag(ReadStatusFragment.TAG) == null) {
+                create(fm, fragmentContainerViewId, ReadStatusFragment.TAG,
+                       new ReadStatusFragment(), mode, embedded);
             }
         }
+    }
+
+    private static void create(@NonNull final FragmentManager fm,
+                               final int fragmentContainerViewId,
+                               @NonNull final String tag,
+                               @NonNull final Fragment fragment,
+                               @NonNull final Mode mode,
+                               final boolean embedded) {
+        final Bundle args = new Bundle(2);
+        args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
+        args.putBoolean(BKEY_EMBEDDED, embedded);
+        fragment.setArguments(args);
+        fm.beginTransaction()
+          .setReorderingAllowed(true)
+          .replace(fragmentContainerViewId, fragment, tag)
+          .commit();
     }
 
     /**
@@ -119,8 +119,26 @@ public final class ReadStatusFragmentFactory {
     static BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
                                                 @NonNull final Bundle args) {
         final Mode mode = Objects.requireNonNull(args.getParcelable(BKEY_VIEWMODEL_MODE));
-        final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
-        return mode.getViewModel(fragment, embedded);
+        switch (mode) {
+            case Show:
+                // See class docs for ShowBookDetailsFragment
+                final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
+                if (embedded) {
+                    return new ViewModelProvider(fragment.requireActivity())
+                            .get(ShowBookDetailsViewModel.class);
+                } else {
+                    return new ViewModelProvider(fragment.requireParentFragment())
+                            .get(ShowBookDetailsViewModel.class);
+                }
+            case Edit:
+                // MUST be in the Activity scope
+                // The editor fragments all exchange data via the Activity.
+                //noinspection DataFlowIssue
+                return new ViewModelProvider(fragment.getActivity())
+                        .get(EditBookViewModel.class);
+            default:
+                throw new IllegalArgumentException(mode.toString());
+        }
     }
 
     /**
@@ -148,40 +166,6 @@ public final class ReadStatusFragmentFactory {
                 return new Mode[size];
             }
         };
-
-        /**
-         * Create the appropriate ViewModel for this mode.
-         *
-         * @param fragment hosting fragment
-         * @param embedded flag, whether we're running in tablet-landscape (embedded).
-         *
-         * @return the ViewModel
-         *
-         * @throws IllegalArgumentException for illegal values
-         */
-        @NonNull
-        BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
-                                             final boolean embedded) {
-            switch (this) {
-                case Show:
-                    // See class docs for ShowBookDetailsFragment
-                    if (embedded) {
-                        return new ViewModelProvider(fragment.requireActivity())
-                                .get(ShowBookDetailsViewModel.class);
-                    } else {
-                        return new ViewModelProvider(fragment.requireParentFragment())
-                                .get(ShowBookDetailsViewModel.class);
-                    }
-                case Edit:
-                    // MUST be in the Activity scope
-                    // The editor fragments all exchange data via the Activity.
-                    //noinspection DataFlowIssue
-                    return new ViewModelProvider(fragment.getActivity())
-                            .get(EditBookViewModel.class);
-                default:
-                    throw new IllegalArgumentException(this.toString());
-            }
-        }
 
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
