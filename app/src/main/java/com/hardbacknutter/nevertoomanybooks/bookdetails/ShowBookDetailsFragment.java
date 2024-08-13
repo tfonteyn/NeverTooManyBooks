@@ -580,8 +580,11 @@ public class ShowBookDetailsFragment
                   .replace(R.id.toc_frame, fragment, TocFragment.TAG)
                   .commit();
             } else {
-                //URGENT: this is a hack.... it works but.... it's bound to break some day.
-                ((TocFragment) fragment).reload(book);
+                // The above TocFragment will have created a vm in its
+                // parent-fragment (i.e THIS fragment)  scope
+                final TocViewModel childVm = new ViewModelProvider(this)
+                        .get(TocViewModel.class);
+                childVm.reloadBook(book);
             }
         }
     }

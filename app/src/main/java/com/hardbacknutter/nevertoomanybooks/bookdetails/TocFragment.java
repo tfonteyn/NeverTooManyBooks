@@ -127,7 +127,16 @@ public class TocFragment
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
         aVm.init(args);
 
-        vm = new ViewModelProvider(this).get(TocViewModel.class);
+        final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
+        if (embedded) {
+            // If we're running in embedded mode, i.e. as a child-fragment, create the vm in
+            // the parent fragment scope allowing it to be accessed by that parent.
+            vm = new ViewModelProvider(requireParentFragment()).get(TocViewModel.class);
+        } else {
+            // Otherwise, use local scope.
+            vm = new ViewModelProvider(this).get(TocViewModel.class);
+        }
+
         vm.init(args);
     }
 
