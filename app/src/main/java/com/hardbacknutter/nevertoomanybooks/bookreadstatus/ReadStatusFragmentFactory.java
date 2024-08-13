@@ -41,7 +41,7 @@ public final class ReadStatusFragmentFactory {
 
     private static final String TAG = "ReadStatusFragmentFactory";
     private static final String BKEY_VIEWMODEL_MODE = TAG + ":vm";
-    private static final String BKEY_EMBEDDED = TAG + ":embed";
+    private static final String BKEY_EMBEDDED = TAG + ":bd-embedded";
 
     private ReadStatusFragmentFactory() {
     }

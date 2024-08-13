@@ -87,15 +87,24 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragm
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 
 /**
- * This Fragment is always hosted inside another Fragment.
- * <ul>
- * <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code false}
- *      ==> {@link ShowBookPagerFragment}</li>
- * <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code true}
- *      ==> {@link BooksOnBookshelf}</li>
- * </ul>
- * <p>
+ * This Fragment can run either in a ViewPager2, or embedded in the BoB activity.
  * Hence there is NO OnBackPressedCallback in this Fragment.
+ *
+ * <ul>
+ *     <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code false}
+ *         <ul>
+ *             <li>{@link ShowBookPagerFragment}</li>
+ *             <li>The vm is a the local scope</li>
+ *         </ul>
+ *     </li>
+ *     <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code true}
+ *          <ul>
+ *              <li>{@link BooksOnBookshelf}</li>
+ *              <li>The vm is a the Activity scope</li>
+ *              <li>{@link #bookChangedListener} is valid</li>
+ *          </ul>
+ *     </li>
+ * </ul>
  */
 public class ShowBookDetailsFragment
         extends BaseFragment {
@@ -104,10 +113,11 @@ public class ShowBookDetailsFragment
     public static final String TAG = "ShowBookDetailsFragment";
 
     /**
-     * Whether to run this fragment in embedded mode (i.e. inside a frame on the BoB screen).
+     * Whether {@link ShowBookDetailsFragment} and its related child fragments
+     * is running in embedded mode (i.e. inside a frame on the BoB screen) or not.
      * We could (should?) use a boolean resource in "sw800-land" instead.
      */
-    static final String BKEY_EMBEDDED = TAG + ":emb";
+    static final String BKEY_EMBEDDED = TAG + ":bd-embedded";
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] coverHandler = new CoverHandler[2];
@@ -154,7 +164,7 @@ public class ShowBookDetailsFragment
      *
      * @param bookId    to open
      * @param styleUuid to use
-     * @param embedded  flag, whether we're running embedded in a BoB activity
+     * @param embedded  flag, whether we're running in tablet-landscape (embedded).
      *
      * @return new instance
      */
@@ -339,6 +349,7 @@ public class ShowBookDetailsFragment
     }
 
     private void onReadStatusChanged() {
+        // URGENT: is this needed? maybe test on !isEmbedded
         // needed when running inside the ViewPager to update the activity result data
         aVm.setDataModified();
 

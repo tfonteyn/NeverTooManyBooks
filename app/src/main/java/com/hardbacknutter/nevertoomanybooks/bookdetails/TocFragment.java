@@ -56,7 +56,7 @@ public class TocFragment
 
     /** Log tag. */
     public static final String TAG = "TocFragment";
-    static final String BKEY_EMBEDDED = TAG + ":emb";
+    static final String BKEY_EMBEDDED = TAG + ":toc-embedded";
 
     /** View Binding. */
     private FragmentTocBinding vb;
@@ -78,7 +78,8 @@ public class TocFragment
      * Constructor.
      *
      * @param book     to display
-     * @param embedded Whether the fragment is running in embedded mode.
+     * @param embedded  {@code true} when we're running embedded in the book-details fragment
+     *                  or {@code false} as standalone.
      * @param style    to use
      *
      * @return instance
