@@ -1298,8 +1298,8 @@ public class BooksOnBookshelf
      *
      * @see #onRowMenuForBook(int, DataHolder, int)
      */
-    private void createRowMenuForBook(final DataHolder rowData,
-                                      final Menu menu) {
+    private void createRowMenuForBook(@NonNull final DataHolder rowData,
+                                      @NonNull final Menu menu) {
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.book, menu);
 
@@ -1408,8 +1408,8 @@ public class BooksOnBookshelf
      *
      * @see #onRowMenuForAuthor(View, DataHolder, int)
      */
-    private void createRowMenuForAuthor(final DataHolder rowData,
-                                        final Menu menu) {
+    private void createRowMenuForAuthor(@NonNull final DataHolder rowData,
+                                        @NonNull final Menu menu) {
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.author, menu);
         vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
@@ -1471,8 +1471,8 @@ public class BooksOnBookshelf
      *
      * @see #onRowMenuForSeries(View, DataHolder, int)
      */
-    private void createRowMenuForSeries(final DataHolder rowData,
-                                        final Menu menu) {
+    private void createRowMenuForSeries(@NonNull final DataHolder rowData,
+                                        @NonNull final Menu menu) {
         if (rowData.getLong(DBKey.FK_SERIES) != 0) {
             final MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.series, menu);
@@ -1541,8 +1541,8 @@ public class BooksOnBookshelf
      *
      * @see #onRowMenuForPublisher(View, DataHolder, int)
      */
-    private void createRowMenuForPublisher(final DataHolder rowData,
-                                           final Menu menu) {
+    private void createRowMenuForPublisher(@NonNull final DataHolder rowData,
+                                           @NonNull final Menu menu) {
         if (rowData.getLong(DBKey.FK_PUBLISHER) != 0) {
             getMenuInflater().inflate(R.menu.publisher, menu);
         } else {
@@ -1594,8 +1594,8 @@ public class BooksOnBookshelf
      *
      * @see #onRowMenuForBookshelf(DataHolder, int)
      */
-    private void createRowMenuForBookshelf(final DataHolder rowData,
-                                           final Menu menu) {
+    private void createRowMenuForBookshelf(@NonNull final DataHolder rowData,
+                                           @NonNull final Menu menu) {
         if (!rowData.getString(DBKey.FK_BOOKSHELF).isEmpty()) {
             getMenuInflater().inflate(R.menu.bookshelf, menu);
         }
@@ -1641,8 +1641,8 @@ public class BooksOnBookshelf
      *
      * @see #onRowMenuForLanguage(DataHolder, int)
      */
-    private void createRowMenuForLanguage(final DataHolder rowData,
-                                          final Menu menu) {
+    private void createRowMenuForLanguage(@NonNull final DataHolder rowData,
+                                          @NonNull final Menu menu) {
         if (!rowData.getString(DBKey.LANGUAGE).isEmpty()) {
             menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                      getResources().getInteger(R.integer.MENU_ORDER_EDIT),
