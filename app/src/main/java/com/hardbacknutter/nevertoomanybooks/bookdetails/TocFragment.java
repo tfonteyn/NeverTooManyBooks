@@ -116,7 +116,10 @@ public class TocFragment
 
         displayBookLauncher = new DisplayBookLauncher(this, o -> o.ifPresent(data -> {
             if (data.isModified()) {
+                // Needed when running inside the ViewPager to update the activity result data
+                // Ignored if running im embedded mode, but keeping this future-proof
                 aVm.setDataModified();
+                // when running in embedded mode, update the BoB list
                 if (bookChangedListener != null) {
                     final Book book = Book.from(vm.getBookId());
                     bookChangedListener.onBookUpdated(book, (String) null);

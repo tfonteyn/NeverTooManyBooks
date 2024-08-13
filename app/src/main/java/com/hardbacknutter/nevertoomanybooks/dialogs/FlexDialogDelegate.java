@@ -38,6 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
  * The interface between the {@link DialogMode} base classes and
  * the delegates.
  *
+ * FIXME: use DefaultLifecycleObserver and add the delegate as an observer to the fragment.
+ *
  * @see BaseFFDialogFragment
  * @see BaseBottomSheetDialogFragment
  */

@@ -324,12 +324,13 @@ public class ShowBookDetailsFragment
      *             {@code null} to indicate the entire Book was potentially updated.
      */
     private void onBookEditFinished(@Nullable final String... keys) {
-        // needed when running inside the ViewPager to update the activity result data
+        // Needed when running inside the ViewPager to update the activity result data
+        // Ignored if running im embedded mode, but keeping this future-proof
         aVm.setDataModified();
 
         vm.displayBook();
 
-        // needed when running in embedded mode to update the BoB list
+        // when running in embedded mode, update the BoB list
         if (bookChangedListener != null) {
             bookChangedListener.onBookUpdated(vm.getBook(), keys);
         }
@@ -341,21 +342,22 @@ public class ShowBookDetailsFragment
      * @param cIdx 0..n image index
      */
     private void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
-        // needed when running inside the ViewPager to update the activity result data
+        // Needed when running inside the ViewPager to update the activity result data
+        // Ignored if running im embedded mode, but keeping this future-proof
         aVm.setDataModified();
 
         // don't reload the whole book, just rebind the images
         bindCoverImages();
 
-        // needed when running in embedded mode to update the BoB list
+        // when running in embedded mode, update the BoB list
         if (bookChangedListener != null && cIdx == 0) {
             bookChangedListener.onBookUpdated(vm.getBook(), DBKey.COVER[0]);
         }
     }
 
     private void onReadStatusChanged() {
-        // URGENT: is this needed? maybe test on !isEmbedded
-        // needed when running inside the ViewPager to update the activity result data
+        // Needed when running inside the ViewPager to update the activity result data
+        // Ignored if running im embedded mode, but keeping this future-proof
         aVm.setDataModified();
 
         final Book book = vm.getBook();
@@ -367,7 +369,7 @@ public class ShowBookDetailsFragment
             field.setVisibility(getView(), true, false);
         });
 
-        // needed when running in embedded mode to update the BoB list
+        // when running in embedded mode, update the BoB list
         if (bookChangedListener != null) {
             bookChangedListener.onBookUpdated(book,
                                               // just send all possible fields,
@@ -725,6 +727,7 @@ public class ShowBookDetailsFragment
                 return true;
 
             } else if (menuItemId == R.id.MENU_SYNC_LIST_WITH_DETAILS) {
+                // when running in embedded mode, update the BoB list
                 if (bookChangedListener != null) {
                     bookChangedListener.onSyncBook(book.getId());
                 }
@@ -744,11 +747,13 @@ public class ShowBookDetailsFragment
 
         private void deleteLoanee(@NonNull final Book book) {
             vm.deleteLoan();
+            // Needed when running inside the ViewPager to update the activity result data
+            // Ignored if running im embedded mode, but keeping this future-proof
             aVm.setDataModified();
 
             bindLoanee(book);
 
-            // needed when running in embedded mode to update the BoB list
+            // when running in embedded mode, update the BoB list
             if (bookChangedListener != null) {
                 bookChangedListener.onBookUpdated(book, DBKey.LOANEE_NAME);
             }
@@ -761,15 +766,18 @@ public class ShowBookDetailsFragment
             StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                 final long bookIdDeleted = book.getId();
                 vm.deleteBook();
+                // Needed when running inside the ViewPager to update the activity result data
+                // Ignored if running im embedded mode, but keeping this future-proof
                 aVm.setDataModified();
 
-                // needed when running in embedded mode to update the BoB list
+                // when running in embedded mode, update the BoB list and stay here
                 if (bookChangedListener != null) {
                     bookChangedListener.onBookDeleted(bookIdDeleted);
-
                 } else {
-                    // set 0 as the repositionToBookId
-                    final Intent resultIntent = EditBookOutput.createResultIntent(true, 0);
+                    // Not embedded, set 0 as the repositionToBookId and return to the BoB
+                    // (could hardcode modified=true, but consistency prevails)
+                    final Intent resultIntent = EditBookOutput
+                            .createResultIntent(aVm.isModified(), 0);
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
