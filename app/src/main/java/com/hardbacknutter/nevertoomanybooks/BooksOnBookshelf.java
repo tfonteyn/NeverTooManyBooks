@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContract
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
@@ -1997,15 +1998,17 @@ public class BooksOnBookshelf
 
         Fragment fragment = fm.findFragmentByTag(ShowBookDetailsFragment.TAG);
         if (fragment == null) {
-            fragment = ShowBookDetailsFragment.create(
-                    bookId, vm.getStyle().getUuid(), true);
+            fragment = ShowBookDetailsFragment.create(bookId, vm.getStyle().getUuid(), true);
             fm.beginTransaction()
               .setReorderingAllowed(true)
               .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
               .commit();
         } else {
-            //URGENT: this is a hack.... it works but.... it's bound to break some day.
-            ((ShowBookDetailsFragment) fragment).displayBook(bookId);
+            // In embedded mode, the above ShowBookDetailsFragment will have created its vm
+            // in the Activity scope
+            final ShowBookDetailsViewModel childVm = new ViewModelProvider(this)
+                    .get(ShowBookDetailsViewModel.class);
+            childVm.displayBook(bookId);
         }
     }
 

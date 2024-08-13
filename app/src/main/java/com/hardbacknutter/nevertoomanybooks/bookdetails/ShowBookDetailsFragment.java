@@ -193,9 +193,18 @@ public class ShowBookDetailsFragment
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
         aVm.init(args);
 
-        // MUST be in the Fragment scope, as we'll have multiple copies of this Fragment
-        // object in the {@link ShowBookPagerFragment} and each showing a different book obv.
-        vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
+        final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
+        if (embedded) {
+            // Create the vm in the Activity scope allowing it to be accessed by
+            // the BooksOnBookshelf activity.
+            vm = new ViewModelProvider(getActivity()).get(ShowBookDetailsViewModel.class);
+        } else {
+            // {@link ShowBookPagerFragment} mode:
+            // We have multiple copies of this Fragment each showing a different book.
+            // Create the vm in the local scope and NOT in the Activity.
+            vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
+        }
+
         //noinspection DataFlowIssue
         vm.init(getContext(), args, aVm.getStyle());
 
@@ -325,16 +334,6 @@ public class ShowBookDetailsFragment
         if (bookChangedListener != null) {
             bookChangedListener.onBookUpdated(vm.getBook(), keys);
         }
-    }
-
-    /**
-     * Entry point for {@link BooksOnBookshelf} when running in embedded mode.
-     * Called when the user taps a book in the BoB list.
-     *
-     * @param bookId to display
-     */
-    public void displayBook(final long bookId) {
-        vm.displayBook(bookId);
     }
 
     /**
@@ -704,14 +703,14 @@ public class ShowBookDetailsFragment
                 // Must use the Activity fm as the current fragment could be hosted by
                 // ShowBookPagerFragment or embedded inside the BoB
                 //noinspection DataFlowIssue
-                getActivity().getSupportFragmentManager()
-                             .beginTransaction()
-                             .setReorderingAllowed(true)
-                             .addToBackStack(CalibrePreferencesFragment.TAG)
-                             .replace(R.id.main_fragment,
-                                      new CalibrePreferencesFragment(),
-                                      CalibrePreferencesFragment.TAG)
-                             .commit();
+                final FragmentManager fm = getActivity().getSupportFragmentManager();
+                fm.beginTransaction()
+                  .setReorderingAllowed(true)
+                  .addToBackStack(CalibrePreferencesFragment.TAG)
+                  .replace(R.id.main_fragment,
+                           new CalibrePreferencesFragment(),
+                           CalibrePreferencesFragment.TAG)
+                  .commit();
                 return true;
 
             } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
