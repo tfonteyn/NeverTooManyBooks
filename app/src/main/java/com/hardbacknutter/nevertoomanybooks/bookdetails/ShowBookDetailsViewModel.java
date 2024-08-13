@@ -72,7 +72,6 @@ public class ShowBookDetailsViewModel
     private static final String BOOK_NOT_LOADED_YET = "Book not loaded yet";
 
     private final MutableLiveData<Book> onBookLoaded = new MutableLiveData<>();
-    private final MutableLiveData<Book> onUpdateToolbar = new MutableLiveData<>();
     private final MutableLiveData<Void> onReadStatusChanged = new MutableLiveData<>();
 
     /** the list with all fields. */
@@ -113,43 +112,10 @@ public class ShowBookDetailsViewModel
         return onBookLoaded;
     }
 
-    /**
-     * Observable - triggers a Toolbar update for the given {@link Book}.
-     *
-     * @return book
-     */
-    @NonNull
-    MutableLiveData<Book> onUpdateToolbar() {
-        return onUpdateToolbar;
-    }
-
-    /**
-     * Called after the user swiped left/right on the ViewPager.
-     * (i.e. only when embedded==false).
-     *
-     * @param bookId from the currently selected ViewPager fragment
-     */
-    void updateUIAfterPagerUpdate(final long bookId) {
-        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-
-        // All fragments in the ViewPager will be called,
-        // only update if the incoming data is OUR book
-        if (book.getId() != bookId) {
-            return;
-        }
-
-        // Note that the pager is only active in non-embedded mode
-        // so we don't need to test here for "if (!embedded)"
-        onUpdateToolbar.setValue(book);
-    }
-
     private void updateUI() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         onBookLoaded.setValue(book);
         onReadStatusChanged.setValue(null);
-        if (!embedded) {
-            onUpdateToolbar.setValue(book);
-        }
     }
 
     /**
@@ -166,7 +132,7 @@ public class ShowBookDetailsViewModel
      *
      * @param bookId to display
      */
-    void displayBook(final long bookId) {
+    public void displayBook(final long bookId) {
         book = Book.from(bookId);
         updateUI();
     }

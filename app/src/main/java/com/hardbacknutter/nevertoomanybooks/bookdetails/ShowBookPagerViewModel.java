@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -45,8 +44,6 @@ public class ShowBookPagerViewModel
     public static final String BKEY_NAV_TABLE_NAME = TAG + ":LTName";
     /** The row id in the list table for the initial book to show. */
     public static final String BKEY_LIST_TABLE_ROW_ID = TAG + ":LTRow";
-
-    private final MutableLiveData<Long> currentBookId = new MutableLiveData<>();
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
@@ -137,23 +134,5 @@ public class ShowBookPagerViewModel
             return navHelper.getBookIdAtRow(position + 1);
         }
         return initialBookId;
-    }
-
-    @NonNull
-    MutableLiveData<Long> onCurrentBookUpdated() {
-        return currentBookId;
-    }
-
-    /**
-     * Called when the user swipes to the next or previous book.
-     *
-     * @param position new 'current' position
-     */
-    void setPageSelected(final int position) {
-        if (navHelper != null) {
-            currentBookId.setValue(navHelper.getBookIdAtRow(position + 1));
-        } else {
-            currentBookId.setValue(initialBookId);
-        }
     }
 }

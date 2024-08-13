@@ -118,9 +118,6 @@ public class ShowBookDetailsFragment
     private ShowBookDetailsActivityViewModel aVm;
     private ShowBookDetailsViewModel vm;
 
-    /** Gives access to the ViewPager2. Will be {@code null} when we're in embedded mode. */
-    @Nullable
-    private ShowBookPagerViewModel pagerVm;
     private RealNumberParser realNumberParser;
 
     /**
@@ -208,11 +205,6 @@ public class ShowBookDetailsFragment
         //noinspection DataFlowIssue
         vm.init(getContext(), args, aVm.getStyle());
 
-        if (!vm.isEmbedded()) {
-            pagerVm = new ViewModelProvider(getActivity()).get(ShowBookPagerViewModel.class);
-            pagerVm.init(args);
-        }
-
         createFragmentResultListeners();
     }
 
@@ -257,16 +249,8 @@ public class ShowBookDetailsFragment
         // because the menu setup uses them before the Book is loaded.
         createSyncDelegates();
 
-        if (pagerVm != null) {
-            // hook up the ViewPager so we can react to swipes
-            pagerVm.onCurrentBookUpdated().observe(getViewLifecycleOwner(),
-                                                   bookId -> vm.updateUIAfterPagerUpdate(bookId));
-        }
-
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
         vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
-
-        vm.onUpdateToolbar().observe(getViewLifecycleOwner(), this::onUpdateToolbar);
     }
 
     /**
@@ -377,17 +361,22 @@ public class ShowBookDetailsFragment
         }
     }
 
-    private void onUpdateToolbar(@NonNull final Book book) {
-        final Toolbar toolbar = getToolbar();
+    public void onResume() {
+        super.onResume();
 
-        //noinspection DataFlowIssue
-        toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
+        if (!vm.isEmbedded()) {
+            final Toolbar toolbar = getToolbar();
+            final Book book = vm.getBook();
 
-        String bookTitle = book.getTitle();
-        if (BuildConfig.DEBUG /* always */) {
-            bookTitle = "[" + book.getId() + "] " + bookTitle;
+            //noinspection DataFlowIssue
+            toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
+
+            String bookTitle = book.getTitle();
+            if (BuildConfig.DEBUG /* always */) {
+                bookTitle = "[" + book.getId() + "] " + bookTitle;
+            }
+            toolbar.setSubtitle(bookTitle);
         }
-        toolbar.setSubtitle(bookTitle);
     }
 
     // Dev. note: this will get called FOR EACH fragment currently existing
