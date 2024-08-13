@@ -115,10 +115,12 @@ public class TocFragment
         super.onCreate(savedInstanceState);
 
         displayBookLauncher = new DisplayBookLauncher(this, o -> o.ifPresent(data -> {
-            aVm.setDataModified(data);
-            if (bookChangedListener != null && data.isModified()) {
-                final Book book = Book.from(vm.getBookId());
-                bookChangedListener.onBookUpdated(book, (String) null);
+            if (data.isModified()) {
+                aVm.setDataModified();
+                if (bookChangedListener != null) {
+                    final Book book = Book.from(vm.getBookId());
+                    bookChangedListener.onBookUpdated(book, (String) null);
+                }
             }
         }));
 

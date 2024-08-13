@@ -24,18 +24,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 
 /**
- * Shared data between pager, details, Read and TOC fragments.
+ * Shared data between pager, details and TOC fragments.
  * <p>
  * REMINDER: this is used by the ViewPager and MUST NOT contain Book information.
  * The ViewPager handles multiple child fragments, each of which represents a Book.
@@ -43,8 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 @SuppressWarnings("WeakerAccess")
 public class ShowBookDetailsActivityViewModel
         extends ViewModel {
-
-    private List<MenuHandler> menuHandlers;
 
     private boolean modified;
 
@@ -68,18 +61,6 @@ public class ShowBookDetailsActivityViewModel
     }
 
     /**
-     * Set the modification flag to {@code true} <strong>if the given data was modified</strong>.
-     * Does NOT change the flag if the data was not modified.
-     *
-     * @param data to check for being modified
-     */
-    void setDataModified(@NonNull final EditBookOutput data) {
-        if (data.isModified()) {
-            modified = true;
-        }
-    }
-
-    /**
      * Pseudo constructor.
      *
      * @param args Bundle with arguments
@@ -90,14 +71,7 @@ public class ShowBookDetailsActivityViewModel
             final String styleUuid = args.getString(Style.BKEY_UUID);
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
-
-            menuHandlers = MenuHandlerFactory.create();
         }
-    }
-
-    @NonNull
-    List<MenuHandler> getMenuHandlers() {
-        return menuHandlers;
     }
 
     @NonNull
