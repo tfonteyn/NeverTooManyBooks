@@ -405,8 +405,8 @@ public class ShowBookDetailsFragment
 
         // We're only creating this here instead of in onViewCreated
         // so we are sure the book is loaded when the read-progress fragment displays
-        ReadStatusFragmentFactory.create(getChildFragmentManager(), R.id.fragment_read,
-                                         aVm.getStyle(), ReadStatusFragmentFactory.Mode.Show);
+        ReadStatusFragmentFactory.createShow(getChildFragmentManager(), R.id.fragment_read,
+                                             aVm.getStyle(), vm.isEmbedded());
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);

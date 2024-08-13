@@ -41,8 +41,22 @@ public final class ReadStatusFragmentFactory {
 
     private static final String TAG = "ReadStatusFragmentFactory";
     private static final String BKEY_VIEWMODEL_MODE = TAG + ":vm";
+    private static final String BKEY_EMBEDDED = TAG + ":embed";
 
     private ReadStatusFragmentFactory() {
+    }
+
+    public static void createShow(@NonNull final FragmentManager fm,
+                                  @IdRes final int fragmentContainerViewId,
+                                  @NonNull final Style style,
+                                  final boolean embedded) {
+        create(fm, fragmentContainerViewId, style, Mode.Show, embedded);
+    }
+
+    public static void createEditor(@NonNull final FragmentManager fm,
+                                    @IdRes final int fragmentContainerViewId,
+                                    @NonNull final Style style) {
+        create(fm, fragmentContainerViewId, style, Mode.Edit, false);
     }
 
     /**
@@ -52,18 +66,22 @@ public final class ReadStatusFragmentFactory {
      * @param fragmentContainerViewId where to add the new fragment
      * @param style                   to use
      * @param mode                    the required ViewModel mode
+     * @param embedded                flag, whether we're running in tablet-landscape (embedded)
+     *                                (only applicable to Mode.Edit)
      */
-    public static void create(@NonNull final FragmentManager fm,
-                              @IdRes final int fragmentContainerViewId,
-                              @NonNull final Style style,
-                              @NonNull final Mode mode) {
+    private static void create(@NonNull final FragmentManager fm,
+                               @IdRes final int fragmentContainerViewId,
+                               @NonNull final Style style,
+                               @NonNull final Mode mode,
+                               final boolean embedded) {
 
         if (style.useReadProgress()) {
             Fragment fragment = fm.findFragmentByTag(ReadProgressFragment.TAG);
             if (fragment == null) {
                 fragment = new ReadProgressFragment();
-                final Bundle args = new Bundle(1);
+                final Bundle args = new Bundle(2);
                 args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
+                args.putBoolean(BKEY_EMBEDDED, embedded);
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -75,8 +93,9 @@ public final class ReadStatusFragmentFactory {
             Fragment fragment = fm.findFragmentByTag(ReadStatusFragment.TAG);
             if (fragment == null) {
                 fragment = new ReadStatusFragment();
-                final Bundle args = new Bundle(1);
+                final Bundle args = new Bundle(2);
                 args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
+                args.putBoolean(BKEY_EMBEDDED, embedded);
                 fragment.setArguments(args);
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -100,7 +119,8 @@ public final class ReadStatusFragmentFactory {
     static BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
                                                 @NonNull final Bundle args) {
         final Mode mode = Objects.requireNonNull(args.getParcelable(BKEY_VIEWMODEL_MODE));
-        return mode.getViewModel(fragment);
+        final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
+        return mode.getViewModel(fragment, embedded);
     }
 
     /**
@@ -133,19 +153,25 @@ public final class ReadStatusFragmentFactory {
          * Create the appropriate ViewModel for this mode.
          *
          * @param fragment hosting fragment
+         * @param embedded flag, whether we're running in tablet-landscape (embedded).
          *
          * @return the ViewModel
          *
          * @throws IllegalArgumentException for illegal values
          */
         @NonNull
-        BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment) {
+        BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
+                                             final boolean embedded) {
             switch (this) {
                 case Show:
-                    // MUST be in the PARENT Fragment scope
                     // See class docs for ShowBookDetailsFragment
-                    return new ViewModelProvider(fragment.requireParentFragment())
-                            .get(ShowBookDetailsViewModel.class);
+                    if (embedded) {
+                        return new ViewModelProvider(fragment.requireActivity())
+                                .get(ShowBookDetailsViewModel.class);
+                    } else {
+                        return new ViewModelProvider(fragment.requireParentFragment())
+                                .get(ShowBookDetailsViewModel.class);
+                    }
                 case Edit:
                     // MUST be in the Activity scope
                     // The editor fragments all exchange data via the Activity.
