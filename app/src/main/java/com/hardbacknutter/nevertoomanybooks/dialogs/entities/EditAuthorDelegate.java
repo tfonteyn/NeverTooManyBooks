@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -264,7 +265,7 @@ class EditAuthorDelegate
     }
 
     @Override
-    public void onPause() {
+    public void onPause(@NonNull final LifecycleOwner lifecycleOwner) {
         viewToModel();
     }
 

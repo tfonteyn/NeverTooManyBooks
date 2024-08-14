@@ -37,6 +37,7 @@ import androidx.annotation.RequiresPermission;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
@@ -166,7 +167,7 @@ class EditLenderDelegate
     }
 
     @Override
-    public void onPause() {
+    public void onPause(@NonNull final LifecycleOwner lifecycleOwner) {
         viewToModel();
     }
 

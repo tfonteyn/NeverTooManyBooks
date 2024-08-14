@@ -31,20 +31,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.DefaultLifecycleObserver;
 
 import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 
 /**
- * The interface between the {@link DialogMode} base classes and
- * the delegates.
- *
- * FIXME: use DefaultLifecycleObserver and add the delegate as an observer to the fragment.
+ * The interface between the {@link DialogMode} base classes and the delegates.
+ * <p>
+ * It should be enabled in the {@link #onCreateView} parent with
+ * {@code getLifecycle().addObserver(delegate);}
  *
  * @see BaseFFDialogFragment
  * @see BaseBottomSheetDialogFragment
  */
 public interface FlexDialogDelegate
-        extends FlexToolbar {
+        extends FlexToolbar, DefaultLifecycleObserver {
 
     /**
      * {@link DialogMode#BottomSheet} ONLY.
@@ -90,27 +91,6 @@ public interface FlexDialogDelegate
      * Called from {@link Fragment#onViewCreated(View, Bundle)}.
      */
     void onViewCreated();
-
-    /**
-     * Called from {@link Fragment#onStart()}.
-     */
-    default void onStart() {
-        // no action
-    }
-
-    /**
-     * Called from {@link Fragment#onResume()}.
-     */
-    default void onResume() {
-        // no action
-    }
-
-    /**
-     * Called from {@link Fragment#onPause()}.
-     */
-    default void onPause() {
-        // no action
-    }
 
     /**
      * Called from {@link DialogFragment#onCancel(DialogInterface)}.

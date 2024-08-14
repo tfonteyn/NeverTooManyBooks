@@ -36,6 +36,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 
 public class BaseBottomSheetDialogFragment
@@ -49,7 +51,13 @@ public class BaseBottomSheetDialogFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return delegate.onCreateView(inflater, container);
+        // Sanity check
+        Objects.requireNonNull(delegate, "delegate not set");
+
+        final View view = delegate.onCreateView(inflater, container);
+
+        getLifecycle().addObserver(delegate);
+        return view;
     }
 
     @CallSuper
@@ -92,24 +100,6 @@ public class BaseBottomSheetDialogFragment
         // the dialog toolbar == bottom-sheet toolbar; can be null, that's ok
         delegate.setToolbar(view.findViewById(R.id.dialog_toolbar));
         delegate.onViewCreated();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        delegate.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        delegate.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 
     @Override

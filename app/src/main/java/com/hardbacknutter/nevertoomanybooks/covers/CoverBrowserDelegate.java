@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -214,7 +215,7 @@ class CoverBrowserDelegate
     }
 
     @Override
-    public void onResume() {
+    public void onResume(final @NonNull LifecycleOwner lifecycleOwner) {
         // if the task is NOT already running and we have no editions loaded before
         if (!vm.isSearchEditionsTaskRunning() && vm.getEditions().isEmpty()) {
             // start the task

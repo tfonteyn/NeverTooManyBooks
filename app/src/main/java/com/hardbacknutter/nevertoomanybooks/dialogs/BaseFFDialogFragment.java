@@ -201,6 +201,8 @@ public abstract class BaseFFDialogFragment
             view = inflater.inflate(contentLayoutId, container, false);
         }
         delegate.onCreateView(view);
+
+        getLifecycle().addObserver(delegate);
         return view;
     }
 
@@ -357,24 +359,6 @@ public abstract class BaseFFDialogFragment
         }
 
         window.setLayout(lpWidth, lpHeight);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        delegate.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        delegate.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        delegate.onPause();
-        super.onPause();
     }
 
     @Override

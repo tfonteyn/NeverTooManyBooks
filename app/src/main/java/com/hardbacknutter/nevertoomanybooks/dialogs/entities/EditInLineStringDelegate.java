@@ -33,6 +33,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
@@ -228,7 +229,7 @@ class EditInLineStringDelegate
     }
 
     @Override
-    public void onPause() {
+    public void onPause(@NonNull final LifecycleOwner lifecycleOwner) {
         viewToModel();
     }
 

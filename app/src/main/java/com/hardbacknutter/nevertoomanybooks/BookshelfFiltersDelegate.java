@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -147,7 +148,7 @@ class BookshelfFiltersDelegate
     }
 
     @Override
-    public void onStart() {
+    public void onStart(@NonNull final LifecycleOwner lifecycleOwner) {
         if (vm.getFilterList().isEmpty()) {
             onAdd();
         }
