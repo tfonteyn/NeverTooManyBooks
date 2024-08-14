@@ -26,6 +26,9 @@ public final class DEBUG_FLAGS {
     /** {@link com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker}. */
     public static final boolean NETWORK_CHECKER = false;
 
+    /** Window insets. */
+    public static final boolean INSETS = false;
+
     private DEBUG_FLAGS() {
     }
 }

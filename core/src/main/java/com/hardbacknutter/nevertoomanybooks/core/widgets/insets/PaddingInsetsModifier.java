@@ -30,6 +30,7 @@ import androidx.core.graphics.Insets;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
 
 class PaddingInsetsModifier
         implements InsetsModifier {
@@ -60,7 +61,7 @@ class PaddingInsetsModifier
 
         view.setPadding(left, top, right, bottom);
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.INSETS) {
             dumpDebug(view, insets);
         }
     }

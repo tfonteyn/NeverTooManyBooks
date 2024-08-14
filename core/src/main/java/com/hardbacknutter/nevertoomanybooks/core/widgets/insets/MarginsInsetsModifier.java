@@ -31,6 +31,7 @@ import androidx.core.graphics.Insets;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
 
 class MarginsInsetsModifier
         implements InsetsModifier {
@@ -67,7 +68,7 @@ class MarginsInsetsModifier
         lp.setMargins(left, top, right, bottom);
         view.setLayoutParams(lp);
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.INSETS) {
             dumpDebug(view, insets);
         }
     }
