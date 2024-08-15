@@ -62,12 +62,18 @@ public interface FlexToolbar {
 
     /**
      * Setup the Toolbar listeners.
+     * <p>
+     * Dev. Note: If we want an outline to be drawn AROUND the icon, then we seem
+     * forced to use an "actionLayout" with an icon-Button using the outline style.
+     * Only alternative is to use an icon with outline builtin...
+     * which makes the actual icon to small.
      *
      * @param toolbar to process
      */
     default void initToolbar(@NonNull final Toolbar toolbar) {
+        // The (optional) navigation/home icon
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-        // Simple menu items; i.e. non-action view.
+        // The (optional) menu items; i.e. non-action view.
         toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
 
         // Hookup all menu items with action views to use #onToolbarButtonClick

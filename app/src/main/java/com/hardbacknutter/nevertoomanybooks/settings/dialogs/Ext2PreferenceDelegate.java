@@ -53,7 +53,7 @@ class Ext2PreferenceDelegate<P extends DialogPreference,
         key = Objects.requireNonNull(args.getString(Ext2PreferenceViewModel.ARG_KEY));
 
         vm = new ViewModelProvider(owner).get(key, vmClass);
-        // URGENT: this is an ultra-weird Android bug.
+        // TODO: this is an ultra-weird Android bug.
         //  Example with Ext2ListPreferenceViewModel:
         //  If we run the vm.init() here, then it will call  Ext2PreferenceViewModel.init()
         //  and NOT Ext2ListPreferenceViewModel.init()
@@ -80,8 +80,8 @@ class Ext2PreferenceDelegate<P extends DialogPreference,
         if (preference == null) {
             final Fragment rawFragment = owner.getTargetFragment();
             if (!(rawFragment instanceof DialogPreference.TargetFragment)) {
-                throw new IllegalStateException("Target fragment must implement TargetFragment" +
-                                                " interface");
+                throw new IllegalStateException("Target fragment must implement TargetFragment"
+                                                + " interface");
             }
 
             preference = Objects.requireNonNull(

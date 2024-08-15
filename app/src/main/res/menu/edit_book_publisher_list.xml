@@ -19,16 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    If we want an outline to be drawn AROUND the icon, then we seem forced to use an
-    "actionLayout" with an icon-Button using the outline style.
-
-    Only alternative is to use an icon with outline builtin...
-    which makes the actual icon to small.
-
-    Also: MENU_ACTION_CONFIRM must be used to have "BaseFFDialogFragment" handle
-    some mapping automatically.
--->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools">
