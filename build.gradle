@@ -25,7 +25,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.0.10" apply false
     // https://github.com/mannodermaus/android-junit5
     // Don't forget to update ext.mannodermausVersion
-    id("de.mannodermaus.android-junit5") version "1.10.2.0" apply false
+    id("de.mannodermaus.android-junit5") version "1.11.0.0" apply false
 }
 
 tasks.register("clean", Delete) {
@@ -90,12 +90,12 @@ ext {
     mockitoVersion = '5.12.0'
 
     // https://junit.org/junit5/docs/current/user-guide/#overview
-    jupiterVersion = '5.10.3'
+    jupiterVersion = '5.11.0'
 
     // https://developer.android.com/jetpack/androidx/releases/test
     androidxArchCoreTestingVersion = "2.2.0"
     androidxTestCoreVersion = '1.6.1'
-    androidxTestRunnerVersion = '1.6.1'
+    androidxTestRunnerVersion = '1.6.2'
     androidxTestRulesVersion = '1.6.1'
 
     // An explicit dependency must be added to avoid gradle/studio/bugs?
