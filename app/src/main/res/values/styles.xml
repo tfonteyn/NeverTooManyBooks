@@ -119,7 +119,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="colorSurface">@color/red_600</item>
     </style>
 
     <!-- A highlighted button placed in toolbars menus as an "actionLayout"
