@@ -40,6 +40,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
@@ -92,9 +93,9 @@ class StylePickerDelegate
     }
 
     @Override
-    public void onViewCreated() {
+    public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
-            initToolbar(toolbar);
+            initToolbar(owner, dialogType, toolbar);
         }
 
         final Context context = vb.getRoot().getContext();

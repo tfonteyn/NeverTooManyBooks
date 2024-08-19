@@ -262,7 +262,7 @@ public abstract class BaseFFDialogFragment
             }
         }
 
-        delegate.onViewCreated();
+        delegate.onViewCreated(fullscreen ? DialogType.Fullscreen : DialogType.Floating);
     }
 
     /**

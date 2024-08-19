@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesViewModel;
@@ -115,9 +116,9 @@ class EditBookSeriesDelegate
     }
 
     @Override
-    public void onViewCreated() {
+    public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
-            initToolbar(toolbar);
+            initToolbar(owner, dialogType, toolbar);
         }
 
         final Context context = vb.getRoot().getContext();
@@ -138,8 +139,10 @@ class EditBookSeriesDelegate
     }
 
     @Override
-    public void initToolbar(@NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(toolbar);
+    public void initToolbar(@NonNull final DialogFragment owner,
+                            @NonNull final DialogType dialogType,
+                            @NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
         toolbar.setSubtitle(vm.getBook().getTitle());
     }
 

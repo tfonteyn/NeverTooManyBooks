@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
@@ -91,9 +92,9 @@ class EditTocEntryDelegate
     }
 
     @Override
-    public void onViewCreated() {
+    public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
-            initToolbar(toolbar);
+            initToolbar(owner, dialogType, toolbar);
         }
 
         final Context context = vb.getRoot().getContext();
@@ -133,8 +134,10 @@ class EditTocEntryDelegate
     }
 
     @Override
-    public void initToolbar(@NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(toolbar);
+    public void initToolbar(@NonNull final DialogFragment owner,
+                            @NonNull final DialogType dialogType,
+                            @NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
         final String toolbarTitle = vm.getBookTitle();
         if (toolbarTitle != null) {
             toolbar.setTitle(toolbarTitle);

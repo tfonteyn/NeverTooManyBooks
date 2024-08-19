@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -157,11 +158,11 @@ class CoverBrowserDelegate
     }
 
     @Override
-    public void onViewCreated() {
+    public void onViewCreated(@NonNull final DialogType dialogType) {
         InsetsListenerBuilder.apply(vb.gallery);
 
         if (toolbar != null) {
-            initToolbar(toolbar);
+            initToolbar(owner, dialogType, toolbar);
         }
 
         final Context context = vb.getRoot().getContext();
@@ -204,8 +205,10 @@ class CoverBrowserDelegate
     }
 
     @Override
-    public void initToolbar(@NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(toolbar);
+    public void initToolbar(@NonNull final DialogFragment owner,
+                            @NonNull final DialogType dialogType,
+                            @NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
         toolbar.setSubtitle(bookTitle);
     }
 
@@ -215,7 +218,7 @@ class CoverBrowserDelegate
     }
 
     @Override
-    public void onResume(final @NonNull LifecycleOwner lifecycleOwner) {
+    public void onResume(@NonNull final LifecycleOwner lifecycleOwner) {
         // if the task is NOT already running and we have no editions loaded before
         if (!vm.isSearchEditionsTaskRunning() && vm.getEditions().isEmpty()) {
             // start the task

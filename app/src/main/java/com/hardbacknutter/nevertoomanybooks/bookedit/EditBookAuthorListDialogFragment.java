@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
@@ -163,7 +164,7 @@ public class EditBookAuthorListDialogFragment
         InsetsListenerBuilder.fragmentRootView(view);
         InsetsListenerBuilder.apply(vb.authorList);
 
-        initToolbar(vb.toolbar);
+        initToolbar(this, DialogType.Fullscreen, vb.toolbar);
         vb.toolbar.setSubtitle(vm.getBook().getTitle());
 
         //noinspection DataFlowIssue

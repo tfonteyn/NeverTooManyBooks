@@ -89,8 +89,10 @@ public interface FlexDialogDelegate
 
     /**
      * Called from {@link Fragment#onViewCreated(View, Bundle)}.
+     *
+     * @param dialogType the type
      */
-    void onViewCreated();
+    void onViewCreated(@NonNull DialogType dialogType);
 
     /**
      * Called from {@link DialogFragment#onCancel(DialogInterface)}.

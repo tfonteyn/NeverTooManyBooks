@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookInlineStringContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
@@ -119,9 +120,9 @@ class EditInLineStringDelegate
     }
 
     @Override
-    public void onViewCreated() {
+    public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
-            initToolbar(toolbar);
+            initToolbar(owner, dialogType, toolbar);
         }
 
         final Context context = vb.getRoot().getContext();
@@ -150,8 +151,10 @@ class EditInLineStringDelegate
     }
 
     @Override
-    public void initToolbar(@NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(toolbar);
+    public void initToolbar(@NonNull final DialogFragment owner,
+                            @NonNull final DialogType dialogType,
+                            @NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
         toolbar.setTitle(toolbarTitle);
     }
 

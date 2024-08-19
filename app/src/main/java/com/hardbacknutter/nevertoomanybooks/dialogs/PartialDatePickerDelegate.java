@@ -209,9 +209,9 @@ class PartialDatePickerDelegate
     }
 
     @Override
-    public void onViewCreated() {
+    public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
-            initToolbar(toolbar);
+            initToolbar(owner, dialogType, toolbar);
         }
 
         // 0: 'not set'
@@ -243,8 +243,10 @@ class PartialDatePickerDelegate
     }
 
     @Override
-    public void initToolbar(@NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(toolbar);
+    public void initToolbar(@NonNull final DialogFragment owner,
+                            @NonNull final DialogType dialogType,
+                            @NonNull final Toolbar toolbar) {
+        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
         toolbar.setTitle(dialogTitle);
     }
 

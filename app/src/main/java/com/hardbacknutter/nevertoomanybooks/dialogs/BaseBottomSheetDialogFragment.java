@@ -99,7 +99,7 @@ public class BaseBottomSheetDialogFragment
 
         // the dialog toolbar == bottom-sheet toolbar; can be null, that's ok
         delegate.setToolbar(view.findViewById(R.id.dialog_toolbar));
-        delegate.onViewCreated();
+        delegate.onViewCreated(DialogType.BottomSheet);
     }
 
     @Override

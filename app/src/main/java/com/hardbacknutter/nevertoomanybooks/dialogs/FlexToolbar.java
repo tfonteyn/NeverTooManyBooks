@@ -29,6 +29,9 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
+
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 public interface FlexToolbar {
 
@@ -61,16 +64,21 @@ public interface FlexToolbar {
     boolean onToolbarButtonClick(@Nullable View button);
 
     /**
-     * Setup the Toolbar listeners.
+     * Setup the Toolbar.
      * <p>
      * Dev. Note: If we want an outline to be drawn AROUND the icon, then we seem
      * forced to use an "actionLayout" with an icon-Button using the outline style.
      * Only alternative is to use an icon with outline builtin...
      * which makes the actual icon to small.
      *
-     * @param toolbar to process
+     * @param owner      the hosting DialogFragment
+     * @param dialogType the type
+     * @param toolbar    to process
      */
-    default void initToolbar(@NonNull final Toolbar toolbar) {
+    default void initToolbar(@NonNull final DialogFragment owner,
+                             @NonNull final DialogType dialogType,
+                             @NonNull final Toolbar toolbar) {
+
         // The (optional) navigation/home icon
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         // The (optional) menu items; i.e. non-action view.
@@ -96,6 +104,25 @@ public interface FlexToolbar {
                     }
                 }
             }
+        }
+
+        // The status-bar and toolbar background color must be set dynamically
+        // in order to follow the Dynamic Colors.
+        if (dialogType == DialogType.Fullscreen) {
+            // Reminder: calling this HAS NO EFFECT
+            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //     owner.getDialog().getWindow().setNavigationBarContrastEnforced(false);
+            // }
+
+            // Instead we need to manually get the current (dynamic) color to use
+            //noinspection DataFlowIssue
+            final int statusBarColor = AttrUtils.getColorInt(owner.getContext(),
+                                                             android.R.attr.statusBarColor);
+            // and force the status-bar background
+            //noinspection DataFlowIssue
+            owner.getDialog().getWindow().setStatusBarColor(statusBarColor);
+            // and the actual toolbar.
+            toolbar.setBackgroundColor(statusBarColor);
         }
     }
 }
