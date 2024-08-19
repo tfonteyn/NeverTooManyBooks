@@ -101,6 +101,13 @@
         <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="navigationIcon">@drawable/close_24px</item>
+        <!-- Widget.Material3.Toolbar.OnSurface
+             titleTextColor: uses a 'macro' to point to "?attr/?attr/colorOnSurface"
+             subtitleTextColor: is set to "?attr/colorOnSurfaceVariant"
+             For better or for worse, were resetting both here:
+        -->
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="subtitleTextColor">?attr/colorOnSurface</item>
     </style>
 
     <!-- A floating Dialog or BottomSheet toolbar
