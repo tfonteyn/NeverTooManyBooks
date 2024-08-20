@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 public interface FlexToolbar {
@@ -109,6 +110,9 @@ public interface FlexToolbar {
         // The status-bar and toolbar background color must be set dynamically
         // in order to follow the Dynamic Colors.
         if (dialogType == DialogType.Fullscreen) {
+
+            InsetsListenerBuilder.apply(toolbar);
+
             // Reminder: calling this HAS NO EFFECT
             // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             //     owner.getDialog().getWindow().setNavigationBarContrastEnforced(false);

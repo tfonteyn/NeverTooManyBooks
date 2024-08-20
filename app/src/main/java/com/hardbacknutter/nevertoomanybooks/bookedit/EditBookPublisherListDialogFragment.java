@@ -155,7 +155,6 @@ public class EditBookPublisherListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        InsetsListenerBuilder.fragmentRootView(view);
         InsetsListenerBuilder.apply(vb.publisherList);
 
         initToolbar(this, DialogType.Fullscreen, vb.toolbar);
