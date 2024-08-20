@@ -28,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
@@ -147,9 +146,8 @@ public class EditBookSeriesListDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final Dialog dialog = new Dialog(requireContext(), R.style.Theme_App_FullScreen);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        return dialog;
+        // See notes in {@link EditBookAuthorListFragment}
+        return new Dialog(requireContext(), R.style.Theme_App_FullScreen);
     }
 
     @CallSuper

@@ -28,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
@@ -151,9 +150,16 @@ public class EditBookAuthorListDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final Dialog dialog = new Dialog(requireContext(), R.style.Theme_App_FullScreen);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        return dialog;
+        // Exhaustive testing always showed "something" wrong...
+        // - we tried to get the status-bar visible
+        // - we tried use "Theme_App"
+        // - we tried Window.FEATURE_NO_TITLE
+        // - we tried variations of InsetsListenerBuilder in onViewCreated
+        // - tried all this on API 30,33 and 35
+        // Bottom line: Android is [bleeped].
+        // Compromise seems to now show the status-bar and apply insets to the toolbar.
+        // ... and will have to [bleeping] do for now.
+        return new Dialog(requireContext(), R.style.Theme_App_FullScreen);
     }
 
     @CallSuper
