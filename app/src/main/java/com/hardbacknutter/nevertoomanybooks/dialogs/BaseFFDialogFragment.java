@@ -41,9 +41,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.window.layout.WindowMetricsCalculator;
 
-import java.util.EnumSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntFunction;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -80,12 +78,6 @@ public abstract class BaseFFDialogFragment
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
-    @NonNull
-    private final Set<ScreenSize.Value> useFullscreenWidth = EnumSet.of(
-            ScreenSize.Value.Compact);
-    @NonNull
-    private final Set<ScreenSize.Value> useFullscreenHeight = EnumSet.of(
-            ScreenSize.Value.Compact);
 
     /** Must be created/set in {@link #onCreate(Bundle)}. */
     protected FlexDialogDelegate delegate;
@@ -114,51 +106,22 @@ public abstract class BaseFFDialogFragment
         this.contentLayoutId = contentLayoutId;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param fullscreenLayoutId  the layout resource id which offers a full screen
-     *                            dialog-fragment with a CoordinatorLayout/AppBarLayout
-     *                            at the root.
-     * @param contentLayoutId     the layout resource if which can be used to view the same
-     *                            dialog-fragment as a floating dialog; i.e. without
-     *                            the CoordinatorLayout/AppBarLayout.
-     *                            Set this to {@code 0} to <strong>force</strong> fullscreen usage
-     *                            on all screen sizes.
-     * @param useFullscreenWidth  set of {@link ScreenSize.Value} when to use fullscreen.
-     *                            Ignored when {@code contentLayoutId == 0}
-     * @param useFullscreenHeight set of {@link ScreenSize.Value} when to use fullscreen.
-     *                            Ignored when {@code contentLayoutId == 0}
-     */
-    protected BaseFFDialogFragment(@LayoutRes final int fullscreenLayoutId,
-                                   @LayoutRes final int contentLayoutId,
-                                   @NonNull final Set<ScreenSize.Value> useFullscreenWidth,
-                                   @NonNull final Set<ScreenSize.Value> useFullscreenHeight) {
-        this(fullscreenLayoutId, contentLayoutId);
-        this.useFullscreenWidth.addAll(useFullscreenWidth);
-        this.useFullscreenHeight.addAll(useFullscreenHeight);
-    }
-
     @Override
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
         // fullscreen check must be done here as it's needed by both onCreateDialog/onCreateView
-        final FragmentActivity activity = requireActivity();
-        final ScreenSize screenSize = ScreenSize.compute(activity);
+        final ScreenSize screenSize = ScreenSize.compute(requireActivity());
+
         // Use fullscreen mode if there is no content layout set,
-        // or if the device screen does not match our size requirements as set in the constructor.
-        fullscreen = this.contentLayoutId == 0
-                     ||
-                     useFullscreenWidth.contains(screenSize.width)
-                     && useFullscreenHeight.contains(screenSize.height);
+        // or if the device screen (too) small.
+        fullscreen = this.contentLayoutId == 0 || screenSize.isSmallScreen();
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger().d(getClass().getSimpleName(), "onAttach",
                                         "forceFullscreen=" + (this.contentLayoutId == 0),
-                                        "width=" + screenSize.width,
-                                        "height=" + screenSize.height,
+                                        "screenSize=" + screenSize,
                                         "fullscreen=" + fullscreen);
         }
     }

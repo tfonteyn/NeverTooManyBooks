@@ -25,10 +25,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.EnumSet;
-
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 public class CoverBrowserDialogFragment
@@ -38,11 +35,7 @@ public class CoverBrowserDialogFragment
      * No-arg constructor for OS use.
      */
     public CoverBrowserDialogFragment() {
-        super(R.layout.dialog_cover_browser,
-              R.layout.dialog_cover_browser_content,
-              // Fullscreen on Medium screens
-              EnumSet.of(ScreenSize.Value.Medium),
-              EnumSet.of(ScreenSize.Value.Medium));
+        super(R.layout.dialog_cover_browser, R.layout.dialog_cover_browser_content);
     }
 
     @Override

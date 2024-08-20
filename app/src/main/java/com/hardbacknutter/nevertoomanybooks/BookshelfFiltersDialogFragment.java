@@ -26,9 +26,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.EnumSet;
-
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 public class BookshelfFiltersDialogFragment
@@ -39,11 +36,7 @@ public class BookshelfFiltersDialogFragment
      */
     public BookshelfFiltersDialogFragment() {
         super(R.layout.dialog_edit_bookshelf_filters,
-              R.layout.dialog_edit_bookshelf_filters_content,
-              // Fullscreen on Medium screens
-              // to avoid 3 buttons overlapping text on a UI in e.g. german
-              EnumSet.of(ScreenSize.Value.Medium),
-              EnumSet.of(ScreenSize.Value.Medium));
+              R.layout.dialog_edit_bookshelf_filters_content);
     }
 
     @Override

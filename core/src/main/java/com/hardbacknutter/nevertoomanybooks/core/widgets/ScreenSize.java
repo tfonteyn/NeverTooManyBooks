@@ -30,6 +30,8 @@ import androidx.annotation.NonNull;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
+import java.util.Objects;
+
 /**
  * Screen size support.
  * <p>
@@ -79,8 +81,8 @@ public final class ScreenSize {
     @NonNull
     public final Value height;
 
-    private ScreenSize(@NonNull final Value width,
-                       @NonNull final Value height) {
+    public ScreenSize(@NonNull final Value width,
+                      @NonNull final Value height) {
         this.width = width;
         this.height = height;
     }
@@ -161,20 +163,62 @@ public final class ScreenSize {
 
     /**
      * Large screen definition.
-     * Either the width or the height is {@code Expanded}
-     * and the other size is NOT {@code Compact}.
-     *
+     * The WIDTH/HEIGHT is:
      * <ul>
      *     <li>Expanded/Expanded</li>
      *     <li>Expanded/Medium</li>
+     *     <li>Medium/Expanded</li>
      * </ul>
      *
      * @return {@code true} when large
      */
     public boolean isLargeScreen() {
-        return height != Value.Compact && width == Value.Expanded
+        return width == Value.Expanded && height != Value.Compact
                ||
-               width != Value.Compact && height == Value.Expanded;
+               height == Value.Expanded && width != Value.Compact;
+    }
+
+    /**
+     * Small screen definition.
+     * The WIDTH/HEIGHT is:
+     * <ul>
+     *     <li>Medium/Compact</li>
+     *     <li>Compact/Medium</li>
+     *     <li>Compact/Compact</li>
+     * </ul>
+     *
+     * @return {@code true} when small
+     */
+    public boolean isSmallScreen() {
+        return width == Value.Compact && height != Value.Expanded
+               ||
+               height == Value.Compact && width != Value.Expanded;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ScreenSize that = (ScreenSize) o;
+        return width == that.width && height == that.height;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(width, height);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ScreenSize{"
+               + "width=" + width
+               + ", height=" + height
+               + '}';
     }
 
     /**

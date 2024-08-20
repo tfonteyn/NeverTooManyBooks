@@ -21,7 +21,19 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 public enum DialogType {
+    /**
+     * A fullscreen dialog.
+     * <p>
+     * These do NOT show a status-bar.
+     * This is by choice after a lot of experiments which ended in "Android is [bleep]".
+     */
     Fullscreen,
+    /**
+     * A standard floating dialog.
+     */
     Floating,
+    /**
+     * Dialog shown as a BottomSheets.
+     */
     BottomSheet
 }
