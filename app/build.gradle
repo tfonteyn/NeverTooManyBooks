@@ -19,10 +19,6 @@
  */
 //file:noinspection LongLine
 
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -129,11 +125,6 @@ android {
             resValue("string", "fileProviderAuthority",
                     "${defaultConfig.applicationId}.GenericFileProvider")
 
-            // Add the build UTC DateTime; ISO formatted
-            buildConfigField("String", "TIMESTAMP",
-                    "\"" + LocalDateTime.now(ZoneOffset.UTC)
-                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"")
-
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
             buildConfigField("boolean", "ENABLE_DNB_DE", "false")
@@ -155,9 +146,6 @@ android {
             debuggable = true
             versionNameSuffix = "-debug"
             applicationIdSuffix = ".debug"
-
-            // Add the build UTC DateTime as a fixed X to speed up debug builds
-            buildConfigField("String", "TIMESTAMP", "\"x\"")
 
             resValue("string", "searchSuggestAuthority",
                     "${defaultConfig.applicationId}.SearchSuggestionProvider.debug")

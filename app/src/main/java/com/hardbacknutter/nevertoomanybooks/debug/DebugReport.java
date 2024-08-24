@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -93,9 +92,7 @@ public class DebugReport {
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         message = "App: " + info.getPackageName() + '\n'
-                  + "Version: " + info.getVersionName()
-                  + " (" + info.getVersionCode() + ", " + BuildConfig.TIMESTAMP + ")\n"
-
+                  + "Version: " + info.getVersionName() + " (" + info.getVersionCode() + ")\n"
                   + "SDK: " + Build.VERSION.RELEASE
                   + " (" + Build.VERSION.SDK_INT + ' ' + Build.TAGS + ")\n"
                   + "Model: " + Build.MODEL + '\n'

@@ -70,10 +70,9 @@ public class AboutFragment
                 PackageInfoWrapper.createWithSignatures(getContext());
         // show the version in the header
         vb.version.setText(packageInfoWrapper.getVersionName());
-        // show the full version + build date in the bottom corner
+        // show the full version in the bottom corner
         final String code = "a" + packageInfoWrapper.getVersionCode()
                             + " d" + DBHelper.DATABASE_VERSION
-                            + " b" + BuildConfig.TIMESTAMP
                             + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
         vb.debugVersion.setText(code);
 
