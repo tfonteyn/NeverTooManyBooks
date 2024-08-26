@@ -44,7 +44,7 @@ ext {
     compileSdkVersion = 35
 
     // https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md
-    desugarVersion = '2.0.4'
+    desugarVersion = '2.1.0'
 
     // https://developer.android.com/jetpack/androidx/versions
 
