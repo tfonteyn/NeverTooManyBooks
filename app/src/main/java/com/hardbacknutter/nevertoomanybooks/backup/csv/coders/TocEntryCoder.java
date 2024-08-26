@@ -99,7 +99,7 @@ public class TocEntryCoder
                 title = title.replace(g1, "").trim();
 
                 final PartialDate firstPublicationDate = partialDateParser
-                        .parse(matcher.group(1), false)
+                        .parse(matcher.group(1))
                         .orElse(PartialDate.NOT_SET);
                 return new TocEntry(author, title, firstPublicationDate);
             }

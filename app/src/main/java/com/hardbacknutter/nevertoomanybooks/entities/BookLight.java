@@ -81,7 +81,7 @@ public class BookLight
         this.primaryAuthor = primaryAuthor;
         // FIXME: optimize this by moving the PartialDateParser to the caller
         this.firstPublicationDate = new PartialDateParser()
-                .parse(rowData.getString(DBKey.FIRST_PUBLICATION__DATE), false)
+                .parse(rowData.getString(DBKey.FIRST_PUBLICATION__DATE))
                 .orElse(PartialDate.NOT_SET);
     }
 

@@ -28,7 +28,11 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Note this does NOT implement the DateParser interface!
+ * TODO: implement/change the DateParser interface to allow generic return types.
+ * <p>
+ * TODO: fold all manual parsers into one or more DateTimeFormatter pattern
  */
 public class PartialDateParser {
 
@@ -47,15 +53,29 @@ public class PartialDateParser {
     private static final Pattern PATTERN_YYYY =
             Pattern.compile("^(\\d\\d\\d\\d)$");
     private static final Pattern PATTERN_YYYY_MM =
-            Pattern.compile("^(\\d\\d\\d\\d)[/-](\\d{1,2})$");
-    private static final Pattern PATTERN_YYYY_MM_DD_ts =
-            Pattern.compile("^(\\d\\d\\d\\d)[/-](\\d{1,2})[/-](\\d{1,2}).*");
+            Pattern.compile("^(\\d\\d\\d\\d)[\\s/-](\\d{1,2})$");
+    private static final Pattern PATTERN_YYYY_MM_DD_TIMESTAMP =
+            Pattern.compile("^(\\d\\d\\d\\d)[\\s/-](\\d{1,2})[/-](\\d{1,2}).*");
 
     private static final Pattern PATTERN_MM_YYYY =
-            Pattern.compile("^(\\d{1,2})[/-](\\d\\d\\d\\d)$");
+            Pattern.compile("^(\\d{1,2})[\\s/-](\\d\\d\\d\\d)$");
+
+    private static final Pattern PATTERN_MMM_YYYY =
+            Pattern.compile("^(.*)[\\s/-](\\d\\d\\d\\d)$");
 
     /** Used to transform SQL-ISO to Java-ISO datetime format for UTC conversions. */
     private static final Pattern SPACE = Pattern.compile(" ");
+
+    @NonNull
+    public Optional<PartialDate> parse(@Nullable final CharSequence dateStr) {
+        return parse(dateStr, null, false);
+    }
+
+    @NonNull
+    public Optional<PartialDate> parse(@Nullable final CharSequence dateStr,
+                                       @Nullable final Locale locale) {
+        return parse(dateStr, locale, false);
+    }
 
     /**
      * Attempt to parse a date string.
@@ -65,12 +85,15 @@ public class PartialDateParser {
      *     <li>yyyy-MM-dd[...]</li>
      *     <li>yyyy-MM with MM being 1 or 2 digit </li>
      *     <li>yyyy</li>
-     *     <li>digit dividers can be {@code -} or {@code /}</li>
+     *     <li>Month-yyyy</li>
+     *     <li>digit dividers can be {@code space}, {@code -} or {@code /}</li>
      *     <li>Month {@code MM} can be one or two digits; 01..12  or 1..9</li>
      *     <li>Day {@code dd} can be one or two digits; 01..31  or 1..9</li>
      * </ul>
      *
      * @param dateStr a pattern as above, or {@code null}, or {@code ""}
+     * @param locale  (optional) Locale to try to decode month names.
+     *                If set to {@code null} we'll use {@code Locale.ENGLISH}.
      * @param isUtc   Set to {@code true} if dates are to be converted from UTC
      *                to the local timezone.
      *                Set to {@code false} to use the date is used as-is,
@@ -80,6 +103,7 @@ public class PartialDateParser {
      */
     @NonNull
     public Optional<PartialDate> parse(@Nullable final CharSequence dateStr,
+                                       @Nullable final Locale locale,
                                        final boolean isUtc) {
         if (dateStr == null || dateStr.length() == 0) {
             return Optional.empty();
@@ -108,7 +132,7 @@ public class PartialDateParser {
                 return Optional.of(new PartialDate(localDate.getYear(), month, 0));
             }
 
-            matcher = PATTERN_YYYY_MM_DD_ts.matcher(dateStr);
+            matcher = PATTERN_YYYY_MM_DD_TIMESTAMP.matcher(dateStr);
             if (matcher.find()) {
                 if (isUtc) {
                     // full date match with an optional timestamp; simply pass the whole group
@@ -124,6 +148,36 @@ public class PartialDateParser {
                                              Integer.parseInt(matcher.group(3)));
                 }
                 return Optional.of(new PartialDate(localDate));
+            }
+
+            matcher = PATTERN_MMM_YYYY.matcher(dateStr);
+            if (matcher.find()) {
+                localDate = Year.parse(matcher.group(2)).atDay(1);
+                final Locale withLocale = Objects.requireNonNullElse(locale, Locale.ENGLISH);
+                int monthNumber = 0;
+                final String monthStr = matcher.group(1);
+                try {
+                    // We check for these 3 different patterns...
+                    // LLL     3      appendText(ChronoField.MONTH_OF_YEAR,
+                    //                          TextStyle.SHORT_STANDALONE)
+                    // LLLL    4      appendText(ChronoField.MONTH_OF_YEAR,
+                    //                          TextStyle.FULL_STANDALONE)
+                    // LLLLL   5      appendText(ChronoField.MONTH_OF_YEAR,
+                    //                          TextStyle.NARROW_STANDALONE)
+                    monthNumber = new DateTimeFormatterBuilder()
+                            .parseLenient()
+                            .parseCaseInsensitive()
+                            .appendPattern("[LLLL][LLL][LLLLL]")
+                            .toFormatter(withLocale)
+                            .parse(monthStr)
+                            .get(ChronoField.MONTH_OF_YEAR);
+                } catch (DateTimeParseException | NumberFormatException e) {
+                    if (BuildConfig.DEBUG /* always */) {
+                        LoggerFactory.getLogger().e(TAG, e, "monthStr=" + monthStr);
+                    }
+                }
+
+                return Optional.of(new PartialDate(localDate.getYear(), monthNumber, 0));
             }
 
         } catch (@NonNull final DateTimeParseException | NumberFormatException e) {

@@ -283,7 +283,8 @@ class IsfdbPublicationListHandler
                 case XML_YEAR: {
                     if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
                         final String dateStr = builder.toString().strip();
-                        partialDateParser.parse(dateStr, false)
+                        // Ignore the locale, the format is always iso
+                        partialDateParser.parse(dateStr)
                                          .ifPresent(book::setPublicationDate);
                     }
                     break;

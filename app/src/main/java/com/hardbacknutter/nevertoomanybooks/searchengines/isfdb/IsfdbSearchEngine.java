@@ -604,7 +604,7 @@ public class IsfdbSearchEngine
                 PartialDate tocDate = PartialDate.NOT_SET;
                 if (matcher.find()) {
                     final String yearStr = SearchEngineUtils.digits(matcher.group(2));
-                    final Optional<PartialDate> oTocDate = partialDateParser.parse(yearStr, false);
+                    final Optional<PartialDate> oTocDate = partialDateParser.parse(yearStr);
                     if (oTocDate.isPresent()) {
                         tocDate = oTocDate.get();
                         // If this entry has the same title as the book title
@@ -877,9 +877,9 @@ public class IsfdbSearchEngine
                                 tmpString = nextSibling.toString().trim();
                                 // except that ISFDB uses 00 for the day/month when unknown ...
                                 // e.g. "1975-04-00" or "1974-00-00"
-                                // Cut those parts off.
+                                // Cut those parts off. Ignore the locale.
                                 tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
-                                partialDateParser.parse(tmpString, false)
+                                partialDateParser.parse(tmpString)
                                                  .ifPresent(book::setPublicationDate);
                             }
                             break;

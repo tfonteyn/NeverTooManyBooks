@@ -467,10 +467,11 @@ public class DoubanSearchEngine
                     // Year of publication
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        // Dates are listed as yyyy-MM; use a PartialDate parser.
+                        // Dates are listed as yyyy-MM;
+                        // use a PartialDate parser ignoring the locale
                         final String dateStr = n.toString().strip();
                         final PartialDateParser parser = new PartialDateParser();
-                        parser.parse(dateStr, false).ifPresent(book::setPublicationDate);
+                        parser.parse(dateStr).ifPresent(book::setPublicationDate);
                     }
                     break;
                 }

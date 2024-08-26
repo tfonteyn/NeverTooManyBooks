@@ -544,7 +544,7 @@ public class Book
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
-        return partialDateParser.parse(getString(DBKey.FIRST_PUBLICATION__DATE), false)
+        return partialDateParser.parse(getString(DBKey.FIRST_PUBLICATION__DATE))
                                 .orElse(PartialDate.NOT_SET);
     }
 

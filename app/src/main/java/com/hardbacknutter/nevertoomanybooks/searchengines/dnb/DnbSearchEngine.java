@@ -64,7 +64,6 @@ public class DnbSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
-
     /**
      * param 1: the ISBN.
      */
@@ -195,7 +194,7 @@ public class DnbSearchEngine
                             }
                             case "Erschienen":
                             case "Published": {
-                                parsePublisher(td, book);
+                                parsePublisher(context, td, book);
                                 break;
                             }
                             case "Umfang":
@@ -453,10 +452,12 @@ public class DnbSearchEngine
      *   ==> date parsing will fail.
      * </pre>
      *
+     * @param context Current context
      * @param td   to parse
      * @param book to update
      */
-    private void parsePublisher(@NonNull final Element td,
+    private void parsePublisher(@NonNull final Context context,
+                                @NonNull final Element td,
                                 @NonNull final Book book) {
         final Element p = td.selectFirst("p");
         if (p != null) {
@@ -489,7 +490,7 @@ public class DnbSearchEngine
                             && dateStr.endsWith("]")) {
                             dateStr = dateStr.substring(1, dateStr.length() - 1);
                         }
-                        partialDateParser.parse(dateStr, false)
+                        partialDateParser.parse(dateStr, getLocale(context))
                                          .ifPresent(book::setPublicationDate);
                     }
                 }

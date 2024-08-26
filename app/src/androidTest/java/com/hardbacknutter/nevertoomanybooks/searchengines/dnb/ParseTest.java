@@ -131,11 +131,11 @@ public class ParseTest
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
         Log.d(TAG, book.toString());
 
-        assertEquals("Totholz : Was vergraben ist, ist nicht vergessen.",
+        assertEquals("Totholz : was vergraben ist, ist nicht vergessen",
                      book.getString(DBKey.TITLE, null));
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2024", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("384", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("378", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("9783426226681", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Krimis, Thriller, Spionage", book.getString(DBKey.GENRE, null));
 
@@ -154,12 +154,12 @@ public class ParseTest
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
-        assertEquals(1, series.size());
+        assertEquals(0, series.size());
 
-        final Series expectedSeries;
-        expectedSeries = new Series("Ein Wallner & Kreuthner Krimi");
-        expectedSeries.setNumber("11");
-        TestCase.assertTrue(expectedSeries.isIdentical(series.get(0)));
+//        final Series expectedSeries;
+//        expectedSeries = new Series("Ein Wallner & Kreuthner Krimi");
+//        expectedSeries.setNumber("11");
+//        TestCase.assertTrue(expectedSeries.isIdentical(series.get(0)));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);

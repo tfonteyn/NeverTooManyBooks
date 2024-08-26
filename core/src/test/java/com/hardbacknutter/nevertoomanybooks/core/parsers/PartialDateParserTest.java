@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -42,15 +43,15 @@ class PartialDateParserTest {
     void parse01() {
         Optional<PartialDate> od;
 
-        od = parser.parse("2020-09-17", false);
+        od = parser.parse("2020-09-17");
         assertTrue(od.isPresent());
         assertEquals("2020-09-17", od.get().getIsoString());
 
-        od = parser.parse("2020-09", false);
+        od = parser.parse("2020-09");
         assertTrue(od.isPresent());
         assertEquals("2020-09", od.get().getIsoString());
 
-        od = parser.parse("2020", false);
+        od = parser.parse("2020");
         assertTrue(od.isPresent());
         assertEquals("2020", od.get().getIsoString());
     }
@@ -59,11 +60,11 @@ class PartialDateParserTest {
     void parse02() {
         Optional<PartialDate> od;
 
-        od = parser.parse("2020/09/17", false);
+        od = parser.parse("2020/09/17");
         assertTrue(od.isPresent());
         assertEquals("2020-09-17", od.get().getIsoString());
 
-        od = parser.parse("2020/09", false);
+        od = parser.parse("2020/09");
         assertTrue(od.isPresent());
         assertEquals("2020-09", od.get().getIsoString());
     }
@@ -72,16 +73,41 @@ class PartialDateParserTest {
     void parse10() {
         Optional<PartialDate> od;
 
-        od = parser.parse("2020-9-17", false);
+        od = parser.parse("2020-9-17");
         assertTrue(od.isPresent());
         assertEquals("2020-09-17", od.get().getIsoString());
 
-        od = parser.parse("2020-9", false);
+        od = parser.parse("2020-9");
         assertTrue(od.isPresent());
         assertEquals("2020-09", od.get().getIsoString());
 
-        od = parser.parse("2020-9-7", false);
+        od = parser.parse("2020-9-7");
         assertTrue(od.isPresent());
         assertEquals("2020-09-07", od.get().getIsoString());
+    }
+
+    @Test
+    void parse100() {
+        Optional<PartialDate> od;
+
+        od = parser.parse("Jun 2020", Locale.UK);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06", od.get().getIsoString());
+
+        od = parser.parse("June 2020", Locale.UK);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06", od.get().getIsoString());
+
+        od = parser.parse("Juni 2020", Locale.GERMAN);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06", od.get().getIsoString());
+
+        od = parser.parse("Juin 2020", Locale.FRENCH);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06", od.get().getIsoString());
+
+        od = parser.parse("juin 2020", Locale.FRENCH);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06", od.get().getIsoString());
     }
 }

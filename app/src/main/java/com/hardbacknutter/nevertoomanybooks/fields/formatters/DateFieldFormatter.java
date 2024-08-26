@@ -84,7 +84,7 @@ public class DateFieldFormatter
     @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final String rawValue) {
-        return parser.parse(rawValue, isUtc)
+        return parser.parse(rawValue, null, isUtc)
                      .map(date -> date.toDisplay(locale, rawValue))
                      .orElse("");
     }
@@ -98,7 +98,7 @@ public class DateFieldFormatter
     @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return parser.parse(text, isUtc)
+        return parser.parse(text, null, isUtc)
                      .map(PartialDate::getIsoString)
                      .orElse("");
     }

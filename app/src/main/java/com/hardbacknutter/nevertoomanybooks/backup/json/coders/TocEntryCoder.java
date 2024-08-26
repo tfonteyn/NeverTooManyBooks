@@ -64,7 +64,7 @@ public class TocEntryCoder
         final TocEntry tocEntry = new TocEntry(
                 authorCoder.decode(data.getJSONObject(DBKey.FK_AUTHOR)),
                 data.getString(DBKey.TITLE),
-                partialDateParser.parse(data.optString(DBKey.FIRST_PUBLICATION__DATE), false)
+                partialDateParser.parse(data.optString(DBKey.FIRST_PUBLICATION__DATE))
                                  .orElse(PartialDate.NOT_SET));
 
         tocEntry.setId(data.getLong(DBKey.PK_ID));

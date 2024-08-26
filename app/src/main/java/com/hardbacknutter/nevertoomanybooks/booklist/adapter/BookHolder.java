@@ -457,7 +457,7 @@ public class BookHolder
         if (showPubDate) {
             final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
             date = partialDateParser
-                    .parse(dateStr, false)
+                    .parse(dateStr)
                     .map(d -> d.toDisplay(itemView.getContext().getResources()
                                                   .getConfiguration().getLocales()
                                                   .get(0),
