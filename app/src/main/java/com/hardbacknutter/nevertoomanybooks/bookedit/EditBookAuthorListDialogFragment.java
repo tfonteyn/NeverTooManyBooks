@@ -150,16 +150,8 @@ public class EditBookAuthorListDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Exhaustive testing always showed "something" wrong...
-        // - we tried to get the status-bar visible
-        // - we tried use "Theme_App"
-        // - we tried Window.FEATURE_NO_TITLE
-        // - we tried variations of InsetsListenerBuilder in onViewCreated
-        // - tried all this on API 30,33 and 35
-        // Bottom line: Android is [bleeped].
-        // Compromise seems to now show the status-bar and apply insets to the toolbar.
-        // ... and will have to [bleeping] do for now.
-        return new Dialog(requireContext(), R.style.Theme_App_FullScreen);
+        // See notes in {@link BaseFFDialogFragment#onCreateDialog}
+        return new Dialog(requireContext(), R.style.Theme_App);
     }
 
     @CallSuper

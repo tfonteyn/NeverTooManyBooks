@@ -146,8 +146,8 @@ public class EditBookSeriesListDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // See notes in {@link EditBookAuthorListFragment}
-        return new Dialog(requireContext(), R.style.Theme_App_FullScreen);
+        // See notes in {@link BaseFFDialogFragment#onCreateDialog}
+        return new Dialog(requireContext(), R.style.Theme_App);
     }
 
     @CallSuper

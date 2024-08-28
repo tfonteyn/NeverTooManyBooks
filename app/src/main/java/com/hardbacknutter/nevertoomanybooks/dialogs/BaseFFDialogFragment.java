@@ -47,6 +47,7 @@ import java.util.function.IntFunction;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -141,8 +142,25 @@ public abstract class BaseFFDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Dialog dialog;
         if (fullscreen) {
-            dialog = new Dialog(requireContext(), R.style.Theme_App_FullScreen);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            // Exhaustive testing always showed "something" wrong...
+            // - we tried to get the status-bar visible
+            // - we tried use "Theme_App" versus "Theme_App_FullScreen"
+            // - we tried adding/removing Window.FEATURE_NO_TITLE
+            // - we tried variations of InsetsListenerBuilder in onViewCreated
+            // - tried all this on API 30,33 and 35
+            // Bottom line: Android is [bleeped].
+            // Compromise seems to be:
+            // - use the normal theme (NOT fullscreen)
+            // - the toolbar consumes insets
+            // - this DOES show the status-bar
+            // - shows fine on a portrait screen with or without camera inset
+            // - shows sort-of ok on a landscape screen with a camera inset.
+            // - small screens may cause the subtitle to be touching the bottom of the toolbar.
+            // - small screens will not always set insets on the toolbar correctly.
+            // - The underlying app toolbar can show through while
+            //   the dialog is despite all efforts not showing fully fullscreen.
+            // ... all this will have to [bleeping] do for now... what a [bleeping] mess...
+            dialog = new Dialog(requireContext(), R.style.Theme_App);
         } else {
             dialog = new Dialog(requireContext(), R.style.ThemeOverlay_App_CustomDialog);
         }
@@ -185,12 +203,16 @@ public abstract class BaseFFDialogFragment
         final View buttonPanel = view.findViewById(R.id.button_panel_layout);
 
         if (fullscreen) {
+            InsetsListenerBuilder.fragmentRootView(view);
+
             // Hide the dialog toolbar
             if (floatingToolbar != null) {
                 floatingToolbar.setVisibility(View.GONE);
             }
-            delegate.setToolbar(Objects.requireNonNull(view.findViewById(R.id.toolbar),
-                                                       "R.id.toolbar"));
+            // and use the fragment toolbar instead
+            final Toolbar toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar),
+                                                           "R.id.toolbar");
+            delegate.setToolbar(toolbar);
 
             // Hide the button bar at the bottom of the dialog
             if (buttonPanel != null) {
