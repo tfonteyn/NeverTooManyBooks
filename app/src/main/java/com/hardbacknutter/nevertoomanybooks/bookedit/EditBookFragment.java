@@ -140,8 +140,8 @@ public class EditBookFragment
 
         new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
             final TabAdapter.TabInfo tabInfo = tabAdapter.getTabInfo(position);
-            tab.setText(tabInfo.titleId);
-            tab.setContentDescription(tabInfo.contentDescriptionId);
+            tab.setText(tabInfo.getTitleId());
+            tab.setContentDescription(tabInfo.getContentDescriptionId());
         }).attach();
     }
 
@@ -350,25 +350,18 @@ public class EditBookFragment
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            try {
-                return tabList.get(position).clazz.getConstructor().newInstance();
-
-            } catch (@NonNull final IllegalAccessException | java.lang.InstantiationException
-                                    | NoSuchMethodException | InvocationTargetException e) {
-                // We'll never get here...
-                throw new IllegalStateException(e);
-            }
+            return tabList.get(position).createFragment();
         }
 
         /** Value class to match up a tab fragment class and the title to use for the tab. */
         private static class TabInfo {
 
             @NonNull
-            final Class<? extends Fragment> clazz;
+            private final Class<? extends Fragment> clazz;
             @StringRes
-            final int titleId;
+            private final int titleId;
             @StringRes
-            final int contentDescriptionId;
+            private final int contentDescriptionId;
 
             TabInfo(@NonNull final Class<? extends Fragment> clazz,
                     @StringRes final int titleId,
@@ -376,6 +369,28 @@ public class EditBookFragment
                 this.clazz = clazz;
                 this.titleId = titleId;
                 this.contentDescriptionId = contentDescriptionId;
+            }
+
+            @NonNull
+            Fragment createFragment() {
+                try {
+                    return clazz.getConstructor().newInstance();
+
+                } catch (@NonNull final IllegalAccessException | java.lang.InstantiationException
+                                        | NoSuchMethodException | InvocationTargetException e) {
+                    // We'll never get here...
+                    throw new IllegalStateException(e);
+                }
+            }
+
+            @StringRes
+            int getTitleId() {
+                return titleId;
+            }
+
+            @StringRes
+            int getContentDescriptionId() {
+                return contentDescriptionId;
             }
         }
     }
