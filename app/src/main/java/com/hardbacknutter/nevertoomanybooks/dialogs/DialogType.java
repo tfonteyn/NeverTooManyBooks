@@ -20,12 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+/**
+ * TODO: unify with {@link com.hardbacknutter.nevertoomanybooks.settings.DialogMode}.
+ */
 public enum DialogType {
     /**
      * A fullscreen dialog.
-     * <p>
-     * These do NOT show a status-bar.
-     * This is by choice after a lot of experiments which ended in "Android is [bleep]".
      */
     Fullscreen,
     /**
