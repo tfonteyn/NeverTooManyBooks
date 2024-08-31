@@ -82,8 +82,12 @@ class EditTocEntryDelegate
     }
 
     @Override
-    public void onCreateView(@NonNull final View view) {
+    @NonNull
+    public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
+                                   @Nullable final ViewGroup container) {
+        final View view = inflater.inflate(R.layout.dialog_edit_book_toc, container, false);
         vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
+        return view;
     }
 
     @Override

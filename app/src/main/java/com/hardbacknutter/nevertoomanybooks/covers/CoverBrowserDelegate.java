@@ -147,8 +147,12 @@ class CoverBrowserDelegate
     }
 
     @Override
-    public void onCreateView(@NonNull final View view) {
+    @NonNull
+    public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
+                                   @Nullable final ViewGroup container) {
+        final View view = inflater.inflate(R.layout.dialog_cover_browser, container, false);
         vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
+        return view;
     }
 
     @Override

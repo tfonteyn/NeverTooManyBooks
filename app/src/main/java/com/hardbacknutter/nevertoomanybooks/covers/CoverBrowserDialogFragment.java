@@ -25,18 +25,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 public class CoverBrowserDialogFragment
         extends BaseFFDialogFragment {
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public CoverBrowserDialogFragment() {
-        super(R.layout.dialog_cover_browser, R.layout.dialog_cover_browser_content);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

@@ -24,19 +24,11 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 
 public class ReadingProgressDialogFragment
         extends BaseFFDialogFragment {
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public ReadingProgressDialogFragment() {
-        super(R.layout.dialog_book_read_progress, R.layout.dialog_book_read_progress_content);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

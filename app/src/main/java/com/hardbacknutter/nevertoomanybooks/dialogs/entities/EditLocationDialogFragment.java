@@ -33,14 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 public class EditLocationDialogFragment
         extends BaseFFDialogFragment {
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    EditLocationDialogFragment() {
-        super(R.layout.dialog_edit_book_inline_string,
-              R.layout.dialog_edit_book_inline_string_content);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

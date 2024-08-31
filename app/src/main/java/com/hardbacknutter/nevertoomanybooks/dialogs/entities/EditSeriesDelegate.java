@@ -103,8 +103,12 @@ class EditSeriesDelegate
     }
 
     @Override
-    public void onCreateView(@NonNull final View view) {
+    @NonNull
+    public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
+                                   @Nullable final ViewGroup container) {
+        final View view = inflater.inflate(R.layout.dialog_edit_series, container, false);
         vb = DialogEditSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
+        return view;
     }
 
     @Override

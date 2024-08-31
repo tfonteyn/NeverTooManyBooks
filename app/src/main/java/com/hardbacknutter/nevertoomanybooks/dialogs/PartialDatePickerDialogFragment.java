@@ -23,17 +23,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-
 public class PartialDatePickerDialogFragment
         extends BaseFFDialogFragment {
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public PartialDatePickerDialogFragment() {
-        super(R.layout.dialog_partial_date_picker, R.layout.dialog_partial_date_picker_content);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

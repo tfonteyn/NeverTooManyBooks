@@ -32,13 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 public class StylePickerDialogFragment
         extends BaseFFDialogFragment {
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    public StylePickerDialogFragment() {
-        super(R.layout.dialog_style_picker, R.layout.dialog_style_picker_content);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

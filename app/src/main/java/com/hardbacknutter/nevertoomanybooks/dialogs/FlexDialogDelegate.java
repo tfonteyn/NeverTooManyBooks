@@ -38,17 +38,17 @@ import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 /**
  * The interface between the {@link DialogMode} base classes and the delegates.
  * <p>
- * It should be enabled in the {@link #onCreateView} parent with
+ * It should be enabled in the {@code onCreateView} method of the below base classes with
  * {@code getLifecycle().addObserver(delegate);}
  *
- * @see BaseFFDialogFragment
- * @see BaseBottomSheetDialogFragment
+ * @see BaseFFDialogFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)
+ * @see BaseBottomSheetDialogFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)
  */
 public interface FlexDialogDelegate
         extends FlexToolbar, DefaultLifecycleObserver {
 
     /**
-     * {@link DialogMode#BottomSheet} ONLY.
+     * {@link DialogType#BottomSheet} and {@link DialogType#Floating}.
      * <p>
      * Called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      *
@@ -62,13 +62,18 @@ public interface FlexDialogDelegate
                       @Nullable ViewGroup container);
 
     /**
-     * {@link DialogMode#Dialog} ONLY.
+     * {@link DialogType#Fullscreen}.
      * <p>
      * Called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      *
-     * @param view to use
+     * @param inflater  LayoutInflater
+     * @param container parent view
+     *
+     * @return the view
      */
-    void onCreateView(@NonNull View view);
+    @NonNull
+    View onCreateFullscreen(@NonNull LayoutInflater inflater,
+                            @Nullable ViewGroup container);
 
     /**
      * Called from {@link Fragment#onViewCreated(View, Bundle)}.

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,7 +30,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -77,51 +75,28 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public abstract class BaseFFDialogFragment
         extends DialogFragment {
 
-    private final int fullscreenLayoutId;
-    private final int contentLayoutId;
-
     /** Must be created/set in {@link #onCreate(Bundle)}. */
     protected FlexDialogDelegate delegate;
 
     /**
      * Show the dialog fullscreen (default) or as a floating dialog.
-     * Decided in {@link #onAttach(Context)}
+     * Decided in {@link #onCreate(Bundle)}
      */
     private boolean fullscreen;
 
-    /**
-     * Constructor.
-     *
-     * @param fullscreenLayoutId the layout resource id which offers a full screen
-     *                           dialog-fragment with a CoordinatorLayout/AppBarLayout
-     *                           at the root.
-     * @param contentLayoutId    the layout resource if which can be used to view the same
-     *                           dialog-fragment as a floating dialog; i.e. without
-     *                           the CoordinatorLayout/AppBarLayout.
-     *                           Set this to {@code 0} to <strong>force</strong> fullscreen usage
-     *                           on all screen sizes.
-     */
-    protected BaseFFDialogFragment(@LayoutRes final int fullscreenLayoutId,
-                                   @LayoutRes final int contentLayoutId) {
-        this.fullscreenLayoutId = fullscreenLayoutId;
-        this.contentLayoutId = contentLayoutId;
-    }
-
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         // fullscreen check must be done here as it's needed by both onCreateDialog/onCreateView
         final ScreenSize screenSize = ScreenSize.compute(requireActivity());
 
-        // Use fullscreen mode if there is no content layout set,
-        // or if the device screen (too) small.
-        fullscreen = this.contentLayoutId == 0 || screenSize.isSmallScreen();
+        // Use fullscreen mode if the device screen is (too) small.
+        fullscreen = screenSize.isSmallScreen();
 
         if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(getClass().getSimpleName(), "onAttach",
-                                        "forceFullscreen=" + (this.contentLayoutId == 0),
+            LoggerFactory.getLogger().d(getClass().getSimpleName(), "onCreate",
                                         "screenSize=" + screenSize,
                                         "fullscreen=" + fullscreen);
         }
@@ -177,11 +152,10 @@ public abstract class BaseFFDialogFragment
 
         final View view;
         if (fullscreen) {
-            view = inflater.inflate(fullscreenLayoutId, container, false);
+            view = delegate.onCreateFullscreen(inflater, container);
         } else {
-            view = inflater.inflate(contentLayoutId, container, false);
+            view = delegate.onCreateView(inflater, container);
         }
-        delegate.onCreateView(view);
 
         getLifecycle().addObserver(delegate);
         return view;

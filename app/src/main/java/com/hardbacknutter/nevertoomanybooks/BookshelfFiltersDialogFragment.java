@@ -31,14 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 public class BookshelfFiltersDialogFragment
         extends BaseFFDialogFragment {
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    public BookshelfFiltersDialogFragment() {
-        super(R.layout.dialog_edit_bookshelf_filters,
-              R.layout.dialog_edit_bookshelf_filters_content);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

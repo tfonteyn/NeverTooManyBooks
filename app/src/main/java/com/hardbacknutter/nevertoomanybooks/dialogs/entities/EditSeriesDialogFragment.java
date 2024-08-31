@@ -23,19 +23,11 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 
 public class EditSeriesDialogFragment
         extends BaseFFDialogFragment {
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditSeriesDialogFragment() {
-        super(R.layout.dialog_edit_series, R.layout.dialog_edit_series_content);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

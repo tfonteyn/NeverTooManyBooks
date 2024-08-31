@@ -23,18 +23,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
 public class EditAuthorDialogFragment
         extends BaseFFDialogFragment {
-
-    /**
-     * No-arg constructor for OS use.
-     */
-    public EditAuthorDialogFragment() {
-        super(R.layout.dialog_edit_author, R.layout.dialog_edit_author_content);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
