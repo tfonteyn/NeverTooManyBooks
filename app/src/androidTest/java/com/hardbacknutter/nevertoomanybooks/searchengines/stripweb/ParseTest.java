@@ -86,7 +86,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book, null);
+        searchEngine.parse(context, document, new boolean[]{true, false}, book, List.of());
 
         //Log.d(TAG, book.toString());
 
@@ -160,7 +160,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book, null);
+        searchEngine.parse(context, document, new boolean[]{true, false}, book, List.of());
 
         Log.d(TAG, book.toString());
 
@@ -272,7 +272,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book, null);
+        searchEngine.parse(context, document, new boolean[]{true, false}, book, List.of());
 
         //Log.d(TAG, book.toString());
 

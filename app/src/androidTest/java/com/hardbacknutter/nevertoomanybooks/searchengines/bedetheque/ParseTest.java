@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,7 +76,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book, null);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book, List.of());
         // Log.d(TAG, book.toString());
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));

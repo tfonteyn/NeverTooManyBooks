@@ -74,7 +74,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book, null);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book, List.of());
         // Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
@@ -132,7 +132,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book, null);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book, List.of());
         // Log.d(TAG, book.toString());
 
         assertEquals("Schoot der aarde", book.getString(DBKey.TITLE, null));

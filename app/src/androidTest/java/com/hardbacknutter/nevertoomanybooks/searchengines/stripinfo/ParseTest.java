@@ -62,7 +62,7 @@ public class ParseTest
 
     private static final String UTF_8 = "UTF-8";
     private StripInfoSearchEngine searchEngine;
-    private List<AuthorResolver> mockAuthorResolvers;
+    private final List<AuthorResolver> mockAuthorResolvers = List.of();
 
     @Before
     public void setup()
