@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -222,8 +221,7 @@ public class EditBookViewModel
                     if (book.isNew()) {
                         // DATE_ACQUIRED is always used
                         if (!book.contains(DBKey.DATE_ACQUIRED)) {
-                            book.putString(DBKey.DATE_ACQUIRED,
-                                           SqlEncode.date(LocalDateTime.now()));
+                            book.putLocalDateTime(DBKey.DATE_ACQUIRED, LocalDateTime.now());
                         }
                         // if BOOK_CONDITION is wanted, assume the user got a new book.
                         if (serviceLocator.isFieldEnabled(DBKey.BOOK_CONDITION)

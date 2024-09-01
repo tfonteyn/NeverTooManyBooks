@@ -555,7 +555,7 @@ public class DataManager
      * @param key      Key of data object
      * @param dateTime to store
      */
-    protected void putLocalDateTime(@SuppressWarnings("SameParameterValue")
+    public void putLocalDateTime(@SuppressWarnings("SameParameterValue")
                                     @NonNull final String key,
                                     @NonNull final LocalDateTime dateTime) {
         rawData.putString(key, SqlEncode.dateTime(dateTime));
