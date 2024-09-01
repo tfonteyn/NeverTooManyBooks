@@ -739,7 +739,9 @@ public class DataManager
         final Set<String> allKeys = new HashSet<>(b1.keySet());
         allKeys.addAll(b2.keySet());
 
+        @Nullable
         Object valueOne;
+        @Nullable
         Object valueTwo;
 
         for (final String key : allKeys) {
@@ -749,8 +751,8 @@ public class DataManager
 
             valueOne = b1.get(key);
             valueTwo = b2.get(key);
-            if (valueOne instanceof Bundle && valueTwo instanceof Bundle &&
-                !equalBundles((Bundle) valueOne, (Bundle) valueTwo)) {
+            if (valueOne instanceof Bundle && valueTwo instanceof Bundle
+                && !equalBundles((Bundle) valueOne, (Bundle) valueTwo)) {
                 return false;
             } else if (valueOne == null) {
                 if (valueTwo != null) {
