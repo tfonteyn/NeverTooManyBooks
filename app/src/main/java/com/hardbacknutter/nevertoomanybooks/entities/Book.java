@@ -1128,7 +1128,7 @@ public class Book
      * @param read flag
      */
     public void setReadNow(final boolean read) {
-        final String now = SqlEncode.date(LocalDateTime.now());
+        final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = read ? now : "";
         internalSetReadingProgress(read, endDate);
     }
@@ -1182,7 +1182,7 @@ public class Book
     public void setReadingProgress(@NonNull final ReadingProgress progress) {
         final boolean read = progress.isRead();
 
-        final String now = SqlEncode.date(LocalDateTime.now());
+        final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = read ? now : "";
 
         // If the separate page-count field is empty and we have a total-pages value,

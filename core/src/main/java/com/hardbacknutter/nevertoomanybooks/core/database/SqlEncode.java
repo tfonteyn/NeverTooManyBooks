@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,7 +57,7 @@ public final class SqlEncode {
 
     /** See {@link #singleQuotes}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
-    /** See {@link #date(LocalDateTime)}. */
+    /** See {@link #dateTime(LocalDateTime)}. */
     private static final Pattern T = Pattern.compile("T");
 
     /** Keep only alpha/digit characters. */
@@ -105,7 +105,7 @@ public final class SqlEncode {
      * @return sqlite date time as a string
      */
     @NonNull
-    public static String date(@NonNull final LocalDateTime dateTime) {
+    public static String dateTime(@NonNull final LocalDateTime dateTime) {
         // We should just create a formatter which uses a ' '...
         final String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         return T.matcher(date).replaceFirst(" ");

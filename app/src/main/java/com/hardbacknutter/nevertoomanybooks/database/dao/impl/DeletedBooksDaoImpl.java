@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public class DeletedBooksDaoImpl
         final String[] args;
         if (sinceDateTime != null) {
             sql.append(_WHERE_ + DBKey.DATE_ADDED__UTC + ">?");
-            args = new String[]{SqlEncode.date(sinceDateTime)};
+            args = new String[]{SqlEncode.dateTime(sinceDateTime)};
         } else {
             args = null;
         }

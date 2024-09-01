@@ -235,7 +235,7 @@ public class BookDaoImpl
                 throw new DaoInsertException("No authors for book=" + book);
             }
 
-            final String addedOrUpdatedNow = SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC));
+            final String addedOrUpdatedNow = SqlEncode.dateTime(LocalDateTime.now(ZoneOffset.UTC));
 
             // if we do NOT have a date set, use 'now'
             if (!cv.containsKey(DBKey.DATE_ADDED__UTC)) {
@@ -346,7 +346,7 @@ public class BookDaoImpl
             if (!flags.contains(BookFlag.UseUpdateDateIfPresent)
                 || !cv.containsKey(DBKey.DATE_LAST_UPDATED__UTC)) {
                 cv.put(DBKey.DATE_LAST_UPDATED__UTC, SqlEncode
-                        .date(LocalDateTime.now(ZoneOffset.UTC)));
+                        .dateTime(LocalDateTime.now(ZoneOffset.UTC)));
             }
 
             // Reminder: We're updating ONLY the fields present in the ContentValues.
@@ -559,7 +559,7 @@ public class BookDaoImpl
     @Override
     public boolean setRead(@NonNull final Book book,
                            final boolean read) {
-        final String now = SqlEncode.date(LocalDateTime.now());
+        final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = read ? now : "";
 
         final boolean success;
@@ -584,7 +584,7 @@ public class BookDaoImpl
     public boolean setReadingProgress(@NonNull final Book book,
                                       @NonNull final ReadingProgress progress) {
 
-        final String now = SqlEncode.date(LocalDateTime.now());
+        final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = progress.isRead() ? now : "";
 
         final boolean success;
@@ -710,7 +710,7 @@ public class BookDaoImpl
         } else {
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.COUNT_ALL + _WHERE_ + DBKey.DATE_LAST_UPDATED__UTC + ">=?")) {
-                stmt.bindString(1, SqlEncode.date(sinceDateTime));
+                stmt.bindString(1, SqlEncode.dateTime(sinceDateTime));
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         }
@@ -723,7 +723,7 @@ public class BookDaoImpl
             return getBookCursor(null, null, TBL_BOOKS.dot(DBKey.PK_ID));
         } else {
             return getBookCursor(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC) + ">=?",
-                                 new String[]{SqlEncode.date(sinceDateTime)},
+                                 new String[]{SqlEncode.dateTime(sinceDateTime)},
                                  TBL_BOOKS.dot(DBKey.PK_ID));
         }
     }
@@ -740,7 +740,7 @@ public class BookDaoImpl
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY) + "=?"
                                  + _AND_ + TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC) + ">=?",
                                  new String[]{String.valueOf(libraryId),
-                                         SqlEncode.date(sinceDateTime)},
+                                         SqlEncode.dateTime(sinceDateTime)},
                                  TBL_BOOKS.dot(DBKey.PK_ID));
         }
     }
@@ -753,7 +753,7 @@ public class BookDaoImpl
         } else {
             return getBookCursor(TBL_STRIPINFO_COLLECTION.dot(
                                          DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC) + ">=?",
-                                 new String[]{SqlEncode.date(sinceDateTime)},
+                                 new String[]{SqlEncode.dateTime(sinceDateTime)},
                                  TBL_BOOKS.dot(DBKey.PK_ID));
         }
     }

@@ -558,7 +558,7 @@ public class DataManager
     protected void putLocalDateTime(@SuppressWarnings("SameParameterValue")
                                     @NonNull final String key,
                                     @NonNull final LocalDateTime dateTime) {
-        rawData.putString(key, SqlEncode.date(dateTime));
+        rawData.putString(key, SqlEncode.dateTime(dateTime));
     }
 
     /**

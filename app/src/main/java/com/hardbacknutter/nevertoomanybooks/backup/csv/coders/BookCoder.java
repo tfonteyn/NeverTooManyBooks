@@ -554,7 +554,7 @@ public class BookCoder {
             final String s = book.getString(key);
             final Optional<LocalDateTime> date = dateParser.parse(s);
             if (date.isPresent()) {
-                String iso = SqlEncode.date(date.get());
+                String iso = SqlEncode.dateTime(date.get());
                 if (shortDate) {
                     if (iso.length() > 10) {
                         // cut off the time
