@@ -351,10 +351,14 @@ class IsfdbPublicationListHandler
                 }
                 case XML_IMAGE: {
                     if (fetchCovers[0]) {
-                        final String tmpString = builder.toString().strip();
+                        String imageUrl = builder.toString().strip();
+                        // Sanity check
+                        if (imageUrl.startsWith("http:")) {
+                            imageUrl = "https:" + imageUrl.substring(5);
+                        }
                         try {
                             final String isbn = book.getString(DBKey.BOOK_ISBN);
-                            searchEngine.saveImage(context, tmpString, isbn, 0, null)
+                            searchEngine.saveImage(context, imageUrl, isbn, 0, null)
                                         .ifPresent(fileSpec -> CoverFileSpecArray
                                                 .setFileSpec(book, 0, fileSpec));
 
