@@ -49,6 +49,7 @@ import static org.junit.Assert.assertEquals;
  * as the accumulator checks for the real files (which won't be there).
  * It is assumed that if Authors/Series/etc... get processed ok, then so will the fileSpecs.
  */
+@SuppressWarnings("MissingJavadoc")
 public class ResultsAccumulatorTest
         extends BaseDBTest {
 

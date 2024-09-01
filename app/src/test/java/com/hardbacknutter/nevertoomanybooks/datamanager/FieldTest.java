@@ -65,7 +65,7 @@ public class FieldTest
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
         assertInstanceOf(String.class, out);
-        assertEquals("7.0", (String) out);
+        assertEquals("7.0", out);
 
         final DoubleNumberFormatter doubleNumberFormatter = new DoubleNumberFormatter(
                 realNumberParser);

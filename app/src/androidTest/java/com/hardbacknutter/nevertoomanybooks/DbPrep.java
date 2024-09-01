@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
  * {@link InstrumentationRegistry#getInstrumentation()#getTargetContext()}
  * or {@link ServiceLocator#getAppContext()}.
  */
+@SuppressWarnings("MissingJavadoc")
 public class DbPrep {
     public static final String[] COVER = {"0.jpg", "1.jpg"};
 

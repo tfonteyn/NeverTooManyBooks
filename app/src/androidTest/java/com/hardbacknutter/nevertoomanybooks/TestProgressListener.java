@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
+@SuppressWarnings("MissingJavadoc")
 public class TestProgressListener
         implements ProgressListener {
 

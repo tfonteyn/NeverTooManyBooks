@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,9 +35,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MoneyTest
         extends Base {
@@ -95,10 +95,10 @@ public class MoneyTest
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
-        assertTrue(out instanceof Money);
-        final Money mOut = (Money) out;
-        assertEquals(twelveDotThreeFour, mOut.getValue());
-        final Currency currency = mOut.getCurrency();
+        assertInstanceOf(Money.class, out);
+        final Money moneyOut = (Money) out;
+        assertEquals(twelveDotThreeFour, moneyOut.getValue());
+        final Currency currency = moneyOut.getCurrency();
         assertNotNull(currency);
         assertEquals("GBP", currency.getCurrencyCode());
 
@@ -117,6 +117,7 @@ public class MoneyTest
 
         final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
+        // Test for put(.., Object); do NOT replace with putMoney
         dataManager.put(DBKey.PRICE_LISTED, money);
 
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
@@ -141,15 +142,17 @@ public class MoneyTest
 
         final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
+        // Test for put(.., Object); do NOT replace with putMoney
         dataManager.put(DBKey.PRICE_LISTED, money);
 
+        // Test for get(.., Object); do NOT replace with getMoney
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
 
-        assertTrue(out instanceof Money);
-        final Money mOut = (Money) out;
-        assertEquals(twelveDotThreeFour, mOut.getValue());
-        final Currency currency = mOut.getCurrency();
+        assertInstanceOf(Money.class, out);
+        final Money moneyOut = (Money) out;
+        assertEquals(twelveDotThreeFour, moneyOut.getValue());
+        final Currency currency = moneyOut.getCurrency();
         assertNotNull(currency);
         assertEquals("GBP", currency.getCurrencyCode());
 
@@ -197,10 +200,10 @@ public class MoneyTest
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
 
-        assertTrue(out instanceof Money);
-        final Money mOut = (Money) out;
-        assertEquals(twelveDotThreeFour, mOut.getValue());
-        final Currency currency = mOut.getCurrency();
+        assertInstanceOf(Money.class, out);
+        final Money moneyOut = (Money) out;
+        assertEquals(twelveDotThreeFour, moneyOut.getValue());
+        final Currency currency = moneyOut.getCurrency();
         assertNotNull(currency);
         assertEquals("GBP", currency.getCurrencyCode());
 
@@ -264,10 +267,10 @@ public class MoneyTest
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
-        assertTrue(out instanceof Money);
-        final Money mOut = (Money) out;
-        assertEquals(twelveDotThreeFour, mOut.getValue());
-        assertNull(mOut.getCurrency());
+        assertInstanceOf(Money.class, out);
+        final Money moneyOut = (Money) out;
+        assertEquals(twelveDotThreeFour, moneyOut.getValue());
+        assertNull(moneyOut.getCurrency());
 
         MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, null);
     }
@@ -280,7 +283,7 @@ public class MoneyTest
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
-        assertTrue(out instanceof String);
-        assertEquals("Far to much dosh", (String) out);
+        assertInstanceOf(String.class, out);
+        assertEquals("Far to much dosh", out);
     }
 }

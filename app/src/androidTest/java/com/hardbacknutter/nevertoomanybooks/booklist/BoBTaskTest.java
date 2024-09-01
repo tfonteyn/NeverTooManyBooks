@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,6 +63,7 @@ public class BoBTaskTest
                 .stream()
                 .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted,
                                                             s1.get()))
+                .filter(list -> !list.isEmpty())
                 .count();
 
         // some keys generate two expressions, don't bother checking
@@ -86,6 +87,7 @@ public class BoBTaskTest
                 .stream()
                 .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted,
                                                             s1.get()))
+                .filter(list -> !list.isEmpty())
                 .count();
 
         // some keys generate two expressions, don't bother checking

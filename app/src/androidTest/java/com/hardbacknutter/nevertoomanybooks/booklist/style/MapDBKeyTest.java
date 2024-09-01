@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,6 +57,7 @@ public class MapDBKeyTest
         final long labelCount = keys
                 .stream()
                 .map(key -> MapDBKey.getLabel(context, key))
+                .filter(label -> !label.isBlank())
                 .count();
 
         assertEquals(labelCount, keys.size());
@@ -77,6 +78,7 @@ public class MapDBKeyTest
         final long labelCount = keys
                 .stream()
                 .map(key -> MapDBKey.getLabel(context, key))
+                .filter(label -> !label.isBlank())
                 .count();
 
         assertEquals(labelCount, keys.size());
@@ -98,6 +100,7 @@ public class MapDBKeyTest
         final long domainCount = keys
                 .stream()
                 .map(MapDBKey::getDomainName)
+                .filter(label -> !label.isBlank())
                 .count();
 
         assertEquals(domainCount, keys.size());
@@ -118,6 +121,7 @@ public class MapDBKeyTest
         final long domainCount = keys
                 .stream()
                 .map(MapDBKey::getDomainName)
+                .filter(label -> !label.isBlank())
                 .count();
 
         assertEquals(domainCount, keys.size());
