@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/btn_save"
+    android:id="@+id/toolbar_btn_save"
     style="@style/Toolbar.Button"
     android:contentDescription="@string/action_save"
     app:icon="@drawable/save_24px"

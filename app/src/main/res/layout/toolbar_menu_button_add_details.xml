@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/btn_add_details"
+    android:id="@+id/toolbar_btn_add_details"
     style="@style/Toolbar.Button"
     android:contentDescription="@string/action_add_with_details"
     app:icon="@drawable/add_card_24px"

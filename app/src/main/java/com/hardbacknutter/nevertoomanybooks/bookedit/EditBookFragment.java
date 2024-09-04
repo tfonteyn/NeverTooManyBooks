@@ -405,7 +405,7 @@ public class EditBookFragment
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_SAVE);
             //noinspection DataFlowIssue
-            final Button button = menuItem.getActionView().findViewById(R.id.btn_save);
+            final Button button = menuItem.getActionView().findViewById(R.id.toolbar_btn_save);
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
         }
 

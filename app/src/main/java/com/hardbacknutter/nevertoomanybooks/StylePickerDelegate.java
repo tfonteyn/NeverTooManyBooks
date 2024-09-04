@@ -155,7 +155,7 @@ class StylePickerDelegate
 
         if (button != null) {
             final int id = button.getId();
-            if (id == R.id.btn_select || id == R.id.btn_positive) {
+            if (id == R.id.toolbar_btn_select || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     owner.dismiss();
                 }

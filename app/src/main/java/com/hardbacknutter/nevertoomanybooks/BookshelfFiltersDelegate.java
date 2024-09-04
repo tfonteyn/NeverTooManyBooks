@@ -170,7 +170,7 @@ class BookshelfFiltersDelegate
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
-            if (id == R.id.btn_clear || id == R.id.btn_neutral) {
+            if (id == R.id.toolbar_btn_clear || id == R.id.btn_neutral) {
                 vm.setModified(true);
                 vm.getFilterList().clear();
                 if (saveChanges()) {
@@ -178,11 +178,11 @@ class BookshelfFiltersDelegate
                 }
                 return true;
 
-            } else if (id == R.id.btn_add) {
+            } else if (id == R.id.toolbar_btn_add) {
                 onAdd();
                 return true;
 
-            } else if (id == R.id.btn_select || id == R.id.btn_positive) {
+            } else if (id == R.id.toolbar_btn_select || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     owner.dismiss();
                 }

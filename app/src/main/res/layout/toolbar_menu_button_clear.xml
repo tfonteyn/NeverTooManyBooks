@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/btn_clear"
+    android:id="@+id/toolbar_btn_clear"
     style="@style/Toolbar.Button"
     android:contentDescription="@string/action_clear"
     app:icon="@drawable/clear_all_24px"

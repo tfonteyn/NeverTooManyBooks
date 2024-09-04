@@ -267,9 +267,9 @@ public class EditBookAuthorListDialogFragment
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             // Fullscreen only;
-            // R.id.btn_add
-            // R.id.btn_add_details
-            onAdd(button.getId() == R.id.btn_add_details);
+            // R.id.toolbar_btn_add
+            // R.id.toolbar_btn_add_details
+            onAdd(button.getId() == R.id.toolbar_btn_add_details);
             return true;
         }
         return false;

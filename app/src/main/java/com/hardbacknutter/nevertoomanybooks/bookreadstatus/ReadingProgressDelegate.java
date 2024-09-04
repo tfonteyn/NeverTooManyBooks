@@ -242,7 +242,7 @@ class ReadingProgressDelegate
                 ReadingProgressLauncher.setResult(owner, requestKey, true);
                 owner.dismiss();
                 return true;
-            } else if (id == R.id.btn_save || id == R.id.btn_positive) {
+            } else if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     owner.dismiss();
                 }

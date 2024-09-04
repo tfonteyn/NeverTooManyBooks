@@ -263,9 +263,9 @@ public class EditBookSeriesListDialogFragment
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             // Fullscreen only;
-            // R.id.btn_add
-            // R.id.btn_add_details (2024-03-28: not used/available for now)
-            onAdd(button.getId() == R.id.btn_add_details);
+            // R.id.toolbar_btn_add
+            // R.id.toolbar_btn_add_details (2024-03-28: not used/available for now)
+            onAdd(button.getId() == R.id.toolbar_btn_add_details);
             return true;
         }
         return false;

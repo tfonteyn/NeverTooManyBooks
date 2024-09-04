@@ -159,7 +159,7 @@ class EditBookSeriesDelegate
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
-            if (id == R.id.btn_save || id == R.id.btn_positive) {
+            if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     owner.dismiss();
                 }
