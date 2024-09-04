@@ -131,20 +131,20 @@
     <!-- A highlighted button placed in toolbars menus as an "actionLayout"
          (parent is '?attr/materialIconButtonFilledTonalStyle).
 
-          FIXME: there is a problem with the "backgroundTint"
-          BottomSheet + Fullscreen dialogs, it will correctly be applied
-          ('teal' variations in both dark/light modes).
-
-           When used in a floating dialog, it will reset to "colorOnSurface" (a 'grey' color)
-           When using the layout-inspector it shows "teal" being applied, but its "grey"
-           in the device/emulator.
+        2024-09-04: Getting the "backgroundTint" correct has proven to be VERY tricky.
+        - we need to hardcode it here to ?attr/colorSecondaryContainer
+          to get the FRAGMENT toolbar button to be consistent in both
+          dynamic-colors and classic theme.
+        - but, we need to explicitly set it in code for Dialog/BottomSheet
+          ==> see com/hardbacknutter/nevertoomanybooks/dialogs/FlexToolbar.java
           -->
     <style name="Toolbar.Button"
-           parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
+           parent="@style/Widget.Material3.Button.IconButton.Filled">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
         <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="backgroundTint">?attr/colorSecondaryContainer</item>
     </style>
 
     <!-- *************************************************************************************** -->

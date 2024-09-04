@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.content.res.ColorStateList;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -92,7 +93,7 @@ public interface FlexToolbar {
             if (actionView != null) {
                 if (actionView instanceof Button) {
                     // Single button as top-level view
-                    actionView.setOnClickListener(this::onToolbarButtonClick);
+                    initToolbarButton(owner, (Button) actionView);
 
                 } else if (actionView instanceof ViewGroup) {
                     // A ViewGroup with multiple Buttons.
@@ -100,7 +101,7 @@ public interface FlexToolbar {
                     for (int c = 0; c < av.getChildCount(); c++) {
                         final View child = av.getChildAt(c);
                         if (child instanceof Button) {
-                            child.setOnClickListener(this::onToolbarButtonClick);
+                            initToolbarButton(owner, (Button) child);
                         }
                     }
                 }
@@ -128,5 +129,21 @@ public interface FlexToolbar {
             // and the actual toolbar.
             toolbar.setBackgroundColor(statusBarColor);
         }
+    }
+
+    private void initToolbarButton(@NonNull final DialogFragment owner,
+                                   @NonNull final Button btn) {
+        btn.setOnClickListener(this::onToolbarButtonClick);
+
+        // For a reason not understood, the style "Toolbar.Button" where we set
+        //  <item name="backgroundTint">?attr/colorSecondaryContainer</item>
+        // get overridden by the system. We need to explicitly reset the backgroundTint
+        // to the desired attribute using the context from the FRAGMENT !
+        // See style "Toolbar.Button" for extra comments.
+        //noinspection DataFlowIssue
+        final int color = AttrUtils.getColorInt(
+                owner.getContext(),
+                com.google.android.material.R.attr.colorSecondaryContainer);
+        btn.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 }
