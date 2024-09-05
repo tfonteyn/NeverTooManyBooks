@@ -136,6 +136,7 @@ class EditBookAuthorDelegate
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
             initToolbar(owner, dialogType, toolbar);
+            toolbar.setSubtitle(vm.getBook().getTitle());
         }
 
         final Context context = vb.getRoot().getContext();
@@ -163,14 +164,6 @@ class EditBookAuthorDelegate
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.familyName.requestFocus();
-    }
-
-    @Override
-    public void initToolbar(@NonNull final DialogFragment owner,
-                            @NonNull final DialogType dialogType,
-                            @NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
-        toolbar.setSubtitle(vm.getBook().getTitle());
     }
 
     private void setupRealAuthorField(@NonNull final Context context) {

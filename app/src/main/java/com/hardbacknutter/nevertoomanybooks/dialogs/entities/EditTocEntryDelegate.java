@@ -99,6 +99,11 @@ class EditTocEntryDelegate
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
             initToolbar(owner, dialogType, toolbar);
+            final String bookTitle = vm.getBookTitle();
+            // Only override the default if we have a book title
+            if (bookTitle != null) {
+                toolbar.setTitle(bookTitle);
+            }
         }
 
         final Context context = vb.getRoot().getContext();
@@ -134,17 +139,6 @@ class EditTocEntryDelegate
 
             vb.lblAuthor.setVisibility(View.GONE);
             vb.author.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void initToolbar(@NonNull final DialogFragment owner,
-                            @NonNull final DialogType dialogType,
-                            @NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
-        final String toolbarTitle = vm.getBookTitle();
-        if (toolbarTitle != null) {
-            toolbar.setTitle(toolbarTitle);
         }
     }
 

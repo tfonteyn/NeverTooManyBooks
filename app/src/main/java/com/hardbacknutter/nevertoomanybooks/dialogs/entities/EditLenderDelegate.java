@@ -117,6 +117,7 @@ class EditLenderDelegate
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
             initToolbar(owner, dialogType, toolbar);
+            toolbar.setSubtitle(vm.getBookTitle());
         }
 
         final Context context = vb.getRoot().getContext();
@@ -138,14 +139,6 @@ class EditLenderDelegate
         }
 
         vb.lendTo.requestFocus();
-    }
-
-    @Override
-    public void initToolbar(@NonNull final DialogFragment owner,
-                            @NonNull final DialogType dialogType,
-                            @NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
-        toolbar.setSubtitle(vm.getBookTitle());
     }
 
     @RequiresPermission(Manifest.permission.READ_CONTACTS)

@@ -128,6 +128,7 @@ class EditInLineStringDelegate
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
             initToolbar(owner, dialogType, toolbar);
+            toolbar.setTitle(dialogTitle);
         }
 
         final Context context = vb.getRoot().getContext();
@@ -153,14 +154,6 @@ class EditInLineStringDelegate
         vb.editString.setAdapter(adapter);
 
         vb.editString.requestFocus();
-    }
-
-    @Override
-    public void initToolbar(@NonNull final DialogFragment owner,
-                            @NonNull final DialogType dialogType,
-                            @NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
-        toolbar.setTitle(toolbarTitle);
     }
 
     @Override

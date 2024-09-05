@@ -167,6 +167,7 @@ class CoverBrowserDelegate
 
         if (toolbar != null) {
             initToolbar(owner, dialogType, toolbar);
+            toolbar.setSubtitle(bookTitle);
         }
 
         final Context context = vb.getRoot().getContext();
@@ -206,14 +207,6 @@ class CoverBrowserDelegate
                 owner.dismiss();
             }
         });
-    }
-
-    @Override
-    public void initToolbar(@NonNull final DialogFragment owner,
-                            @NonNull final DialogType dialogType,
-                            @NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
-        toolbar.setSubtitle(bookTitle);
     }
 
     @Override

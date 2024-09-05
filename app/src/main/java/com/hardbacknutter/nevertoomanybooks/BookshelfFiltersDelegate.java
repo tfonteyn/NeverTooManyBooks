@@ -131,6 +131,7 @@ class BookshelfFiltersDelegate
 
         if (toolbar != null) {
             initToolbar(owner, dialogType, toolbar);
+            toolbar.setSubtitle(vm.getBookshelf().getName());
         }
 
         final Context context = vb.getRoot().getContext();
@@ -139,14 +140,6 @@ class BookshelfFiltersDelegate
         vb.filterList.setAdapter(adapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
-    }
-
-    @Override
-    public void initToolbar(@NonNull final DialogFragment owner,
-                            @NonNull final DialogType dialogType,
-                            @NonNull final Toolbar toolbar) {
-        FlexDialogDelegate.super.initToolbar(owner, dialogType, toolbar);
-        toolbar.setSubtitle(vm.getBookshelf().getName());
     }
 
     @NonNull
