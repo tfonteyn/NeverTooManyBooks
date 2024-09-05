@@ -44,6 +44,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.theme.ThemeColorController;
 
 /**
  * Used/defined in xml/preferences.xml
+ * <p>
+ * On Android 15, when the user changes the Theme Colors,
+ * the toolbar is automatically changed, but the background of the status bar
+ * will switch to transparent.
+ * When quitting settings back to the BoB, the status bar background will be correct again.
+ * 2024-09-05: not fixing this issue... Android is just a [bleeping] mess and this detail
+ * is just not worth my time.
  */
 @Keep
 public class UserInterfacePreferenceFragment
