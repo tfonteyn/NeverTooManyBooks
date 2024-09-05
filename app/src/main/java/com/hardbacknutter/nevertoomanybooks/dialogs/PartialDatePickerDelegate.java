@@ -220,6 +220,9 @@ class PartialDatePickerDelegate
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
+            if (dialogType == DialogType.BottomSheet) {
+                toolbar.inflateMenu(R.menu.toolbar_action_save);
+            }
             initToolbar(owner, dialogType, toolbar);
             toolbar.setTitle(dialogTitle);
         }

@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
 
-
 public class StylePickerDialogFragment
         extends BaseFFDialogFragment {
 
@@ -46,10 +45,9 @@ public class StylePickerDialogFragment
         final StylePickerDelegate pickerDelegate = (StylePickerDelegate) delegate;
         adjustWindowSize(pickerDelegate.getRecyclerView(), 0.33f);
 
-        if (!isFullscreen()) {
-            // The floating dialog toolbar menu must
-            // hide these duplicate buttons in favour of the bottom button-bar
-            final Menu menu = pickerDelegate.getToolbar().getMenu();
+        if (isFloatingDialog()) {
+            // Hide duplicate buttons in favour of the bottom button-bar
+            final Menu menu = delegate.getToolbar().getMenu();
             menu.findItem(R.id.MENU_ACTION_SELECT).setVisible(false);
         }
     }

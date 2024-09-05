@@ -57,7 +57,7 @@ class EditInLineStringDelegate
         implements FlexDialogDelegate {
 
     @NonNull
-    private final String toolbarTitle;
+    private final String dialogTitle;
     @NonNull
     private final String label;
     @NonNull
@@ -95,7 +95,7 @@ class EditInLineStringDelegate
 
         final Context context = owner.getContext();
         //noinspection DataFlowIssue
-        this.toolbarTitle = context.getString(dialogTitleId);
+        this.dialogTitle = context.getString(dialogTitleId);
         this.label = context.getString(labelResId);
 
         this.daoSupplier = daoSupplier;
@@ -132,6 +132,9 @@ class EditInLineStringDelegate
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
+            if (dialogType == DialogType.BottomSheet) {
+                toolbar.inflateMenu(R.menu.toolbar_action_save);
+            }
             initToolbar(owner, dialogType, toolbar);
             toolbar.setTitle(dialogTitle);
         }

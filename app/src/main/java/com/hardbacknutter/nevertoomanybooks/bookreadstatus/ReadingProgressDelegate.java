@@ -134,8 +134,6 @@ class ReadingProgressDelegate
 
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
-        // URGENT: the toolbar does not really need a "save" button for the BottomSheet any longer.
-        //  keeping it for now for consistency, but we need to review ALL BottomSheet toolbars.
         if (toolbar != null) {
             initToolbar(owner, dialogType, toolbar);
         }

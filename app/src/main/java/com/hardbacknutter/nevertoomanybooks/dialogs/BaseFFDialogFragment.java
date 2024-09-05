@@ -102,8 +102,8 @@ public abstract class BaseFFDialogFragment
         }
     }
 
-    protected boolean isFullscreen() {
-        return fullscreen;
+    protected boolean isFloatingDialog() {
+        return !fullscreen;
     }
 
     /**
