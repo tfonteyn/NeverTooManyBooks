@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- *************************************************************************************** -->
+    <!-- Toolbars -->
+    <!-- *************************************************************************************** -->
+
+    <style name="Base.Toolbar"
+           parent="Widget.Material3.Toolbar.Surface">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <!-- padding added for bars with a subtitle which was sticking to the bottom
+             due to using "wrap_content" for the layout_height.
+             The 4dp seems to work out universally and this is better than setting
+             layout_height directly to attr/actionBarSize -->
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Base.Toolbar.Top">
+        <!-- We like a top-toolbar which shows some contrast to the rest of the screen.
+             So we set the background color and likewise re-color the text/icons as needed.
+             Note that the icon colors must be done using a materialThemeOverlay.
+
+             Without these adjustments, the toolbar will be
+              - default theme: white with black icon/text
+              - dynamic color: some very light variant of the wallpaper with black text/icons.
+              Neither of these look very appealing IMHO.
+
+              When using dynamic-color in dark-mode, the toolbar can be rather ugly depending
+              on the actual color to which the user has configured their device...
+              We're not going to "fix" this, as we don't have any control over how/when
+              Android is choosing those dynamic colors.
+              Theoretically we could apply or not-apply the below based on the dynamic-color
+              setting.... but adjusting to every Google/Android change is [bleeping] hard
+              enough already.
+              -->
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="subtitleTextColor">?attr/colorOnSurface</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
+    </style>
+
+    <!-- Activity top toolbar. -->
+    <style name="Toolbar.Activity"
+           parent="Base.Toolbar.Top">
+        <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
+    </style>
+
+    <!-- A fullscreen Dialog toolbar with a 'close' or 'back' icon. -->
+    <style name="Toolbar.Dialog.Fullscreen"
+           parent="Base.Toolbar.Top">
+        <!-- The default icon, will be overridden with a 'back' icon when needed -->
+        <item name="navigationIcon">@drawable/close_24px</item>
+    </style>
+
+    <!-- A floating Dialog or BottomSheet toolbar. -->
+    <style name="Toolbar.Dialog.Floating"
+           parent="Base.Toolbar">
+
+        <item name="android:background">@android:color/transparent</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
+    </style>
+
+    <!-- A highlighted button placed in toolbars menus as an "actionLayout"
+         (parent is '?attr/materialIconButtonFilledTonalStyle).
+
+        2024-09-04: Getting the "backgroundTint" correct has proven to be VERY tricky.
+        - we need to hardcode it here to ?attr/colorSecondaryContainer
+          to get the FRAGMENT toolbar button to be consistent in both
+          dynamic-colors and classic theme.
+        - but, we need to explicitly set it in code for Dialog/BottomSheet
+          ==> see com/hardbacknutter/nevertoomanybooks/dialogs/FlexToolbar.java
+          -->
+    <style name="Toolbar.Button"
+           parent="@style/Widget.Material3.Button.IconButton.Filled">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="backgroundTint">?attr/colorSecondaryContainer</item>
+    </style>
+
+</resources>
