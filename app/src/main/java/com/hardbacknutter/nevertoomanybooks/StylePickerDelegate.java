@@ -92,8 +92,8 @@ class StylePickerDelegate
     }
 
     @NonNull
-    Toolbar getToolbar() {
-        return Objects.requireNonNull(toolbar);
+    public Toolbar getToolbar() {
+        return Objects.requireNonNull(toolbar, "No toolbar set");
     }
 
     @Override

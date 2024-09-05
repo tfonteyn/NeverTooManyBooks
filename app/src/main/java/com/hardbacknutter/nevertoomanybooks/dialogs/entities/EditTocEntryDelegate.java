@@ -95,6 +95,11 @@ class EditTocEntryDelegate
         this.toolbar = toolbar;
     }
 
+    @NonNull
+    public Toolbar getToolbar() {
+        return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {

@@ -127,6 +127,11 @@ class ReadingProgressDelegate
         this.toolbar = toolbar;
     }
 
+    @NonNull
+    public Toolbar getToolbar() {
+        return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         // URGENT: the toolbar does not really need a "save" button for the BottomSheet any longer.

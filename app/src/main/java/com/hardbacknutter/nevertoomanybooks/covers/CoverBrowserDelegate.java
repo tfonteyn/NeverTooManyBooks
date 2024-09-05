@@ -158,7 +158,11 @@ class CoverBrowserDelegate
     @Override
     public void setToolbar(@Nullable final Toolbar toolbar) {
         this.toolbar = toolbar;
+    }
 
+    @NonNull
+    public Toolbar getToolbar() {
+        return Objects.requireNonNull(toolbar, "No toolbar set");
     }
 
     @Override

@@ -93,6 +93,16 @@ public interface FlexDialogDelegate
     void setToolbar(@Nullable Toolbar toolbar);
 
     /**
+     * Get the previously set toolbar.
+     *
+     * @return the toolbar
+     *
+     * @throws NullPointerException if there was no toolbar set
+     */
+    @NonNull
+    Toolbar getToolbar();
+
+    /**
      * Called from {@link Fragment#onViewCreated(View, Bundle)}.
      *
      * @param dialogType the type
