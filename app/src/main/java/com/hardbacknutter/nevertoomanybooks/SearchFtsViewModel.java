@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,11 +73,21 @@ public class SearchFtsViewModel
         return onSearchCriteriaUpdate;
     }
 
+    /**
+     * Get the current set of criteria.
+     *
+     * @return criteria, can be empty, but never {@code null}
+     */
     @NonNull
     public SearchCriteria getCriteria() {
         return Objects.requireNonNull(criteria);
     }
 
+    /**
+     * Execute the search using the current criteria.
+     * <p>
+     * Results will come back using {@link #onBooklistUpdate()}.
+     */
     public void search() {
         Objects.requireNonNull(criteria);
         final List<Long> list = dao.search(criteria.getFtsAuthor(),
