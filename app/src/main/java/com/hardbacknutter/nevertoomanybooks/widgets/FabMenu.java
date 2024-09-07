@@ -33,6 +33,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -48,7 +49,8 @@ public class FabMenu {
 
     /** Array with the submenu FAB buttons. Element {@code 0} shows at the bottom. */
     private ExtendedFloatingActionButton[] fabMenuItems;
-
+    @Nullable
+    private Consumer<Boolean> onOpenListener;
     /** Define a scroller to show, or collapse/hide the FAB. */
     private final RecyclerView.OnScrollListener updateFabVisibility =
             new RecyclerView.OnScrollListener() {
@@ -106,6 +108,15 @@ public class FabMenu {
         for (final ExtendedFloatingActionButton fabMenuItem : fabMenuItems) {
             fabMenuItem.setOnClickListener(listener);
         }
+    }
+
+    /**
+     * Set a listener to be notified of the menu being opened or closed.
+     *
+     * @param onOpenListener to set
+     */
+    public void setOnOpenListener(@Nullable final Consumer<Boolean> onOpenListener) {
+        this.onOpenListener = onOpenListener;
     }
 
     /**
@@ -193,6 +204,10 @@ public class FabMenu {
         } finally {
             baseX.recycle();
             baseY.recycle();
+        }
+
+        if (onOpenListener != null) {
+            onOpenListener.accept(show);
         }
     }
 }
