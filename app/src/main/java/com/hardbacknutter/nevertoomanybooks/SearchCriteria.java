@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,9 @@ import java.util.List;
 
 /**
  * Holder class for search criteria with some methods to bulk manipulate them.
+ *
+ * TODO: this class should be refactored to (set of) PFilter
+ *  and (maybe) integrated into the BookshelfFilters* classes.
  */
 public class SearchCriteria
         implements Parcelable {
