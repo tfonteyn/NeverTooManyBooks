@@ -178,6 +178,9 @@ public class BooksOnBookshelfViewModel
     private final MutableLiveData<LiveDataEvent<Boolean>> triggerRebuildList =
             new MutableLiveData<>();
 
+    private final MutableLiveData<Boolean> searchCriteriaAreActive =
+            new MutableLiveData<>();
+
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     @Nullable
     private SearchCriteria searchCriteria;
@@ -308,7 +311,6 @@ public class BooksOnBookshelfViewModel
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {
 
-
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
             bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
@@ -319,12 +321,14 @@ public class BooksOnBookshelfViewModel
             if (args != null) {
                 proposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
 
-                // extract search criteria if any are present
+                // Check for incoming criteria
                 searchCriteria = args.getParcelable(SearchCriteria.BKEY);
+                // Typically there won't be any, create them if needed.
                 if (searchCriteria == null) {
                     searchCriteria = new SearchCriteria();
                 }
 
+                // There MAY be a list of book id's.
                 final List<Long> bookIdlist = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
                 if (bookIdlist != null) {
                     searchCriteria.setBookIdList(bookIdlist);
@@ -341,8 +345,7 @@ public class BooksOnBookshelfViewModel
                 if (args.containsKey(DBKey.FK_BOOKSHELF)) {
                     // might be null, that's ok.
                     bookshelf = bookshelfDao
-                            .getBookshelf(context,
-                                          args.getInt(DBKey.FK_BOOKSHELF))
+                            .getBookshelf(context, args.getInt(DBKey.FK_BOOKSHELF))
                             .orElse(null);
                 }
             }
@@ -358,6 +361,8 @@ public class BooksOnBookshelfViewModel
             searchCriteria = new SearchCriteria();
         }
 
+        searchCriteriaAreActive.setValue(!searchCriteria.isEmpty());
+
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
         if (bookshelf == null) {
@@ -366,9 +371,6 @@ public class BooksOnBookshelfViewModel
                                                   Bookshelf.HARD_DEFAULT)
                                     .orElseThrow();
         }
-
-        // preserve the current Layout so we can react to style/layout changes
-//        currentLayout = bookshelf.getStyle().getLayout();
     }
 
     boolean isProposeBackup() {
@@ -693,6 +695,20 @@ public class BooksOnBookshelfViewModel
     @NonNull
     SearchCriteria getSearchCriteria() {
         return Objects.requireNonNull(searchCriteria);
+    }
+
+    /**
+     * Clear the search-criteria and update the observable.
+     */
+    void clearSearchCriteria() {
+        Objects.requireNonNull(searchCriteria);
+        searchCriteria.clear();
+        searchCriteriaAreActive.setValue(false);
+    }
+
+    @NonNull
+    MutableLiveData<Boolean> getSearchCriteriaAreActive() {
+        return searchCriteriaAreActive;
     }
 
     /**
@@ -1253,6 +1269,7 @@ public class BooksOnBookshelfViewModel
 
     void onFtsSearchFinished(@NonNull final SearchCriteria criteria) {
         searchCriteria = criteria;
+        searchCriteriaAreActive.setValue(!searchCriteria.isEmpty());
         forceRebuildInOnResume = true;
     }
 

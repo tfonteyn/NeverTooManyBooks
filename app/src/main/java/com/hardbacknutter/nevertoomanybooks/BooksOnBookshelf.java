@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -299,54 +300,32 @@ public class BooksOnBookshelf
             new SpinnerInteractionListener(this::onBookshelfSelected);
 
     private NavDrawer navDrawer;
-    /**
-     * The single back-press handler.
-     * <p>
-     * <a href="https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#best-practices">Best practices</a>
-     * states that we should have multiple handlers and enable/disable them as needed.
-     * e.g. have a callback to close the Navigation drawer solely.
-     * and trigger the enable/disable using an observable. That's all very well if the
-     * state is held in the ViewModel, but for all 3 situation in our handler
-     * the state is directly dependent on another UI element. It would be absurd to
-     * duplicate state in the VM. So... sticking with conditionals in this single handler.
-     * <p>
-     * Notes:
-     * - a {@link DrawerLayout.SimpleDrawerListener} could be used for the nav-drawer.
-     * - we could implement a similar listener on the FABMenu.
-     * - the SearchCriteria could be handled as per above link.
-     * ... so code in 3 different places as compared to all of it centralized here
-     */
-    private final OnBackPressedCallback backPressedCallback =
-            new OnBackPressedCallback(true) {
+
+    private final OnBackPressedCallback backClosesNavDrawer =
+            new OnBackPressedCallback(false) {
                 @Override
                 public void handleOnBackPressed() {
-                    // It's possible to have both FAB and NAV open if the
-                    // user first opened the FAB, then swiped the NAV into visibility.
-                    // So make sure to close both before deciding we're done here.
-                    final boolean navClosed = navDrawer.close();
-                    final boolean fabClosed = fabMenu.hideMenu();
-
-                    // If either was actually closed, we're done here
-                    if (navClosed || fabClosed) {
-                        return;
-                    }
-
-                    // Secondly, after an "Advanced Local Search", the BoB
-                    // will be displaying a filtered list.
-                    // i.e. the current list will have search criteria present,
-                    // If the user taps 'back' we clear the search criteria and rebuild the list.
-                    if (isTaskRoot() && !vm.getSearchCriteria().isEmpty()) {
-                        vm.getSearchCriteria().clear();
-                        setNavIcon();
-                        buildBookList();
-                        return;
-                    }
-
-                    // Prevent looping
-                    this.setEnabled(false);
-                    // Simulate the user pressing the 'back' key,
-                    // which minimize the app.
-                    getOnBackPressedDispatcher().onBackPressed();
+                    // Paranoia... the drawer listener should/will disable us.
+                    backClosesNavDrawer.setEnabled(false);
+                    navDrawer.close();
+                }
+            };
+    private final OnBackPressedCallback backClosesFabMenu =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    // Paranoia... the FaMenu onOpenListener should/will disable us
+                    backClosesFabMenu.setEnabled(false);
+                    fabMenu.hideMenu();
+                }
+            };
+    private final OnBackPressedCallback backClearsSearchCriteria =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    vm.clearSearchCriteria();
+                    setNavIcon();
+                    buildBookList();
                 }
             };
 
@@ -377,12 +356,11 @@ public class BooksOnBookshelf
         InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
         InsetsListenerBuilder.apply(vb.content.list);
 
-        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
-
         createFragmentLaunchers();
         createViewModel();
+
         createSyncDelegates();
-        createHandlers();
+        createCalibreServerHandler();
 
         navDrawer = new NavDrawer(vb.drawerLayout, menuItem ->
                 onNavigationItemSelected(menuItem.getItemId()));
@@ -401,7 +379,10 @@ public class BooksOnBookshelf
         // Otherwise, even while not showing, it will be put in 'resumed' state by the system
         removeEmbeddedDetailsFragment();
 
-        // Popup the search widget when the user starts to type.
+        // Create the various OnBackHandlers and setup their listener/observers
+        createOnBackHandlers();
+
+        // Enable popup for the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         // check & get search text coming from a system search intent
@@ -422,6 +403,35 @@ public class BooksOnBookshelf
                         .show();
             }
         }
+    }
+
+    /**
+     * Create the OnBackPressedDispatcher.
+     *
+     * @see <a href="https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#best-practices">
+     *         predictive-back-gesture</a>
+     */
+    private void createOnBackHandlers() {
+        final OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+
+        dispatcher.addCallback(this, backClosesNavDrawer);
+        vb.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(@NonNull final View drawerView) {
+                backClosesNavDrawer.setEnabled(true);
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull final View drawerView) {
+                backClosesNavDrawer.setEnabled(false);
+            }
+        });
+
+        dispatcher.addCallback(this, backClosesFabMenu);
+        fabMenu.setOnOpenListener(backClosesFabMenu::setEnabled);
+
+        dispatcher.addCallback(this, backClearsSearchCriteria);
+        vm.getSearchCriteriaAreActive().observe(this, backClearsSearchCriteria::setEnabled);
     }
 
     private void createFragmentLaunchers() {
@@ -535,7 +545,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Create the optional launcher and delegates.
+     * Create the optional synchronization launchers and delegates.
      */
     private void createSyncDelegates() {
 
@@ -568,9 +578,10 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Create the (optional) handlers.
+     * Create the Calibre handler which deals with a Calibre enabled book.
+     * i.e. books which exist in the optional Calibre Content Server.
      */
-    private void createHandlers() {
+    private void createCalibreServerHandler() {
         if (calibreHandler == null && SyncServer.CalibreCS.isEnabled(this)) {
             try {
                 calibreHandler = new CalibreHandler(this, this)
@@ -713,6 +724,8 @@ public class BooksOnBookshelf
         if (isRootActivity()) {
             vb.toolbar.setNavigationIcon(R.drawable.menu_24px);
         } else {
+            // If we have search criteria enabled (i.e. we're filtering the current list)
+            // we will NOT be the root Activity.
             vb.toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
         }
     }
@@ -854,14 +867,17 @@ public class BooksOnBookshelf
             return;
         }
 
-        // If we have search criteria enabled (i.e. we're filtering the current list)
-        // then we should display the 'up' indicator.
+        // Adjust the icon depending on whether we have search-criteria active or not.
         setNavIcon();
 
+        // update the back-handler depending on the presence of search-criteria.
+        backClearsSearchCriteria.setEnabled(!vm.getSearchCriteria().isEmpty());
+
+        // update the fab menu visibility depending on current user settings
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
                .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab(this)));
 
-        // Initialize/Update the list of bookshelves
+        // Update the list of bookshelves
         vm.reloadBookshelfList(this);
         bookshelfAdapter.notifyDataSetChanged();
         // and select the current shelf.
