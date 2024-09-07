@@ -44,10 +44,13 @@ public class SearchFtsContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final SearchCriteria criteria) {
-        return FragmentHostActivity
-                .createIntent(context, SearchFtsFragment.class)
-                .putExtra(SearchCriteria.BKEY, criteria);
+                               @Nullable final SearchCriteria criteria) {
+        final Intent intent = FragmentHostActivity
+                .createIntent(context, SearchFtsFragment.class);
+        if (criteria != null && !criteria.isEmpty()) {
+            intent.putExtra(SearchCriteria.BKEY, criteria);
+        }
+        return intent;
     }
 
     @Override
@@ -62,10 +65,12 @@ public class SearchFtsContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
+        // The criteria are always present, but can be empty.
         final SearchCriteria searchCriteria = intent.getParcelableExtra(SearchCriteria.BKEY);
         if (searchCriteria != null) {
             return Optional.of(searchCriteria);
         } else {
+            // Paranoia, we should never get here.
             return Optional.empty();
         }
     }
