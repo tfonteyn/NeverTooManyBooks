@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -93,7 +94,7 @@ public interface FlexToolbar {
             if (actionView != null) {
                 if (actionView instanceof Button) {
                     // Single button as top-level view
-                    initToolbarButton(owner, (Button) actionView);
+                    initToolbarButton(owner, dialogType, (Button) actionView);
 
                 } else if (actionView instanceof ViewGroup) {
                     // A ViewGroup with multiple Buttons.
@@ -101,7 +102,7 @@ public interface FlexToolbar {
                     for (int c = 0; c < av.getChildCount(); c++) {
                         final View child = av.getChildAt(c);
                         if (child instanceof Button) {
-                            initToolbarButton(owner, (Button) child);
+                            initToolbarButton(owner, dialogType, (Button) child);
                         }
                     }
                 }
@@ -111,7 +112,6 @@ public interface FlexToolbar {
         // The status-bar and toolbar background color must be set dynamically
         // in order to follow the Dynamic Colors.
         if (dialogType == DialogType.Fullscreen) {
-
             InsetsListenerBuilder.apply(toolbar);
 
             // Reminder: calling this HAS NO EFFECT
@@ -119,20 +119,32 @@ public interface FlexToolbar {
             //     owner.getDialog().getWindow().setNavigationBarContrastEnforced(false);
             // }
 
-            // Instead we need to manually get the current (dynamic) color to use
-            //noinspection DataFlowIssue
-            final int statusBarColor = AttrUtils.getColorInt(owner.getContext(),
-                                                             android.R.attr.statusBarColor);
-            // and force the status-bar background
-            //noinspection DataFlowIssue
-            owner.getDialog().getWindow().setStatusBarColor(statusBarColor);
-            // and the actual toolbar.
-            toolbar.setBackgroundColor(statusBarColor);
+            // FIXME: android 15 has deprecated R.attr.statusBarColor (but reading the value works)
+            //  it's expected that android 16 might fail here !
+            // Make sure we do NOT crash on Android 16. To be revisited in summer 2025.
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                // Instead we need to manually get the current (dynamic) color to use
+                //noinspection DataFlowIssue
+                final int statusBarColor = AttrUtils.getColorInt(owner.getContext(),
+                                                                 android.R.attr.statusBarColor);
+                // and force the status-bar background
+                // Android 15 is setting it correctly, but android 14- is not.
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    // Android 14-: manually set it
+                    //noinspection DataFlowIssue
+                    owner.getDialog().getWindow().setStatusBarColor(statusBarColor);
+                }
+
+                // and the actual toolbar.
+                toolbar.setBackgroundColor(statusBarColor);
+            }
         }
     }
 
     private void initToolbarButton(@NonNull final DialogFragment owner,
+                                   @NonNull final DialogType dialogType,
                                    @NonNull final Button btn) {
+
         btn.setOnClickListener(this::onToolbarButtonClick);
 
         // For a reason not understood, the style "Toolbar.Button" where we set
