@@ -31,6 +31,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
 
+/**
+ * Note we're NOT extending BaseFFDialogFragment.
+ * This dialog is only used/shown as a floating-dialog.
+ * The view uses a simple Material AlertDialog.
+ */
 public class MultiChoiceDialogFragment
         extends DialogFragment {
 
@@ -48,6 +53,7 @@ public class MultiChoiceDialogFragment
 
         final DialogSelectMultipleBinding vb = DialogSelectMultipleBinding.inflate(
                 getLayoutInflater(), null, false);
+
         // Ensure the drag handle is hidden.
         vb.dragHandle.setVisibility(View.GONE);
         // Ensure the unused title field is hidden

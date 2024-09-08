@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,11 +37,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
 
 /**
- * Note that {@link #onDismiss(DialogInterface)} will <strong>save</strong> the selection.
+ * Note that we're NOT extending BaseBottomSheetDialogFragment.
+ * The view is simplified and does not use a toolbar.
+ * There is no dedicated 'save' button.
+ * {@link #onDismiss(DialogInterface)} will <strong>save</strong> the selection.
  */
 public class SingleChoiceBottomSheet
         extends BottomSheetDialogFragment {
 
+    /** Must be created/set in {@link #onCreate(Bundle)}. */
     private SingleChoiceDelegate delegate;
     private DialogSelectOneBinding vb;
 
@@ -65,16 +68,8 @@ public class SingleChoiceBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Ensure the drag handle is visible.
-        vb.dragHandle.setVisibility(View.VISIBLE);
-        vb.title.setText(delegate.getDialogTitle());
-        delegate.onViewCreated(vb);
-    }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final Dialog dialog = super.onCreateDialog(savedInstanceState);
+        final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 
         // Due to multi-use of the layouts, we don't set these in xml:
         final BottomSheetBehavior<FrameLayout> behavior =
@@ -84,7 +79,11 @@ public class SingleChoiceBottomSheet
         // Open fully when started.
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        return dialog;
+        // Ensure the drag handle is visible.
+        vb.dragHandle.setVisibility(View.VISIBLE);
+        // There is no toolbar, just a TextView for the dialog title.
+        vb.title.setText(delegate.getDialogTitle());
+        delegate.onViewCreated(vb);
     }
 
     @Override

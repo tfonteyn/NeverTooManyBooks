@@ -32,10 +32,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
 
 /**
+ * Note we're NOT extending BaseFFDialogFragment.
+ * This dialog is only used/shown as a floating-dialog.
+ * The view uses a simple Material AlertDialog.
+ * <p>
  * FIXME: not in use right now
  * Search the code for "setSingleChoiceItems" to check where this should be used.
- *
- * @see MultiChoiceDelegate
  */
 public class SingleChoiceDialogFragment
         extends DialogFragment {
@@ -54,6 +56,7 @@ public class SingleChoiceDialogFragment
 
         final DialogSelectOneBinding vb = DialogSelectOneBinding.inflate(
                 getLayoutInflater(), null, false);
+
         // Ensure the drag handle is hidden.
         vb.dragHandle.setVisibility(View.GONE);
         // Ensure the unused title field is hidden
