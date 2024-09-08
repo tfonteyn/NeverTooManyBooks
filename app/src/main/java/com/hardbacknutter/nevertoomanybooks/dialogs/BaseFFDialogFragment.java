@@ -84,8 +84,8 @@ public abstract class BaseFFDialogFragment
      */
     private boolean fullscreen;
 
-    @Override
     @CallSuper
+    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -112,8 +112,8 @@ public abstract class BaseFFDialogFragment
      * <p>
      * {@inheritDoc}
      */
-    @NonNull
     @Override
+    @NonNull
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Dialog dialog;
         if (fullscreen) {
@@ -142,8 +142,8 @@ public abstract class BaseFFDialogFragment
         return dialog;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -161,46 +161,73 @@ public abstract class BaseFFDialogFragment
         return view;
     }
 
-    @Override
     @CallSuper
+    @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Ensure the drag handle is hidden.
-        final View dragHandle = view.findViewById(R.id.drag_handle);
+        if (fullscreen) {
+            InsetsListenerBuilder.fragmentRootView(view);
+        }
+
+        initDragHandle(view);
+        initToolbar(view);
+        initButtonBar(view);
+
+        delegate.onViewCreated(fullscreen ? DialogType.Fullscreen : DialogType.Floating);
+    }
+
+    private void initDragHandle(@NonNull final View parent) {
+        // Ensure the drag handle as used for a BottomSheet is hidden.
+        final View dragHandle = parent.findViewById(R.id.drag_handle);
         if (dragHandle != null) {
             dragHandle.setVisibility(View.GONE);
         }
+    }
 
-        final Toolbar floatingToolbar = view.findViewById(R.id.dialog_toolbar);
-        final View buttonPanel = view.findViewById(R.id.button_panel_layout);
-
+    /**
+     * Setup the toolbar: use either the fragment toolbar in fullscreen mode,
+     * or else the floating dialog toolbar.
+     *
+     * @param parent root view
+     */
+    private void initToolbar(@NonNull final View parent) {
+        final Toolbar floatingToolbar = parent.findViewById(R.id.dialog_toolbar);
         if (fullscreen) {
-            InsetsListenerBuilder.fragmentRootView(view);
-
             // Hide the dialog toolbar
             if (floatingToolbar != null) {
                 floatingToolbar.setVisibility(View.GONE);
             }
             // and use the fragment toolbar instead
-            final Toolbar toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar),
+            final Toolbar toolbar = Objects.requireNonNull(parent.findViewById(R.id.toolbar),
                                                            "R.id.toolbar");
             delegate.setToolbar(toolbar);
 
-            // Hide the button bar at the bottom of the dialog
-            if (buttonPanel != null) {
-                buttonPanel.setVisibility(View.GONE);
-            }
         } else {
             // Show the dialog toolbar
             if (floatingToolbar != null) {
                 floatingToolbar.setVisibility(View.VISIBLE);
+                delegate.setToolbar(floatingToolbar);
             }
-            // can be null, that's ok
-            delegate.setToolbar(floatingToolbar);
+        }
+    }
 
-            // Show the button bar at the bottom of the dialog
+    /**
+     * Setup the (optional) button-bar at the bottom of the dialog:
+     * hidden in fullscreen mode and shown in floating dialog mode.
+     *
+     * @param parent root view
+     */
+    private void initButtonBar(@NonNull final View parent) {
+        final View buttonPanel = parent.findViewById(R.id.button_panel_layout);
+        if (fullscreen) {
+            // Hide the button bar
+            if (buttonPanel != null) {
+                buttonPanel.setVisibility(View.GONE);
+            }
+        } else {
+            // Show the button bar
             if (buttonPanel != null) {
                 buttonPanel.setVisibility(View.VISIBLE);
                 Button button;
@@ -220,8 +247,6 @@ public abstract class BaseFFDialogFragment
                 }
             }
         }
-
-        delegate.onViewCreated(fullscreen ? DialogType.Fullscreen : DialogType.Floating);
     }
 
     /**

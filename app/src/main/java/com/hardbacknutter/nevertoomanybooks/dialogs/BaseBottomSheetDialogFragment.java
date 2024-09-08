@@ -46,8 +46,8 @@ public class BaseBottomSheetDialogFragment
     /** Must be created/set in {@link #onCreate(Bundle)}. */
     protected FlexDialogDelegate delegate;
 
-    @Nullable
     @Override
+    @NonNull
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -76,30 +76,42 @@ public class BaseBottomSheetDialogFragment
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         // SOFT_INPUT_STATE_ALWAYS_VISIBLE
-        // This ensures that the first EditText field will be fully visible
-        // when the onscreen keyboard pops up.
+        //   Ensures that the first EditText field will be fully visible
+        //   when the onscreen keyboard pops up.
         // SOFT_INPUT_ADJUST_RESIZE
-        // Make sure the BottomSheet sits above the keyboard
+        //   Ensures the BottomSheet sits above the keyboard.
         //noinspection DataFlowIssue
         dialog.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
 
+        initDragHandle(view);
+        initToolbar(view);
+        initButtonBar(view);
+
+        delegate.onViewCreated(DialogType.BottomSheet);
+    }
+
+    private void initDragHandle(@NonNull final View parent) {
         // Ensure the drag handle is visible.
-        final View dragHandle = view.findViewById(R.id.drag_handle);
+        final View dragHandle = parent.findViewById(R.id.drag_handle);
         if (dragHandle != null) {
             dragHandle.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void initToolbar(@NonNull final View parent) {
+        // the dialog toolbar == bottom-sheet toolbar; can be null, that's ok
+        delegate.setToolbar(parent.findViewById(R.id.dialog_toolbar));
+    }
+
+    private void initButtonBar(@NonNull final View parent) {
         // Hide the button bar at the bottom of the dialog
-        final View buttonPanel = view.findViewById(R.id.button_panel_layout);
+        final View buttonPanel = parent.findViewById(R.id.button_panel_layout);
         if (buttonPanel != null) {
             buttonPanel.setVisibility(View.GONE);
         }
-
-        // the dialog toolbar == bottom-sheet toolbar; can be null, that's ok
-        delegate.setToolbar(view.findViewById(R.id.dialog_toolbar));
-        delegate.onViewCreated(DialogType.BottomSheet);
     }
 
     @Override
