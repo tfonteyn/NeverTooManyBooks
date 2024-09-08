@@ -586,7 +586,7 @@ public class CsvRecordReader
             }
         };
 
-        /** Bundle key if we get passed around. */
+        /** Bundle key to pass this object around. */
         public static final String BKEY = "Origin:bk";
 
         /** {@link Parcelable}. */

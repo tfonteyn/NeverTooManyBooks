@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,6 +63,7 @@ public class AmazonPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
 
+        //noinspection DataFlowIssue
         pHostUrl = findPreference(AmazonSearchEngine.PK_HOST_URL);
         //noinspection DataFlowIssue
         hostUrlValidator = initHostUrlPreference(pHostUrl);

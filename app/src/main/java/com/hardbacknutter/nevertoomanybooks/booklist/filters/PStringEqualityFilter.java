@@ -156,6 +156,8 @@ public class PStringEqualityFilter
      * UI support.
      *
      * @param context Current context
+     *
+     * @return the optional formatter
      */
     @Nullable
     private FieldFormatter<String> getFormatter(@NonNull final Context context) {

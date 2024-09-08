@@ -73,7 +73,7 @@ public class ImportResults
     /** Log tag. */
     private static final String TAG = "ImportResults";
 
-    /** Bundle key if we get passed around. */
+    /** Bundle key to pass this object around. */
     public static final String BKEY = TAG;
 
     /**

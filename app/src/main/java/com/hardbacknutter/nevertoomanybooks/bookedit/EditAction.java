@@ -42,6 +42,7 @@ public enum EditAction
      */
     EditInPlace;
 
+    /** Bundle key to pass this object around. */
     public static final String BKEY = "EditAction";
 
     /** {@link Parcelable}. */

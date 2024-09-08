@@ -30,9 +30,13 @@ import java.util.List;
 
 /**
  * Holder class for search criteria with some methods to bulk manipulate them.
- *
- * TODO: this class should be refactored to (set of) PFilter
- *  and (maybe) integrated into the BookshelfFilters* classes.
+ * <p>
+ * We combine three distinct types of criteria in a single object.
+ * <ul>
+ *     <li>a list of book-ids. When present, all other criteria are ignored.</li>
+ *     <li>FTS based fields which can be used to construct an FTS 'MATCH' sql clause</li>
+ *     <li>Simple string criteria (currently only 'lender')</li>
+ * </ul>
  */
 public class SearchCriteria
         implements Parcelable {
@@ -54,6 +58,7 @@ public class SearchCriteria
 
     /** Log tag. */
     private static final String TAG = "SearchCriteria";
+    /** Bundle key to pass this object around. */
     public static final String BKEY = TAG + ":a";
 
     /**
@@ -256,6 +261,11 @@ public class SearchCriteria
         return list;
     }
 
+    /**
+     * Check if there are <strong>any</strong> criteria set.
+     *
+     * @return {@code true} if there are no criteria set
+     */
     public boolean isEmpty() {
         return bookIdList.isEmpty()
                && (ftsBookTitle == null || ftsBookTitle.isEmpty())
