@@ -760,7 +760,7 @@
     <string name="lbl_current_page">Pagina corrente</string>
     <string name="btn_completed">Completato</string>
     <string name="ps_use_read_progress_off">Utilizzare un semplice stato di lettura/non lettura.</string>
-    <string name="ps_use_read_progress_on">Traccia l\'avanzamento in percentuale o in numero di pagina.</string>
+    <string name="ps_use_read_progress_on">Traccia l’avanzamento in percentuale o in numero di pagina.</string>
     <string name="info_progress_x_percent">%1$d%% lettura</string>
     <string name="info_progress_page_x_of_y">Pagina: %1$d di %2$d</string>
     <string name="lbl_track_progress_long">Traccia i tuoi progressi</string>
@@ -778,10 +778,10 @@
     <string name="pe_ui_context_menu_mode_classic">Sempre come un classico menu contestuale</string>
     <string name="lbl_troubleshooting">Risoluzione dei problemi</string>
     <string name="pt_enable_extra_logging">Abilitare la registrazione aggiuntiva</string>
-    <string name="lbl_troubleshooting_warning">Non abilitare le opzioni seguenti, a meno che non siano state esplicitamente richieste dallo sviluppatore dell\'applicazione.</string>
+    <string name="lbl_troubleshooting_warning">Non abilitare le opzioni seguenti, a meno che non siano state esplicitamente richieste dallo sviluppatore dell’applicazione.</string>
     <string name="info_tap_to_select">Toccare per selezionare.</string>
     <string name="lbl_tab_alternative_editions_long">Edizioni alternative</string>
-    <string name="warning_restart_required">È necessario riavviare l\'app</string>
+    <string name="warning_restart_required">È necessario riavviare l’app</string>
     <string name="pt_ui_theme_colors">Colori del tema</string>
     <string name="pe_ui_theme_colors_blue_grey">Blu-grigio</string>
     <string name="pe_ui_theme_colors_dynamic">Colori dinamici</string>
