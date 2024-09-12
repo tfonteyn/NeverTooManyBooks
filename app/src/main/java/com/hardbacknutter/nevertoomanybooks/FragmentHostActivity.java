@@ -23,8 +23,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
@@ -69,19 +71,13 @@ public class FragmentHostActivity
     @Nullable
     private NavDrawer navDrawer;
 
-    /** See comments in the BoB activity on its backPressedCallback. */
-    private final OnBackPressedCallback backPressedCallback =
-            new OnBackPressedCallback(true) {
+    private final OnBackPressedCallback backClosesNavDrawer =
+            new OnBackPressedCallback(false) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (navDrawer != null && navDrawer.close()) {
-                        return;
-                    }
-                    // Prevent looping
-                    this.setEnabled(false);
-                    // Simulate the user pressing the 'back' key,
-                    // which will take us back to the previous screen.
-                    getOnBackPressedDispatcher().onBackPressed();
+                    // Paranoia... the drawer listener should/will disable us.
+                    backClosesNavDrawer.setEnabled(false);
+                    navDrawer.close();
                 }
             };
 
@@ -118,8 +114,6 @@ public class FragmentHostActivity
         initNavDrawer(drawerLayout);
         initToolbar(toolbar);
 
-        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
-
         final String classname = Objects.requireNonNull(
                 getIntent().getStringExtra(BKEY_FRAGMENT_CLASS), "fragment class");
 
@@ -137,6 +131,22 @@ public class FragmentHostActivity
     private void initNavDrawer(@Nullable final DrawerLayout drawerLayout) {
         if (drawerLayout != null) {
             navDrawer = new NavDrawer(drawerLayout, this::onNavigationItemSelected);
+
+            final OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+
+            dispatcher.addCallback(this, backClosesNavDrawer);
+            drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerOpened(@NonNull final View drawerView) {
+                    backClosesNavDrawer.setEnabled(true);
+                }
+
+                @Override
+                public void onDrawerClosed(@NonNull final View drawerView) {
+                    backClosesNavDrawer.setEnabled(false);
+                }
+            });
+
             manageBookshelvesLauncher = registerForActivityResult(
                     new EditBookshelvesContract(), optBookshelfId -> {
                     });
