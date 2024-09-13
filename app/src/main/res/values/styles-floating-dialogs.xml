@@ -50,10 +50,9 @@
     <!--
      URGENT: re-evaluate the use of this in relation to the corner-radius and the backgroundTint
 
-     use these instead of the app wide "ThemeOverlay.App.MaterialAlertDialog"
+        Used instead of the app wide "ThemeOverlay.App.MaterialAlertDialog"
 
-        Note that Studio is for some strange reason (pile-of-bleep) not able to find this
-        by using "Find Usages" .... instead do a text-search for "ThemeOverlay_App_CustomDialog"
+        used from code; do a text-search for "ThemeOverlay_App_CustomDialog"
     -->
     <style name="ThemeOverlay.App.CustomDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
