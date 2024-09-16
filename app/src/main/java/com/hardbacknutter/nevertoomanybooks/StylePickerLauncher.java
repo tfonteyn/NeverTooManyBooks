@@ -74,8 +74,9 @@ class StylePickerLauncher
 
     /**
      * Launch the dialog.
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
+     *
+     * @param context      preferably the {@code Activity}
+     *                     but another UI {@code Context} will also do.
      * @param currentStyle the currently active style
      * @param all          if {@code true} show all styles, otherwise only the preferred ones.
      */
