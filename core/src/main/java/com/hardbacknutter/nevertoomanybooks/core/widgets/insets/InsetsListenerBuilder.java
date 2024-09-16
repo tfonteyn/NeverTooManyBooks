@@ -42,9 +42,6 @@ import java.util.Set;
 
 /**
  * Builder for a {@link OnApplyWindowInsetsListener}.
- * <p>
- * The default insets always applied : {@link WindowInsetsCompat.Type#systemBars()}
- * and {@link WindowInsetsCompat.Type#displayCutout()}
  */
 @SuppressWarnings("WeakerAccess")
 public final class InsetsListenerBuilder {
@@ -187,7 +184,6 @@ public final class InsetsListenerBuilder {
                 .apply();
     }
 
-
     /**
      * Constructor.
      *
@@ -291,11 +287,14 @@ public final class InsetsListenerBuilder {
 
     /**
      * Build and apply the listener.
+     * <p>
+     * If modifiers (e.g. {@link #margins(Side...)}) were set,
+     * but no insets where added
+     * and this is not a simple dispatcher,
+     * then we'll apply the default insets {@link WindowInsetsCompat.Type#systemBars()}
+     * and {@link WindowInsetsCompat.Type#displayCutout()}.
      */
     public void apply() {
-        // If we HAVE modifiers set, but the mask was NOT set
-        // and this is not a dispatcher...
-        // then we'll apply the default insets as a fallback.
         if (!modifiers.isEmpty() && insetsTypeMask == 0 && !dispatchToChildren) {
             insetsTypeMask = WindowInsetsCompat.Type.systemBars()
                              | WindowInsetsCompat.Type.displayCutout();
