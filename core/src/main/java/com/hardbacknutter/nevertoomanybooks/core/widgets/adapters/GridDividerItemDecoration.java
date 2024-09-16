@@ -39,7 +39,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Original code copied from "com.google.android.material:material:1.7.0-alpha02"
+ * Original code from
+ * {@code com.google.android.material.divider.MaterialDividerItemDecoration}
+ * in "com.google.android.material:material:1.12.0"
  * <p>
  * Modified to fully support the {@link GridLayoutManager}:
  * <ul>
@@ -48,6 +50,13 @@ import androidx.recyclerview.widget.RecyclerView;
  *     <li>the vertical dividers will respect the {@link #dividerAfterLastColumn} properly.</li>
  *     <li>vertical and horizontal dividers can be drawn at the same time; i.e. a proper grid.</li>
  * </ul>
+ * <p>
+ * Only supported to be used directly from code.
+ *
+ * <p>For more information, see the <a
+ * href="https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md">component
+ * developer guidance</a> and <a href="https://material.io/components/divider/overview">design
+ * guidelines</a>.
  */
 @SuppressWarnings("WeakerAccess")
 public class GridDividerItemDecoration
@@ -58,14 +67,27 @@ public class GridDividerItemDecoration
     private final Drawable dividerDrawable;
     private final boolean horizontalDivider;
     private final boolean verticalDivider;
+    @Px
     private int thickness;
     @ColorInt
     private int color;
+    @Px
     private int insetStart;
+    @Px
     private int insetEnd;
     private boolean dividerAfterLastColumn;
     private boolean dividerAfterLastRow = true;
 
+    /**
+     * Constructor.
+     * <p>
+     * The default color is {@code ?attr/colorOutline}.
+     * The default thickness is {@code 1dp}.
+     *
+     * @param context           Current content
+     * @param horizontalDivider whether a horizontal divider should be drawn between cells
+     * @param verticalDivider   whether a vertical divider should be drawn between cells
+     */
     public GridDividerItemDecoration(@NonNull final Context context,
                                      final boolean horizontalDivider,
                                      final boolean verticalDivider) {
@@ -123,6 +145,8 @@ public class GridDividerItemDecoration
     /**
      * Returns the thickness set on the divider.
      *
+     * @return pixels
+     *
      * @see #setDividerThickness(int)
      */
     @Px
@@ -156,6 +180,8 @@ public class GridDividerItemDecoration
 
     /**
      * Returns the divider color.
+     *
+     * @return color int
      *
      * @see #setDividerColor(int)
      */
@@ -192,6 +218,8 @@ public class GridDividerItemDecoration
     /**
      * Returns the divider's start inset.
      *
+     * @return pixels
+     *
      * @see #setDividerInsetStart(int)
      */
     @Px
@@ -226,6 +254,8 @@ public class GridDividerItemDecoration
     /**
      * Returns the divider's end inset.
      *
+     * @return pixels
+     *
      * @see #setDividerInsetEnd(int)
      */
     @Px
@@ -247,6 +277,8 @@ public class GridDividerItemDecoration
     /**
      * Whether there's a divider after the last item of a {@link RecyclerView}.
      *
+     * @return flag
+     *
      * @see #setDividerAfterLastColumn(boolean)
      */
     public boolean isDividerAfterLastColumn() {
@@ -265,10 +297,25 @@ public class GridDividerItemDecoration
         this.dividerAfterLastColumn = dividerAfterLastColumn;
     }
 
+    /**
+     * Whether there's a divider after the last item of a {@link RecyclerView}.
+     *
+     * @return flag
+     *
+     * @see #setDividerAfterLastRow(boolean)
+     */
     public boolean isDividerAfterLastRow() {
         return dividerAfterLastRow;
     }
 
+    /**
+     * Sets whether the class should draw a divider after the last item of a {@link RecyclerView}.
+     *
+     * @param dividerAfterLastRow whether there's a divider after the last item
+     *                            of a recycler view.
+     *
+     * @see #isDividerAfterLastRow()
+     */
     public void setDividerAfterLastRow(final boolean dividerAfterLastRow) {
         this.dividerAfterLastRow = dividerAfterLastRow;
     }
@@ -315,6 +362,7 @@ public class GridDividerItemDecoration
                 left = 0;
                 right = parent.getWidth();
             }
+
             final boolean isRtl = parent.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
             left += isRtl ? insetEnd : insetStart;
             right -= isRtl ? insetStart : insetEnd;
@@ -359,12 +407,22 @@ public class GridDividerItemDecoration
             top += insetStart;
             bottom -= insetEnd;
 
+            final boolean isRtl = parent.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+
             for (int d = 0; d < dividerCount; d++) {
                 final View child = parent.getChildAt(d);
                 parent.getLayoutManager().getDecoratedBoundsWithMargins(child, tempRect);
-                // Take into consideration any translationX added to the view.
-                final int right = tempRect.right + Math.round(child.getTranslationX());
-                final int left = right - dividerDrawable.getIntrinsicWidth() - thickness;
+                // Take into consideration any translationX added to the view.c
+                final int translationX = Math.round(child.getTranslationX());
+                final int left;
+                final int right;
+                if (isRtl) {
+                    left = tempRect.left + translationX;
+                    right = left + dividerDrawable.getIntrinsicWidth() + thickness;
+                } else {
+                    right = tempRect.right + translationX;
+                    left = right - dividerDrawable.getIntrinsicWidth() - thickness;
+                }
 
                 dividerDrawable.setBounds(left, top, right, bottom);
                 final int alpha = Math.round(child.getAlpha() * 255);
