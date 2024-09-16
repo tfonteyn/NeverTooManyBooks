@@ -144,9 +144,9 @@ public class SearchBookByIsbnFragment
             final ScreenSize screenSize = ScreenSize.compute(getActivity());
             if (getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_PORTRAIT) {
-                embeddedBarcodeScanner = screenSize.height == ScreenSize.Value.Expanded;
+                embeddedBarcodeScanner = screenSize.getHeight() == ScreenSize.Value.Expanded;
             } else {
-                embeddedBarcodeScanner = screenSize.width == ScreenSize.Value.Expanded;
+                embeddedBarcodeScanner = screenSize.getWidth() == ScreenSize.Value.Expanded;
             }
         }
     }

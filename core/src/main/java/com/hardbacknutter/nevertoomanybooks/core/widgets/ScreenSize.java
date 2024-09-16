@@ -59,30 +59,14 @@ import java.util.Objects;
  */
 public final class ScreenSize {
 
-    /**
-     * Width.
-     * <ul>
-     *     <li>{@link Value#Compact} -> base; phone in portrait</li>
-     *     <li>{@link Value#Medium} -> sw600; phone in landscape + tablet in portrait</li>
-     *     <li>{@link Value#Expanded} -> sw800; tablet in landscape</li>
-     * </ul>
-     */
     @NonNull
-    public final Value width;
+    private final Value width;
 
-    /**
-     * Height.
-     * <ul>
-     *     <li>{@link Value#Compact} -> base; small phone in landscape</li>
-     *     <li>{@link Value#Medium} -> sw600; phone in portrait + tablet in landscape</li>
-     *     <li>{@link Value#Expanded} -> sw800; tablet in portrait</li>
-     * </ul>
-     */
     @NonNull
-    public final Value height;
+    private final Value height;
 
-    public ScreenSize(@NonNull final Value width,
-                      @NonNull final Value height) {
+    private ScreenSize(@NonNull final Value width,
+                       @NonNull final Value height) {
         this.width = width;
         this.height = height;
     }
@@ -159,6 +143,36 @@ public final class ScreenSize {
             iterator = ((ContextWrapper) iterator).getBaseContext();
         }
         throw new IllegalArgumentException("Context is not a UiContext");
+    }
+
+    /**
+     * Width.
+     * <ul>
+     *     <li>{@link Value#Compact} -> base; phone in portrait</li>
+     *     <li>{@link Value#Medium} -> sw600; phone in landscape + tablet in portrait</li>
+     *     <li>{@link Value#Expanded} -> sw800; tablet in landscape</li>
+     * </ul>
+     *
+     * @return the Width Value
+     */
+    @NonNull
+    public Value getWidth() {
+        return width;
+    }
+
+    /**
+     * Height.
+     * <ul>
+     *     <li>{@link Value#Compact} -> base; small phone in landscape</li>
+     *     <li>{@link Value#Medium} -> sw600; phone in portrait + tablet in landscape</li>
+     *     <li>{@link Value#Expanded} -> sw800; tablet in portrait</li>
+     * </ul>
+     *
+     * @return the Height Value
+     */
+    @NonNull
+    public Value getHeight() {
+        return height;
     }
 
     /**

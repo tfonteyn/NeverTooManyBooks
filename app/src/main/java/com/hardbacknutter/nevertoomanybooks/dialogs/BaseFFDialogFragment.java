@@ -279,7 +279,7 @@ public abstract class BaseFFDialogFragment
         int lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
         int lpHeight = ViewGroup.LayoutParams.MATCH_PARENT;
 
-        if (screenSize.width == ScreenSize.Value.Expanded) {
+        if (screenSize.getWidth() == ScreenSize.Value.Expanded) {
             lpWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
 
@@ -298,7 +298,7 @@ public abstract class BaseFFDialogFragment
 
         // So we can't rely on Android being consistent (surprise...)
         // 2023-06-09: patch 4.4.2: adjust the recyclerView manually
-        if (screenSize.height == ScreenSize.Value.Expanded) {
+        if (screenSize.getHeight() == ScreenSize.Value.Expanded) {
             lpHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
             if (recyclerView != null) {
                 final ViewGroup.LayoutParams rvLp = recyclerView.getLayoutParams();
@@ -336,8 +336,8 @@ public abstract class BaseFFDialogFragment
                          .d(getClass().getSimpleName(), "adjustWindowSize",
                             "lp.width=" + dbgLp.apply(lp.width),
                             "lp.height=" + dbgLp.apply(lp.height),
-                            "width=" + screenSize.width,
-                            "height=" + screenSize.height,
+                            "width=" + screenSize.getWidth(),
+                            "height=" + screenSize.getHeight(),
                             "lpWidth=" + dbgLp.apply(lpWidth),
                             "lpHeight=" + dbgLp.apply(lpHeight));
         }

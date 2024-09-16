@@ -145,7 +145,7 @@ public class SearchAdminFragment
 
         vb.pager.setAdapter(tabAdapter);
         new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
-            if (ScreenSize.compute(getActivity()).width == ScreenSize.Value.Compact) {
+            if (ScreenSize.compute(getActivity()).getWidth() == ScreenSize.Value.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {
                 tab.setText(getString(tabAdapter.getTabDescription(position)));

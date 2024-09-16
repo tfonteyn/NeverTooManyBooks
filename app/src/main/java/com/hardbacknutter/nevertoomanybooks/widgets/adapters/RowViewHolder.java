@@ -157,7 +157,7 @@ public class RowViewHolder
             }
             case IfRoom: {
                 final ScreenSize.Value size =
-                        ScreenSize.compute(itemView.getContext()).width;
+                        ScreenSize.compute(itemView.getContext()).getWidth();
                 if (size == ScreenSize.Value.Medium
                     || size == ScreenSize.Value.Expanded) {
                     visibility = View.VISIBLE;

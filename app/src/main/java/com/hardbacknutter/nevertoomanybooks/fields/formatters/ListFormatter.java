@@ -99,7 +99,7 @@ public class ListFormatter<T extends Entity>
             final ScreenSize screenSize = ScreenSize.compute(context);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape
-                switch (screenSize.width) {
+                switch (screenSize.getWidth()) {
                     case Expanded:
                     case Medium:
                         listDetails = Details.Normal;
@@ -113,11 +113,11 @@ public class ListFormatter<T extends Entity>
 
                     default:
                         throw new IllegalArgumentException("WindowSizeClass="
-                                                           + screenSize.width);
+                                                           + screenSize.getWidth());
                 }
             } else {
                 // In portrait
-                switch (screenSize.height) {
+                switch (screenSize.getHeight()) {
                     case Expanded:
                         listDetails = Details.Full;
                         itemDetails = Details.Full;
@@ -135,7 +135,7 @@ public class ListFormatter<T extends Entity>
 
                     default:
                         throw new IllegalArgumentException("WindowSizeClass="
-                                                           + screenSize.height);
+                                                           + screenSize.getHeight());
                 }
             }
 
