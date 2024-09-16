@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -327,6 +327,8 @@ public class GridDividerItemDecoration
                 final int top = bottom - dividerDrawable.getIntrinsicHeight() - thickness;
 
                 dividerDrawable.setBounds(left, top, right, bottom);
+                final int alpha = Math.round(child.getAlpha() * 255);
+                dividerDrawable.setAlpha(alpha);
                 dividerDrawable.draw(canvas);
             }
             canvas.restore();
@@ -365,9 +367,10 @@ public class GridDividerItemDecoration
                 final int left = right - dividerDrawable.getIntrinsicWidth() - thickness;
 
                 dividerDrawable.setBounds(left, top, right, bottom);
+                final int alpha = Math.round(child.getAlpha() * 255);
+                dividerDrawable.setAlpha(alpha);
                 dividerDrawable.draw(canvas);
             }
-
             canvas.restore();
         }
     }
