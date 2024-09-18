@@ -116,14 +116,19 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param key            of the predefined launcher
      * @param onAddListener  results listener
      * @param onEditListener results listener
+     * @param <T>            type of editable object
      *
      * @return new instance
+     *
+     * @throws IllegalArgumentException for undefined keys
+     * @noinspection DuplicateBranchesInSwitch (bug in lint)
      */
     @NonNull
     public static <T extends Parcelable> EditParcelableLauncher<T> create(
             @NonNull final String key,
             @Nullable final OnAddListener<T> onAddListener,
-            @Nullable final OnEditListener<T> onEditListener) {
+            @Nullable final OnEditListener<T> onEditListener)
+            throws IllegalArgumentException {
         switch (key) {
             case DBKey.FK_AUTHOR:
                 return new EditParcelableLauncher<>(key,
@@ -156,8 +161,12 @@ public final class EditParcelableLauncher<T extends Parcelable>
      *
      * @param key                   of the predefined launcher
      * @param onEditInPlaceListener results listener
+     * @param <T>                   type of editable object
      *
      * @return new instance
+     *
+     * @throws IllegalArgumentException for undefined keys
+     * @noinspection DuplicateBranchesInSwitch (bug in lint)
      */
     @NonNull
     public static <T extends Parcelable> EditParcelableLauncher<T> create(
