@@ -19,8 +19,8 @@
  */
 
 plugins {
-    id("com.android.application") version '8.6.0' apply false
-    id("com.android.library") version '8.6.0' apply false
+    id("com.android.application") version '8.6.1' apply false
+    id("com.android.library") version '8.6.1' apply false
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
     id("org.jetbrains.kotlin.android") version "2.0.20" apply false
     // https://github.com/mannodermaus/android-junit5
@@ -84,7 +84,7 @@ ext {
     zxingCoreVersion = '3.5.3'
 
     // https://github.com/ACRA/acra
-    acraVersion = '5.11.3'
+    acraVersion = '5.11.4'
 
     // https://github.com/mockito/mockito
     mockitoVersion = '5.13.0'
@@ -101,7 +101,7 @@ ext {
     // An explicit dependency must be added to avoid gradle/studio/bugs?
     // adding (in some unknown circumstances) two different kotlin-stdlib versions
     // resulting in Duplicate class kotlin.* build problems.
-    kotlinxCoroutinesCoreVersion = '1.8.1'
+    kotlinxCoroutinesCoreVersion = '1.9.0'
 
     mannodermausVersion = '1.5.0'
 }
