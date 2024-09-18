@@ -31,7 +31,7 @@ import java.util.Arrays;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 /**
- * Edition data is returned by {@code https://openlibrary.org/works/OL5725956W/editions.json}
+ * Edition data is returned by {@code https://openlibrary.org/works/OL5725956W/editions.json}.
  * <pre>
  *     {
  *       "type": {
