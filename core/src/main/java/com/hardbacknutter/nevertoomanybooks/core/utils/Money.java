@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,8 +81,10 @@ public class Money
         }
     };
 
+    private static final String EUR_STR = "EUR";
+
     /** Cached EURO currency. */
-    public static final Currency EURO = Currency.getInstance("EUR");
+    public static final Currency EURO = Currency.getInstance(EUR_STR);
     private static final Map<String, Double> EUROS = Map.ofEntries(
             // Austria
             Map.entry("ATS", 13.7603d),
@@ -281,7 +283,7 @@ public class Money
             return new Money(value, EURO);
         }
 
-        if ("EUR".equals(currency.getCurrencyCode())) {
+        if (EUR_STR.equals(currency.getCurrencyCode())) {
             // The Euro itself
             return new Money(value, currency);
         }
