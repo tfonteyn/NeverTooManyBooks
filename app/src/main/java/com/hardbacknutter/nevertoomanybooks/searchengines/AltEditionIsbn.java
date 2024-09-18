@@ -61,7 +61,7 @@ public class AltEditionIsbn
     }
 
     /**
-     * The ISBN for this edition
+     * The ISBN for this edition.
      *
      * @return isbn
      */
