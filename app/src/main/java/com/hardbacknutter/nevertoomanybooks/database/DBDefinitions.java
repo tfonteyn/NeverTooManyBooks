@@ -109,6 +109,7 @@ public final class DBDefinitions {
      * from this site. Used as a means to split the relatively fast process of getting
      * the collection data (fast) and as a next step importing new books (slow).
      */
+    @SuppressWarnings("PublicStaticCollectionField")
     public static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
 
     /* ======================================================================================
