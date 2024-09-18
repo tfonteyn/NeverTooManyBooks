@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * An interesting read about Android Locale usage:
+ * An interesting read about Android Locale usage.
  * <a href="https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242">
  * https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242</a>
  */
