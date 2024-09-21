@@ -120,7 +120,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuResultListener;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -1205,19 +1204,19 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.AUTHOR: {
-                if (onRowMenuForAuthor(v, rowData, menuItemId)) {
+                if (onRowMenuForAuthor(v, adapterPosition, rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.SERIES: {
-                if (onRowMenuForSeries(v, rowData, menuItemId)) {
+                if (onRowMenuForSeries(v, adapterPosition, rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                if (onRowMenuForPublisher(v, rowData, menuItemId)) {
+                if (onRowMenuForPublisher(v, adapterPosition, rowData, menuItemId)) {
                     return true;
                 }
                 break;
@@ -1416,7 +1415,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForAuthor(View, DataHolder, int)
+     * @see #onRowMenuForAuthor(View, int, DataHolder, int)
      */
     private void createRowMenuForAuthor(@NonNull final DataHolder rowData,
                                         @NonNull final Menu menu) {
@@ -1443,6 +1442,7 @@ public class BooksOnBookshelf
      * @see #createRowMenuForAuthor(DataHolder, Menu)
      */
     private boolean onRowMenuForAuthor(@NonNull final View v,
+                                       final int adapterPosition,
                                        @NonNull final DataHolder rowData,
                                        @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
@@ -1467,7 +1467,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
-            updateBooksFromInternetData(v, rowData, dialogTitle);
+            updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
             return true;
         }
         return false;
@@ -1479,7 +1479,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForSeries(View, DataHolder, int)
+     * @see #onRowMenuForSeries(View, int, DataHolder, int)
      */
     private void createRowMenuForSeries(@NonNull final DataHolder rowData,
                                         @NonNull final Menu menu) {
@@ -1515,6 +1515,7 @@ public class BooksOnBookshelf
      * @see #createRowMenuForSeries(DataHolder, Menu)
      */
     private boolean onRowMenuForSeries(@NonNull final View v,
+                                       final int adapterPosition,
                                        @NonNull final DataHolder rowData,
                                        @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_SERIES_SET_COMPLETE
@@ -1537,7 +1538,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
-            updateBooksFromInternetData(v, rowData, dialogTitle);
+            updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
             return true;
         }
         return false;
@@ -1549,7 +1550,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForPublisher(View, DataHolder, int)
+     * @see #onRowMenuForPublisher(View, int, DataHolder, int)
      */
     private void createRowMenuForPublisher(@NonNull final DataHolder rowData,
                                            @NonNull final Menu menu) {
@@ -1576,6 +1577,7 @@ public class BooksOnBookshelf
      * @see #createRowMenuForPublisher(DataHolder, Menu)
      */
     private boolean onRowMenuForPublisher(@NonNull final View v,
+                                          final int adapterPosition,
                                           @NonNull final DataHolder rowData,
                                           @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
@@ -1590,7 +1592,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
-            updateBooksFromInternetData(v, rowData, dialogTitle);
+            updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
             return true;
         }
         return false;
@@ -1786,6 +1788,7 @@ public class BooksOnBookshelf
      * @param dialogTitle text to show to the user.
      */
     private void updateBooksFromInternetData(@NonNull final View anchor,
+                                             final int adapterPosition,
                                              @NonNull final DataHolder rowData,
                                              @NonNull final CharSequence dialogTitle) {
 
