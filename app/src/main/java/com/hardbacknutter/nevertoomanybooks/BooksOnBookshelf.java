@@ -1191,6 +1191,10 @@ public class BooksOnBookshelf
                     .createIntent(this, CalibrePreferencesFragment.class);
             startActivity(intent);
             return true;
+
+        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES
+                   || menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
+            return updateBooksFromInternetData(menuItemId, rowData);
         }
 
         // Specific row-group options
@@ -1782,14 +1786,21 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Allow the user to decide between books on "this bookshelf only" or on all bookshelves
-     * and then update all the selected books.
+     * We get here when the user has selected a {@code R.id.MENU_UPDATE_FROM_INTERNET}
+     * for an applicable row.
+     * <p>
+     * The next step is to allow the user to decide between books on "this bookshelf only"
+     * or on all bookshelves,
+     * and then to update all the selected books.
      *
      * @param anchor          View clicked; the anchor for the popup menu
      * @param adapterPosition The booklist adapter position of the row for which
      *                        we're going to fetch updates.
      * @param rowData         for the row which was selected
      * @param dialogTitle     text to show to the user.
+     *
+     * @see #onRowMenuItemSelected(View, int, int)
+     * @see #updateBooksFromInternetData(int, DataHolder)
      */
     private void updateBooksFromInternetData(@NonNull final View anchor,
                                              final int adapterPosition,
@@ -1815,6 +1826,20 @@ public class BooksOnBookshelf
         }
     }
 
+    /**
+     * This is the 3rd step in the updateBooksFromInternet process.
+     * We get here after the user has selected to update a set of books on "this bookshelf only"
+     * or on all bookshelves.
+     *
+     * @param menuItemId {@code R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY}
+     *                   or {@code R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES}
+     * @param rowData    for the row which was selected
+     *
+     * @return {@code true} if handled.
+     *
+     * @see #onRowMenuItemSelected(View, int, int)
+     * @see #updateBooksFromInternetData(View, int, DataHolder, CharSequence)
+     */
     private boolean updateBooksFromInternetData(final int menuItemId,
                                                 @NonNull final DataHolder rowData) {
         Boolean onlyThisShelf = null;
