@@ -1119,28 +1119,17 @@ public class BooksOnBookshelf
             final CharSequence menuTitle = adapter
                     .getLevelText(rowData.getInt(DBKey.BL_NODE_LEVEL), adapterPosition);
 
-            showRowMenu(v, adapterPosition, menuTitle, null, menu, this::onRowMenuItemSelected);
-        }
-    }
-
-    private void showRowMenu(@NonNull final View v,
-                             final int adapterPosition,
-                             @Nullable final CharSequence menuTitle,
-                             @Nullable final CharSequence message,
-                             @NonNull final Menu menu,
-                             @NonNull final ExtMenuResultListener listener) {
-
-        final MenuMode menuMode = MenuMode.getMode(this, menu);
-        if (menuMode.isPopup()) {
-            new ExtMenuPopupWindow(this)
-                    .setTitle(menuTitle)
-                    .setMessage(message)
-                    .setListener(listener)
-                    .setPosition(adapterPosition)
-                    .setMenu(menu, true)
-                    .show(v, menuMode);
-        } else {
-            menuLauncher.launch(this, adapterPosition, menuTitle, null, menu, true);
+            final MenuMode menuMode = MenuMode.getMode(this, menu);
+            if (menuMode.isPopup()) {
+                new ExtMenuPopupWindow(this)
+                        .setTitle(menuTitle)
+                        .setPosition(adapterPosition)
+                        .setMenu(menu, true)
+                        .setListener(this::onRowMenuItemSelected)
+                        .show(v, menuMode);
+            } else {
+                menuLauncher.launch(this, adapterPosition, menuTitle, null, menu, true);
+            }
         }
     }
 
@@ -1773,8 +1762,19 @@ public class BooksOnBookshelf
                 .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
         }
 
-        showRowMenu(anchor, 0, getString(subMenuTitleId), null, menu,
-                    (p, mii) -> onNavigationItemSelected(mii));
+        final CharSequence menuTitle = getString(subMenuTitleId);
+
+        final MenuMode menuMode = MenuMode.getMode(this, menu);
+        if (menuMode.isPopup()) {
+            new ExtMenuPopupWindow(this)
+                    .setTitle(menuTitle)
+                    .setPosition(0)
+                    .setMenu(menu, true)
+                    .setListener((p, mii) -> onNavigationItemSelected(mii))
+                    .show(anchor, menuMode);
+        } else {
+            menuLauncher.launch(this, 0, menuTitle, null, menu, true);
+        }
     }
 
     /**
@@ -1791,8 +1791,21 @@ public class BooksOnBookshelf
 
         final Menu menu = MenuUtils.create(this, R.menu.update_books);
 
-        showRowMenu(anchor, 0, dialogTitle, getString(R.string.menu_update_books),
-                    menu, (p, menuItemId) -> updateBooksFromInternetData(menuItemId, rowData));
+        final CharSequence message = getString(R.string.menu_update_books);
+
+        final MenuMode menuMode = MenuMode.getMode(this, menu);
+        if (menuMode.isPopup()) {
+            new ExtMenuPopupWindow(this)
+                    .setTitle(dialogTitle)
+                    .setMessage(message)
+                    .setPosition(adapterPosition)
+                    .setMenu(menu, true)
+                    .setListener((positionOrId, menuItemId)
+                                         -> updateBooksFromInternetData(menuItemId, rowData))
+                    .show(anchor, menuMode);
+        } else {
+            menuLauncher.launch(this, adapterPosition, dialogTitle, null, menu, true);
+        }
     }
 
     private boolean updateBooksFromInternetData(final int menuItemId,
