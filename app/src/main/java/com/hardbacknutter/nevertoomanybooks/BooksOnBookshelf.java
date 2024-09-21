@@ -954,7 +954,7 @@ public class BooksOnBookshelf
      * </ul>
      *
      * @param v               View clicked
-     * @param adapterPosition The booklist adapter position of the row clicked.
+     * @param adapterPosition The {@link #adapter} position of the row clicked.
      */
     private void onRowClicked(@NonNull final View v,
                               final int adapterPosition) {
@@ -1000,7 +1000,7 @@ public class BooksOnBookshelf
      * Create a context menu based on row group.
      *
      * @param v               View clicked
-     * @param adapterPosition The booklist adapter position of the row menu to show.
+     * @param adapterPosition The {@link #adapter} position of the row menu to show.
      */
     private void onCreateContextMenu(@NonNull final View v,
                                      final int adapterPosition) {
@@ -1152,7 +1152,7 @@ public class BooksOnBookshelf
      * ended throwing a "java.lang.LinkageError" ... so the name had to be changed.
      *
      * @param v               View clicked; the anchor for a potential popup menu
-     * @param adapterPosition The booklist adapter position of the row menu from which
+     * @param adapterPosition The {@link #adapter} position of the row menu from which
      *                        the user made a selection.
      * @param menuItemId      The menu item that was invoked.
      *
@@ -1349,7 +1349,7 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Book}.
      *
-     * @param adapterPosition The booklist adapter position of the row menu from which
+     * @param adapterPosition The {@link #adapter} position of the row menu from which
      *                        the user made a selection.
      * @param rowData         the row data
      * @param menuItemId      The menu item that was invoked.
@@ -1439,9 +1439,11 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for an {@link Author}.
      *
-     * @param v          View clicked; the anchor for a potential popup menu
-     * @param rowData    the row data
-     * @param menuItemId The menu item that was invoked.
+     * @param v               View clicked; the anchor for a potential popup menu
+     * @param adapterPosition The {@link #adapter} position of the row menu from which
+     *                        the user made a selection.
+     * @param rowData         the row data
+     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1512,9 +1514,11 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Series}.
      *
-     * @param v          View clicked; the anchor for a potential popup menu
-     * @param rowData    the row data
-     * @param menuItemId The menu item that was invoked.
+     * @param v               View clicked; the anchor for a potential popup menu
+     * @param adapterPosition The {@link #adapter} position of the row menu from which
+     *                        the user made a selection.
+     * @param rowData         the row data
+     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1574,9 +1578,11 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Publisher}.
      *
-     * @param v          View clicked; the anchor for a potential popup menu
-     * @param rowData    the row data
-     * @param menuItemId The menu item that was invoked.
+     * @param v               View clicked; the anchor for a potential popup menu
+     * @param adapterPosition The {@link #adapter} position of the row menu from which
+     *                        the user made a selection.
+     * @param rowData         the row data
+     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
@@ -1794,7 +1800,7 @@ public class BooksOnBookshelf
      * and then to update all the selected books.
      *
      * @param anchor          View clicked; the anchor for the popup menu
-     * @param adapterPosition The booklist adapter position of the row for which
+     * @param adapterPosition The {@link #adapter} position of the row for which
      *                        we're going to fetch updates.
      * @param rowData         for the row which was selected
      * @param dialogTitle     text to show to the user.
@@ -1999,7 +2005,7 @@ public class BooksOnBookshelf
      * Display the given book in the embedded details fragment IF POSSIBLE.
      *
      * @param bookId          of the book to open
-     * @param adapterPosition the booklist adapter position
+     * @param adapterPosition the {@link #adapter} position
      */
     @SuppressLint("Range")
     private void showBookDetailsIfWeCan(@IntRange(from = 0) final long bookId,
