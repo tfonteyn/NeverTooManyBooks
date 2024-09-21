@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -66,6 +67,9 @@ public class CursorRow
     }
 
     /**
+     * Returns {@code true} if the given key is contained in the mapping
+     * of this DataHolder.
+     *
      * @param key the domain to get
      *
      * @return {@code true} if this cursor contains the specified domain.
@@ -92,6 +96,8 @@ public class CursorRow
     }
 
     /**
+     * Returns the value associated with the given key.
+     *
      * @param key to get
      *
      * @return the boolean value of the column ({@code null} comes back as false).
@@ -105,6 +111,8 @@ public class CursorRow
     }
 
     /**
+     * Returns the value associated with the given key.
+     *
      * @param key to get
      *
      * @return the int value of the column ({@code null} comes back as 0)
@@ -126,6 +134,8 @@ public class CursorRow
     }
 
     /**
+     * Returns the value associated with the given key.
+     *
      * @param key to get
      *
      * @return the long value of the column ({@code null} comes back as 0)
@@ -147,11 +157,14 @@ public class CursorRow
     }
 
     /**
+     * Returns the value associated with the given key.
+     *
      * @param key to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
+     * @throws NumberFormatException     if the value could not be parsed.
      */
     @Override
     public double getDouble(@NonNull final String key,
@@ -169,12 +182,15 @@ public class CursorRow
     }
 
     /**
+     * Returns the value associated with the given key.
+     *
      * @param parser to use for number parsing
-     * @param key     to get
+     * @param key    to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
+     * @throws NumberFormatException     if the value could not be parsed.
      */
     @Override
     public float getFloat(@NonNull final String key,
@@ -192,6 +208,7 @@ public class CursorRow
     }
 
 //    /**
+//     * Returns the value associated with the given key.
 //     * @param key to get
 //     *
 //     * @return the byte array (blob) of the column
@@ -217,5 +234,20 @@ public class CursorRow
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key)
             throws ColumnNotPresentException {
         throw new ColumnNotPresentException(key);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        final String obj = keySet()
+                .stream()
+                .map(key -> {
+                    final int col = cursor.getColumnIndex(key);
+                    final String value = cursor.getString(col);
+                    return key + "=" + value;
+                })
+                .collect(Collectors.joining("; "));
+
+        return "CursorRow{" + obj + "}";
     }
 }
