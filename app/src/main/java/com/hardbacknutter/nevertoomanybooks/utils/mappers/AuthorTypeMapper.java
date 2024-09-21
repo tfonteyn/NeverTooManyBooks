@@ -137,13 +137,20 @@ public class AuthorTypeMapper {
      */
     public int map(@NonNull final Locale locale,
                    @NonNull final String typeName) {
-        final Integer mapped = MAPPINGS.get(typeName.toLowerCase(locale).trim());
-        if (mapped != null) {
-            return mapped;
+        final String[] names = typeName.split(",");
+        int mapped = Author.TYPE_UNKNOWN;
+        for (final String name : names) {
+            final Integer type = MAPPINGS.get(name.toLowerCase(locale).trim());
+            if (type != null) {
+                mapped |= type;
+            }
         }
 
-        // unknown, log it for future enhancement.
-        LoggerFactory.getLogger().w(TAG, "map|typeName=`" + typeName + "`");
-        return Author.TYPE_UNKNOWN;
+        // If unknown, log it for future enhancement.
+        if (mapped == Author.TYPE_UNKNOWN) {
+            LoggerFactory.getLogger().w(TAG, "map|typeName=`" + typeName + "`");
+        }
+
+        return mapped;
     }
 }
