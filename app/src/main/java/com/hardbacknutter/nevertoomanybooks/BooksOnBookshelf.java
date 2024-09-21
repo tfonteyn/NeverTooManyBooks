@@ -1296,9 +1296,13 @@ public class BooksOnBookshelf
 
         // other handlers.
         if (calibreHandler != null) {
-            final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
-            if (calibreHandler.onMenuItemSelected(this, menuItemId, book)) {
-                return true;
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            // Sanity check
+            if (bookId > 0) {
+                final Book book = Book.from(bookId);
+                if (calibreHandler.onMenuItemSelected(this, menuItemId, book)) {
+                    return true;
+                }
             }
         }
 
