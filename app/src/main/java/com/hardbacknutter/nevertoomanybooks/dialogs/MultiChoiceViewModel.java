@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
@@ -34,8 +35,9 @@ import java.util.stream.Collectors;
 public class MultiChoiceViewModel
         extends ViewModel {
 
-    /** The selected items. */
     private Set<Long> selectedItems;
+    @Nullable
+    private Bundle extras;
 
     /**
      * Pseudo constructor.
@@ -48,11 +50,18 @@ public class MultiChoiceViewModel
                     args.getLongArray(MultiChoiceLauncher.BKEY_SELECTED_ITEMS),
                     MultiChoiceLauncher.BKEY_SELECTED_ITEMS);
             selectedItems = Arrays.stream(items).boxed().collect(Collectors.toSet());
+
+            extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
         }
     }
 
     @NonNull
     Set<Long> getSelectedItems() {
         return selectedItems;
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
     }
 }

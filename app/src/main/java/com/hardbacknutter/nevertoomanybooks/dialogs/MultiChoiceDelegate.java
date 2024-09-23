@@ -117,6 +117,8 @@ class MultiChoiceDelegate {
     }
 
     void saveChanges() {
-        MultiChoiceLauncher.setResult(owner, requestKey, vm.getSelectedItems());
+        MultiChoiceLauncher.setResult(owner, requestKey,
+                                      vm.getSelectedItems(),
+                                      vm.getExtras());
     }
 }
