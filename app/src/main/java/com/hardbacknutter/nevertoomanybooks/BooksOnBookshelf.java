@@ -1217,15 +1217,14 @@ public class BooksOnBookshelf
             startActivity(intent);
             return true;
 
+        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            // This is the 1st step in the updateBooksFromInternet process.
+            return onRowMenuGroupUpdateFromInternet(v, adapterPosition, rowData);
+
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES
                    || menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
             // This is the 3rd step in the updateBooksFromInternet process.
             return updateBooksFromInternetData(menuItemId, rowData);
-        }
-
-        // Check for common options to multiple specific row-group
-        if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            return onRowMenuGroupUpdateFromInternet(v, adapterPosition, rowData);
 
         } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
             return onRowMenuGroupSetBookshelves(v, rowData);
