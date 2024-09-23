@@ -114,6 +114,9 @@
     <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
           type="id" />
 
+    <item name="MENU_SET_BOOKSHELVES"
+          type="id" />
+
     <item name="MENU_SYNC_LIST_WITH_DETAILS"
           type="id" />
 

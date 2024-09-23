@@ -92,12 +92,14 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInLineStringLauncher;
@@ -167,6 +169,8 @@ public class BooksOnBookshelf
 
     /** Row Menu as a BottomSheet {@link FragmentResultListener} request key. */
     private static final String RK_MENU = TAG + ":rk:menu";
+
+    private static final String RK_SET_BOOKSHELVES = TAG + ":rk:setBookshelves";
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
     private static final int OFFSCREEN_CACHE_SIZE = 20;
@@ -294,6 +298,8 @@ public class BooksOnBookshelf
     private StylePickerLauncher stylePickerLauncher;
     private BookshelfFiltersLauncher bookshelfFiltersLauncher;
 
+    /** Row menu launcher to add/move a set of Books to the selected Bookshelves. */
+    private MultiChoiceLauncher<Bookshelf> bulkSetBookshelvesLauncher;
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
 
@@ -446,6 +452,11 @@ public class BooksOnBookshelf
 
         stylePickerLauncher = new StylePickerLauncher(this::onStyleSelected);
         stylePickerLauncher.registerForFragmentResult(fm, this);
+
+        bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(
+                RK_SET_BOOKSHELVES,
+                (bookshelfIds, extras) -> vm.setBookshelves(this, bookshelfIds, extras));
+        bulkSetBookshelvesLauncher.registerForFragmentResult(fm, this);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
@@ -1108,6 +1119,11 @@ public class BooksOnBookshelf
 
         int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_NEXT_MISSING_COVER);
 
+        // add the Move/Add Bookshelves
+        menu.add(R.id.MENU_SET_BOOKSHELVES, R.id.MENU_SET_BOOKSHELVES, ++menuOrder,
+                 R.string.lbl_assign_bookshelves)
+            .setIcon(R.drawable.library_books_24px);
+
         // forms its own group
         menu.add(R.id.MENU_NEXT_MISSING_COVER, R.id.MENU_NEXT_MISSING_COVER, menuOrder,
                  R.string.option_goto_next_book_without_cover)
@@ -1211,6 +1227,11 @@ public class BooksOnBookshelf
         if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             return onRowMenuGroupUpdateFromInternet(v, adapterPosition, rowData);
 
+        } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
+            return onRowMenuGroupSetBookshelves(v, rowData);
+        }
+
+        // Finally check for specific row-group options
         @BooklistGroup.Id
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
@@ -1300,6 +1321,51 @@ public class BooksOnBookshelf
                  .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
     }
 
+    /**
+     * Handle {@link R.id#MENU_SET_BOOKSHELVES}.
+     *
+     * @param v       View clicked; the anchor for a potential popup menu
+     * @param rowData the row data
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuGroupSetBookshelves(@NonNull final View v,
+                                                 @NonNull final DataHolder rowData) {
+
+        @BooklistGroup.Id
+        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+
+        final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
+        final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
+
+        //noinspection DataFlowIssue
+        final List<Long> bookIds = adapter.getBookIds(nodeKey, level);
+        // Theoretically this CAN happen (but should in fact never be the case).
+        // We do not show/hide the menu depending on books being
+        // under the node at the adapter position.
+        if (bookIds.isEmpty()) {
+            Snackbar.make(v, getString(R.string.warning_no_matching_book_found),
+                          Snackbar.LENGTH_LONG).show();
+            return true;
+        }
+
+        // We simply grab the FIRST book to get the pre-selected bookshelves.
+        final List<Bookshelf> selected = Book.from(bookIds.get(0)).getBookshelves();
+
+        // URGENT: this gets the name of the groupKEY,
+        //  we should display the actual data/name of the group
+        //  which means we need a switch(rowGroupId) and read whatever field is appropriate
+        final String dialogTitle = vm.getStyle().requireGroupById(rowGroupId).getLabel(this);
+
+        final Bundle extras = new Bundle(1);
+        extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
+
+        bulkSetBookshelvesLauncher.launch(this, dialogTitle,
+                                          ServiceLocator.getInstance().getBookshelfDao().getAll(),
+                                          selected,
+                                          extras);
+        return true;
+    }
 
     /**
      * Handle {@link R.id#MENU_UPDATE_FROM_INTERNET}.
