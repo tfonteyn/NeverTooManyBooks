@@ -68,6 +68,7 @@ public class BooklistAdapter
 
     /** Log tag. */
     private static final String TAG = "BooklistAdapter";
+    private static final String ERROR_NULL_BOOKLIST = "booklist";
 
     @NonNull
     private final LayoutInflater inflater;
@@ -198,6 +199,21 @@ public class BooklistAdapter
             return null;
         }
         return rowData;
+    }
+
+    /**
+     * Get the ids of all Books for the given node key.
+     *
+     * @param nodeKey to use
+     * @param level   the level in the Booklist tree of this node
+     *
+     * @return list of book ID's
+     */
+    @NonNull
+    public List<Long> getBookIds(@NonNull final String nodeKey,
+                                 final int level) {
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.getBookIdsForNodeKey(nodeKey, level);
     }
 
     /**
@@ -349,7 +365,7 @@ public class BooklistAdapter
 
         if (BuildConfig.DEBUG /* always */) {
             if (holder instanceof GenericStringHolder) {
-                Objects.requireNonNull(booklist);
+                Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
                 ((GenericStringHolder) holder).setDebugPosition(
                         rowId -> booklist.getDbgRowColor(rowId));
             }
@@ -472,5 +488,4 @@ public class BooklistAdapter
         }
         return null;
     }
-
 }
