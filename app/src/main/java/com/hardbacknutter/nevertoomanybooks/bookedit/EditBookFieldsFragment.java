@@ -104,8 +104,8 @@ public class EditBookFieldsFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editBookshelvesLauncher = MultiChoiceLauncher.create(DBKey.FK_BOOKSHELF,
-                                                             this::onBookshelvesSelection);
+        editBookshelvesLauncher = new MultiChoiceLauncher<>(DBKey.FK_BOOKSHELF,
+                                                            this::onBookshelvesSelection);
         editBookshelvesLauncher.registerForFragmentResult(fm, this);
     }
 
@@ -239,10 +239,12 @@ public class EditBookFieldsFragment
         //noinspection DataFlowIssue
         editBookshelvesLauncher.launch(getActivity(), getString(R.string.lbl_bookshelves),
                                        vm.getAllBookshelves(),
-                                       vm.getBook().getBookshelves());
+                                       vm.getBook().getBookshelves(),
+                                       null);
     }
 
-    private void onBookshelvesSelection(@NonNull final Set<Long> selectedIds) {
+    private void onBookshelvesSelection(@NonNull final Set<Long> selectedIds,
+                                        @Nullable final Bundle extras) {
         final Field<List<Bookshelf>, TextView> field =
                 vm.requireField(R.id.bookshelves);
         final List<Bookshelf> previous = field.getValue();
