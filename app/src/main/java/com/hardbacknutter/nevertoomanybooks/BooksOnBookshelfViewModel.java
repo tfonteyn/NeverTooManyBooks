@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -85,6 +86,8 @@ public class BooksOnBookshelfViewModel
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelfViewModel";
+
+    static final String BKEY_BOOK_IDS = TAG + ":bookIds";
 
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
@@ -805,6 +808,8 @@ public class BooksOnBookshelfViewModel
      * @param onlyThisShelf flag
      *
      * @return a fully initialized input object
+     *
+     * @throws IllegalArgumentException (debug) for an unsupported group
      */
     @NonNull
     UpdateBooklistContract.Input createUpdateBooklistContractInput(
@@ -943,6 +948,33 @@ public class BooksOnBookshelfViewModel
                             .toArray();
             positionsUpdated.setValue(positions);
         }
+    }
+
+    /**
+     * Add/move the given books to the given list of Bookshelves.
+     *
+     * @param context      Current context
+     * @param bookshelfIds to set
+     * @param extras       containing "bookIds"
+     *
+     * @throws IllegalArgumentException (debug) if the extras or bookIds are missing
+     */
+    void setBookshelves(@NonNull final Context context,
+                        @NonNull final Collection<Long> bookshelfIds,
+                        @Nullable final Bundle extras) {
+
+        if (extras == null) {
+            throw new IllegalArgumentException("No extras?");
+        }
+
+        final List<Long> bookIds = ParcelUtils.unwrap(extras, BKEY_BOOK_IDS);
+        if (bookIds == null || bookIds.isEmpty()) {
+            throw new IllegalArgumentException("No bookIds?");
+        }
+
+        bookDao.setBookshelves(context, bookIds, bookshelfIds);
+        // ALWAYS rebuild
+        triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
     /**
