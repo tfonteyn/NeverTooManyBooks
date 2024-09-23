@@ -110,7 +110,7 @@ public class StyleBooklistBookLevelSortingFragment
     private BookLevelColumnWrapperListAdapter listAdapter;
 
 
-    private boolean onMenuItemClick(final int positionOrId,
+    private boolean onMenuItemClick(final int menuOwner,
                                     final int menuItemId) {
 
         final Sort nextValue;
@@ -125,8 +125,8 @@ public class StyleBooklistBookLevelSortingFragment
             return false;
         }
 
-        vm.getWrappedBookLevelColumnList().get(positionOrId).setSort(nextValue);
-        listAdapter.notifyItemChanged(positionOrId);
+        vm.getWrappedBookLevelColumnList().get(menuOwner).setSort(nextValue);
+        listAdapter.notifyItemChanged(menuOwner);
         return true;
     }
 
@@ -208,7 +208,7 @@ public class StyleBooklistBookLevelSortingFragment
             if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(anchor.getContext())
                         .setListener(this::onMenuItemClick)
-                        .setPosition(position)
+                        .setMenuOwner(position)
                         .setMenu(menu, true)
                         .show(anchor, menuMode);
             } else {

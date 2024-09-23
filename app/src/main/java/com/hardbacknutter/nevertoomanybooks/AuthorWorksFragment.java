@@ -178,7 +178,7 @@ public class AuthorWorksFragment
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(anchor.getContext())
                                 .setListener(this::onMenuItemSelected)
-                                .setPosition(position)
+                                .setMenuOwner(position)
                                 .setMenu(rowMenu, true)
                                 .show(anchor, menuMode);
                     } else {

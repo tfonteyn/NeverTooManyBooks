@@ -222,7 +222,7 @@ public class PreferredStylesFragment
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(context)
                                 .setListener(this::onMenuItemSelected)
-                                .setPosition(position)
+                                .setMenuOwner(position)
                                 .setMenu(menu, true)
                                 .show(anchor, menuMode);
                     } else {

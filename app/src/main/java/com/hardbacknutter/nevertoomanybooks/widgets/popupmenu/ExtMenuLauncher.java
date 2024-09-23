@@ -90,14 +90,18 @@ public class ExtMenuLauncher
      *
      * @param context             preferably the {@code Activity}
      *                            but another UI {@code Context} will also do.
-     * @param adapterPosition     the position where the menu originates from
+     * @param menuOwner           Typically the adapter-position (includes {@code 0}) for
+     *                            the View/item which owns the menu.
+     *                            But can also be a generic id.
+     *                            It will be passed back as the first argument of
+     *                            {@link ExtMenuResultListener#onMenuItemClick(int, int)}.
      * @param menuTitle           optional menu title
      * @param message             optional message
      * @param menu                to display
      * @param groupDividerEnabled flag
      */
     public void launch(@NonNull final Context context,
-                       final int adapterPosition,
+                       final int menuOwner,
                        @Nullable final CharSequence menuTitle,
                        @Nullable final CharSequence message,
                        @NonNull final Menu menu,
@@ -106,7 +110,7 @@ public class ExtMenuLauncher
         final ArrayList<ExtMenuItem> items = ExtMenu.convert(menu, groupDividerEnabled);
 
         final Bundle args = new Bundle(5);
-        args.putInt(BKEY_MENU_OWNER, adapterPosition);
+        args.putInt(BKEY_MENU_OWNER, menuOwner);
 
         if (menuTitle != null) {
             args.putString(BKEY_TITLE, menuTitle.toString());

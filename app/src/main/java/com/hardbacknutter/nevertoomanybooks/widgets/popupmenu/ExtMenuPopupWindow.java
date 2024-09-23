@@ -57,7 +57,8 @@ public class ExtMenuPopupWindow {
     private final MenuItemListAdapter adapter;
 
     private ExtMenuResultListener listener;
-    private int positionOrId;
+    private int menuOwner;
+
     @SuppressWarnings("FieldCanBeLocal")
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
@@ -73,7 +74,7 @@ public class ExtMenuPopupWindow {
                 @Override
                 public void onMenuItemClick(@IdRes final int menuItemId) {
                     popupWindow.dismiss();
-                    listener.onMenuItemClick(positionOrId, menuItemId);
+                    listener.onMenuItemClick(menuOwner, menuItemId);
                 }
             };
 
@@ -190,22 +191,23 @@ public class ExtMenuPopupWindow {
     @NonNull
     public ExtMenuPopupWindow setListener(@NonNull final ExtMenuResultListener listener) {
         this.listener = listener;
-
         return this;
     }
 
     /**
-     * Set the position/id for whom this menu is meant. The value will
-     * be passed back in the {@link ExtMenuResultListener}.
+     * Set the position/id for whom this menu is meant.
      *
-     * @param position The adapter-position for the View/item which
-     *                 owns the menu. But can also be a generic id.
+     * @param menuOwner Typically the adapter-position (includes {@code 0}) for
+     *                  the View/item which owns the menu.
+     *                  But can also be a generic id.
+     *                  It will be passed back as the first argument of
+     *                  {@link ExtMenuResultListener#onMenuItemClick(int, int)}.
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtMenuPopupWindow setPosition(final int position) {
-        this.positionOrId = position;
+    public ExtMenuPopupWindow setMenuOwner(final int menuOwner) {
+        this.menuOwner = menuOwner;
         return this;
     }
 

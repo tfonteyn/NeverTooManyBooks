@@ -1147,7 +1147,7 @@ public class BooksOnBookshelf
             if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(this)
                         .setTitle(menuTitle)
-                        .setPosition(adapterPosition)
+                        .setMenuOwner(adapterPosition)
                         .setMenu(menu, true)
                         .setListener(this::onRowMenuItemSelected)
                         .show(v, menuMode);
@@ -1871,7 +1871,7 @@ public class BooksOnBookshelf
         if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(this)
                     .setTitle(menuTitle)
-                    .setPosition(0)
+                    .setMenuOwner(0)
                     .setMenu(menu, true)
                     .setListener((p, mii) -> onNavigationItemSelected(mii))
                     .show(anchor, menuMode);
@@ -1911,9 +1911,9 @@ public class BooksOnBookshelf
             new ExtMenuPopupWindow(this)
                     .setTitle(dialogTitle)
                     .setMessage(message)
-                    .setPosition(adapterPosition)
+                    .setMenuOwner(adapterPosition)
                     .setMenu(menu, true)
-                    .setListener((positionOrId, menuItemId)
+                    .setListener((menuOwner, menuItemId)
                                          -> updateBooksFromInternetData(menuItemId, rowData))
                     .show(anchor, menuMode);
         } else {

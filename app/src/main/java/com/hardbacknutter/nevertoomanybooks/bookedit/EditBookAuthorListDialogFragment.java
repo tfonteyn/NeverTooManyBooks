@@ -207,7 +207,7 @@ public class EditBookAuthorListDialogFragment
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())
                                 .setListener(this::onMenuItemSelected)
-                                .setPosition(position)
+                                .setMenuOwner(position)
                                 .setMenu(menu, true)
                                 .show(v, menuMode);
                     } else {

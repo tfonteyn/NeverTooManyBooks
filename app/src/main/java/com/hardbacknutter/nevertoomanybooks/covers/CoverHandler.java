@@ -346,7 +346,7 @@ public class CoverHandler {
         if (menuMode.isPopup()) {
             new ExtMenuPopupWindow(context)
                     .setListener(this::onMenuItemSelected)
-                    .setPosition(cIdx)
+                    .setMenuOwner(cIdx)
                     .setMenu(menu, true)
                     .show(anchor, menuMode);
         } else {

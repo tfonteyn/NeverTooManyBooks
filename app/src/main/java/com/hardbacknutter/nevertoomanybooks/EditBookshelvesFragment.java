@@ -132,7 +132,7 @@ public class EditBookshelvesFragment
             if (menuMode.isPopup()) {
                 new ExtMenuPopupWindow(context)
                         .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
-                        .setPosition(listIndex)
+                        .setMenuOwner(listIndex)
                         .setMenu(menu, true)
                         .show(anchor, menuMode);
             } else {
