@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,7 +46,7 @@ public interface BookDao {
     /**
      * Update the 'last updated' of the given book.
      * If successful, the book itself will also be updated with
-     * the current date-time (which will be very slightly 'later' then what we store).
+     * the current date-time (which will be very slightly 'later' than when we stored).
      *
      * @param book to update
      *
@@ -164,6 +165,21 @@ public interface BookDao {
      * @return the number of rows deleted
      */
     int deleteByUuid(@NonNull List<String> uuids);
+
+    /**
+     * Add/move the given books to the given list of Bookshelves.
+     * <p>
+     * If successful, the book objects will have been updated with the new bookshelves.
+     *
+     * @param context      Current context
+     * @param bookIds      to update
+     * @param bookShelfIds to add/move the books to
+     *
+     * @return {@code true} for success.
+     */
+    boolean setBookshelves(@NonNull Context context,
+                           @NonNull Collection<Long> bookIds,
+                           @NonNull Collection<Long> bookShelfIds);
 
     /**
      * Update the 'read' status of a book.

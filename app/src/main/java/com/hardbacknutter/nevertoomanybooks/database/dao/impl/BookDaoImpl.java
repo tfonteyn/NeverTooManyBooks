@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -71,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -545,6 +547,58 @@ public class BookDaoImpl
         if (book.contains(DBKey.SID_STRIP_INFO)) {
             stripInfoDaoSupplier.get().insertOrUpdate(book);
         }
+    }
+
+    @Override
+    public boolean setBookshelves(@NonNull final Context context,
+                                  @NonNull final Collection<Long> bookIds,
+                                  @NonNull final Collection<Long> bookshelfIds) {
+
+        // Sanity check
+        if (bookIds.isEmpty() || bookshelfIds.isEmpty()) {
+            return false;
+        }
+
+        final List<Bookshelf> bookshelves = bookshelfDaoSupplier
+                .get()
+                .getAll()
+                .stream()
+                .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
+                .collect(Collectors.toList());
+
+        // Sanity check
+        if (bookshelves.isEmpty()) {
+            return false;
+        }
+
+        Synchronizer.SyncLock txLock = null;
+        try (SynchronizedStatement touchStmt = db.compileStatement(Sql.TOUCH)) {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            for (final long bookId : bookIds) {
+                // Bookshelves will be inserted if new, but never updated
+                bookshelfDaoSupplier.get().insertOrUpdate(context, bookId, bookshelves);
+
+                touchStmt.bindLong(1, bookId);
+                touchStmt.executeUpdateDelete();
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+
+        } catch (@NonNull final DaoWriteException e) {
+            return false;
+
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+
+        return true;
     }
 
     @Override
