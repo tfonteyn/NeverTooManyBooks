@@ -179,17 +179,8 @@ public class BookDaoImpl
         this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
-    /**
-     * Update the 'last updated' of the given book.
-     * <p>
-     * If successful, the book itself will also be updated with
-     * the current date-time (which will be very slightly 'later' then what we store).
-     *
-     * @param book to update
-     *
-     * @return {@code true} on success
-     */
     @SuppressWarnings("UnusedReturnValue")
+    @Override
     public boolean touch(@NonNull final Book book) {
         final boolean result;
         final long bookId = book.getId();
