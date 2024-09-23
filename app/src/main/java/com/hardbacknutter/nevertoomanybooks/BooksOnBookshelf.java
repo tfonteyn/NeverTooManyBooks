@@ -165,7 +165,7 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
-    /** {@link FragmentResultListener} request key. */
+    /** Row Menu as a BottomSheet {@link FragmentResultListener} request key. */
     private static final String RK_MENU = TAG + ":rk:menu";
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
@@ -268,15 +268,23 @@ public class BooksOnBookshelf
             registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
                     bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
 
+    /** Edit a {@code Book Color} which appears as a {@link BooklistGroup} (node). */
     private EditInLineStringLauncher editColorLauncher;
+    /** Edit a {@code Book Format} which appears as a {@link BooklistGroup} (node). */
     private EditInLineStringLauncher editFormatLauncher;
+    /** Edit a {@code Book Genre} which appears as a {@link BooklistGroup} (node). */
     private EditInLineStringLauncher editGenreLauncher;
+    /** Edit a {@code Book Language} which appears as a {@link BooklistGroup} (node). */
     private EditInLineStringLauncher editLanguageLauncher;
+    /** Edit a {@code Book Location} which appears as a {@link BooklistGroup} (node). */
     private EditInLineStringLauncher editLocationLauncher;
-
+    /** Edit a {@link Bookshelf} which appears as a {@link BooklistGroup} (node). */
     private EditParcelableLauncher<Bookshelf> editBookshelfLauncher;
+    /** Edit an {@link Author} which appears as a {@link BooklistGroup} (node). */
     private EditParcelableLauncher<Author> editAuthorLauncher;
+    /** Edit a {@link Series} which appears as a {@link BooklistGroup} (node). */
     private EditParcelableLauncher<Series> editSeriesLauncher;
+    /** Edit a {@link Publisher} which appears as a {@link BooklistGroup} (node). */
     private EditParcelableLauncher<Publisher> editPublisherLauncher;
     private EditLenderLauncher editLenderLauncher;
 
@@ -1105,8 +1113,9 @@ public class BooksOnBookshelf
                  R.string.option_goto_next_book_without_cover)
             .setIcon(R.drawable.broken_image_24px);
 
-        // if it's a level, add the expand option
+        // if it's a level, i.e. NOT a Book...
         if (rowData.getInt(DBKey.BL_NODE_GROUP) != BooklistGroup.BOOK) {
+            // add the expand option
             menu.add(R.id.MENU_GROUP_BOB_EXPANSION, R.id.MENU_LEVEL_EXPAND, ++menuOrder,
                      R.string.option_level_expand)
                 .setIcon(R.drawable.unfold_more_24px);
@@ -1194,6 +1203,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES
                    || menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
+            // This is the 3rd step in the updateBooksFromInternet process.
             return updateBooksFromInternetData(menuItemId, rowData);
         }
 
