@@ -132,7 +132,7 @@ public class ListChipGroupField<T extends Parcelable & Entity>
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putParcelableArrayList(getFieldKey(), getValue());
+        target.putParcelableCollection(getFieldKey(), getValue());
     }
 
     @Override
