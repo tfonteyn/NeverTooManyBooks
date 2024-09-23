@@ -301,7 +301,7 @@ class ResultsAccumulator {
         }
 
         list.addAll(dataToAdd);
-        book.putParcelableArrayList(key, list);
+        book.putParcelableCollection(key, list);
     }
 
     /**
