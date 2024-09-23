@@ -35,6 +35,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
@@ -556,8 +557,8 @@ public class DataManager
      * @param dateTime to store
      */
     public void putLocalDateTime(@SuppressWarnings("SameParameterValue")
-                                    @NonNull final String key,
-                                    @NonNull final LocalDateTime dateTime) {
+                                 @NonNull final String key,
+                                 @NonNull final LocalDateTime dateTime) {
         rawData.putString(key, SqlEncode.dateTime(dateTime));
     }
 
@@ -618,16 +619,21 @@ public class DataManager
     }
 
     /**
-     * Store a {@link Parcelable} {@link ArrayList} in the collection.
+     * Store a {@link Parcelable} {@link Collection}.
+     * <p>
+     * An {@link ArrayList} value is stored as-is,
+     * while other types of {@link Collection}s are wrapped in a new {@link ArrayList}.
      * <p>
      * <strong>If possible, AVOID using this method directly.</strong>
      *
      * @param key   Key of data object
      * @param value to store
      * @param <T>   type of objects in the list
+     *
+     * @see #getParcelableArrayList(String)
      */
-    public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
-                                                              @NonNull final List<T> value) {
+    public <T extends Parcelable> void putParcelableCollection(@NonNull final String key,
+                                                               @NonNull final Collection<T> value) {
         if (value instanceof ArrayList) {
             rawData.putParcelableArrayList(key, (ArrayList<T>) value);
         } else {
