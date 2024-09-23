@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,6 +47,7 @@ public final class ParcelUtils {
      * @see #readParcelableList(Parcel, List, ClassLoader)
      * @see Parcel#writeParcelableList(List, int)
      */
+    @SuppressWarnings({"MissingJavadoc", "CheckStyle", "LocalVariableNamingConvention"})
     public static <T extends Parcelable> void writeParcelableList(@NonNull final Parcel out,
                                                                   @Nullable final List<T> val,
                                                                   final int flags) {
@@ -72,7 +73,8 @@ public final class ParcelUtils {
      * @see #writeParcelableList(Parcel, List, int)
      * @see Parcel#readParcelableList(List, ClassLoader)
      */
-    @SuppressWarnings("ForLoopWithMissingComponent")
+    @SuppressWarnings({"MissingJavadoc", "CheckStyle", "ForLoopWithMissingComponent",
+            "LocalVariableNamingConvention"})
     @NonNull
     public static <T extends Parcelable> List<T> readParcelableList(
             @NonNull final Parcel in,
@@ -116,15 +118,28 @@ public final class ParcelUtils {
     /**
      * Extract a {@code List&lt;Long&gt;} from the given arguments.
      *
+     * @param args to read from
+     * @param key  to get
+     *
      * @return the list, or {@code null} if not found
      *
+     * @throws IllegalArgumentException (debug) if the wrapped Parcelable
+     *                                  is of an unsupported type
      * @see #wrap(List)
      */
     @Nullable
     public static List<Long> unwrap(@NonNull final Bundle args,
                                     @NonNull final String key) {
         final Parcelable parcelable = args.getParcelable(key);
-        return parcelable != null ? ((ParcelableArrayListLong) parcelable).unwrap() : null;
+        if (parcelable == null) {
+            // Don't check the type, just return null
+            return null;
+        }
+        if (parcelable instanceof ParcelableArrayListLong) {
+            return ((ParcelableArrayListLong) parcelable).unwrap();
+        }
+
+        throw new IllegalArgumentException("Unsupported type");
     }
 
     /**
