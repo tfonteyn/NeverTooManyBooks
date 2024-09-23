@@ -41,6 +41,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -657,12 +658,12 @@ public class Book
     }
 
     /**
-     * Replace the list of {@link Author}s with the given list.
+     * Set/replace the list of {@link Author}s.
      *
      * @param authors list
      */
-    public void setAuthors(@NonNull final List<Author> authors) {
-        putParcelableArrayList(BKEY_AUTHOR_LIST, authors);
+    public void setAuthors(@NonNull final Collection<Author> authors) {
+        putParcelableCollection(BKEY_AUTHOR_LIST, authors);
     }
 
     /**
@@ -752,12 +753,12 @@ public class Book
     }
 
     /**
-     * Replace the list of {@link Series}s with the given list.
+     * Set/replace the list of {@link Series}s.
      *
      * @param series list
      */
-    public void setSeries(@NonNull final List<Series> series) {
-        putParcelableArrayList(BKEY_SERIES_LIST, series);
+    public void setSeries(@NonNull final Collection<Series> series) {
+        putParcelableCollection(BKEY_SERIES_LIST, series);
     }
 
     /**
@@ -836,12 +837,12 @@ public class Book
     }
 
     /**
-     * Replace the list of {@link Publisher}s with the given list.
+     * Set/replace the list of {@link Publisher}s.
      *
      * @param publishers list
      */
-    public void setPublishers(@NonNull final List<Publisher> publishers) {
-        putParcelableArrayList(BKEY_PUBLISHER_LIST, publishers);
+    public void setPublishers(@NonNull final Collection<Publisher> publishers) {
+        putParcelableCollection(BKEY_PUBLISHER_LIST, publishers);
     }
 
     /**
@@ -897,12 +898,12 @@ public class Book
     }
 
     /**
-     * Replace the list of {@link Bookshelf}s with the given list.
+     * Set/replace the list of {@link Bookshelf}s.
      *
      * @param bookShelves list
      */
-    public void setBookshelves(@NonNull final List<Bookshelf> bookShelves) {
-        putParcelableArrayList(BKEY_BOOKSHELF_LIST, bookShelves);
+    public void setBookshelves(@NonNull final Collection<Bookshelf> bookShelves) {
+        putParcelableCollection(BKEY_BOOKSHELF_LIST, bookShelves);
     }
 
     /**
@@ -925,12 +926,12 @@ public class Book
     }
 
     /**
-     * Replace the list of {@link TocEntry}s with the given list.
+     * Set/replace the list of {@link TocEntry}s.
      *
      * @param tocEntries list
      */
-    public void setToc(@NonNull final List<TocEntry> tocEntries) {
-        putParcelableArrayList(BKEY_TOC_LIST, tocEntries);
+    public void setToc(@NonNull final Collection<TocEntry> tocEntries) {
+        putParcelableCollection(BKEY_TOC_LIST, tocEntries);
     }
 
     /**
