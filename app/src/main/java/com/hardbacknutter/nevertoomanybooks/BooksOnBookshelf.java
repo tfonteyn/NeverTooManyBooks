@@ -1207,7 +1207,9 @@ public class BooksOnBookshelf
             return updateBooksFromInternetData(menuItemId, rowData);
         }
 
-        // Specific row-group options
+        // Check for common options to multiple specific row-group
+        if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            return onRowMenuGroupUpdateFromInternet(v, adapterPosition, rowData);
 
         @BooklistGroup.Id
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
@@ -1219,19 +1221,19 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.AUTHOR: {
-                if (onRowMenuForAuthor(v, adapterPosition, rowData, menuItemId)) {
+                if (onRowMenuForAuthor(v, rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.SERIES: {
-                if (onRowMenuForSeries(v, adapterPosition, rowData, menuItemId)) {
+                if (onRowMenuForSeries(v, rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                if (onRowMenuForPublisher(v, adapterPosition, rowData, menuItemId)) {
+                if (onRowMenuForPublisher(v, rowData, menuItemId)) {
                     return true;
                 }
                 break;
@@ -1276,23 +1278,7 @@ public class BooksOnBookshelf
                 }
                 break;
             }
-            case BooklistGroup.DATE_ACQUIRED_YEAR:
-            case BooklistGroup.DATE_ACQUIRED_MONTH:
-            case BooklistGroup.DATE_ACQUIRED_DAY:
-            case BooklistGroup.DATE_ADDED_YEAR:
-            case BooklistGroup.DATE_ADDED_MONTH:
-            case BooklistGroup.DATE_ADDED_DAY:
-            case BooklistGroup.DATE_PUBLISHED_YEAR:
-            case BooklistGroup.DATE_PUBLISHED_MONTH:
-            case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
-            case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
-                if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBookListLauncher.launch(
-                            vm.createDateRowUpdateBooklistContractInput(this, rowData));
-                    return true;
-                }
-                break;
-            }
+
             default:
                 break;
         }
@@ -1312,6 +1298,62 @@ public class BooksOnBookshelf
         return vm.getMenuHandlers()
                  .stream()
                  .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
+    }
+
+
+    /**
+     * Handle {@link R.id#MENU_UPDATE_FROM_INTERNET}.
+     *
+     * @param v               View clicked; the anchor for a potential popup menu
+     * @param adapterPosition The {@link #adapter} position of the row menu from which
+     *                        the user made a selection.
+     * @param rowData         the row data
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuGroupUpdateFromInternet(@NonNull final View v,
+                                                     final int adapterPosition,
+                                                     @NonNull final DataHolder rowData) {
+        @BooklistGroup.Id
+        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+        switch (rowGroupId) {
+            case BooklistGroup.AUTHOR: {
+                final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
+                updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
+                return true;
+            }
+            case BooklistGroup.SERIES: {
+                final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
+                updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
+                return true;
+            }
+            case BooklistGroup.PUBLISHER: {
+                final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
+                updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
+                return true;
+            }
+            case BooklistGroup.BOOKSHELF: {
+                updateBookListLauncher.launch(
+                        vm.createUpdateBooklistContractInput(this, rowData, true));
+                return true;
+            }
+            case BooklistGroup.DATE_ACQUIRED_YEAR:
+            case BooklistGroup.DATE_ACQUIRED_MONTH:
+            case BooklistGroup.DATE_ACQUIRED_DAY:
+            case BooklistGroup.DATE_ADDED_YEAR:
+            case BooklistGroup.DATE_ADDED_MONTH:
+            case BooklistGroup.DATE_ADDED_DAY:
+            case BooklistGroup.DATE_PUBLISHED_YEAR:
+            case BooklistGroup.DATE_PUBLISHED_MONTH:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
+                updateBookListLauncher.launch(
+                        vm.createDateRowUpdateBooklistContractInput(this, rowData));
+                return true;
+            }
+            default:
+                return false;
+        }
     }
 
     /**
@@ -1431,7 +1473,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForAuthor(View, int, DataHolder, int)
+     * @see #onRowMenuForAuthor(View, DataHolder, int)
      */
     private void createRowMenuForAuthor(@NonNull final DataHolder rowData,
                                         @NonNull final Menu menu) {
@@ -1449,18 +1491,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for an {@link Author}.
      *
-     * @param v               View clicked; the anchor for a potential popup menu
-     * @param adapterPosition The {@link #adapter} position of the row menu from which
-     *                        the user made a selection.
-     * @param rowData         the row data
-     * @param menuItemId      The menu item that was invoked.
+     * @param v          View clicked; the anchor for a potential popup menu
+     * @param rowData    the row data
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForAuthor(DataHolder, Menu)
      */
     private boolean onRowMenuForAuthor(@NonNull final View v,
-                                       final int adapterPosition,
                                        @NonNull final DataHolder rowData,
                                        @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
@@ -1482,11 +1521,6 @@ public class BooksOnBookshelf
             final Author author = DataHolderUtils.requireAuthor(rowData);
             editAuthorLauncher.launch(this, EditAction.EditInPlace, author);
             return true;
-
-        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
-            updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
-            return true;
         }
         return false;
     }
@@ -1497,7 +1531,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForSeries(View, int, DataHolder, int)
+     * @see #onRowMenuForSeries(View, DataHolder, int)
      */
     private void createRowMenuForSeries(@NonNull final DataHolder rowData,
                                         @NonNull final Menu menu) {
@@ -1524,18 +1558,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Series}.
      *
-     * @param v               View clicked; the anchor for a potential popup menu
-     * @param adapterPosition The {@link #adapter} position of the row menu from which
-     *                        the user made a selection.
-     * @param rowData         the row data
-     * @param menuItemId      The menu item that was invoked.
+     * @param v          View clicked; the anchor for a potential popup menu
+     * @param rowData    the row data
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForSeries(DataHolder, Menu)
      */
     private boolean onRowMenuForSeries(@NonNull final View v,
-                                       final int adapterPosition,
                                        @NonNull final DataHolder rowData,
                                        @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_SERIES_SET_COMPLETE
@@ -1555,11 +1586,6 @@ public class BooksOnBookshelf
             final Series series = DataHolderUtils.requireSeries(rowData);
             StandardDialogs.deleteSeries(this, series, () -> vm.delete(this, series));
             return true;
-
-        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
-            updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
-            return true;
         }
         return false;
     }
@@ -1570,7 +1596,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForPublisher(View, int, DataHolder, int)
+     * @see #onRowMenuForPublisher(View, DataHolder, int)
      */
     private void createRowMenuForPublisher(@NonNull final DataHolder rowData,
                                            @NonNull final Menu menu) {
@@ -1588,18 +1614,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Publisher}.
      *
-     * @param v               View clicked; the anchor for a potential popup menu
-     * @param adapterPosition The {@link #adapter} position of the row menu from which
-     *                        the user made a selection.
-     * @param rowData         the row data
-     * @param menuItemId      The menu item that was invoked.
+     * @param v          View clicked; the anchor for a potential popup menu
+     * @param rowData    the row data
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForPublisher(DataHolder, Menu)
      */
     private boolean onRowMenuForPublisher(@NonNull final View v,
-                                          final int adapterPosition,
                                           @NonNull final DataHolder rowData,
                                           @IdRes final int menuItemId) {
         if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
@@ -1610,11 +1633,6 @@ public class BooksOnBookshelf
         } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
             StandardDialogs.deletePublisher(this, publisher, () -> vm.delete(this, publisher));
-            return true;
-
-        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
-            updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
             return true;
         }
         return false;
@@ -1657,11 +1675,6 @@ public class BooksOnBookshelf
         } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
             StandardDialogs.deleteBookshelf(this, bookshelf, () -> vm.delete(this, bookshelf));
-            return true;
-
-        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
-                    this, rowData, true));
             return true;
         }
         return false;
@@ -1802,7 +1815,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * We get here when the user has selected a {@code R.id.MENU_UPDATE_FROM_INTERNET}
+     * We get here when the user has selected a {@link R.id#MENU_UPDATE_FROM_INTERNET}
      * for an applicable row.
      * <p>
      * The next step is to allow the user to decide between books on "this bookshelf only"
@@ -1847,8 +1860,8 @@ public class BooksOnBookshelf
      * We get here after the user has selected to update a set of books on "this bookshelf only"
      * or on all bookshelves.
      *
-     * @param menuItemId {@code R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY}
-     *                   or {@code R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES}
+     * @param menuItemId {@link R.id#MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY}
+     *                   or {@link R.id#MENU_UPDATE_FROM_INTERNET_ALL_SHELVES}
      * @param rowData    for the row which was selected
      *
      * @return {@code true} if handled.
