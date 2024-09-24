@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -61,6 +63,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
@@ -113,6 +117,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -455,8 +460,7 @@ public class BooksOnBookshelf
         stylePickerLauncher.registerForFragmentResult(fm, this);
 
         bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(
-                RK_SET_BOOKSHELVES,
-                (bookshelfIds, extras) -> vm.setBookshelves(this, bookshelfIds, extras));
+                RK_SET_BOOKSHELVES, this::onBulkSetBookshelves);
         bulkSetBookshelvesLauncher.registerForFragmentResult(fm, this);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
@@ -1332,40 +1336,79 @@ public class BooksOnBookshelf
     private boolean onRowMenuGroupSetBookshelves(@NonNull final View v,
                                                  @NonNull final DataHolder rowData) {
 
-        @BooklistGroup.Id
-        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
-
         final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
         final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
 
         //noinspection DataFlowIssue
         final List<Long> bookIds = adapter.getBookIds(nodeKey, level);
-        // Theoretically this CAN happen (but should in fact never be the case).
-        // We do not show/hide the menu depending on books being
-        // under the node at the adapter position.
         if (bookIds.isEmpty()) {
+            // We should never get here... flw
+            // Theoretically this can happen as we do set the menu visibility
+            // depending on books being under the node at the adapter position (or not).
             Snackbar.make(v, getString(R.string.warning_no_matching_book_found),
                           Snackbar.LENGTH_LONG).show();
             return true;
         }
 
+        final String dialogTitle = getRowLabel(rowData);
+        final String dialogMessage = getString(R.string.info_bulk_set_bookshelves)
+                                     // The Dialog has a "cancel/ok" button,
+                                     // a BottomSheet will trigger an additional simple
+                                     // confirmation dialog.
+                                     + (DialogMode.getMode(this) == DialogMode.BottomSheet
+                                        ? '\n' + getString(R.string.info_bulk_set_bookshelves_bs)
+                                        : "");
+
+        final List<Bookshelf> allShelves = ServiceLocator.getInstance().getBookshelfDao().getAll();
         // We simply grab the FIRST book to get the pre-selected bookshelves.
         final List<Bookshelf> selected = Book.from(bookIds.get(0)).getBookshelves();
-
-        // URGENT: this gets the name of the groupKEY,
-        //  we should display the actual data/name of the group
-        //  which means we need a switch(rowGroupId) and read whatever field is appropriate
-        final String dialogTitle = vm.getStyle().requireGroupById(rowGroupId).getLabel(this);
 
         final Bundle extras = new Bundle(1);
         extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
 
-        bulkSetBookshelvesLauncher.launch(this, dialogTitle,
-                                          ServiceLocator.getInstance().getBookshelfDao().getAll(),
-                                          selected,
+        bulkSetBookshelvesLauncher.launch(this, dialogTitle, dialogMessage,
+                                          allShelves, selected,
                                           extras);
         return true;
     }
+
+    private void onBulkSetBookshelves(@NonNull final Set<Long> bookshelfIds,
+                                      @Nullable final Bundle extras) {
+
+        final List<Bookshelf> bookshelves = ServiceLocator
+                .getInstance()
+                .getBookshelfDao()
+                .getAll()
+                .stream()
+                .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
+                .collect(Collectors.toList());
+
+        if (DialogMode.getMode(this) == DialogMode.Dialog) {
+            // The Dialog has a "cancel/ok" button; confirming is already done.
+            vm.setBookshelves(this, bookshelves, extras);
+            return;
+        }
+
+        // a BottomSheet needs additional confirmation
+        final Spanned message = Html.fromHtml(
+                getString(R.string.confirm_assign_bookshelves,
+                          bookshelves.stream()
+                                     .map(Bookshelf::getName)
+                                     .map(s -> "<li>" + s + "</li>")
+                                     .collect(Collectors.joining("", "<ul>", "</ul>"))),
+                Html.FROM_HTML_MODE_COMPACT);
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.lbl_assign_bookshelves)
+                .setMessage(message)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w)
+                        -> vm.setBookshelves(this, bookshelves, extras))
+                .create()
+                .show();
+    }
+
+
 
     /**
      * Handle {@link R.id#MENU_UPDATE_FROM_INTERNET}.
