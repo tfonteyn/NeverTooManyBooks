@@ -39,7 +39,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -954,13 +953,13 @@ public class BooksOnBookshelfViewModel
      * Add/move the given books to the given list of Bookshelves.
      *
      * @param context      Current context
-     * @param bookshelfIds to set
+     * @param bookshelves  to set
      * @param extras       containing "bookIds"
      *
      * @throws IllegalArgumentException (debug) if the extras or bookIds are missing
      */
     void setBookshelves(@NonNull final Context context,
-                        @NonNull final Collection<Long> bookshelfIds,
+                        @NonNull final List<Bookshelf> bookshelves,
                         @Nullable final Bundle extras) {
 
         if (extras == null) {
@@ -972,7 +971,7 @@ public class BooksOnBookshelfViewModel
             throw new IllegalArgumentException("No bookIds?");
         }
 
-        bookDao.setBookshelves(context, bookIds, bookshelfIds);
+        bookDao.setBookshelves(context, bookIds, bookshelves);
         // ALWAYS rebuild
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }

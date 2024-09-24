@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public interface BookDao {
 
@@ -171,15 +172,15 @@ public interface BookDao {
      * <p>
      * If successful, the book objects will have been updated with the new bookshelves.
      *
-     * @param context      Current context
-     * @param bookIds      to update
-     * @param bookShelfIds to add/move the books to
+     * @param context     Current context
+     * @param bookIds     to update
+     * @param bookshelves to add/move the books to
      *
      * @return {@code true} for success.
      */
     boolean setBookshelves(@NonNull Context context,
                            @NonNull Collection<Long> bookIds,
-                           @NonNull Collection<Long> bookShelfIds);
+                           @NonNull List<Bookshelf> bookshelves);
 
     /**
      * Update the 'read' status of a book.

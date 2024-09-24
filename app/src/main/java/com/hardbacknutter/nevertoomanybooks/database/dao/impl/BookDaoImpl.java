@@ -552,22 +552,10 @@ public class BookDaoImpl
     @Override
     public boolean setBookshelves(@NonNull final Context context,
                                   @NonNull final Collection<Long> bookIds,
-                                  @NonNull final Collection<Long> bookshelfIds) {
+                                  @NonNull final List<Bookshelf> bookshelves) {
 
         // Sanity check
-        if (bookIds.isEmpty() || bookshelfIds.isEmpty()) {
-            return false;
-        }
-
-        final List<Bookshelf> bookshelves = bookshelfDaoSupplier
-                .get()
-                .getAll()
-                .stream()
-                .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
-                .collect(Collectors.toList());
-
-        // Sanity check
-        if (bookshelves.isEmpty()) {
+        if (bookIds.isEmpty() || bookshelves.isEmpty()) {
             return false;
         }
 
