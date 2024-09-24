@@ -53,8 +53,8 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Constructor.
      *
-     * @param requestKey          FragmentResultListener request key to use for our response.
-     * @param resultListener      listener
+     * @param requestKey     FragmentResultListener request key to use for our response.
+     * @param resultListener listener
      */
     public MultiChoiceLauncher(@NonNull final String requestKey,
                                @NonNull final ResultListener resultListener) {
@@ -71,7 +71,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      * @param requestKey    to use
      * @param selectedItems the set of <strong>checked</strong> items
      * @param extras        the optional Bundle as provided to
-     *                      {@link #launch(Context, String, List, List, Bundle)}
+     *                      {@link #launch(Context, String, String, List, List, Bundle)}
      *
      * @see #onFragmentResult(String, Bundle)
      */
@@ -95,18 +95,24 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      * @param context       preferably the {@code Activity}
      *                      but another UI {@code Context} will also do.
      * @param dialogTitle   the dialog title
+     * @param dialogMessage optional message to display at the top of the dialog
      * @param allItems      list of all possible items
      * @param selectedItems list of item which are currently selected
      * @param extras        optional Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
+                       @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,
                        @NonNull final List<T> selectedItems,
                        @Nullable final Bundle extras) {
 
-        final Bundle args = new Bundle(6);
+        final Bundle args = new Bundle();
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
+
+        if (dialogMessage != null) {
+            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
+        }
 
         args.putLongArray(BKEY_ITEMS, allItems
                 .stream().mapToLong(Entity::getId).toArray());
@@ -142,7 +148,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
          *
          * @param selectedItems the set of <strong>checked</strong> items
          * @param extras        the optional Bundle as provided to
-         *                      {@link #launch(Context, String, List, List, Bundle)}
+         *                      {@link #launch(Context, String, String, List, List, Bundle)}
          */
         void onResult(@NonNull Set<Long> selectedItems,
                       @Nullable Bundle extras);
