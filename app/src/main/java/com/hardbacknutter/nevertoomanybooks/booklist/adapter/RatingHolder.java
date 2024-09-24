@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,7 +55,9 @@ public class RatingHolder
                  final Style style) {
         super(itemView);
         key = style.requireGroupById(BooklistGroup.RATING)
-                   .getDisplayDomainExpression().getDomain().getName();
+                   .getDisplayDomainExpression()
+                   .getDomain()
+                   .getName();
         ratingBar = itemView.findViewById(R.id.rating);
     }
 

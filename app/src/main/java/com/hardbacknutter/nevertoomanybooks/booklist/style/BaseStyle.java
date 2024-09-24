@@ -591,7 +591,7 @@ public abstract class BaseStyle
     }
 
     public void setGroupIds(@NonNull final List<Integer> groupIds) {
-        setGroupList(BooklistGroup.createList(groupIds, this));
+        setGroupList(BooklistGroup.getGroups(this, groupIds));
     }
 
     @Override

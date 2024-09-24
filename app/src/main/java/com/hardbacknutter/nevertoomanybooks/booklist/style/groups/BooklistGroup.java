@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import androidx.preference.PreferenceScreen;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -243,14 +244,14 @@ public class BooklistGroup {
     /**
      * Create a list with new BooklistGroup's using the list of specified ids.
      *
-     * @param idList of the groups to create
      * @param style  Style reference.
+     * @param idList of the groups to create
      *
      * @return list
      */
     @NonNull
-    public static List<BooklistGroup> createList(@NonNull final List<Integer> idList,
-                                                 @NonNull final Style style) {
+    public static List<BooklistGroup> getGroups(@NonNull final Style style,
+                                                @NonNull final Collection<Integer> idList) {
         return idList.stream()
                      .map(groupId -> newInstance(groupId, style))
                      .collect(Collectors.toList());

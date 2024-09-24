@@ -106,7 +106,10 @@ public class GenericStringHolder
         this.groupId = groupId;
         this.formatter = formatter;
 
-        key = style.requireGroupById(groupId).getDisplayDomainExpression().getDomain().getName();
+        key = style.requireGroupById(groupId)
+                   .getDisplayDomainExpression()
+                   .getDomain()
+                   .getName();
 
         final Context context = itemView.getContext();
 

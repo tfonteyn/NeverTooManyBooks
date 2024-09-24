@@ -478,7 +478,9 @@ public class BooklistAdapter
             } else {
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = style.getGroupByLevel(level);
-                final String key = group.getDisplayDomainExpression().getDomain().getName();
+                final String key = group.getDisplayDomainExpression()
+                                        .getDomain()
+                                        .getName();
                 //noinspection DataFlowIssue
                 return formatter.format(group.getId(), rowData, key);
             }

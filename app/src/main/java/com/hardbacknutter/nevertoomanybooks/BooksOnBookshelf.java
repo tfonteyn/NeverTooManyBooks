@@ -1471,7 +1471,9 @@ public class BooksOnBookshelf
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
 
         final BooklistGroup group = vm.getStyle().requireGroupById(rowGroupId);
-        final String domainName = group.getDisplayDomainExpression().getDomain().getName();
+        final String domainName = group.getDisplayDomainExpression()
+                                       .getDomain()
+                                       .getName();
 
         final String label = group.getLabel(this);
         final String name;
