@@ -433,7 +433,7 @@ public class BooklistGroup {
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    public GroupKey createGroupKey(@Id final int id) {
+    protected GroupKey createGroupKey(@Id final int id) {
         // NEWTHINGS: BooklistGroup
         switch (id) {
             // Data without a linked table uses the display name as the key domain.

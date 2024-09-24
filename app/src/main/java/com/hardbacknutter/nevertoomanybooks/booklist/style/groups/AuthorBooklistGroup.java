@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -95,7 +95,7 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    public GroupKey createGroupKey(@Id final int id) {
+    protected GroupKey createGroupKey(@Id final int id) {
         // We use the foreign ID to create the key-domain.
         // It is NOT used to display the data; instead we use #displayDomainExpression.
         // Neither the key-domain nor the display-domain is sorted;
