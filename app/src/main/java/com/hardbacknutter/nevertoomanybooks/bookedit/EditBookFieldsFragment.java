@@ -237,7 +237,9 @@ public class EditBookFieldsFragment
 
     private void editBookshelves() {
         //noinspection DataFlowIssue
-        editBookshelvesLauncher.launch(getActivity(), getString(R.string.lbl_bookshelves),
+        editBookshelvesLauncher.launch(getActivity(),
+                                       getString(R.string.lbl_bookshelves),
+                                       null,
                                        vm.getAllBookshelves(),
                                        vm.getBook().getBookshelves(),
                                        null);
