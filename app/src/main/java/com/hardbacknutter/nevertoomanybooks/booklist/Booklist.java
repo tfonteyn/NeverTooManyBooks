@@ -637,7 +637,7 @@ public class Booklist
     @SuppressWarnings("JavadocReference")
     @NonNull
     public List<Long> getBookIdsForNodeKey(@NonNull final String nodeKey,
-                                           final int level) {
+                                           @IntRange(from = 1) final int level) {
         if (sqlGetBookIdListForNodeKey == null) {
             sqlGetBookIdListForNodeKey =
                     SELECT_ + DBKey.FK_BOOK

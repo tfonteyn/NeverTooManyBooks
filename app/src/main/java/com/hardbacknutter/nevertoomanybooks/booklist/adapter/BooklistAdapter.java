@@ -211,7 +211,7 @@ public class BooklistAdapter
      */
     @NonNull
     public List<Long> getBookIds(@NonNull final String nodeKey,
-                                 final int level) {
+                                 @IntRange(from = 1) final int level) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         return booklist.getBookIdsForNodeKey(nodeKey, level);
     }
