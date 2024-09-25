@@ -1375,6 +1375,10 @@ public class BooksOnBookshelf
     private void onBulkSetBookshelves(@NonNull final Set<Long> previousSelection,
                                       @NonNull final Set<Long> bookshelfIds,
                                       @Nullable final Bundle extras) {
+        if (previousSelection.equals(bookshelfIds)) {
+            // No changes made
+            return;
+        }
 
         final List<Bookshelf> bookshelves = ServiceLocator
                 .getInstance()

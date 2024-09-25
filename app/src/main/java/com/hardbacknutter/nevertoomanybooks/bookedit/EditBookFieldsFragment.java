@@ -248,6 +248,11 @@ public class EditBookFieldsFragment
     private void onBookshelvesSelection(@NonNull final Set<Long> previousSelection,
                                         @NonNull final Set<Long> selectedIds,
                                         @Nullable final Bundle extras) {
+        if (previousSelection.equals(selectedIds)) {
+            // No changes made
+            return;
+        }
+
         final Field<List<Bookshelf>, TextView> field =
                 vm.requireField(R.id.bookshelves);
         final List<Bookshelf> previous = field.getValue();
