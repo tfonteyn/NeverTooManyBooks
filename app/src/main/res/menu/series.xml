@@ -46,6 +46,12 @@
         android:title="@string/action_delete" />
 
     <item
+        android:id="@id/MENU_SET_BOOKSHELVES"
+        android:icon="@drawable/library_books_24px"
+        android:orderInCategory="@integer/MENU_ORDER_SET_BOOKSHELVES"
+        android:title="@string/lbl_assign_bookshelves" />
+
+    <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"
         android:icon="@drawable/cloud_download_24px"
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"

@@ -51,6 +51,8 @@
 
     <integer name="MENU_ORDER_ISBN_VALIDITY">550</integer>
 
+    <integer name="MENU_ORDER_SET_BOOKSHELVES">600</integer>
+
     <integer name="MENU_ORDER_UPDATE_FIELDS">700</integer>
     <integer name="MENU_ORDER_LENDING">710</integer>
     <integer name="MENU_ORDER_SHARE">720</integer>
