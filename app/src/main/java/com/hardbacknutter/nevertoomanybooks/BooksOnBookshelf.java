@@ -1164,6 +1164,8 @@ public class BooksOnBookshelf
     private boolean onRowMenuItemSelected(final int adapterPosition,
                                           @IdRes final int menuItemId) {
         View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
+        // Paranoia check to protect from the adapterPosition having
+        // scrolled off screen.
         if (view == null) {
             // While we never should get a null here, tests have shown that
             // using the list view as a substitute works ok,
@@ -1239,37 +1241,37 @@ public class BooksOnBookshelf
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
-                if (onRowMenuForBook(adapterPosition, rowData, menuItemId)) {
+                if (onRowMenuForBook(menuItemId, rowData, adapterPosition)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.AUTHOR: {
-                if (onRowMenuForAuthor(v, rowData, menuItemId)) {
+                if (onRowMenuForAuthor(menuItemId, rowData)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.SERIES: {
-                if (onRowMenuForSeries(v, rowData, menuItemId)) {
+                if (onRowMenuForSeries(menuItemId, rowData)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                if (onRowMenuForPublisher(v, rowData, menuItemId)) {
+                if (onRowMenuForPublisher(menuItemId, rowData)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.BOOKSHELF: {
-                if (onRowMenuForBookshelf(rowData, menuItemId)) {
+                if (onRowMenuForBookshelf(menuItemId, rowData)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.LANGUAGE: {
-                if (onRowMenuForLanguage(rowData, menuItemId)) {
+                if (onRowMenuForLanguage(menuItemId, rowData)) {
                     return true;
                 }
                 break;
@@ -1507,18 +1509,18 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Book}.
      *
+     * @param menuItemId      The menu item that was invoked.
+     * @param rowData         the row data
      * @param adapterPosition The {@link #adapter} position of the row menu from which
      *                        the user made a selection.
-     * @param rowData         the row data
-     * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForBook(DataHolder, Menu)
      */
-    private boolean onRowMenuForBook(final int adapterPosition,
+    private boolean onRowMenuForBook(@IdRes final int menuItemId,
                                      @NonNull final DataHolder rowData,
-                                     @IdRes final int menuItemId) {
+                                     final int adapterPosition) {
 
         final long bookId = rowData.getLong(DBKey.FK_BOOK);
         vm.setSelectedBook(bookId, adapterPosition);
@@ -1579,7 +1581,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForAuthor(View, DataHolder, int)
+     * @see #onRowMenuForAuthor(int, DataHolder)
      */
     private void createRowMenuForAuthor(@NonNull final DataHolder rowData,
                                         @NonNull final Menu menu) {
@@ -1597,17 +1599,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for an {@link Author}.
      *
-     * @param v          View clicked; the anchor for a potential popup menu
-     * @param rowData    the row data
      * @param menuItemId The menu item that was invoked.
+     * @param rowData    the row data
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForAuthor(DataHolder, Menu)
      */
-    private boolean onRowMenuForAuthor(@NonNull final View v,
-                                       @NonNull final DataHolder rowData,
-                                       @IdRes final int menuItemId) {
+    private boolean onRowMenuForAuthor(@IdRes final int menuItemId,
+                                       @NonNull final DataHolder rowData) {
         if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
             authorWorksLauncher.launch(new AuthorWorksContract.Input(
                     rowData.getLong(DBKey.FK_AUTHOR),
@@ -1637,7 +1637,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForSeries(View, DataHolder, int)
+     * @see #onRowMenuForSeries(int, DataHolder)
      */
     private void createRowMenuForSeries(@NonNull final DataHolder rowData,
                                         @NonNull final Menu menu) {
@@ -1664,17 +1664,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Series}.
      *
-     * @param v          View clicked; the anchor for a potential popup menu
-     * @param rowData    the row data
      * @param menuItemId The menu item that was invoked.
+     * @param rowData    the row data
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForSeries(DataHolder, Menu)
      */
-    private boolean onRowMenuForSeries(@NonNull final View v,
-                                       @NonNull final DataHolder rowData,
-                                       @IdRes final int menuItemId) {
+    private boolean onRowMenuForSeries(@IdRes final int menuItemId,
+                                       @NonNull final DataHolder rowData) {
         if (menuItemId == R.id.MENU_SERIES_SET_COMPLETE
             || menuItemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
             final Series series = DataHolderUtils.requireSeries(rowData);
@@ -1702,7 +1700,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForPublisher(View, DataHolder, int)
+     * @see #onRowMenuForPublisher(int, DataHolder)
      */
     private void createRowMenuForPublisher(@NonNull final DataHolder rowData,
                                            @NonNull final Menu menu) {
@@ -1720,17 +1718,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Publisher}.
      *
-     * @param v          View clicked; the anchor for a potential popup menu
-     * @param rowData    the row data
      * @param menuItemId The menu item that was invoked.
+     * @param rowData    the row data
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForPublisher(DataHolder, Menu)
      */
-    private boolean onRowMenuForPublisher(@NonNull final View v,
-                                          @NonNull final DataHolder rowData,
-                                          @IdRes final int menuItemId) {
+    private boolean onRowMenuForPublisher(@IdRes final int menuItemId,
+                                          @NonNull final DataHolder rowData) {
         if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
             editPublisherLauncher.launch(this, EditAction.EditInPlace, publisher);
@@ -1750,7 +1746,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForBookshelf(DataHolder, int)
+     * @see #onRowMenuForBookshelf(int, DataHolder)
      */
     private void createRowMenuForBookshelf(@NonNull final DataHolder rowData,
                                            @NonNull final Menu menu) {
@@ -1764,15 +1760,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Bookshelf}.
      *
-     * @param rowData    the row data
      * @param menuItemId The menu item that was invoked.
+     * @param rowData    the row data
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForBookshelf(DataHolder, Menu)
      */
-    private boolean onRowMenuForBookshelf(@NonNull final DataHolder rowData,
-                                          @IdRes final int menuItemId) {
+    private boolean onRowMenuForBookshelf(@IdRes final int menuItemId,
+                                          @NonNull final DataHolder rowData) {
         if (menuItemId == R.id.MENU_BOOKSHELF_EDIT) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
             editBookshelfLauncher.launch(this, EditAction.EditInPlace, bookshelf);
@@ -1792,7 +1788,7 @@ public class BooksOnBookshelf
      * @param rowData the row data
      * @param menu    to attach to
      *
-     * @see #onRowMenuForLanguage(DataHolder, int)
+     * @see #onRowMenuForLanguage(int, DataHolder)
      */
     private void createRowMenuForLanguage(@NonNull final DataHolder rowData,
                                           @NonNull final Menu menu) {
@@ -1807,15 +1803,15 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link BooklistGroup#LANGUAGE}.
      *
-     * @param rowData    the row data
      * @param menuItemId The menu item that was invoked.
+     * @param rowData    the row data
      *
      * @return {@code true} if handled.
      *
      * @see #createRowMenuForLanguage(DataHolder, Menu)
      */
-    private boolean onRowMenuForLanguage(@NonNull final DataHolder rowData,
-                                         @IdRes final int menuItemId) {
+    private boolean onRowMenuForLanguage(@IdRes final int menuItemId,
+                                         @NonNull final DataHolder rowData) {
         if (menuItemId == R.id.MENU_LANGUAGE_EDIT) {
             final String text = rowData.getString(DBKey.LANGUAGE);
             final String editLang;
