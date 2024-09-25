@@ -376,6 +376,44 @@ public class BooksOnBookshelfViewModel
         }
     }
 
+    /**
+     * Get a Group-name: value" string representation from the given row-data.
+     *
+     * @param context Current context
+     * @param rowData to read the group/label from.
+     *
+     * @return "Group-name: value"
+     */
+    @NonNull
+    String getRowLabel(@NonNull final Context context,
+                       @NonNull final DataHolder rowData) {
+        @BooklistGroup.Id
+        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+
+        final BooklistGroup group = getStyle().requireGroupById(rowGroupId);
+        final String domainName = group.getDisplayDomainExpression()
+                                       .getDomain()
+                                       .getName();
+
+        final String label = group.getLabel(context);
+        final String value;
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (rowGroupId) {
+            case BooklistGroup.READ_STATUS: {
+                final int status = rowData.getInt(domainName);
+                value = ReadStatus.getById(status).getLabel(context);
+                break;
+            }
+            default: {
+                // Simple string data
+                value = rowData.getString(domainName);
+                break;
+            }
+        }
+
+        return context.getString(R.string.name_colon_value, label, value);
+    }
+
     boolean isProposeBackup() {
         // We only offer ONCE
         final boolean tmp = proposeBackup;

@@ -96,7 +96,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
@@ -1350,7 +1349,7 @@ public class BooksOnBookshelf
             return true;
         }
 
-        final String dialogTitle = getRowLabel(rowData);
+        final String dialogTitle = vm.getRowLabel(this, rowData);
         final String dialogMessage = getString(R.string.info_bulk_set_bookshelves)
                                      // The Dialog has a "cancel/ok" button,
                                      // a BottomSheet will trigger an additional simple
@@ -1434,7 +1433,7 @@ public class BooksOnBookshelf
             case BooklistGroup.AUTHOR:
             case BooklistGroup.SERIES:
             case BooklistGroup.PUBLISHER: {
-                final String dialogTitle = getRowLabel(rowData);
+                final String dialogTitle = vm.getRowLabel(this, rowData);
                 // Show a menu to select "all bookshelves" or "This node only"
                 updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
                 return true;
@@ -1461,42 +1460,6 @@ public class BooksOnBookshelf
             default:
                 return false;
         }
-    }
-
-    /**
-     * Get a "label: value" string representation from the given row-data.
-     *
-     * @param rowData to use
-     *
-     * @return "Group-name: value"
-     */
-    @NonNull
-    private String getRowLabel(@NonNull final DataHolder rowData) {
-        @BooklistGroup.Id
-        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
-
-        final BooklistGroup group = vm.getStyle().requireGroupById(rowGroupId);
-        final String domainName = group.getDisplayDomainExpression()
-                                       .getDomain()
-                                       .getName();
-
-        final String label = group.getLabel(this);
-        final String name;
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (rowGroupId) {
-            case BooklistGroup.READ_STATUS: {
-                final int status = rowData.getInt(domainName);
-                name = ReadStatus.getById(status).getLabel(this);
-                break;
-            }
-            default: {
-                // Simple string data
-                name = rowData.getString(domainName);
-                break;
-            }
-        }
-
-        return getString(R.string.name_colon_value, label, name);
     }
 
     /**
