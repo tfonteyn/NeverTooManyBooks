@@ -1137,14 +1137,9 @@ public class BooksOnBookshelf
                 break;
             }
             default: {
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                         getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                         R.string.menu_update_books)
-                    .setIcon(R.drawable.cloud_download_24px);
+                // For now, we do NOT provide the below options for unlisted groups.
+                // - MENU_SET_BOOKSHELVES
+                // - MENU_UPDATE_FROM_INTERNET
                 break;
             }
         }
@@ -1252,7 +1247,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES
                    || menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
-            // This is the 3rd step in the updateBooksFromInternet process.
+            // We get here after the user choose from the BottomSheet dialog.
             return updateBooksFromInternetData(menuItemId, rowData);
 
         } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
@@ -1437,8 +1432,6 @@ public class BooksOnBookshelf
                 .show();
     }
 
-
-
     /**
      * Handle {@link R.id#MENU_UPDATE_FROM_INTERNET}.
      *
@@ -1458,14 +1451,30 @@ public class BooksOnBookshelf
             case BooklistGroup.AUTHOR:
             case BooklistGroup.SERIES:
             case BooklistGroup.PUBLISHER: {
-                final String dialogTitle = vm.getRowLabel(this, rowData);
                 // Show a menu to select "all bookshelves" or "This node only"
-                updateBooksFromInternetData(v, adapterPosition, rowData, dialogTitle);
+                final String dialogTitle = vm.getRowLabel(this, rowData);
+                final CharSequence message = getString(R.string.menu_update_books);
+
+                final Menu menu = MenuUtils.create(this, R.menu.update_books);
+                final MenuMode menuMode = MenuMode.getMode(this, menu);
+                if (menuMode.isPopup()) {
+                    new ExtMenuPopupWindow(this)
+                            .setTitle(dialogTitle)
+                            .setMessage(message)
+                            .setMenuOwner(adapterPosition)
+                            .setMenu(menu, true)
+                            .setListener((menuOwner, menuItemId) ->
+                                                 updateBooksFromInternetData(menuItemId, rowData))
+                            .show(v, menuMode);
+                } else {
+                    menuLauncher.launch(this, dialogTitle, message, adapterPosition, menu, true);
+                }
                 return true;
             }
             case BooklistGroup.BOOKSHELF: {
-                updateBookListLauncher.launch(
-                        vm.createUpdateBooklistContractInput(this, rowData, true));
+                // Hardcoded to "this shelf only"
+                updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
+                        this, rowData, true));
                 return true;
             }
             case BooklistGroup.DATE_ACQUIRED_YEAR:
@@ -1478,8 +1487,9 @@ public class BooksOnBookshelf
             case BooklistGroup.DATE_PUBLISHED_MONTH:
             case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
-                updateBookListLauncher.launch(
-                        vm.createDateRowUpdateBooklistContractInput(this, rowData));
+                // Hardcoded to "this shelf only"
+                updateBookListLauncher.launch(vm.createDateRowUpdateBooklistContractInput(
+                        this, rowData));
                 return true;
             }
             default:
@@ -1952,47 +1962,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     * We get here when the user has selected a {@link R.id#MENU_UPDATE_FROM_INTERNET}
-     * for an applicable row.
-     * <p>
-     * The next step is to allow the user to decide between books on "this bookshelf only"
-     * or on all bookshelves,
-     * and then to update all the selected books.
-     *
-     * @param anchor          View clicked; the anchor for the popup menu
-     * @param adapterPosition The {@link #adapter} position of the row for which
-     *                        we're going to fetch updates.
-     * @param rowData         for the row which was selected
-     * @param dialogTitle     text to show to the user.
-     *
-     * @see #onRowMenuItemSelected(View, int, int)
-     * @see #updateBooksFromInternetData(int, DataHolder)
-     */
-    private void updateBooksFromInternetData(@NonNull final View anchor,
-                                             final int adapterPosition,
-                                             @NonNull final DataHolder rowData,
-                                             @NonNull final CharSequence dialogTitle) {
-
-        final Menu menu = MenuUtils.create(this, R.menu.update_books);
-
-        final CharSequence message = getString(R.string.menu_update_books);
-
-        final MenuMode menuMode = MenuMode.getMode(this, menu);
-        if (menuMode.isPopup()) {
-            new ExtMenuPopupWindow(this)
-                    .setTitle(dialogTitle)
-                    .setMessage(message)
-                    .setMenuOwner(adapterPosition)
-                    .setMenu(menu, true)
-                    .setListener((menuOwner, menuItemId)
-                                         -> updateBooksFromInternetData(menuItemId, rowData))
-                    .show(anchor, menuMode);
-        } else {
-            menuLauncher.launch(this, adapterPosition, dialogTitle, null, menu, true);
-        }
-    }
-
-    /**
      * This is the 3rd step in the updateBooksFromInternet process.
      * We get here after the user has selected to update a set of books on "this bookshelf only"
      * or on all bookshelves.
@@ -2004,7 +1973,6 @@ public class BooksOnBookshelf
      * @return {@code true} if handled.
      *
      * @see #onRowMenuItemSelected(View, int, int)
-     * @see #updateBooksFromInternetData(View, int, DataHolder, CharSequence)
      */
     private boolean updateBooksFromInternetData(final int menuItemId,
                                                 @NonNull final DataHolder rowData) {
