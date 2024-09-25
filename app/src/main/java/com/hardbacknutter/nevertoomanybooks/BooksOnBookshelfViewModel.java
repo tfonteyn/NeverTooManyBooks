@@ -927,14 +927,14 @@ public class BooksOnBookshelfViewModel
 
         @BooklistGroup.Id
         final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
-
         final BLGDateRecord blgRecord = Objects.requireNonNull(BLG_DATE_RECORD.get(groupId),
                                                                () -> GROUP_NOT_DEFINED + groupId);
 
         final StringJoiner sj = new StringJoiner("-");
-        for (int g = 0; g < blgRecord.dbKeys.length; g++) {
-            final String text = rowData.getString(blgRecord.dbKeys[g]);
+        for (final String key : blgRecord.dbKeys) {
+            final String text = rowData.getString(key);
             if (text.isBlank()) {
+                // stop at first 'blank'
                 break;
             }
             sj.add(text);
