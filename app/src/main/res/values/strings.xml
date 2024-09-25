@@ -82,12 +82,13 @@
     <string name="name_hash_nr">%1$s #%2$d</string>
     <!-- x and y are numbers; e.g.: 5 of 9 -->
     <string name="x_of_y">%1$d of %2$d</string>
-    <!-- abbreviation to indicate there are more of something.
+    <!-- Abbreviation to indicate there are more of something.
          e.g. a list of Series: "Foundation …" indicates a book belongs to the
          "Foundation" Series, but is also present in others.
     -->
     <string name="and_others">%1$s …</string>
-    <!-- same as "and_others" but with the number of items added. -->
+    <!-- Same as "and_others" but with the number of items added.
+         HTML string, must be between a CDATA tag/brackets-->
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
 
@@ -743,6 +744,11 @@
     <string name="option_isbn_strict">Strict ISBN</string>
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
     <string name="option_isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
+
+    <string name="pt_search_result_order">Searches return the most recent book, or the first one found.</string>
+    <string name="pe_search_result_order_most_recent">Most recent book found</string>
+    <string name="pe_search_result_order_first_found">First book found</string>
+
     <!-- Menu option:
          Replace/update the Author for all the entries in the TOC with the books main Author.
          See msg key: confirm_toc_list_update_with_main_author -->
@@ -1566,6 +1572,17 @@
     <!-- [VERIFIED] Param 1: a filter name -->
     <string name="lbl_search_filtered_by_x">Filtered by: %1$s</string>
     <!-- endregion -->
+    <!-- region ========== Bulk actions -->
+    <!-- Dialog message: assigning a list of books to a set of Bookshelves.
+     i.o.w. Bulk move/Add books to Bookshelves. -->
+    <string name="info_bulk_set_bookshelves">Select the bookshelves you want to assign to all books listed under the selected node.</string>
+    <!-- Second part of the "info_bulk_set_bookshelves" message.
+         Only shown when BottomSheets are used for displaying the Menu. Not shown when the menu is a Dialog. -->
+    <string name="info_bulk_set_bookshelves_bs">You will be prompted to confirm or cancel before the assignment is done.</string>
+    <!-- Confirmation message to assign a list of books to a set of bookshelves.
+         HTML string, must be between a CDATA tag/brackets -->
+    <string name="confirm_assign_bookshelves"><![CDATA[Please confirm that you want to assign the below list of bookshelves to all books listed under the selected node.<br><br>%1$s]]></string>
+    <!-- endregion -->
     <!-- region ========== Automatic update book fields from the internet. -->
     <!-- Booklist screen / Book details screen - context/options menu.
          Update Fields from internet for a SINGLE book -->
@@ -1816,15 +1833,5 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
-
-
-    <string name="pt_search_result_order">Searches return the most recent book, or the first one found.</string>
-    <string name="pe_search_result_order_most_recent">Most recent book found</string>
-    <string name="pe_search_result_order_first_found">First book found</string>
-
-
-    <string name="info_bulk_set_bookshelves">Select the bookshelves you want to assign to all books listed under the selected node.</string>
-    <string name="info_bulk_set_bookshelves_bs">You will be prompted to confirm or cancel before the assignment is done.</string>
-    <string name="confirm_assign_bookshelves">Please confirm that you want to assign the below list of bookshelves to all books listed under the selected node.\n\n%1$s</string>
 
 </resources>
