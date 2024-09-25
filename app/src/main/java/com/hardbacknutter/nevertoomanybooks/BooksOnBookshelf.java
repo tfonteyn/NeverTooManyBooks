@@ -1372,7 +1372,8 @@ public class BooksOnBookshelf
         return true;
     }
 
-    private void onBulkSetBookshelves(@NonNull final Set<Long> bookshelfIds,
+    private void onBulkSetBookshelves(@NonNull final Set<Long> previousSelection,
+                                      @NonNull final Set<Long> bookshelfIds,
                                       @Nullable final Bundle extras) {
 
         final List<Bookshelf> bookshelves = ServiceLocator

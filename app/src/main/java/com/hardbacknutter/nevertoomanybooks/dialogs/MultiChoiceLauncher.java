@@ -42,6 +42,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     private static final String TAG = "MultiChoiceLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
+    static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
     static final String BKEY_SELECTED_ITEMS = TAG + ":selected";
     static final String BKEY_EXTRAS = TAG + ":extras";
     static final String BKEY_ITEMS = TAG + ":ids";
@@ -67,20 +68,25 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
-     * @param fragment      the calling DialogFragment
-     * @param requestKey    to use
-     * @param selectedItems the set of <strong>checked</strong> items
-     * @param extras        the optional Bundle as provided to
-     *                      {@link #launch(Context, String, String, List, List, Bundle)}
+     * @param fragment          the calling DialogFragment
+     * @param requestKey        to use
+     * @param previousSelection the selection as it was before the user (potentially)
+     *                          made changes
+     * @param selectedItems     the set of <strong>checked</strong> items
+     * @param extras            the optional Bundle as provided to
+     *                          {@link #launch(Context, String, String, List, List, Bundle)}
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
+                          @NonNull final Set<Long> previousSelection,
                           @NonNull final Set<Long> selectedItems,
                           @Nullable final Bundle extras) {
-        final Bundle result = new Bundle(2);
+        final Bundle result = new Bundle(3);
+        result.putLongArray(BKEY_PREVIOUS_SELECTION,
+                            previousSelection.stream().mapToLong(o -> o).toArray());
         result.putLongArray(BKEY_SELECTED_ITEMS,
                             selectedItems.stream().mapToLong(o -> o).toArray());
         if (extras != null && !extras.isEmpty()) {
@@ -132,13 +138,19 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
 
+        final Set<Long> previousSelection = Arrays
+                .stream(Objects.requireNonNull(result.getLongArray(BKEY_PREVIOUS_SELECTION),
+                                               BKEY_PREVIOUS_SELECTION))
+                .boxed()
+                .collect(Collectors.toSet());
+
         final Set<Long> selectedIds = Arrays
                 .stream(Objects.requireNonNull(result.getLongArray(BKEY_SELECTED_ITEMS),
                                                BKEY_SELECTED_ITEMS))
                 .boxed()
                 .collect(Collectors.toSet());
 
-        resultListener.onResult(selectedIds, result.getBundle(BKEY_EXTRAS));
+        resultListener.onResult(previousSelection, selectedIds, result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface
@@ -146,11 +158,14 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         /**
          * Callback handler with the user's selection.
          *
-         * @param selectedItems the set of <strong>checked</strong> items
-         * @param extras        the optional Bundle as provided to
-         *                      {@link #launch(Context, String, String, List, List, Bundle)}
+         * @param previousSelection the selection as it was before the user (potentially)
+         *                          made changes
+         * @param selectedItems     the set of <strong>checked</strong> items
+         * @param extras            the optional Bundle as provided to
+         *                          {@link #launch(Context, String, String, List, List, Bundle)}
          */
-        void onResult(@NonNull Set<Long> selectedItems,
+        void onResult(@NonNull Set<Long> previousSelection,
+                      @NonNull Set<Long> selectedItems,
                       @Nullable Bundle extras);
     }
 }

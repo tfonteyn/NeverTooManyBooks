@@ -245,7 +245,8 @@ public class EditBookFieldsFragment
                                        null);
     }
 
-    private void onBookshelvesSelection(@NonNull final Set<Long> selectedIds,
+    private void onBookshelvesSelection(@NonNull final Set<Long> previousSelection,
+                                        @NonNull final Set<Long> selectedIds,
                                         @Nullable final Bundle extras) {
         final Field<List<Bookshelf>, TextView> field =
                 vm.requireField(R.id.bookshelves);

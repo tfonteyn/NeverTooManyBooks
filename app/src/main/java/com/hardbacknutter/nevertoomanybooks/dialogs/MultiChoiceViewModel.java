@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 public class MultiChoiceViewModel
         extends ViewModel {
 
+    private Set<Long> previousSelection;
     private Set<Long> selectedItems;
     @Nullable
     private Bundle extras;
@@ -49,10 +51,17 @@ public class MultiChoiceViewModel
             final long[] items = Objects.requireNonNull(
                     args.getLongArray(MultiChoiceLauncher.BKEY_SELECTED_ITEMS),
                     MultiChoiceLauncher.BKEY_SELECTED_ITEMS);
-            selectedItems = Arrays.stream(items).boxed().collect(Collectors.toSet());
+
+            previousSelection = Arrays.stream(items).boxed().collect(Collectors.toSet());
+            selectedItems = new HashSet<>(previousSelection);
 
             extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
         }
+    }
+
+    @NonNull
+    public Set<Long> getPreviousSelection() {
+        return previousSelection;
     }
 
     @NonNull
