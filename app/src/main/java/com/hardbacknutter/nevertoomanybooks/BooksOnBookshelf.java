@@ -1069,6 +1069,10 @@ public class BooksOnBookshelf
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.edit_24px);
+                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                             R.string.lbl_assign_bookshelves)
+                        .setIcon(R.drawable.library_books_24px);
                 }
                 break;
             }
@@ -1078,6 +1082,10 @@ public class BooksOnBookshelf
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.edit_24px);
+                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                             R.string.lbl_assign_bookshelves)
+                        .setIcon(R.drawable.library_books_24px);
                 }
                 break;
             }
@@ -1087,6 +1095,10 @@ public class BooksOnBookshelf
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.edit_24px);
+                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                             R.string.lbl_assign_bookshelves)
+                        .setIcon(R.drawable.library_books_24px);
                 }
                 break;
             }
@@ -1096,6 +1108,10 @@ public class BooksOnBookshelf
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.edit_24px);
+                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                             R.string.lbl_assign_bookshelves)
+                        .setIcon(R.drawable.library_books_24px);
                 }
                 break;
             }
@@ -1110,6 +1126,10 @@ public class BooksOnBookshelf
             case BooklistGroup.DATE_PUBLISHED_MONTH:
             case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
+                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                         R.string.lbl_assign_bookshelves)
+                    .setIcon(R.drawable.library_books_24px);
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
@@ -1117,16 +1137,19 @@ public class BooksOnBookshelf
                 break;
             }
             default: {
+                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                         R.string.lbl_assign_bookshelves)
+                    .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                         getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                         R.string.menu_update_books)
+                    .setIcon(R.drawable.cloud_download_24px);
                 break;
             }
         }
 
         int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_NEXT_MISSING_COVER);
-
-        // add the Move/Add Bookshelves
-        menu.add(R.id.MENU_SET_BOOKSHELVES, R.id.MENU_SET_BOOKSHELVES, ++menuOrder,
-                 R.string.lbl_assign_bookshelves)
-            .setIcon(R.drawable.library_books_24px);
 
         // forms its own group
         menu.add(R.id.MENU_NEXT_MISSING_COVER, R.id.MENU_NEXT_MISSING_COVER, menuOrder,
@@ -1654,6 +1677,10 @@ public class BooksOnBookshelf
 
         } else {
             // It's a "(No Series)" node
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
             menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                      getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                      R.string.menu_update_books)
@@ -1708,6 +1735,10 @@ public class BooksOnBookshelf
             getMenuInflater().inflate(R.menu.publisher, menu);
         } else {
             // It's a "(No Publisher)" node
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
             menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                      getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                      R.string.menu_update_books)
@@ -1793,6 +1824,10 @@ public class BooksOnBookshelf
     private void createRowMenuForLanguage(@NonNull final DataHolder rowData,
                                           @NonNull final Menu menu) {
         if (!rowData.getString(DBKey.LANGUAGE).isEmpty()) {
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
             menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                      getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                      R.string.action_edit_ellipsis)
