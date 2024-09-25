@@ -350,7 +350,7 @@ public class CoverHandler {
                     .setMenu(menu, true)
                     .show(anchor, menuMode);
         } else {
-            menuLauncher.launch(context, cIdx, null, null, menu, true);
+            menuLauncher.launch(context, null, null, cIdx, menu, true);
         }
 
         return true;

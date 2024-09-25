@@ -31,8 +31,8 @@ public interface ExtMenuResultListener {
      * Callback handler.
      *
      * @param menuOwner  The  value which was passed into
-     *                   {@link ExtMenuLauncher#launch(Context, int, CharSequence,
-     *                   CharSequence, Menu, boolean)}
+     *                   {@link ExtMenuLauncher#launch(Context, CharSequence,
+     *                   CharSequence, int, Menu, boolean)}
      * @param menuItemId The menu item that was invoked.
      *
      * @return Return true to consume this click and prevent others from executing.

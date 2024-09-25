@@ -207,8 +207,7 @@ public class EditBookPublisherListDialogFragment
                                 .setMenu(menu, true)
                                 .show(v, menuMode);
                     } else {
-                        menuLauncher.launch(getActivity(), position, null, null,
-                                            menu, true);
+                        menuLauncher.launch(getActivity(), null, null, position, menu, true);
                     }
                 });
 

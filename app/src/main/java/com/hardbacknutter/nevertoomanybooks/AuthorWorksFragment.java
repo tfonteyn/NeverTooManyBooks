@@ -182,8 +182,7 @@ public class AuthorWorksFragment
                                 .setMenu(rowMenu, true)
                                 .show(anchor, menuMode);
                     } else {
-                        menuLauncher.launch(getActivity(), position, null, null,
-                                            rowMenu, true);
+                        menuLauncher.launch(getActivity(), null, null, position, rowMenu, true);
                     }
                 }
         );

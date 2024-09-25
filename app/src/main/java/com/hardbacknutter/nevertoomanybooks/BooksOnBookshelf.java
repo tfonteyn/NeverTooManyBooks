@@ -1179,7 +1179,7 @@ public class BooksOnBookshelf
                         .setListener(this::onRowMenuItemSelected)
                         .show(v, menuMode);
             } else {
-                menuLauncher.launch(this, adapterPosition, menuTitle, null, menu, true);
+                menuLauncher.launch(this, menuTitle, null, adapterPosition, menu, true);
             }
         }
     }
@@ -1947,7 +1947,7 @@ public class BooksOnBookshelf
                     .setListener((p, mii) -> onNavigationItemSelected(mii))
                     .show(anchor, menuMode);
         } else {
-            menuLauncher.launch(this, 0, menuTitle, null, menu, true);
+            menuLauncher.launch(this, menuTitle, null, 0, menu, true);
         }
     }
 

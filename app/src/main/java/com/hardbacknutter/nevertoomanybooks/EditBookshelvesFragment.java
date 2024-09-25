@@ -136,7 +136,7 @@ public class EditBookshelvesFragment
                         .setMenu(menu, true)
                         .show(anchor, menuMode);
             } else {
-                menuLauncher.launch(getActivity(), listIndex, null, null, menu, true);
+                menuLauncher.launch(getActivity(), null, null, listIndex, menu, true);
             }
         }
     };

@@ -214,7 +214,7 @@ public class StyleBooklistBookLevelSortingFragment
             } else {
                 final String label = vm.getWrappedBookLevelColumnList().get(position)
                                        .getLabel(anchor.getContext());
-                menuLauncher.launch(getActivity(), position, label, null, menu, true);
+                menuLauncher.launch(getActivity(), label, null, position, menu, true);
             }
         });
 

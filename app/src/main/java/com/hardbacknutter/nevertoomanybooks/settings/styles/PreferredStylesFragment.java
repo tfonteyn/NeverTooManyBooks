@@ -226,7 +226,7 @@ public class PreferredStylesFragment
                                 .setMenu(menu, true)
                                 .show(anchor, menuMode);
                     } else {
-                        menuLauncher.launch(getActivity(), position, null, null, menu, true);
+                        menuLauncher.launch(getActivity(), null, null, position, menu, true);
                     }
                 });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
