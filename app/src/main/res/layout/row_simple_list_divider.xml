@@ -38,7 +38,7 @@
 
     <com.google.android.material.divider.MaterialDivider
         style="@style/Widget.Material3.MaterialDivider"
-        android:layout_width="320dp"
+        android:layout_width="@dimen/popup_menu_divider_width"
         android:layout_height="wrap_content"
         />
 </LinearLayout>

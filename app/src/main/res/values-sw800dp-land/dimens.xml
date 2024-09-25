@@ -21,4 +21,7 @@
 
 <resources>
     <integer name="span_count_update_from_internet">3</integer>
+
+    <dimen name="popup_menu_divider_width">540dp</dimen>
+
 </resources>
