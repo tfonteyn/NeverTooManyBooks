@@ -18,13 +18,16 @@ https://apilevels.com/
 ====================================================================================================
 Draft notes for next version:
 
-### 6.2.1
+### 6.3.0
 
 NEW:
 - Edge-to-Edge support (Android 11 and up)
-- Android 15 tested/supported (based on beta-3).
+- Android 15 tested/supported.
+- Option to move/set the Bookshelves for all books for a node in the list
 
 FIXES:
+- Requesting "Update books" for a node in the list (e.g. 'series') was failing when the UI
+  preference was using a BottomSheet.
 
 REMOVED:
 
@@ -63,7 +66,7 @@ Tried it out for the ViewPager2 usage:
 
 BottomSheets:
   I don't see the need... BottomSheet is the "focus". If the user decides they
-  want to go 'back' while a BottomSheet is displayed, then can first close the BottomSheet.
+  want to go 'back' while a BottomSheet is displayed, they should close the BottomSheet first.
 
 
 ====================================================================================================
