@@ -819,4 +819,9 @@
     <string name="pe_search_result_order_first_found">找到的第一本书</string>
     <string name="pe_search_result_order_most_recent">找到的最新书籍</string>
     <string name="pt_search_result_order">搜索返回最新书籍或者第找到的第一本.</string>
+    <string name="confirm_assign_bookshelves">请确认你要将下面的书架列表分配给所选节点下列出的所有书籍。
+\n
+\n%1$s</string>
+    <string name="info_bulk_set_bookshelves_bs">分配执行前，你将被提示确认或取消。</string>
+    <string name="info_bulk_set_bookshelves">选择要分配给所选节点下列出的所有图书的书架。</string>
 </resources>
