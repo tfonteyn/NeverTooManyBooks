@@ -111,8 +111,9 @@ public class TocViewModel
 
     void reloadBook(@NonNull final Book book) {
         // All fragments in the ViewPager might/will be called,
-        // only update if the incoming data is OUR book
-        if (book.getId() != bookId) {
+        // only update if the incoming data is OUR book.
+        // If we're in embedded mode, skip this test as we always need to reload.
+        if (!embedded && book.getId() != bookId) {
             return;
         }
 
