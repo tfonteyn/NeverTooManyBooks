@@ -797,4 +797,9 @@
     <string name="pe_search_result_order_most_recent">Bulunan en son kitap</string>
     <string name="pe_search_result_order_first_found">Bulunan ilk kitap</string>
     <string name="anonymous_author">[Anonim]</string>
+    <string name="info_bulk_set_bookshelves">Seçilen düğüm altında listelenen tüm kitaplara atamak istediğiniz kitap raflarını seçin.</string>
+    <string name="info_bulk_set_bookshelves_bs">Atama yapılmadan önce onaylamanız veya iptal etmeniz istenecektir.</string>
+    <string name="confirm_assign_bookshelves">Lütfen aşağıdaki kitap rafları listesini seçilen düğüm altında listelenen tüm kitaplara atamak istediğinizi onaylayın.
+\n
+\n%1$s</string>
 </resources>
