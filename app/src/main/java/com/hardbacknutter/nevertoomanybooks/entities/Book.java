@@ -1112,6 +1112,8 @@ public class Book
 
 
     /**
+     * FIXME: 27/09/2024 unify 'isRead' with 'getReadingProgress()'
+     *
      * Get the Read/Unread status.
      *
      * @return {@code true} if this book was read/finished.
