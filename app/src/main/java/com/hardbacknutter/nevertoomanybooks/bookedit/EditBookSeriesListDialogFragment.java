@@ -218,7 +218,7 @@ public class EditBookSeriesListDialogFragment
 
     private void editEntry(final int position) {
         //noinspection DataFlowIssue
-        editLauncher.launch(getActivity(), EditAction.Edit, seriesList.get(position));
+        editLauncher.edit(getActivity(), seriesList.get(position));
     }
 
     /**
@@ -291,7 +291,7 @@ public class EditBookSeriesListDialogFragment
         series.setNumber(vb.seriesNum.getText().toString().trim());
         if (withDetails) {
             //noinspection DataFlowIssue
-            editLauncher.launch(getActivity(), EditAction.Add, series);
+            editLauncher.add(getActivity(), series);
         } else {
             add(series);
         }

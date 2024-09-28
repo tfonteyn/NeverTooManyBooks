@@ -65,12 +65,17 @@ public final class EditParcelableLauncher<T extends Parcelable>
 
     private static final String MODIFIED = TAG + ":m";
 
+    private static final String ERROR_NULL_ON_ADD_LISTENER = "onAddListener";
+    private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
+    private static final String ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER = "onEditInPlaceListener";
+    private static final String ERROR_UNSUPPORTED_REQUEST_KEY = "Unsupported requestKey=";
+
     @Nullable
     private final OnAddListener<T> onAddListener;
     @Nullable
     private final OnEditListener<T> onEditListener;
     @Nullable
-    private final OnModifiedListener<T> onEditInPlaceListener;
+    private final OnEditInPlaceListener<T> onEditInPlaceListener;
 
     /**
      * Constructor for doing {@link EditAction#Add} or {@link EditAction#Edit}.
@@ -103,7 +108,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
     private EditParcelableLauncher(@NonNull final String requestKey,
                                    @NonNull final Supplier<DialogFragment> dialogSupplier,
                                    @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                                   @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
+                                   @NonNull final OnEditInPlaceListener<T> onEditInPlaceListener) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.onAddListener = null;
         this.onEditListener = null;
@@ -120,7 +125,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
      *
      * @return new instance
      *
-     * @throws IllegalArgumentException for undefined keys
+     * @throws IllegalArgumentException (debug) for undefined keys
      * @noinspection DuplicateBranchesInSwitch (bug in lint)
      */
     @NonNull
@@ -152,7 +157,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
                                                     onEditListener);
 
             default:
-                throw new IllegalArgumentException("Unsupported requestKey=" + key);
+                throw new IllegalArgumentException(ERROR_UNSUPPORTED_REQUEST_KEY + key);
         }
     }
 
@@ -165,13 +170,13 @@ public final class EditParcelableLauncher<T extends Parcelable>
      *
      * @return new instance
      *
-     * @throws IllegalArgumentException for undefined keys
+     * @throws IllegalArgumentException (debug) for undefined keys
      * @noinspection DuplicateBranchesInSwitch (bug in lint)
      */
     @NonNull
     public static <T extends Parcelable> EditParcelableLauncher<T> create(
             @NonNull final String key,
-            @NonNull final OnModifiedListener<T> onEditInPlaceListener) {
+            @NonNull final OnEditInPlaceListener<T> onEditInPlaceListener) {
         switch (key) {
             case DBKey.FK_BOOKSHELF:
                 return new EditParcelableLauncher<>(key,
@@ -194,7 +199,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
                                                     EditPublisherBottomSheet::new,
                                                     onEditInPlaceListener);
             default:
-                throw new IllegalArgumentException("Unsupported requestKey=" + key);
+                throw new IllegalArgumentException(ERROR_UNSUPPORTED_REQUEST_KEY + key);
         }
     }
 
@@ -224,6 +229,8 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param action     {@link EditAction#Add} or {@link EditAction#Edit}
      * @param original   the original item
      * @param modified   the modified item
+     *
+     * @throws IllegalArgumentException (debug) for an invalid EditAction
      */
     public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
                                                         @NonNull final String requestKey,
@@ -244,28 +251,54 @@ public final class EditParcelableLauncher<T extends Parcelable>
     }
 
     /**
-     * Launch the dialog.
+     * Launch the dialog for an add-operation.
      *
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
-     * @param action  one of the {@link EditAction}s.
      * @param item    to edit
      */
-    public void launch(@NonNull final Context context,
-                       @NonNull final EditAction action,
-                       @NonNull final T item) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (action == EditAction.EditInPlace && onEditInPlaceListener == null) {
-                throw new IllegalArgumentException("EditInPlace missing onEditInPlaceListener");
-            } else if (action == EditAction.Add && onAddListener == null) {
-                throw new IllegalArgumentException("Add missing onAddListener");
-            } else if (action == EditAction.Edit && onEditListener == null) {
-                throw new IllegalArgumentException("Edit missing onEditListener");
-            }
-        }
+    public void add(@NonNull final Context context,
+                    @NonNull final T item) {
+        Objects.requireNonNull(onAddListener, ERROR_NULL_ON_ADD_LISTENER);
 
         final Bundle args = new Bundle(3);
-        args.putParcelable(EditAction.BKEY, action);
+        args.putParcelable(EditAction.BKEY, EditAction.Add);
+        args.putParcelable(BKEY_ITEM, item);
+
+        showDialog(context, args);
+    }
+
+    /**
+     * Launch the dialog for an edit-operation.
+     *
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
+     * @param item    to edit
+     */
+    public void edit(@NonNull final Context context,
+                     @NonNull final T item) {
+        Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
+
+        final Bundle args = new Bundle(3);
+        args.putParcelable(EditAction.BKEY, EditAction.Edit);
+        args.putParcelable(BKEY_ITEM, item);
+
+        showDialog(context, args);
+    }
+
+    /**
+     * Launch the dialog for an edit-in-place-operation.
+     *
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
+     * @param item    to edit
+     */
+    public void editInPlace(@NonNull final Context context,
+                            @NonNull final T item) {
+        Objects.requireNonNull(onEditInPlaceListener, ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER);
+
+        final Bundle args = new Bundle(3);
+        args.putParcelable(EditAction.BKEY, EditAction.EditInPlace);
         args.putParcelable(BKEY_ITEM, item);
 
         showDialog(context, args);
@@ -274,60 +307,25 @@ public final class EditParcelableLauncher<T extends Parcelable>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        final EditAction action = Objects.requireNonNull(
-                result.getParcelable(EditAction.BKEY), EditAction.BKEY);
+        final EditAction action = Objects.requireNonNull(result.getParcelable(EditAction.BKEY),
+                                                         EditAction.BKEY);
         switch (action) {
             case Add:
-                Objects.requireNonNull(onAddListener, "onAddListener");
+                Objects.requireNonNull(onAddListener, ERROR_NULL_ON_ADD_LISTENER);
                 onAddListener.onAdd(
                         Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
                 break;
             case Edit:
-                Objects.requireNonNull(onEditListener, "onEditListener");
+                Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
                 onEditListener.onEdit(
                         Objects.requireNonNull(result.getParcelable(BKEY_ITEM), BKEY_ITEM),
                         Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
                 break;
             case EditInPlace:
-                Objects.requireNonNull(onEditInPlaceListener, "onEditInPlaceListener");
-                onEditInPlaceListener.onModified(
+                Objects.requireNonNull(onEditInPlaceListener, ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER);
+                onEditInPlaceListener.onEdit(
                         Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
                 break;
         }
-    }
-
-    @FunctionalInterface
-    public interface OnAddListener<T> {
-
-        /**
-         * Callback handler - {@link EditAction#Add}.
-         *
-         * @param item the new item
-         */
-        void onAdd(@NonNull T item);
-    }
-
-    @FunctionalInterface
-    public interface OnEditListener<T> {
-
-        /**
-         * Callback handler - {@link EditAction#Edit}.
-         *
-         * @param original the original item
-         * @param modified the modified item
-         */
-        void onEdit(@NonNull T original,
-                    @NonNull T modified);
-    }
-
-    @FunctionalInterface
-    public interface OnModifiedListener<T> {
-
-        /**
-         * Callback handler - {@link EditAction#EditInPlace}.
-         *
-         * @param item the modified item
-         */
-        void onModified(@NonNull T item);
     }
 }

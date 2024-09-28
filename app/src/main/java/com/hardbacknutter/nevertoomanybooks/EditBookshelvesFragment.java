@@ -49,7 +49,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
@@ -214,7 +213,7 @@ public class EditBookshelvesFragment
         final Style style = ServiceLocator.getInstance().getStyles().getDefault();
         // Not as 'add' as we DO want this new shelf stored in the database when edited.
         //noinspection DataFlowIssue
-        editLauncher.launch(getActivity(), EditAction.EditInPlace, new Bookshelf("", style));
+        editLauncher.editInPlace(getActivity(), new Bookshelf("", style));
     }
 
     /**
@@ -251,7 +250,7 @@ public class EditBookshelvesFragment
 
         if (menuItemId == R.id.MENU_EDIT) {
             //noinspection DataFlowIssue
-            editLauncher.launch(getActivity(), EditAction.EditInPlace, bookshelf);
+            editLauncher.editInPlace(getActivity(), bookshelf);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {

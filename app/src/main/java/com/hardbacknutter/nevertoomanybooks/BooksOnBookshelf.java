@@ -87,7 +87,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookli
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -106,8 +105,18 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInLineStringLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -233,6 +242,11 @@ public class BooksOnBookshelf
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(
                     data -> vm.onEditStyleFinished(this, data)));
 
+    /** Manage the book shelves. */
+    private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
+            registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
+                    bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
+
     /**
      * Display a Book. We still call
      * {@link BooksOnBookshelfViewModel#onBookEditFinished(EditBookOutput)}
@@ -272,10 +286,7 @@ public class BooksOnBookshelf
             registerForActivityResult(new SearchFtsContract(), o -> o.ifPresent(
                     criteria -> vm.onFtsSearchFinished(criteria)));
 
-    /** Manage the book shelves. */
-    private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
-            registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
-                    bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
+
 
     /** Edit a {@code Book Color} which appears as a {@link BooklistGroup} (node). */
     private EditInLineStringLauncher editColorLauncher;
@@ -486,24 +497,44 @@ public class BooksOnBookshelf
                 (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
         editLenderLauncher.registerForFragmentResult(fm, this);
 
-        editColorLauncher = EditInLineStringLauncher.create(DBKey.COLOR, (original, modified)
-                -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
+        editColorLauncher = new EditInLineStringLauncher(
+                DBKey.COLOR,
+                EditColorDialogFragment::new,
+                EditColorBottomSheet::new,
+                (original, modified)
+                        -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
         editColorLauncher.registerForFragmentResult(fm, this);
 
-        editFormatLauncher = EditInLineStringLauncher.create(DBKey.FORMAT, (original, modified)
-                -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
+        editFormatLauncher = new EditInLineStringLauncher(
+                DBKey.FORMAT,
+                EditFormatDialogFragment::new,
+                EditFormatBottomSheet::new,
+                (original, modified)
+                        -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
         editFormatLauncher.registerForFragmentResult(fm, this);
 
-        editGenreLauncher = EditInLineStringLauncher.create(DBKey.GENRE, (original, modified)
-                -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
+        editGenreLauncher = new EditInLineStringLauncher(
+                DBKey.GENRE,
+                EditGenreDialogFragment::new,
+                EditGenreBottomSheet::new,
+                (original, modified)
+                        -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
         editGenreLauncher.registerForFragmentResult(fm, this);
 
-        editLanguageLauncher = EditInLineStringLauncher.create(DBKey.LANGUAGE, (original, modified)
-                -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
+        editLanguageLauncher = new EditInLineStringLauncher(
+                DBKey.LANGUAGE,
+                EditLanguageDialogFragment::new,
+                EditLanguageBottomSheet::new,
+                (original, modified)
+                        -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
         editLanguageLauncher.registerForFragmentResult(fm, this);
 
-        editLocationLauncher = EditInLineStringLauncher.create(DBKey.LOCATION, (original, modified)
-                -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
+        editLocationLauncher = new EditInLineStringLauncher(
+                DBKey.LOCATION,
+                EditLocationDialogFragment::new,
+                EditLocationBottomSheet::new,
+                (original, modified)
+                        -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
         editLocationLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onRowMenuItemSelected);
@@ -1658,7 +1689,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
             final Author author = DataHolderUtils.requireAuthor(rowData);
-            editAuthorLauncher.launch(this, EditAction.EditInPlace, author);
+            editAuthorLauncher.editInPlace(this, author);
             return true;
         }
         return false;
@@ -1720,7 +1751,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_SERIES_EDIT) {
             final Series series = DataHolderUtils.requireSeries(rowData);
-            editSeriesLauncher.launch(this, EditAction.EditInPlace, series);
+            editSeriesLauncher.editInPlace(this, series);
             return true;
 
         } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
@@ -1770,7 +1801,7 @@ public class BooksOnBookshelf
                                           @NonNull final DataHolder rowData) {
         if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-            editPublisherLauncher.launch(this, EditAction.EditInPlace, publisher);
+            editPublisherLauncher.editInPlace(this, publisher);
             return true;
 
         } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
@@ -1812,7 +1843,7 @@ public class BooksOnBookshelf
                                           @NonNull final DataHolder rowData) {
         if (menuItemId == R.id.MENU_BOOKSHELF_EDIT) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-            editBookshelfLauncher.launch(this, EditAction.EditInPlace, bookshelf);
+            editBookshelfLauncher.editInPlace(this, bookshelf);
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {

@@ -218,7 +218,7 @@ public class EditBookPublisherListDialogFragment
 
     private void editEntry(final int position) {
         //noinspection DataFlowIssue
-        editLauncher.launch(getActivity(), EditAction.Edit, publisherList.get(position));
+        editLauncher.edit(getActivity(), publisherList.get(position));
     }
 
     /**
@@ -289,7 +289,7 @@ public class EditBookPublisherListDialogFragment
         final Publisher publisher = Publisher.from(name);
         if (withDetails) {
             //noinspection DataFlowIssue
-            editLauncher.launch(getActivity(), EditAction.Add, publisher);
+            editLauncher.add(getActivity(), publisher);
         } else {
             add(publisher);
         }

@@ -30,8 +30,8 @@ import androidx.fragment.app.Fragment;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.OnEditListener;
 
 /**
  * Launcher for one of the inline-string fields in the Books table.
@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
  * <li>returns the original and the modified/stored text</li>
  * </ul>
  */
-public final class EditInLineStringLauncher
+public class EditInLineStringLauncher
         extends DialogLauncher {
 
     private static final String TAG = "Launcher";
@@ -53,7 +53,7 @@ public final class EditInLineStringLauncher
     private static final String MODIFIED = TAG + ":m";
 
     @NonNull
-    private final ResultListener resultListener;
+    private final OnEditListener<String> onEditListener;
 
     /**
      * Constructor.
@@ -62,58 +62,14 @@ public final class EditInLineStringLauncher
      *                            Typically the {@code DBKey} for the column we're editing.
      * @param dialogSupplier      a supplier for a new plain DialogFragment
      * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
-     * @param resultListener      callback for results
+     * @param onEditListener      callback for results
      */
-    private EditInLineStringLauncher(@NonNull final String requestKey,
+    public EditInLineStringLauncher(@NonNull final String requestKey,
                                      @NonNull final Supplier<DialogFragment> dialogSupplier,
                                      @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                                     @NonNull final ResultListener resultListener) {
+                                    @NonNull final OnEditListener<String> onEditListener) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
-        this.resultListener = resultListener;
-    }
-
-    /**
-     * Create one of the predefined launchers based on the given request-key.
-     *
-     * @param key            of the predefined launcher
-     * @param resultListener callback for results
-     *
-     * @return new instance
-     */
-    @SuppressWarnings("DuplicateBranchesInSwitch")
-    @NonNull
-    public static EditInLineStringLauncher create(@NonNull final String key,
-                                                  @NonNull final ResultListener resultListener) {
-        // Android Studio thinks these are all the same 'case's .... sigh
-        switch (key) {
-            case DBKey.COLOR:
-                return new EditInLineStringLauncher(key,
-                                                    EditColorDialogFragment::new,
-                                                    EditColorBottomSheet::new,
-                                                    resultListener);
-            case DBKey.FORMAT:
-                return new EditInLineStringLauncher(key,
-                                                    EditFormatDialogFragment::new,
-                                                    EditFormatBottomSheet::new,
-                                                    resultListener);
-            case DBKey.GENRE:
-                return new EditInLineStringLauncher(key,
-                                                    EditGenreDialogFragment::new,
-                                                    EditGenreBottomSheet::new,
-                                                    resultListener);
-            case DBKey.LANGUAGE:
-                return new EditInLineStringLauncher(key,
-                                                    EditLanguageDialogFragment::new,
-                                                    EditLanguageBottomSheet::new,
-                                                    resultListener);
-            case DBKey.LOCATION:
-                return new EditInLineStringLauncher(key,
-                                                    EditLocationDialogFragment::new,
-                                                    EditLocationBottomSheet::new,
-                                                    resultListener);
-            default:
-                throw new IllegalArgumentException("Unsupported requestKey=" + key);
-        }
+        this.onEditListener = onEditListener;
     }
 
     /**
@@ -155,19 +111,7 @@ public final class EditInLineStringLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
-                                Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
-    }
-
-    @FunctionalInterface
-    public interface ResultListener {
-        /**
-         * Callback handler - modifying an existing item.
-         *
-         * @param original the original item
-         * @param modified the modified item
-         */
-        void onResult(@NonNull String original,
-                      @NonNull String modified);
+        onEditListener.onEdit(Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
+                              Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
     }
 }
