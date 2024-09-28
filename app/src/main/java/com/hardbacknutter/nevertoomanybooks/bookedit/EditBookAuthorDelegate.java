@@ -71,6 +71,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
  * <li>Modifications are <strong>NOT STORED</strong> in the database</li>
  * <li>Returns the original + a new instance/copy with the modifications</li>
  * </ul>
+ *
+ * In either of the above cases, the 'real' Author <strong>IS STORED</strong>
+ * when applicable and explicitly allowed by the user.
  */
 class EditBookAuthorDelegate
         implements FlexDialogDelegate {
