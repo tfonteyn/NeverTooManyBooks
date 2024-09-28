@@ -63,7 +63,7 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
      *
      * @param fragment     the calling DialogFragment
      * @param requestKey   to use
-     * @param selectedItem the  <strong>checked</strong> item
+     * @param selectedItem the  <strong>checked</strong> item, can be {@code null} for none.
      *
      * @see #onFragmentResult(String, Bundle)
      */
@@ -118,8 +118,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
         /**
          * Callback handler with the user's selection.
          *
-         * @param selectedItem the <strong>checked</strong> item
+         * @param selectedItem the <strong>checked</strong> item, can be {@code null} for none.
          */
-        void onResult(@NonNull Long selectedItem);
+        void onResult(@Nullable Long selectedItem);
     }
 }
