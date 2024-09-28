@@ -34,21 +34,6 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublisherDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 
 /**
  * Launcher to edit a Parcelable object.
@@ -68,7 +53,6 @@ public final class EditParcelableLauncher<T extends Parcelable>
     private static final String ERROR_NULL_ON_ADD_LISTENER = "onAddListener";
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
     private static final String ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER = "onEditInPlaceListener";
-    private static final String ERROR_UNSUPPORTED_REQUEST_KEY = "Unsupported requestKey=";
 
     @Nullable
     private final OnAddListener<T> onAddListener;
@@ -86,11 +70,11 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param onAddListener       results listener
      * @param onEditListener      results listener
      */
-    private EditParcelableLauncher(@NonNull final String requestKey,
-                                   @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                   @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                                   @Nullable final OnAddListener<T> onAddListener,
-                                   @Nullable final OnEditListener<T> onEditListener) {
+    public EditParcelableLauncher(@NonNull final String requestKey,
+                                  @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                  @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
+                                  @Nullable final OnAddListener<T> onAddListener,
+                                  @Nullable final OnEditListener<T> onEditListener) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.onAddListener = onAddListener;
         this.onEditListener = onEditListener;
@@ -105,102 +89,14 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param bottomSheetSupplier   a supplier for a new BottomSheetDialogFragment.
      * @param onEditInPlaceListener results listener
      */
-    private EditParcelableLauncher(@NonNull final String requestKey,
-                                   @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                   @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                                   @NonNull final OnEditInPlaceListener<T> onEditInPlaceListener) {
+    public EditParcelableLauncher(@NonNull final String requestKey,
+                                  @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                  @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
+                                  @NonNull final OnEditInPlaceListener<T> onEditInPlaceListener) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
         this.onAddListener = null;
         this.onEditListener = null;
         this.onEditInPlaceListener = onEditInPlaceListener;
-    }
-
-    /**
-     * Create one of the predefined launchers based on the given request-key.
-     *
-     * @param key            of the predefined launcher
-     * @param onAddListener  results listener
-     * @param onEditListener results listener
-     * @param <T>            type of editable object
-     *
-     * @return new instance
-     *
-     * @throws IllegalArgumentException (debug) for undefined keys
-     * @noinspection DuplicateBranchesInSwitch (bug in lint)
-     */
-    @NonNull
-    public static <T extends Parcelable> EditParcelableLauncher<T> create(
-            @NonNull final String key,
-            @Nullable final OnAddListener<T> onAddListener,
-            @Nullable final OnEditListener<T> onEditListener)
-            throws IllegalArgumentException {
-        switch (key) {
-            case DBKey.FK_AUTHOR:
-                return new EditParcelableLauncher<>(key,
-                                                    EditBookAuthorDialogFragment::new,
-                                                    EditBookAuthorBottomSheet::new,
-                                                    onAddListener,
-                                                    onEditListener);
-
-            case DBKey.FK_SERIES:
-                return new EditParcelableLauncher<>(key,
-                                                    EditBookSeriesDialogFragment::new,
-                                                    EditBookSeriesBottomSheet::new,
-                                                    onAddListener,
-                                                    onEditListener);
-
-            case DBKey.FK_PUBLISHER:
-                return new EditParcelableLauncher<>(key,
-                                                    EditBookPublisherDialogFragment::new,
-                                                    EditBookPublisherBottomSheet::new,
-                                                    onAddListener,
-                                                    onEditListener);
-
-            default:
-                throw new IllegalArgumentException(ERROR_UNSUPPORTED_REQUEST_KEY + key);
-        }
-    }
-
-    /**
-     * Create one of the predefined launchers based on the given request-key.
-     *
-     * @param key                   of the predefined launcher
-     * @param onEditInPlaceListener results listener
-     * @param <T>                   type of editable object
-     *
-     * @return new instance
-     *
-     * @throws IllegalArgumentException (debug) for undefined keys
-     * @noinspection DuplicateBranchesInSwitch (bug in lint)
-     */
-    @NonNull
-    public static <T extends Parcelable> EditParcelableLauncher<T> create(
-            @NonNull final String key,
-            @NonNull final OnEditInPlaceListener<T> onEditInPlaceListener) {
-        switch (key) {
-            case DBKey.FK_BOOKSHELF:
-                return new EditParcelableLauncher<>(key,
-                                                    EditBookshelfDialogFragment::new,
-                                                    EditBookshelfBottomSheet::new,
-                                                    onEditInPlaceListener);
-            case DBKey.FK_AUTHOR:
-                return new EditParcelableLauncher<>(key,
-                                                    EditAuthorDialogFragment::new,
-                                                    EditAuthorBottomSheet::new,
-                                                    onEditInPlaceListener);
-            case DBKey.FK_SERIES:
-                return new EditParcelableLauncher<>(key,
-                                                    EditSeriesDialogFragment::new,
-                                                    EditSeriesBottomSheet::new,
-                                                    onEditInPlaceListener);
-            case DBKey.FK_PUBLISHER:
-                return new EditParcelableLauncher<>(key,
-                                                    EditPublisherDialogFragment::new,
-                                                    EditPublisherBottomSheet::new,
-                                                    onEditInPlaceListener);
-            default:
-                throw new IllegalArgumentException(ERROR_UNSUPPORTED_REQUEST_KEY + key);
-        }
     }
 
     /**

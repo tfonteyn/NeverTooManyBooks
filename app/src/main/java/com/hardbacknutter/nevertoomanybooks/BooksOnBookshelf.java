@@ -105,6 +105,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatBottomSheet;
@@ -117,6 +121,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogF
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -286,8 +294,6 @@ public class BooksOnBookshelf
             registerForActivityResult(new SearchFtsContract(), o -> o.ifPresent(
                     criteria -> vm.onFtsSearchFinished(criteria)));
 
-
-
     /** Edit a {@code Book Color} which appears as a {@link BooklistGroup} (node). */
     private EditInLineStringLauncher editColorLauncher;
     /** Edit a {@code Book Format} which appears as a {@link BooklistGroup} (node). */
@@ -306,6 +312,7 @@ public class BooksOnBookshelf
     private EditParcelableLauncher<Series> editSeriesLauncher;
     /** Edit a {@link Publisher} which appears as a {@link BooklistGroup} (node). */
     private EditParcelableLauncher<Publisher> editPublisherLauncher;
+
     private EditLenderLauncher editLenderLauncher;
 
     /** Row menu launcher displaying the menu as a BottomSheet. */
@@ -466,6 +473,9 @@ public class BooksOnBookshelf
     private void createFragmentLaunchers() {
         final FragmentManager fm = getSupportFragmentManager();
 
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onRowMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, this);
+
         stylePickerLauncher = new StylePickerLauncher(this::onStyleSelected);
         stylePickerLauncher.registerForFragmentResult(fm, this);
 
@@ -476,21 +486,32 @@ public class BooksOnBookshelf
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
 
-        editBookshelfLauncher = EditParcelableLauncher.create(
+        editBookshelfLauncher = new EditParcelableLauncher<>(
                 DBKey.FK_BOOKSHELF,
+                EditBookshelfDialogFragment::new,
+                EditBookshelfBottomSheet::new,
                 bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
         editBookshelfLauncher.registerForFragmentResult(fm, this);
 
-        editAuthorLauncher = EditParcelableLauncher.create(
-                DBKey.FK_AUTHOR, author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
+        editAuthorLauncher = new EditParcelableLauncher<>(
+                DBKey.FK_AUTHOR,
+                EditAuthorDialogFragment::new,
+                EditAuthorBottomSheet::new,
+                author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
         editAuthorLauncher.registerForFragmentResult(fm, this);
 
-        editSeriesLauncher = EditParcelableLauncher.create(
-                DBKey.FK_SERIES, series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
+        editSeriesLauncher = new EditParcelableLauncher<>(
+                DBKey.FK_SERIES,
+                EditSeriesDialogFragment::new,
+                EditSeriesBottomSheet::new,
+                series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
         editSeriesLauncher.registerForFragmentResult(fm, this);
 
-        editPublisherLauncher = EditParcelableLauncher.create(
-                DBKey.FK_PUBLISHER, publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
+        editPublisherLauncher = new EditParcelableLauncher<>(
+                DBKey.FK_PUBLISHER,
+                EditPublisherDialogFragment::new,
+                EditPublisherBottomSheet::new,
+                publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
         editPublisherLauncher.registerForFragmentResult(fm, this);
 
         editLenderLauncher = new EditLenderLauncher(
@@ -536,9 +557,6 @@ public class BooksOnBookshelf
                 (original, modified)
                         -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
         editLocationLauncher.registerForFragmentResult(fm, this);
-
-        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onRowMenuItemSelected);
-        menuLauncher.registerForFragmentResult(fm, this);
     }
 
     private void createViewModel() {

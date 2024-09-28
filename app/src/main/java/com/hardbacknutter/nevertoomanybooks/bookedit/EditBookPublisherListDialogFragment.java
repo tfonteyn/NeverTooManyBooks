@@ -126,8 +126,11 @@ public class EditBookPublisherListDialogFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = EditParcelableLauncher.create(DBKey.FK_PUBLISHER,
-                                                     this::add, this::processChanges);
+        editLauncher = new EditParcelableLauncher<>(DBKey.FK_PUBLISHER,
+                                                    EditBookPublisherDialogFragment::new,
+                                                    EditBookPublisherBottomSheet::new,
+                                                    this::add,
+                                                    this::processChanges);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);

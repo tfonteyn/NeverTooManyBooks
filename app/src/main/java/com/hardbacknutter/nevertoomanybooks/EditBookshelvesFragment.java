@@ -57,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesB
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -152,7 +154,10 @@ public class EditBookshelvesFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = EditParcelableLauncher.create(DBKey.FK_BOOKSHELF, this::onModified);
+        editLauncher = new EditParcelableLauncher<>(DBKey.FK_BOOKSHELF,
+                                                    EditBookshelfDialogFragment::new,
+                                                    EditBookshelfBottomSheet::new,
+                                                    this::onModified);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
