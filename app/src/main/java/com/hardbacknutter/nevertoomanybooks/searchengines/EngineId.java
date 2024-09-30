@@ -91,6 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *         the string resource id for the name as displayed to the user and
  *         the implementation class. The string-id must be all lowercase, no-spaces.
  *         It will be used in preferences, database settings,...
+ *         This is the {@link #key} field.
  *     </li>
  *
  *     <li>Configure the engine in the method {@link #createEngineConfigurations()},
@@ -117,7 +118,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * </ol>
  * <p>
  *
- * <strong>Note: NEVER change the "key" of the sites</strong>.
+ * <strong>Note: NEVER change the {@link #key} of the sites</strong>.
  *
  * @see SearchEngine
  * @see SearchEngineConfig
