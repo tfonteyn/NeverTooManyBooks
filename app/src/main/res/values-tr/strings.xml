@@ -799,7 +799,5 @@
     <string name="anonymous_author">[Anonim]</string>
     <string name="info_bulk_set_bookshelves">Seçilen düğüm altında listelenen tüm kitaplara atamak istediğiniz kitap raflarını seçin.</string>
     <string name="info_bulk_set_bookshelves_bs">Atama yapılmadan önce onaylamanız veya iptal etmeniz istenecektir.</string>
-    <string name="confirm_assign_bookshelves">Lütfen aşağıdaki kitap rafları listesini seçilen düğüm altında listelenen tüm kitaplara atamak istediğinizi onaylayın.
-\n
-\n%1$s</string>
+    <string name="confirm_assign_bookshelves"><![CDATA[Lütfen aşağıdaki kitap rafları listesini seçilen düğüm altında listelenen tüm kitaplara atamak istediğinizi onaylayın.<br><br>%1$s]]></string>
 </resources>
