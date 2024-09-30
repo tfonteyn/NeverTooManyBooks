@@ -809,4 +809,5 @@
     <string name="pt_search_result_order">Wyszukiwanie zwraca najnowszą lub pierwszą znalezioną książkę.</string>
     <string name="pe_search_result_order_most_recent">Ostatnio znaleziona książka</string>
     <string name="pe_search_result_order_first_found">Pierwsza znaleziona książka</string>
+    <string name="info_bulk_set_bookshelves">Wybierz półki z książkami, które chcesz przypisać do wszystkich książek wymienionych w wybranym węźle.</string>
 </resources>

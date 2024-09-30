@@ -20,8 +20,7 @@
   --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d boek</item>
         <item quantity="other">%1$d boeken</item>
@@ -754,8 +753,7 @@
     <string name="lbl_author_type_storyboard">Storyboard</string>
     <string name="lbl_author_type_lettering">Lettering</string>
     <string name="lbl_percentage">Percentage</string>
-    <string name="lbl_percentage_read"
-            tools:ignore="StringFormatInvalid">% gelezen</string>
+    <string name="lbl_percentage_read" tools:ignore="StringFormatInvalid">% gelezen</string>
     <string name="lbl_current_page">Huidige pagina</string>
     <string name="btn_completed">Voltooid</string>
     <string name="ps_use_read_progress_off">Gebruik een eenvoudige status Lezen/Niet gelezen.</string>
@@ -788,4 +786,5 @@
     <string name="pt_search_result_order">Zoekopdrachten geven het meest recente boek of het eerste gevonden boek terug.</string>
     <string name="pe_search_result_order_most_recent">Meest recente boek gevonden</string>
     <string name="pe_search_result_order_first_found">Eerste boek gevonden</string>
+    <string name="info_bulk_set_bookshelves">Selecteer de boekenplanken die je wilt toewijzen aan alle boeken die onder het geselecteerde knooppunt staan.</string>
 </resources>
