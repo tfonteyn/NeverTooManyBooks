@@ -65,6 +65,10 @@ public interface FlexDialogDelegate
      * {@link DialogType#Fullscreen}.
      * <p>
      * Called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * <p>
+     * FIXME: (on small-screen devices) we do not apply insets. This is on purpose
+     *  as the screen is already small.... but while the toolbar is fully functional
+     *  admittedly it does not look good
      *
      * @param inflater  LayoutInflater
      * @param container parent view
@@ -74,6 +78,16 @@ public interface FlexDialogDelegate
     @NonNull
     View onCreateFullscreen(@NonNull LayoutInflater inflater,
                             @Nullable ViewGroup container);
+
+    /**
+     * Get the previously set toolbar.
+     *
+     * @return the toolbar
+     *
+     * @throws NullPointerException if there was no toolbar set
+     */
+    @NonNull
+    Toolbar getToolbar();
 
     /**
      * Called from {@link Fragment#onViewCreated(View, Bundle)}.
@@ -91,16 +105,6 @@ public interface FlexDialogDelegate
      * @param toolbar optional Toolbar to show
      */
     void setToolbar(@Nullable Toolbar toolbar);
-
-    /**
-     * Get the previously set toolbar.
-     *
-     * @return the toolbar
-     *
-     * @throws NullPointerException if there was no toolbar set
-     */
-    @NonNull
-    Toolbar getToolbar();
 
     /**
      * Called from {@link Fragment#onViewCreated(View, Bundle)}.
