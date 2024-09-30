@@ -90,6 +90,7 @@ android {
         buildConfigField("boolean", "ENABLE_AMAZON", "true")
         buildConfigField("boolean", "ENABLE_BEDETHEQUE", "true")
         buildConfigField("boolean", "ENABLE_BOL", "true")
+        buildConfigField("boolean", "ENABLE_DNB_DE", "true")
         buildConfigField("boolean", "ENABLE_DOUBAN", "true")
         buildConfigField("boolean", "ENABLE_GOOGLE_BOOKS", "true")
         buildConfigField("boolean", "ENABLE_ISFDB", "true")
@@ -107,7 +108,6 @@ android {
 
         // Under development; disabled for release builds in buildTypes.release
         buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
-        buildConfigField("boolean", "ENABLE_DNB_DE", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
         buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "true")
     }
@@ -127,7 +127,6 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
-            buildConfigField("boolean", "ENABLE_DNB_DE", "false")
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }

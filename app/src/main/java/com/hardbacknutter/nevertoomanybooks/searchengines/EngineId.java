@@ -492,10 +492,7 @@ public enum EngineId
 
         // The order added here is the default order they will be used, but the user
         // can reorder the lists in preferences.
-
-        // We're assuming chinese users will predominantly want to use Douban.
-        // Of course, the user can manually enable them whenever they want.
-        // TODO: optimize the lists depending on language
+        // TODO: optimize the lists depending on device locale/language
         switch (type) {
             case Data: {
                 // Only add sites here that implement one or more of
@@ -504,9 +501,12 @@ public enum EngineId
                 // {@link SearchEngine.ByBarcode}
                 // {@link SearchEngine.ByText}
 
+                // Try to optimize by putting the most-likely-wanted at the top
                 if (isChinese) {
                     type.addSite(Douban, true);
                 }
+
+                // All sites unless added above
                 type.addSite(Amazon, true);
                 type.addSite(GoogleBooks, true);
                 type.addSite(Isfdb, true);
