@@ -800,4 +800,5 @@
     <string name="pt_search_result_order">Las búsquedas devuelven el libro más reciente, o el primero encontrado.</string>
     <string name="pe_search_result_order_most_recent">Libro más reciente encontrado</string>
     <string name="pe_search_result_order_first_found">Primer libro encontrado</string>
+    <string name="info_bulk_set_bookshelves">Seleccione las estanterías que desea asignar a todos los libros listados en el nodo seleccionado.</string>
 </resources>
