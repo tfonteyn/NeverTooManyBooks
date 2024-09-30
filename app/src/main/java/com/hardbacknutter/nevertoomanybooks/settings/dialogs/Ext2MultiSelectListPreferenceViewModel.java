@@ -43,8 +43,8 @@ public class Ext2MultiSelectListPreferenceViewModel
         if (entries == null) {
             if (preference.getEntries() == null || preference.getEntryValues() == null) {
                 throw new IllegalStateException(
-                        "MultiSelectListPreference requires an entries array and " +
-                        "an entryValues array.");
+                        "MultiSelectListPreference requires an entries array and "
+                        + "an entryValues array.");
             }
 
             entries = preference.getEntries();

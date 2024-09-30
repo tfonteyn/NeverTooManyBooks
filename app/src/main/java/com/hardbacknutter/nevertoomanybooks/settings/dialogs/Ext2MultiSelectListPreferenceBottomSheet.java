@@ -49,7 +49,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleSimpleBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
@@ -60,7 +60,7 @@ public class Ext2MultiSelectListPreferenceBottomSheet
         extends BottomSheetDialogFragment {
 
     private Ext2MultiSelectListPreferenceDelegate delegate;
-    private DialogSelectMultipleBinding vb;
+    private DialogSelectMultipleSimpleBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class Ext2MultiSelectListPreferenceBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = DialogSelectMultipleBinding.inflate(inflater, container, false);
+        vb = DialogSelectMultipleSimpleBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 

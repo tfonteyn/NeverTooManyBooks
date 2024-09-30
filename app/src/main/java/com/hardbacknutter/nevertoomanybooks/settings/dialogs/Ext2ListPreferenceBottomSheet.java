@@ -32,17 +32,17 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 /**
- * The layout is hardcoded to {@code dialog_choose_one.xml}
+ * The layout is hardcoded to {@link DialogSelectSingleSimpleBinding}
  */
 public class Ext2ListPreferenceBottomSheet
         extends BottomSheetDialogFragment {
 
     private Ext2ListPreferenceDelegate delegate;
-    private DialogSelectOneBinding vb;
+    private DialogSelectSingleSimpleBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class Ext2ListPreferenceBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = DialogSelectOneBinding.inflate(inflater, container, false);
+        vb = DialogSelectSingleSimpleBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
