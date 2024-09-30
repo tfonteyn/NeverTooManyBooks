@@ -170,6 +170,9 @@ class CoverBrowserDelegate
         InsetsListenerBuilder.apply(vb.gallery);
 
         if (toolbar != null) {
+            // The BottomSheet implementation DOES NOT have a toolbar save/select button.
+            // Cancelling the action is by dismissing the BS,
+            // selection is by tapping the large image.
             initToolbar(owner, dialogType, toolbar);
             toolbar.setSubtitle(bookTitle);
         }
