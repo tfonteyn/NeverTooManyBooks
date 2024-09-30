@@ -37,7 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleSimpleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 /**
@@ -165,7 +165,7 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         Objects.requireNonNull(itemLabels);
         Objects.requireNonNull(positiveButtonConsumer);
 
-        final DialogSelectMultipleBinding vb = DialogSelectMultipleBinding.inflate(
+        final DialogSelectMultipleSimpleBinding vb = DialogSelectMultipleSimpleBinding.inflate(
                 layoutInflater, null, false);
         // Ensure the drag handle is hidden.
         vb.dragHandle.setVisibility(View.GONE);
