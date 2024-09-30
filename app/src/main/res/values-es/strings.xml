@@ -801,4 +801,8 @@
     <string name="pe_search_result_order_most_recent">Libro más reciente encontrado</string>
     <string name="pe_search_result_order_first_found">Primer libro encontrado</string>
     <string name="info_bulk_set_bookshelves">Seleccione las estanterías que desea asignar a todos los libros listados en el nodo seleccionado.</string>
+    <string name="info_bulk_set_bookshelves_bs">Se le pedirá que confirme o cancele antes de que se realice la tarea.</string>
+    <string name="confirm_assign_bookshelves">Por favor, confirme que desea asignar la siguiente lista de estanterías a todos los libros listados en el nodo seleccionado.
+\n
+\n%1$s</string>
 </resources>
