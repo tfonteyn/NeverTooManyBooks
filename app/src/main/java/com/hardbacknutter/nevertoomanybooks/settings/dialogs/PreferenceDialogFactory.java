@@ -46,6 +46,9 @@ public final class PreferenceDialogFactory {
     @NonNull
     public static DialogFragment create(@NonNull final Preference preference) {
         // URGENT: hardcoded to use v1 dialog classes only for now.
+        //  we need to decide on Ext2MultiSelectListPreferenceDialogFragment
+        //  using bottom-sheets WITH or WITHOUT 'save' buttons.
+        //  We use 'save' buttons everywhere else, but it's not really standard android UI....
         return createV1(preference);
     }
 
