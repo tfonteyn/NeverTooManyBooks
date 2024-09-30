@@ -24,8 +24,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -133,7 +131,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -1419,18 +1416,13 @@ public class BooksOnBookshelf
         }
 
         final String dialogTitle = vm.getRowLabel(this, rowData);
-        final String dialogMessage = getString(R.string.info_bulk_set_bookshelves)
-                                     // The Dialog has a "cancel/ok" button,
-                                     // a BottomSheet will trigger an additional simple
-                                     // confirmation dialog.
-                                     + (DialogMode.getMode(this) == DialogMode.BottomSheet
-                                        ? '\n' + getString(R.string.info_bulk_set_bookshelves_bs)
-                                        : "");
+        final String dialogMessage = getString(R.string.info_bulk_set_bookshelves);
 
         final List<Bookshelf> allShelves = ServiceLocator.getInstance().getBookshelfDao().getAll();
         // We simply grab the FIRST book to get the pre-selected bookshelves.
         final List<Bookshelf> selected = Book.from(bookIds.get(0)).getBookshelves();
 
+        // We're using the extras to pass the set of book ids
         final Bundle extras = new Bundle(1);
         extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
 
@@ -1441,44 +1433,22 @@ public class BooksOnBookshelf
     }
 
     private void onBulkSetBookshelves(@NonNull final Set<Long> previousSelection,
-                                      @NonNull final Set<Long> bookshelfIds,
+                                      @NonNull final Set<Long> selectedIds,
                                       @Nullable final Bundle extras) {
-        if (previousSelection.equals(bookshelfIds)) {
+        if (previousSelection.equals(selectedIds)) {
             // No changes made
             return;
         }
 
-        final List<Bookshelf> bookshelves = ServiceLocator
+        final List<Bookshelf> selected = ServiceLocator
                 .getInstance()
                 .getBookshelfDao()
                 .getAll()
                 .stream()
-                .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
+                .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
                 .collect(Collectors.toList());
 
-        if (DialogMode.getMode(this) == DialogMode.Dialog) {
-            // The Dialog has a "cancel/ok" button; confirming is already done.
-            vm.setBookshelves(this, bookshelves, extras);
-            return;
-        }
-
-        // a BottomSheet needs additional confirmation
-        final Spanned message = Html.fromHtml(
-                getString(R.string.confirm_assign_bookshelves,
-                          bookshelves.stream()
-                                     .map(Bookshelf::getName)
-                                     .map(s -> "<li>" + s + "</li>")
-                                     .collect(Collectors.joining("", "<ul>", "</ul>"))),
-                Html.FROM_HTML_MODE_COMPACT);
-
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.lbl_assign_bookshelves)
-                .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w)
-                        -> vm.setBookshelves(this, bookshelves, extras))
-                .create()
-                .show();
+        vm.setBookshelves(this, selected, extras);
     }
 
     /**
