@@ -86,6 +86,7 @@ public class ParseTest
         assertEquals("526", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("9783453321892", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
+        assertEquals(1254682597, book.getLong(DBKey.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -139,6 +140,7 @@ public class ParseTest
         assertEquals("378", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("9783426226681", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Krimis, Thriller, Spionage", book.getString(DBKey.GENRE, null));
+        assertEquals(1308358113, book.getLong(DBKey.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -188,6 +190,7 @@ public class ParseTest
         assertEquals("9783734163296", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Science Fiction, Fantasy", book.getString(DBKey.GENRE, null));
         assertEquals("Lesser evil", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals(1272077195, book.getLong(DBKey.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
