@@ -81,9 +81,18 @@ public class BookshelfFiltersViewModel
         this.modified = modified;
     }
 
+    /**
+     * Get the items and their labels.
+     *
+     * @param context Current context
+     *
+     * @return a pair with the 'first' the (sorted) labels, and the 'second' their {@link DBKey}s
+     */
     @NonNull
     Pair<String[], String[]> getFilterChoiceItems(@NonNull final Context context) {
-        // key: the label, sorted locale-alphabetically; value: the DBKey
+        // key: the label, value: the DBKey
+        // The map will be automatically sorted alphabetically
+        // on the labels according to to the Locale
         final SortedMap<String, String> map = new TreeMap<>();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();

@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters.ui;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -42,15 +43,17 @@ public final class PFilterViewHolderFactory {
      * @param inflater   The LayoutInflater object that can be used to inflate any views
      * @param parent     The ViewGroup into which the new View will be added after it is bound to
      *                   an adapter position.
-     * @param filterType The view type of the filter
+     * @param filterType The view type of the filter (a layout id)
      * @param listener   to receive update notifications
      *
      * @return holder
+     *
+     * @throws IllegalArgumentException (debug) for an unsupported filter type
      */
     @NonNull
     public static PFilterViewHolder create(@NonNull final LayoutInflater inflater,
                                            @NonNull final ViewGroup parent,
-                                           final int filterType,
+                                           @LayoutRes final int filterType,
                                            @NonNull final ModificationListener listener) {
         if (filterType == R.layout.row_edit_bookshelf_filter_bitmask) {
             final RowEditBookshelfFilterBitmaskBinding vb =
@@ -73,7 +76,7 @@ public final class PFilterViewHolderFactory {
             return new StringEqualityHolder(vb, listener);
 
         } else {
-            throw new IllegalArgumentException("Unknown viewType");
+            throw new IllegalArgumentException("Unsupported filter type");
         }
     }
 }
