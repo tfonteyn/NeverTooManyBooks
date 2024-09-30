@@ -24,6 +24,8 @@ NEW:
 - Edge-to-Edge support (Android 11 and up)
 - Android 15 tested/supported.
 - Option to move/set the Bookshelves for all books for a node in the list
+- Bookshelves selection dialog(s) are now conform to all other dialog/BottomSheet usage.
+  IMPORTANT: The BottomSheet now has an explicit 'save' button, while dismissing acts as a 'cancel'
 
 FIXES:
 - Requesting "Update books" for a node in the list (e.g. 'series') was failing when the UI
