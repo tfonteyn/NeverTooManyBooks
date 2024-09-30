@@ -791,4 +791,5 @@
     <string name="pt_search_result_order">Les recherches renvoient le livre le plus récent ou le premier livre trouvé.</string>
     <string name="pe_search_result_order_most_recent">Livre le plus récent trouvé</string>
     <string name="pe_search_result_order_first_found">Premier livre trouvé</string>
+    <string name="info_bulk_set_bookshelves">Sélectionnez les étagères que vous souhaitez attribuer à tous les livres répertoriés sous le nœud sélectionné.</string>
 </resources>
