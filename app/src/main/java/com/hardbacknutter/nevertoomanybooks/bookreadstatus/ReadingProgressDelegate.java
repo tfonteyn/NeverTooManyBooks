@@ -135,6 +135,9 @@ class ReadingProgressDelegate
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
+            // The BottomSheet implementation DOES NOT have a toolbar save/select button.
+            // Cancelling the action is by dismissing the BS,
+            // selection is by tapping IME confirmation button.
             initToolbar(owner, dialogType, toolbar);
         }
 
