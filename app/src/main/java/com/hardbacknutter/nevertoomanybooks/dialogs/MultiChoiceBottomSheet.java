@@ -20,76 +20,16 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
-
-/**
- * Note that we're NOT extending BaseBottomSheetDialogFragment.
- * The view is simplified and does not use a toolbar.
- * There is no dedicated 'save' button.
- * {@link #onDismiss(DialogInterface)} will <strong>save</strong> the selection.
- */
 public class MultiChoiceBottomSheet
-        extends BottomSheetDialogFragment {
-
-    /** Must be created/set in {@link #onCreate(Bundle)}. */
-    private MultiChoiceDelegate delegate;
-    private DialogSelectMultipleBinding vb;
+        extends BaseBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new MultiChoiceDelegate(this, requireArguments());
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        vb = DialogSelectMultipleBinding.inflate(inflater, container, false);
-        return vb.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
-
-        // Due to multi-use of the layouts, we don't set these in xml:
-        final BottomSheetBehavior<FrameLayout> behavior =
-                ((BottomSheetDialog) dialog).getBehavior();
-        // Close fully when the user is dragging us down
-        behavior.setSkipCollapsed(true);
-        // Open fully when started.
-        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-        // Ensure the drag handle is visible.
-        vb.dragHandle.setVisibility(View.VISIBLE);
-        // There is no toolbar, just a TextView for the dialog title.
-        vb.title.setText(delegate.getDialogTitle());
-
-        delegate.onViewCreated(vb);
-    }
-
-    @Override
-    public void onDismiss(@NonNull final DialogInterface dialog) {
-        delegate.saveChanges();
-        super.onDismiss(dialog);
     }
 }

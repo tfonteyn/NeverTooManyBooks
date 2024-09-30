@@ -19,55 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.app.Dialog;
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
-
-/**
- * Note we're NOT extending BaseFFDialogFragment.
- * This dialog is only used/shown as a floating-dialog.
- * The view uses a simple Material AlertDialog.
- */
 public class MultiChoiceDialogFragment
-        extends DialogFragment {
-
-    private MultiChoiceDelegate delegate;
+        extends BaseFFDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new MultiChoiceDelegate(this, requireArguments());
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
-        final DialogSelectMultipleBinding vb = DialogSelectMultipleBinding.inflate(
-                getLayoutInflater(), null, false);
-
-        // Ensure the drag handle is hidden.
-        vb.dragHandle.setVisibility(View.GONE);
-        // Ensure the unused title field is hidden
-        vb.title.setVisibility(View.GONE);
-
-        delegate.onViewCreated(vb);
-
-        //noinspection DataFlowIssue
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(vb.getRoot())
-                .setTitle(delegate.getDialogTitle())
-                .setIcon(null)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> delegate.saveChanges())
-                .create();
     }
 }

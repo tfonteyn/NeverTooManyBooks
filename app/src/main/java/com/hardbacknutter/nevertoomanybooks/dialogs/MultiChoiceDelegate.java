@@ -22,10 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -35,13 +38,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleContentBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 /**
  * Replacement for an AlertDialog with checkbox setup.
  */
-class MultiChoiceDelegate {
+class MultiChoiceDelegate
+        implements FlexDialogDelegate {
 
     @NonNull
     private final DialogFragment owner;
@@ -60,6 +64,10 @@ class MultiChoiceDelegate {
     private final List<Long> items;
     @NonNull
     private final List<String> itemLabels;
+
+    private DialogSelectMultipleContentBinding vb;
+    @Nullable
+    private Toolbar toolbar;
 
     MultiChoiceDelegate(@NonNull final DialogFragment owner,
                         @NonNull final Bundle args) {
@@ -83,18 +91,41 @@ class MultiChoiceDelegate {
         vm.init(args);
     }
 
-    /**
-     * For use as a {@link MultiChoiceDialogFragment}.
-     *
-     * @return the title for the hosting dialog.
-     */
     @NonNull
-    String getDialogTitle() {
-        return dialogTitle;
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container) {
+        vb = DialogSelectMultipleContentBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
-    public void onViewCreated(@NonNull final DialogSelectMultipleBinding vb) {
-        // No insets needed; the surrounding container takes care of all.
+    @Override
+    @NonNull
+    public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
+                                   @Nullable final ViewGroup container) {
+        final View view = inflater.inflate(R.layout.dialog_select_multiple, container, false);
+        vb = DialogSelectMultipleContentBinding.bind(view.findViewById(R.id.dialog_content));
+        return view;
+    }
+
+    @NonNull
+    public Toolbar getToolbar() {
+        return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    public void onViewCreated(@NonNull final DialogType dialogType) {
+        if (toolbar != null) {
+            if (dialogType == DialogType.BottomSheet) {
+                toolbar.inflateMenu(R.menu.toolbar_action_save);
+            }
+            initToolbar(owner, dialogType, toolbar);
+            toolbar.setTitle(dialogTitle);
+        }
 
         if (dialogMessage != null && !dialogMessage.isEmpty()) {
             vb.message.setText(dialogMessage);
@@ -116,10 +147,31 @@ class MultiChoiceDelegate {
         vb.itemList.setAdapter(adapter);
     }
 
-    void saveChanges() {
+    @Override
+    public void onToolbarNavigationClick(@NonNull final View v) {
+        owner.dismiss();
+    }
+
+    @Override
+    public boolean onToolbarButtonClick(@Nullable final View button) {
+
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
+                if (saveChanges()) {
+                    owner.dismiss();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean saveChanges() {
         MultiChoiceLauncher.setResult(owner, requestKey,
                                       vm.getPreviousSelection(),
                                       vm.getSelectedItems(),
                                       vm.getExtras());
+        return true;
     }
 }
