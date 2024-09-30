@@ -209,4 +209,14 @@
     <string name="option_cover_rotate_ccw">逆時針</string>
     <string name="option_fab_add_book_by_isbn">按 ISBN 搜尋</string>
     <string name="option_fab_add_book_manually">手動新增</string>
+    <string name="info_bulk_set_bookshelves">選取要指定給所選節點下列出的所有書籍的書架。</string>
+    <string name="warning_book_not_always_found">並非所有網站都傳回有效資料。</string>
+    <string name="warning_no_search_data_for_active_sites">活動網站沒有有效的搜尋資料。</string>
+    <string name="warning_immediate_global_changes">警告：儲存的變更會立即套用至所有書籍。</string>
+    <string name="warning_enable_at_least_1_website">每個類別至少啟用一個網站。</string>
+    <string name="warning_select_at_least_1_group">至少選擇一組。</string>
+    <string name="warning_nothing_selected">未選取任何項目</string>
+    <string name="error_unexpected">發生意外錯誤。</string>
+    <string name="warning_book_not_found">無法找到指定的書籍。</string>
+    <string name="warning_select_at_least_1_field">至少選取一個要更新的欄位。</string>
 </resources>
