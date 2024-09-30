@@ -29,15 +29,12 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 
 /**
  * Note we're NOT extending BaseFFDialogFragment.
  * This dialog is only used/shown as a floating-dialog.
  * The view uses a simple Material AlertDialog.
- * <p>
- * FIXME: not in use right now
- * Search the code for "setSingleChoiceItems" to check where this should be used.
  */
 public class SingleChoiceDialogFragment
         extends DialogFragment {
@@ -54,7 +51,7 @@ public class SingleChoiceDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        final DialogSelectOneBinding vb = DialogSelectOneBinding.inflate(
+        final DialogSelectSingleSimpleBinding vb = DialogSelectSingleSimpleBinding.inflate(
                 getLayoutInflater(), null, false);
 
         // Ensure the drag handle is hidden.

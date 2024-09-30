@@ -36,11 +36,16 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 /**
  * Replacement for an AlertDialog with radio button setup.
+ * <p>
+ * FIXME: SingleChoiceDelegate and related classes are not in use right now
+ *  - Search the code for "setSingleChoiceItems" to check where this should be used.
+ *  - Review using a select/cancel button for the dialog/bottomsheet.
+ *  - Migrate to the FlexDialog concept
  */
 class SingleChoiceDelegate {
 
@@ -94,7 +99,7 @@ class SingleChoiceDelegate {
         return dialogTitle;
     }
 
-    public void onViewCreated(@NonNull final DialogSelectOneBinding vb) {
+    public void onViewCreated(@NonNull final DialogSelectSingleSimpleBinding vb) {
         InsetsListenerBuilder.apply(vb.itemList);
 
         if (dialogMessage != null && !dialogMessage.isEmpty()) {

@@ -34,7 +34,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectOneBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 
 /**
  * Note that we're NOT extending BaseBottomSheetDialogFragment.
@@ -47,7 +47,7 @@ public class SingleChoiceBottomSheet
 
     /** Must be created/set in {@link #onCreate(Bundle)}. */
     private SingleChoiceDelegate delegate;
-    private DialogSelectOneBinding vb;
+    private DialogSelectSingleSimpleBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -60,7 +60,7 @@ public class SingleChoiceBottomSheet
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = DialogSelectOneBinding.inflate(inflater, container, false);
+        vb = DialogSelectSingleSimpleBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 

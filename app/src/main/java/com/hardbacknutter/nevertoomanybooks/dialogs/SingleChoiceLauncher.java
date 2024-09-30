@@ -46,9 +46,6 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
 
     /**
      * Constructor.
-     * <p>
-     * FIXME: currently not in use. When used, we need to review using a select/cancel
-     * button for the dialog/bottomsheet.
      *
      * @param requestKey     FragmentResultListener request key to use for our response.
      * @param resultListener listener
