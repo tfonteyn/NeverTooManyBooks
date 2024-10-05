@@ -41,12 +41,16 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleSimp
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 /**
- * This is a pure dialog/listener construct.
+ * This is a wrapper for a {@link MaterialAlertDialogBuilder}
+ * with a suitable RecyclerView/Adapter and builtin listener.
+ * Items are handled as {@code List} and {@code Set}s of {@code Number} values
+ * (usually and id of some sort) and matching labels.
+ * <p>
  * It will <strong>NOT</strong> survive device rotations.
  * <p>
- * For rotation-safe behaviour, use {@link MultiChoiceDialogFragment}.
+ * For rotation-safe behaviour, use {@link MultiChoiceLauncher} and related classes.
  *
- * @param <T>
+ * @param <T> type of id based on {@code Number}
  */
 public class MultiChoiceAlertDialogBuilder<T extends Number> {
 
@@ -106,18 +110,46 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         return this;
     }
 
+    /**
+     * Optional. Set a message shown below the title, and above the list of items.
+     *
+     * @param messageId to show
+     *
+     * @return {@code this} (for chaining)
+     *
+     * @see #setMessage(CharSequence)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setMessage(@StringRes final int messageId) {
         this.dialogMessage = context.getString(messageId);
         return this;
     }
 
+    /**
+     * Optional. Set a message shown below the title, and above the list of items.
+     *
+     * @param message to show
+     *
+     * @return {@code this} (for chaining)
+     *
+     * @see #setMessage(int)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setMessage(@Nullable final CharSequence message) {
         this.dialogMessage = message;
         return this;
     }
 
+    /**
+     * Required. Set the list of selectable items. Both {@code List}s must be the same length.
+     *
+     * @param items      list of id values
+     * @param itemLabels matching labels for the id's
+     *
+     * @return {@code this} (for chaining)
+     *
+     * @throws IllegalArgumentException if the lists have a different size
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setItems(@NonNull final List<T> items,
                                                      @NonNull final List<String> itemLabels) {
@@ -126,6 +158,13 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         return this;
     }
 
+    /**
+     * Optional. Set the set of pre-selected items.
+     *
+     * @param selectedItems set of id values
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setSelectedItems(@Nullable final Set<T> selectedItems) {
         this.selectedItems.clear();
@@ -135,6 +174,14 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         return this;
     }
 
+    /**
+     * Required. Set the text and action listener for the positive button.
+     *
+     * @param textId         for the button
+     * @param resultConsumer to receive the set of selected items.
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setPositiveButton(
             @StringRes final int textId,
@@ -144,6 +191,14 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         return this;
     }
 
+    /**
+     * Optional. Set the text and action listener for the neutral button.
+     *
+     * @param textId         for the button
+     * @param resultConsumer to receive the set of selected items.
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setNeutralButton(
             @StringRes final int textId,
@@ -159,6 +214,11 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         return this;
     }
 
+    /**
+     * Create (but does not show) the dialog.
+     *
+     * @return the dialog ready to be shown.
+     */
     @NonNull
     public AlertDialog build() {
         Objects.requireNonNull(items);
@@ -207,9 +267,8 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
                     neutralButtonConsumer.accept(selectedItems));
         }
 
-        return builder
-                .setPositiveButton(positiveButtonTextId, (d, which) ->
-                        positiveButtonConsumer.accept(selectedItems))
-                .create();
+        return builder.setPositiveButton(positiveButtonTextId, (d, which) ->
+                              positiveButtonConsumer.accept(selectedItems))
+                      .create();
     }
 }
