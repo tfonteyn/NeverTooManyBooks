@@ -113,6 +113,17 @@ public class AltEditionOpenLibrary
     /** Guaranteed to be len=2. */
     private final long[] covers;
 
+    /**
+     * Constructor.
+     *
+     * @param olid      {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_OPEN_LIBRARY}
+     * @param isbn      of the book book
+     * @param langIso3  language ISO3 code of the book
+     * @param publisher primary publisher name
+     * @param covers    the OL native cover id(s); the array <strong>must</strong> be 2 elements.
+     *
+     * @throws IllegalArgumentException (debug) if the covers array is not 2 elements.
+     */
     AltEditionOpenLibrary(@NonNull final String olid,
                           @Nullable final String isbn,
                           @Nullable final String langIso3,
