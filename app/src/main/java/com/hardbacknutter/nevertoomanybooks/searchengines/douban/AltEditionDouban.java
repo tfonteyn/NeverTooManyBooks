@@ -46,13 +46,20 @@ public class AltEditionDouban
         }
     };
 
-    private final int id;
+    private final long id;
     @Nullable
     private final String bookUrl;
     @Nullable
     private final String coverUrl;
 
-    AltEditionDouban(final int id,
+    /**
+     * Constructor.
+     *
+     * @param id       {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_DOUBAN}
+     * @param bookUrl  full url to the book on the Douban site
+     * @param coverUrl full url to the cover on the Douban site
+     */
+    AltEditionDouban(final long id,
                      @Nullable final String bookUrl,
                      @Nullable final String coverUrl) {
         this.id = id;
@@ -61,7 +68,7 @@ public class AltEditionDouban
     }
 
     private AltEditionDouban(@NonNull final Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         bookUrl = in.readString();
         coverUrl = in.readString();
     }
@@ -71,7 +78,7 @@ public class AltEditionDouban
         return coverUrl != null && !coverUrl.isEmpty();
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -93,7 +100,7 @@ public class AltEditionDouban
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(id);
+        dest.writeLong(id);
         dest.writeString(bookUrl);
         dest.writeString(coverUrl);
     }

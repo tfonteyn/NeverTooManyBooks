@@ -684,7 +684,7 @@ public class DoubanSearchEngine
                 for (int i = 0; i < items.length(); i++) {
                     final JSONObject item = items.getJSONObject(i);
 
-                    final int id = item.optInt("id");
+                    final long id = item.optLong("id");
                     final String bookUrl = item.optString("url");
                     final String coverUrl = item.optString("cover_url");
 
