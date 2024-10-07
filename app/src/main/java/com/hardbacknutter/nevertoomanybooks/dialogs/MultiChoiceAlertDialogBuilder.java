@@ -153,6 +153,9 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setItems(@NonNull final List<T> items,
                                                      @NonNull final List<String> itemLabels) {
+        if (items.size() != itemLabels.size()) {
+            throw new IllegalArgumentException("Lists must be the same size");
+        }
         this.items = items;
         this.itemLabels = itemLabels;
         return this;
