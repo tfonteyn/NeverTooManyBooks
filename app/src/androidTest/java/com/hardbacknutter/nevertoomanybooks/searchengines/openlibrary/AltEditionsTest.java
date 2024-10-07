@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -64,6 +65,19 @@ public class AltEditionsTest
         // 2024-05-01: returned 87 results; the first was "9783551357793"
         // but as we're fetching live data, this might change of course.
         assertTrue("size=" + editions.size(), editions.size() > 1);
-        assertEquals("9783551357793", editions.get(0).getIsbn());
+
+        // The order however, can be DIFFERENT EACH TIME !
+        // This is just a crude test, so we just look for the test result
+        final Optional<AltEditionOpenLibrary> oe =
+                editions.stream()
+                        .filter(ed -> "9783551357793".equals(ed.getIsbn()))
+                        .findAny();
+        assertTrue(oe.isPresent());
+        final AltEditionOpenLibrary edition = oe.get();
+
+        assertEquals("OL49350279M", edition.getOLID());
+        assertEquals("9783551357793", edition.getIsbn());
+        assertEquals("Carlsen", edition.getPublisher());
+        assertEquals("ger", edition.getLangIso3());
     }
 }
