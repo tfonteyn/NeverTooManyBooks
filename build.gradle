@@ -25,7 +25,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.0.20" apply false
     // https://github.com/mannodermaus/android-junit5
     // Don't forget to update ext.mannodermausVersion
-    id("de.mannodermaus.android-junit5") version "1.11.0.0" apply false
+    id("de.mannodermaus.android-junit5") version "1.11.2.0" apply false
 }
 
 tasks.register("clean", Delete) {
