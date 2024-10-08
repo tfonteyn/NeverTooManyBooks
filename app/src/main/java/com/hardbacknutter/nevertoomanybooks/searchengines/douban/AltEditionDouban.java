@@ -78,6 +78,11 @@ public class AltEditionDouban
         return coverUrl != null && !coverUrl.isEmpty();
     }
 
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_DOUBAN}.
+     *
+     * @return the website id
+     */
     public long getId() {
         return id;
     }

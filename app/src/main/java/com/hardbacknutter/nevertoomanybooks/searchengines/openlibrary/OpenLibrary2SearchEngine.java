@@ -76,8 +76,8 @@ public class OpenLibrary2SearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
-    private static final String BASE_BOOK_URL = "/search.json?q=%1$s" +
-                                                "&fields=key,editions";
+    private static final String BASE_BOOK_URL = "/search.json?q=%1$s"
+                                                + "&fields=key,editions";
 
     /**
      * The covers are available in 3 sizes:
@@ -169,6 +169,8 @@ public class OpenLibrary2SearchEngine
      * }
      * <p>
      * S/M/L
+     * <p>
+     * {@inheritDoc}
      *
      * @see #searchCoverByKey(Context, String, String, int, Size)
      * @see #searchBestCoverByKey(Context, String, String, int)

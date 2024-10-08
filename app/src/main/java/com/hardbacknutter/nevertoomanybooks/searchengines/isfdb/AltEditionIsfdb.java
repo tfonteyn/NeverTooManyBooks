@@ -123,6 +123,11 @@ public class AltEditionIsfdb
         document = null;
     }
 
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_ISFDB}.
+     *
+     * @return the website id
+     */
     long getIsfdbId() {
         return isfdbId;
     }

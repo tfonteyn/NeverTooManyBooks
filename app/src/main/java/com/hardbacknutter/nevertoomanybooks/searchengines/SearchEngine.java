@@ -344,7 +344,11 @@ public interface SearchEngine
                        CredentialsException;
     }
 
-    /** Optional. */
+    /**
+     * Optional.
+     *
+     * @param <T> SearchEngine specific implementations.
+     */
     interface AlternativeEditions<T extends AltEdition>
             extends SearchEngine {
 

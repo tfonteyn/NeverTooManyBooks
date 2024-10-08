@@ -155,6 +155,11 @@ public class AltEditionOpenLibrary
         return covers[0] != 0;
     }
 
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_OPEN_LIBRARY}.
+     *
+     * @return the website id
+     */
     @NonNull
     public String getOLID() {
         return olid;

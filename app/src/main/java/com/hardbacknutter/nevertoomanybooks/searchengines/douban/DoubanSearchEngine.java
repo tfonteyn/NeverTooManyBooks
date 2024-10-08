@@ -89,11 +89,14 @@ public class DoubanSearchEngine
     public static final String PK_FETCH_MOST_RECENT = EngineId.Douban.getPreferenceKey()
                                                       + ".search.result.order.by.date";
     /**
-     * param 1: the ISBN
+     * param 1: the ISBN.
      */
     private static final String SEARCH_URL = "/book/subject_search?search_text=%1$s";
     private static final Pattern PATTERN_BR = Pattern.compile("<br>");
-    /** Support for foreign author names in the format: [法] 保罗·霍尔特   ==>  [France] Paul Holt */
+    /**
+     * Support for foreign author names.
+     * Format: [法] 保罗·霍尔特   ==>  [France] Paul Holt
+     */
     private static final Pattern PATTERN_FOREIGN_AUTHOR = Pattern.compile("\\[(.+)] (.+)");
     @NonNull
     private final RatingParser ratingParser;
@@ -378,7 +381,7 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Does the user prefer to always use the most recent book from the site?
+     * Does the user prefer to always use the most recent book from the site.
      * Or do they prefer to just grab the first one found?
      *
      * @param context Current context
@@ -631,11 +634,11 @@ public class DoubanSearchEngine
     /**
      * Parses the given {@link Document} for the cover and fetches it when present.
      *
-     * @param context Current context
-     * @param document    to parse
-     * @param bookId  (optional) isbn or native id of the book,
-     *                will only be used for the temporary cover filename
-     * @param cIdx    0..n image index
+     * @param context  Current context
+     * @param document to parse
+     * @param bookId   (optional) isbn or native id of the book,
+     *                 will only be used for the temporary cover filename
+     * @param cIdx     0..n image index
      *
      * @return fileSpec
      *
