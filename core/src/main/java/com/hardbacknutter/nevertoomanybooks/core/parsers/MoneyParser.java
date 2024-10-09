@@ -149,41 +149,41 @@ public class MoneyParser {
         CURRENCY_MAP.put("€", EUR);
 
         // English
-        CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
-        CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
-        CURRENCY_MAP.put("£", GBP); // British Pound
-        CURRENCY_MAP.put("$", USD); // Trump Disney's
-
-        CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
+        CURRENCY_MAP.put("$", USD);     // US Dollar
+        CURRENCY_MAP.put("a$", "AUD");  // Australian Dollar
+        CURRENCY_MAP.put("c$", "CAD");  // Canadian Dollar
         CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
-        CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
+        CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
+        CURRENCY_MAP.put("s$", "SGD");  // Singapore dollar
+        CURRENCY_MAP.put("£", GBP);     // British Pound
 
         // supported locales (including pre-euro)
-        CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
-        CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
-        CURRENCY_MAP.put("kč", "CZK"); // Czech Koruna
-        CURRENCY_MAP.put("kc", "CZK"); // Czech Koruna
-        CURRENCY_MAP.put("dm", "DEM"); // German Marks
-        CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
-        CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
+        CURRENCY_MAP.put("br", "RUB");  // Russian Rouble
+        CURRENCY_MAP.put("dm", "DEM");  // German Marks
+        CURRENCY_MAP.put("f", "FRF");   // French Franc
+        CURRENCY_MAP.put("ff", "FRF");  // French Franc
+        CURRENCY_MAP.put("fr", "BEF");  // Belgian Franc
         CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
-        CURRENCY_MAP.put("f", "FRF"); // French Franc
-        CURRENCY_MAP.put("ff", "FRF"); // French Franc
-        CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
-        CURRENCY_MAP.put("l", "ITL"); // Italian Lira
+        CURRENCY_MAP.put("kc", "CZK");  // Czech Koruna
+        CURRENCY_MAP.put("kč", "CZK");  // Czech Koruna
+        CURRENCY_MAP.put("l", "ITL");   // Italian Lira
         CURRENCY_MAP.put("lit", "ITL"); // Italian Lira
-        CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
-        CURRENCY_MAP.put("₺", "TRY"); // Turkish Lira
-        CURRENCY_MAP.put("₫", "VND"); // Vietnamese đồng
-        CURRENCY_MAP.put("đ", "VND"); // Vietnamese đồng (a different symbol!)
-        CURRENCY_MAP.put("元", CNY);  // Chinese Yuan
+        CURRENCY_MAP.put("nt$", "TWD"); // Taiwan dollar
+        CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
+        CURRENCY_MAP.put("zł", "PLN");  // Polish Zloty
+        CURRENCY_MAP.put("đ", "VND");   // Vietnamese đồng
+        CURRENCY_MAP.put("₫", "VND");   // Vietnamese đồng (a different symbol!)
+        CURRENCY_MAP.put("ƒ", "NLG");   // Dutch Guilder
+        CURRENCY_MAP.put("Δρ", "GRD");  // Greek Drachma
+        CURRENCY_MAP.put("₺", "TRY");   // Turkish Lira
+        CURRENCY_MAP.put("元", CNY);    // Chinese Yuan
 
         // some others
-        CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
-        CURRENCY_MAP.put("kr", "DKK"); // Danish Krone
-        CURRENCY_MAP.put("ft", "HUF"); // Hungarian Forint
-        CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
+        CURRENCY_MAP.put("ft", "HUF");  // Hungarian Forint
         CURRENCY_MAP.put("kn", "HRK");  // Croatian Kuna
+        CURRENCY_MAP.put("kr", "DKK");  // Danish Krone
+        CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
+        CURRENCY_MAP.put("r$", "BRL");  // Brazilian Real
     }
 
 
