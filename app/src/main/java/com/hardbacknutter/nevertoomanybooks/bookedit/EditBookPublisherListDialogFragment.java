@@ -289,7 +289,7 @@ public class EditBookPublisherListDialogFragment
             return;
         }
 
-        final Publisher publisher = Publisher.from(name);
+        final Publisher publisher = new Publisher(name);
         if (withDetails) {
             //noinspection DataFlowIssue
             editLauncher.add(getActivity(), publisher);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public class PublisherTest
 
     @Test
     public void parcelling() {
-        final Publisher publisher = Publisher.from(SOME_PUBLISHER);
+        final Publisher publisher = new Publisher(SOME_PUBLISHER);
 
         final Parcel parcel = Parcel.obtain();
         publisher.writeToParcel(parcel, publisher.describeContents());

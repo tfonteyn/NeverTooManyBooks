@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,7 +115,7 @@ public abstract class BaseSetup
         publisherArray = new Publisher[TestConstants.PUBLISHER.length];
         publisherIdArray = new long[publisherArray.length];
         for (int i = 0; i < TestConstants.PUBLISHER.length; i++) {
-            publisherArray[i] = Publisher.from(TestConstants.PUBLISHER[i]);
+            publisherArray[i] = new Publisher(TestConstants.PUBLISHER[i]);
         }
     }
 

@@ -379,7 +379,7 @@ public class BedethequeSearchEngine
                     case "Editeur :": {
                         final Element span = label.nextElementSibling();
                         if (span != null) {
-                            book.add(new Publisher(span.text()));
+                            book.add(Publisher.from(span.text()));
                         }
                         break;
                     }
