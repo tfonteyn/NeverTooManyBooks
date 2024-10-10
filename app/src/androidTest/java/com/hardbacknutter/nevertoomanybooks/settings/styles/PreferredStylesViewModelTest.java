@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,9 @@ public class PreferredStylesViewModelTest
 
         final Style aDefault = ServiceLocator.getInstance().getStyles().getDefault();
         listVm = new PreferredStylesViewModel();
-        listVm.init(createArgs(aDefault));
+        final Bundle args = new Bundle(1);
+        args.putString(Style.BKEY_UUID, aDefault.getUuid());
+        listVm.init(args);
     }
 
     @AfterClass
@@ -88,14 +90,6 @@ public class PreferredStylesViewModelTest
                         .filter(userStyle -> userStyle.getName().startsWith(prefix))
                         .forEach(stylesHelper::delete);
         }
-    }
-
-    @NonNull
-    private Bundle createArgs(@NonNull final Style style) {
-        final String uuid = style.getUuid();
-        final Bundle args = new Bundle();
-        args.putString(Style.BKEY_UUID, uuid);
-        return args;
     }
 
     @Test
@@ -133,7 +127,8 @@ public class PreferredStylesViewModelTest
 
         // Prepare editing
         final StyleViewModel styleVm = new StyleViewModel();
-        final Bundle args = createArgs(initialStyle);
+        final Bundle args = new Bundle(3);
+        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
         args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
         args.putInt(EditStyleContract.BKEY_ACTION, EditStyleContract.ACTION_CLONE);
         styleVm.init(context, args);
@@ -212,7 +207,8 @@ public class PreferredStylesViewModelTest
 
         // Prepare editing
         final StyleViewModel styleVm = new StyleViewModel();
-        final Bundle args = createArgs(initialStyle);
+        final Bundle args = new Bundle(3);
+        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
         args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
         args.putInt(EditStyleContract.BKEY_ACTION, EditStyleContract.ACTION_CLONE);
         styleVm.init(context, args);
@@ -282,7 +278,8 @@ public class PreferredStylesViewModelTest
 
         // Prepare editing
         final StyleViewModel styleVm = new StyleViewModel();
-        final Bundle args = createArgs(initialStyle);
+        final Bundle args = new Bundle(3);
+        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
         args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
         args.putInt(EditStyleContract.BKEY_ACTION, EditStyleContract.ACTION_EDIT);
         styleVm.init(context, args);
