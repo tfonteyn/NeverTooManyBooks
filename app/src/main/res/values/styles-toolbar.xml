@@ -16,7 +16,9 @@
         <item name="android:paddingBottom">4dp</item>
     </style>
 
-    <style name="Base.Toolbar.Top">
+    <!-- Activity top toolbar. -->
+    <style name="Toolbar.Activity"
+           parent="Base.Toolbar">
         <!-- We like a top-toolbar which shows some contrast to the rest of the screen.
              So we set the background color and likewise re-color the text/icons as needed.
              Note that the icon colors must be done using a materialThemeOverlay.
@@ -33,24 +35,23 @@
               Theoretically we could apply or not-apply the below based on the dynamic-color
               setting.... but adjusting to every Google/Android change is [bleeping] hard
               enough already.
-              -->
+      -->
         <item name="android:background">?attr/colorPrimary</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
         <item name="subtitleTextColor">?attr/colorOnSurface</item>
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
-    </style>
-
-    <!-- Activity top toolbar. -->
-    <style name="Toolbar.Activity"
-           parent="Base.Toolbar.Top">
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 
     <!-- A fullscreen Dialog toolbar with a 'close' or 'back' icon. -->
     <style name="Toolbar.Dialog.Fullscreen"
-           parent="Base.Toolbar.Top">
+           parent="Base.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="subtitleTextColor">?attr/colorOnSurface</item>
         <!-- The default icon, will be overridden with a 'back' icon when needed -->
         <item name="navigationIcon">@drawable/close_24px</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 
     <!-- A floating Dialog or BottomSheet toolbar. -->
