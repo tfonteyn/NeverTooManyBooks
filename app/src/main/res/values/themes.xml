@@ -171,7 +171,6 @@
         <item name="colorOutline">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <!-- app wide ThemeOverlay -->
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
@@ -195,19 +194,9 @@
     <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme"
            parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
 
-        <item name="materialCalendarHeaderLayout">
-            @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderLayout
-        </item>
         <item name="materialCalendarHeaderConfirmButton">
             @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton
         </item>
-    </style>
-
-    <!-- We want the full screen calendar widget to use the same header style (toolbar)
-         as all edit-screens. -->
-    <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderLayout"
-           parent="Widget.Material3.MaterialCalendar.HeaderLayout">
-        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <!-- The "Save" button in the header (toolbar).-->
