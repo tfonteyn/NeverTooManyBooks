@@ -1110,55 +1110,19 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.LOCATION: {
-                if (!rowData.getString(DBKey.LOCATION).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
-                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.edit_24px);
-                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                             R.string.lbl_assign_bookshelves)
-                        .setIcon(R.drawable.library_books_24px);
-                }
+                createRowMenuForLocation(rowData, menu);
                 break;
             }
             case BooklistGroup.GENRE: {
-                if (!rowData.getString(DBKey.GENRE).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
-                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.edit_24px);
-                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                             R.string.lbl_assign_bookshelves)
-                        .setIcon(R.drawable.library_books_24px);
-                }
+                createRowMenuForGenre(rowData, menu);
                 break;
             }
             case BooklistGroup.FORMAT: {
-                if (!rowData.getString(DBKey.FORMAT).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
-                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.edit_24px);
-                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                             R.string.lbl_assign_bookshelves)
-                        .setIcon(R.drawable.library_books_24px);
-                }
+                createRowMenuForFormat(rowData, menu);
                 break;
             }
             case BooklistGroup.COLOR: {
-                if (!rowData.getString(DBKey.COLOR).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
-                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.edit_24px);
-                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                             R.string.lbl_assign_bookshelves)
-                        .setIcon(R.drawable.library_books_24px);
-                }
+                createRowMenuForColor(rowData, menu);
                 break;
             }
             // year/month/day all resolve to the same date string yyyy-mm-dd
@@ -1891,6 +1855,62 @@ public class BooksOnBookshelf
             return true;
         }
         return false;
+    }
+
+    private void createRowMenuForLocation(@NonNull final DataHolder rowData,
+                                          @NonNull final Menu menu) {
+        if (!rowData.getString(DBKey.LOCATION).isEmpty()) {
+            menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
+                     getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.action_edit_ellipsis)
+                .setIcon(R.drawable.edit_24px);
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
+        }
+    }
+
+    private void createRowMenuForGenre(@NonNull final DataHolder rowData,
+                                       @NonNull final Menu menu) {
+        if (!rowData.getString(DBKey.GENRE).isEmpty()) {
+            menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
+                     getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.action_edit_ellipsis)
+                .setIcon(R.drawable.edit_24px);
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
+        }
+    }
+
+    private void createRowMenuForFormat(@NonNull final DataHolder rowData,
+                                        @NonNull final Menu menu) {
+        if (!rowData.getString(DBKey.FORMAT).isEmpty()) {
+            menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
+                     getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.action_edit_ellipsis)
+                .setIcon(R.drawable.edit_24px);
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
+        }
+    }
+
+    private void createRowMenuForColor(@NonNull final DataHolder rowData,
+                                       @NonNull final Menu menu) {
+        if (!rowData.getString(DBKey.COLOR).isEmpty()) {
+            menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
+                     getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.action_edit_ellipsis)
+                .setIcon(R.drawable.edit_24px);
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
+        }
     }
 
     private void searchMissingCover(final long nodeRowId) {
