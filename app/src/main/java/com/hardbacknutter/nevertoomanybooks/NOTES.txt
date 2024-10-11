@@ -24,6 +24,7 @@ NEW:
 
 - dnb.de site (Deutsche Nationalbibliothek) added for looking up German language books.
 - Option to move/set the Bookshelves for all books for a node in the list
+
 - Bookshelves selection dialog(s) are now conform to all other dialog/BottomSheet usage.
   IMPORTANT: The BottomSheet now has an explicit 'save' button, while dismissing acts as a 'cancel'
 - Edge-to-Edge support (Android 11 and up)
@@ -37,23 +38,7 @@ REMOVED:
 
 ====================================================================================================
 Android 15 insets / EdgeToEdge
-https://developer.android.com/develop/ui/views/layout/insets
-https://medium.com/androiddevelopers/windowinsets-listeners-to-layouts-8f9ccc8fa4d1
-https://medium.com/androiddevelopers/why-would-i-want-to-fitssystemwindows-4e26d9ce1eec
-https://developer.android.com/codelabs/edge-to-edge#4
-https://medium.com/androiddevelopers/intercepting-everything-with-coordinatorlayout-behaviors-8c6adc140c26
 
-----------------------------------------------------------------------------------------------------
-https://developer.android.com/develop/ui/views/layout/edge-to-edge#cutout-insets
-
-Display cutouts (camera etc): TODO: test on real device.
-
-----------------------------------------------------------------------------------------------------
-https://developer.android.com/develop/ui/views/layout/insets/rounded-corners
-Rounded corner displays: not taken into account.
-Based on emulator tests... it's not perfect, but should not be an issue.
-
-----------------------------------------------------------------------------------------------------
 // https://developer.android.com/develop/ui/views/layout/edge-to-edge#system-gesture-insets
 
 Need to make a decision on adding WindowInsetsCompat.Type.systemGestures()
