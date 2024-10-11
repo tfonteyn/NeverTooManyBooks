@@ -2120,8 +2120,6 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
-            //URGENT: Scroll to the previously stored position - this seems to be
-            // getting incorrect results when using GRID mode.
             final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
             positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
                                        topRowPos.getViewOffset(),
@@ -2395,7 +2393,7 @@ public class BooksOnBookshelf
             final LinearLayoutManager layoutManager =
                     (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            // the LAYOUT positions; i.e. including the header row
+            // the LAYOUT positions; i.e. including the header rows
             //noinspection DataFlowIssue
             final int firstLayoutPos = layoutManager.findFirstCompletelyVisibleItemPosition();
             final int lastLayoutPos = layoutManager.findLastCompletelyVisibleItemPosition();
@@ -2405,14 +2403,17 @@ public class BooksOnBookshelf
                 return null;
             }
 
+            // the ADAPTER positions; i.e. without the header rows
             final int firstAdapterPos = Math.max(0, firstLayoutPos - headerItemCount);
             final int lastAdapterPos = Math.max(0, lastLayoutPos - headerItemCount);
 
             BooklistNode best;
             if (targetNodes.size() == 1) {
+                // There is only one, so it's always the "best"
                 best = targetNodes.get(0);
 
             } else {
+                // Find the target which is closest to the current centered position
                 final int centerPos = Math.max(0, (firstAdapterPos + lastAdapterPos) / 2);
 
                 // Assume first is best
