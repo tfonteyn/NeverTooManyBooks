@@ -33,11 +33,7 @@
         app:elevation="0dp"
         >
 
-        <!--
-            TODO: decide if we want to use the dialog instead (as Author does)
-                    The only extra field is the "is complete"...
-            app:menu="@menu/toolbar_action_add2"
-        -->
+        <!-- uses a 'back' icon because saving is always/automatically done -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog.Fullscreen"

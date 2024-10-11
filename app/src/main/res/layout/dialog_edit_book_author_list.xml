@@ -33,6 +33,7 @@
         app:elevation="0dp"
         >
 
+        <!-- uses a 'back' icon because saving is always/automatically done -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog.Fullscreen"
