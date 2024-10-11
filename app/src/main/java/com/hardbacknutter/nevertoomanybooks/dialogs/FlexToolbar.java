@@ -109,8 +109,13 @@ public interface FlexToolbar {
             }
         }
 
-        // The status-bar and toolbar background color must be set dynamically
-        // in order to follow the Dynamic Colors.
+        //URGENT: we're not supposed to set StatusBar color
+        // The status-bar and toolbar background color must be set manually
+        // in order to follow the Dynamic Colours.
+        // If we do not take the below steps, the toolbar/system-bar will keep
+        // the original blue-grey theme colour instead.
+        // Some info in step 7 of:
+        // https://medium.com/androiddevelopers/insets-handling-tips-for-android-15s-edge-to-edge-enforcement-872774e8839b
         if (dialogType == DialogType.Fullscreen) {
             InsetsListenerBuilder.apply(toolbar);
 
@@ -120,10 +125,12 @@ public interface FlexToolbar {
             // }
 
             // FIXME: android 15 has deprecated R.attr.statusBarColor (but reading the value works)
-            //  it's expected that android 16 might fail here !
-            // Make sure we do NOT crash on Android 16. To be revisited in summer 2025.
+            //  it's possible that android 16 might fail here !
+            //  Make sure we do NOT crash on Android 16. To be revisited in summer 2025.
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                // Instead we need to manually get the current (dynamic) color to use
+
+                // We manually read the current colour for the status-bar which will
+                // give us the correct Dynamic Colour.
                 //noinspection DataFlowIssue
                 final int statusBarColor = AttrUtils.getColorInt(owner.getContext(),
                                                                  android.R.attr.statusBarColor);
@@ -135,7 +142,7 @@ public interface FlexToolbar {
                     owner.getDialog().getWindow().setStatusBarColor(statusBarColor);
                 }
 
-                // and the actual toolbar.
+                // and the actual toolbar to the Dynamic Colour.
                 toolbar.setBackgroundColor(statusBarColor);
             }
         }
