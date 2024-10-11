@@ -14,6 +14,8 @@
              The 4dp seems to work out universally and this is better than setting
              layout_height directly to attr/actionBarSize -->
         <item name="android:paddingBottom">4dp</item>
+        <!-- adjust icon colour -->
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 
     <!-- Activity top toolbar. -->
@@ -40,26 +42,21 @@
         <item name="titleTextColor">?attr/colorOnSurface</item>
         <item name="subtitleTextColor">?attr/colorOnSurface</item>
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 
     <!-- A fullscreen Dialog toolbar with a 'close' or 'back' icon. -->
     <style name="Toolbar.Dialog.Fullscreen"
            parent="Base.Toolbar">
-        <item name="android:background">?attr/colorPrimary</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
         <item name="subtitleTextColor">?attr/colorOnSurface</item>
         <!-- The default icon, will be overridden with a 'back' icon when needed -->
         <item name="navigationIcon">@drawable/close_24px</item>
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 
     <!-- A floating Dialog or BottomSheet toolbar. -->
     <style name="Toolbar.Dialog.Floating"
            parent="Base.Toolbar">
-
         <item name="android:background">@android:color/transparent</item>
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 
     <!-- A highlighted button placed in toolbars menus as an "actionLayout"

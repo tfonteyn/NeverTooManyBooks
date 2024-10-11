@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.res.ColorStateList;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -82,6 +81,10 @@ public interface FlexToolbar {
                              @NonNull final DialogType dialogType,
                              @NonNull final Toolbar toolbar) {
 
+        if (dialogType == DialogType.Fullscreen) {
+            InsetsListenerBuilder.apply(toolbar);
+        }
+
         // The (optional) navigation/home icon
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         // The (optional) menu items; i.e. non-action view.
@@ -94,7 +97,7 @@ public interface FlexToolbar {
             if (actionView != null) {
                 if (actionView instanceof Button) {
                     // Single button as top-level view
-                    initToolbarButton(owner, dialogType, (Button) actionView);
+                    initToolbarButton(owner, (Button) actionView);
 
                 } else if (actionView instanceof ViewGroup) {
                     // A ViewGroup with multiple Buttons.
@@ -102,54 +105,15 @@ public interface FlexToolbar {
                     for (int c = 0; c < av.getChildCount(); c++) {
                         final View child = av.getChildAt(c);
                         if (child instanceof Button) {
-                            initToolbarButton(owner, dialogType, (Button) child);
+                            initToolbarButton(owner, (Button) child);
                         }
                     }
                 }
             }
         }
-
-        //URGENT: we're not supposed to set StatusBar color
-        // The status-bar and toolbar background color must be set manually
-        // in order to follow the Dynamic Colours.
-        // If we do not take the below steps, the toolbar/system-bar will keep
-        // the original blue-grey theme colour instead.
-        // Some info in step 7 of:
-        // https://medium.com/androiddevelopers/insets-handling-tips-for-android-15s-edge-to-edge-enforcement-872774e8839b
-        if (dialogType == DialogType.Fullscreen) {
-            InsetsListenerBuilder.apply(toolbar);
-
-            // Reminder: calling this HAS NO EFFECT
-            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            //     owner.getDialog().getWindow().setNavigationBarContrastEnforced(false);
-            // }
-
-            // FIXME: android 15 has deprecated R.attr.statusBarColor (but reading the value works)
-            //  it's possible that android 16 might fail here !
-            //  Make sure we do NOT crash on Android 16. To be revisited in summer 2025.
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-
-                // We manually read the current colour for the status-bar which will
-                // give us the correct Dynamic Colour.
-                //noinspection DataFlowIssue
-                final int statusBarColor = AttrUtils.getColorInt(owner.getContext(),
-                                                                 android.R.attr.statusBarColor);
-                // and force the status-bar background
-                // Android 15 is setting it correctly, but android 14- is not.
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    // Android 14-: manually set it
-                    //noinspection DataFlowIssue
-                    owner.getDialog().getWindow().setStatusBarColor(statusBarColor);
-                }
-
-                // and the actual toolbar to the Dynamic Colour.
-                toolbar.setBackgroundColor(statusBarColor);
-            }
-        }
     }
 
     private void initToolbarButton(@NonNull final DialogFragment owner,
-                                   @NonNull final DialogType dialogType,
                                    @NonNull final Button btn) {
 
         btn.setOnClickListener(this::onToolbarButtonClick);
