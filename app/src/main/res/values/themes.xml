@@ -201,8 +201,8 @@
 
     <!-- The "Save" button in the header (toolbar).-->
     <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton"
-           parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
+           parent="Toolbar.Button">
+        <item name="android:text">""</item>
+        <item name="icon">@drawable/save_24px</item>
     </style>
 </resources>

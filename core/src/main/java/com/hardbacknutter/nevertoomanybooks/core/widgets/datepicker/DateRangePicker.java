@@ -76,6 +76,9 @@ public class DateRangePicker
                     .dateRangePicker()
                     .setTitleText(titleResId)
                     .setSelection(selection)
+                    // Remove the default "Save" text as our styling will display
+                    // this button as an icon-only button
+                    .setPositiveButtonText("")
                     .build();
             picker.show(fragmentManager, fragmentTag);
         }
