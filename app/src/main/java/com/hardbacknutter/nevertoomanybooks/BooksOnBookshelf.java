@@ -2151,9 +2151,19 @@ public class BooksOnBookshelf
                     // There are no target nodes, display the book details if possible
                     showBookDetailsIfWeCan(vm.getSelectedBookId(), topRowPos.getAdapterPosition());
                 } else {
-                    // Use the target nodes to find the "best" node
-                    // and scroll it to the center of the screen
+                    // Use the target nodes to find the "best" node and scroll it into view.
+                    // URGENT: scrolling to the best node not always correct
+                    // 1. Best node is already visible => no scrolling will be done.
+                    // 2. Best node is "before-the-first" => scrolling always correct.
+                    // 3. Best node is "after-the last" and NO COVERS are shown
+                    //    =>  scrolling always correct.
+                    // 4. Best node is "after-the last" and COVERS ARE shown
+                    //   => due to the covers being loaded asynchronously,
+                    //      the amount of visible rows will be higher than expected.
+                    //      The result being that the scroll amount will be LESS than needed,
+                    //      and the desired node will STILL be "below" the screen.
                     final BooklistNode node = positioningHelper.scrollTo(targetNodes);
+
                     // Sanity check, should never happen... flw
                     if (node != null) {
                         // again wait for layout cycle and display the book details if possible

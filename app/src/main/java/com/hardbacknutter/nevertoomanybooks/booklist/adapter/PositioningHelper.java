@@ -258,8 +258,8 @@ public class PositioningHelper {
             layoutManager.scrollToPosition(destPos + headerRowCount);
         } else if (destPos > lastAdapterPos) {
             // URGENT: this is based on the list BEFORE covers are shown
-            //  hence... the lastAdapterPos is TOO HIGH
-            // Offscreen after "last"
+            //  hence... the lastAdapterPos is TOO HIGH and the amount
+            // of rows scrolled is not enough.
             layoutManager.scrollToPosition(destPos + 1 + headerRowCount);
         }
 
