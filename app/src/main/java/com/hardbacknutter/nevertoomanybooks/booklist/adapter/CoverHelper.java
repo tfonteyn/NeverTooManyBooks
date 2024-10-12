@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -107,6 +107,10 @@ class CoverHelper {
      * Handles checking & storing in the cache.
      * <p>
      * Images will always be scaled to a fixed size.
+     * <p>
+     * A bitmap found in the cache will be displayed immediately.
+     * If the image needs to be loaded from a file,
+     * it will be done asynchronously using an {@link ImageViewLoader}.
      *
      * @param coverView to load the image into.
      *                  Passed in to allow for future expansion.
