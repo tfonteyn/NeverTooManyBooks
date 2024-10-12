@@ -194,7 +194,7 @@ public class BookHolder
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
-            // init once
+            // Init once. We do this here because we want to check the rowData (once)
             use = style.getFieldVisibilityKeys(FieldVisibility.Screen.List, false)
                        .stream()
                        // Sanity check making sure the domain is present
