@@ -123,7 +123,7 @@ public final class ParcelUtils {
      *
      * @return the list, or {@code null} if not found
      *
-     * @throws IllegalArgumentException (debug) if the wrapped Parcelable
+     * @throws IllegalArgumentException if the wrapped Parcelable
      *                                  is of an unsupported type
      * @see #wrap(List)
      */

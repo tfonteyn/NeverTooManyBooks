@@ -48,7 +48,7 @@ public final class PFilterViewHolderFactory {
      *
      * @return holder
      *
-     * @throws IllegalArgumentException (debug) for an unsupported filter type
+     * @throws IllegalArgumentException for an unsupported filter type
      */
     @NonNull
     public static PFilterViewHolder create(@NonNull final LayoutInflater inflater,

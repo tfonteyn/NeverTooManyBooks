@@ -847,7 +847,7 @@ public class BooksOnBookshelfViewModel
      *
      * @return a fully initialized input object
      *
-     * @throws IllegalArgumentException (debug) for an unsupported group
+     * @throws IllegalArgumentException for an unsupported group
      */
     @NonNull
     UpdateBooklistContract.Input createUpdateBooklistContractInput(
@@ -995,7 +995,7 @@ public class BooksOnBookshelfViewModel
      * @param bookshelves  to set
      * @param extras       containing "bookIds"
      *
-     * @throws IllegalArgumentException (debug) if the extras or bookIds are missing
+     * @throws IllegalArgumentException if the extras or bookIds are missing
      */
     void setBookshelves(@NonNull final Context context,
                         @NonNull final List<Bookshelf> bookshelves,

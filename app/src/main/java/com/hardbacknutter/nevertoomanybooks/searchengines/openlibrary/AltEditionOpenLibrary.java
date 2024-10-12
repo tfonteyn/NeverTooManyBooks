@@ -122,7 +122,7 @@ public class AltEditionOpenLibrary
      * @param publisher primary publisher name
      * @param covers    the OL native cover id(s); the array <strong>must</strong> be 2 elements.
      *
-     * @throws IllegalArgumentException (debug) if the covers array is not 2 elements.
+     * @throws IllegalArgumentException if the covers array is not 2 elements.
      */
     AltEditionOpenLibrary(@NonNull final String olid,
                           @Nullable final String isbn,

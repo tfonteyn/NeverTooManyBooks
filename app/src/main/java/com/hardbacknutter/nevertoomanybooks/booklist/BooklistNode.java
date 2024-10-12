@@ -173,7 +173,7 @@ public class BooklistNode {
      *
      * @return 0..x
      *
-     * @throws IllegalStateException (debug) if the position is not set
+     * @throws IllegalStateException if the position is not set
      */
     public int getAdapterPosition() {
         if (adapterPosition < 0) {

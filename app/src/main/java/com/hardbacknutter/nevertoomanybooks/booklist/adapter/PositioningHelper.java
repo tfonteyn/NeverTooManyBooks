@@ -193,7 +193,7 @@ public class PositioningHelper {
      *
      * @return the node we ended up at.
      *
-     * @throws IllegalArgumentException debug only: if the list had less then 2 nodes
+     * @throws IllegalArgumentException if the list had less then 2 nodes
      */
     @Nullable
     public BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {

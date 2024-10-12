@@ -126,7 +126,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param original   the original item
      * @param modified   the modified item
      *
-     * @throws IllegalArgumentException (debug) for an invalid EditAction
+     * @throws IllegalArgumentException for an invalid EditAction
      */
     public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
                                                         @NonNull final String requestKey,
