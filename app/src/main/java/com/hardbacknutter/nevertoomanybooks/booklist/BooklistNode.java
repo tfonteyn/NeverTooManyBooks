@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,18 +37,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class BooklistNode {
 
     // See constructor
-    public static final int NEXT_COL = 6;
+    static final int NEXT_COL = 6;
 
     /** The row "_id" in the list-table. */
     private final long rowId;
 
-    /**
-     * The String based node key;
-     * e.g. "/a=2453/s=1749" which stands for author=2453/series=1749
-     * <p>
-     * Completed by {@link #bookId} for actual Book nodes.
-     */
-    private final String key;
+    private final String nodeKey;
 
     @IntRange(from = 1)
     private final int level;
@@ -71,7 +65,7 @@ public class BooklistNode {
     BooklistNode(@NonNull final Cursor cursor) {
         rowId = cursor.getInt(0);
         level = cursor.getInt(1);
-        key = cursor.getString(2);
+        nodeKey = cursor.getString(2);
         bookId = cursor.isNull(3) ? 0 : cursor.getInt(3);
 
         expanded = cursor.getInt(4) != 0;
@@ -118,9 +112,18 @@ public class BooklistNode {
         return rowId;
     }
 
+    /**
+     * Get the String based node key.
+     * <p>
+     * e.g. "/a=2453/s=1749" which stands for author=2453/series=1749
+     * <p>
+     * Must be completed with the {@link #getBookId()} for actual Book nodes.
+     *
+     * @return key
+     */
     @NonNull
-    public String getKey() {
-        return key;
+    public String getNodeKey() {
+        return nodeKey;
     }
 
     /**
@@ -133,6 +136,11 @@ public class BooklistNode {
         return bookId;
     }
 
+    /**
+     * Get the level of this node.
+     *
+     * @return level
+     */
     @IntRange(from = 1)
     public int getLevel() {
         return level;
@@ -164,6 +172,8 @@ public class BooklistNode {
      * The position in the {@link BooklistAdapter}.
      *
      * @return 0..x
+     *
+     * @throws IllegalStateException (debug) if the position is not set
      */
     public int getAdapterPosition() {
         if (adapterPosition < 0) {
@@ -211,7 +221,7 @@ public class BooklistNode {
     public String toString() {
         return "BooklistNode{"
                + "rowId=" + rowId
-               + ", key=" + key
+               + ", key=" + nodeKey
                + ", bookId=" + bookId
                + ", level=" + level
                + ", expanded=" + expanded

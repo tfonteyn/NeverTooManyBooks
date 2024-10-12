@@ -453,7 +453,7 @@ public class Booklist
         }
 
         node.setFullyVisible();
-        String nodeKey = node.getKey();
+        String nodeKey = node.getNodeKey();
 
         // levels are 1.. based; start with lowest level above books, working up to root.
         // Pair: rowId/Level
