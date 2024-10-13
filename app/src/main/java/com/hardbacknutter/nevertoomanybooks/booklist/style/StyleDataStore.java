@@ -449,7 +449,11 @@ public class StyleDataStore
                              @Nullable final Set<String> values) {
         switch (key) {
             case PK_LIST_HEADER:
-                style.setHeaderFieldVisibility(convert(values, BooklistHeader.BITMASK_ALL));
+                if (values == null || values.isEmpty()) {
+                    style.setHeaderFieldVisibility(BooklistHeader.NONE);
+                } else {
+                    style.setHeaderFieldVisibility(convert(values, BooklistHeader.BITMASK_ALL));
+                }
                 break;
 
             case PK_GROUPS_AUTHOR_PRIMARY_TYPE:

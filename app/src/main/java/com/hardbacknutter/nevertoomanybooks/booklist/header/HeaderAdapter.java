@@ -70,6 +70,7 @@ public class HeaderAdapter
 
     @Override
     public int getItemCount() {
+        // Even if NO headers are displayed, we still have a row with height 0px
         return 1;
     }
 

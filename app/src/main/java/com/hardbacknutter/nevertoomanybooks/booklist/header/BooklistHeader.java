@@ -45,11 +45,12 @@ public class BooklistHeader {
      * not in use:
      * 1 << 1
      */
+    public static final int NONE = 0;
     public static final int SHOW_BOOK_COUNT = 1;
     public static final int SHOW_SEARCH_CRITERIA = 1 << 2;
     public static final int SHOW_STYLE_NAME = 1 << 3;
     public static final int SHOW_FILTERS = 1 << 4;
-    /** the amount of details to show in the header. This is also the default. */
+    /** The bitmask for to apply to the settings values. This is also the default. */
     public static final int BITMASK_ALL = SHOW_BOOK_COUNT
                                           | SHOW_SEARCH_CRITERIA
                                           | SHOW_STYLE_NAME
@@ -131,6 +132,7 @@ public class BooklistHeader {
     }
 
     @IntDef(flag = true, value = {
+            NONE,
             SHOW_BOOK_COUNT,
             SHOW_SEARCH_CRITERIA,
             SHOW_STYLE_NAME,
