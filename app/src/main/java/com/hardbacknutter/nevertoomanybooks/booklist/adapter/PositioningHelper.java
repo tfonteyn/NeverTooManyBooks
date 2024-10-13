@@ -192,12 +192,11 @@ public class PositioningHelper {
      * into view.
      *
      * @param targetNodes candidates to scroll to.
-     *
      * @return the node we ended up at.
      *
-     * @throws IllegalArgumentException if the list had less then 2 nodes
+     * @throws IllegalStateException if the list is empty
      */
-    @Nullable
+    @NonNull
     public BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {
         final LinearLayoutManager layoutManager =
                 (LinearLayoutManager) recyclerView.getLayoutManager();
@@ -209,7 +208,7 @@ public class PositioningHelper {
 
         // Sanity check, should never happen... flw
         if (firstLayoutPos == RecyclerView.NO_POSITION) {
-            return null;
+            throw new IllegalStateException("Empty list");
         }
 
         // the ADAPTER positions; i.e. without the header rows
