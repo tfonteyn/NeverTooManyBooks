@@ -1520,10 +1520,9 @@ public class BooksOnBookshelf
 
                     // Sanity check, should never happen... flw
                     if (node != null) {
-                        // again wait for layout cycle and display the book details if possible
-                        vb.content.list.post(() -> showBookDetailsIfWeCan(
-                                node.getBookId(),
-                                node.getAdapterPosition()));
+                        // We don't need to wait for the next layout cycle,
+                        // as the node will not change even if further scrolling is done
+                        showBookDetailsIfWeCan(node.getBookId(), node.getAdapterPosition());
                     }
                 }
             });
