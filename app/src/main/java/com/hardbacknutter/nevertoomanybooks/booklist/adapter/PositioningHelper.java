@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ConcatAdapter;
@@ -54,7 +55,7 @@ public class PositioningHelper {
      * @param headerRowCount the number of rows used by the header
      */
     public PositioningHelper(@NonNull final RecyclerView recyclerView,
-                             final int headerRowCount) {
+                             @IntRange(from = 0) final int headerRowCount) {
         this.recyclerView = recyclerView;
         this.headerRowCount = headerRowCount;
     }
@@ -187,7 +188,8 @@ public class PositioningHelper {
      * The {@link #recyclerView} <strong>MUST></strong> have been through a layout phase.
      * <p>
      * If the best node is currently on-screen, no scrolling will be done,
-     * otherwise the list will be scrolled <strong>centering</strong> the best node.
+     * otherwise the list will be scrolled the minimal amount to get the "best" node
+     * into view.
      *
      * @param targetNodes candidates to scroll to.
      *
