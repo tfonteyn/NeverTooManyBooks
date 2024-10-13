@@ -105,7 +105,7 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 - Chinese translation: [CloneWith](https://github.com/CloneWith)
   and [evoke322](https://github.com/evoke322)
 - Vietnamese translation: [ngocanhtve](https://github.com/ngocanhtve).
-- Portuguese translation: by [maverick74](https://github.com/maverick74).
+- Portuguese translation: [maverick74](https://github.com/maverick74).
 - All other volunteers on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
 
 In August 2018, this project was forked from:
