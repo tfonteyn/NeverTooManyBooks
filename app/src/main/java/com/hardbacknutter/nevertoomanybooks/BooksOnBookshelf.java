@@ -93,6 +93,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.PositioningHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
@@ -195,6 +196,14 @@ public class BooksOnBookshelf
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
     private static final int OFFSCREEN_CACHE_SIZE = 20;
+    /**
+     * The postDelay() in milliseconds. Used to more or less delay
+     * scrolling in {@link #displayList(List)} until cover images are loaded.
+     * The value is based on tests in the emulator. It's likely
+     * too large for modern devices but might be too small for older ones.
+     * FIXME: find a better solution for SCROLL_POST_DELAY_MS
+     */
+    private static final int SCROLL_POST_DELAY_MS = 200;
 
     /** Make a backup. */
     private final ActivityResultLauncher<Void> exportLauncher =
@@ -1491,42 +1500,59 @@ public class BooksOnBookshelf
         // Set visible before we do any scrolling,
         // as we need the (internal) requestLayout() call to do its work
         vb.content.list.setVisibility(View.VISIBLE);
+        // (re)allow the user to select a different Bookshelf (which will trigger a new list build)
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
-            final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
-            positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
-                                       topRowPos.getViewOffset(),
-                                       adapter.getItemCount());
+            // Scrolling will finish asynchronously using post()
+            scrollToTarget(targetNodes);
+        }
+    }
 
-            // wait for layout cycle so the list will have valid first/last visible row.
-            vb.content.list.post(() -> {
-                if (targetNodes == null || targetNodes.isEmpty()) {
-                    // There are no target nodes, display the book details if possible
-                    showBookDetailsIfWeCan(vm.getSelectedBookId(), topRowPos.getAdapterPosition());
-                } else {
-                    // Use the target nodes to find the "best" node and scroll it into view.
-                    // URGENT: scrolling to the best node not always correct
-                    // 1. Best node is already visible => no scrolling will be done.
-                    // 2. Best node is "before-the-first" => scrolling always correct.
-                    // 3. Best node is "after-the last" and NO COVERS are shown
-                    //    =>  scrolling always correct.
-                    // 4. Best node is "after-the last" and COVERS ARE shown
-                    //   => due to the covers being loaded asynchronously,
-                    //      the amount of visible rows will be higher than expected.
-                    //      The result being that the scroll amount will be LESS than needed,
-                    //      and the desired node will STILL be "below" the screen.
+    private void scrollToTarget(@Nullable final List<BooklistNode> targetNodes) {
+        final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
+        //noinspection DataFlowIssue
+        positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
+                                   topRowPos.getViewOffset(),
+                                   adapter.getItemCount());
+
+        // wait for layout cycle after the above scroll action
+        vb.content.list.post(() -> {
+            if (targetNodes == null || targetNodes.isEmpty()) {
+                // There are no target nodes, display the embedded book details if applicable
+                showBookDetailsAfterScrolling(vm.getSelectedBookId(),
+                                              topRowPos.getAdapterPosition());
+            } else {
+                // Use the target nodes to find the "best" node and scroll it into view.
+                // FIXME: scrolling to the best node not always correct
+                // 1. Best node is already visible => no scrolling will be done.
+                // 2. Best node is "before-the-first" => scrolling always correct.
+                // 3. Best node is "after-the last" and NO COVERS are shown
+                //    =>  scrolling always correct.
+                // 4. Best node is "after-the last" and COVERS ARE shown
+                //   => due to the covers being loaded asynchronously,
+                //      the amount of visible rows will be higher than expected.
+                //      The result being that the scroll amount will be LESS than needed,
+                //      and the desired node will STILL be "below" the screen.
+                final boolean covers = vm.getStyle().isShowField(FieldVisibility.Screen.List,
+                                                                 DBKey.COVER[0]);
+                // Assume that cached covers will appear faster than File based covers.
+                final boolean imageCachingEnabled = ServiceLocator.getInstance().getCoverStorage()
+                                                                  .isImageCachingEnabled();
+
+                final long delay = covers && !imageCachingEnabled ? SCROLL_POST_DELAY_MS : 0;
+
+                vb.content.list.postDelayed(() -> {
                     final BooklistNode node = positioningHelper.scrollTo(targetNodes);
 
-                    // Sanity check, should never happen... flw
-                    if (node != null) {
-                        // We don't need to wait for the next layout cycle,
-                        // as the node will not change even if further scrolling is done
-                        showBookDetailsIfWeCan(node.getBookId(), node.getAdapterPosition());
-                    }
-                }
-            });
-        }
+                    // We don't need to wait for the next layout cycle,
+                    // as the node will not change even if further scrolling is done
+                    // Display the embedded book details if applicable
+                    showBookDetailsAfterScrolling(node.getBookId(),
+                                                  node.getAdapterPosition());
+                }, delay);
+            }
+        });
     }
 
     /**
@@ -1534,10 +1560,12 @@ public class BooksOnBookshelf
      *
      * @param bookId          of the book to open
      * @param adapterPosition the {@link #adapter} position
+     *
+     * @see #scrollToTarget(List)
      */
     @SuppressLint("Range")
-    private void showBookDetailsIfWeCan(@IntRange(from = 0) final long bookId,
-                                        final int adapterPosition) {
+    private void showBookDetailsAfterScrolling(@IntRange(from = 0) final long bookId,
+                                               final int adapterPosition) {
         if (bookId > 0 && hasEmbeddedDetailsFrame()) {
             vm.setSelectedBook(bookId, adapterPosition);
             openEmbeddedBookDetails(bookId);
