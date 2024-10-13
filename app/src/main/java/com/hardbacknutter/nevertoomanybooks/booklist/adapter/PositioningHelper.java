@@ -175,7 +175,7 @@ public class PositioningHelper {
             // The list is shorter than it used to be,
             // scroll to the end disregarding the offset
             //noinspection DataFlowIssue
-            layoutManager.scrollToPosition(layoutPosition);
+            layoutManager.scrollToPosition(maxPosition);
         } else {
             //noinspection DataFlowIssue
             layoutManager.scrollToPositionWithOffset(layoutPosition, viewOffset);
