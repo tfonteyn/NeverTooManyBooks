@@ -42,8 +42,10 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -100,6 +102,8 @@ public class MaintenanceDaoImpl
     @NonNull
     private final Supplier<PublisherDao> publisherDaoSupplier;
     @NonNull
+    private final Supplier<TocEntryDao> tocEntryDaoSupplier;
+    @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
     @NonNull
     private final Supplier<ReorderHelper> reorderHelperSupplier;
@@ -111,6 +115,7 @@ public class MaintenanceDaoImpl
      * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
      * @param seriesDaoSupplier     deferred supplier for the {@link SeriesDao}
      * @param publisherDaoSupplier  deferred supplier for the {@link PublisherDao}
+     * @param tocEntryDaoSupplier  deferred supplier for the {@link TocEntryDao}
      * @param appLocaleSupplier     deferred supplier for the {@link AppLocale}
      * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
@@ -118,12 +123,14 @@ public class MaintenanceDaoImpl
                               @NonNull final Supplier<AuthorDao> authorDaoSupplier,
                               @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
                               @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
+                              @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
                               @NonNull final Supplier<AppLocale> appLocaleSupplier,
                               @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         this.authorDaoSupplier = authorDaoSupplier;
         this.seriesDaoSupplier = seriesDaoSupplier;
         this.publisherDaoSupplier = publisherDaoSupplier;
+        this.tocEntryDaoSupplier = tocEntryDaoSupplier;
         this.appLocaleSupplier = appLocaleSupplier;
         this.reorderHelperSupplier = reorderHelperSupplier;
     }
@@ -131,22 +138,24 @@ public class MaintenanceDaoImpl
     @Override
     @WorkerThread
     public void purge() {
-
-        // Note: purging TocEntry's is automatic due to foreign key cascading.
-        // i.e. a TocEntry is linked directly with authors;
-        // and linked with books via a link table.
-
+        final Logger logger = LoggerFactory.getLogger();
         //noinspection CheckStyle
         try {
-            seriesDaoSupplier.get().purge();
-            authorDaoSupplier.get().purge();
-            publisherDaoSupplier.get().purge();
+            int i;
+            i = seriesDaoSupplier.get().purge();
+            logger.w(TAG, "Purged Series: " + i);
+            i = authorDaoSupplier.get().purge();
+            logger.w(TAG, "Purged Author: " + i);
+            i = publisherDaoSupplier.get().purge();
+            logger.w(TAG, "Purged Publishers: " + i);
+            i = tocEntryDaoSupplier.get().purge();
+            logger.w(TAG, "Purged TocEntries: " + i);
 
             db.analyze();
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad but NOT fatal.
-            LoggerFactory.getLogger().e(TAG, e);
+            logger.e(TAG, e);
         }
     }
 

@@ -667,6 +667,7 @@ public class ServiceLocator {
                                                         this::getAuthorDao,
                                                         this::getSeriesDao,
                                                         this::getPublisherDao,
+                                                        this::getTocEntryDao,
                                                         this::getAppLocale,
                                                         this::getReorderHelper);
             }

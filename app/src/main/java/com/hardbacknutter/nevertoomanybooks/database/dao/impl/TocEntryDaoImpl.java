@@ -450,9 +450,9 @@ public class TocEntryDaoImpl
 
     @Override
     @WorkerThread
-    public void purge() {
+    public int purge() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
-            stmt.executeUpdateDelete();
+            return stmt.executeUpdateDelete();
         }
     }
 

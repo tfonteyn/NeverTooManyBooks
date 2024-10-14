@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,7 +78,10 @@ public interface PublisherDao
 
     /**
      * Delete orphaned records.
+     *
+     * @return the number of rows deleted,
+     *         or {@code -1} if an error occurred
      */
     @WorkerThread
-    void purge();
+    int purge();
 }
