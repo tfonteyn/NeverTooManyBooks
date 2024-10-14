@@ -100,11 +100,11 @@ public class SeriesDaoImpl
                                        @NonNull final Locale locale) {
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
-        final String text = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
+        final String title = series.getTitle();
+        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                SqlEncode.orderByColumn(series.getTitle(), locale),
+                SqlEncode.orderByColumn(title, locale),
                 SqlEncode.orderByColumn(obTitle, locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);

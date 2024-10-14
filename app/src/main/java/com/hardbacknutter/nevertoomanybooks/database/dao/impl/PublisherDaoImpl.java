@@ -99,11 +99,11 @@ public class PublisherDaoImpl
                                           @NonNull final Locale locale) {
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
-        final String text = publisher.getName();
-        final String obName = reorderHelper.reorderForSorting(context, text, locale);
+        final String name = publisher.getName();
+        final String obName = reorderHelper.reorderForSorting(context, name, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                SqlEncode.orderByColumn(publisher.getName(), locale),
+                SqlEncode.orderByColumn(name, locale),
                 SqlEncode.orderByColumn(obName, locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
