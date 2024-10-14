@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,14 @@ public interface Mergeable {
     /**
      * Get a list of names which represent this object.
      * <p>
-     * Examples: Publisher: the name;  Author: the family AND given-names
+     * Examples:
+     * <ul>
+     *     <li>{@link Bookshelf}: the name</li>
+     *     <li>{@link Author}: the family AND given-names</li>
+     *     <li>{@link Series}: the title</li>
+     *     <li>{@link Publisher}: the name</li>
+     *     <li>{@link TocEntry}: the title, the {@link Author} name-fields</li>
+     * </ul>
      *
      * @return list
      */
