@@ -84,10 +84,6 @@ public class SynchronizedDb
     @NonNull
     private final Synchronizer synchronizer;
 
-    /** Factory object to create the custom cursor. */
-    private final SQLiteDatabase.CursorFactory cursorFactory = (db, mq, et, q) ->
-            new SynchronizedCursor(mq, et, q, getSynchronizer());
-
     /** Factory object to create a {@link TypedCursor} cursor. */
     private final SQLiteDatabase.CursorFactory typedCursorFactory =
             (db, d, et, q) -> new TypedCursor(d, et, q, getSynchronizer());
@@ -468,14 +464,11 @@ public class SynchronizedDb
         }
 
         try {
-            /* lint says this cursor is not always closed.
-             * 2019-01-14: the only place it's not closed is in {@link SearchSuggestionProvider}
-             * where it seems not possible to close it ourselves.
-             * TEST: do we actually need to use the factory here ?
-             *   sqLiteDatabase was created with a factory?
-             */
+            // lint says this cursor is not always closed.
+            // 2019-01-14: the only place it's not closed is in {@link SearchSuggestionProvider}
+            // where it seems not possible to close it ourselves.
             return (SynchronizedCursor)
-                    sqLiteDatabase.rawQueryWithFactory(cursorFactory, sql, selectionArgs, null);
+                    sqLiteDatabase.rawQuery(sql, selectionArgs, null);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
