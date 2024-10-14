@@ -33,6 +33,7 @@ NEW:
 FIXES:
 - Requesting "Update books" for a node in the list (e.g. 'series') was failing when the UI
   preference was using a BottomSheet.
+- Fix a TOC lookup for existing titles when manually editing a TOC list
 
 REMOVED:
 

@@ -174,13 +174,13 @@ public class TocEntryDaoImpl
                                          @NonNull final Locale locale) {
 
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
-        final String text = tocEntry.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
+        final String title = tocEntry.getTitle();
+        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME_AND_AUTHOR, new String[]{
-                SqlEncode.orderByColumn(tocEntry.getTitle(), locale),
-                SqlEncode.orderByColumn(obTitle, locale),
-                String.valueOf(tocEntry.getPrimaryAuthor().getId())})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_AUTHOR_AND_TITLE, new String[]{
+                String.valueOf(tocEntry.getPrimaryAuthor().getId()),
+                SqlEncode.orderByColumn(title, locale),
+                SqlEncode.orderByColumn(obTitle, locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
@@ -559,7 +559,7 @@ public class TocEntryDaoImpl
          * The lookup is by EQUALITY and CASE-SENSITIVE.
          * Searches TITLE_OB on both original and (potentially) reordered title.
          */
-        static final String FIND_BY_NAME_AND_AUTHOR =
+        static final String FIND_BY_AUTHOR_AND_TITLE =
                 SELECT_ + TOC_FULL_SET_OF_COLUMNS
                 + _FROM_
                 + TBL_TOC_ENTRIES.startJoin(TBL_AUTHORS)
