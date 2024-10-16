@@ -126,7 +126,9 @@
              -->
         <!-- <item name="alertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
 
+        <!-- Date(range) picker - Dialog styling. -->
         <item name="materialCalendarTheme">@style/ThemeOverlay.App.MaterialCalendarTheme</item>
+        <!-- Date(range) picker - Fullscreen styling. -->
         <item name="materialCalendarFullscreenTheme">
             @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme
         </item>
@@ -194,15 +196,20 @@
     <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme"
            parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
 
-        <item name="materialCalendarHeaderConfirmButton">
-            @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton
-        </item>
+        <!-- FIXME: The intention was to style the 'save' button' as an icon-only button.
+              but it seems impossible to remove the button text from the fullscreen style
+              without also removing it from the dialog style where is MUST be shown.
+        -->
+        <!--        <item name="materialCalendarHeaderConfirmButton">-->
+        <!--            @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton-->
+        <!--        </item>-->
     </style>
 
     <!-- The "Save" button in the header (toolbar).-->
     <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton"
            parent="Toolbar.Button">
-        <item name="android:text">""</item>
+        <!-- setting the text of the button here has NO effect, as it will ALWAYS be overwritten
+             from the google material code. -->
         <item name="icon">@drawable/save_24px</item>
     </style>
 </resources>
