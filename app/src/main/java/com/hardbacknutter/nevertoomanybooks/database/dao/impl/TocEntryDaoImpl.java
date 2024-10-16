@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -138,9 +139,22 @@ public class TocEntryDaoImpl
 
         authorDaoSupplier.get().fixId(context, tocEntry.getPrimaryAuthor(), locale);
 
-        final long found = findByName(context, tocEntry, locale)
-                .map(TocEntry::getId).orElse(0L);
-        tocEntry.setId(found);
+        final Optional<TocEntry> oFound = findByName(context, tocEntry, locale);
+        if (oFound.isPresent()) {
+            final TocEntry found = oFound.get();
+            tocEntry.setId(found.getId());
+
+            // Enhance the current entry with the date from the existing entry
+            if (!tocEntry.getFirstPublicationDate().isPresent()) {
+                final PartialDate firstPublicationDate = found.getFirstPublicationDate();
+                if (firstPublicationDate.isPresent()) {
+                    tocEntry.setFirstPublicationDate(firstPublicationDate);
+                }
+            }
+        } else {
+            // As per contract of #fixId
+            tocEntry.setId(0);
+        }
     }
 
     @Override
@@ -176,18 +190,25 @@ public class TocEntryDaoImpl
         final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String title = tocEntry.getTitle();
         final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
+        final String searchDateIso = tocEntry.getFirstPublicationDate().getIsoString();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_AUTHOR_AND_TITLE, new String[]{
                 String.valueOf(tocEntry.getPrimaryAuthor().getId()),
                 SqlEncode.orderByColumn(title, locale),
                 SqlEncode.orderByColumn(obTitle, locale)})) {
-            if (cursor.moveToFirst()) {
-                final CursorRow rowData = new CursorRow(cursor);
-                return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
-            } else {
-                return Optional.empty();
+            final CursorRow rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                final String fpd = rowData.getString(DBKey.FIRST_PUBLICATION__DATE);
+
+                // Both the same date (or both empty)
+                // OR the existing row has a date and there was no search-date
+                if (fpd.equals(searchDateIso)
+                    || !fpd.isEmpty() && searchDateIso.isEmpty()) {
+                    return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
+                }
             }
         }
+        return Optional.empty();
     }
 
     @Override
@@ -270,9 +291,9 @@ public class TocEntryDaoImpl
         pruneList(context, tocEntries, localeSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
-        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
-            stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete();
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete();
         }
 
         // is there anything to insert ?
@@ -558,6 +579,9 @@ public class TocEntryDaoImpl
          * Find a {@link TocEntry} by name <strong>for a specific {@link Author}</strong>
          * The lookup is by EQUALITY and CASE-SENSITIVE.
          * Searches TITLE_OB on both original and (potentially) reordered title.
+         * <p>
+         * The ORDER BY ensures that when we do a lookup, the oldest date is used by preference
+         * and empty values are sorted LAST.
          */
         static final String FIND_BY_AUTHOR_AND_TITLE =
                 SELECT_ + TOC_FULL_SET_OF_COLUMNS
@@ -565,7 +589,8 @@ public class TocEntryDaoImpl
                 + TBL_TOC_ENTRIES.startJoin(TBL_AUTHORS)
                 + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_AUTHOR) + "=?"
                 + _AND_ + '(' + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=? " + _COLLATION
-                + _OR_ + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=?" + _COLLATION + ')';
+                + _OR_ + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=?" + _COLLATION + ')'
+                + _ORDER_BY_ + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE);
 
         /**
          * All {@link TocEntry}s for a {@link Book}.
