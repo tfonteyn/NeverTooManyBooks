@@ -29,6 +29,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 
 /**
@@ -66,8 +67,8 @@ public class SingleChoiceDialogFragment
                 .setView(vb.getRoot())
                 .setTitle(delegate.getDialogTitle())
                 .setIcon(null)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> delegate.saveChanges())
+                .setNegativeButton(R.string.cancel, (d, which) -> dismiss())
+                .setPositiveButton(R.string.ok, (d, which) -> delegate.saveChanges())
                 .create();
     }
 }

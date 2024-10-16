@@ -252,7 +252,7 @@ public class ImportFragment
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_import_failed)
                     .setMessage(e.getUserMessage(getContext()))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                    .setPositiveButton(R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
         } catch (@NonNull final FileNotFoundException e) {
@@ -261,7 +261,7 @@ public class ImportFragment
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_import_failed)
                     .setMessage(getString(R.string.error_file_not_found, uri.getPath()))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                    .setPositiveButton(R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
         }
@@ -397,9 +397,9 @@ public class ImportFragment
                     .setIcon(R.drawable.warning_24px)
                     .setTitle(R.string.lbl_import_books)
                     .setMessage(R.string.warning_import_csv)
-                    .setNegativeButton(android.R.string.cancel,
+                    .setNegativeButton(R.string.cancel,
                                        (d, w) -> getActivity().finish())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> startImport())
+                    .setPositiveButton(R.string.ok, (d, w) -> startImport())
                     .create()
                     .show();
         } else {

@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:menu="@menu/image_cropper"
-        app:navigationContentDescription="@android:string/cancel"
+        app:navigationContentDescription="@string/cancel"
         app:navigationIcon="@drawable/arrow_back_24px"
         />
 

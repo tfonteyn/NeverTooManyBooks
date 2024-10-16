@@ -126,7 +126,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                 .setMessage(R.string.confirm_test_connection)
                 .setNegativeButton(R.string.action_not_now, (d, w) ->
                         popBackStackOrFinish())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     d.dismiss();
                     if (progressDelegate == null) {
                         progressDelegate = new ProgressDelegate(getProgressFrame())

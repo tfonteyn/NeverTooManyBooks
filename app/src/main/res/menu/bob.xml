@@ -29,7 +29,7 @@
         android:id="@id/MENU_SEARCH"
         android:icon="@drawable/search_24px"
         android:orderInCategory="@integer/MENU_ORDER_SEARCH"
-        android:title="@android:string/search_go"
+        android:title="@string/action_search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
 

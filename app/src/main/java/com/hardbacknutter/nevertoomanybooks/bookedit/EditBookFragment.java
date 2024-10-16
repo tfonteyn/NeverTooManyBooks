@@ -244,7 +244,7 @@ public class EditBookFragment
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.vldt_failure)
                     .setMessage(book.getValidationExceptionMessage(context))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
             return;
@@ -258,7 +258,7 @@ public class EditBookFragment
                     .setMessage(R.string.confirm_duplicate_book_message)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> setResultsAndFinish())
+                    .setNegativeButton(R.string.cancel, (d, w) -> setResultsAndFinish())
                     .setNeutralButton(R.string.action_edit, (d, w) -> d.dismiss())
                     // add regardless
                     .setPositiveButton(R.string.action_add, (d, w) -> saveBook())

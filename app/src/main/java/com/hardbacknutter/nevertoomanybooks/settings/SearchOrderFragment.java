@@ -180,7 +180,7 @@ public class SearchOrderFragment
                     capabilities.add(context.getString(R.string.lbl_tab_lbl_ext_id));
                 }
                 if (engineId.supports(SearchEngine.SearchBy.Text)) {
-                    capabilities.add(context.getString(android.R.string.search_go));
+                    capabilities.add(context.getString(R.string.action_search));
                 }
                 vb.capabilities.setText(context.getString(R.string.brackets,
                                                           String.join(", ", capabilities)));

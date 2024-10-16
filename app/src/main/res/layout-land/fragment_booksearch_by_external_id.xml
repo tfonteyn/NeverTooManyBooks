@@ -155,7 +155,7 @@
             android:id="@+id/btn_search"
             style="@style/Button.Action.Submit"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:text="@android:string/search_go"
+            android:text="@string/action_search"
             app:icon="@drawable/search_24px"
             app:layout_constraintEnd_toEndOf="@id/lbl_external_id"
             app:layout_constraintTop_toBottomOf="@id/lbl_external_id"

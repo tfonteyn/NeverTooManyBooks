@@ -693,6 +693,8 @@
     <string name="whichSendApplication">Udostępnij</string>
     <string name="whichViewApplication">Otwórz w aplikacji</string>
     <string name="x_of_y">%1$d z %2$d</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Anuluj</string>
     <string name="yes">Tak</string>
     <string name="info_story_in_single_book">„%1$s” występuje w jednej książce:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Zaimportuj plik tekstowy z numerami ISBN. Plik powinien mieć jeden numer ISBN w każdym wierszu. Wyniki zostaną umieszczone w kolejce.</string>
@@ -810,4 +812,5 @@
     <string name="pe_search_result_order_most_recent">Ostatnio znaleziona książka</string>
     <string name="pe_search_result_order_first_found">Pierwsza znaleziona książka</string>
     <string name="info_bulk_set_bookshelves">Wybierz półki z książkami, które chcesz przypisać do wszystkich książek wymienionych w wybranym węźle.</string>
+    <string name="dialog_alert_title">Uwaga</string>
 </resources>

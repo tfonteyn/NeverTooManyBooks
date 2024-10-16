@@ -680,6 +680,7 @@
     <string name="whichSendApplication">Paylaş</string>
     <string name="whichViewApplication">Şununla aç</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
+    <string name="cancel">İptal</string>
     <string name="yes">Evet</string>
     <string name="info_story_in_single_book">“%1$s” tek bir kitapta mevcut:\n\n%2$s</string>
     <string name="tip_import_isbn_list">ISBN numaralarına sahip bir metin dosyasını içe aktarın. Dosyanın her satırında tek bir ISBN olmalıdır. Sonuçlar sıraya konulacaktır.</string>
@@ -800,4 +801,6 @@
     <string name="info_bulk_set_bookshelves">Seçilen düğüm altında listelenen tüm kitaplara atamak istediğiniz kitap raflarını seçin.</string>
     <string name="info_bulk_set_bookshelves_bs">Atama yapılmadan önce onaylamanız veya iptal etmeniz istenecektir.</string>
     <string name="confirm_assign_bookshelves"><![CDATA[Lütfen aşağıdaki kitap rafları listesini seçilen düğüm altında listelenen tüm kitaplara atamak istediğinizi onaylayın.<br><br>%1$s]]></string>
+    <string name="ok">Tamam</string>
+    <string name="dialog_alert_title">Dikkat</string>
 </resources>

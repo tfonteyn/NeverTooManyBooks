@@ -678,6 +678,8 @@
     <string name="whichSendApplication">Teilen</string>
     <string name="whichViewApplication">Öffnen mit</string>
     <string name="x_of_y">%1$d von %2$d</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
     <string name="yes">Ja</string>
     <string name="info_story_in_single_book">„%1$s“ ist in einem einzigen Buch vorhanden:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importieren Sie eine Textdatei mit ISBN-Nummern. Die Datei sollte in jeder Zeile eine einzige ISBN haben. Die Ergebnisse werden in die Warteschlange gestellt.</string>
@@ -787,4 +789,5 @@
     <string name="pe_search_result_order_most_recent">Letztes gefundenes Buch</string>
     <string name="pe_search_result_order_first_found">Erstes gefundenes Buch</string>
     <string name="info_bulk_set_bookshelves">Wählen Sie die Bücherregale aus, die Sie allen unter dem ausgewählten Knoten aufgeführten Büchern zuordnen möchten.</string>
+    <string name="dialog_alert_title">Achtung</string>
 </resources>

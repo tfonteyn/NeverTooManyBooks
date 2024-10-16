@@ -153,6 +153,7 @@
     <string name="whichSendApplication">Compartilhar</string>
     <string name="whichViewApplication">Abrir com</string>
     <string name="x_of_y">%1$d de %2$d</string>
+    <string name="cancel">Cancelar</string>
     <string name="yes">Sim</string>
     <string name="error_search_x_failed_y">Falha ao pesquisar em %1$s: %2$s</string>
     <string name="error_search_could_not_be_started">A pesquisa do livro falhou.</string>
@@ -817,4 +818,6 @@
     <string name="pe_search_result_order_first_found">Primeiro livro encontrado</string>
     <string name="anonymous_author">[Anónimo]</string>
     <string name="info_bulk_set_bookshelves">Selecione as estantes que pretende atribuir a todos os livros listados no nó selecionado.</string>
+    <string name="ok">OK</string>
+    <string name="dialog_alert_title">Atenção</string>
 </resources>

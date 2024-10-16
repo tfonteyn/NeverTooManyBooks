@@ -37,6 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleSimpleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
@@ -257,7 +258,7 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
                 .setView(vb.getRoot())
                 .setTitle(dialogTitle)
                 .setIcon(iconId)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> {
+                .setNegativeButton(R.string.cancel, (d, which) -> {
                     if (onDismiss != null) {
                         onDismiss.run();
                     } else {

@@ -683,6 +683,7 @@
     <string name="whichSendApplication">Partager</string>
     <string name="whichViewApplication">Ouvrir avec</string>
     <string name="x_of_y">%1$d de %2$d</string>
+    <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
     <string name="info_story_in_single_book">« %1$s » est présent dans un seul livre :\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importez un fichier texte avec des numéros ISBN. Le fichier doit avoir un seul ISBN sur chaque ligne. Les résultats seront placés dans la file d’attente.</string>
@@ -792,4 +793,6 @@
     <string name="pe_search_result_order_most_recent">Livre le plus récent trouvé</string>
     <string name="pe_search_result_order_first_found">Premier livre trouvé</string>
     <string name="info_bulk_set_bookshelves">Sélectionnez les étagères que vous souhaitez attribuer à tous les livres répertoriés sous le nœud sélectionné.</string>
+    <string name="ok">OK</string>
+    <string name="dialog_alert_title">Attention</string>
 </resources>

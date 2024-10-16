@@ -92,7 +92,7 @@ public class AcraCustomDialog
                     createDocumentLauncher.launch(new GetContentUriForWritingContract
                             .Input(MIME_TYPE, fileName));
                 })
-                .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                .setNegativeButton(R.string.cancel, (d, w) -> {
                     crashReportHelper.cancelReports();
                     finish();
                 })
@@ -114,7 +114,7 @@ public class AcraCustomDialog
                             startActivity(GithubIntentFactory.issue(this));
                             finish();
                         })
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> finish())
+                        .setNegativeButton(R.string.cancel, (d, w) -> finish())
                         .create()
                         .show();
             } else {
@@ -135,7 +135,7 @@ public class AcraCustomDialog
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.app_name)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok, (d, w) -> finish())
+                .setPositiveButton(R.string.ok, (d, w) -> finish())
                 .create()
                 .show();
     }

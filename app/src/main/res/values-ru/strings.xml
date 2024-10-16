@@ -690,6 +690,8 @@
     <string name="whichSendApplication">Отправка данных</string>
     <string name="whichViewApplication">Открыть с помощью приложения</string>
     <string name="x_of_y">%1$d из %2$d</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
     <string name="yes">Да</string>
     <string name="info_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Импортируйте текстовый файл с номерами ISBN. Файл должен иметь один ISBN в каждой строке. Результаты будут помещены в очередь.</string>
@@ -808,4 +810,5 @@
     <string name="pe_search_result_order_most_recent">Самая последняя найденная книга</string>
     <string name="pe_search_result_order_first_found">Первая найденная книга</string>
     <string name="info_bulk_set_bookshelves">Выберите книжные полки, которые нужно назначить всем книгам, перечисленным в выбранном узле.</string>
+    <string name="dialog_alert_title">Внимание!</string>
 </resources>

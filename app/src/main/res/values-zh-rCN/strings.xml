@@ -217,6 +217,7 @@
     <string name="pe_camera_front">前置摄像头</string>
     <string name="pe_camera_other">其他</string>
     <string name="preference_not_set">未设置</string>
+    <string name="cancel">取消</string>
     <string name="yes">确定</string>
     <string name="info_story_in_single_book">“%1$s” 存在与一本书中：
 \n
@@ -822,4 +823,6 @@
     <string name="confirm_assign_bookshelves"><![CDATA[请确认你要将下面的书架列表分配给所选节点下列出的所有书籍。<br><br>%1$s]]></string>
     <string name="info_bulk_set_bookshelves_bs">分配执行前，你将被提示确认或取消。</string>
     <string name="info_bulk_set_bookshelves">选择要分配给所选节点下列出的所有图书的书架。</string>
+    <string name="ok">确定</string>
+    <string name="dialog_alert_title">注意</string>
 </resources>

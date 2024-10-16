@@ -54,7 +54,7 @@ public interface Notifier
                       @NonNull final Intent intent,
                       @NonNull final CharSequence message) {
         send(context, channel, intent, message,
-             android.R.string.dialog_alert_title,
+             R.string.dialog_alert_title,
              ID_GENERIC, RC_DEFAULT, false);
     }
 

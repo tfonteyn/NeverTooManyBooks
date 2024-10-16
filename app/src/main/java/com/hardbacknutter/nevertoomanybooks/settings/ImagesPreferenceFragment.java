@@ -56,8 +56,8 @@ public class ImagesPreferenceFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.warning_24px)
                     .setMessage(R.string.option_purge_image_cache)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.ok, (d, w) -> {
                         ServiceLocator.getInstance().getCoverCacheDao().deleteAll();
                         setPurgeCacheSummary(p);
                     })

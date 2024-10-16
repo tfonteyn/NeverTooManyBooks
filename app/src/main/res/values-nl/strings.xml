@@ -701,6 +701,8 @@
     <string name="whichSendApplication">Delen</string>
     <string name="whichViewApplication">Openen met</string>
     <string name="x_of_y">%1$d van %2$d</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annuleren</string>
     <string name="yes">Ja</string>
     <string name="lbl_country">Land</string>
     <string name="pt_search_show_shopping_options">Toon shopping menu’s</string>
@@ -787,4 +789,5 @@
     <string name="pe_search_result_order_most_recent">Meest recente boek gevonden</string>
     <string name="pe_search_result_order_first_found">Eerste boek gevonden</string>
     <string name="info_bulk_set_bookshelves">Selecteer de boekenplanken die je wilt toewijzen aan alle boeken die onder het geselecteerde knooppunt staan.</string>
+    <string name="dialog_alert_title">Let op</string>
 </resources>

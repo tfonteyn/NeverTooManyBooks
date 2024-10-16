@@ -219,4 +219,7 @@
     <string name="error_unexpected">發生意外錯誤。</string>
     <string name="warning_book_not_found">無法找到指定的書籍。</string>
     <string name="warning_select_at_least_1_field">至少選取一個要更新的欄位。</string>
+    <string name="ok">確定</string>
+    <string name="cancel">取消</string>
+    <string name="dialog_alert_title">注意</string>
 </resources>

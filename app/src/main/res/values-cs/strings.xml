@@ -689,6 +689,7 @@
     <string name="whichSendApplication">Sdílet</string>
     <string name="whichViewApplication">Otevřít v aplikaci</string>
     <string name="x_of_y">%1$d z %2$d</string>
+    <string name="cancel">Zrušit</string>
     <string name="yes">Ano</string>
     <string name="info_story_in_single_book">„%1$s“ se nachází v jedné knize:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importujte textový soubor s čísly ISBN. Soubor by měl mít na každém řádku jedno ISBN. Výsledky budou zařazeny do fronty.</string>
@@ -807,4 +808,6 @@
     <string name="pe_search_result_order_most_recent">Nejnovější nalezená kniha</string>
     <string name="pe_search_result_order_first_found">První nalezená kniha</string>
     <string name="info_bulk_set_bookshelves">Vyberte regály, které chcete přiřadit všem knihám uvedeným pod vybraným uzlem.</string>
+    <string name="ok">OK</string>
+    <string name="dialog_alert_title">Upozornění</string>
 </resources>

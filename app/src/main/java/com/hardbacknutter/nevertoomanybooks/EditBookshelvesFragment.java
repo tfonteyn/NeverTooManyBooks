@@ -273,7 +273,7 @@ public class EditBookshelvesFragment
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.warning_24px)
                         .setMessage(R.string.warning_cannot_delete_1st_bs)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
                         .create()
                         .show();
             }

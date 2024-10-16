@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterEntityListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
@@ -73,7 +74,7 @@ public class EntityListHolder<T extends Entity>
                     .setTitle(filter.getLabel(context))
                     .setItems(ids, labels)
                     .setSelectedItems(filter.getValue())
-                    .setPositiveButton(android.R.string.ok, value -> {
+                    .setPositiveButton(R.string.ok, value -> {
                         filter.setValue(context, value);
                         vb.filter.setText(filter.getValueText(context));
                         listener.onModified(getBindingAdapterPosition());

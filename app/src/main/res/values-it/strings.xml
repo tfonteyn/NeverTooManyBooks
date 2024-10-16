@@ -682,6 +682,7 @@
     <string name="whichSendApplication">Condividi</string>
     <string name="whichViewApplication">Apri con</string>
     <string name="x_of_y">%1$d di %2$d</string>
+    <string name="cancel">Annulla</string>
     <string name="yes">Sì</string>
     <string name="info_story_in_single_book">«%1$s» è presente in un solo libro:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importa un file di testo con numeri ISBN. Il file dovrebbe avere un unico codice ISBN su ogni riga. I risultati verranno messi in coda.</string>
@@ -791,4 +792,6 @@
     <string name="pe_search_result_order_most_recent">Libro più recente trovato</string>
     <string name="pe_search_result_order_first_found">Primo libro trovato</string>
     <string name="info_bulk_set_bookshelves">Selezionare le librerie che si desidera assegnare a tutti i libri elencati nel nodo selezionato.</string>
+    <string name="ok">OK</string>
+    <string name="dialog_alert_title">Attenzione</string>
 </resources>

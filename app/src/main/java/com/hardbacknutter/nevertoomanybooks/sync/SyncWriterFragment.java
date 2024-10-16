@@ -154,12 +154,12 @@ public class SyncWriterFragment
         new MaterialAlertDialogBuilder(context)
                 .setTitle(vm.getDestinationDisplayName(context))
                 .setMessage(R.string.action_synchronize)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                .setNegativeButton(R.string.cancel, (d, w) -> getActivity().finish())
                 .setNeutralButton(R.string.action_show_options, (d, w) -> {
                     d.dismiss();
                     showOptions();
                 })
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     d.dismiss();
                     vm.startExport();
                 })

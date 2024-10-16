@@ -299,7 +299,7 @@ public final class TipManager {
                             postRun.run();
                         }
                     })
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    .setPositiveButton(R.string.ok, (d, w) -> {
                         if (postRun != null) {
                             postRun.run();
                         }

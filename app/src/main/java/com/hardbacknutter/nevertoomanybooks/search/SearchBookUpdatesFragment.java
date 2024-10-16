@@ -233,7 +233,7 @@ public class SearchBookUpdatesFragment
                     .setIcon(R.drawable.warning_24px)
                     .setTitle(R.string.menu_update_books)
                     .setMessage(R.string.confirm_overwrite_cover)
-                    .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setNeutralButton(R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.option_field_usage_copy_if_blank, (d, w) -> {
                         vm.setCoverSyncAction(SyncAction.CopyIfBlank);
                         startUpdate();

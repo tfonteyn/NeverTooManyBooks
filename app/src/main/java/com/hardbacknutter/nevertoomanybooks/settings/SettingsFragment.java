@@ -301,8 +301,8 @@ public class SettingsFragment
                         .setCancelable(false)
                         .setMessage(context.getString(R.string.option_storage_select,
                                                       newVolumeDesc))
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.ok, (d, w) ->
                                 setStorageVolume(newVolumeIndex))
                         .create()
                         .show();
@@ -324,8 +324,8 @@ public class SettingsFragment
                         .setCancelable(false)
                         .setSingleChoiceItems(items, volumeChangedOptionChosen,
                                               (d, w) -> volumeChangedOptionChosen = w)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.ok, (d, w) ->
                                 onVolumeChangedOptionChosen(oldVolumeIndex, newVolumeIndex))
                         .create()
                         .show();
@@ -457,7 +457,7 @@ public class SettingsFragment
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     // Cancelling will revert to the original value and remove any scheduling
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                    .setNegativeButton(R.string.cancel, (d, w) -> {
                         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB,
                                                   false);
                         titleOrderByPref.setChecked(vm.getStoredTitleOrderBy());
@@ -468,7 +468,7 @@ public class SettingsFragment
                         titleOrderByPref.setSummaryProvider(summaryProvider);
                     })
                     // Confirming will persist the new value and schedule the rebuild
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    .setPositiveButton(R.string.ok, (d, w) -> {
                         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB,
                                                   true);
                         titleOrderByPref.setChecked(checked);

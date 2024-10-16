@@ -263,7 +263,7 @@ public class StartupActivity
                 .setTitle(R.string.app_name)
                 .setMessage(msg)
                 .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> finishAndRemoveTask())
+                .setNegativeButton(R.string.cancel, (d, w) -> finishAndRemoveTask())
                 .setOnDismissListener(d -> finishAndRemoveTask())
                 .setPositiveButton(R.string.pt_maintenance, (d, w) -> {
                     // We'll TRY to start the maintenance fragment
@@ -293,7 +293,7 @@ public class StartupActivity
                 // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
                 .setSingleChoiceItems(items, 0, (d, w) -> volumeChangedOptionChosen = w)
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     switch (volumeChangedOptionChosen) {
                         case 0: {
                             // exit the app, and let the user insert the correct sdcard

@@ -423,8 +423,8 @@ public class BooksOnBookshelf
                         .setIcon(R.drawable.warning_24px)
                         .setTitle(R.string.app_name)
                         .setMessage(R.string.warning_backup_request)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.ok, (d, w) ->
                                 exportLauncher.launch(null))
                         .create()
                         .show();

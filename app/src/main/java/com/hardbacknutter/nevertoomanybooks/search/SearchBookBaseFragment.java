@@ -239,7 +239,7 @@ public abstract class SearchBookBaseFragment
                         .setTitle(hasData ? R.string.warning_book_not_always_found
                                           : R.string.warning_book_not_found)
                         .setMessage(searchErrors)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        .setPositiveButton(R.string.ok, (d, w) -> {
                             d.dismiss();
                             if (hasData) {
                                 searchAndClearCriteria(book);

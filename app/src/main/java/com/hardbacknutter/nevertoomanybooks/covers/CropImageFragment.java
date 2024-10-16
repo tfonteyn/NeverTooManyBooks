@@ -114,7 +114,7 @@ public class CropImageFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_storage_not_accessible)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    .setPositiveButton(R.string.ok, (d, w) -> {
                         //noinspection DataFlowIssue
                         getActivity().finish();
                     })
@@ -214,7 +214,7 @@ public class CropImageFragment
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.action_save)
                     .setMessage(R.string.error_storage_not_writable)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
         }

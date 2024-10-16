@@ -372,7 +372,7 @@ public class EditBookTocFragment
                                                       tocEntry.getTitle(),
                                                       tocEntry.getPrimaryAuthor()
                                                               .getLabel(context)))
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(R.string.action_delete, (d, w) -> {
                             // We don't actually delete anything here as the user must be
                             // able to cancel the edit. So just remove it from the list.
@@ -395,7 +395,7 @@ public class EditBookTocFragment
                                                       tocEntry.getPrimaryAuthor()
                                                               .getLabel(context),
                                                       context.getString(R.string.btn_all_books)))
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                         .setNeutralButton(R.string.btn_this_book, (d, w) -> {
                             // We don't actually delete anything here as the user must be
                             // able to cancel the edit. So just remove it from the list.
@@ -449,8 +449,8 @@ public class EditBookTocFragment
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_toc_list_update_with_main_author)
                 .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     tocEntryList.forEach(tocEntry -> tocEntry.setPrimaryAuthor(tocAuthor));
                     adapter.notifyDataSetChanged();
                 })
@@ -639,11 +639,11 @@ public class EditBookTocFragment
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.warning_24px)
                             .setView(vb.getRoot())
-                            .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                            .setNegativeButton(R.string.cancel, (d, which) -> dismiss())
                             .create();
 
             if (hasToc) {
-                dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
+                dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok),
                                  (d, which) -> Launcher.setResult(this, requestKey,
                                                                   bookContentType, tocEntries));
             }

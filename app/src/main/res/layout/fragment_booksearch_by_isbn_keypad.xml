@@ -139,7 +139,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_search"
         style="@style/IsbnKeyPad.SearchButton"
-        android:contentDescription="@android:string/search_go"
+        android:contentDescription="@string/action_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/key_0"
         app:layout_constraintTop_toBottomOf="@id/key_9"

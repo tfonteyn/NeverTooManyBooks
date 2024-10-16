@@ -442,7 +442,7 @@ public class ExportFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.error_24px)
                     .setTitle(R.string.error_email_failed)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                    .setPositiveButton(R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
         }

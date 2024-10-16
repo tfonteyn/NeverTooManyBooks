@@ -506,7 +506,7 @@ public class SearchBookByIsbnFragment
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     // User aborts this isbn
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> onClearSearchCriteria())
+                    .setNegativeButton(R.string.cancel, (d, w) -> onClearSearchCriteria())
                     // User wants to review the existing book
                     .setNeutralButton(R.string.action_edit, (d, w)
                             -> editBookLauncher.launch(new EditBookContract

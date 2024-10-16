@@ -1190,7 +1190,7 @@
 
     <!-- Preference Category -->
     <string name="pc_search"
-            translatable="false">@android:string/search_go</string>
+            translatable="false">@string/action_search</string>
     <!-- Preference Category -->
     <string name="pc_formatting">Formatting</string>
     <!-- Preference Category -->
@@ -1695,6 +1695,10 @@
     <!-- endregion -->
     <!-- region ========== Single words used for multiple purposes. -->
     <!-- [VERIFIED] -->
+    <string name="ok">OK</string>
+    <!-- [VERIFIED] -->
+    <string name="cancel">Cancel</string>
+    <!-- [VERIFIED] -->
     <string name="yes">Yes</string>
     <!-- [VERIFIED] -->
     <string name="no">No</string>
@@ -1833,5 +1837,7 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
+    <!-- [VERIFIED] -->
+    <string name="dialog_alert_title">Attention</string>
 
 </resources>

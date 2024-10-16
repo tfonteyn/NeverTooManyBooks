@@ -190,8 +190,8 @@ public class MaintenanceFragment
                     .setIcon(R.drawable.warning_24px)
                     .setTitle(R.string.option_purge_files)
                     .setMessage(msg)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.ok, (d, w) -> {
                         try {
                             FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
                             FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
@@ -218,8 +218,8 @@ public class MaintenanceFragment
                 .setTitle(R.string.option_sync_deleted_book_records)
                 .setMessage(getString(R.string.info_maintenance_sync_deleted_book_records)
                             + "\n\n" + getString(R.string.confirm_continue))
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     final int count = ServiceLocator.getInstance().getDeletedBooksDao().sync();
                     if (count > 0) {
                         settingsViewModel.setForceRebuildBooklist();
@@ -237,8 +237,8 @@ public class MaintenanceFragment
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_clear_deleted_book_records)
                 .setMessage(R.string.info_maintenance_clear_deleted_book_records)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     ServiceLocator.getInstance().getDeletedBooksDao().purge();
                     //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();
@@ -252,8 +252,8 @@ public class MaintenanceFragment
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb());
                     //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();
@@ -267,12 +267,12 @@ public class MaintenanceFragment
                 .setIcon(R.drawable.info_24px)
                 .setTitle(R.string.option_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                .setNegativeButton(R.string.cancel, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
                                               StartupViewModel.PK_REBUILD_FTS, false);
                     vb.btnRebuildFts.setError(null);
                 })
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
                                               StartupViewModel.PK_REBUILD_FTS, true);
                     vb.btnRebuildFts.setError(getString(R.string.info_rebuild_scheduled));
@@ -286,12 +286,12 @@ public class MaintenanceFragment
                 .setIcon(R.drawable.info_24px)
                 .setTitle(R.string.option_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                .setNegativeButton(R.string.cancel, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
                                               StartupViewModel.PK_REBUILD_INDEXES, false);
                     vb.btnRebuildIndex.setError(null);
                 })
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
                                               StartupViewModel.PK_REBUILD_INDEXES, true);
                     vb.btnRebuildIndex.setError(getString(R.string.info_rebuild_scheduled));
