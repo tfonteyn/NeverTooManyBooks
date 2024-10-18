@@ -70,6 +70,8 @@ public class ShowBookPagerViewModel
      * Pseudo constructor.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     *
+     * @throws IllegalArgumentException if there are missing mandatory arguments
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Bundle args) {

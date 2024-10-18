@@ -108,7 +108,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
  *     </li>
  * </ul>
  */
-// FIXME: 27/09/2024 we need to unify the update-handling for the TOC and the ReadStatus/Progress fragments
+// FIXME: 27/09/2024 we need to unify the update-handling for the TOC
+//  and the ReadStatus/Progress fragments
 
 public class ShowBookDetailsFragment
         extends BaseFragment {

@@ -49,7 +49,7 @@ public class ShowBookDetailsActivityViewModel
      *
      * @return {@code true} if the book was changed and successfully saved.
      */
-    public boolean isModified() {
+    boolean isModified() {
         return modified;
     }
 
@@ -65,7 +65,7 @@ public class ShowBookDetailsActivityViewModel
      *
      * @param args Bundle with arguments
      */
-    public void init(@NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (style == null) {
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
@@ -75,7 +75,7 @@ public class ShowBookDetailsActivityViewModel
     }
 
     @NonNull
-    public Style getStyle() {
+    Style getStyle() {
         return style;
     }
 }

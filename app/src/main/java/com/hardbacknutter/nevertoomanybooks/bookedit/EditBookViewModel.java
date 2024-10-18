@@ -331,7 +331,7 @@ public class EditBookViewModel
     }
 
     @NonNull
-    public Style getStyle() {
+    Style getStyle() {
         return style;
     }
 
