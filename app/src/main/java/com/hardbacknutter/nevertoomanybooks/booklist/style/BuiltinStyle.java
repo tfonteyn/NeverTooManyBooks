@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,10 @@ public final class BuiltinStyle
      */
     public static final int HARD_DEFAULT_ID;
 
-    /** We need a random style for testing. Currently set to -9: ID_PUBLICATION_DATA. */
+    /**
+     * We need a random style for testing. Currently set to -9: ID_PUBLICATION_DATA.
+     * See {@link #ALL} remarks.
+     */
     @VisibleForTesting
     public static final int ID_FOR_TESTING_ONLY = -9;
 
