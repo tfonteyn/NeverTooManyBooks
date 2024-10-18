@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,8 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-
 /**
  * A persistable {@link Filter}.
  * <p>
@@ -48,7 +46,7 @@ public class ReadStatusFilter
         extends PEntityListFilter<ReadStatus> {
 
     ReadStatusFilter() {
-        super(DBKey.READ__BOOL, R.string.lbl_read, TBL_BOOKS,
+        super(DBKey.READ__BOOL, R.string.lbl_read, DBDefinitions.TBL_BOOKS,
               DBDefinitions.DOM_BOOK_READ, ReadStatus::getAll);
     }
 
