@@ -401,7 +401,7 @@ public class BooksOnBookshelfViewModel
         switch (rowGroupId) {
             case BooklistGroup.READ_STATUS: {
                 final int status = rowData.getInt(domainName);
-                value = ReadStatus.getById(status).getLabel(context);
+                value = ReadStatus.byId(status).getLabel(context);
                 break;
             }
             default: {

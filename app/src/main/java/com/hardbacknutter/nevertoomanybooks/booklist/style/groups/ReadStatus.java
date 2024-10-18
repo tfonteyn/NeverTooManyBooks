@@ -95,7 +95,7 @@ public enum ReadStatus
     }
 
     @NonNull
-    public static ReadStatus getById(final int id) {
+    public static ReadStatus byId(final int id) {
         return Arrays.stream(values()).filter(v -> v.id == id).findFirst().orElse(Unknown);
     }
 

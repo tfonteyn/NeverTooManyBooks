@@ -142,9 +142,9 @@ class Formatter
                 }
             }
             case BooklistGroup.READ_STATUS: {
-                return ReadStatus.getById(rowData.getInt(key)).getLabel(context,
-                                                                        Details.AutoSelect,
-                                                                        style);
+                return ReadStatus.byId(rowData.getInt(key)).getLabel(context,
+                                                                     Details.AutoSelect,
+                                                                     style);
             }
             case BooklistGroup.LANGUAGE: {
                 final String text = rowData.getString(key);
