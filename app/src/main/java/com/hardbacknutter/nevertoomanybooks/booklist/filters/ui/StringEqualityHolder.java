@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterStringEqualityBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
+@SuppressWarnings("WeakerAccess")
 public class StringEqualityHolder
         extends PFilterViewHolder
         implements BindableViewHolder<PStringEqualityFilter> {

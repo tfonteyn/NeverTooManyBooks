@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBi
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
+@SuppressWarnings("WeakerAccess")
 public class BitmaskHolder
         extends PFilterViewHolder
         implements BindableViewHolder<PBitmaskFilter> {
@@ -47,8 +48,8 @@ public class BitmaskHolder
      * @param vb       view-binding
      * @param listener for update events
      */
-    public BitmaskHolder(@NonNull final RowEditBookshelfFilterBitmaskBinding vb,
-                         @NonNull final ModificationListener listener) {
+    BitmaskHolder(@NonNull final RowEditBookshelfFilterBitmaskBinding vb,
+                  @NonNull final ModificationListener listener) {
         super(vb.getRoot(), listener);
         this.vb = vb;
     }

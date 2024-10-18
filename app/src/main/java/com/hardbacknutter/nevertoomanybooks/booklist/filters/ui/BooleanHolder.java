@@ -41,8 +41,8 @@ public class BooleanHolder
      * @param vb       view-binding
      * @param listener for update events
      */
-    public BooleanHolder(@NonNull final RowEditBookshelfFilterBooleanBinding vb,
-                         @NonNull final ModificationListener listener) {
+    BooleanHolder(@NonNull final RowEditBookshelfFilterBooleanBinding vb,
+                  @NonNull final ModificationListener listener) {
         super(vb.getRoot(), listener);
         this.vb = vb;
     }

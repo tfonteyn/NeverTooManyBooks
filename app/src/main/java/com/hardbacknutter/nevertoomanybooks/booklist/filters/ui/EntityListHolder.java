@@ -47,8 +47,8 @@ public class EntityListHolder<T extends Entity>
      * @param vb       view-binding
      * @param listener for update events
      */
-    public EntityListHolder(@NonNull final RowEditBookshelfFilterEntityListBinding vb,
-                            @NonNull final ModificationListener listener) {
+    EntityListHolder(@NonNull final RowEditBookshelfFilterEntityListBinding vb,
+                     @NonNull final ModificationListener listener) {
         super(vb.getRoot(), listener);
         this.vb = vb;
     }
