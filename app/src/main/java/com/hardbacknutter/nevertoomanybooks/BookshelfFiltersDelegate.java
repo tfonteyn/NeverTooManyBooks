@@ -92,7 +92,7 @@ class BookshelfFiltersDelegate
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(BookshelfFiltersViewModel.class);
-        vm.init(args);
+        vm.init(owner.requireContext(), args);
     }
 
     @Override
@@ -187,7 +187,7 @@ class BookshelfFiltersDelegate
 
     private void onAdd() {
         final Context context = vb.getRoot().getContext();
-        final Pair<String[], String[]> items = vm.getFilterChoiceItems(context);
+        final Pair<String[], String[]> items = vm.getFilterChoiceItems();
 
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.lbl_add_filter)

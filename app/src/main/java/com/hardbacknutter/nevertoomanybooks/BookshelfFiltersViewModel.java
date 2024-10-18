@@ -54,13 +54,49 @@ public class BookshelfFiltersViewModel
     private List<PFilter<?>> filterList;
 
     private boolean modified;
+    private Pair<String[], String[]> filterChoiceItems;
 
-    void init(@NonNull final Bundle args) {
+    /**
+     * Pseudo constructor.
+     *
+     * @param context current context
+     * @param args    Bundle with arguments
+     */
+    void init(@NonNull final Context context,
+              @NonNull final Bundle args) {
         if (bookshelf == null) {
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
             filterList = bookshelf.getFilters();
+
+            filterChoiceItems = createFilterChoiceItems(context);
         }
+    }
+
+    /**
+     * Create the labels/dbKey lists for the supported filters.
+     *
+     * @param context Current context
+     *
+     * @return a pair with the 'first' the (sorted) labels, and the 'second' their {@link DBKey}s
+     */
+    @NonNull
+    private Pair<String[], String[]> createFilterChoiceItems(@NonNull final Context context) {
+        // key: the label, value: the DBKey
+        // The map will be automatically sorted alphabetically
+        // on the labels according to to the Locale
+        final SortedMap<String, String> map = new TreeMap<>();
+
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        FilterFactory.SUPPORTED
+                .entrySet()
+                .stream()
+                .filter(entry -> serviceLocator.isFieldEnabled(entry.getKey()))
+                .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
+
+        return new Pair<>(map.keySet().toArray(Z_ARRAY_STRING),
+                          map.values().toArray(Z_ARRAY_STRING)
+        );
     }
 
     @NonNull
@@ -82,29 +118,13 @@ public class BookshelfFiltersViewModel
     }
 
     /**
-     * Get the items and their labels.
-     *
-     * @param context Current context
+     * Get the labels/dbKey lists for the supported filters.
      *
      * @return a pair with the 'first' the (sorted) labels, and the 'second' their {@link DBKey}s
      */
     @NonNull
-    Pair<String[], String[]> getFilterChoiceItems(@NonNull final Context context) {
-        // key: the label, value: the DBKey
-        // The map will be automatically sorted alphabetically
-        // on the labels according to to the Locale
-        final SortedMap<String, String> map = new TreeMap<>();
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        FilterFactory.SUPPORTED
-                .entrySet()
-                .stream()
-                .filter(entry -> serviceLocator.isFieldEnabled(entry.getKey()))
-                .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
-
-        return new Pair<>(map.keySet().toArray(Z_ARRAY_STRING),
-                          map.values().toArray(Z_ARRAY_STRING)
-        );
+    Pair<String[], String[]> getFilterChoiceItems() {
+        return filterChoiceItems;
     }
 
     boolean saveChanges(@NonNull final Context context) {
