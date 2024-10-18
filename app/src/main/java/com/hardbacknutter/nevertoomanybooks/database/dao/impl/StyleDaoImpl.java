@@ -80,7 +80,7 @@ public class StyleDaoImpl
      * @param db Database Access
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
-        insertGlobalDefaults(db, new GlobalStyle());
+        insertGlobalDefaults(db, GlobalStyle.createDefault());
 
         // insert the builtin styles so foreign key rules are possible.
         // Other than the id/uuid/type and the menu options, the settings are never

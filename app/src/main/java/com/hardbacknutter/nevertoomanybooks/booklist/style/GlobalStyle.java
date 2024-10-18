@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public final class GlobalStyle
     /**
      * Constructor <strong>only used during app installation/upgrade</strong>.
      */
-    public GlobalStyle() {
+    private GlobalStyle() {
         super(UUID.randomUUID().toString(), Integer.MIN_VALUE);
         fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility());
         fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility());
@@ -67,6 +67,15 @@ public final class GlobalStyle
      */
     private GlobalStyle(@NonNull final DataHolder rowData) {
         super(rowData);
+    }
+
+    /**
+     * Create the global default style.
+     *
+     * @return the style
+     */
+    public static GlobalStyle createDefault() {
+        return new GlobalStyle();
     }
 
     /**

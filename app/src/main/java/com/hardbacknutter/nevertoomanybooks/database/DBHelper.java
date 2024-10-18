@@ -371,7 +371,7 @@ public class DBHelper
 
         if (install) {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final GlobalStyle style = new GlobalStyle();
+            final GlobalStyle style = GlobalStyle.createDefault();
             style.setSortAuthorByGivenName(
                     prefs.getBoolean(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST, false));
             style.setShowAuthorByGivenName(
