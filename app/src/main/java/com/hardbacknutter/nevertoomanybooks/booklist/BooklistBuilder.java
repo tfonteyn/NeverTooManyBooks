@@ -155,7 +155,7 @@ class BooklistBuilder {
         this.db = db;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger().d(TAG, "BooklistBuilder",
+            LoggerFactory.getLogger().d(TAG, "Constructor",
                                         "style=" + style.getUuid(),
                                         "bookshelf=`" + bookshelf.getName() + '`',
                                         "instances: "
