@@ -1,0 +1,11 @@
+NEW:
+- dnb.de site (Deutsche Nationalbibliothek) added for looking up German language books
+- Option to move/set the Bookshelves for all books for a node in the list
+
+- Bookshelves selection dialog(s) are now conform to all other dialog/BottomSheet usage.
+- Edge-to-Edge support for Android 11 and up.
+- Android 15 tested/supported.
+
+FIXES:
+- Fix "Update books" for a node in the list (e.g. 'series') when using a BottomSheet.
+- Fix a TOC lookup for existing titles when manually editing a TOC list

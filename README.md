@@ -24,9 +24,9 @@ Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
-### Download the latest release: 6.2.0
+### Download the latest release: 6.3.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.2.0/NeverTooManyBooks-6.2.0.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.3.0/NeverTooManyBooks-6.3.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
@@ -68,6 +68,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **BOL.com** (Dutch and more; Shop)
+- **dnb.de** (German; Catalogue)
 - **Douban.com** (Chinese; Catalogue)
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
@@ -81,7 +82,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 ## Device support:
 
 - Requires minimal Android 8.0 (API 26)
-- Supported/tested up to Android 14 (API 34).
+- Supported/tested up to Android 15 (API 35).
 
 ## Android Permissions:
 
