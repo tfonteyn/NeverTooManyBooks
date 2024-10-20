@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,14 +74,14 @@ public class UncheckedStorageException
      * Called to read the object from a stream.
      *
      * @throws InvalidObjectException if the object is invalid or has a cause that is not
-     *                                a {@code CoverStorageException}
+     *                                a {@code StorageException}
      */
     private void readObject(@NonNull final ObjectInputStream ois)
             throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         final Throwable cause = super.getCause();
-        if (!(cause instanceof CoverStorageException)) {
-            throw new InvalidObjectException("Cause must be an CoverStorageException");
+        if (!(cause instanceof StorageException)) {
+            throw new InvalidObjectException("Cause must be an StorageException");
         }
     }
 }
