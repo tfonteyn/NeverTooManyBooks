@@ -124,7 +124,7 @@
     </plurals>
     <string name="option_cover_rotate_automatic">自动</string>
     <string name="name_colon_value">%1$s：%2$s</string>
-    <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
+    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="no">取消</string>
     <string name="notification_channel_error">错误</string>
