@@ -786,7 +786,7 @@
     <string name="lbl_track_progress">Pokrok</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Musí být větší nebo stejná jako aktuální stránka</string>
     <string name="info_builtin_style_asterix">(* výchozí styly)</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Dialogy a nabídky</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Dialogy a nabídky</string>
     <string name="pe_option_bottom_sheet">Vždy v dolní části obrazovky</string>
     <string name="pt_ui_dialogs_mode">Dialogy</string>
     <string name="pe_ui_dialog_mode_classic">Vždy jako klasické dialogové okno</string>

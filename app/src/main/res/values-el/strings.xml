@@ -768,7 +768,7 @@
     <string name="lbl_track_progress">Πρόοδος</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Πρέπει να είναι μεγαλύτερη ή ίση με την τρέχουσα σελίδα</string>
     <string name="info_builtin_style_asterix">(* προεπιλεγμένα στυλ)</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Διάλογοι και μενού</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Διάλογοι και μενού</string>
     <string name="pe_option_bottom_sheet">Πάντα στο κάτω μέρος της οθόνης</string>
     <string name="pt_ui_dialogs_mode">Διάλογοι</string>
     <string name="pe_ui_dialog_mode_classic">Πάντα ως κλασικό παράθυρο διαλόγου</string>

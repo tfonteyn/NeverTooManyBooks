@@ -40,6 +40,7 @@
 --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
+<!--suppress LongLine -->
 <resources>
     <plurals name="n_books_found">
         <item quantity="other">找到 %1$d 本書</item>

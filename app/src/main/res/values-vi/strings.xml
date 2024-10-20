@@ -1510,7 +1510,7 @@
     <string name="lbl_current_page">Trang hiện tại</string>
     <string name="info_builtin_style_asterix">(* kiểu mặc định)</string>
     <string name="pe_ui_dialog_mode_classic">Luôn là hộp thoại cổ điển</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Hộp thoại và Thực đơn</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Hộp thoại và Thực đơn</string>
     <string name="pe_option_bottom_sheet">Luôn ở cuối màn hình</string>
     <string name="pt_ui_dialogs_mode">Hộp thoại</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Màn hình nhỏ hơn hiển thị các hộp thoại ở cuối màn hình.

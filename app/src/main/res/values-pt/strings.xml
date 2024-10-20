@@ -796,7 +796,7 @@
     <string name="lbl_author_type_lettering">Letrista</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Deve ser maior ou igual à página atual</string>
     <string name="info_builtin_style_asterix">(* estilos predefinidos)</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Diálogos e menus</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Diálogos e menus</string>
     <string name="pe_option_bottom_sheet">Sempre na parte inferior do ecrã</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
     <string name="pe_ui_dialog_mode_classic">Sempre como uma caixa de diálogo clássica</string>

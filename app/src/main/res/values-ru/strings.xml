@@ -788,7 +788,7 @@
     <string name="lbl_track_progress">Прогресс</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Должна быть больше или равна текущей странице</string>
     <string name="info_builtin_style_asterix">(* стили по умолчанию)</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Диалоги и меню</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Диалоги и меню</string>
     <string name="pe_option_bottom_sheet">Всегда в нижней части экрана</string>
     <string name="pt_ui_dialogs_mode">Диалоги</string>
     <string name="pe_ui_dialog_mode_classic">Всегда в виде классического диалогового окна</string>

@@ -1376,7 +1376,7 @@
     <string name="pe_ui_theme_colors_dynamic">Dynamic Colors</string>
 
     <!-- ListPreference title. UI Dialog tuning. Opens a new screen with the related settings. -->
-    <string name="pt_dialog_and_menu_popup_tuning">Dialogs and Menus</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Dialogs and Menus</string>
 
     <!-- ListPreference value: UI Dialog tuning.
          Always display a dialog or context menu using a BottomSheet. -->
@@ -1576,12 +1576,6 @@
     <!-- Dialog message: assigning a list of books to a set of Bookshelves.
      i.o.w. Bulk move/Add books to Bookshelves. -->
     <string name="info_bulk_set_bookshelves">Select the bookshelves you want to assign to all books listed under the selected node.</string>
-    <!-- Second part of the "info_bulk_set_bookshelves" message.
-         Only shown when BottomSheets are used for displaying the Menu. Not shown when the menu is a Dialog. -->
-    <string name="info_bulk_set_bookshelves_bs">You will be prompted to confirm or cancel before the assignment is done.</string>
-    <!-- Confirmation message to assign a list of books to a set of bookshelves.
-         HTML string, must be between a CDATA tag/brackets -->
-    <string name="confirm_assign_bookshelves"><![CDATA[Please confirm that you want to assign the below list of bookshelves to all books listed under the selected node.<br><br>%1$s]]></string>
     <!-- endregion -->
     <!-- region ========== Automatic update book fields from the internet. -->
     <!-- Booklist screen / Book details screen - context/options menu.

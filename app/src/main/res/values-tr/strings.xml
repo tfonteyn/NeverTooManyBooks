@@ -776,7 +776,7 @@
     <string name="lbl_track_progress">İlerleme</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Geçerli sayfadan büyük veya eşit olmalıdır</string>
     <string name="info_builtin_style_asterix">(* varsayılan stiller)</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Diyaloglar ve Menüler</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Diyaloglar ve Menüler</string>
     <string name="pe_option_bottom_sheet">Her zaman ekranın alt kısmında</string>
     <string name="pt_ui_dialogs_mode">Diyaloglar</string>
     <string name="pe_ui_dialog_mode_classic">Her zaman klasik bir iletişim kutusu olarak</string>
@@ -799,8 +799,6 @@
     <string name="pe_search_result_order_first_found">Bulunan ilk kitap</string>
     <string name="anonymous_author">[Anonim]</string>
     <string name="info_bulk_set_bookshelves">Seçilen düğüm altında listelenen tüm kitaplara atamak istediğiniz kitap raflarını seçin.</string>
-    <string name="info_bulk_set_bookshelves_bs">Atama yapılmadan önce onaylamanız veya iptal etmeniz istenecektir.</string>
-    <string name="confirm_assign_bookshelves"><![CDATA[Lütfen aşağıdaki kitap rafları listesini seçilen düğüm altında listelenen tüm kitaplara atamak istediğinizi onaylayın.<br><br>%1$s]]></string>
     <string name="ok">Tamam</string>
     <string name="dialog_alert_title">Dikkat</string>
 </resources>

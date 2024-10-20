@@ -780,7 +780,7 @@
     <string name="lbl_track_progress_long">Seguimiento del progreso</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Debe ser mayor o igual que la página actual</string>
     <string name="info_builtin_style_asterix">(* estilos predeterminados)</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Diálogos y menús</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Diálogos y menús</string>
     <string name="pe_option_bottom_sheet">Siempre en la parte inferior de la pantalla</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
     <string name="pe_ui_dialog_mode_classic">Siempre como un diálogo clásico</string>
@@ -802,8 +802,6 @@
     <string name="pe_search_result_order_most_recent">Libro más reciente encontrado</string>
     <string name="pe_search_result_order_first_found">Primer libro encontrado</string>
     <string name="info_bulk_set_bookshelves">Seleccione las estanterías que desea asignar a todos los libros listados en el nodo seleccionado.</string>
-    <string name="info_bulk_set_bookshelves_bs">Se le pedirá que confirme o cancele antes de que se realice la tarea.</string>
-    <string name="confirm_assign_bookshelves"><![CDATA[Por favor, confirme que desea asignar la siguiente lista de estanterías a todos los libros listados en el nodo seleccionado.<br><br>%1$s]]></string>
     <string name="ok">Aceptar</string>
     <string name="dialog_alert_title">Atención</string>
 </resources>

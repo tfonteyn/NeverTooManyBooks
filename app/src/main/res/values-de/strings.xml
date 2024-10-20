@@ -767,7 +767,7 @@
     <string name="lbl_track_progress">Fortschritt</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Muss größer oder gleich der aktuellen Seite sein</string>
     <string name="info_builtin_style_asterix">(* Standardstile)</string>
-    <string name="pt_dialog_and_menu_popup_tuning">Dialoge und Menüs</string>
+    <string name="X_pt_dialog_and_menu_popup_tuning">Dialoge und Menüs</string>
     <string name="pe_option_bottom_sheet">Immer am unteren Rand des Bildschirms</string>
     <string name="pt_ui_dialogs_mode">Dialoge</string>
     <string name="pe_ui_dialog_mode_classic">Immer als klassisches Dialogfenster</string>
