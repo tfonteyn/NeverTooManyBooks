@@ -32,11 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -372,7 +368,7 @@ public interface Style {
     List<BooklistGroup> getGroupList();
 
     /**
-     * {@link AuthorBooklistGroup} property.
+     * {@link BooklistGroup#AUTHOR} property.
      *
      * @return bitmask representing the type of author we consider the primary author
      */
@@ -420,7 +416,7 @@ public interface Style {
         }
 
         @NonNull
-        public static Layout byId(final int id) {
+        static Layout byId(final int id) {
             if (id == 0) {
                 return List;
             }
@@ -445,7 +441,7 @@ public interface Style {
         }
 
         @NonNull
-        public static CoverClickAction byId(final int id) {
+        static CoverClickAction byId(final int id) {
             if (id == 0) {
                 return Zoom;
             }
@@ -470,7 +466,7 @@ public interface Style {
         }
 
         @NonNull
-        public static CoverLongClickAction byId(final int id) {
+        static CoverLongClickAction byId(final int id) {
             if (id == 0) {
                 return Ignore;
             }
@@ -486,25 +482,21 @@ public interface Style {
      * See {@link #isShowBooksUnderEachGroup(int)}.
      */
     enum UnderEach {
-        /** {@link AuthorBooklistGroup}. */
         Author(BooklistGroup.AUTHOR,
                DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
                "style.booklist.group.authors.show.all"
         ),
 
-        /** {@link SeriesBooklistGroup} . */
         Series(BooklistGroup.SERIES,
                DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
                "style.booklist.group.series.show.all"
         ),
 
-        /** {@link PublisherBooklistGroup}. */
         Publisher(BooklistGroup.PUBLISHER,
                   DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
                   "style.booklist.group.publisher.show.all"
         ),
 
-        /** {@link BookshelfBooklistGroup}. */
         Bookshelf(BooklistGroup.BOOKSHELF,
                   DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
                   "style.booklist.group.bookshelf.show.all"
@@ -554,9 +546,9 @@ public interface Style {
         }
 
         /**
-         * Get the {@link BooklistGroup} for this element.
+         * Get the {@link BooklistGroup} id for this element.
          *
-         * @return key
+         * @return id
          */
         @SuppressWarnings("WeakerAccess")
         @BooklistGroup.Id

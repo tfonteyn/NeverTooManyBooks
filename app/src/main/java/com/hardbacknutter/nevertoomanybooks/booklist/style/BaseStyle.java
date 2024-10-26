@@ -591,7 +591,12 @@ public abstract class BaseStyle
     }
 
     public void setGroupIds(@NonNull final List<Integer> groupIds) {
-        setGroupList(BooklistGroup.getGroups(this, groupIds));
+        // Create a list with new BooklistGroup's using the list of specified ids.
+        final List<BooklistGroup> list = groupIds
+                .stream()
+                .map(groupId -> BooklistGroup.newInstance(groupId, this))
+                .collect(Collectors.toList());
+        setGroupList(list);
     }
 
     @Override
@@ -604,8 +609,8 @@ public abstract class BaseStyle
     }
 
     /**
-     * Wrapper that gets the primary-author-type from the {@link AuthorBooklistGroup}
-     * (if we have it); or the default {@link Author#TYPE_UNKNOWN}.
+     * Wrapper that gets the primary-author-type from the {@link BooklistGroup#AUTHOR} group
+     * (if we have it); or else the default {@link Author#TYPE_UNKNOWN}.
      *
      * @return bitmask representing the type of author we consider the primary author
      */

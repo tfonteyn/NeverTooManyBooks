@@ -85,11 +85,11 @@ public final class MapDBKey {
             Map.entry(DBKey.TITLE_ORIGINAL_LANG, R.string.lbl_original_title),
 
             // The BooklistGroup specific domains for sorting
-            Map.entry(BooklistGroup.BlgKey.SORT_AUTHOR, R.string.lbl_author),
-            Map.entry(BooklistGroup.BlgKey.SORT_BOOKSHELF, R.string.lbl_bookshelf),
-            Map.entry(BooklistGroup.BlgKey.SORT_PUBLISHER, R.string.lbl_publisher),
-            Map.entry(BooklistGroup.BlgKey.SORT_SERIES_TITLE, R.string.lbl_series),
-            Map.entry(BooklistGroup.BlgKey.SORT_SERIES_NUM_FLOAT, R.string.lbl_series_num)
+            Map.entry(BooklistGroup.BlgDBKey.SORT_AUTHOR, R.string.lbl_author),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_BOOKSHELF, R.string.lbl_bookshelf),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_PUBLISHER, R.string.lbl_publisher),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_TITLE, R.string.lbl_series),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_NUM_FLOAT, R.string.lbl_series_num)
     );
 
     private MapDBKey() {

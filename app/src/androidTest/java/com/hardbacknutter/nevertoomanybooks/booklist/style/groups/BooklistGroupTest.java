@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,7 @@ public class BooklistGroupTest {
             final BooklistGroup group = BooklistGroup.newInstance(id, style);
             assertNotNull("Missing id: " + id, group);
 
-            final String prefix = group.getGroupKey().getKeyPrefix();
+            final String prefix = ((BooklistGroupImpl) group).getGroupKey().getKeyPrefix();
             if (!prefixes.add(prefix)) {
                 fail("Duplicate keyPrefix: " + prefix);
             }

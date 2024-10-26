@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -149,7 +148,7 @@ public interface WritableStyle
     void setGroupIds(@NonNull List<Integer> groupIds);
 
     /**
-     * Set the primary-author-type from the {@link AuthorBooklistGroup}
+     * Set the primary-author-type for the {@link BooklistGroup#AUTHOR}
      * (if this Style has the group).
      *
      * @param type the Author type

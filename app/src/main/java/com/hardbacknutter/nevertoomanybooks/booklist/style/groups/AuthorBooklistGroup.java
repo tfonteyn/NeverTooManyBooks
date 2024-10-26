@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 public class AuthorBooklistGroup
-        extends BooklistGroup
+        extends BooklistGroupImpl
         implements UnderEachGroup {
 
     private static final String[] PREF_KEYS = {
@@ -87,7 +87,7 @@ public class AuthorBooklistGroup
                                      Sort.Unsorted);
         // Sorting depends on user preference
         sortingDomainExpression =
-                new DomainExpression(new Domain.Builder(BlgKey.SORT_AUTHOR, SqLiteDataType.Text)
+                new DomainExpression(new Domain.Builder(BlgDBKey.SORT_AUTHOR, SqLiteDataType.Text)
                                              .build(),
                                      AuthorDaoImpl.getSortingDomainExpression(sortByGivenName),
                                      Sort.Asc);
@@ -95,7 +95,7 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    protected GroupKey createGroupKey(@Id final int id) {
+    protected GroupKey createGroupKey(@BooklistGroup.Id final int id) {
         // We use the foreign ID to create the key-domain.
         // It is NOT used to display the data; instead we use #displayDomainExpression.
         // Neither the key-domain nor the display-domain is sorted;

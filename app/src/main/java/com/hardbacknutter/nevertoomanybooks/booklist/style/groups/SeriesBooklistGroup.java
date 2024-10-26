@@ -43,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * {@link #getDisplayDomainExpression()} returns a customized display domain
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
-public class SeriesBooklistGroup
-        extends BooklistGroup
+class SeriesBooklistGroup
+        extends BooklistGroupImpl
         implements UnderEachGroup {
 
     private static final String[] PREF_KEYS = {
@@ -70,7 +70,7 @@ public class SeriesBooklistGroup
 
     @Override
     @NonNull
-    protected GroupKey createGroupKey(@Id final int id) {
+    protected GroupKey createGroupKey(@BooklistGroup.Id final int id) {
         // We use the foreign ID to create the key-domain.
         // It is NOT used to display the data; instead we use #displayDomainExpression.
         // Neither the key-domain nor the display-domain is sorted;
@@ -81,7 +81,7 @@ public class SeriesBooklistGroup
                                                  Sort.Unsorted))
                 .addGroupDomain(
                         new DomainExpression(
-                                new Domain.Builder(BlgKey.SORT_SERIES_TITLE, SqLiteDataType.Text)
+                                new Domain.Builder(BlgDBKey.SORT_SERIES_TITLE, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
                                 Sort.Asc))
@@ -101,7 +101,7 @@ public class SeriesBooklistGroup
                         // Casting it as a float allows for the possibility of 3.1,
                         // or even 3.1|Omnibus 3-10" as a series number.
                         new DomainExpression(
-                                new Domain.Builder(BlgKey.SORT_SERIES_NUM_FLOAT,
+                                new Domain.Builder(BlgDBKey.SORT_SERIES_NUM_FLOAT,
                                                    SqLiteDataType.Real)
                                         .build(),
                                 "CAST("

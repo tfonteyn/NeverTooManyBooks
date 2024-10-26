@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * {@link #getDisplayDomainExpression()} returns a customized display domain
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
-public class BookshelfBooklistGroup
-        extends BooklistGroup
+class BookshelfBooklistGroup
+        extends BooklistGroupImpl
         implements UnderEachGroup {
 
     private static final String[] PREF_KEYS = {
@@ -73,7 +73,7 @@ public class BookshelfBooklistGroup
 
     @Override
     @NonNull
-    protected GroupKey createGroupKey(@Id final int id) {
+    protected GroupKey createGroupKey(@BooklistGroup.Id final int id) {
         // We use the foreign ID to create the key-domain.
         // It is NOT used to display the data; instead we use #displayDomainExpression.
         // Neither the key-domain nor the display-domain is sorted;
@@ -84,7 +84,7 @@ public class BookshelfBooklistGroup
                                                  Sort.Unsorted))
                 .addGroupDomain(
                         new DomainExpression(
-                                new Domain.Builder(BlgKey.SORT_BOOKSHELF, SqLiteDataType.Text)
+                                new Domain.Builder(BlgDBKey.SORT_BOOKSHELF, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
                                 Sort.Asc))

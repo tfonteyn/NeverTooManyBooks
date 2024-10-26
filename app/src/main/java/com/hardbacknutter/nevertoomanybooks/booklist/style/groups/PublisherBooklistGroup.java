@@ -43,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * {@link #getDisplayDomainExpression()} returns a customized display domain
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
-public class PublisherBooklistGroup
-        extends BooklistGroup
+class PublisherBooklistGroup
+        extends BooklistGroupImpl
         implements UnderEachGroup {
 
     private static final String[] PREF_KEYS = {
@@ -70,7 +70,7 @@ public class PublisherBooklistGroup
 
     @Override
     @NonNull
-    protected GroupKey createGroupKey(@Id final int id) {
+    protected GroupKey createGroupKey(@BooklistGroup.Id final int id) {
         // We use the foreign ID to create the key-domain.
         // It is NOT used to display the data; instead we use #displayDomainExpression.
         // Neither the key-domain nor the display-domain is sorted;
@@ -81,7 +81,7 @@ public class PublisherBooklistGroup
                                                  Sort.Unsorted))
                 .addGroupDomain(
                         new DomainExpression(
-                                new Domain.Builder(BlgKey.SORT_PUBLISHER, SqLiteDataType.Text)
+                                new Domain.Builder(BlgDBKey.SORT_PUBLISHER, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
                                 Sort.Asc))
