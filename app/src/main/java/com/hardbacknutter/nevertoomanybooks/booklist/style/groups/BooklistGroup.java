@@ -24,8 +24,8 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceScreen;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -94,6 +94,8 @@ public interface BooklistGroup {
     int GROUP_KEY_MAX = 33;
 
     /**
+     * Factory constructor.
+     * <p>
      * Create a new BooklistGroup of the specified id.
      *
      * @param id    of group to create
@@ -122,7 +124,9 @@ public interface BooklistGroup {
     }
 
     /**
-     * Get a list of <strong>ALL defined</strong> groups,
+     * Factory constructor.
+     * <p>
+     * Create a list of <strong>ALL defined</strong> groups,
      * <p>
      * Note that these are <strong>not</strong> the {@link Style}'s groups; the style
      * is only used to get default settings for some groups.
@@ -212,16 +216,12 @@ public interface BooklistGroup {
     void setAccumulatedDomains(@NonNull List<Domain> accumulatedDomains);
 
     /**
-     * Preference UI support.
-     * <p>
-     * This method can be called multiple times.
-     * Visibility of individual preferences should always be updated.
+     * Get the {@link GroupPrefs} structure for this group.
      *
-     * @param screen  which hosts the prefs
-     * @param visible whether to make the preferences visible
+     * @return structure with preference category and keys.
      */
-    void setPreferencesVisible(@NonNull PreferenceScreen screen,
-                               boolean visible);
+    @Nullable
+    GroupPrefs getGroupPrefs();
 
     @IntDef({BOOK,
 

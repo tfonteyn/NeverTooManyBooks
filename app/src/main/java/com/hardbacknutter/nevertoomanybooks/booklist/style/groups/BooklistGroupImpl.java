@@ -25,9 +25,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
 
 import java.util.List;
 import java.util.Map;
@@ -269,7 +266,6 @@ class BooklistGroupImpl
 
     /**
      * Create/get a GroupKey. We create the keys only once and keep them in a static cache map.
-     * This must be called <strong>after</strong> construction, i.e. from {@link BooklistGroup#newInstance}.
      *
      * @param id of group to create
      *
@@ -714,48 +710,10 @@ class BooklistGroupImpl
         this.accumulatedDomains = accumulatedDomains;
     }
 
-    /**
-     * Preference UI support.
-     * <p>
-     * This method can be called multiple times.
-     * Visibility of individual preferences should always be updated.
-     *
-     * @param screen  which hosts the prefs
-     * @param visible whether to make the preferences visible
-     */
+    @Nullable
     @Override
-    public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
-                                      final boolean visible) {
-        // no properties by default
-    }
-
-    /**
-     * Set the visibility of the list of the passed preferences.
-     * When one preference is visible, make the category visible.
-     *
-     * @param category to set
-     * @param keys     to set visibility on
-     * @param visible  to set
-     */
-    void setPreferenceVisibility(@NonNull final PreferenceCategory category,
-                                 @NonNull final String[] keys,
-                                 final boolean visible) {
-
-        for (final String key : keys) {
-            final Preference preference = category.findPreference(key);
-            if (preference != null) {
-                preference.setVisible(visible);
-            }
-        }
-
-        int i = 0;
-        while (i < category.getPreferenceCount()) {
-            if (category.getPreference(i).isVisible()) {
-                category.setVisible(true);
-                return;
-            }
-            i++;
-        }
+    public GroupPrefs getGroupPrefs() {
+        return null;
     }
 
     @Override

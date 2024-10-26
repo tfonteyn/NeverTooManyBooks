@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
 
 import java.util.Objects;
 
@@ -47,9 +45,9 @@ class SeriesBooklistGroup
         extends BooklistGroupImpl
         implements UnderEachGroup {
 
-    private static final String[] PREF_KEYS = {
-            Style.UnderEach.Series.getPrefKey()
-    };
+    private static final GroupPrefs GROUP_PREFS =
+            new GroupPrefs("psk_style_series",
+                           Style.UnderEach.Series.getPrefKey());
 
     /** DomainExpression for displaying the data. */
     @NonNull
@@ -134,14 +132,10 @@ class SeriesBooklistGroup
         underEach = value;
     }
 
+    @NonNull
     @Override
-    public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
-                                      final boolean visible) {
-
-        final PreferenceCategory category = screen.findPreference("psk_style_series");
-        if (category != null) {
-            setPreferenceVisibility(category, PREF_KEYS, visible);
-        }
+    public GroupPrefs getGroupPrefs() {
+        return GROUP_PREFS;
     }
 
     @Override

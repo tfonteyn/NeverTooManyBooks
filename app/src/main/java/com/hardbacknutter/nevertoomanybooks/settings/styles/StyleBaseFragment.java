@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
@@ -42,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.GroupPrefs;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
 
@@ -162,16 +164,50 @@ public abstract class StyleBaseFragment
     public void onResume() {
         super.onResume();
 
+        updatePreferenceVisibility();
+        updateSummaries();
+        updateLayoutPrefs();
+    }
+
+    /**
+     * Show the preferences for groups we have and hide for groups we don't/no longer have.
+     * When one preference is visible, make the category visible.
+     */
+    private void updatePreferenceVisibility() {
         final WritableStyle style = vm.getStyle();
 
         final PreferenceScreen screen = getPreferenceScreen();
-
-        // Show the preferences for groups we have and hide for groups we don't/no longer have.
         BooklistGroup.getAllGroups(style).forEach(
-                group -> group.setPreferencesVisible(screen, style.hasGroup(group.getId())));
+                group -> {
+                    final GroupPrefs groupPrefs = group.getGroupPrefs();
+                    // Not all groups have preferences
+                    if (groupPrefs == null) {
+                        return;
+                    }
+                    final PreferenceCategory category =
+                            screen.findPreference(groupPrefs.getCategory());
+                    // Sanity check
+                    if (category == null) {
+                        return;
+                    }
 
-        updateSummaries();
-        updateLayoutPrefs();
+                    final boolean visible = style.hasGroup(group.getId());
+                    for (final String key : groupPrefs.getKeys()) {
+                        final Preference preference = category.findPreference(key);
+                        if (preference != null) {
+                            preference.setVisible(visible);
+                        }
+                    }
+
+                    int i = 0;
+                    while (i < category.getPreferenceCount()) {
+                        if (category.getPreference(i).isVisible()) {
+                            category.setVisible(true);
+                            return;
+                        }
+                        i++;
+                    }
+                });
     }
 
     /**
