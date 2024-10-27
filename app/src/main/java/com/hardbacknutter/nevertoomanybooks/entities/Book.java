@@ -31,7 +31,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
@@ -941,7 +940,7 @@ public class Book
      */
     @NonNull
     public ContentType getContentType() {
-        return ContentType.getType(getLong(DBKey.BOOK_CONTENT_TYPE));
+        return ContentType.byId(getInt(DBKey.BOOK_CONTENT_TYPE));
     }
 
     /**
@@ -1630,12 +1629,12 @@ public class Book
     public enum ContentType
             implements Entity, Parcelable {
         /** Single work. One or more authors. */
-        Book(0, R.string.lbl_book_type_book),
+        Book(0),
         /** Multiple works, all by a single Author. */
-        Collection(1, R.string.lbl_book_type_collection),
+        Collection(1),
         // value 2 not in use.
         /** Multiple works, multiple Authors. */
-        Anthology(3, R.string.lbl_book_type_anthology);
+        Anthology(3);
 
         /** {@link Parcelable}. */
         public static final Creator<ContentType> CREATOR = new Creator<>() {
@@ -1652,27 +1651,10 @@ public class Book
             }
         };
 
-        private final int value;
-        @StringRes
-        private final int labelResId;
+        private final int id;
 
-        ContentType(final int value,
-                    @StringRes final int labelResId) {
-            this.value = value;
-            this.labelResId = labelResId;
-        }
-
-        @NonNull
-        public static ContentType getType(final long value) {
-            switch ((int) value) {
-                case 3:
-                    return Anthology;
-                case 1:
-                    return Collection;
-                case 0:
-                default:
-                    return Book;
-            }
+        ContentType(final int id) {
+            this.id = id;
         }
 
         @NonNull
@@ -1680,9 +1662,32 @@ public class Book
             return Arrays.asList(values());
         }
 
+        /**
+         * Lookup by id.
+         * <p>
+         * Import/Export and database usage only.
+         * <p>
+         * Returns {@link #Book} for any invalid id.
+         *
+         * @param id to lookup
+         *
+         * @return type
+         */
+        @NonNull
+        public static ContentType byId(final int id) {
+            return Arrays.stream(values()).filter(v -> v.id == id).findFirst().orElse(Book);
+        }
+
+        /**
+         * Get the internal id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @return id
+         */
         @Override
         public long getId() {
-            return value;
+            return id;
         }
 
         @NonNull
@@ -1690,7 +1695,7 @@ public class Book
         public String getLabel(@NonNull final Context context,
                                @Nullable final Details details,
                                @NonNull final Style style) {
-            return context.getString(labelResId);
+            return context.getResources().getStringArray(R.array.lbl_book_content_type)[id];
         }
 
         @Override

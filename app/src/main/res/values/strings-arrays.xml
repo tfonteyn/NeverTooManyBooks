@@ -63,6 +63,15 @@
         <item>@string/option_field_usage_overwrite</item>
     </string-array>
 
+    <!-- Labels for {@link com.hardbacknutter.nevertoomanybooks.entities.Book.ContentType}. -->
+    <string-array name="lbl_book_content_type">
+        <item>@string/lbl_book_type_book</item>
+        <item>@string/lbl_book_type_collection</item>
+        <!-- value 2 is UNUSED, place holder -->
+        <item>@string/unknown</item>
+        <item>@string/lbl_book_type_anthology</item>
+    </string-array>
+
     <string-array name="lbl_book_condition">
         <item>@string/unknown</item>
         <item>@string/lbl_condition_reading_copy</item>
