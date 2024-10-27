@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,11 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 /**
  * How to handle a data field when updating the entity it belongs to.
@@ -150,7 +150,7 @@ public final class SyncField
     }
 
     /**
-     * Get the key (colum nname) for the field.
+     * Get the key (colum name) for the field.
      *
      * @return key
      */
@@ -172,11 +172,13 @@ public final class SyncField
     /**
      * Get the label for the currently selected action.
      *
-     * @return label resource id
+     * @param context Current context
+     *
+     * @return label
      */
-    @StringRes
-    public int getActionLabelResId() {
-        return syncAction.getLabelResId();
+    @NonNull
+    public String getActionLabel(@NonNull final Context context) {
+        return syncAction.getLabel(context);
     }
 
     /**

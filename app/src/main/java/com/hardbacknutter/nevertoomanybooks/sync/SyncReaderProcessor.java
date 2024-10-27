@@ -421,10 +421,10 @@ public final class SyncReaderProcessor {
          * Write current settings to the user preferences.
          */
         public void writePreferences() {
-
             final SharedPreferences.Editor ed = prefs.edit();
             for (final SyncField syncField : fields.values()) {
-                syncField.getAction().write(ed, preferencePrefix + syncField.getKey());
+                ed.putInt(preferencePrefix + syncField.getKey(),
+                          syncField.getAction().getId());
             }
             ed.apply();
         }
@@ -522,8 +522,8 @@ public final class SyncReaderProcessor {
                         @NonNull final SyncAction defaultAction) {
 
             if (ServiceLocator.getInstance().isFieldEnabled(key)) {
-                final SyncAction action = SyncAction
-                        .read(prefs, preferencePrefix + key, defaultAction);
+                final SyncAction action = SyncAction.byId(
+                        prefs.getInt(preferencePrefix + key, defaultAction.getId()));
                 fields.put(key, new SyncField(key, label, false,
                                               defaultAction, action));
             }
@@ -544,8 +544,8 @@ public final class SyncReaderProcessor {
                              @NonNull final String key) {
 
             if (ServiceLocator.getInstance().isFieldEnabled(prefKey)) {
-                final SyncAction action = SyncAction
-                        .read(prefs, preferencePrefix + key, SyncAction.Append);
+                final SyncAction action = SyncAction.byId(
+                        prefs.getInt(preferencePrefix + key, SyncAction.Append.getId()));
                 fields.put(key, new SyncField(key, label, true,
                                               SyncAction.Append, action));
             }

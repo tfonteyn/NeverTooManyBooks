@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,21 +19,26 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
+
+import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
 public enum SyncAction
         implements Parcelable {
-    Skip(0, R.string.action_skip),
-    CopyIfBlank(1, R.string.option_field_usage_copy_if_blank),
-    Append(2, R.string.option_field_usage_append),
-    Overwrite(3, R.string.option_field_usage_overwrite);
+    /** Ignore/skip the field. */
+    Skip(0),
+    /** Update the field only if the current value is blank (null/empty). */
+    CopyIfBlank(1),
+    /** List fields (incl. text fields): append any new data. */
+    Append(2),
+    /** Force (over)write the field with the new data. */
+    Overwrite(3);
 
     /** {@link Parcelable}. */
     public static final Creator<SyncAction> CREATOR = new Creator<>() {
@@ -50,36 +55,26 @@ public enum SyncAction
         }
     };
 
-    private final int value;
-    @StringRes
-    private final int labelResId;
+    private final int id;
 
-    SyncAction(final int value,
-               @StringRes final int labelResId) {
-        this.value = value;
-        this.labelResId = labelResId;
+    SyncAction(final int id) {
+        this.id = id;
     }
 
+    /**
+     * Lookup by id.
+     * <p>
+     * Import/Export and database usage only.
+     * <p>
+     * Returns {@link #Skip} for any invalid id.
+     *
+     * @param id to lookup
+     *
+     * @return type
+     */
     @NonNull
-    public static SyncAction read(@NonNull final SharedPreferences prefs,
-                                  @NonNull final String key,
-                                  @NonNull final SyncAction defAction) {
-        switch (prefs.getInt(key, defAction.value)) {
-            case 3:
-                return Overwrite;
-            case 2:
-                return Append;
-            case 1:
-                return CopyIfBlank;
-            case 0:
-            default:
-                return Skip;
-        }
-    }
-
-    public void write(@NonNull final SharedPreferences.Editor ed,
-                      @NonNull final String key) {
-        ed.putInt(key, value);
+    public static SyncAction byId(final int id) {
+        return Arrays.stream(values()).filter(v -> v.id == id).findFirst().orElse(Skip);
     }
 
     @NonNull
@@ -105,13 +100,26 @@ public enum SyncAction
     }
 
     /**
-     * Return the user readable label id.
+     * Get the internal id.
+     * <p>
+     * Import/Export and database usage only.
      *
-     * @return string id
+     * @return id
      */
-    @StringRes
-    int getLabelResId() {
-        return labelResId;
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Get a short description of this type.
+     *
+     * @param context Current context
+     *
+     * @return the label
+     */
+    @NonNull
+    String getLabel(@NonNull final Context context) {
+        return context.getResources().getStringArray(R.array.lbl_sync_action)[id];
     }
 
 
