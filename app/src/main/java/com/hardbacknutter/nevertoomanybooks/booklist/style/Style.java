@@ -485,14 +485,32 @@ public interface Style {
             this.id = id;
         }
 
+        /**
+         * Lookup by id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @param id to lookup
+         *
+         * @return type
+         *
+         * @throws IllegalArgumentException for any undefined id
+         */
         @NonNull
-        static Layout byId(final int id) {
+        public static Layout byId(final int id) {
             if (id == 0) {
                 return List;
             }
             return Grid;
         }
 
+        /**
+         * Get the internal id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @return id
+         */
         public int getId() {
             return id;
         }
@@ -510,14 +528,32 @@ public interface Style {
             this.id = id;
         }
 
+        /**
+         * Lookup by id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @param id to lookup
+         *
+         * @return type
+         *
+         * @throws IllegalArgumentException for any undefined id
+         */
         @NonNull
-        static CoverClickAction byId(final int id) {
+        public static CoverClickAction byId(final int id) {
             if (id == 0) {
                 return Zoom;
             }
             return OpenBookDetails;
         }
 
+        /**
+         * Get the internal id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @return id
+         */
         public int getId() {
             return id;
         }
@@ -535,14 +571,32 @@ public interface Style {
             this.id = id;
         }
 
+        /**
+         * Lookup by id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @param id to lookup
+         *
+         * @return type
+         *
+         * @throws IllegalArgumentException for any undefined id
+         */
         @NonNull
-        static CoverLongClickAction byId(final int id) {
+        public static CoverLongClickAction byId(final int id) {
             if (id == 0) {
                 return Ignore;
             }
             return PopupMenu;
         }
 
+        /**
+         * Get the internal id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @return id
+         */
         public int getId() {
             return id;
         }

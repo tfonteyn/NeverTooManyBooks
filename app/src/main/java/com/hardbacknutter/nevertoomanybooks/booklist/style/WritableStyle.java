@@ -38,11 +38,9 @@ public interface WritableStyle
 
     void setExpansionLevel(@IntRange(from = 1) int value);
 
-    void setLayout(int layout);
+    void setCoverClickAction(@NonNull CoverClickAction coverClickAction);
 
-    void setCoverClickAction(int coverClickAction);
-
-    void setCoverLongClickAction(int coverLongClickAction);
+    void setCoverLongClickAction(@NonNull CoverLongClickAction coverLongClickAction);
 
     /**
      * Set the preference whether to <strong>show</strong> the Author full name

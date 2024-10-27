@@ -272,15 +272,15 @@ public class StyleCoder
                                 @NonNull final WritableStyle style) {
 
         if (source.has(StyleDataStore.PK_LAYOUT)) {
-            style.setLayout(source.getInt(StyleDataStore.PK_LAYOUT));
+            style.setLayout(Style.Layout.byId(source.getInt(StyleDataStore.PK_LAYOUT)));
         }
         if (source.has(StyleDataStore.PK_COVER_CLICK_ACTION)) {
-            style.setCoverClickAction(source.getInt(
-                    StyleDataStore.PK_COVER_CLICK_ACTION));
+            style.setCoverClickAction(Style.CoverClickAction.byId(source.getInt(
+                    StyleDataStore.PK_COVER_CLICK_ACTION)));
         }
         if (source.has(StyleDataStore.PK_COVER_LONG_CLICK_ACTION)) {
-            style.setCoverLongClickAction(source.getInt(
-                    StyleDataStore.PK_COVER_LONG_CLICK_ACTION));
+            style.setCoverLongClickAction(Style.CoverLongClickAction.byId(source.getInt(
+                    StyleDataStore.PK_COVER_LONG_CLICK_ACTION)));
         }
         if (source.has(StyleDataStore.PK_COVER_SCALE)) {
             style.setCoverScale(CoverScale.byId(source.getInt(StyleDataStore.PK_COVER_SCALE)));

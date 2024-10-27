@@ -218,11 +218,11 @@ public abstract class BaseStyle
         menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
         // 'simple' options
-        setLayout(rowData.getInt(DBKey.STYLE_LAYOUT));
-        setCoverClickAction(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION));
-        setCoverLongClickAction(rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION));
-        setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
-        setTextScale(rowData.getInt(DBKey.STYLE_TEXT_SCALE));
+        setLayout(Style.Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT)));
+        setCoverClickAction(Style.CoverClickAction.byId(
+                rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION)));
+        setCoverLongClickAction(Style.CoverLongClickAction.byId(
+                rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION)));
         setCoverScale(CoverScale.byId(rowData.getInt(DBKey.STYLE_COVER_SCALE)));
         setTextScale(TextScale.byId(rowData.getInt(DBKey.STYLE_TEXT_SCALE)));
 
@@ -397,18 +397,14 @@ public abstract class BaseStyle
         this.layout = layout;
     }
 
-    public void setLayout(final int layout) {
-        this.layout = Style.Layout.byId(layout);
-    }
-
     @Override
     @NonNull
     public CoverClickAction getCoverClickAction() {
         return coverClickAction;
     }
 
-    public void setCoverClickAction(final int coverClickAction) {
-        this.coverClickAction = CoverClickAction.byId(coverClickAction);
+    public void setCoverClickAction(@NonNull final CoverClickAction coverClickAction) {
+        this.coverClickAction = coverClickAction;
     }
 
     @Override
@@ -418,8 +414,8 @@ public abstract class BaseStyle
     }
 
 
-    public void setCoverLongClickAction(final int coverLongClickAction) {
-        this.coverLongClickAction = CoverLongClickAction.byId(coverLongClickAction);
+    public void setCoverLongClickAction(@NonNull final CoverLongClickAction coverLongClickAction) {
+        this.coverLongClickAction = coverLongClickAction;
     }
 
     @Override

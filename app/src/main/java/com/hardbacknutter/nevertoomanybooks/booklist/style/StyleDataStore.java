@@ -399,15 +399,16 @@ public class StyleDataStore
                 break;
             }
             case PK_LAYOUT: {
-                style.setLayout(Integer.parseInt(value));
+                style.setLayout(Style.Layout.byId(Integer.parseInt(value)));
                 break;
             }
             case PK_COVER_CLICK_ACTION: {
-                style.setCoverClickAction(Integer.parseInt(value));
+                style.setCoverClickAction(Style.CoverClickAction.byId(Integer.parseInt(value)));
                 break;
             }
             case PK_COVER_LONG_CLICK_ACTION: {
-                style.setCoverLongClickAction(Integer.parseInt(value));
+                style.setCoverLongClickAction(Style.CoverLongClickAction.byId(
+                        Integer.parseInt(value)));
                 break;
             }
             default:
