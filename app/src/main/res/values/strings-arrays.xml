@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Booklist Filter - the [0] value is a fallback and not normally shown.-->
+    <string-array name="lbl_bob_filter_signed">
+        <item>@string/btn_all_books</item>
+        <item>@string/option_bob_filter_signed_no</item>
+        <item>@string/option_bob_filter_signed_yes</item>
+    </string-array>
+
+    <!--  Booklist Filter - the [0] value is a fallback and not normally shown.-->
+    <string-array name="lbl_bob_filter_lending">
+        <item>@string/btn_all_books</item>
+        <item>@string/option_bob_filter_lend_out_no</item>
+        <item>@string/option_bob_filter_lend_out_yes</item>
+    </string-array>
+
+    <!-- Booklist Filter - the [0] value is a fallback and not normally shown.-->
+    <string-array name="lbl_bob_filter_isbn">
+        <item>@string/btn_all_books</item>
+        <item>@string/option_bob_filter_isbn_no</item>
+        <item>@string/option_bob_filter_isbn_yes</item>
+    </string-array>
+
+    <!-- Labels for the {@link TextScale} enum values. -->
+    <string-array name="lbl_style_text_scale">
+        <item>@string/size_x_small</item>
+        <item>@string/size_small</item>
+        <item>@string/size_medium</item>
+        <item>@string/size_large</item>
+        <item>@string/size_x_large</item>
+    </string-array>
+
+    <!-- Labels for the {@link CoverScale} enum values. -->
+    <string-array name="lbl_style_cover_scale">
+        <item>@string/size_hidden</item>
+        <item>@string/size_small</item>
+        <item>@string/size_medium</item>
+        <item>@string/size_large</item>
+        <item>@string/size_x_large</item>
+    </string-array>
+
+    <!-- Labels for the {@link Style.Type} enum values. -->
+    <string-array name="lbl_style_type">
+        <item>@string/style_type_user_defined</item>
+        <item>@string/style_type_builtin</item>
+        <item>@string/lbl_defaults</item>
+    </string-array>
+
+    <!-- Labels for the {@link ReadStatus} enum values. -->
+    <string-array name="lbl_read_status">
+        <item>@string/bob_empty_read_status</item>
+        <item>@string/lbl_reading</item>
+        <item>@string/lbl_unread</item>
+        <item>@string/lbl_read</item>
+    </string-array>
+
+    <string-array name="conditions_book">
+        <item>@string/unknown</item>
+        <item>@string/lbl_condition_reading_copy</item>
+        <item>@string/lbl_condition_fair</item>
+        <item>@string/lbl_condition_good</item>
+        <item>@string/lbl_condition_very_good</item>
+        <item>@string/lbl_condition_fine</item>
+    </string-array>
+    <string-array name="conditions_dust_cover">
+        <item>@string/unknown</item>
+        <item>@string/lbl_condition_dust_cover_none</item>
+        <item>@string/lbl_condition_dust_cover_missing_or_bad</item>
+        <item>@string/lbl_condition_good</item>
+        <item>@string/lbl_condition_very_good</item>
+        <item>@string/lbl_condition_fine</item>
+    </string-array>
+
+    <!-- used for Spinners as placeholder text. Can't seem to use "@tools:sample/" there. -->
+    <string-array name="tools_spinner_title">
+        <item>Spinner entry 1</item>
+        <item>Spinner entry 2</item>
+    </string-array>
+</resources>

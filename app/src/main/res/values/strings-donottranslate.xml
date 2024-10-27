@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+
+<!-- ####################################################################################### -->
+<!-- == No translation required == -->
+<!-- ####################################################################################### -->
+<resources>
+    <string name="app_name"
+            translatable="false">&APP_NAME;</string>
+
+    <string name="lbl_github"
+            translatable="false">GitHub</string>
+    <string name="github_project_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
+    <string name="github_help_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki</string>
+    <string name="github_help_calibre_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki#calibre</string>
+    <string name="github_issues_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/issues</string>
+
+    <!--  acronyms -->
+    <string name="lbl_isbn"
+            translatable="false">ISBN</string>
+
+    <!-- External sites  -->
+    <string name="site_amazon"
+            translatable="false">Amazon</string>
+    <string name="site_info_amazon"
+            translatable="false">@string/site_description_general_shopping</string>
+    <string name="site_bedetheque"
+            translatable="false">Bedetheque</string>
+    <string name="site_info_bedetheque"
+            translatable="false">@string/site_description_french_catalogue_eu_comics</string>
+    <string name="site_bol_com"
+            translatable="false">bol.com</string>
+    <string name="site_info_bol_com"
+            translatable="false">@string/site_description_dutch_shopping</string>
+    <string name="site_bookfinder"
+            translatable="false">BookFinder</string>
+    <string name="site_info_bookfinder"
+            translatable="false">@string/site_description_general_shopping</string>
+    <string name="site_goodreads"
+            translatable="false">Goodreads</string>
+    <string name="site_info_goodreads"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_google_books"
+            translatable="false">Google Books</string>
+    <string name="site_info_google_books"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_isfdb"
+            translatable="false">ISFDB</string>
+    <string name="site_info_isfdb"
+            translatable="false">@string/site_description_english_catalogue_FSF</string>
+    <string name="site_kb_nl"
+            translatable="false">KB.NL</string>
+    <string name="site_info_kb_nl"
+            translatable="false">@string/site_description_dutch_catalogue</string>
+    <string name="site_lastdodo_nl"
+            translatable="false">LastDodo</string>
+    <string name="site_info_lastdodo_nl"
+            translatable="false">@string/site_description_dutch_catalogue_eu_comics</string>
+    <string name="site_library_thing"
+            translatable="false">LibraryThing</string>
+    <string name="site_info_library_thing"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_open_library"
+            translatable="false">OpenLibrary</string>
+    <string name="site_info_open_library"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_stripinfo_be"
+            translatable="false">StripInfo</string>
+    <string name="site_info_stripinfo_be"
+            translatable="false">@string/site_description_dutch_catalogue_eu_comics</string>
+    <string name="site_stripweb_be"
+            translatable="false">StripWeb</string>
+    <string name="site_info_stripweb_be"
+            translatable="false">@string/site_description_dutch_comics_shopping</string>
+    <string name="site_dnb_de"
+            translatable="false">DNB.DE</string>
+    <string name="site_info_dnb_de"
+            translatable="false">@string/site_description_german_catalogue</string>
+    <string name="site_douban"
+            translatable="false">Douban</string>
+    <string name="site_info_douban"
+            translatable="false">@string/site_description_chinese_catalogue</string>
+
+    <!-- https://calibre-ebook.com -->
+    <string name="site_calibre"
+            translatable="false">Calibre</string>
+
+    <!-- Shopping submenu title -->
+    <string name="option_amazon_ellipsis"
+            translatable="false">Amazon…</string>
+    <!-- Shopping submenu title -->
+    <string name="option_bol_ellipsis"
+            translatable="false">BOL…</string>
+
+    <!-- The project which inspired us. -->
+    <string name="lbl_book_catalogue"
+            translatable="false">Book Catalogue</string>
+    <string name="brackets"
+            translatable="false">(%1$s)</string>
+
+    <!--&lt;!&ndash; Regular expression with all possible prefixes-->
+    <!--(as seen in the wild) for a Series number. &ndash;&gt;-->
+    <!--<string name="series_prefixes" translatable="false">-->
+    <!--(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|dl.|)-->
+    <!--</string>-->
+    <!---->
+
+    <!-- debug user visible strings, not normally seen; here to please lint. -->
+    <string name="debug"
+            translatable="false">Debug</string>
+    <string name="debug_sq_shell"
+            translatable="false">SQLite Shell</string>
+    <string name="debug_sq_shell_run"
+            translatable="false">Run</string>
+    <string name="debug_sq_shell_list_tables"
+            translatable="false">List tables</string>
+    <string name="debug_sq_shell_max_rows"
+            translatable="false">Max rows</string>
+    <string name="debug_sq_shell_rows_x"
+            translatable="false">Rows: %1$d</string>
+    <string name="debug_sq_shell_rows_affected_x"
+            translatable="false">Rows affected: %1$d</string>
+    <string name="debug_sq_shell_warning_updates_not_allowed"
+            translatable="false">Updates are not allowed</string>
+</resources>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public final class FilterFactory {
             }
             case DBKey.SIGNED__BOOL: {
                 return new PBooleanFilter(
-                        dbKey, R.string.lbl_signed, R.array.pe_bob_filter_signed,
+                        dbKey, R.string.lbl_signed, R.array.lbl_bob_filter_signed,
                         TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED);
             }
 
@@ -81,13 +81,13 @@ public final class FilterFactory {
             // Does the book have an ISBN (or any other code) or none.
             case DBKey.BOOK_ISBN: {
                 return new PHasValueFilter(
-                        dbKey, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
+                        dbKey, R.string.lbl_isbn, R.array.lbl_bob_filter_isbn,
                         TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN);
             }
             // Is the book lend out or not.
             case DBKey.LOANEE_NAME: {
                 return new PHasValueFilter(
-                        dbKey, R.string.lbl_lend_out, R.array.pe_bob_filter_lending,
+                        dbKey, R.string.lbl_lend_out, R.array.lbl_bob_filter_lending,
                         TBL_BOOK_LOANEE, DBDefinitions.DOM_LOANEE);
             }
 
