@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -89,7 +90,7 @@ public interface Style {
      * @return type
      */
     @NonNull
-    StyleType getType();
+    Type getType();
 
     /**
      * Get the label to use. This is for <strong>displaying only</strong>.
@@ -402,6 +403,75 @@ public interface Style {
      */
     @NonNull
     String getGroupsSummaryText(@NonNull Context context);
+
+    enum Type {
+        /**
+         * User defined.
+         */
+        User(0),
+        /**
+         * A predefined style.
+         */
+        Builtin(1),
+        /**
+         * The global style, i.e. the defaults.
+         */
+        Global(2);
+
+        private final int id;
+
+        Type(final int id) {
+            this.id = id;
+        }
+
+        /**
+         * Lookup by id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @param id to lookup
+         *
+         * @return type
+         *
+         * @throws IllegalArgumentException for any undefined id
+         */
+        @NonNull
+        public static Type byId(final int id) {
+            switch (id) {
+                case 0:
+                    return User;
+                case 1:
+                    return Builtin;
+                case 2:
+                    return Global;
+                default:
+                    throw new IllegalArgumentException(String.valueOf(id));
+            }
+        }
+
+        /**
+         * Get the internal id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @return id
+         */
+        public int getId() {
+            return id;
+        }
+
+        /**
+         * Get a short description of this type.
+         *
+         * @param context Current context
+         *
+         * @return the label
+         */
+        @NonNull
+        public String getLabel(@NonNull final Context context) {
+            return context.getResources().getStringArray(R.array.lbl_style_type)[id];
+        }
+    }
 
     enum Layout {
         /** Original list-style. */

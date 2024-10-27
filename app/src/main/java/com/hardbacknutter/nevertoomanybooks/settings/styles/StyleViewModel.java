@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleCon
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -141,7 +140,7 @@ public class StyleViewModel
                                                EditStyleContract.ACTION_EDIT);
 
                 if (action == EditStyleContract.ACTION_CLONE
-                    || dbStyle.getType() == StyleType.Builtin) {
+                    || dbStyle.getType() == Style.Type.Builtin) {
                     // We're cloning a style. If the style is Builtin, we force cloning.
                     style = dbStyle.clone(context);
                 } else {
@@ -177,7 +176,7 @@ public class StyleViewModel
     /**
      * Get the template UUID this style edit was based on  for the Activity result.
      * <p>
-     * <strong>DO NOT use</strong> for {@link StyleType#Global}.
+     * <strong>DO NOT use</strong> for {@link Style.Type#Global}.
      *
      * @return uuid
      */

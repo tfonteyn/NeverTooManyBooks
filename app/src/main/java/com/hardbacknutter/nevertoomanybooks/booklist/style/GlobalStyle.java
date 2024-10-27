@@ -92,13 +92,13 @@ public final class GlobalStyle
 
     @NonNull
     @Override
-    public StyleType getType() {
-        return StyleType.Global;
+    public Type getType() {
+        return Type.Global;
     }
 
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        return StyleType.Global.getLabel(context);
+        return Type.Global.getLabel(context);
     }
 }

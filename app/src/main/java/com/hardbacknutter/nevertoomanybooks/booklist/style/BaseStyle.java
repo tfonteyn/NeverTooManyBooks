@@ -198,8 +198,8 @@ public abstract class BaseStyle
     /**
      * Constructor. Load the style data from the database.
      * <p>
-     * Used by {@link StyleType#Global} and {@link StyleType#User},
-     * but NOT by {@link StyleType#Builtin}.
+     * Used by {@link Style.Type#Global} and {@link Style.Type#User},
+     * but NOT by {@link Style.Type#Builtin}.
      *
      * @param rowData to use
      *
@@ -223,6 +223,9 @@ public abstract class BaseStyle
         setCoverLongClickAction(rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION));
         setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
         setTextScale(rowData.getInt(DBKey.STYLE_TEXT_SCALE));
+        setCoverScale(CoverScale.byId(rowData.getInt(DBKey.STYLE_COVER_SCALE)));
+        setTextScale(TextScale.byId(rowData.getInt(DBKey.STYLE_TEXT_SCALE)));
+
         groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
 
         setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));

@@ -260,7 +260,7 @@ public final class DBKey {
      * Note the actual name of the column is incorrect.
      * This used to be a boolean (0=user, 1=builtin).
      *
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Type
      */
     public static final String STYLE_TYPE = "builtin";
     public static final String STYLE_IS_PREFERRED = "preferred";

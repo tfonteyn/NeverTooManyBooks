@@ -355,8 +355,8 @@
         <item>4</item>
     </string-array>
 
-    <!-- SeekBarPreference - Summary text - Scale text. -->
-    <string-array name="pe_bob_text_scale">
+    <!-- Labels for the TextScale enum values. -->
+    <string-array name="lbl_style_text_scale">
         <item>@string/size_x_small</item>
         <item>@string/size_small</item>
         <item>@string/size_medium</item>
@@ -364,13 +364,20 @@
         <item>@string/size_x_large</item>
     </string-array>
 
-    <!-- SeekBarPreference - Summary text - Scale thumbnails in the list view. -->
-    <string-array name="pe_bob_thumbnail_scale">
+    <!-- Labels for the CoverScale enum values. -->
+    <string-array name="lbl_style_cover_scale">
         <item>@string/size_hidden</item>
         <item>@string/size_small</item>
         <item>@string/size_medium</item>
         <item>@string/size_large</item>
         <item>@string/size_x_large</item>
+    </string-array>
+
+    <!-- Labels for the Style.Type enum values. -->
+    <string-array name="lbl_style_type">
+        <item>@string/style_type_user_defined</item>
+        <item>@string/style_type_builtin</item>
+        <item>@string/lbl_defaults</item>
     </string-array>
 
     <!-- MultiSelectListPreference - Determines which author type is considered the primary author of a book -->

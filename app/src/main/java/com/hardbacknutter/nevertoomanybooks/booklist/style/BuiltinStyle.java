@@ -311,8 +311,8 @@ public final class BuiltinStyle
 
     @Override
     @NonNull
-    public StyleType getType() {
-        return StyleType.Builtin;
+    public Type getType() {
+        return Type.Builtin;
     }
 
     @Override

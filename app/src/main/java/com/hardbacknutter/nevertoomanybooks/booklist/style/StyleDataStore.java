@@ -391,7 +391,7 @@ public class StyleDataStore
                 // The DataStores lives inside a ViewModel, so we can't get a Context
                 // and use the type independent #getLabel(Context).
                 // But we only allow name editing for a UserStyle anyhow.
-                if (style.getType() == StyleType.User) {
+                if (style.getType() == Style.Type.User) {
                     //noinspection DataFlowIssue
                     ((UserStyle) style).setName(value);
                 }
@@ -423,7 +423,7 @@ public class StyleDataStore
         switch (key) {
             case PK_NAME: {
                 // See remarks in #putString
-                if (style.getType() == StyleType.User) {
+                if (style.getType() == Style.Type.User) {
                     return ((UserStyle) style).getName();
                 } else {
                     // We can't stop the framework calling us... just return bogus

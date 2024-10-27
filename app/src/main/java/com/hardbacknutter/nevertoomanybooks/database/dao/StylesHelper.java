@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -272,7 +271,7 @@ public class StylesHelper {
             }
         }
 
-        if (style.getType() == StyleType.Global) {
+        if (style.getType() == Style.Type.Global) {
             return update(context, style);
         }
 
@@ -339,7 +338,7 @@ public class StylesHelper {
             }
             // Now update the caches.
             for (final Style style : styles) {
-                if (style.getType() == StyleType.Global) {
+                if (style.getType() == Style.Type.Global) {
                     // ensure both the global style and any inheriting styles get reloaded
                     globalStyle = null;
                     cache.clear();
@@ -381,8 +380,8 @@ public class StylesHelper {
         }
 
         if (styleDaoSupplier.get().delete(style)) {
-            // Sanity check, it should always be a StyleType.User
-            if (style.getType() == StyleType.User) {
+            // Sanity check, it should always be a Style.Type.User
+            if (style.getType() == Style.Type.User) {
                 cache.remove(style.getUuid());
             }
             return true;

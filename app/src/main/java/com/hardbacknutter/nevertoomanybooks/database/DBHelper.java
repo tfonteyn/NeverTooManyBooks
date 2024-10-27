@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -560,7 +559,7 @@ public class DBHelper
             final List<String> uuids = new ArrayList<>();
             try (Cursor cursor = db.rawQuery(
                     "SELECT uuid FROM " + TBL_BOOKLIST_STYLES.getName()
-                    + " WHERE " + DBKey.STYLE_TYPE + "=" + StyleType.User.getId(), null)) {
+                    + " WHERE " + DBKey.STYLE_TYPE + "=" + Style.Type.User.getId(), null)) {
                 while (cursor.moveToNext()) {
                     uuids.add(cursor.getString(0));
                 }

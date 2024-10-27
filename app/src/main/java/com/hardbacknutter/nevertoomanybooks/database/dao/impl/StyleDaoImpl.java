@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
@@ -90,7 +89,7 @@ public class StyleDaoImpl
             for (final BuiltinStyle.Definition styleDef : BuiltinStyle.getAll()) {
                 stmt.bindLong(1, styleDef.getId());
                 stmt.bindString(2, styleDef.getUuid());
-                stmt.bindLong(3, StyleType.Builtin.getId());
+                stmt.bindLong(3, Style.Type.Builtin.getId());
                 // preferred: false
                 stmt.bindLong(4, 0);
                 // menu position, initially just in the order defined.
@@ -198,7 +197,7 @@ public class StyleDaoImpl
         final Map<String, Style> map = new LinkedHashMap<>();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_TYPE, new String[]{
-                String.valueOf(StyleType.User.getId())})) {
+                String.valueOf(Style.Type.User.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final Style style = UserStyle.createFromDatabase(rowData);
@@ -215,7 +214,7 @@ public class StyleDaoImpl
         final Map<String, Style> map = new LinkedHashMap<>();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_TYPE, new String[]{
-                String.valueOf(StyleType.Builtin.getId())})) {
+                String.valueOf(Style.Type.Builtin.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 BuiltinStyle.createFromDatabase(rowData).ifPresent(
@@ -230,7 +229,7 @@ public class StyleDaoImpl
     @NonNull
     public Style getGlobalStyle() {
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_TYPE, new String[]{
-                String.valueOf(StyleType.Global.getId())})) {
+                String.valueOf(Style.Type.Global.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
                 return GlobalStyle.createFromDatabase(rowData);
@@ -265,12 +264,12 @@ public class StyleDaoImpl
                        @NonNull final Style style)
             throws DaoUpdateException {
         final ContentValues cv = new ContentValues();
-        // Note that the StyleType is NEVER updated.
+        // Note that the Style.Type is NEVER updated.
 
         cv.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         cv.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
-        if (style.getType() != StyleType.Builtin) {
+        if (style.getType() != Style.Type.Builtin) {
             cv.put(DBKey.STYLE_NAME, style.getLabel(context));
 
             cv.put(DBKey.STYLE_EXP_LEVEL, style.getExpansionLevel());
@@ -377,7 +376,7 @@ public class StyleDaoImpl
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /**
-         * Find a {@link Style} by its {@link StyleType}.
+         * Find a {@link Style} by its {@link Style.Type}.
          * <p>
          * We order by the id, i.e. in the order the styles were created.
          * This is only done to get a reproducible and consistent order.

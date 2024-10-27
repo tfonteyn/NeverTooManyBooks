@@ -37,7 +37,6 @@ import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
@@ -255,7 +254,7 @@ public class PreferredStylesViewModel
         final Style templateStyle = stylesHelper.getStyle(templateUuid).orElseThrow();
         final int templateRow = findRow(templateStyle);
 
-        if (templateStyle.getType() == StyleType.User) {
+        if (templateStyle.getType() == Style.Type.User) {
             // The 'style' is either an edit of a user-defined style,
             // or it's a (new) clone of a user-defined style.
 
@@ -268,7 +267,7 @@ public class PreferredStylesViewModel
                 // Put it directly above the user-defined original
                 styleList.add(templateRow, style);
             }
-        } else if (templateStyle.getType() == StyleType.Builtin) {
+        } else if (templateStyle.getType() == Style.Type.Builtin) {
             // It's a clone of a builtin style
             if (templateStyle.isPreferred()) {
                 // if the original style was a preferred style,

@@ -107,7 +107,7 @@ public class StyleCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        final StyleType type = style.getType();
+        final Style.Type type = style.getType();
 
         out.put(DBKey.STYLE_TYPE, type.getId());
         out.put(DBKey.STYLE_UUID, style.getUuid());
@@ -115,12 +115,12 @@ public class StyleCoder
         out.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         out.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
-        if (type == StyleType.Builtin) {
+        if (type == Style.Type.Builtin) {
             // We're done
             return out;
         }
 
-        if (type == StyleType.User) {
+        if (type == Style.Type.User) {
             out.put(DBKey.STYLE_NAME, ((UserStyle) style).getName());
         }
 
@@ -211,17 +211,17 @@ public class StyleCoder
 
         final String uuid = data.getString(DBKey.STYLE_UUID);
 
-        final StyleType type;
+        final Style.Type type;
         if (data.has(DBKey.STYLE_TYPE)) {
             // Version 5.1 archives store the type; just use it.
-            type = StyleType.byId(data.getInt(DBKey.STYLE_TYPE));
+            type = Style.Type.byId(data.getInt(DBKey.STYLE_TYPE));
         } else {
             // without a STYLE_TYPE, we're reading a version 5.0 or earlier
             // Use the UUID to check if we're reading a builtin Style.
             if (BuiltinStyle.isBuiltin(uuid)) {
-                type = StyleType.Builtin;
+                type = Style.Type.Builtin;
             } else {
-                type = StyleType.User;
+                type = Style.Type.User;
             }
         }
 
@@ -257,7 +257,7 @@ public class StyleCoder
             // any element in the source which we don't know, will simply be ignored.
             final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
 
-            if (style.getType() == StyleType.User && source.has(StyleDataStore.PK_GROUPS)) {
+            if (style.getType() == Style.Type.User && source.has(StyleDataStore.PK_GROUPS)) {
                 decodeGroups((WritableStyle) style, source,
                              stylesHelper.getGlobalStyle());
             }

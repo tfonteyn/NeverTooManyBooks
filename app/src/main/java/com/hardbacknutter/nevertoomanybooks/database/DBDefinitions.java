@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
@@ -1175,7 +1174,7 @@ public final class DBDefinitions {
         DOM_STYLE_TYPE =
                 new Domain.Builder(DBKey.STYLE_TYPE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(StyleType.User.getId())
+                        .withDefault(Style.Type.User.getId())
                         .build();
 
         DOM_STYLE_IS_PREFERRED =

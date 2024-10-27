@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 
 @SuppressWarnings("WeakerAccess")
@@ -110,7 +109,7 @@ public class StylePickerViewModel
     public CharSequence getLabel(@NonNull final Context context,
                                  final int position) {
         final Style style = styleList.get(position);
-        if (style.getType() == StyleType.Builtin) {
+        if (style.getType() == Style.Type.Builtin) {
             //TODO: maybe move style '*' suffix logic to the style itself and use universally?
             return context.getString(R.string.a_b, style.getLabel(context), builtinLabelSuffix);
         } else {

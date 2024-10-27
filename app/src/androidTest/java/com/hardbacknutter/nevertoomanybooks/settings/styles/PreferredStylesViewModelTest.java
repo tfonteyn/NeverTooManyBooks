@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -85,7 +84,7 @@ public class PreferredStylesViewModelTest
         for (final String prefix : List.of(NAME_CLONE_BUILTIN, NAME_CLONE_USER)) {
             stylesHelper.getStyles(true)
                         .stream()
-                        .filter(style -> style.getType() == StyleType.User)
+                        .filter(style -> style.getType() == Style.Type.User)
                         .map(style -> (UserStyle) style)
                         .filter(userStyle -> userStyle.getName().startsWith(prefix))
                         .forEach(stylesHelper::delete);
@@ -116,7 +115,7 @@ public class PreferredStylesViewModelTest
         initialStyle = styleList.get(initialPosition);
         try {
             // Skip all entries until we find a Builtin style.
-            while (initialStyle.getType() != StyleType.Builtin) {
+            while (initialStyle.getType() != Style.Type.Builtin) {
                 initialStyle = styleList.get(++initialPosition);
             }
         } catch (@NonNull final IndexOutOfBoundsException e) {
@@ -198,7 +197,7 @@ public class PreferredStylesViewModelTest
         initialStyle = styleList.get(initialPosition);
         try {
             // Skip all entries until we find a User style.
-            while (initialStyle.getType() != StyleType.User) {
+            while (initialStyle.getType() != Style.Type.User) {
                 initialStyle = styleList.get(++initialPosition);
             }
         } catch (@NonNull final IndexOutOfBoundsException e) {
@@ -269,7 +268,7 @@ public class PreferredStylesViewModelTest
         initialStyle = styleList.get(initialPosition);
         try {
             // Skip all entries until we find a User style.
-            while (initialStyle.getType() != StyleType.User) {
+            while (initialStyle.getType() != Style.Type.User) {
                 initialStyle = styleList.get(++initialPosition);
             }
         } catch (@NonNull final IndexOutOfBoundsException e) {
