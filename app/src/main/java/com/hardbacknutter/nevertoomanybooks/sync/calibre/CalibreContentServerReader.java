@@ -278,7 +278,7 @@ public class CalibreContentServerReader
                 new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
 
         // add the sorted fields
-        map.forEach((label, keys) -> builder.add(context, label, keys));
+        map.forEach(builder::add);
 
         builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
