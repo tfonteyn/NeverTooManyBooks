@@ -345,13 +345,13 @@ public class ShowBookDetailsViewModel
         fields.add(new TextViewField<>(FragmentId.Main, R.id.condition,
                                        DBKey.BOOK_CONDITION,
                                        new StringArrayResFormatter(
-                                               context, R.array.conditions_book))
+                                               context, R.array.lbl_book_condition))
                            .addRelatedViews(R.id.lbl_condition));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.condition_cover,
                                        DBKey.BOOK_CONDITION_COVER,
                                        new StringArrayResFormatter(
-                                               context, R.array.conditions_dust_cover))
+                                               context, R.array.lbl_dust_cover_condition))
                            .addRelatedViews(R.id.lbl_condition_cover));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.notes,

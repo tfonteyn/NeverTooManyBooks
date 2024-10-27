@@ -63,7 +63,7 @@
         <item>@string/option_field_usage_overwrite</item>
     </string-array>
 
-    <string-array name="conditions_book">
+    <string-array name="lbl_book_condition">
         <item>@string/unknown</item>
         <item>@string/lbl_condition_reading_copy</item>
         <item>@string/lbl_condition_fair</item>
@@ -71,7 +71,7 @@
         <item>@string/lbl_condition_very_good</item>
         <item>@string/lbl_condition_fine</item>
     </string-array>
-    <string-array name="conditions_dust_cover">
+    <string-array name="lbl_dust_cover_condition">
         <item>@string/unknown</item>
         <item>@string/lbl_condition_dust_cover_none</item>
         <item>@string/lbl_condition_dust_cover_missing_or_bad</item>

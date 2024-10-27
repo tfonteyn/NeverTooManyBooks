@@ -1111,12 +1111,12 @@ public class EditBookViewModel
 
         fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
                                                     DBKey.BOOK_CONDITION,
-                                                    context, R.array.conditions_book)
+                                                    context, R.array.lbl_book_condition)
                            .setTextInputLayoutId(R.id.lbl_condition));
 
         fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition_cover,
                                                     DBKey.BOOK_CONDITION_COVER,
-                                                    context, R.array.conditions_dust_cover)
+                                                    context, R.array.lbl_dust_cover_condition)
                            .setTextInputLayoutId(R.id.lbl_condition_cover));
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.location, DBKey.LOCATION,

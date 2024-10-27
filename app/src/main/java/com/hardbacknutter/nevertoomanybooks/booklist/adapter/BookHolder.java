@@ -125,7 +125,7 @@ public class BookHolder
         this.partialDateParser = new PartialDateParser();
 
         final Resources res = context.getResources();
-        conditionDescriptions = res.getStringArray(R.array.conditions_book);
+        conditionDescriptions = res.getStringArray(R.array.lbl_book_condition);
         a_bracket_b_bracket = res.getString(R.string.a_bracket_b_bracket);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {

@@ -74,7 +74,7 @@ class Formatter
         this.style = style;
         this.locales = locales;
 
-        conditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
+        conditionDescriptions = context.getResources().getStringArray(R.array.lbl_book_condition);
     }
 
     @NonNull
