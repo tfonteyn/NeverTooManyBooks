@@ -464,8 +464,8 @@ public abstract class BaseStyle
         return textScale;
     }
 
-    public void setTextScale(final int scale) {
-        textScale = TextScale.byId(scale);
+    public void setTextScale(@NonNull final TextScale scale) {
+        textScale = scale;
     }
 
     @Override
@@ -474,8 +474,8 @@ public abstract class BaseStyle
         return coverScale;
     }
 
-    public void setCoverScale(final int coverScale) {
-        this.coverScale = CoverScale.byId(coverScale);
+    public void setCoverScale(@NonNull final CoverScale coverScale) {
+        this.coverScale = coverScale;
     }
 
     @Override

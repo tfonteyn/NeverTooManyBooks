@@ -31,10 +31,11 @@ import java.util.stream.IntStream;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -136,9 +137,9 @@ public class StyleCoder
         settings.put(StyleDataStore.PK_COVER_LONG_CLICK_ACTION,
                      style.getCoverLongClickAction().getId());
         settings.put(StyleDataStore.PK_COVER_SCALE,
-                     style.getCoverScale().getScale());
+                     style.getCoverScale().getId());
         settings.put(StyleDataStore.PK_TEXT_SCALE,
-                     style.getTextScale().getScale());
+                     style.getTextScale().getId());
 
         settings.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
                      style.isGroupRowUsesPreferredHeight());
@@ -282,10 +283,10 @@ public class StyleCoder
                     StyleDataStore.PK_COVER_LONG_CLICK_ACTION));
         }
         if (source.has(StyleDataStore.PK_COVER_SCALE)) {
-            style.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));
+            style.setCoverScale(CoverScale.byId(source.getInt(StyleDataStore.PK_COVER_SCALE)));
         }
         if (source.has(StyleDataStore.PK_TEXT_SCALE)) {
-            style.setTextScale(source.getInt(StyleDataStore.PK_TEXT_SCALE));
+            style.setTextScale(TextScale.byId(source.getInt(StyleDataStore.PK_TEXT_SCALE)));
         }
         if (source.has(StyleDataStore.PK_GROUP_ROW_HEIGHT)) {
             style.setGroupRowUsesPreferredHeight(

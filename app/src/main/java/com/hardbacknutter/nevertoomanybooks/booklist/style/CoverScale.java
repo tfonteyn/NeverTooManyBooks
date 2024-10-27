@@ -73,20 +73,31 @@ public enum CoverScale {
      */
     public static final float HW_RATIO = 0.6f;
 
-    private final int scale;
+    private final int id;
 
-    CoverScale(final int scale) {
-        this.scale = scale;
+    CoverScale(final int id) {
+        this.id = id;
     }
 
+    /**
+     * Lookup by id.
+     * <p>
+     * Import/Export and database usage only.
+     *
+     * @param id to lookup
+     *
+     * @return type
+     *
+     * @throws IllegalArgumentException for any undefined id
+     */
     @NonNull
-    static CoverScale byId(final int id) {
-        if (id > Maximum.scale) {
+    public static CoverScale byId(final int id) {
+        if (id > Maximum.id) {
             return Maximum;
-        } else if (id < Hidden.scale) {
+        } else if (id < Hidden.id) {
             return Hidden;
         } else {
-            return Arrays.stream(values()).filter(v -> v.scale == id).findAny().orElse(DEFAULT);
+            return Arrays.stream(values()).filter(v -> v.id == id).findAny().orElse(DEFAULT);
         }
     }
 
@@ -100,12 +111,26 @@ public enum CoverScale {
     }
 
     /**
-     * Get the numerical value of this scale.
+     * Get the internal id.
+     * <p>
+     * Import/Export and database usage only.
      *
-     * @return numerical value for storing in database etc...
+     * @return id
      */
-    public int getScale() {
-        return scale;
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Get a short description of this scale.
+     *
+     * @param context Current context
+     *
+     * @return the label
+     */
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        return context.getResources().getStringArray(R.array.lbl_style_cover_scale)[id];
     }
 
     /**
@@ -115,7 +140,7 @@ public enum CoverScale {
      */
     @NonNull
     public CoverScale larger() {
-        final int next = MathUtils.clamp(scale + 1, Small.scale, Maximum.scale);
+        final int next = MathUtils.clamp(id + 1, Small.id, Maximum.id);
         return values()[next];
     }
 
@@ -126,7 +151,7 @@ public enum CoverScale {
      */
     @NonNull
     public CoverScale smaller() {
-        final int next = MathUtils.clamp(scale - 1, Small.scale, Maximum.scale);
+        final int next = MathUtils.clamp(id - 1, Small.id, Maximum.id);
         return values()[next];
     }
 
@@ -162,7 +187,7 @@ public enum CoverScale {
         final TypedArray coverSizes = context
                 .getResources().obtainTypedArray(R.array.cover_max_width);
         try {
-            return coverSizes.getDimensionPixelSize(scale, 0);
+            return coverSizes.getDimensionPixelSize(id, 0);
         } finally {
             coverSizes.recycle();
         }
@@ -199,7 +224,7 @@ public enum CoverScale {
                 final float coverWidthPx = 0.6f * TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         // The value in dp
-                        coverSizes.getDimension(scale, 1),
+                        coverSizes.getDimension(id, 1),
                         res.getDisplayMetrics());
 
                 return (int) Math.floor(getWindowWidthInPx(context) / coverWidthPx);

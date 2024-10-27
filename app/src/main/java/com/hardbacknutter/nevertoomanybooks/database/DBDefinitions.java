@@ -1296,12 +1296,12 @@ public final class DBDefinitions {
         DOM_STYLE_TEXT_SCALE =
                 new Domain.Builder(DBKey.STYLE_TEXT_SCALE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(TextScale.DEFAULT.getScale())
+                        .withDefault(TextScale.DEFAULT.getId())
                         .build();
         DOM_STYLE_COVER_SCALE =
                 new Domain.Builder(DBKey.STYLE_COVER_SCALE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(CoverScale.DEFAULT.getScale())
+                        .withDefault(CoverScale.DEFAULT.getId())
                         .build();
 
         DOM_STYLE_LIST_HEADER =

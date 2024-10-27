@@ -76,16 +76,16 @@ public interface WritableStyle
     /**
      * Set the text/font scale.
      *
-     * @param scale the id of the {@link TextScale}.
+     * @param scale the {@link TextScale}.
      */
-    void setTextScale(int scale);
+    void setTextScale(@NonNull TextScale scale);
 
     /**
      * Set the cover scale.
      *
-     * @param scale the id of the {@link CoverScale}.
+     * @param scale the {@link CoverScale}.
      */
-    void setCoverScale(int scale);
+    void setCoverScale(@NonNull CoverScale scale);
 
     /**
      * Set the bitmap value with the list header fields to show.

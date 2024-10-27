@@ -232,10 +232,9 @@ public abstract class StyleBaseFragment
         // List layout
         pListBookLevelFields.setSummary(
                 createVisibilitySummary(context, style, FieldVisibility.Screen.List));
-        pCoverScale.setSummary(context.getResources().getStringArray(
-                R.array.pe_bob_thumbnail_scale)[style.getCoverScale().getScale()]);
-        pTextScale.setSummary(context.getResources().getStringArray(
-                R.array.pe_bob_text_scale)[style.getTextScale().getScale()]);
+
+        pCoverScale.setSummary(style.getCoverScale().getLabel(context));
+        pTextScale.setSummary(style.getTextScale().getLabel(context));
     }
 
     @NonNull

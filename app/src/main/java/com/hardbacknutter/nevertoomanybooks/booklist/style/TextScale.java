@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,27 +41,56 @@ public enum TextScale {
 
     public static final TextScale DEFAULT = Medium;
 
-    private final int scale;
+    private final int id;
 
-    TextScale(final int scale) {
-        this.scale = scale;
+    TextScale(final int id) {
+        this.id = id;
     }
 
-    public int getScale() {
-        return scale;
-    }
-
+    /**
+     * Lookup by id.
+     * <p>
+     * Import/Export and database usage only.
+     *
+     * @param id to lookup
+     *
+     * @return type
+     *
+     * @throws IllegalArgumentException for any undefined id
+     */
     @NonNull
     public static TextScale byId(final int id) {
-        if (id > XL.scale) {
+        if (id > XL.id) {
             return XL;
-        } else if (id < VerySmall.scale) {
+        } else if (id < VerySmall.id) {
             return VerySmall;
         } else {
-            return Arrays.stream(values()).filter(v -> v.scale == id).findAny().orElse(DEFAULT);
+            return Arrays.stream(values()).filter(v -> v.id == id).findAny().orElse(DEFAULT);
         }
     }
 
+    /**
+     * Get the internal id.
+     * <p>
+     * Import/Export and database usage only.
+     *
+     * @return id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Get a short description of this scale.
+     *
+     * @param context Current context
+     *
+     * @return the label
+     */
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        return context.getResources().getStringArray(R.array.lbl_style_text_scale)[id];
+    }
 
     @Dimension(unit = Dimension.SP)
     public float getFontSizeInSp(@NonNull final Context context) {
@@ -69,7 +98,7 @@ public enum TextScale {
         final TypedArray ta;
         ta = res.obtainTypedArray(R.array.bob_text_size_in_sp);
         try {
-            final float size = ta.getFloat(scale, 0);
+            final float size = ta.getFloat(id, 0);
             if (BuildConfig.DEBUG /* always */) {
                 if (size <= 0) {
                     throw new IllegalArgumentException("Font size");
@@ -86,7 +115,7 @@ public enum TextScale {
         final TypedArray ta;
         ta = res.obtainTypedArray(R.array.bob_text_padding_in_percent);
         try {
-            final float size = ta.getFloat(scale, 0);
+            final float size = ta.getFloat(id, 0);
             if (BuildConfig.DEBUG /* always */) {
                 if (size <= 0) {
                     throw new IllegalArgumentException("Padding factor");

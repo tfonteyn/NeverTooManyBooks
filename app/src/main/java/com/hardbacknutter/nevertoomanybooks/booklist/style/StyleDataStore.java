@@ -257,11 +257,11 @@ public class StyleDataStore
                 break;
 
             case PK_COVER_SCALE:
-                style.setCoverScale(value);
+                style.setCoverScale(CoverScale.byId(value));
                 break;
 
             case PK_TEXT_SCALE:
-                style.setTextScale(value);
+                style.setTextScale(TextScale.byId(value));
                 break;
 
             default:
@@ -278,10 +278,10 @@ public class StyleDataStore
                 return style.getExpansionLevel();
 
             case PK_COVER_SCALE:
-                return style.getCoverScale().getScale();
+                return style.getCoverScale().getId();
 
             case PK_TEXT_SCALE:
-                return style.getTextScale().getScale();
+                return style.getTextScale().getId();
 
             default:
                 throw new IllegalArgumentException(key);

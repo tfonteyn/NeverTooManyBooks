@@ -629,9 +629,9 @@ public class DBHelper
 
 
                     stmt.bindLong(++c, stylePrefs.getInt(
-                            "style.booklist.scale.font", TextScale.DEFAULT.getScale()));
+                            "style.booklist.scale.font", TextScale.DEFAULT.getId()));
                     stmt.bindLong(++c, stylePrefs.getInt(
-                            "style.booklist.scale.thumbnails", CoverScale.DEFAULT.getScale()));
+                            "style.booklist.scale.thumbnails", CoverScale.DEFAULT.getId()));
 
                     stmt.bindLong(++c, StyleDataStore.convert(
                             stylePrefs.getStringSet("style.booklist.header", null),
