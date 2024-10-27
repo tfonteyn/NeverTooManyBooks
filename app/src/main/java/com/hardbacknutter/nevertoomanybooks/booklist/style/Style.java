@@ -414,7 +414,7 @@ public interface Style {
          */
         Builtin(1),
         /**
-         * The global style, i.e. the defaults.
+         * The global style, i.e. the defaults as set by the user.
          */
         Global(2);
 

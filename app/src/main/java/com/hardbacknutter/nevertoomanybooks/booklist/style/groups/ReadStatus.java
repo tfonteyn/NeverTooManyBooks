@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,11 +30,10 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * Used to create an ordering of the read-status.
@@ -59,53 +57,74 @@ public enum ReadStatus
     /**
      * Currently reading - the read-start-date is set, the read-end-date is not.
      */
-    Reading(1, R.string.lbl_reading),
+    Reading(1),
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#DOM_BOOK_READ}
      * is {@code false}.
      */
-    Unread(2, R.string.lbl_unread),
+    Unread(2),
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#DOM_BOOK_READ}
      * is {@code true}.
      */
-    Read(3, R.string.lbl_read),
+    Read(3),
     /**
      * Never used/generated, but serves as a fallback option which should never be seen.
      */
-    Unknown(0, R.string.bob_empty_read_status);
+    Unknown(0);
 
     /** WHEN/WHERE clause. */
     public static final String W_READING =
-            TBL_BOOKS.dot(DBKey.READ_START__DATE) + "<>''"
-            + " AND " + TBL_BOOKS.dot(DBKey.READ_END__DATE) + "=''";
+            DBDefinitions.TBL_BOOKS.dot(DBKey.READ_START__DATE) + "<>''"
+            + " AND " + DBDefinitions.TBL_BOOKS.dot(DBKey.READ_END__DATE) + "=''";
     /** WHEN/WHERE clause. */
-    public static final String W_READ = TBL_BOOKS.dot(DBKey.READ__BOOL) + "=1";
+    public static final String W_READ = DBDefinitions.TBL_BOOKS.dot(DBKey.READ__BOOL) + "=1";
     /** WHEN/WHERE clause. */
-    public static final String W_UNREAD = TBL_BOOKS.dot(DBKey.READ__BOOL) + "=0";
+    public static final String W_UNREAD = DBDefinitions.TBL_BOOKS.dot(DBKey.READ__BOOL) + "=0";
 
     private final int id;
-    @StringRes
-    private final int labelId;
 
-    ReadStatus(final int id,
-               @StringRes final int labelId) {
+    ReadStatus(final int id) {
         this.id = id;
-        this.labelId = labelId;
     }
 
+    /**
+     * Get the list of all status value.
+     *
+     * <strong>Excludes</strong> the unknown status.
+     * <p>
+     * Uses the same order as the numerical order.
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<ReadStatus> getAll() {
+        return List.of(Reading, Unread, Read);
+    }
+
+    /**
+     * Lookup by id.
+     * <p>
+     * Import/Export and database usage only.
+     * <p>
+     * Returns {@link #Unknown} for any invalid id.
+     *
+     * @param id to lookup
+     *
+     * @return type
+     */
     @NonNull
     public static ReadStatus byId(final int id) {
         return Arrays.stream(values()).filter(v -> v.id == id).findFirst().orElse(Unknown);
     }
 
-    @NonNull
-    public static List<ReadStatus> getAll() {
-        // Do NOT return the unknown status!
-        // Use the same order as the numerical order.
-        return List.of(Reading, Unread, Read);
-    }
-
+    /**
+     * Get the internal id.
+     * <p>
+     * Import/Export and database usage only.
+     *
+     * @return id
+     */
     public long getId() {
         return id;
     }
@@ -115,6 +134,6 @@ public enum ReadStatus
     public String getLabel(@NonNull final Context context,
                            @NonNull final Details details,
                            @NonNull final Style style) {
-        return context.getString(labelId);
+        return context.getResources().getStringArray(R.array.lbl_read_status)[id];
     }
 }

@@ -355,7 +355,7 @@
         <item>4</item>
     </string-array>
 
-    <!-- Labels for the TextScale enum values. -->
+    <!-- Labels for the {@link TextScale} enum values. -->
     <string-array name="lbl_style_text_scale">
         <item>@string/size_x_small</item>
         <item>@string/size_small</item>
@@ -364,7 +364,7 @@
         <item>@string/size_x_large</item>
     </string-array>
 
-    <!-- Labels for the CoverScale enum values. -->
+    <!-- Labels for the {@link CoverScale} enum values. -->
     <string-array name="lbl_style_cover_scale">
         <item>@string/size_hidden</item>
         <item>@string/size_small</item>
@@ -373,11 +373,19 @@
         <item>@string/size_x_large</item>
     </string-array>
 
-    <!-- Labels for the Style.Type enum values. -->
+    <!-- Labels for the {@link Style.Type} enum values. -->
     <string-array name="lbl_style_type">
         <item>@string/style_type_user_defined</item>
         <item>@string/style_type_builtin</item>
         <item>@string/lbl_defaults</item>
+    </string-array>
+
+    <!-- Labels for the {@link ReadStatus} enum values. -->
+    <string-array name="lbl_read_status">
+        <item>@string/bob_empty_read_status</item>
+        <item>@string/lbl_reading</item>
+        <item>@string/lbl_unread</item>
+        <item>@string/lbl_read</item>
     </string-array>
 
     <!-- MultiSelectListPreference - Determines which author type is considered the primary author of a book -->
