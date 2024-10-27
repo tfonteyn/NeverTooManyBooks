@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * One of the major issues is that it does not preserve/expose the icon resource id
  * but only the icon Drawable. As a result, a MenuItem cannot be parcelled.
  * <p>
- * Use this class to lookup the icon resource id based on the manu resource id.
+ * Use this class to lookup the icon resource id based on the menu resource id.
  * <p>
  * TODO: for now only actively used for the BottomSheet menu. Perhaps use universally?
  */
