@@ -66,4 +66,12 @@ public class BooklistGroupTest {
             }
         }
     }
+
+    @Test
+    public void keysForAllGroups() {
+        for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
+            final GroupKey groupKey = GroupKeyFactory.getKey(id);
+            assertNotNull(groupKey);
+        }
+    }
 }

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -34,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -69,15 +67,17 @@ public class AuthorBooklistGroup
     /**
      * Constructor.
      *
+     * @param groupKey           of group to create
      * @param showGivenNameFirst whether to <strong>show</strong> the given name
      *                           before (@code true} or after {@code false} the family name
      * @param sortByGivenName    whether to <strong>sort</strong> by the given name
      *                           first (@code true} or by  the family name
      *                           {@code false} first
      */
-    AuthorBooklistGroup(final boolean showGivenNameFirst,
+    AuthorBooklistGroup(@NonNull final GroupKey groupKey,
+                        final boolean showGivenNameFirst,
                         final boolean sortByGivenName) {
-        super(AUTHOR);
+        super(groupKey);
         // Not sorted
         displayDomainExpression =
                 new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
@@ -89,33 +89,6 @@ public class AuthorBooklistGroup
                                              .build(),
                                      AuthorDaoImpl.getSortingDomainExpression(sortByGivenName),
                                      Sort.Asc);
-    }
-
-    @Override
-    @NonNull
-    protected GroupKey createGroupKey(@BooklistGroup.Id final int id) {
-        // We use the foreign ID to create the key-domain.
-        // It is NOT used to display the data; instead we use #displayDomainExpression.
-        // Neither the key-domain nor the display-domain is sorted;
-        // Sorting is done with #sortingDomainExpression
-        return new GroupKey(id, R.string.lbl_author, "a",
-                            new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
-                                                 DBDefinitions.TBL_AUTHORS.dot(DBKey.PK_ID),
-                                                 Sort.Unsorted))
-                .addGroupDomain(
-                        new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
-                                             DBDefinitions.TBL_BOOK_AUTHOR,
-                                             Sort.Unsorted))
-
-                // Extra data we need:
-                .addGroupDomain(
-                        new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_COMPLETE,
-                                             DBDefinitions.TBL_AUTHORS,
-                                             Sort.Unsorted))
-                .addGroupDomain(
-                        new DomainExpression(DBDefinitions.DOM_AUTHOR_REAL_AUTHOR,
-                                             DBDefinitions.TBL_PSEUDONYM_AUTHOR,
-                                             Sort.Unsorted));
     }
 
     @Override

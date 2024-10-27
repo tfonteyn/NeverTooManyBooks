@@ -131,12 +131,12 @@ final class GroupKey {
     }
 
     /**
-     * Get the key domain.
+     * Get the domain that contains the displayable data.
      *
-     * @return the key domain
+     * @return domain to display
      */
     @NonNull
-    DomainExpression getKeyDomainExpression() {
+    DomainExpression getDisplayDomainExpression() {
         return keyDomain;
     }
 

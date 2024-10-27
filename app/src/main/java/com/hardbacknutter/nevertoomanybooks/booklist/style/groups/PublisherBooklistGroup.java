@@ -24,14 +24,10 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
@@ -57,36 +53,15 @@ class PublisherBooklistGroup
 
     /**
      * Constructor.
+     *
+     * @param groupKey of group to create
      */
-    PublisherBooklistGroup() {
-        super(PUBLISHER);
-        // Not sorted; we sort on the OB domain as defined in #createGroupKey.
+    PublisherBooklistGroup(@NonNull final GroupKey groupKey) {
+        super(groupKey);
+        // Not sorted; we sort on the OB domain as defined in GroupKeyFactory#create
         displayDomainExpression = new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME,
                                                        DBDefinitions.TBL_PUBLISHERS,
                                                        Sort.Unsorted);
-    }
-
-    @Override
-    @NonNull
-    protected GroupKey createGroupKey(@BooklistGroup.Id final int id) {
-        // We use the foreign ID to create the key-domain.
-        // It is NOT used to display the data; instead we use #displayDomainExpression.
-        // Neither the key-domain nor the display-domain is sorted;
-        // instead we add the OB column, sorted, as a group domain.
-        return new GroupKey(id, R.string.lbl_publisher, "p",
-                            new DomainExpression(DBDefinitions.DOM_FK_PUBLISHER,
-                                                 DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PK_ID),
-                                                 Sort.Unsorted))
-                .addGroupDomain(
-                        new DomainExpression(
-                                new Domain.Builder(BlgDBKey.SORT_PUBLISHER, SqLiteDataType.Text)
-                                        .build(),
-                                DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
-                                Sort.Asc))
-                .addGroupDomain(
-                        new DomainExpression(DBDefinitions.DOM_FK_PUBLISHER,
-                                             DBDefinitions.TBL_BOOK_PUBLISHER,
-                                             Sort.Unsorted));
     }
 
     @Override

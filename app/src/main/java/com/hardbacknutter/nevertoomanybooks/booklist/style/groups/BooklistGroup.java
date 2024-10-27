@@ -107,19 +107,24 @@ public interface BooklistGroup {
     @NonNull
     static BooklistGroup newInstance(@Id final int id,
                                      @NonNull final Style style) {
+
+        // The GroupKey is created once and cached in a static Map.
+        final GroupKey groupKey = GroupKeyFactory.getKey(id);
+
         switch (id) {
             case AUTHOR:
-                return new AuthorBooklistGroup(style.isShowAuthorByGivenName(),
+                return new AuthorBooklistGroup(groupKey,
+                                               style.isShowAuthorByGivenName(),
                                                style.isSortAuthorByGivenName());
             case SERIES:
-                return new SeriesBooklistGroup();
+                return new SeriesBooklistGroup(groupKey);
             case PUBLISHER:
-                return new PublisherBooklistGroup();
+                return new PublisherBooklistGroup(groupKey);
             case BOOKSHELF:
-                return new BookshelfBooklistGroup();
+                return new BookshelfBooklistGroup(groupKey);
 
             default:
-                return new BooklistGroupImpl(id);
+                return new BooklistGroupImpl(groupKey);
         }
     }
 
@@ -165,7 +170,8 @@ public interface BooklistGroup {
 
     /**
      * Create the expression for the key column: "/key=value".
-     * A {@code null} value is reformatted as an empty string
+     * <p>
+     * Implementations <strong>must</strong> replace a {@code null} value with an empty string
      *
      * @return column expression
      */
