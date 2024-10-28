@@ -305,7 +305,7 @@ public class CsvRecordReader
                     throw e.getCause();
                 }
 
-                if (!allLines.isEmpty()) {
+                if (allLines.size() > 1) {
                     readBooks(context, allLines, progressListener);
                 }
             }
