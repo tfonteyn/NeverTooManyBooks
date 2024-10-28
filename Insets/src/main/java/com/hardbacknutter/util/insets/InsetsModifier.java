@@ -18,11 +18,16 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
+package com.hardbacknutter.util.insets;
 
-public enum Side {
-    Left,
-    Top,
-    Right,
-    Bottom
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.core.graphics.Insets;
+
+@FunctionalInterface
+public interface InsetsModifier {
+
+    void apply(@NonNull View view,
+               @NonNull Insets insets);
 }

@@ -48,7 +48,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilde
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 @Keep
 public class MaintenanceFragment

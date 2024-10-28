@@ -18,50 +18,54 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
+package com.hardbacknutter.util.insets;
 
 import android.content.res.Resources;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
-
-class PaddingInsetsModifier
+class MarginsInsetsModifier
         implements InsetsModifier {
 
-    private static final String TAG = "PaddingInsetsModifier";
+    private static final String TAG = "MarginsInsetsModifier";
 
     @NonNull
-    private final Insets padding;
+    private final Insets margins;
     @NonNull
     private final Set<Side> sides;
 
-    PaddingInsetsModifier(@NonNull final View view,
+    MarginsInsetsModifier(@NonNull final View view,
                           @NonNull final Set<Side> sides) {
-        this.padding = Insets.of(view.getPaddingLeft(),
-                                 view.getPaddingTop(),
-                                 view.getPaddingRight(),
-                                 view.getPaddingBottom());
+        final ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        margins = Insets.of(lp.leftMargin,
+                            lp.topMargin,
+                            lp.rightMargin,
+                            lp.bottomMargin);
         this.sides = sides;
     }
 
     @Override
     public void apply(@NonNull final View view,
                       @NonNull final Insets insets) {
-        final int left = padding.left + (sides.contains(Side.Left) ? insets.left : 0);
-        final int top = padding.top + (sides.contains(Side.Top) ? insets.top : 0);
-        final int right = padding.right + (sides.contains(Side.Right) ? insets.right : 0);
-        final int bottom = padding.bottom + (sides.contains(Side.Bottom) ? insets.bottom : 0);
 
-        view.setPadding(left, top, right, bottom);
+        final int left = margins.left + (sides.contains(Side.Left) ? insets.left : 0);
+        final int top = margins.top + (sides.contains(Side.Top) ? insets.top : 0);
+        final int right = margins.right + (sides.contains(Side.Right) ? insets.right : 0);
+        final int bottom = margins.bottom + (sides.contains(Side.Bottom) ? insets.bottom : 0);
 
-        if (BuildConfig.DEBUG && DEBUG_FLAGS.INSETS) {
+        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                view.getLayoutParams();
+        lp.setMargins(left, top, right, bottom);
+        view.setLayoutParams(lp);
+
+        if (BuildConfig.DEBUG) {
             dumpDebug(view, insets);
         }
     }

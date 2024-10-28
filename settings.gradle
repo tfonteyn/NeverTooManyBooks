@@ -46,7 +46,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "NeverTooManyBooks"
 include(":app")
-include(":fastscroller")
-include(":repacked-org-json")
 include(":core")
-include ':Logger'
+include(":fastscroller")
+include(":Insets")
+include(":Logger")
+include(":repacked-org-json")

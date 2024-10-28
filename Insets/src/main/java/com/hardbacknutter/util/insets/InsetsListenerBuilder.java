@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.widgets.insets;
+package com.hardbacknutter.util.insets;
 
 import android.view.View;
 

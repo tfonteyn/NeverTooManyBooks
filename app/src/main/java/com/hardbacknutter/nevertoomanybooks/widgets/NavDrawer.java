@@ -34,7 +34,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public final class NavDrawer {
 

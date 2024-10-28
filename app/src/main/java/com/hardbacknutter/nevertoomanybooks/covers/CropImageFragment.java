@@ -48,9 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.Side;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImageEditorBinding;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.Side;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**

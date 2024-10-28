@@ -43,10 +43,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.settings.dialogs.PreferenceDialogFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * Base settings page. This handles:

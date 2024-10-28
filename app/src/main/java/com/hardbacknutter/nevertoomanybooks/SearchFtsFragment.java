@@ -39,8 +39,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the

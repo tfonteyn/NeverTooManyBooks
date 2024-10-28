@@ -37,11 +37,11 @@ import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.insets.InsetsListenerBuilder;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncCalibreBinding;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * Starting point for sending and importing books with Calibre.
