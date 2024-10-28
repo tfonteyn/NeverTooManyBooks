@@ -612,15 +612,20 @@ public class CsvRecordReader
         }
 
         @NonNull
-        static Origin guess(@NonNull final String columnHeader) {
+        static Origin guess(@NonNull final String header) {
             // RELEASE: check the latest Goodreads CSV export file header.
             // A download on 2024-04-22 showed a header starting like this:
-            if (columnHeader.startsWith(
+            if (header.startsWith(
                     "Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,")) {
                 return Origin.Goodreads;
 
-            } else if (columnHeader.startsWith("\"_id\",")) {
-                // The startsWith should really be longer to be on the safe side.
+            } else if (header.startsWith("_id,author_details,title,isbn")
+                       || header.startsWith("\"_id\",\"author_details\",\"title\",\"isbn\"")) {
+                // We have a pretty good match for original BC files
+                return Origin.BC;
+
+            } else if (header.startsWith("\"_id\",")) {
+                // It's likely/hopefully a match for BC or NTMB 1-3 formats
                 return Origin.BC;
 
             }
