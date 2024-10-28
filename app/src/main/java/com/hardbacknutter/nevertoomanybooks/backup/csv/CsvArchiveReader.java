@@ -96,8 +96,8 @@ public class CsvArchiveReader
         // Sample the first line to get the (raw/lowercase) column names
         final String columnHeader;
         try (InputStream is = context.getContentResolver().openInputStream(uri);
-             final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-             final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE)) {
+             Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE)) {
             columnHeader = reader.readLine();
         }
 
