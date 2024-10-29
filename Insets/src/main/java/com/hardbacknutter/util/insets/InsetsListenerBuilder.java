@@ -132,7 +132,7 @@ public final class InsetsListenerBuilder {
      */
     public static void apply(@NonNull final Toolbar view) {
         new InsetsListenerBuilder(view)
-                .padding(Side.Left, Side.Top, Side.Right)
+                .padding(Side.Start, Side.Top, Side.End)
                 .systemBars()
                 .displayCutout()
                 .apply();
@@ -147,7 +147,7 @@ public final class InsetsListenerBuilder {
         // Don't react to the keyboard; the presumption is that the user is entering data.
         // The FAB is a *start* edit, the *end* edit action is on the Toolbar.
         new InsetsListenerBuilder(view)
-                .margins(Side.Right, Side.Bottom)
+                .margins(Side.End, Side.Bottom)
                 .systemBars()
                 .displayCutout()
                 .apply();
@@ -164,7 +164,7 @@ public final class InsetsListenerBuilder {
      */
     public static void fragmentRootView(@NonNull final View view) {
         new InsetsListenerBuilder(view)
-                .padding(Side.Left, Side.Right, Side.Bottom)
+                .padding(Side.Start, Side.End, Side.Bottom)
                 .systemBars()
                 .displayCutout()
                 .apply();
@@ -177,7 +177,7 @@ public final class InsetsListenerBuilder {
      */
     public static void apply(@NonNull final RecyclerView view) {
         new InsetsListenerBuilder(view)
-                .margins(Side.Left, Side.Right, Side.Bottom)
+                .margins(Side.Start, Side.End, Side.Bottom)
                 .systemBars()
                 .displayCutout()
                 .ime()

@@ -120,7 +120,7 @@ public class SearchAdminFragment
         super.onViewCreated(view, savedInstanceState);
         // Effectively disable edge-to-edge for the pager and include system gestures.
         InsetsListenerBuilder.create(view)
-                             .padding(Side.Left, Side.Right, Side.Bottom)
+                             .padding(Side.Start, Side.End, Side.Bottom)
                              .systemBars()
                              .displayCutout()
                              .systemGestures()

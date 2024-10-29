@@ -103,7 +103,7 @@ public class ZoomedImageDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         InsetsListenerBuilder.create(view)
-                             .margins(Side.Left, Side.Top, Side.Right, Side.Bottom)
+                             .margins(Side.Start, Side.Top, Side.End, Side.Bottom)
                              .systemBars()
                              .displayCutout()
                              .systemGestures()

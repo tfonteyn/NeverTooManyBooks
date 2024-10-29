@@ -21,8 +21,8 @@
 package com.hardbacknutter.util.insets;
 
 public enum Side {
-    Left,
+    Start,
     Top,
-    Right,
+    End,
     Bottom
 }
