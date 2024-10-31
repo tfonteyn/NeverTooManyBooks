@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -396,13 +397,12 @@ public class SearchBookUpdatesViewModel
                     }
 
                     if (canSearch) {
-                        // optional: whether this is used will depend on SearchEngine/Preferences
-                        currentBook.getPrimaryPublisher().ifPresent(publisher -> {
-                            final String publisherName = publisher.getName();
-                            if (!publisherName.isEmpty()) {
-                                setPublisherSearchText(publisherName);
-                            }
-                        });
+                        // If we have a usable publisher name, set it
+                        // Not all sites will use it to search though
+                        currentBook.getPrimaryPublisher()
+                                   .map(Publisher::getName)
+                                   .filter(name -> !name.isEmpty())
+                                   .ifPresent(this::setPublisherSearchText);
 
                         // optional: whether this is used will depend on SearchEngine/Preferences
                         final boolean[] fetchCovers = new boolean[2];
@@ -410,7 +410,7 @@ public class SearchBookUpdatesViewModel
                             fetchCovers[cIdx] = currentFieldsWanted
                                     .containsKey(Book.BKEY_TMP_FILE_SPEC[cIdx]);
                         }
-                        setFetchCover(fetchCovers);
+                        setFetchCovers(fetchCovers);
 
                         // Start searching
                         if (search()) {

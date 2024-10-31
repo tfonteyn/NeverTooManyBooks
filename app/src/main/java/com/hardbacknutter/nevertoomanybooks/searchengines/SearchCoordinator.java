@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
@@ -144,30 +143,9 @@ public class SearchCoordinator
     @Nullable
     private Map<EngineId, String> externalIdSearchText;
 
-    /** Original title for search. */
-    @NonNull
-    private String titleSearchText = "";
-
-    /** Original author for search. */
-    @NonNull
-    private String authorSearchText = "";
-
-    /** Original series for search. */
-    @NonNull
-    private String seriesSearchText = "";
-
-    /** Original series number for search. */
-    @NonNull
-    private String seriesNrSearchText = "";
-
-    /** Original publisher for search. */
-    @NonNull
-    private String publisherSearchText = "";
-
-
     /** Whether of not to fetch thumbnails. */
     @Nullable
-    private boolean[] fetchCover;
+    private boolean[] fetchCovers;
 
     /** DEBUG timer. */
     private long searchStartTime;
@@ -180,6 +158,8 @@ public class SearchCoordinator
     private String listElementPrefixString;
 
     private ResultsAccumulator resultsAccumulator;
+
+    private SearchCoordinatorCriteria criteria;
 
     /**
      * Process the message and start another task if required.
@@ -283,7 +263,7 @@ public class SearchCoordinator
 
             if (BuildConfig.DEBUG && (DEBUG_SWITCHES.SEARCH_COORDINATOR
                                       || DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS)) {
-                debugExitOnSearchTaskFinished(context, processTime, searchErrors);
+                debugExitOnSearchTaskFinished(processTime, searchErrors);
             }
         }
     }
@@ -397,28 +377,12 @@ public class SearchCoordinator
 
             listElementPrefixString = context.getString(R.string.list_element);
 
-            if (args != null) {
-                fetchCover = new boolean[]{
-                        serviceLocator.isFieldEnabled(DBKey.COVER[0]),
-                        serviceLocator.isFieldEnabled(DBKey.COVER[1])
-                };
+            fetchCovers = new boolean[]{
+                    serviceLocator.isFieldEnabled(DBKey.COVER[0]),
+                    serviceLocator.isFieldEnabled(DBKey.COVER[1])
+            };
 
-                isbnSearchText = args.getString(DBKey.BOOK_ISBN, "");
-
-                titleSearchText = args.getString(DBKey.TITLE, "");
-
-                authorSearchText = args.getString(
-                        SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
-
-                seriesSearchText = args.getString(
-                        SearchCriteria.BKEY_SEARCH_TEXT_SERIES, "");
-
-                seriesNrSearchText = args.getString(
-                        DBKey.SERIES_BOOK_NUMBER, "");
-
-                publisherSearchText = args.getString(
-                        SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
-            }
+            criteria = new SearchCoordinatorCriteria();
         }
     }
 
@@ -476,7 +440,7 @@ public class SearchCoordinator
         // If we did not get a title, use the one we originally searched for.
         final String title = book.getString(DBKey.TITLE, null);
         if (title == null || title.isEmpty()) {
-            book.putString(DBKey.TITLE, titleSearchText);
+            book.putString(DBKey.TITLE, criteria.getTitle());
         }
 
         return book;
@@ -504,7 +468,6 @@ public class SearchCoordinator
         completedOrder.addAll(resultsByEngineId.keySet());
         return completedOrder;
     }
-
 
     /**
      * Determine the order in which to apply the results from the list of sites.
@@ -574,6 +537,8 @@ public class SearchCoordinator
      * @param externalIdSearchText to search for
      *
      * @return {@code true} if the search was started.
+     *
+     * @throws IllegalArgumentException if externalIdSearchText was invalid
      */
     public boolean searchByExternalId(@NonNull final EngineId engineId,
                                       @NonNull final String externalIdSearchText) {
@@ -633,6 +598,9 @@ public class SearchCoordinator
     /**
      * Called after the search criteria are ready, and before starting the actual search.
      * Clears a number of parameters so we can start the search with a clean slate.
+     *
+     * @throws IllegalStateException    if the network is not already checked/available
+     * @throws IllegalArgumentException if there are no criteria set
      */
     private void prepareSearch() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
@@ -649,12 +617,10 @@ public class SearchCoordinator
                 throw new IllegalStateException("a search is already running");
             }
 
-            // Note we don't care about publisher.
-            if (authorSearchText.isEmpty()
-                && titleSearchText.isEmpty()
+            if (criteria.isEmpty()
                 && isbnSearchText.isEmpty()
                 && (externalIdSearchText == null || externalIdSearchText.isEmpty())) {
-                throw new IllegalArgumentException("empty criteria");
+                throw new IllegalArgumentException("Nothing to search for");
             }
         }
 
@@ -674,11 +640,7 @@ public class SearchCoordinator
                                         + "|isbnSearchText=" + isbnSearchText
                                         + "|isbn=" + isbn
                                         + "|strictIsbn=" + strictIsbn
-                                        + "|titleSearchText=" + titleSearchText
-                                        + "|authorSearchText=" + authorSearchText
-                                        + "|seriesSearchText=" + seriesSearchText
-                                        + "|seriesNrSearchText=" + seriesNrSearchText
-                                        + "|publisherSearchText=" + publisherSearchText);
+                                        + "|criteria=" + criteria);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
@@ -750,7 +712,7 @@ public class SearchCoordinator
                                                searchEngine, searchTaskListener);
         task.setExecutor(ASyncExecutor.MAIN);
 
-        task.setFetchCovers(fetchCover);
+        task.setFetchCovers(fetchCovers);
 
         // check for a external id matching the site.
         String externalId = null;
@@ -779,11 +741,7 @@ public class SearchCoordinator
         } else if (engineId.supports(SearchEngine.SearchBy.Text)) {
             task.setSearchBy(SearchEngine.SearchBy.Text);
             task.setIsbn(isbn);
-            task.setTitle(titleSearchText);
-            task.setAuthor(authorSearchText);
-            task.setSeries(seriesSearchText);
-            task.setSeriesNr(seriesNrSearchText);
-            task.setPublisher(publisherSearchText);
+            task.setCriteria(criteria);
 
         } else {
             // search data and engine have nothing in common, abort silently.
@@ -822,8 +780,8 @@ public class SearchCoordinator
      *
      * @param fetchCovers Set to {@code true} if we want to get covers
      */
-    protected void setFetchCover(@Nullable final boolean[] fetchCovers) {
-        fetchCover = fetchCovers;
+    protected void setFetchCovers(@Nullable final boolean[] fetchCovers) {
+        this.fetchCovers = fetchCovers;
     }
 
     /**
@@ -831,12 +789,7 @@ public class SearchCoordinator
      */
     public void clearSearchCriteria() {
         externalIdSearchText = null;
-        isbnSearchText = "";
-        titleSearchText = "";
-        authorSearchText = "";
-        seriesSearchText = "";
-        seriesNrSearchText = "";
-        publisherSearchText = "";
+        criteria.clear();
     }
 
     /**
@@ -956,20 +909,6 @@ public class SearchCoordinator
         return strictIsbn;
     }
 
-    @NonNull
-    public String getTitleSearchText() {
-        return titleSearchText;
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param titleSearchText to search for
-     */
-    public void setTitleSearchText(@NonNull final String titleSearchText) {
-        this.titleSearchText = titleSearchText;
-    }
-
     /**
      * Search criteria.
      *
@@ -981,8 +920,22 @@ public class SearchCoordinator
     }
 
     @NonNull
+    public String getTitleSearchText() {
+        return criteria.getTitle();
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param titleSearchText to search for
+     */
+    public void setTitleSearchText(@NonNull final String titleSearchText) {
+        criteria.setTitle(titleSearchText);
+    }
+
+    @NonNull
     public String getAuthorSearchText() {
-        return authorSearchText;
+        return criteria.getAuthor();
     }
 
     /**
@@ -991,12 +944,12 @@ public class SearchCoordinator
      * @param authorSearchText to search for
      */
     public void setAuthorSearchText(@NonNull final String authorSearchText) {
-        this.authorSearchText = authorSearchText;
+        criteria.setAuthor(authorSearchText);
     }
 
     @NonNull
     public String getSeriesSearchText() {
-        return seriesSearchText;
+        return criteria.getSeries();
     }
 
     /**
@@ -1005,12 +958,12 @@ public class SearchCoordinator
      * @param seriesSearchText to search for
      */
     public void setSeriesSearchText(@NonNull final String seriesSearchText) {
-        this.seriesSearchText = seriesSearchText;
+        criteria.setSeries(seriesSearchText);
     }
 
     @NonNull
     public String getSeriesNrSearchText() {
-        return seriesNrSearchText;
+        return criteria.getSeriesNr();
     }
 
     /**
@@ -1019,12 +972,12 @@ public class SearchCoordinator
      * @param seriesNrSearchText to search for
      */
     public void setSeriesNrSearchText(@NonNull final String seriesNrSearchText) {
-        this.seriesNrSearchText = seriesNrSearchText;
+        criteria.setSeriesNr(seriesNrSearchText);
     }
 
     @NonNull
     public String getPublisherSearchText() {
-        return publisherSearchText;
+        return criteria.getPublisher();
     }
 
     /**
@@ -1033,7 +986,7 @@ public class SearchCoordinator
      * @param publisherSearchText to search for
      */
     public void setPublisherSearchText(@NonNull final String publisherSearchText) {
-        this.publisherSearchText = publisherSearchText;
+        criteria.setPublisher(publisherSearchText);
     }
 
     /**
@@ -1089,8 +1042,7 @@ public class SearchCoordinator
         }
     }
 
-    private void debugExitOnSearchTaskFinished(@NonNull final Context context,
-                                               final long processTime,
+    private void debugExitOnSearchTaskFinished(final long processTime,
                                                @Nullable final String searchErrors) {
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",

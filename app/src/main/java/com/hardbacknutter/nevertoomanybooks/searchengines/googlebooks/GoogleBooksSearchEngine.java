@@ -28,6 +28,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -36,6 +37,7 @@ import javax.xml.parsers.SAXParserFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -57,8 +59,10 @@ import org.xml.sax.SAXException;
  * You may not charge users any fee for the use of your application,...
  * => so it seems if this SearchEngine is included, the entire app has to be free.
  * <p>
- * example:
+ * example v1:
  * <a href="https://stackoverflow.com/questions/7908954">google-books-api-searching-by-isbn</a>
+ * API v1:
+ * <a href="https://developers.google.com/books/docs/v1/using?csw=1">API v1</a>
  */
 public class GoogleBooksSearchEngine
         extends SearchEngineBase
@@ -96,31 +100,60 @@ public class GoogleBooksSearchEngine
         return book;
     }
 
+    /**
+     * Criteria supported: title, author, publisher.
+     * Code: supports "isbn" only.
+     * <p>
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     @WorkerThread
     public Book search(@NonNull final Context context,
-                       @Nullable final String title,
-                       @Nullable final String author,
-                       @Nullable final /* not supported */ String series,
-                       @Nullable final /* not supported */ String seriesNr,
-                       @Nullable final /* not supported */ String publisher,
-                       @Nullable final /* not supported */ String code,
+                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @Nullable final String isbn,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
         final Book book = new Book();
 
         // %2B  +
-        // %3A  :
-        if (author != null && !author.isEmpty()
-            && title != null && !title.isEmpty()) {
-            final String url = getHostUrl(context) + "/books/feeds/volumes?q="
-                               + "intitle%3A" + encodeSpaces(title)
-                               + "%2B"
-                               + "inauthor%3A" + encodeSpaces(author);
-            fetchBook(context, url, fetchCovers, book);
+        final StringJoiner args = new StringJoiner("%2B");
+
+        // 2024-10-31: bit of experimenting shows these things still work
+        // providing the search text is a "whole" word.
+        // i.o.w.
+        // if we add "inauthor=asimo" => no matches
+        // if we add "inauthor=asimov" => books are returned
+        // ... but we need to face facts... this API is a dead-end.
+
+        final String title = criteria.getTitle();
+        if (!title.isEmpty()) {
+            args.add("intitle%3A" + encodeSpaces(title));
         }
+
+        final String author = criteria.getAuthor();
+        if (!author.isEmpty()) {
+            args.add("inauthor%3A" + encodeSpaces(author));
+        }
+
+        final String publisher = criteria.getPublisher();
+        if (!publisher.isEmpty()) {
+            args.add("inpublisher%3A" + encodeSpaces(publisher));
+        }
+
+        if (isbn != null && !isbn.isEmpty()) {
+            args.add("isbn%3A" + encodeSpaces(publisher));
+        }
+
+        // Sanity check
+        if (args.length() == 0) {
+            return book;
+        }
+
+        // %3A  :
+        final String url = getHostUrl(context) + "/books/feeds/volumes?q=" + args;
+        fetchBook(context, url, fetchCovers, book);
         return book;
     }
 

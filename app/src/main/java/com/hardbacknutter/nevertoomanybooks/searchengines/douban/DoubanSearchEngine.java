@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -133,35 +134,44 @@ public class DoubanSearchEngine
         return book;
     }
 
+    /**
+     * Criteria supported: ALL.
+     * Code: supported.
+     * <p>
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @Nullable final String title,
-                       @Nullable final String author,
-                       @Nullable final String series,
-                       @Nullable final String seriesNr,
-                       @Nullable final String publisher,
+                       @NonNull final SearchCoordinatorCriteria criteria,
                        @Nullable final String code,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = new StringJoiner(" ");
-        if (title != null && !title.isEmpty()) {
+
+        final String title = criteria.getTitle();
+        if (!title.isEmpty()) {
             words.add(title);
         }
-        if (author != null && !author.isEmpty()) {
+        final String author = criteria.getAuthor();
+        if (!author.isEmpty()) {
             words.add(author);
         }
-        if (series != null && !series.isEmpty()) {
+        final String series = criteria.getSeries();
+        if (!series.isEmpty()) {
             words.add(series);
         }
-        if (seriesNr != null && !seriesNr.isEmpty()) {
+        final String seriesNr = criteria.getSeriesNr();
+        if (!seriesNr.isEmpty()) {
             words.add(seriesNr);
         }
-        if (publisher != null && !publisher.isEmpty()) {
+        final String publisher = criteria.getPublisher();
+        if (!publisher.isEmpty()) {
             words.add(publisher);
         }
+
         if (code != null && !code.isEmpty()) {
             words.add(code);
         }

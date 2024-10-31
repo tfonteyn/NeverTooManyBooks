@@ -311,17 +311,14 @@ public interface SearchEngine
         /**
          * Called by the {@link SearchCoordinator#search}.
          * <p>
-         * Checking the arguments <strong>MUST</strong> be done inside the implementation,
+         * Checking the criteria <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          * <p>
-         * At least one search field must be present.
+         * The engine can simply return an empty {@link Book} if it deems
+         * the criteria not usable. It <strong>MUST NOT</strong> throw in such a situation.
          *
          * @param context     Current context
-         * @param title       Optional but generally mandatory by most sites
-         * @param author      Optional but highly recommended to pass in
-         * @param series      Optional / not supported by all engines
-         * @param seriesNr    Optional / not supported by all engines
-         * @param publisher   Optional / not supported by all engines
+         * @param criteria    text strings to search for
          * @param code        isbn, barcode or generic code to search for.
          *                    The interpretation depends on the engine.
          *                    Optional / not supported by all engines
@@ -337,11 +334,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book search(@NonNull Context context,
-                    @Nullable String title,
-                    @Nullable String author,
-                    @Nullable String series,
-                    @Nullable String seriesNr,
-                    @Nullable String publisher,
+                    @NonNull SearchCoordinatorCriteria criteria,
                     @Nullable String code,
                     @NonNull boolean[] fetchCovers)
                 throws StorageException,

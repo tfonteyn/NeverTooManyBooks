@@ -70,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -183,8 +184,7 @@ public class IsfdbSearchEngine
      * We hardcode "AND".
      * <p>
      * param 1: a sequential number, 1..6
-     * param 2: the search field, currently supported in
-     * {@link ByText#search(Context, String, String, String, String, String, String, boolean[])}:
+     * param 2: the search field, currently supported in {@link ByText#search}
      * <ul>
      *     <li>pub_isbn</li>
      *     <li>pub_title</li>
@@ -321,22 +321,19 @@ public class IsfdbSearchEngine
         return book;
     }
 
+    /**
+     * Criteria supported: title, author, publisher.
+     * Code: supports "isbn" only.
+     * <p>
+     * The site has a "publisher series" as searchable field but that is NOT the "book series".
+     * Searching the book-series is not straightforward sadly.
+     */
     @NonNull
     @Override
     @WorkerThread
     public Book search(@NonNull final Context context,
-                       @Nullable final String title,
-                       @Nullable final String author,
-            /*
-             * The site has a "publisher series" as searchable field
-             * but that is NOT the "book series".
-             * Searching the book-series is not straightforward sadly.
-             */
-                       @Nullable final String /* not supported */ series,
-                       @Nullable final String /* not supported */ seriesNr,
-                       @Nullable final String publisher,
+                       @NonNull final SearchCoordinatorCriteria criteria,
                        @Nullable final String isbn,
-
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
@@ -355,19 +352,22 @@ public class IsfdbSearchEngine
                                        URLEncoder.encode(isbn, CHARSET_ENCODE_URL)));
             }
 
-            if (title != null && !title.isEmpty()) {
+            final String title = criteria.getTitle();
+            if (!title.isEmpty()) {
                 index++;
                 args.add(String.format(USE, index, "pub_title",
                                        URLEncoder.encode(title, CHARSET_ENCODE_URL)));
             }
 
-            if (author != null && !author.isEmpty()) {
+            final String author = criteria.getAuthor();
+            if (!author.isEmpty()) {
                 index++;
                 args.add(String.format(USE, index, "author_canonical",
                                        URLEncoder.encode(author, CHARSET_ENCODE_URL)));
             }
 
-            if (publisher != null && !publisher.isEmpty()) {
+            final String publisher = criteria.getPublisher();
+            if (!publisher.isEmpty()) {
                 index++;
                 args.add(String.format(USE, index, "pub_publisher",
                                        URLEncoder.encode(publisher, CHARSET_ENCODE_URL)));

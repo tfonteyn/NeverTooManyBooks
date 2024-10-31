@@ -60,21 +60,10 @@ public class SearchTask
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
     private ISBN isbn;
+
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
-    private String author;
-    /** Search criteria. Usage depends on {@link #by}. */
-    @Nullable
-    private String title;
-    /** Search criteria. Usage depends on {@link #by}. */
-    @Nullable
-    private String series;
-    /** Search criteria. Usage depends on {@link #by}. */
-    @Nullable
-    private String seriesNr;
-    /** Search criteria. Usage depends on {@link #by}. */
-    @Nullable
-    private String publisher;
+    private SearchCoordinatorCriteria criteria;
 
     /**
      * Constructor. Will search according to passed parameters.
@@ -136,46 +125,10 @@ public class SearchTask
     /**
      * Set/reset the criteria.
      *
-     * @param title to search for
+     * @param criteria to search for
      */
-    void setTitle(@Nullable final String title) {
-        this.title = title;
-    }
-
-    /**
-     * Set/reset the criteria.
-     *
-     * @param author to search for
-     */
-    void setAuthor(@Nullable final String author) {
-        this.author = author;
-    }
-
-    /**
-     * Set/reset the criteria.
-     *
-     * @param series to search for
-     */
-    public void setSeries(@Nullable final String series) {
-        this.series = series;
-    }
-
-    /**
-     * Set/reset the criteria.
-     *
-     * @param seriesNr to search for
-     */
-    public void setSeriesNr(@Nullable final String seriesNr) {
-        this.seriesNr = seriesNr;
-    }
-
-    /**
-     * Set/reset the criteria.
-     *
-     * @param publisher to search for
-     */
-    void setPublisher(@Nullable final String publisher) {
-        this.publisher = publisher;
+    void setCriteria(@Nullable final SearchCoordinatorCriteria criteria) {
+        this.criteria = criteria;
     }
 
     /**
@@ -249,7 +202,7 @@ public class SearchTask
         switch (by) {
             case ExternalId:
                 if (externalId == null || externalId.isEmpty()) {
-                    throw new IllegalArgumentException("externalId=" + externalId);
+                    throw new IllegalArgumentException("externalId not set");
                 }
                 book = ((SearchEngine.ByExternalId) searchEngine)
                         .searchByExternalId(context, externalId, fetchCovers);
@@ -257,7 +210,7 @@ public class SearchTask
 
             case Isbn:
                 if (isbnStr == null || isbnStr.isEmpty()) {
-                    throw new IllegalArgumentException("isbnStr=" + isbnStr);
+                    throw new IllegalArgumentException("isbnStr not set");
                 }
                 book = ((SearchEngine.ByIsbn) searchEngine)
                         .searchByIsbn(context, isbnStr, fetchCovers);
@@ -265,16 +218,18 @@ public class SearchTask
 
             case Barcode:
                 if (isbnStr == null || isbnStr.isEmpty()) {
-                    throw new IllegalArgumentException("isbnStr=" + isbnStr);
+                    throw new IllegalArgumentException("isbnStr not set");
                 }
                 book = ((SearchEngine.ByBarcode) searchEngine)
                         .searchByBarcode(context, isbnStr, fetchCovers);
                 break;
 
             case Text:
+                if (criteria == null || criteria.isEmpty()) {
+                    throw new IllegalArgumentException("criteria not set");
+                }
                 book = ((SearchEngine.ByText) searchEngine)
-                        .search(context, title, author, series, seriesNr, publisher, isbnStr,
-                                fetchCovers);
+                        .search(context, criteria, isbnStr, fetchCovers);
                 break;
 
             default:
@@ -294,12 +249,8 @@ public class SearchTask
                + "searchEngine=" + searchEngine.getEngineId()
                + ", by=" + by
                + ", isbn=" + isbn
-               + ", author=`" + author + '`'
-               + ", title=`" + title + '`'
-               + ", series=`" + series + '`'
-               + ", seriesNr=`" + seriesNr + '`'
-               + ", publisher=`" + publisher + '`'
                + ", externalId=`" + externalId + '`'
+               + ", criteria=`" + criteria + '`'
                + ", fetchCovers=" + Arrays.toString(fetchCovers)
                + '}';
     }
