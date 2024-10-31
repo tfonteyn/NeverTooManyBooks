@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -162,7 +160,7 @@ public class ParseTest
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book, List.of());
 
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("Valstrikken en emoties", book.getString(DBKey.TITLE, null));
         assertEquals("9789085587187", book.getString(DBKey.BOOK_ISBN, null));

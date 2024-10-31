@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -78,7 +76,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
@@ -131,7 +129,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("Totholz : was vergraben ist, ist nicht vergessen",
                      book.getString(DBKey.TITLE, null));
@@ -181,7 +179,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("Teurer Sieg", book.getString(DBKey.TITLE, null));
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));

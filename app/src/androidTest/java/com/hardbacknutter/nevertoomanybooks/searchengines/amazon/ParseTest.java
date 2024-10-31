@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -154,7 +152,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));

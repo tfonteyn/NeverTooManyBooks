@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
-import android.util.Log;
-
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -192,7 +190,7 @@ public class ParseTest
 
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //og.d(TAG, book.toString());
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
@@ -247,7 +245,7 @@ public class ParseTest
 
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
@@ -324,7 +322,7 @@ public class ParseTest
 
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("第七重解答", book.getString(DBKey.TITLE, null));
         assertEquals("La Septième Hypothèse", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
@@ -507,7 +505,7 @@ public class ParseTest
 
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("伽利略的错误", book.getString(DBKey.TITLE, null));
         assertEquals("Galileo's Error: Foundations for a New Science of Consciousness",
