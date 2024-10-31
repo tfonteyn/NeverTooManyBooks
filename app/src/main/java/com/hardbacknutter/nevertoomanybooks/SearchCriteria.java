@@ -62,17 +62,30 @@ public class SearchCriteria
     public static final String BKEY = TAG + ":a";
 
     /**
-     * Bundle key for Author search text
-     * (all DB KEY's and the ARRAY key is for authors with verified names).
+     * Bundle key for Author search text.
+     * <p>
+     * Important: {@code DBKey}'s and the {@code Book.BKEY_AUTHOR_LIST} key are used
+     * for <strong>verified</strong> names.
+     * This key is for the <strong>user search/unverified text</strong>
      */
     public static final String BKEY_SEARCH_TEXT_AUTHOR = TAG + ":author";
     /**
-     * Bundle key for Publisher search text
-     * (all DB KEY's and the ARRAY key is for publishers with verified names).
+     * Bundle key for Series search text.
+     * <p>
+     * Important: {@code DBKey}'s and the {@code Book.BKEY_SERIES_LIST} key are used
+     * for <strong>verified</strong> names.
+     * This key is for the <strong>user search/unverified text</strong>
+     */
+    public static final String BKEY_SEARCH_TEXT_SERIES = TAG + ":series";
+
+    /**
+     * Bundle key for Publisher search text.
+     * <p>
+     * Important: {@code DBKey}'s and the {@code Book.BKEY_PUBLISHER_LIST} key are used
+     * for <strong>verified</strong> names.
+     * This key is for the <strong>user search/unverified text</strong>
      */
     public static final String BKEY_SEARCH_TEXT_PUBLISHER = TAG + ":publisher";
-    /** Bundle key for generic search text. */
-    private static final String BKEY_SEARCH_TEXT_KEYWORDS = TAG + ":keywords";
 
     /**
      * List of book ID's to display.

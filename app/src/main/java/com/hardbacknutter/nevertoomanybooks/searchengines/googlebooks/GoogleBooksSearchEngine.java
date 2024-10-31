@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,10 +100,12 @@ public class GoogleBooksSearchEngine
     @Override
     @WorkerThread
     public Book search(@NonNull final Context context,
-                       @Nullable final /* not supported */ String code,
-                       @Nullable final String author,
                        @Nullable final String title,
+                       @Nullable final String author,
+                       @Nullable final /* not supported */ String series,
+                       @Nullable final /* not supported */ String seriesNr,
                        @Nullable final /* not supported */ String publisher,
+                       @Nullable final /* not supported */ String code,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 

@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByText
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -61,6 +62,8 @@ public class SearchBookByTextFragment
 
     /** adapter for the AutoCompleteTextView. */
     private ExtArrayAdapter<String> authorAdapter;
+    /** adapter for the AutoCompleteTextView. */
+    private ExtArrayAdapter<String> seriesAdapter;
     /** adapter for the AutoCompleteTextView. */
     private ExtArrayAdapter<String> publisherAdapter;
     /** View Binding. */
@@ -79,8 +82,7 @@ public class SearchBookByTextFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), getArguments());
+        vm.init(requireArguments());
     }
 
     @Override
@@ -102,27 +104,10 @@ public class SearchBookByTextFragment
         toolbar.setTitle(R.string.lbl_search_for_books);
         toolbar.addMenuProvider(new SearchSitesToolbarMenuProvider(), getViewLifecycleOwner());
 
-        if (vm.usePublisher()) {
-            vb.lblPublisher.setVisibility(View.VISIBLE);
+        modelToView();
+        vb.publisher.setOnEditorActionListener(this::onEditorAction);
 
-            vb.title.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-            vb.title.setOnEditorActionListener(null);
-
-            vb.publisher.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            vb.publisher.setOnEditorActionListener(this::onEditorAction);
-        } else {
-            vb.lblPublisher.setVisibility(View.GONE);
-
-            vb.title.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            vb.title.setOnEditorActionListener(this::onEditorAction);
-        }
-
-        vb.author.setText(coordinator.getAuthorSearchText());
-        vb.title.setText(coordinator.getTitleSearchText());
-        vb.publisher.setText(coordinator.getPublisherSearchText());
-
-        populateAuthorList();
-        populatePublisherList();
+        populateAdapters();
 
         vb.btnSearch.setOnClickListener(v -> startSearch());
         explainSitesSupport(coordinator.getSiteList());
@@ -180,29 +165,39 @@ public class SearchBookByTextFragment
         viewToModel();
     }
 
+    private void modelToView() {
+        vb.title.setText(coordinator.getTitleSearchText());
+        vb.author.setText(coordinator.getAuthorSearchText());
+        vb.seriesTitle.setText(coordinator.getSeriesSearchText());
+        vb.seriesNum.setText(coordinator.getSeriesNrSearchText());
+        vb.publisher.setText(coordinator.getPublisherSearchText());
+    }
+
     private void viewToModel() {
-        coordinator.setAuthorSearchText(vb.author.getText().toString().trim());
         //noinspection DataFlowIssue
         coordinator.setTitleSearchText(vb.title.getText().toString().trim());
+        coordinator.setAuthorSearchText(vb.author.getText().toString().trim());
+        coordinator.setSeriesSearchText(vb.seriesTitle.getText().toString().trim());
+        //noinspection DataFlowIssue
+        coordinator.setSeriesNrSearchText(vb.seriesNum.getText().toString().trim());
         coordinator.setPublisherSearchText(vb.publisher.getText().toString().trim());
     }
 
     /**
-     * Setup the adapter for the Author AutoCompleteTextView field.
+     * Setup the adapters for the AutoCompleteTextView fields.
      */
-    private void populateAuthorList() {
+    private void populateAdapters() {
         //noinspection DataFlowIssue
         authorAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAuthorNames(getContext()));
         vb.author.setAdapter(authorAdapter);
-    }
 
-    /**
-     * Setup the adapter for the Publisher AutoCompleteTextView field.
-     */
-    private void populatePublisherList() {
-        //noinspection DataFlowIssue
+        seriesAdapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Diacritic, vm.getSeriesNames(getContext()));
+        vb.seriesTitle.setAdapter(seriesAdapter);
+
         publisherAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getPublisherNames(getContext()));
@@ -225,8 +220,20 @@ public class SearchBookByTextFragment
             }
         }
 
+        final String seriesSearchText = coordinator.getSeriesSearchText();
+        if (!seriesSearchText.isEmpty()) {
+            // Always add the current search text (if not already present)
+            // to the list of recent searches.
+            if (seriesAdapter.getPosition(seriesSearchText) < 0) {
+                if (vm.addSeriesName(seriesSearchText)) {
+                    // Add to adapter, in case search produces no results
+                    seriesAdapter.add(seriesSearchText);
+                }
+            }
+        }
+
         final String publisherSearchText = coordinator.getPublisherSearchText();
-        if (vm.usePublisher() && !publisherSearchText.isEmpty()) {
+        if (!publisherSearchText.isEmpty()) {
             // Always add the current search text (if not already present)
             // to the list of recent searches.
             if (publisherAdapter.getPosition(publisherSearchText) < 0) {
@@ -261,14 +268,23 @@ public class SearchBookByTextFragment
 
         final List<Author> authors = book.getAuthors();
         if (authors.isEmpty()) {
-            // do NOT use the array, that's reserved for verified names.
+            // do NOT use {@code Book.BKEY_AUTHOR_LIST}, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
                            coordinator.getAuthorSearchText());
         }
 
+        final List<Series> series = book.getSeries();
+        if (series.isEmpty()) {
+            // do NOT use {@code Book.BKEY_SERIES_LIST}, that's reserved for verified names.
+            book.putString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES,
+                           coordinator.getSeriesSearchText());
+            book.putString(DBKey.SERIES_BOOK_NUMBER,
+                           coordinator.getSeriesNrSearchText());
+        }
+
         final List<Publisher> publishers = book.getPublishers();
         if (publishers.isEmpty()) {
-            // do NOT use the array, that's reserved for verified names.
+            // do NOT use {@code Book.BKEY_PUBLISHER_LIST}, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
                            coordinator.getPublisherSearchText());
         }
@@ -279,8 +295,10 @@ public class SearchBookByTextFragment
     @Override
     void onClearSearchCriteria() {
         super.onClearSearchCriteria();
-        vb.author.setText("");
         vb.title.setText("");
+        vb.author.setText("");
+        vb.seriesTitle.setText("");
+        vb.seriesNum.setText("");
         vb.publisher.setText("");
     }
 
@@ -293,9 +311,8 @@ public class SearchBookByTextFragment
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         vm.onBookEditingDone(data);
 
-        // refresh, we could have modified/created Authors/Publishers while editing
+        // refresh, we could have modified/created items while editing
         // (even when the edit was cancelled )
-        populateAuthorList();
-        populatePublisherList();
+        populateAdapters();
     }
 }

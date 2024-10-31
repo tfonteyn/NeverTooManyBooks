@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -65,6 +66,12 @@ public class SearchTask
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
     private String title;
+    /** Search criteria. Usage depends on {@link #by}. */
+    @Nullable
+    private String series;
+    /** Search criteria. Usage depends on {@link #by}. */
+    @Nullable
+    private String seriesNr;
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
     private String publisher;
@@ -129,6 +136,15 @@ public class SearchTask
     /**
      * Set/reset the criteria.
      *
+     * @param title to search for
+     */
+    void setTitle(@Nullable final String title) {
+        this.title = title;
+    }
+
+    /**
+     * Set/reset the criteria.
+     *
      * @param author to search for
      */
     void setAuthor(@Nullable final String author) {
@@ -138,10 +154,19 @@ public class SearchTask
     /**
      * Set/reset the criteria.
      *
-     * @param title to search for
+     * @param series to search for
      */
-    void setTitle(@Nullable final String title) {
-        this.title = title;
+    public void setSeries(@Nullable final String series) {
+        this.series = series;
+    }
+
+    /**
+     * Set/reset the criteria.
+     *
+     * @param seriesNr to search for
+     */
+    public void setSeriesNr(@Nullable final String seriesNr) {
+        this.seriesNr = seriesNr;
     }
 
     /**
@@ -248,7 +273,8 @@ public class SearchTask
 
             case Text:
                 book = ((SearchEngine.ByText) searchEngine)
-                        .search(context, isbnStr, author, title, publisher, fetchCovers);
+                        .search(context, title, author, series, seriesNr, publisher, isbnStr,
+                                fetchCovers);
                 break;
 
             default:
@@ -259,5 +285,22 @@ public class SearchTask
         }
 
         return book;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "SearchTask{"
+               + "searchEngine=" + searchEngine.getEngineId()
+               + ", by=" + by
+               + ", isbn=" + isbn
+               + ", author=`" + author + '`'
+               + ", title=`" + title + '`'
+               + ", series=`" + series + '`'
+               + ", seriesNr=`" + seriesNr + '`'
+               + ", publisher=`" + publisher + '`'
+               + ", externalId=`" + externalId + '`'
+               + ", fetchCovers=" + Arrays.toString(fetchCovers)
+               + '}';
     }
 }

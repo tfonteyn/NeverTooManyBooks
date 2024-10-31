@@ -311,17 +311,20 @@ public interface SearchEngine
         /**
          * Called by the {@link SearchCoordinator#search}.
          * <p>
-         * The code parameter might or might not be valid.
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
+         * <p>
+         * At least one search field must be present.
          *
          * @param context     Current context
-         * @param code        isbn, barcode or generic code to search for
-         * @param author      to search for
-         * @param title       to search for
-         * @param publisher   optional and in addition to author/title.
-         *                    i.e. author and/or title must be valid;
-         *                    only then the publisher is taken into account.
+         * @param title       Optional but generally mandatory by most sites
+         * @param author      Optional but highly recommended to pass in
+         * @param series      Optional / not supported by all engines
+         * @param seriesNr    Optional / not supported by all engines
+         * @param publisher   Optional / not supported by all engines
+         * @param code        isbn, barcode or generic code to search for.
+         *                    The interpretation depends on the engine.
+         *                    Optional / not supported by all engines
          * @param fetchCovers Set to {@code true} if we want to get covers
          *                    The array is guaranteed to have 2 elements.
          *
@@ -334,10 +337,12 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book search(@NonNull Context context,
-                    @Nullable String code,
-                    @Nullable String author,
                     @Nullable String title,
+                    @Nullable String author,
+                    @Nullable String series,
+                    @Nullable String seriesNr,
                     @Nullable String publisher,
+                    @Nullable String code,
                     @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,

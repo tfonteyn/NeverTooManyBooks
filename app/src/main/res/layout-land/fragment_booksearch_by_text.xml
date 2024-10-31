@@ -94,9 +94,49 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
-                style="@style/titleTextEntry"
+                style="@style/acTitleTextEntry"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_series_title"
+            style="@style/TIL.AutoCompleteTextView"
+            android:hint="@string/lbl_series"
+            app:helperText="@string/info_site_search_field_not_supported"
+            app:helperTextEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/middle"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/series_title"
+                style="@style/acTitleTextEntry"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_series_num"
+            style="@style/TIL.Text.SeriesNum"
+            android:hint="@string/lbl_series_num"
+            app:helperText="@string/info_site_search_field_not_supported"
+            app:helperTextEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintStart_toStartOf="@id/middle"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/series_num"
+                style="@style/TIE.SeriesNumber"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -106,11 +146,11 @@
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_publisher"
             android:visibility="gone"
-            app:helperText="@string/info_isfdb_warning_limited_to"
+            app:helperText="@string/info_site_search_field_not_supported"
             app:helperTextEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/middle"
-            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series_num"
             tools:visibility="visible"
             >
 

@@ -24,10 +24,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,29 +39,71 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchBookByTextViewModel
         extends ViewModel {
 
     /**
-     * A list of author names we have already searched for in this session.
+     * A list of names we have already searched for in this session.
      */
     @NonNull
     private final Collection<String> recentAuthorNames = new ArrayList<>();
 
     /**
-     * A list of Publisher names we have already searched for in this session.
+     * A list of names we have already searched for in this session.
+     */
+    @NonNull
+    private final Collection<String> recentSeriesNames = new ArrayList<>();
+
+    /**
+     * A list of names we have already searched for in this session.
      */
     @NonNull
     private final Collection<String> recentPublisherNames = new ArrayList<>();
     @NonNull
     private final EditBookOutput resultData = new EditBookOutput();
 
-    /** Flag: allow/provide searching by publisher. */
-    private Boolean usePublisher;
     private Style style;
+
+    private static boolean addName(@NonNull final Collection<String> recentNames,
+                                   @NonNull final String searchText) {
+        if (recentNames.stream().noneMatch(s -> s.equalsIgnoreCase(searchText))) {
+            recentNames.add(searchText);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Build a combined list of the passed in names + the database.
+     *
+     * @param context     Current context
+     * @param dbNames     the list from the database (will be modified, and returned as the result).
+     * @param recentNames the in-memory list
+     *
+     * @return combined list
+     */
+    @NonNull
+    private static List<String> combineNames(@NonNull final Context context,
+                                             @NonNull final List<String> dbNames,
+                                             @NonNull final Collection<String> recentNames) {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+
+        final Collection<String> uniqueNames = new HashSet<>(dbNames.size());
+        for (final String s : dbNames) {
+            uniqueNames.add(s.toLowerCase(userLocale));
+        }
+
+        // Add the names the user has already tried (to handle errors and mistakes)
+        for (final String s : recentNames) {
+            if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
+                dbNames.add(s);
+            }
+        }
+
+        return dbNames;
+    }
 
     @NonNull
     Intent createResultIntent() {
@@ -77,23 +117,14 @@ public class SearchBookByTextViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    void init(@NonNull final Context context,
-              @Nullable final Bundle args) {
-        if (usePublisher == null) {
-            // Hardcoded to ISFDB only for now, as that's the only site supporting this field.
-            // This will be refactored/moved/... at some point.
-            usePublisher = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
-
-            if (args != null) {
-                // Lookup the provided style or use the default if not found.
-                final String styleUuid = args.getString(Style.BKEY_UUID);
-                final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-                style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
-            }
+    void init(@NonNull final Bundle args) {
+        if (style == null) {
+            // Lookup the provided style or use the default if not found.
+            final String styleUuid = args.getString(Style.BKEY_UUID);
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
         }
     }
 
@@ -104,88 +135,36 @@ public class SearchBookByTextViewModel
     }
 
     boolean addAuthorName(@NonNull final String searchText) {
-        if (recentAuthorNames.stream().noneMatch(s -> s.equalsIgnoreCase(searchText))) {
-            recentAuthorNames.add(searchText);
-            return true;
-        }
-        return false;
+        return addName(recentAuthorNames, searchText);
     }
 
-    /**
-     * Build a combined list of the passed in Authors + the database.
-     *
-     * @param context Current context
-     *
-     * @return combined list
-     */
     @NonNull
     List<String> getAuthorNames(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
         // search sites can cope with the formatted version.
-        final List<String> authors =
+        final List<String> dbNames =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getNames(DBKey.AUTHOR_FORMATTED_GIVEN_FIRST);
-
-        final Collection<String> uniqueNames = new HashSet<>(authors.size());
-        for (final String s : authors) {
-            uniqueNames.add(s.toLowerCase(userLocale));
-        }
-
-        // Add the names the user has already tried (to handle errors and mistakes)
-        for (final String s : recentAuthorNames) {
-            if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
-                authors.add(s);
-            }
-        }
-
-        return authors;
+        return combineNames(context, dbNames, recentAuthorNames);
     }
 
-    /**
-     * Whether a search should (also) use the publisher name to search for books.
-     *
-     * @return flag
-     */
-    boolean usePublisher() {
-        return usePublisher;
+    boolean addSeriesName(@NonNull final String searchText) {
+        return addName(recentSeriesNames, searchText);
+    }
+
+    @NonNull
+    List<String> getSeriesNames(@NonNull final Context context) {
+        final List<String> dbNames = ServiceLocator.getInstance().getSeriesDao().getNames();
+        return combineNames(context, dbNames, recentSeriesNames);
     }
 
     boolean addPublisherName(@NonNull final String searchText) {
-        if (recentPublisherNames.stream().noneMatch(s -> s.equalsIgnoreCase(searchText))) {
-            recentPublisherNames.add(searchText);
-            return true;
-        }
-        return false;
+        return addName(recentPublisherNames, searchText);
     }
 
-    /**
-     * Build a combined list of the passed in Publishers + the database.
-     *
-     * @param context Current context
-     *
-     * @return combined list
-     */
     @NonNull
     List<String> getPublisherNames(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-        final List<String> publishers = ServiceLocator.getInstance().getPublisherDao()
-                                                      .getNames();
-
-        final Collection<String> uniqueNames = new HashSet<>(publishers.size());
-        for (final String s : publishers) {
-            uniqueNames.add(s.toLowerCase(userLocale));
-        }
-
-        // Add the names the user has already tried (to handle errors and mistakes)
-        for (final String s : recentPublisherNames) {
-            if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
-                publishers.add(s);
-            }
-        }
-
-        return publishers;
+        final List<String> dbNames = ServiceLocator.getInstance().getPublisherDao().getNames();
+        return combineNames(context, dbNames, recentPublisherNames);
     }
 }

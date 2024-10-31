@@ -163,19 +163,28 @@ public class BolSearchEngine
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @Nullable final String code,
-                       @Nullable final String author,
                        @Nullable final String title,
+                       @Nullable final String author,
+                       @Nullable final String series,
+                       @Nullable final String seriesNr,
                        @Nullable final String publisher,
+                       @Nullable final String code,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
+        // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = new StringJoiner(" ");
+        if (title != null && !title.isEmpty()) {
+            words.add(title);
+        }
         if (author != null && !author.isEmpty()) {
             words.add(author);
         }
-        if (title != null && !title.isEmpty()) {
-            words.add(title);
+        if (series != null && !series.isEmpty()) {
+            words.add(series);
+        }
+        if (seriesNr != null && !seriesNr.isEmpty()) {
+            words.add(seriesNr);
         }
         if (publisher != null && !publisher.isEmpty()) {
             words.add(publisher);
@@ -184,9 +193,15 @@ public class BolSearchEngine
             words.add(code);
         }
 
+        final Book book = new Book();
+
+        // Sanity check
+        if (words.length() == 0) {
+            return book;
+        }
+
         final String url = getHostUrl(context) + String.format(BY_TEXT, getCountry(context), words);
         final Document document = loadDocument(context, url, null);
-        final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);

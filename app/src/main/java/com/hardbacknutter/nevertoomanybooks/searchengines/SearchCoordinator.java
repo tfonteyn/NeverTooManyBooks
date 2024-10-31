@@ -143,15 +143,28 @@ public class SearchCoordinator
     /** Site external id for search. */
     @Nullable
     private Map<EngineId, String> externalIdSearchText;
-    /** Original author for search. */
-    @NonNull
-    private String authorSearchText = "";
+
     /** Original title for search. */
     @NonNull
     private String titleSearchText = "";
+
+    /** Original author for search. */
+    @NonNull
+    private String authorSearchText = "";
+
+    /** Original series for search. */
+    @NonNull
+    private String seriesSearchText = "";
+
+    /** Original series number for search. */
+    @NonNull
+    private String seriesNrSearchText = "";
+
     /** Original publisher for search. */
     @NonNull
     private String publisherSearchText = "";
+
+
     /** Whether of not to fetch thumbnails. */
     @Nullable
     private boolean[] fetchCover;
@@ -396,6 +409,12 @@ public class SearchCoordinator
 
                 authorSearchText = args.getString(
                         SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
+
+                seriesSearchText = args.getString(
+                        SearchCriteria.BKEY_SEARCH_TEXT_SERIES, "");
+
+                seriesNrSearchText = args.getString(
+                        DBKey.SERIES_BOOK_NUMBER, "");
 
                 publisherSearchText = args.getString(
                         SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
@@ -655,8 +674,10 @@ public class SearchCoordinator
                                         + "|isbnSearchText=" + isbnSearchText
                                         + "|isbn=" + isbn
                                         + "|strictIsbn=" + strictIsbn
-                                        + "|authorSearchText=" + authorSearchText
                                         + "|titleSearchText=" + titleSearchText
+                                        + "|authorSearchText=" + authorSearchText
+                                        + "|seriesSearchText=" + seriesSearchText
+                                        + "|seriesNrSearchText=" + seriesNrSearchText
                                         + "|publisherSearchText=" + publisherSearchText);
         }
 
@@ -758,8 +779,10 @@ public class SearchCoordinator
         } else if (engineId.supports(SearchEngine.SearchBy.Text)) {
             task.setSearchBy(SearchEngine.SearchBy.Text);
             task.setIsbn(isbn);
-            task.setAuthor(authorSearchText);
             task.setTitle(titleSearchText);
+            task.setAuthor(authorSearchText);
+            task.setSeries(seriesSearchText);
+            task.setSeriesNr(seriesNrSearchText);
             task.setPublisher(publisherSearchText);
 
         } else {
@@ -809,8 +832,10 @@ public class SearchCoordinator
     public void clearSearchCriteria() {
         externalIdSearchText = null;
         isbnSearchText = "";
-        authorSearchText = "";
         titleSearchText = "";
+        authorSearchText = "";
+        seriesSearchText = "";
+        seriesNrSearchText = "";
         publisherSearchText = "";
     }
 
@@ -927,28 +952,22 @@ public class SearchCoordinator
         this.isbnSearchText = isbnSearchText;
     }
 
-    private void debugEnteredOnSearchTaskFinished(@NonNull final EngineId engineId) {
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            searchTasksEndTime.put(engineId, System.nanoTime());
-        }
-
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                        "finished=" + engineId.getPreferenceKey());
-
-            synchronized (activeTasks) {
-                for (final SearchTask task : activeTasks.values()) {
-                    LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                                "running="
-                                                + task.getSearchEngine().getEngineId()
-                                                      .getPreferenceKey());
-                }
-            }
-        }
-    }
-
     public boolean isStrictIsbn() {
         return strictIsbn;
+    }
+
+    @NonNull
+    public String getTitleSearchText() {
+        return titleSearchText;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param titleSearchText to search for
+     */
+    public void setTitleSearchText(@NonNull final String titleSearchText) {
+        this.titleSearchText = titleSearchText;
     }
 
     /**
@@ -976,17 +995,31 @@ public class SearchCoordinator
     }
 
     @NonNull
-    public String getTitleSearchText() {
-        return titleSearchText;
+    public String getSeriesSearchText() {
+        return seriesSearchText;
     }
 
     /**
      * Search criteria.
      *
-     * @param titleSearchText to search for
+     * @param seriesSearchText to search for
      */
-    public void setTitleSearchText(@NonNull final String titleSearchText) {
-        this.titleSearchText = titleSearchText;
+    public void setSeriesSearchText(@NonNull final String seriesSearchText) {
+        this.seriesSearchText = seriesSearchText;
+    }
+
+    @NonNull
+    public String getSeriesNrSearchText() {
+        return seriesNrSearchText;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param seriesNrSearchText to search for
+     */
+    public void setSeriesNrSearchText(@NonNull final String seriesNrSearchText) {
+        this.seriesNrSearchText = seriesNrSearchText;
     }
 
     @NonNull
@@ -1034,6 +1067,26 @@ public class SearchCoordinator
             return msg;
         }
         return null;
+    }
+
+    private void debugEnteredOnSearchTaskFinished(@NonNull final EngineId engineId) {
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            searchTasksEndTime.put(engineId, System.nanoTime());
+        }
+
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
+                                        "finished=" + engineId.getPreferenceKey());
+
+            synchronized (activeTasks) {
+                for (final SearchTask task : activeTasks.values()) {
+                    LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
+                                                "running="
+                                                + task.getSearchEngine().getEngineId()
+                                                      .getPreferenceKey());
+                }
+            }
+        }
     }
 
     private void debugExitOnSearchTaskFinished(@NonNull final Context context,

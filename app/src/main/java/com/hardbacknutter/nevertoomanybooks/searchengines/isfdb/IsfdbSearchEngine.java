@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.parsers.ParserConfigurationException;
@@ -95,10 +96,6 @@ public class IsfdbSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionIsfdb> {
 
-    /** Preferences - Type: {@code boolean}. */
-    public static final String PK_USE_PUBLISHER = EngineId.Isfdb.getPreferenceKey()
-                                                  + ".search.uses.publisher";
-
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -135,6 +132,15 @@ public class IsfdbSearchEngine
     private static final String CGI_SE = "/se.cgi";
     /** Advanced search FORM submission (using GET), and the returned results page url. */
     private static final String CGI_ADV_SEARCH_RESULTS = "/adv_search_results.cgi";
+    /**
+     * This information was derived from inspecting this
+     * <a href="https://www.isfdb.org/cgi-bin/adv_search_selection.cgi?pub">page</a>.
+     * <p>
+     * Use the {@link #USE} template to create one or more search criteria and submit
+     * [url] + [CGI_ADV_SEARCH_PREFIX] + [USE] + [USE] ...
+     *
+     * @see #USE
+     */
     private static final String CGI_ADV_SEARCH_PREFIX = CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
                                                         + "ORDERBY=pub_title"
                                                         + "&ACTION=query"
@@ -171,7 +177,24 @@ public class IsfdbSearchEngine
      */
     private static final String LANGUAGE_DEFAULT = "eng";
 
-    /** Format string for searches. */
+    /**
+     * Format string for searches. A maximum of 6 use's can be send.
+     * They can be "OR or "AND" combined, but <strongly>not grouped</strongly>.
+     * We hardcode "AND".
+     * <p>
+     * param 1: a sequential number, 1..6
+     * param 2: the search field, currently supported in
+     * {@link ByText#search(Context, String, String, String, String, String, String, boolean[])}:
+     * <ul>
+     *     <li>pub_isbn</li>
+     *     <li>pub_title</li>
+     *     <li>author_canonical</li>
+     *     <li>pub_publisher</li>
+     * </ul>
+     * param 3: the search text
+     *
+     * @see #CGI_ADV_SEARCH_PREFIX
+     */
     private static final String USE = "&USE_%1$s=%2$s&O_%1$s=contains&TERM_%1$s=%3$s";
 
     /*
@@ -302,63 +325,62 @@ public class IsfdbSearchEngine
     @Override
     @WorkerThread
     public Book search(@NonNull final Context context,
-                       @Nullable final /* not supported */ String code,
-                       @Nullable final String author,
                        @Nullable final String title,
+                       @Nullable final String author,
+            /*
+             * The site has a "publisher series" as searchable field
+             * but that is NOT the "book series".
+             * Searching the book-series is not straightforward sadly.
+             */
+                       @Nullable final String /* not supported */ series,
+                       @Nullable final String /* not supported */ seriesNr,
                        @Nullable final String publisher,
+                       @Nullable final String isbn,
+
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         final String url = getHostUrl(context) + CGI_ADV_SEARCH_PREFIX;
 
         int index = 0;
-        String args = "";
+        final StringJoiner args = new StringJoiner("", url, "")
+                .setEmptyValue("");
         final Book book = new Book();
 
         //noinspection OverlyBroadCatchBlock
         try {
-            if (author != null && !author.isEmpty()) {
+            if (isbn != null && !isbn.isEmpty()) {
                 index++;
-                args += String.format(USE, index, "author_canonical",
-                                      URLEncoder.encode(author, CHARSET_ENCODE_URL));
-                // "&USE_" + index + "=author_canonical"
-                // + "&O_" + index + "=contains"
-                // + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
+                args.add(String.format(USE, index, "pub_isbn",
+                                       URLEncoder.encode(isbn, CHARSET_ENCODE_URL)));
             }
 
             if (title != null && !title.isEmpty()) {
                 index++;
-                args += String.format(USE, index, "pub_title",
-                                      URLEncoder.encode(title, CHARSET_ENCODE_URL));
-                // "&USE_" + index + "=pub_title"
-                // + "&O_" + index + "=contains"
-                // + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
+                args.add(String.format(USE, index, "pub_title",
+                                       URLEncoder.encode(title, CHARSET_ENCODE_URL)));
             }
 
-            // as per user settings.
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PK_USE_PUBLISHER, false)) {
-                if (publisher != null && !publisher.isEmpty()) {
-                    index++;
-                    args += String.format(USE, index, "pub_publisher",
-                                          URLEncoder.encode(publisher, CHARSET_ENCODE_URL));
-                    // "&USE_" + index + "=pub_publisher"
-                    // + "&O_" + index + "=contains"
-                    // + "&TERM_" + index + "=" + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
-                }
+            if (author != null && !author.isEmpty()) {
+                index++;
+                args.add(String.format(USE, index, "author_canonical",
+                                       URLEncoder.encode(author, CHARSET_ENCODE_URL)));
             }
 
-            // there is support for up to 6 search terms.
-            // &USE_4=pub_title&O_4=exact&TERM_4=
-            // &USE_5=pub_title&O_5=exact&TERM_5=
-            // &USE_6=pub_title&O_6=exact&TERM_6=
+            if (publisher != null && !publisher.isEmpty()) {
+                index++;
+                args.add(String.format(USE, index, "pub_publisher",
+                                       URLEncoder.encode(publisher, CHARSET_ENCODE_URL)));
+            }
 
-            // sanity check: any data to search for?
-            if (!args.isEmpty()) {
-                final List<AltEditionIsfdb> editions = fetchEditions(context, url + args);
-                if (!editions.isEmpty()) {
-                    fetchByEdition(context, editions.get(0), fetchCovers, book);
-                }
+            // Sanity check
+            if (args.length() == 0) {
+                return book;
+            }
+
+            final List<AltEditionIsfdb> editions = fetchEditions(context, url + args);
+            if (!editions.isEmpty()) {
+                fetchByEdition(context, editions.get(0), fetchCovers, book);
             }
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);

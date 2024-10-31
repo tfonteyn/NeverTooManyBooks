@@ -368,8 +368,12 @@
      Some functionality is limited to the ISFDB web site only.
      This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
     <string name="info_isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
+
     <!-- Information on which websites will be searched. Param 1: list of website names. -->
     <string name="info_site_list">Searches are limited to: %1$s</string>
+    <!-- Some functionality is limited to certain web sites only.
+         This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
+    <string name="info_site_search_field_not_supported">(not supported by all web sites)</string>
 
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue">Dutch and more; Catalogue</string>

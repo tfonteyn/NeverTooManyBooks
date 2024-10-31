@@ -718,7 +718,7 @@ public class Book
             }
         }
 
-        // No authors ? Fallback to a potential failed search result
+        // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
         if (authors.isEmpty()) {
             final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
@@ -800,7 +800,6 @@ public class Book
      * @param context Current context
      */
     public void pruneSeries(@NonNull final Context context) {
-        if (contains(BKEY_SERIES_LIST)) {
             final List<Series> seriesList = getSeries();
             if (!seriesList.isEmpty()) {
                 final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
@@ -810,6 +809,17 @@ public class Book
                                                 () -> getLocaleOrUserLocale(context)))) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
+            }
+
+        // None present ? Fallback to a potential failed search result
+        // which would contain whatever the user searched for.
+        if (seriesList.isEmpty()) {
+            final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
+            if (!searchText.isEmpty()) {
+                seriesList.add(Series.from(searchText, getString(DBKey.SERIES_BOOK_NUMBER)));
+                remove(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
+                remove(DBKey.SERIES_BOOK_NUMBER);
+                stage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }
@@ -873,15 +883,24 @@ public class Book
      * @param context Current context
      */
     public void prunePublishers(@NonNull final Context context) {
-        if (contains(BKEY_PUBLISHER_LIST)) {
-            final List<Publisher> publishers = getPublishers();
-            if (!publishers.isEmpty()) {
-                final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-                final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        final List<Publisher> publishers = getPublishers();
+        if (!publishers.isEmpty()) {
+            final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
-                if (publisherDao.pruneList(context, publishers, publisher -> locale)) {
-                    stage.setStage(EntityStage.Stage.Dirty);
-                }
+            if (publisherDao.pruneList(context, publishers, publisher -> locale)) {
+                stage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
+
+        // None present ? Fallback to a potential failed search result
+        // which would contain whatever the user searched for.
+        if (publishers.isEmpty()) {
+            final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
+            if (!searchText.isEmpty()) {
+                publishers.add(Publisher.from(searchText));
+                remove(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
+                stage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }
