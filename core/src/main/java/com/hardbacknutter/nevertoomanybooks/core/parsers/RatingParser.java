@@ -29,6 +29,8 @@ import java.util.function.Function;
 
 public class RatingParser {
 
+    private static final String ERROR_MAX_MUST_BE_5_OR_10 = "max must be 5 or 10";
+
     private final boolean divBy2;
     @NonNull
     private final Function<String, Float> parser;
@@ -39,10 +41,12 @@ public class RatingParser {
      * Parsing will use {@link Float#parseFloat(String)}.
      *
      * @param max either {@code 5} or {@code 10}
+     *
+     * @throws IllegalArgumentException if the max is different from 5 or 10
      */
     public RatingParser(final int max) {
         if (max != 5 && max != 10) {
-            throw new IllegalArgumentException("max must be 5 or 10");
+            throw new IllegalArgumentException(ERROR_MAX_MUST_BE_5_OR_10);
         }
         parser = Float::parseFloat;
         divBy2 = max == 10;
@@ -53,11 +57,13 @@ public class RatingParser {
      *
      * @param realNumberParser the locale based parser to use
      * @param max              either {@code 5} or {@code 10}
+     *
+     * @throws IllegalArgumentException if the max is different from 5 or 10
      */
     public RatingParser(@NonNull final RealNumberParser realNumberParser,
                         final int max) {
         if (max != 5 && max != 10) {
-            throw new IllegalArgumentException("max must be 5 or 10");
+            throw new IllegalArgumentException(ERROR_MAX_MUST_BE_5_OR_10);
         }
         parser = realNumberParser::parseFloat;
         divBy2 = max == 10;
@@ -77,26 +83,33 @@ public class RatingParser {
         }
 
         try {
-            float rating = parser.apply(s);
+            final float rating = parser.apply(s);
             if (rating > 0) {
-                if (divBy2) {
-                    // 0.0 to 10.0 becomes an int 0..10
-                    // then divide by 2 to get 0.0..5.0
-                    rating = (float) Math.round(rating) / 2;
-                } else {
-                    // 0.0 to 5.0 becomes 0.0 to 10.0 which becomes an int 1..10
-                    // then divide by 2 to get 0..5
-                    rating = (float) Math.round(2 * rating) / 2;
-                }
-                // paranoia
-                rating = MathUtils.clamp(rating, (float) 0, (float) 5);
-
-                if (rating > 0) {
-                    return Optional.of(rating);
-                }
+                return normalize(rating);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
+        }
+        return Optional.empty();
+    }
+
+    @NonNull
+    public Optional<Float> normalize(final float rating) {
+        float result;
+        if (divBy2) {
+            // 0.0 to 10.0 becomes an int 0..10
+            // then divide by 2 to get 0.0..5.0
+            result = (float) Math.round(rating) / 2;
+        } else {
+            // 0.0 to 5.0 becomes 0.0 to 10.0 which becomes an int 1..10
+            // then divide by 2 to get 0..5
+            result = (float) Math.round(2 * rating) / 2;
+        }
+        // paranoia
+        result = MathUtils.clamp(result, (float) 0, (float) 5);
+
+        if (result > 0) {
+            return Optional.of(result);
         }
         return Optional.empty();
     }
