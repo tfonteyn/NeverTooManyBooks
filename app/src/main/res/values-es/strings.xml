@@ -145,7 +145,7 @@
     <string name="confirm_delete_book">Se dispone a eliminar el libro con el título «%1$s» de %2$s.\n\n¿Está seguro de que desea continuar?</string>
     <string name="confirm_delete_bookshelf">¿Realmente eliminar la estantería «%1$s»? Los libros en sí no se eliminarán. Seguirán estando presentes en cualquier otro estante o en el estante «%2$s».</string>
     <string name="confirm_delete_publisher">¿Eliminar realmente el editor «%1$s»?\n\nLos libros en sí no se eliminarán.\n\nConsidere editar el editor y cambiar el nombre del editor por el de otro editor para conservar estos datos.</string>
-    <string name="confirm_delete_series">¿Borrar la serie \"%1$s\"?\n\nLos libros en sí no se borrarán.\n\nConsidere la posibilidad de editar la serie y cambiar el nombre de la serie por el de otra serie para conservar estos datos.</string>
+    <string name="confirm_delete_series">¿Borrar la serie «%1$s»?\n\nLos libros en sí no se borrarán.\n\nConsidere la posibilidad de editar la serie y cambiar el nombre de la serie por el de otra serie para conservar estos datos.</string>
     <string name="confirm_delete_style">¿Eliminar el estilo «%1$s»?</string>
     <string name="confirm_delete_toc_entry_everywhere">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
     <string name="confirm_duplicate_book_message">El libro que intenta añadir ya está en la base de datos. ¿Desea añadir otra copia?</string>
@@ -161,7 +161,7 @@
     <string name="confirm_registration_benefits">Esta característica se beneficia del registro con %1$s. ¿Desea ver más información o deshabilitar este mensaje?\nPuede encontrar esta información más adelante en la sección «%2$s» en la configuración.</string>
     <string name="confirm_registration_required">Esta función requiere registro con %1$s. ¿Te gustaría ver más información?</string>
     <string name="confirm_remove_toc_entry">¿Eliminar el título «%1$s» de %2$s este libro?</string>
-    <string name="confirm_scope_for_change">Has cambiado:\n \"%1$s\"\n a\n \"%2$s\"\n\n¿Cómo desea aplicar este cambio?\nNota: La opción \"%3$s\" se aplicará al instante. Si elige \"%4$s\", se creará un nuevo %5$s.</string>
+    <string name="confirm_scope_for_change">Has cambiado:\n «%1$s»\n a\n «%2$s»\n\n¿Cómo desea aplicar este cambio?\nNota: La opción «%3$s» se aplicará al instante. Si elige «%4$s», se creará un nuevo %5$s.</string>
     <string name="confirm_scope_for_delete">Eliminar el título «%1$s» por %2$s.\n\n¿Cómo desea aplicar este cambio?\nADVERTENCIA: ¡La opción «%3$s» no se puede deshacer!</string>
     <string name="confirm_test_connection">Es recomendable probar esta conexión para evitar problemas más adelante.</string>
     <string name="confirm_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
