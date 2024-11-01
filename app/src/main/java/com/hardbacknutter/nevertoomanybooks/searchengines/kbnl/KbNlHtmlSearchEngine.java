@@ -569,8 +569,7 @@ public class KbNlHtmlSearchEngine
             throws StorageException {
 
         Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
-        //noinspection DataFlowIssue
-        if (oFileSpec.isEmpty() && getEngineId().getConfig().supportsMultipleCoverSizes()) {
+        if (oFileSpec.isEmpty()) {
             oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
             if (oFileSpec.isEmpty()) {
                 oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);

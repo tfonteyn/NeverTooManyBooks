@@ -256,8 +256,7 @@ public class OpenLibrary2SearchEngine
             throws StorageException {
 
         Optional<String> oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Large);
-        //noinspection DataFlowIssue
-        if (oFileSpec.isEmpty() && getEngineId().getConfig().supportsMultipleCoverSizes()) {
+        if (oFileSpec.isEmpty()) {
             oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Medium);
             if (oFileSpec.isEmpty()) {
                 oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Small);

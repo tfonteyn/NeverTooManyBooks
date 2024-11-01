@@ -456,7 +456,6 @@ public final class SearchEngineConfig {
             return this;
         }
 
-        // URGENT: remove the need for this setting, easier to let each site handle their own
         @NonNull
         Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
             this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
