@@ -282,6 +282,8 @@ public abstract class SearchBookBaseFragment
     protected void autoRemoveError(@NonNull final EditText editText,
                                    @NonNull final TextInputLayout til) {
         editText.addTextChangedListener((ExtTextWatcher) s -> til.setError(null));
+        // REMINDER: this overrides the default listener which would show/remove the "end_icon"
+        // This is in fact what we want - finally... and android "issue" we like.
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 til.setError(null);

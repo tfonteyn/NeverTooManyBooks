@@ -154,6 +154,8 @@ public class EditTextField<T, V extends EditText>
 
         final V view = requireView();
         view.addTextChangedListener(this);
+        // REMINDER: this overrides the default listener which would show/remove the "end_icon"
+        // This is in fact what we want - finally... and android "issue" we like.
         view.setOnFocusChangeListener(this);
     }
 
