@@ -162,6 +162,37 @@ public class LastDodoSearchEngine
         }
     }
 
+    /**
+     * Takes a string which (hopefully) contains a 10 or 13 digit ISBN number,
+     * and formats it in the traditional way with '-' characters.
+     * Any non valid string is returned as-is;  a {@code null} becomes {@code ""}
+     *
+     * @param s to format
+     *
+     * @return dash formatted isbn
+     */
+    @NonNull
+    private static String formatIsbn(@Nullable final String s) {
+        if (s == null) {
+            return "";
+
+        } else if (s.length() == 10) {
+            return s.substring(0, 2) + '-'
+                   + s.substring(2, 6) + '-'
+                   + s.substring(6, 9) + '-'
+                   + s.charAt(9);
+
+        } else if (s.length() == 13) {
+            return s.substring(0, 3) + '-'
+                   + s.substring(3, 5) + '-'
+                   + s.substring(5, 9) + '-'
+                   + s.substring(9, 12) + '-'
+                   + s.charAt(12);
+        } else {
+            return s;
+        }
+    }
+
     @NonNull
     private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
         return AuthorResolverFactory.getResolvers(context, this);
@@ -199,10 +230,8 @@ public class LastDodoSearchEngine
 
         final Book book = new Book();
 
-        // This is silly...
-        // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
-        // the digits.
-        final String url = getHostUrl(context) + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
+        // Searching on the ISBN REQUIRES the dashes between the digits.
+        final String url = getHostUrl(context) + String.format(SEARCH, formatIsbn(validIsbn));
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.

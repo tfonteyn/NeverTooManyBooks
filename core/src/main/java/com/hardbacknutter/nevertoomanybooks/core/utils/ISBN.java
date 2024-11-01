@@ -287,37 +287,6 @@ public class ISBN {
     }
 
     /**
-     * Takes a string which (hopefully) contains a 10 or 13 digit ISBN number,
-     * and formats it in the traditional way with '-' characters.
-     * Any non valid string is returned as-is;  a {@code null} becomes {@code ""}
-     *
-     * @param s to format
-     *
-     * @return dash formatted isbn
-     */
-    @NonNull
-    public static String formatIsbn(@Nullable final String s) {
-        if (s == null) {
-            return "";
-
-        } else if (s.length() == 10) {
-            return s.substring(0, 2) + '-'
-                   + s.substring(2, 6) + '-'
-                   + s.substring(6, 9) + '-'
-                   + s.charAt(9);
-
-        } else if (s.length() == 13) {
-            return s.substring(0, 3) + '-'
-                   + s.substring(3, 5) + '-'
-                   + s.substring(5, 9) + '-'
-                   + s.substring(9, 12) + '-'
-                   + s.charAt(12);
-        } else {
-            return s;
-        }
-    }
-
-    /**
      * Check the validity of an ISBN string.
      *
      * @param text to check
