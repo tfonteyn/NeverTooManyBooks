@@ -1,0 +1,582 @@
+/*
+ * @Copyright 2018-2024 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
+
+import android.content.Context;
+
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.StringJoiner;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
+
+/**
+ * <a href="https://books.google.com">Google books</a>.
+ * <p>
+ * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">Getting started</a>
+ * <p>
+ * {@link SearchEngine.ByExternalId} can be supported, but the id's
+ * are for example "9ygPPQAACAAJ".
+ * It's not practical for the user to enter those manually.
+ */
+public class GoogleBooks2SearchEngine
+        extends SearchEngineBase
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText {
+
+    private static final String IDENT_ISBN_10 = "ISBN_10";
+    private static final String IDENT_ISBN_13 = "ISBN_13";
+
+    private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
+    private static final String SEARCH = "/books/v1/volumes?q=";
+    @Nullable
+    private FutureHttpGet<String> futureHttpGet;
+
+    /**
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
+     *
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
+     */
+    @Keep
+    public GoogleBooks2SearchEngine(@NonNull final Context appContext,
+                                    @NonNull final SearchEngineConfig config) {
+        super(appContext, config);
+    }
+
+    @NonNull
+    @Override
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException {
+
+        final Book book = new Book();
+
+        // %3A  :
+        final String url = getHostUrl(context) + SEARCH + "isbn%3A" + validIsbn;
+        fetchBook(context, url, fetchCovers, book);
+        return book;
+    }
+
+    /**
+     * Criteria supported: title, author, publisher.
+     * Code: supports "isbn" only.
+     * <p>
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    @WorkerThread
+    public Book search(@NonNull final Context context,
+                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @Nullable final String isbn,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException {
+
+        final Book book = new Book();
+
+        // %2B  +
+        final StringJoiner args = new StringJoiner("%2B");
+
+        final String title = criteria.getTitle();
+        if (!title.isEmpty()) {
+            args.add("intitle%3A" + encodeSpaces(title));
+        }
+
+        final String author = criteria.getAuthor();
+        if (!author.isEmpty()) {
+            args.add("inauthor%3A" + encodeSpaces(author));
+        }
+
+        final String publisher = criteria.getPublisher();
+        if (!publisher.isEmpty()) {
+            args.add("inpublisher%3A" + encodeSpaces(publisher));
+        }
+
+        if (isbn != null && !isbn.isEmpty()) {
+            args.add("isbn%3A" + encodeSpaces(publisher));
+        }
+
+        // Sanity check
+        if (args.length() == 0) {
+            return book;
+        }
+
+        // %3A  :
+        final String url = getHostUrl(context) + SEARCH + args;
+        fetchBook(context, url, fetchCovers, book);
+        return book;
+    }
+
+    /**
+     * Fetch a book by url.
+     *
+     * @param context     Current context
+     * @param url         to fetch
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws StorageException      on storage related failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws IllegalStateException if the SAX parser could not be created
+     */
+    private void fetchBook(@NonNull final Context context,
+                           @NonNull final String url,
+                           @NonNull final boolean[] fetchCovers,
+                           @NonNull final Book book)
+            throws StorageException,
+                   SearchException {
+
+        futureHttpGet = createFutureGetRequest(context);
+
+        try {
+            // get and store the result into a string.
+            final String response = futureHttpGet.get(url, (con, is) -> readResponseStream(is));
+
+            final JSONObject document = new JSONObject(response);
+            // https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes
+            //
+            // {
+            //  "kind": "books#volumes",
+            //  "totalItems": 4,
+            //  "items": [
+            //    {
+            //      "kind": "books#volume",
+            // ...
+            final int numFound = document.optInt("totalItems");
+            if (numFound < 1) {
+                return;
+            }
+
+            // Grab the first one found
+            final JSONObject edition = document.getJSONArray("items")
+                                               .getJSONObject(0);
+            parse(context, edition, fetchCovers, book);
+
+        } catch (@NonNull final IOException | JSONException e) {
+            throw new SearchException(getEngineId(), e);
+        } finally {
+            futureHttpGet = null;
+        }
+    }
+
+    /**
+     * Read the entire InputStream into a String.
+     *
+     * @param is to read
+     *
+     * @return the entire content
+     *
+     * @throws UncheckedIOException on any failure
+     */
+    @VisibleForTesting
+    @NonNull
+    String readResponseStream(@NonNull final InputStream is)
+            throws UncheckedIOException {
+        // Don't close this stream!
+        final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        final BufferedReader reader = new BufferedReader(isr);
+
+        return reader.lines().collect(Collectors.joining());
+    }
+
+    /**
+     * Parse the results, and build the book.
+     * <p>
+     * <a href="https://developers.google.com/books/docs/v1/reference/volumes">
+     * all possible result fields</a>
+     * <p>
+     * Example:
+     * <pre>
+     *     {
+     *       "kind": "books#volume",
+     *       "id": "9ygPPQAACAAJ",
+     *       "etag": "f1WSNi06Bns",
+     *       "selfLink": "https://www.googleapis.com/books/v1/volumes/9ygPPQAACAAJ",
+     *       "volumeInfo": {
+     *         "title": "Flores para Algernon",
+     *         "authors": [
+     *           "Daniel Keyes"
+     *         ],
+     *         "publisher": "Lectorum Publications",
+     *         "publishedDate": "2004",
+     *         "description": "After a mouse gets out of a maze faster than he does, mentally handicapped Charlie Gordon volunteers for an experiment to enhance his brainpower. Soon he goes from an IQ of 68 to genius level and beyond. Only now does Charlie feel that to be mentally handicapped was to be different. And the experiment is running into trouble. This touching, must-read story is finally available in Spanish.",
+     *         "industryIdentifiers": [
+     *           {
+     *             "type": "ISBN_10",
+     *             "identifier": "8467503483"
+     *           },
+     *           {
+     *             "type": "ISBN_13",
+     *             "identifier": "9788467503487"
+     *           }
+     *         ],
+     *         "readingModes": {
+     *           "text": false,
+     *           "image": false
+     *         },
+     *         "pageCount": 0,
+     *         "printType": "BOOK",
+     *         "categories": [
+     *           "Brain"
+     *         ],
+     *         "averageRating": 5,
+     *         "ratingsCount": 1,
+     *         "maturityRating": "NOT_MATURE",
+     *         "allowAnonLogging": false,
+     *         "contentVersion": "preview-1.0.0",
+     *         "panelizationSummary": {
+     *           "containsEpubBubbles": false,
+     *           "containsImageBubbles": false
+     *         },
+     *         "imageLinks": {
+     *           "smallThumbnail": "http://books.google.com/books/content?id=9ygPPQAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api",
+     *           "thumbnail": "http://books.google.com/books/content?id=9ygPPQAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+     *         },
+     *         "language": "es",
+     *         "previewLink": "http://books.google.co.uk/books?id=9ygPPQAACAAJ&dq=intitle:flowers+inauthor:keyes&hl=&cd=1&source=gbs_api",
+     *         "infoLink": "http://books.google.co.uk/books?id=9ygPPQAACAAJ&dq=intitle:flowers+inauthor:keyes&hl=&source=gbs_api",
+     *         "canonicalVolumeLink": "https://books.google.com/books/about/Flores_para_Algernon.html?hl=&id=9ygPPQAACAAJ"
+     *       },
+     *       "saleInfo": {
+     *         "country": "GB",
+     *         "saleability": "NOT_FOR_SALE",
+     *         "isEbook": false
+     *       },
+     *       "accessInfo": {
+     *         "country": "GB",
+     *         "viewability": "NO_PAGES",
+     *         "embeddable": false,
+     *         "publicDomain": false,
+     *         "textToSpeechPermission": "ALLOWED",
+     *         "epub": {
+     *           "isAvailable": false
+     *         },
+     *         "pdf": {
+     *           "isAvailable": false
+     *         },
+     *         "webReaderLink": "http://play.google.com/books/reader?id=9ygPPQAACAAJ&hl=&source=gbs_api",
+     *         "accessViewStatus": "NONE",
+     *         "quoteSharingAllowed": false
+     *       },
+     *       "searchInfo": {
+     *         "textSnippet": "After a mouse gets out of a maze faster than he does, mentally handicapped Charlie Gordon volunteers for an experiment to enhance his brainpower."
+     *       }
+     *     }
+     * </pre>
+     *
+     * @param context     Current context
+     * @param edition     JSON result data
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws StorageException on storage related failures
+     */
+    @VisibleForTesting
+    void parse(@NonNull final Context context,
+               @NonNull final JSONObject edition,
+               @NonNull final boolean[] fetchCovers,
+               @NonNull final Book book)
+            throws StorageException, IOException {
+
+        String s;
+
+        s = edition.optString("id", null);
+        if (s != null && !s.isEmpty()) {
+            book.putString(DBKey.SID_GOOGLE, s);
+        }
+
+        final JSONObject volumeInfo = edition.optJSONObject("volumeInfo");
+        if (volumeInfo == null) {
+            return;
+        }
+
+        parseVolumeInfo(context, volumeInfo, book);
+
+        final JSONObject saleInfo = edition.optJSONObject("saleInfo");
+        if (saleInfo != null) {
+            parseSaleInfo(context, saleInfo, book);
+        }
+
+        if (isCancelled()) {
+            return;
+        }
+
+        final JSONObject coverInfo = volumeInfo.optJSONObject("imageLinks");
+        if (coverInfo != null) {
+            fetchCovers(context, coverInfo, fetchCovers, book);
+        }
+    }
+
+
+    private void parseVolumeInfo(@NonNull final Context context,
+                                 @NonNull final JSONObject volumeInfo,
+                                 @NonNull final Book book) {
+        JSONArray a;
+        int i;
+        String s;
+        float f;
+        s = volumeInfo.optString("title", null);
+        if (s != null && !s.isEmpty()) {
+            book.putString(DBKey.TITLE, s);
+        }
+
+        a = volumeInfo.optJSONArray("authors");
+        if (a != null && !a.isEmpty()) {
+            parseAuthors(a, book);
+        }
+
+        s = volumeInfo.optString("publisher", null);
+        if (s != null && !s.isEmpty()) {
+            book.add(Publisher.from(s));
+        }
+        s = volumeInfo.optString("publishedDate", null);
+        if (s != null && !s.isEmpty()) {
+            addPublicationDate(context, getLocale(context), s, book);
+        }
+
+        s = volumeInfo.optString("description", null);
+        if (s != null && !s.isEmpty()) {
+            book.putString(DBKey.DESCRIPTION, s);
+        }
+
+        a = volumeInfo.getJSONArray("industryIdentifiers");
+        if (!a.isEmpty()) {
+            parseIdentifiers(a, book);
+        }
+
+        i = volumeInfo.optInt("pageCount");
+        if (i > 0) {
+            book.putString(DBKey.PAGE_COUNT, String.valueOf(i));
+        }
+
+        // Google documents this as a "double" with values 0..5,
+        // so we rely on decimal separator "." ... flw...
+        f = volumeInfo.optFloat("averageRating");
+        if (!Float.isNaN(f) && f > 0) {
+            final RatingParser ratingParser = new RatingParser(5);
+            ratingParser.normalize(f).ifPresent(rating -> book.putString(DBKey.RATING,
+                                                                         String.valueOf(rating)));
+        }
+
+        s = volumeInfo.optString("language", null);
+        if (s != null && !s.isEmpty()) {
+            book.putString(DBKey.LANGUAGE, s);
+        }
+
+        // BOOK or MAGAZINE : ignored
+        //s = volumeInfo.optString("printType", null);
+    }
+
+    private void parseSaleInfo(@NonNull final Context context,
+                               @NonNull final JSONObject saleInfo,
+                               @NonNull final Book book) {
+        final boolean isEbook = saleInfo.optBoolean("isEbook");
+        if (isEbook) {
+            // FormatMapper will take care of the translation
+            book.putString(DBKey.FORMAT, "ebook");
+        }
+
+        final JSONObject listPrice = saleInfo.optJSONObject("listPrice");
+        if (listPrice != null) {
+            final String currencyCode = listPrice.optString("currencyCode", null);
+            // Google documents this as a "double", so we rely on decimal separator "." ... flw...
+            final double amount = listPrice.optDouble("amount");
+            if (currencyCode != null && !currencyCode.isEmpty()
+                && !Double.isNaN(amount)) {
+                final Money money = MoneyParser.parse(BigDecimal.valueOf(amount), currencyCode);
+                book.putMoney(DBKey.PRICE_LISTED, money);
+            }
+        }
+    }
+
+    /**
+     * Authors are a plain array of name strings.
+     *
+     * @param a    array with author elements
+     * @param book destination
+     */
+    private void parseAuthors(@NonNull final JSONArray a,
+                              @NonNull final Book book) {
+        for (int i = 0; i < a.length(); i++) {
+            final String name = a.optString(i);
+            addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
+        }
+    }
+
+    private void parseIdentifiers(@NonNull final JSONArray a,
+                                  @NonNull final Book book) {
+        final Map<String, String> all = new HashMap<>();
+
+        for (int i = 0; i < a.length(); i++) {
+            final JSONObject entry = a.optJSONObject(i);
+            if (entry != null) {
+                final String type = entry.optString("type");
+                final String identifier = entry.optString("identifier");
+                if (!type.isEmpty() && !identifier.isEmpty()) {
+                    all.put(type, identifier);
+                }
+            }
+        }
+
+        // Possible values are ISBN_10, ISBN_13, ISSN and OTHER.
+        if (all.containsKey(IDENT_ISBN_13)) {
+            //noinspection DataFlowIssue
+            book.putString(DBKey.BOOK_ISBN, all.get(IDENT_ISBN_13));
+        } else if (all.containsKey(IDENT_ISBN_10)) {
+            //noinspection DataFlowIssue
+            book.putString(DBKey.BOOK_ISBN, all.get(IDENT_ISBN_10));
+        }
+    }
+
+    /**
+     * Fetch one of the possible covers.
+     * <p>
+     * Possible element strings:
+     * <pre>
+     *  thumbnail       thumbnail size (width of ~128 pixels).
+     *  small           small size (width of ~300 pixels).
+     *  medium          medium size (width of ~575 pixels).
+     *  large           large size (width of ~800 pixels).
+     *  smallThumbnail  small thumbnail size (width of ~80 pixels).
+     *  extraLarge      extra large size (width of ~1280 pixels).
+     * </pre>
+     *
+     * @param context     Current context
+     * @param element     JSON result data
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        destination
+     *
+     * @throws StorageException on storage related failures
+     */
+    private void fetchCovers(@NonNull final Context context,
+                             @NonNull final JSONObject element,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
+            throws StorageException {
+        if (fetchCovers[0]) {
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
+
+            Optional<String> oFileSpec;
+
+            oFileSpec = getFileSpec(context, element, "extraLarge", Size.Large, isbn);
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = getFileSpec(context, element, "large", Size.Large, isbn);
+            }
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = getFileSpec(context, element, "medium", Size.Medium, isbn);
+            }
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = getFileSpec(context, element, "small", Size.Medium, isbn);
+            }
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = getFileSpec(context, element, "thumbnail", Size.Small, isbn);
+            }
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = getFileSpec(context, element, "smallThumbnail", Size.Small, isbn);
+            }
+
+            oFileSpec.ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+    }
+
+    private Optional<String> getFileSpec(@NonNull final Context context,
+                                         @NonNull final JSONObject element,
+                                         @NonNull final String key,
+                                         @NonNull final Size size,
+                                         @NonNull final String isbn)
+            throws StorageException {
+
+        String url = element.optString(key, null);
+        if (url != null && !url.isEmpty()) {
+            // 2024-10-31: he urls are "http", seriously Google?
+            if (url.startsWith("http:")) {
+                url = "https:" + url.substring(5);
+            }
+            return saveImage(context, url, isbn, 0, size);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (futureHttpGet != null) {
+                futureHttpGet.cancel();
+            }
+        }
+    }
+
+    /**
+     * replace spaces with %20.
+     *
+     * @param s String to encode
+     *
+     * @return encodes string
+     */
+    @NonNull
+    private String encodeSpaces(@NonNull final CharSequence s) {
+        // return URLEncoder.encode(s, "UTF-8");
+        return SPACE_LITERAL.matcher(s).replaceAll("%20");
+    }
+}
+
+

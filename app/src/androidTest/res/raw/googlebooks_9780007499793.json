@@ -1,0 +1,103 @@
+{
+  "kind": "books#volumes",
+  "totalItems": 1,
+  "items": [
+    {
+      "kind": "books#volume",
+      "id": "lDihJsa19_gC",
+      "etag": "S+uNkgwUv8M",
+      "selfLink": "https://www.googleapis.com/books/v1/volumes/lDihJsa19_gC",
+      "volumeInfo": {
+        "title": "Space",
+        "authors": [
+          "Stephen Baxter"
+        ],
+        "publisher": "HarperCollins UK",
+        "publishedDate": "2012-11-22",
+        "description": "2020. Fueled by an insatiable curiosity, Reid Malenfant ventures to the far edge of the solar system, where he discovers a strange artifact left behind by an alien civilization: A gateway that functions as a kind of quantum transporter, allowing virtually instantaneous travel over the vast distances of interstellar space.",
+        "industryIdentifiers": [
+          {
+            "type": "ISBN_13",
+            "identifier": "9780007499793"
+          },
+          {
+            "type": "ISBN_10",
+            "identifier": "0007499795"
+          }
+        ],
+        "readingModes": {
+          "text": true,
+          "image": false
+        },
+        "pageCount": 441,
+        "printType": "BOOK",
+        "categories": [
+          "Fiction"
+        ],
+        "maturityRating": "NOT_MATURE",
+        "allowAnonLogging": true,
+        "contentVersion": "0.6.6.0.preview.2",
+        "panelizationSummary": {
+          "containsEpubBubbles": false,
+          "containsImageBubbles": false
+        },
+        "imageLinks": {
+          "smallThumbnail": "http://books.google.com/books/content?id=lDihJsa19_gC&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api",
+          "thumbnail": "http://books.google.com/books/content?id=lDihJsa19_gC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
+        },
+        "language": "en",
+        "previewLink": "http://books.google.co.uk/books?id=lDihJsa19_gC&printsec=frontcover&dq=isbn:9780007499793&hl=&cd=1&source=gbs_api",
+        "infoLink": "https://play.google.com/store/books/details?id=lDihJsa19_gC&source=gbs_api",
+        "canonicalVolumeLink": "https://play.google.com/store/books/details?id=lDihJsa19_gC"
+      },
+      "saleInfo": {
+        "country": "GB",
+        "saleability": "FOR_SALE",
+        "isEbook": true,
+        "listPrice": {
+          "amount": 5.49,
+          "currencyCode": "GBP"
+        },
+        "retailPrice": {
+          "amount": 5.49,
+          "currencyCode": "GBP"
+        },
+        "buyLink": "https://play.google.com/store/books/details?id=lDihJsa19_gC&rdid=book-lDihJsa19_gC&rdot=1&source=gbs_api",
+        "offers": [
+          {
+            "finskyOfferType": 1,
+            "listPrice": {
+              "amountInMicros": 5490000,
+              "currencyCode": "GBP"
+            },
+            "retailPrice": {
+              "amountInMicros": 5490000,
+              "currencyCode": "GBP"
+            },
+            "giftable": true
+          }
+        ]
+      },
+      "accessInfo": {
+        "country": "GB",
+        "viewability": "PARTIAL",
+        "embeddable": false,
+        "publicDomain": false,
+        "textToSpeechPermission": "ALLOWED",
+        "epub": {
+          "isAvailable": true,
+          "acsTokenLink": "http://books.google.co.uk/books/download/Space-sample-epub.acsm?id=lDihJsa19_gC&format=epub&output=acs4_fulfillment_token&dl_type=sample&source=gbs_api"
+        },
+        "pdf": {
+          "isAvailable": false
+        },
+        "webReaderLink": "http://play.google.com/books/reader?id=lDihJsa19_gC&hl=&source=gbs_api",
+        "accessViewStatus": "SAMPLE",
+        "quoteSharingAllowed": false
+      },
+      "searchInfo": {
+        "textSnippet": "2020. Fueled by an insatiable curiosity, Reid Malenfant ventures to the far edge of the solar system, where he discovers a strange artifact left behind by an alien civilization: A gateway that functions as a kind of quantum transporter, ..."
+      }
+    }
+  ]
+}

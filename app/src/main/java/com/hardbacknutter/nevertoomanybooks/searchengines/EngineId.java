@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderS
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooks2SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
@@ -201,14 +201,14 @@ public enum EngineId
 
     /**
      * All genres.
-     * Uses old google api which theoretically can be disabled at any time by google.
      */
     GoogleBooks("googlebooks",
                 R.string.site_google_books,
                 R.string.site_info_google_books,
-                "https://books.google.com",
+//                "https://books.google.com",
+                "https://www.googleapis.com",
                 Locale.US,
-                GoogleBooksSearchEngine.class,
+                GoogleBooks2SearchEngine.class,
                 BuildConfig.ENABLE_GOOGLE_BOOKS),
 
     /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
@@ -404,6 +404,7 @@ public enum EngineId
         }
         if (GoogleBooks.isEnabled()) {
             GoogleBooks.createConfiguration()
+                       .setSupportsMultipleCoverSizes(true)
                        .build();
         }
         if (Isfdb.isEnabled()) {
