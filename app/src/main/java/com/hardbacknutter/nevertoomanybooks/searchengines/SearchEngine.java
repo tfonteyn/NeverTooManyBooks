@@ -373,8 +373,6 @@ public interface SearchEngine
          * <strong>Important</strong> this method should never throw any {@link RuntimeException}.
          * For the latter, simply return {@code Optional.empty()} when an error occurs
          * after logging the error.
-         * <p>
-         * See {@link #searchBestCoverByEdition} for sites with support for multiple cover sizes.
          *
          * @param context Current context
          * @param edition to search for
@@ -396,42 +394,5 @@ public interface SearchEngine
                 throws StorageException,
                        SearchException,
                        CredentialsException;
-
-        /**
-         * Helper method for sites which support multiple image sizes.
-         * It's a wrapper around {@link #searchCoverByEdition} which
-         * will try to get an image in order of large, medium, small.
-         * i.e. the 'best' image being the largest we can find.
-         *
-         * @param context Current context
-         * @param edition to search for
-         * @param cIdx    0..n image index
-         *
-         * @return fileSpec
-         *
-         * @throws CredentialsException on authentication/login failures
-         * @throws StorageException     on storage related failures
-         * @throws SearchException      on generic exceptions (wrapped) during search
-         */
-        @WorkerThread
-        @NonNull
-        default Optional<String> searchBestCoverByEdition(
-                @NonNull final Context context,
-                @NonNull final AltEdition edition,
-                @IntRange(from = 0, to = 1) final int cIdx)
-                throws StorageException,
-                       SearchException,
-                       CredentialsException {
-
-            Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
-            //noinspection DataFlowIssue
-            if (oFileSpec.isEmpty() && getEngineId().getConfig().supportsMultipleCoverSizes()) {
-                oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
-                if (oFileSpec.isEmpty()) {
-                    oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);
-                }
-            }
-            return oFileSpec;
-        }
     }
 }

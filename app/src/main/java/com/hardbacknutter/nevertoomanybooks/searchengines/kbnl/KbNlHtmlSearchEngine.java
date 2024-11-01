@@ -547,4 +547,35 @@ public class KbNlHtmlSearchEngine
         }
         return Optional.empty();
     }
+
+    /**
+     * Try to get an image in order of large, medium, small.
+     * i.e. the 'best' image being the largest we can find.
+     *
+     * @param context Current context
+     * @param edition to search for
+     * @param cIdx    0..n image index
+     *
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
+     */
+    @WorkerThread
+    @NonNull
+    private Optional<String> searchBestCoverByEdition(
+            @NonNull final Context context,
+            @NonNull final AltEdition edition,
+            @IntRange(from = 0, to = 1) final int cIdx)
+            throws StorageException {
+
+        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
+        //noinspection DataFlowIssue
+        if (oFileSpec.isEmpty() && getEngineId().getConfig().supportsMultipleCoverSizes()) {
+            oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);
+            }
+        }
+        return oFileSpec;
+    }
 }
