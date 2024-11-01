@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -63,6 +65,7 @@ import org.jsoup.select.Elements;
 public class LastDodoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
 
@@ -72,10 +75,11 @@ public class LastDodoSearchEngine
      */
     private static final String BY_EXTERNAL_ID = "/nl/items/%1$s";
     /**
-     * Param 1: ISBN. Must include the '-' characters! (2022-05-31)
-     * Param 2: 147==comics.
+     * Hardcoded to: 147==comics.
+     * Param 1: The search word(s)
+     *          When searching for an ISBN number, it must include the '-' characters! (2022-05-31)
      */
-    private static final String BY_ISBN = "/nl/areas/search?q=%1$s&type_id=147";
+    private static final String SEARCH = "/nl/areas/search?type_id=147&q=%1$s";
     private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
             Pattern.compile("(.*)\\(([a-z].*)\\)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -232,6 +236,70 @@ public class LastDodoSearchEngine
 
         // Searching on the ISBN REQUIRES the dashes between the digits.
         final String url = getHostUrl(context) + String.format(SEARCH, formatIsbn(validIsbn));
+        final Document document = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            // it's ALWAYS multi-result, even if only one result is returned.
+            parseMultiResult(context, document, fetchCovers, book);
+        }
+        return book;
+    }
+
+    /**
+     * Criteria supported: ALL.
+     * Code: supported.
+     * <p>
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @Nullable final String code,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        // Searches are just a string of 'words', we can simply concatenate all available options.
+        final StringJoiner words = new StringJoiner(" ");
+
+        final String title = criteria.getTitle();
+        if (!title.isEmpty()) {
+            words.add(title);
+        }
+        final String author = criteria.getAuthor();
+        if (!author.isEmpty()) {
+            words.add(author);
+        }
+        final String series = criteria.getSeries();
+        if (!series.isEmpty()) {
+            words.add(series);
+        }
+        final String seriesNr = criteria.getSeriesNr();
+        if (!seriesNr.isEmpty()) {
+            words.add(seriesNr);
+        }
+        final String publisher = criteria.getPublisher();
+        if (!publisher.isEmpty()) {
+            words.add(publisher);
+        }
+
+        if (code != null && !code.isEmpty()) {
+            final ISBN isbn = new ISBN(code, false);
+            if (isbn.isValid(true)) {
+                // Searching on the ISBN REQUIRES the dashes between the digits.
+                words.add(formatIsbn(code));
+            } else {
+                words.add(code);
+            }
+        }
+
+        final Book book = new Book();
+
+        // Sanity check
+        if (words.length() == 0) {
+            return book;
+        }
+
+        final String url = getHostUrl(context) + String.format(SEARCH, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
