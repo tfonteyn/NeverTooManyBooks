@@ -544,6 +544,7 @@ public enum EngineId
                 type.addSite(Amazon, true);
                 type.addSite(Isfdb, true);
                 type.addSite(OpenLibrary, true);
+                type.addSite(GoogleBooks, true);
                 if (!isDutch) {
                     type.addSite(KbNl, false);
                 }

@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -76,7 +79,8 @@ import com.hardbacknutter.org.json.JSONObject;
 public class GoogleBooks2SearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.CoverByEdition {
 
     private static final String IDENT_ISBN_10 = "ISBN_10";
     private static final String IDENT_ISBN_13 = "ISBN_13";
@@ -597,6 +601,23 @@ public class GoogleBooks2SearchEngine
     private String encodeSpaces(@NonNull final CharSequence s) {
         // return URLEncoder.encode(s, "UTF-8");
         return SPACE_LITERAL.matcher(s).replaceAll("%20");
+    }
+
+    @NonNull
+    @Override
+    public Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                                 @NonNull final AltEdition altEdition,
+                                                 final int cIdx,
+                                                 @Nullable final Size size)
+            throws StorageException, SearchException {
+        if (altEdition instanceof AltEditionIsbn) {
+            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+            final String isbn = edition.getIsbn();
+            return searchByIsbn(context, isbn, new boolean[]{true, false})
+                    .getCover(0)
+                    .map(File::getAbsolutePath);
+        }
+        return Optional.empty();
     }
 }
 
