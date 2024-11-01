@@ -215,7 +215,8 @@ class FileManager {
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!se.supportsMultipleCoverSizes()) {
+                        //noinspection DataFlowIssue
+                        if (!se.getEngineId().getConfig().supportsMultipleCoverSizes()) {
                             currentSearch.remove(engineId);
                         }
                     } else {

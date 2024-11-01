@@ -126,11 +126,6 @@ public abstract class SearchEngineBase
                 getHostUrl(context), config.getConnectTimeoutInMs(context));
     }
 
-    @Override
-    public boolean supportsMultipleCoverSizes() {
-        return config.supportsMultipleCoverSizes();
-    }
-
     /**
      * Get the <strong>standard</strong> Locale for this engine.
      * <p>

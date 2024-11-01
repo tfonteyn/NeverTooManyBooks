@@ -114,15 +114,6 @@ public interface SearchEngine
     Locale getLocale(@NonNull Context context);
 
     /**
-     * {@link CoverByEdition} only.
-     * <p>
-     * A site can support a single (default) or multiple sizes.
-     *
-     * @return {@code true} if multiple sizes are supported.
-     */
-    boolean supportsMultipleCoverSizes();
-
-    /**
      * Reset the engine, ready for a new search.
      */
     void reset();
@@ -433,7 +424,8 @@ public interface SearchEngine
                        CredentialsException {
 
             Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
-            if (oFileSpec.isEmpty() && supportsMultipleCoverSizes()) {
+            //noinspection DataFlowIssue
+            if (oFileSpec.isEmpty() && getEngineId().getConfig().supportsMultipleCoverSizes()) {
                 oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
                 if (oFileSpec.isEmpty()) {
                     oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);
