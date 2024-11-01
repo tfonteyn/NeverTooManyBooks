@@ -175,6 +175,7 @@ public class OpenLibrary2SearchEngine
      * @see #searchCoverByKey(Context, String, String, int, Size)
      * @see #searchBestCoverByKey(Context, String, String, int)
      */
+    @Override
     @NonNull
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
@@ -208,61 +209,6 @@ public class OpenLibrary2SearchEngine
         }
 
         return Optional.empty();
-    }
-
-    @NonNull
-    private Optional<String> searchCoverByKey(@NonNull final Context context,
-                                              @NonNull final String key,
-                                              @NonNull final String id,
-                                              @IntRange(from = 0, to = 1) final int cIdx,
-                                              @Nullable final Size size)
-            throws StorageException {
-        final String sizeParam;
-        if (size == null) {
-            sizeParam = "L";
-        } else {
-            switch (size) {
-                case Small:
-                    sizeParam = "S";
-                    break;
-                case Medium:
-                    sizeParam = "M";
-                    break;
-                case Large:
-                default:
-                    sizeParam = "L";
-                    break;
-            }
-        }
-
-        final String url = String.format(BASE_COVER_URL, key, id, sizeParam);
-
-        // see {@link FutureHttpGetBase#setEnable404Redirect(boolean)}
-        imageDownloader404redirect = true;
-
-        if ("isbn".equals(key)) {
-            //noinspection DataFlowIssue
-            getEngineId().getConfig().getThrottler().waitUntilRequestAllowed(
-                    COVER_BY_ISBN_REQUEST_DELAY);
-        }
-        return saveImage(context, url, id, cIdx, size);
-    }
-
-    @NonNull
-    private Optional<String> searchBestCoverByKey(@NonNull final Context context,
-                                                  @NonNull final String key,
-                                                  @NonNull final String id,
-                                                  final int cIdx)
-            throws StorageException {
-
-        Optional<String> oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Large);
-        if (oFileSpec.isEmpty()) {
-            oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Medium);
-            if (oFileSpec.isEmpty()) {
-                oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Small);
-            }
-        }
-        return oFileSpec;
     }
 
     @Override
@@ -536,6 +482,7 @@ public class OpenLibrary2SearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param book        Bundle to update
      *
+     * @throws IOException when fetching the Author details fails
      * @throws StorageException on storage related failures
      */
     @VisibleForTesting
@@ -752,6 +699,9 @@ public class OpenLibrary2SearchEngine
      * @param context Current context
      * @param a       array with author elements
      * @param book    destination
+     *
+     * @throws IOException when fetching the Author details fails
+     * @throws StorageException on storage related failures
      */
     private void parseAuthors(@NonNull final Context context,
                               @NonNull final JSONArray a,
@@ -1085,5 +1035,85 @@ public class OpenLibrary2SearchEngine
         }
 
         return editionList;
+    }
+
+    /**
+     * Wrapper for {@link #searchCoverByEdition(Context, AltEdition, int, Size)}.
+     *
+     * @param context Current context
+     * @param key     to use for the search
+     * @param id      value for the above key
+     * @param cIdx    0..n image index
+     *
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
+     */
+    @NonNull
+    private Optional<String> searchBestCoverByKey(@NonNull final Context context,
+                                                  @NonNull final String key,
+                                                  @NonNull final String id,
+                                                  final int cIdx)
+            throws StorageException {
+
+        Optional<String> oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Large);
+        if (oFileSpec.isEmpty()) {
+            oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Medium);
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Small);
+            }
+        }
+        return oFileSpec;
+    }
+
+    /**
+     * Common code to do the actual cover search.
+     *
+     * @param context Current context
+     * @param key     to use for the search
+     * @param id      value for the above key
+     * @param cIdx    0..n image index
+     * @param size    of image to get.
+     *
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
+     */
+    @NonNull
+    private Optional<String> searchCoverByKey(@NonNull final Context context,
+                                              @NonNull final String key,
+                                              @NonNull final String id,
+                                              @IntRange(from = 0, to = 1) final int cIdx,
+                                              @Nullable final Size size)
+            throws StorageException {
+        final String sizeParam;
+        if (size == null) {
+            sizeParam = "L";
+        } else {
+            switch (size) {
+                case Small:
+                    sizeParam = "S";
+                    break;
+                case Medium:
+                    sizeParam = "M";
+                    break;
+                case Large:
+                default:
+                    sizeParam = "L";
+                    break;
+            }
+        }
+
+        final String url = String.format(BASE_COVER_URL, key, id, sizeParam);
+
+        // see {@link FutureHttpGetBase#setEnable404Redirect(boolean)}
+        imageDownloader404redirect = true;
+
+        if ("isbn".equals(key)) {
+            //noinspection DataFlowIssue
+            getEngineId().getConfig().getThrottler().waitUntilRequestAllowed(
+                    COVER_BY_ISBN_REQUEST_DELAY);
+        }
+        return saveImage(context, url, id, cIdx, size);
     }
 }
