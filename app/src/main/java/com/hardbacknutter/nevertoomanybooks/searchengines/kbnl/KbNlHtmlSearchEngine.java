@@ -505,12 +505,46 @@ public class KbNlHtmlSearchEngine
         }
     }
 
+
     /**
-     * Ths kb.nl site does not have images, but we try bibliotheek.be.
+     * Wrapper for {@link #searchCoverByEdition(Context, AltEdition, int, Size)}.
+     * <p>
+     * Try to get an image in order of large, medium, small.
+     * i.e. the 'best' image being the largest we can find.
+     *
+     * @param context Current context
+     * @param edition to search for
+     * @param cIdx    0..n image index
+     *
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
+     */
+    @WorkerThread
+    @NonNull
+    private Optional<String> searchBestCoverByEdition(@NonNull final Context context,
+                                                      @NonNull final AltEdition edition,
+                                                      @IntRange(from = 0, to = 1) final int cIdx)
+            throws StorageException {
+
+        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
+        if (oFileSpec.isEmpty()) {
+            oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
+            if (oFileSpec.isEmpty()) {
+                oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);
+            }
+        }
+        return oFileSpec;
+    }
+
+    /**
+     * The kb.nl site does not have images, but we try bibliotheek.be.
      * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
      *
      * <br><br>{@inheritDoc}
+     *
+     * @see #searchBestCoverByEdition(Context, AltEdition, int)
      */
     @NonNull
     @Override
@@ -548,33 +582,4 @@ public class KbNlHtmlSearchEngine
         return Optional.empty();
     }
 
-    /**
-     * Try to get an image in order of large, medium, small.
-     * i.e. the 'best' image being the largest we can find.
-     *
-     * @param context Current context
-     * @param edition to search for
-     * @param cIdx    0..n image index
-     *
-     * @return fileSpec
-     *
-     * @throws StorageException on storage related failures
-     */
-    @WorkerThread
-    @NonNull
-    private Optional<String> searchBestCoverByEdition(
-            @NonNull final Context context,
-            @NonNull final AltEdition edition,
-            @IntRange(from = 0, to = 1) final int cIdx)
-            throws StorageException {
-
-        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
-        if (oFileSpec.isEmpty()) {
-            oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
-            if (oFileSpec.isEmpty()) {
-                oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);
-            }
-        }
-        return oFileSpec;
-    }
 }
