@@ -367,7 +367,15 @@ public interface SearchEngine
         /**
          * Get a single cover image of the specified size.
          * <p>
-         * If the given {@link AltEdition} type is not supported, this method
+         * The {@link AltEdition} to be passed in will typically (always?) be coming from
+         * {@link AlternativeEditions#searchAlternativeEditions(Context, String)}.
+         * i.o.w.:
+         * Engines which implement {@link AlternativeEditions} will collect a list of
+         * potential {@link AltEdition}.
+         * These will then be passed to engines which implement {@link CoverByEdition}
+         * to fetch the covers if possible.
+         * <p>
+         * If the given {@link AltEdition} type is not supported, implementations of this method
          * <strong>MUST</strong> return {@code Optional.empty()}.
          * <p>
          * <strong>Important</strong> this method should never throw any {@link RuntimeException}.
