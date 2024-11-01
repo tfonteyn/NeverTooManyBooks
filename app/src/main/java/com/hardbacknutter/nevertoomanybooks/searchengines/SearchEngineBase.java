@@ -389,7 +389,7 @@ public abstract class SearchEngineBase
      * @param cIdx    0..n image index
      * @param size    (optional) size parameter for engines/sites which support one
      *
-     * @return File fileSpec, or {@code null} on failure
+     * @return File fileSpec, or {@code Optional.empty()} on failure
      *
      * @throws StorageException The covers directory is not available
      */
