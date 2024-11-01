@@ -18,10 +18,15 @@ https://apilevels.com/
 ====================================================================================================
 Draft notes for next version:
 
-### 6.3.1
+### 6.4.0
 
 NEW:
-
+- Complete rewrite of the Google-Books site support. Supports more fields,
+  multiple sizes of cover lookup, ...
+- LastDodo site now support searching "by text" making it easier to find
+  older comics without ISBN
+- Searching for book "by text" now supports series/nr and publisher fields.
+  Note that not all sites will actually use them.
 
 FIXES:
 
