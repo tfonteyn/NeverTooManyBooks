@@ -65,11 +65,13 @@ import com.hardbacknutter.org.json.JSONObject;
 /**
  * <a href="https://books.google.com">Google books</a>.
  * <p>
- * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">Getting started</a>
- * <p>
- * {@link SearchEngine.ByExternalId} can be supported, but the id's
- * are for example "9ygPPQAACAAJ".
+ * {@link SearchEngine.ByExternalId} can be supported, but the id's are for example "9ygPPQAACAAJ".
  * It's not practical for the user to enter those manually.
+ *
+ * @see <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">
+ *         Getting started</a>
+ * @see <a href="https://developers.google.com/books/docs/v1/reference/volumes#resource-representations">
+ *         resource-representations</a>
  */
 public class GoogleBooks2SearchEngine
         extends SearchEngineBase
@@ -332,7 +334,7 @@ public class GoogleBooks2SearchEngine
                @NonNull final JSONObject edition,
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
-            throws StorageException, IOException {
+            throws StorageException {
 
         String s;
 
@@ -357,9 +359,11 @@ public class GoogleBooks2SearchEngine
             return;
         }
 
-        final JSONObject coverInfo = volumeInfo.optJSONObject("imageLinks");
-        if (coverInfo != null) {
-            fetchCovers(context, coverInfo, fetchCovers, book);
+        final JSONObject imageLinks = volumeInfo.optJSONObject("imageLinks");
+        if (imageLinks != null && fetchCovers[0]) {
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            searchBestCover(context, imageLinks, isbn).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
@@ -484,75 +488,92 @@ public class GoogleBooks2SearchEngine
         }
     }
 
-    /**
-     * Fetch one of the possible covers.
-     * <p>
-     * Possible element strings:
-     * <pre>
-     *  thumbnail       thumbnail size (width of ~128 pixels).
-     *  small           small size (width of ~300 pixels).
-     *  medium          medium size (width of ~575 pixels).
-     *  large           large size (width of ~800 pixels).
-     *  smallThumbnail  small thumbnail size (width of ~80 pixels).
-     *  extraLarge      extra large size (width of ~1280 pixels).
-     * </pre>
-     *
-     * @param context     Current context
-     * @param element     JSON result data
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        destination
-     *
-     * @throws StorageException on storage related failures
-     */
-    private void fetchCovers(@NonNull final Context context,
-                             @NonNull final JSONObject element,
-                             @NonNull final boolean[] fetchCovers,
-                             @NonNull final Book book)
+    @NonNull
+    private Optional<String> searchBestCover(@NonNull final Context context,
+                                             @NonNull final JSONObject imageLinks,
+                                             @NonNull final String isbn)
             throws StorageException {
-        if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
 
-            Optional<String> oFileSpec;
-
-            oFileSpec = getFileSpec(context, element, "extraLarge", Size.Large, isbn);
+        Optional<String> oFileSpec = searchCover(context, imageLinks, Size.Large, isbn);
+        if (oFileSpec.isEmpty()) {
+            oFileSpec = searchCover(context, imageLinks, Size.Medium, isbn);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = getFileSpec(context, element, "large", Size.Large, isbn);
+                oFileSpec = searchCover(context, imageLinks, Size.Small, isbn);
             }
-            if (oFileSpec.isEmpty()) {
-                oFileSpec = getFileSpec(context, element, "medium", Size.Medium, isbn);
-            }
-            if (oFileSpec.isEmpty()) {
-                oFileSpec = getFileSpec(context, element, "small", Size.Medium, isbn);
-            }
-            if (oFileSpec.isEmpty()) {
-                oFileSpec = getFileSpec(context, element, "thumbnail", Size.Small, isbn);
-            }
-            if (oFileSpec.isEmpty()) {
-                oFileSpec = getFileSpec(context, element, "smallThumbnail", Size.Small, isbn);
-            }
-
-            oFileSpec.ifPresent(
-                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
+        return oFileSpec;
     }
 
-    private Optional<String> getFileSpec(@NonNull final Context context,
-                                         @NonNull final JSONObject element,
-                                         @NonNull final String key,
+    /**
+     * Common code to do the actual cover search.
+     *
+     * @param context    Current context
+     * @param imageLinks the list (json object) with image links
+     * @param size       of image to get.
+     * @param isbn       of the book
+     *
+     * @return File fileSpec, or {@code Optional.empty()} on failure
+     *
+     * @throws StorageException The covers directory is not available
+     */
+    @NonNull
+    private Optional<String> searchCover(@NonNull final Context context,
+                                         @NonNull final JSONObject imageLinks,
                                          @NonNull final Size size,
                                          @NonNull final String isbn)
             throws StorageException {
 
-        String url = element.optString(key, null);
-        if (url != null && !url.isEmpty()) {
-            // 2024-10-31: he urls are "http", seriously Google?
-            if (url.startsWith("http:")) {
-                url = "https:" + url.substring(5);
-            }
-            return saveImage(context, url, isbn, 0, size);
+        Optional<String> oUrl = Optional.empty();
+        /*
+         * Possible element strings:
+         * <pre>
+         *  thumbnail       thumbnail size (width of ~128 pixels).
+         *  small           small size (width of ~300 pixels).
+         *  medium          medium size (width of ~575 pixels).
+         *  large           large size (width of ~800 pixels).
+         *  smallThumbnail  small thumbnail size (width of ~80 pixels).
+         *  extraLarge      extra large size (width of ~1280 pixels).
+         * </pre>
+         */
+        switch (size) {
+            case Large:
+                oUrl = parseImageUrl(imageLinks, "extraLarge");
+                if (oUrl.isEmpty()) {
+                    oUrl = parseImageUrl(imageLinks, "large");
+                }
+                break;
+            case Medium:
+                oUrl = parseImageUrl(imageLinks, "medium");
+                if (oUrl.isEmpty()) {
+                    oUrl = parseImageUrl(imageLinks, "small");
+                }
+                break;
+            case Small:
+                oUrl = parseImageUrl(imageLinks, "thumbnail");
+                if (oUrl.isEmpty()) {
+                    oUrl = parseImageUrl(imageLinks, "smallThumbnail");
+                }
+                break;
+        }
+
+        if (oUrl.isPresent()) {
+            return saveImage(context, oUrl.get(), isbn, 0, size);
         }
         return Optional.empty();
+    }
+
+    @NonNull
+    private Optional<String> parseImageUrl(@NonNull final JSONObject imageLinks,
+                                           @NonNull final String key) {
+        String url = imageLinks.optString(key, null);
+        if (url == null || url.isEmpty()) {
+            return Optional.empty();
+        }
+        // 2024-10-31: the urls are "http", seriously Google?
+        if (url.startsWith("http:")) {
+            url = "https:" + url.substring(5);
+        }
+        return Optional.of(url);
     }
 
     @Override
