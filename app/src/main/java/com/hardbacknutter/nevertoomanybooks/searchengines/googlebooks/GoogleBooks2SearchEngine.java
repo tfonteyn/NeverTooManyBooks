@@ -70,6 +70,14 @@ import com.hardbacknutter.org.json.JSONObject;
  * <p>
  * {@link SearchEngine.ByExternalId} can be supported, but the id's are for example "9ygPPQAACAAJ".
  * It's not practical for the user to enter those manually.
+ * <p>
+ * There is a query parameter "langRestrict" but that does not seem to work properly.
+ * https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes
+ * => es and en books
+ * https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes&langRestrict=es
+ * => NO books
+ * https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes&langRestrict=en
+ * => es and en books
  *
  * @see <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">
  *         Getting started</a>
@@ -403,8 +411,8 @@ public class GoogleBooks2SearchEngine
             book.putString(DBKey.DESCRIPTION, s);
         }
 
-        a = volumeInfo.getJSONArray("industryIdentifiers");
-        if (!a.isEmpty()) {
+        a = volumeInfo.optJSONArray("industryIdentifiers");
+        if (a != null && !a.isEmpty()) {
             parseIdentifiers(a, book);
         }
 
@@ -427,6 +435,17 @@ public class GoogleBooks2SearchEngine
             book.putString(DBKey.LANGUAGE, s);
         }
 
+        a = volumeInfo.optJSONArray("categories");
+        if (a != null && !a.isEmpty()) {
+            final StringJoiner genres = new StringJoiner(", ");
+            for (int g = 0; g < a.length(); g++) {
+                final String genre = a.optString(g, null);
+                if (genre != null && !genre.isEmpty()) {
+                    genres.add(genre);
+                }
+            }
+            book.putString(DBKey.GENRE, genres.toString());
+        }
         // BOOK or MAGAZINE : ignored
         //s = volumeInfo.optString("printType", null);
     }
