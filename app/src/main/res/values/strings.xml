@@ -241,6 +241,7 @@
     <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
     <string name="warning_nothing_selected">Nothing selected</string>
     <string name="warning_requires_at_least_1_field">At least one field must not be blank.</string>
+    <string name="warning_missing_title_or_author">The title and/or the author must be specified.</string>
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <!-- Search using a websites native book-id -->
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
@@ -369,11 +370,14 @@
      This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
     <string name="info_isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
 
-    <!-- Information on which websites will be searched. Param 1: list of website names. -->
+    <!-- Searching books by "text":
+         Information on which websites will be searched.
+         Param 1: list of website names. -->
     <string name="info_site_list">Searches are limited to: %1$s</string>
-    <!-- Some functionality is limited to certain web sites only.
-         This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
-    <string name="info_site_search_field_not_supported">(not supported by all web sites)</string>
+
+    <!-- Searching books by "text":
+         Not all sites will support all search-fields. -->
+    <string name="info_site_search_field_optional">Optional. Not supported by all web sites.</string>
 
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue">Dutch and more; Catalogue</string>

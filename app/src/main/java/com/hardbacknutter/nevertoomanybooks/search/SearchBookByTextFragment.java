@@ -27,13 +27,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByTextBinding;
@@ -105,12 +107,37 @@ public class SearchBookByTextFragment
         toolbar.addMenuProvider(new SearchSitesToolbarMenuProvider(), getViewLifecycleOwner());
 
         modelToView();
+
+        autoRemoveError(vb.lblTitle, vb.title);
+        autoRemoveError(vb.lblAuthor, vb.author);
+        // Counter-intuitive... we must CLEAR the listener which would show/remove the "end_icon"
+        vb.seriesNum.setOnFocusChangeListener(null);
+
+        // For small screens which bring up the IME text editor
         vb.publisher.setOnEditorActionListener(this::onEditorAction);
 
         populateAdapters();
 
         vb.btnSearch.setOnClickListener(v -> startSearch());
         explainSitesSupport(coordinator.getSiteList());
+    }
+
+    private void autoRemoveError(@NonNull final TextInputLayout til,
+                                 @NonNull final EditText editText) {
+        // user type -> clear
+        editText.addTextChangedListener((ExtTextWatcher) s -> {
+            vb.lblTitle.setError(null);
+            vb.lblAuthor.setError(null);
+        });
+        // focused -> clear
+        // REMINDER: this overrides the default listener which would show/remove the "end_icon"
+        // This is in fact what we want - finally... and android "issue" we like.
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                vb.lblTitle.setError(null);
+                vb.lblAuthor.setError(null);
+            }
+        });
     }
 
     protected void explainSitesSupport(@Nullable final List<Site> sites) {
@@ -246,9 +273,9 @@ public class SearchBookByTextFragment
 
         //sanity check
         final String titleSearchText = coordinator.getTitleSearchText();
-        if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
-            Snackbar.make(vb.getRoot(), R.string.warning_requires_at_least_1_field,
-                          Snackbar.LENGTH_LONG).show();
+        if (titleSearchText.isEmpty()
+            && authorSearchText.isEmpty()) {
+            vb.lblTitle.setError(getString(R.string.warning_missing_title_or_author));
             return false;
         }
 

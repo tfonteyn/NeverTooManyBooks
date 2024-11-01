@@ -42,12 +42,16 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
+        <!-- This field is used for a number of messages indicating
+             there might be some limitations during the search
+             depending on the list of enabled sites.
+             Style/color of the text is adjusted as needed from code. -->
         <TextView
             android:id="@+id/txt_limitations"
             style="@style/Text.Body"
             android:layout_width="0dp"
             android:layout_marginStart="@dimen/container_margin"
-            android:layout_marginTop="@dimen/section_margin_top"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="@dimen/container_margin"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
@@ -56,31 +60,16 @@
             tools:text="@string/warning_no_site_supports_this_method" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_author"
-            style="@style/TIL.AutoCompleteTextView"
+            android:id="@+id/lbl_title"
+            style="@style/TIL.Text.Title"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:hint="@string/lbl_author"
+            android:layout_marginEnd="@dimen/field_margin_end"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_limitations"
-            >
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/author"
-                style="@style/acPersonalNameTextEntry"
-                android:imeOptions="actionNext"
-                tools:ignore="LabelFor"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_title"
-            style="@style/TIL.Text.Title"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -93,15 +82,36 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_series_title"
+            android:id="@+id/lbl_author"
             style="@style/TIL.AutoCompleteTextView"
-            android:hint="@string/lbl_series"
-            app:helperText="@string/info_site_search_field_not_supported"
-            app:helperTextEnabled="true"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_end"
+            android:hint="@string/lbl_author"
+            app:errorEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/author"
+                style="@style/acPersonalNameTextEntry"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_series_title"
+            style="@style/TIL.AutoCompleteTextView"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:hint="@string/lbl_series"
+            app:helperText="@string/info_site_search_field_optional"
+            app:helperTextEnabled="true"
+            app:layout_constraintEnd_toStartOf="@id/lbl_series_num"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/series_title"
@@ -115,13 +125,12 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series_num"
             style="@style/TIL.Text.SeriesNum"
+            android:layout_width="100dp"
+            android:layout_marginEnd="@dimen/field_margin_end"
             android:hint="@string/lbl_series_num"
-            app:helperText="@string/info_site_search_field_not_supported"
-            app:helperTextEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_series_title">
+            app:layout_constraintStart_toEndOf="@id/lbl_series_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/series_num"
@@ -135,12 +144,14 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
             style="@style/TIL.AutoCompleteTextView"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_end"
             android:hint="@string/lbl_publisher"
-            app:helperText="@string/info_site_search_field_not_supported"
+            app:helperText="@string/info_site_search_field_optional"
             app:helperTextEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_series_num"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
