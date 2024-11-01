@@ -161,55 +161,7 @@ public class OpenLibrary2SearchEngine
         return book;
     }
 
-    /**
-     * <a href="https://openlibrary.org/dev/docs/api/covers">API covers</a>.
-     * <p>
-     * {@code
-     * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
-     * }
-     * <p>
-     * S/M/L
-     * <p>
-     * {@inheritDoc}
-     *
-     * @see #searchCoverByKey(Context, String, String, int, Size)
-     * @see #searchBestCoverByKey(Context, String, String, int)
-     */
-    @Override
-    @NonNull
-    public Optional<String> searchCoverByEdition(@NonNull final Context context,
-                                                 @NonNull final AltEdition altEdition,
-                                                 @IntRange(from = 0, to = 1) final int cIdx,
-                                                 @Nullable final Size size)
-            throws StorageException {
 
-        if (altEdition instanceof AltEditionOpenLibrary) {
-            final AltEditionOpenLibrary edition = (AltEditionOpenLibrary) altEdition;
-            final long[] covers = edition.getCovers();
-
-            // The cover should always be valid, but paranoia...
-            if (covers[cIdx] > 0) {
-                return searchCoverByKey(context, "id", String.valueOf(covers[cIdx]), cIdx, size);
-            }
-        } else if (altEdition instanceof AltEditionIsbn) {
-            if (cIdx == 1) {
-                // ENHANCE: we cannot return a back-cover here, as we need to native
-                //  OL cover-id ( != OLID book id) which we do not store locally.
-                //  We'd basically need to do a new book search (2 requests) here,
-                //  extract the cover-id(s) and run 2 more requests.
-                //  For now, users can get the back-cover when doing an "Internet update"
-                return Optional.empty();
-            }
-
-            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final String isbn = edition.getIsbn();
-
-            // Frontcover as usual
-            return searchCoverByKey(context, "isbn", isbn, 0, size);
-        }
-
-        return Optional.empty();
-    }
 
     @Override
     public void cancel() {
@@ -645,7 +597,7 @@ public class OpenLibrary2SearchEngine
                 final int coverId = coverIds.optInt(cIdx);
                 if (coverId > 0) {
                     final int finalCIdx = cIdx;
-                    searchBestCoverByKey(context, "id", String.valueOf(coverId), cIdx).ifPresent(
+                    searchBestCover(context, "id", String.valueOf(coverId), cIdx).ifPresent(
                             fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
                 }
             }
@@ -1038,7 +990,57 @@ public class OpenLibrary2SearchEngine
     }
 
     /**
-     * Wrapper for {@link #searchCoverByEdition(Context, AltEdition, int, Size)}.
+     * <a href="https://openlibrary.org/dev/docs/api/covers">API covers</a>.
+     * <p>
+     * {@code
+     * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
+     * }
+     * <p>
+     * S/M/L
+     * <p>
+     * {@inheritDoc}
+     *
+     * @see #searchCoverByKey(Context, String, String, int, Size)
+     * @see #searchBestCover(Context, String, String, int)
+     */
+    @Override
+    @NonNull
+    public Optional<String> searchCoverByEdition(@NonNull final Context context,
+                                                 @NonNull final AltEdition altEdition,
+                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @Nullable final Size size)
+            throws StorageException {
+
+        if (altEdition instanceof AltEditionOpenLibrary) {
+            final AltEditionOpenLibrary edition = (AltEditionOpenLibrary) altEdition;
+            final long[] covers = edition.getCovers();
+
+            // The cover should always be valid, but paranoia...
+            if (covers[cIdx] > 0) {
+                return searchCoverByKey(context, "id", String.valueOf(covers[cIdx]), cIdx, size);
+            }
+        } else if (altEdition instanceof AltEditionIsbn) {
+            if (cIdx == 1) {
+                // ENHANCE: we cannot return a back-cover here, as we need to native
+                //  OL cover-id ( != OLID book id) which we do not store locally.
+                //  We'd basically need to do a new book search (2 requests) here,
+                //  extract the cover-id(s) and run 2 more requests.
+                //  For now, users can get the back-cover when doing an "Internet update"
+                return Optional.empty();
+            }
+
+            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+            final String isbn = edition.getIsbn();
+
+            // Frontcover as usual
+            return searchCoverByKey(context, "isbn", isbn, 0, size);
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Search for the best cover using the given key/id values.
      *
      * @param context Current context
      * @param key     to use for the search
@@ -1050,10 +1052,10 @@ public class OpenLibrary2SearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private Optional<String> searchBestCoverByKey(@NonNull final Context context,
-                                                  @NonNull final String key,
-                                                  @NonNull final String id,
-                                                  final int cIdx)
+    private Optional<String> searchBestCover(@NonNull final Context context,
+                                             @NonNull final String key,
+                                             @NonNull final String id,
+                                             final int cIdx)
             throws StorageException {
 
         Optional<String> oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Large);
