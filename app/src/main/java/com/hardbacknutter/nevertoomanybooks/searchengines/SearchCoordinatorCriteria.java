@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.NonNull;
 
+import java.util.StringJoiner;
+
 /**
  * A data class with all values potentially supported by {@link SearchEngine.ByText}.
  * <p>
@@ -104,6 +106,36 @@ public class SearchCoordinatorCriteria {
                && series.isEmpty()
                && seriesNr.isEmpty()
                && publisher.isEmpty();
+    }
+
+    /**
+     * Simple concatenation of all the values into a single String.
+     *
+     * @param delimiter to use
+     *
+     * @return a StringJoiner ready to concat more options to
+     */
+    @NonNull
+    public StringJoiner concat(@NonNull final String delimiter) {
+        final StringJoiner words = new StringJoiner(delimiter);
+
+        if (!title.isEmpty()) {
+            words.add(title);
+        }
+        if (!author.isEmpty()) {
+            words.add(author);
+        }
+        if (!series.isEmpty()) {
+            words.add(series);
+        }
+        if (!seriesNr.isEmpty()) {
+            words.add(seriesNr);
+        }
+        if (!publisher.isEmpty()) {
+            words.add(publisher);
+        }
+
+        return words;
     }
 
     @Override
