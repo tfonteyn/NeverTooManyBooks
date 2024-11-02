@@ -76,7 +76,11 @@ import org.jsoup.select.Elements;
  * <p>
  * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
  * <p>
- * TODO: grab book rating value
+ * Implementing {@link SearchEngine.ByText} is problematic due to the site search-field
+ * not being a true "search-terms" field. Instead it expects a single search-term
+ * which it will then use to search in distinct columns and list the results in a table
+ * with the results in different areas.
+ * (try the site to see what the above means...)
  */
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
