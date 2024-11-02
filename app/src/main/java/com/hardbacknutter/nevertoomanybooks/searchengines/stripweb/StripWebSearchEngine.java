@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -59,12 +61,13 @@ import org.jsoup.select.Elements;
 
 public class StripWebSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByBarcode {
+        implements SearchEngine.ByText,
+                   SearchEngine.ByBarcode {
 
     /**
-     * Param 1: ISBN.
+     * Param 1: search terms.
      */
-    private static final String BY_ISBN = "/nl-nl/zoeken?type=&text=%1$s";
+    private static final String SEARCH_URL = "/nl-nl/zoeken?type=&text=%1$s";
 
     /**
      * Some titles have suffixes which we need to strip.
@@ -124,7 +127,37 @@ public class StripWebSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BY_ISBN, validIsbn);
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
+        final Document document = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            // it's ALWAYS multi-result, even if only one result is returned.
+            parseMultiResult(context, document, fetchCovers, book);
+        }
+        return book;
+    }
+
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @Nullable final String code,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        // Searches are just a string of 'words', we can simply concatenate all available options.
+        final StringJoiner words = criteria.concat(" ");
+        if (code != null && !code.isEmpty()) {
+            words.add(code);
+        }
+
+        final Book book = new Book();
+
+        // Sanity check
+        if (words.length() == 0) {
+            return book;
+        }
+
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
