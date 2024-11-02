@@ -23,10 +23,9 @@ Draft notes for next version:
 NEW:
 - Complete rewrite of the Google-Books site support. Supports more fields,
   multiple sizes of cover lookup, ...
-- LastDodo site now support searching "by text" making it easier to find
-  older comics without ISBN
+- Dnb, LastDodo, StripWeb sites: added support for searching "by text"
 - Searching for book "by text" now supports series/nr and publisher fields.
-  Note that not all sites will actually use them.
+  Actual usage during a search depends on the site searched.
 
 FIXES:
 
