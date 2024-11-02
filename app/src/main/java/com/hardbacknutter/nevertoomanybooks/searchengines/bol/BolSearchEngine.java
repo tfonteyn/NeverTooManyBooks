@@ -80,7 +80,8 @@ import org.jsoup.select.Elements;
  * The first suffix is the country: either Belgium (be) or The Netherlands (nl).
  * The second is the language: either Dutch (nl) or French (fr).
  * <p>
- * We support accessing be/nl via a user setting.
+ * We support selecting the belgian or the netherlands site via a user setting
+ * to accommodate price differences between the two countries.
  * We <strong>only</strong> access the site via the dutch language suffix as it makes
  * no difference at all in getting results.
  */
@@ -176,29 +177,7 @@ public class BolSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
-        final StringJoiner words = new StringJoiner(" ");
-
-        final String title = criteria.getTitle();
-        if (!title.isEmpty()) {
-            words.add(title);
-        }
-        final String author = criteria.getAuthor();
-        if (!author.isEmpty()) {
-            words.add(author);
-        }
-        final String series = criteria.getSeries();
-        if (!series.isEmpty()) {
-            words.add(series);
-        }
-        final String seriesNr = criteria.getSeriesNr();
-        if (!seriesNr.isEmpty()) {
-            words.add(seriesNr);
-        }
-        final String publisher = criteria.getPublisher();
-        if (!publisher.isEmpty()) {
-            words.add(publisher);
-        }
-
+        final StringJoiner words = criteria.concat(" ");
         if (code != null && !code.isEmpty()) {
             words.add(code);
         }
@@ -641,15 +620,15 @@ public class BolSearchEngine
         // The site uses several possible keys, loop until found or exhausted
         for (final String key : FRONT_COVER_KEYS) {
             final String coverUrl = currentItem.optString(key);
-            if (coverUrl != null && !coverUrl.isEmpty()) {
+            if (!coverUrl.isEmpty()) {
                 final Optional<String> oFileSpec = saveImage(context, coverUrl, bookId, 0, null);
                 if (oFileSpec.isPresent()) {
                     CoverFileSpecArray.setFileSpec(book, 0, oFileSpec.get());
                     // only attempt to get the back-cover if we got a front-cover
-                    // and (obv.) we want one.
+                    // and (obv.) if we want one.
                     if (fetchCovers.length > 1 && fetchCovers[1]) {
                         final String url = currentItem.optString("backImageUrl");
-                        if (url != null && !url.isEmpty()) {
+                        if (!url.isEmpty()) {
                             saveImage(context, url, bookId, 1, null).ifPresent(
                                     fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
                         }
