@@ -55,7 +55,7 @@
     <string name="action_add">添加</string>
     <string name="action_clear">创建</string>
     <string name="action_create">创建</string>
-    <string name="action_edit">修改</string>
+    <string name="action_edit">编辑</string>
     <string name="action_delete">删除</string>
     <string name="action_discard">舍弃</string>
     <string name="action_done">完成</string>
@@ -126,7 +126,7 @@
     <string name="name_colon_value">%1$s：%2$s</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
-    <string name="no">取消</string>
+    <string name="no">否</string>
     <string name="notification_channel_error">错误</string>
     <string name="acra_dialog_message">看起来 &APP_NAME; 崩溃了。点击 “%1$s” 将报告保存到您选择的位置。您可以使用此报告在项目网站上报告新问题。</string>
     <string name="httpError">出现网络错误。</string>
