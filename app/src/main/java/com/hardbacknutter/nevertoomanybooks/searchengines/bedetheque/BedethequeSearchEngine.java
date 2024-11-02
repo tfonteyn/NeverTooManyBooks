@@ -63,6 +63,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+/**
+ * <a href="https://www.bedetheque.com/">bedetheque</a>
+ * <p>
+ * Implementing {@link SearchEngine.ByText} is not possible.
+ * The form on the site seems to insist on doing lookups for each field individually
+ * e.g. when entering a series name, it wil do a lookup immediately and retrieve the internal
+ * id for that series. The combined search relies on those type of fields having resolved
+ * all id's before th actual search is done.
+ */
 public class BedethequeSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
@@ -85,6 +94,36 @@ public class BedethequeSearchEngine
     /** A text indicating it's a softcover. Can occur in more than one field. */
     private static final String FORMAT_COUVERTURE_SOUPLE = "Couverture souple";
     private static final String SEARCH_URL = "/search";
+
+    /**
+     * Search.
+     * <p>
+     * Param 1: cookie
+     * Param 2: ISBN
+     *
+     * @see #requireCookieNameValueString(Context)
+     */
+    private static final String BY_ISBN = SEARCH_URL + "albums?"
+                                          + "RechIdSerie="
+                                          + "&RechIdAuteur="
+                                          // cookie name=value
+                                          + "&%1$s"
+                                          + "&RechSerie="
+                                          + "&RechTitre="
+                                          + "&RechEditeur="
+                                          + "&RechCollection="
+                                          + "&RechStyle="
+                                          + "&RechAuteur="
+                                          + "&RechISBN=%2$s"
+                                          + "&RechParution="
+                                          + "&RechOrigine="
+                                          + "&RechLangue="
+                                          + "&RechMotCle="
+                                          + "&RechDLDeb="
+                                          + "&RechDLFin="
+                                          + "&RechCoteMin="
+                                          + "&RechCoteMax="
+                                          + "&RechEO=0";
 
     private final Map<String, String> extraRequestProperties;
     @Nullable
@@ -146,15 +185,8 @@ public class BedethequeSearchEngine
         final Book book = new Book();
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
-        final String url = getHostUrl(context) + "/search/albums?RechIdSerie=&RechIdAuteur="
-                           + '&' + requireCookieNameValueString(context)
-                           + "&RechSerie=&RechTitre=&RechEditeur=&RechCollection="
-                           + "&RechStyle=&RechAuteur="
-                           + "&RechISBN=" + validIsbn
-                           + "&RechParution=&RechOrigine=&RechLangue="
-                           + "&RechMotCle=&RechDLDeb=&RechDLFin="
-                           + "&RechCoteMin=&RechCoteMax="
-                           + "&RechEO=0";
+        final String url = getHostUrl(context) + String.format(
+                BY_ISBN, requireCookieNameValueString(context), validIsbn);
 
         final Document document = loadDocument(context, url, extraRequestProperties);
 
@@ -266,12 +298,12 @@ public class BedethequeSearchEngine
                         break;
                     }
                     case "Tome :": {
-                        //FIXME: some books (non-french?) have two numbers which the site
-                        // concatenates... uh???
-                        // e.g. the series "Lucky Luke (en anglais):
+                        //FIXME: some books (non-french only?) have two numbers
+                        // which the site concatenates... uh???
+                        // e.g. the series "Lucky Luke (en anglais)":
                         // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
                         // seems to have BOTH "1" and "48" ... and we end up with "148"
-                        // This is clearly a bug on the site... not sure what we can do about that
+                        // This is clearly a bug on the site... not much we can do about that
                         final Node textNode = label.nextSibling();
                         final List<Series> seriesList = book.getSeries();
                         if (textNode != null && !seriesList.isEmpty()) {
