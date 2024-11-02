@@ -823,4 +823,6 @@
     <string name="info_bulk_set_bookshelves">选择要分配给所选节点下列出的所有图书的书架。</string>
     <string name="ok">确定</string>
     <string name="dialog_alert_title">注意</string>
+    <string name="info_site_search_field_optional">可选。不是所有网站都支持。</string>
+    <string name="warning_missing_title_or_author">必须指定标题和/或作者。</string>
 </resources>
