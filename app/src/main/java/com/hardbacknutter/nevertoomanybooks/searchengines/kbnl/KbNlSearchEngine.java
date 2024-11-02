@@ -133,6 +133,23 @@ public class KbNlSearchEngine
         }
     }
 
+    /**
+     * Send a HEAD request to prepare a cookie for further calls.
+     *
+     * @param context Current context
+     *
+     * @throws SearchException on any error
+     */
+    private void ensureCookie(@NonNull final Context context)
+            throws SearchException {
+        final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
+        try {
+            futureHttpHead.send(getHostUrl(context) + "/cbs/", con -> true);
+        } catch (@NonNull final StorageException | IOException e) {
+            throw new SearchException(getEngineId(), e);
+        }
+    }
+
     @NonNull
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final String validIsbn,
@@ -141,12 +158,7 @@ public class KbNlSearchEngine
                    SearchException,
                    CredentialsException {
 
-        final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
-        try {
-            futureHttpHead.send(getHostUrl(context) + "/cbs/", con -> true);
-        } catch (@NonNull final IOException e) {
-            throw new SearchException(getEngineId(), e);
-        }
+        ensureCookie(context);
 
         final Book book = new Book();
 
