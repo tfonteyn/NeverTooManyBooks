@@ -95,6 +95,7 @@ public class GoogleBooks2SearchEngine
 
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
     private static final String SEARCH = "/books/v1/volumes?q=";
+    private final RatingParser ratingParser;
     @Nullable
     private FutureHttpGet<String> futureHttpGet;
 
@@ -108,6 +109,8 @@ public class GoogleBooks2SearchEngine
     public GoogleBooks2SearchEngine(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        ratingParser = new RatingParser(5);
     }
 
     @NonNull
@@ -268,7 +271,7 @@ public class GoogleBooks2SearchEngine
      *         ],
      *         "publisher": "Lectorum Publications",
      *         "publishedDate": "2004",
-     *         "description": "After a mouse gets out of a maze faster than he does, mentally handicapped Charlie Gordon volunteers for an experiment to enhance his brainpower. Soon he goes from an IQ of 68 to genius level and beyond. Only now does Charlie feel that to be mentally handicapped was to be different. And the experiment is running into trouble. This touching, must-read story is finally available in Spanish.",
+     *         "description": "After a mouse gets out of a maze faster ...",
      *         "industryIdentifiers": [
      *           {
      *             "type": "ISBN_10",
@@ -328,7 +331,7 @@ public class GoogleBooks2SearchEngine
      *         "quoteSharingAllowed": false
      *       },
      *       "searchInfo": {
-     *         "textSnippet": "After a mouse gets out of a maze faster than he does, mentally handicapped Charlie Gordon volunteers for an experiment to enhance his brainpower."
+     *         "textSnippet": "After a mouse gets out of a maze faster than he does, ..."
      *       }
      *     }
      * </pre>
@@ -348,11 +351,9 @@ public class GoogleBooks2SearchEngine
                @NonNull final Book book)
             throws StorageException {
 
-        String s;
-
-        s = edition.optString("id", null);
-        if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.SID_GOOGLE, s);
+        final String googleId = edition.optString("id", null);
+        if (googleId != null && !googleId.isEmpty()) {
+            book.putString(DBKey.SID_GOOGLE, googleId);
         }
 
         final JSONObject volumeInfo = edition.optJSONObject("volumeInfo");
@@ -364,7 +365,7 @@ public class GoogleBooks2SearchEngine
 
         final JSONObject saleInfo = edition.optJSONObject("saleInfo");
         if (saleInfo != null) {
-            parseSaleInfo(context, saleInfo, book);
+            parseSaleInfo(saleInfo, book);
         }
 
         if (isCancelled()) {
@@ -387,6 +388,7 @@ public class GoogleBooks2SearchEngine
         int i;
         String s;
         float f;
+
         s = volumeInfo.optString("title", null);
         if (s != null && !s.isEmpty()) {
             book.putString(DBKey.TITLE, s);
@@ -425,7 +427,6 @@ public class GoogleBooks2SearchEngine
         // so we rely on decimal separator "." ... flw...
         f = volumeInfo.optFloat("averageRating");
         if (!Float.isNaN(f) && f > 0) {
-            final RatingParser ratingParser = new RatingParser(5);
             ratingParser.normalize(f).ifPresent(rating -> book.putString(DBKey.RATING,
                                                                          String.valueOf(rating)));
         }
@@ -450,8 +451,7 @@ public class GoogleBooks2SearchEngine
         //s = volumeInfo.optString("printType", null);
     }
 
-    private void parseSaleInfo(@NonNull final Context context,
-                               @NonNull final JSONObject saleInfo,
+    private void parseSaleInfo(@NonNull final JSONObject saleInfo,
                                @NonNull final Book book) {
         final boolean isEbook = saleInfo.optBoolean("isEbook");
         if (isEbook) {
