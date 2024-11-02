@@ -205,6 +205,7 @@
     <string name="warning_select_at_least_1_field">Chọn ít nhất một trường để cập nhật.</string>
     <string name="warning_nothing_selected">Không có gì được chọn</string>
     <string name="warning_requires_at_least_1_field">Ít nhất một trường không được để trống.</string>
+    <string name="warning_missing_title_or_author">Tiêu đề và/hoặc tác giả phải được chỉ định.</string>
     <string name="warning_requires_isbn">Hành động này yêu cầu ISBN hợp lệ.</string>
     <!-- Search using a websites native book-id -->
     <string name="warning_requires_site_and_id">Chọn một trang web và nhập id.</string>
@@ -330,6 +331,7 @@
     <!-- Information on which websites will be searched. Param 1: list of website names. -->
     <string name="info_site_list">Tìm kiếm bị giới hạn ở: %1$s</string>
     <!-- website info: languages; type; specifics. -->
+    <string name="info_site_search_field_optional">Tùy chọn. Không được hỗ trợ bởi tất cả các trang web.</string>
     <string name="site_description_dutch_catalogue">Tiếng Hà Lan và hơn thế nữa; Bảng tổng kê</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue_eu_comics">Tiếng Hà Lan và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>

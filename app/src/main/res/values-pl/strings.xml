@@ -682,6 +682,7 @@
     <string name="warning_no_site_supports_this_method">OSTRZEŻENIE: żadna z aktualnie wybranych witryn nie obsługuje wyszukiwania według %1$s. Użyj menu witryny, aby włączyć alternatywne witryny lub użyj innej metody wyszukiwania.</string>
     <string name="warning_nothing_selected">Niczego nie wybrano</string>
     <string name="warning_requires_at_least_1_field">Co najmniej jedno pole nie może być puste.</string>
+    <string name="warning_missing_title_or_author">Należy podać tytuł i/lub autora.</string>
     <string name="warning_requires_isbn">Ta akcja wymaga prawidłowego numeru ISBN.</string>
     <string name="warning_requires_site_and_id">Wybierz stronę internetową i wprowadź identyfikator.</string>
     <string name="warning_select_at_least_1_field">Wybierz przynajmniej jedno pole do zaktualizowania.</string>
@@ -727,6 +728,7 @@
     <string name="error_site_access_blocked">Dostęp został zablokowany przez stronę internetową.</string>
     <string name="pt_scan_mode">Tryb skanowania</string>
     <string name="option_sync_deleted_book_records">Synchronizacja usuniętych książek</string>
+    <string name="info_site_search_field_optional">Opcjonalne. Nie jest obsługiwane przez wszystkie strony internetowe.</string>
     <string name="site_description_dutch_catalogue">Holenderski i nie tylko; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Niderlandzki i nie tylko; Katalog; Komiksy europejskie</string>
     <string name="site_description_dutch_shopping">Niderlandzki i więcej; Zakupy</string>

@@ -668,6 +668,7 @@
     <string name="warning_no_site_supports_this_method">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: κανένας από τους επιλεγμένους ιστότοπους δεν υποστηρίζει την αναζήτηση κατά %1$s. Χρησιμοποιήστε το μενού ιστότοπου για να ενεργοποιήσετε εναλλακτικούς ιστότοπους ή χρησιμοποιήστε διαφορετική μέθοδο αναζήτησης.</string>
     <string name="warning_nothing_selected">Τίποτα επιλεγμένο</string>
     <string name="warning_requires_at_least_1_field">Τουλάχιστον ένα πεδίο δεν μπορεί να είναι κενό.</string>
+    <string name="warning_missing_title_or_author">Ο τίτλος ή/και ο συγγραφέας πρέπει να προσδιορίζονται.</string>
     <string name="warning_requires_isbn">Αυτή η ενέργεια απαιτεί έγκυρο ISBN.</string>
     <string name="warning_requires_site_and_id">Επιλέξτε έναν ιστότοπο και πληκτρολογήστε ένα αναγνωριστικό.</string>
     <string name="warning_select_at_least_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση.</string>
@@ -713,6 +714,7 @@
     <string name="error_site_access_blocked">Η πρόσβαση αποκλείστηκε από τον ιστότοπο.</string>
     <string name="pt_scan_mode">Λειτουργία σάρωσης</string>
     <string name="option_sync_deleted_book_records">Συγχρονισμός διαγραμμένων βιβλίων</string>
+    <string name="info_site_search_field_optional">Προαιρετικά. Δεν υποστηρίζεται από όλους τους δικτυακούς τόπους.</string>
     <string name="site_description_dutch_catalogue">Ολλανδικά και άλλα; Κατάλογος</string>
     <string name="site_description_dutch_catalogue_eu_comics">Ολλανδικά και άλλα; Κατάλογος; Ευρωπαϊκά κόμικς</string>
     <string name="site_description_dutch_shopping">Ολλανδικά και άλλα; Αγορές</string>

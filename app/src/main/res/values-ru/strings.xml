@@ -679,6 +679,7 @@
     <string name="warning_no_site_supports_this_method">ВНИМАНИЕ: ни один из выбранных в данный момент сайтов не поддерживает поиск по %1$s. Пожалуйста, используйте меню сайта, чтобы включить альтернативные сайты, или используйте другой метод поиска.</string>
     <string name="warning_nothing_selected">Ничего не выбрано</string>
     <string name="warning_requires_at_least_1_field">Хотя бы одно поле не должно быть пустым.</string>
+    <string name="warning_missing_title_or_author">Необходимо указать название и/или автора.</string>
     <string name="warning_requires_isbn">Для этого действия требуется действительный ISBN.</string>
     <string name="warning_requires_site_and_id">Выберите сайт и введите идентификатор.</string>
     <string name="warning_select_at_least_1_field">Выберите хотя бы одно поле для обновления.</string>
@@ -724,6 +725,7 @@
     <string name="error_site_access_blocked">Доступ был заблокирован сайтом.</string>
     <string name="pt_scan_mode">Режим сканирования</string>
     <string name="option_sync_deleted_book_records">Синхронизация удаленных книг</string>
+    <string name="info_site_search_field_optional">Необязательно. Поддерживается не всеми сайтами.</string>
     <string name="site_description_dutch_catalogue">Голландский и не только; Каталог</string>
     <string name="site_description_dutch_catalogue_eu_comics">Голландский и не только; Каталог; Европейские комиксы</string>
     <string name="site_description_dutch_shopping">Голландский и не только; Покупки</string>

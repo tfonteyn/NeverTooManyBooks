@@ -672,6 +672,7 @@
     <string name="warning_no_site_supports_this_method">AVERTISSEMENT : aucun des sites actuellement sélectionnés ne prend en charge la recherche par %1$s. Veuillez utiliser le menu du site pour activer les sites alternatifs ou utiliser une autre méthode de recherche.</string>
     <string name="warning_nothing_selected">Rien de sélectionné</string>
     <string name="warning_requires_at_least_1_field">Au moins un champ ne doit pas être vide.</string>
+    <string name="warning_missing_title_or_author">Le titre et/ou l\'auteur doivent être précisés.</string>
     <string name="warning_requires_isbn">Cette action nécessite un ISBN valide.</string>
     <string name="warning_requires_site_and_id">Sélectionnez un site Web et entrez un identifiant.</string>
     <string name="warning_select_at_least_1_field">Choisissez au moins un champ à mettre à jour.</string>
@@ -716,6 +717,7 @@
     <string name="error_site_access_blocked">L’accès a été bloqué par le site web.</string>
     <string name="pt_scan_mode">Mode de numérisation</string>
     <string name="option_sync_deleted_book_records">Synchroniser les livres supprimés</string>
+    <string name="info_site_search_field_optional">Optionnel. N\'est pas pris en charge par tous les sites web.</string>
     <string name="site_description_dutch_catalogue">Néerlandais et plus ; Catalogue</string>
     <string name="site_description_dutch_catalogue_eu_comics">Néerlandais et plus ; Catalogue ; Bandes dessinées européennes</string>
     <string name="site_description_dutch_shopping">Néerlandais et plus ; Shopping</string>

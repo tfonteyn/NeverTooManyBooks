@@ -678,6 +678,7 @@
     <string name="warning_no_site_supports_this_method">VAROVÁNÍ: žádná z aktuálně vybraných stránek nepodporuje vyhledávání podle %1$s. Pomocí nabídky stránek povolte alternativní stránky nebo použijte jinou metodu vyhledávání.</string>
     <string name="warning_nothing_selected">Nebylo vybráno nic</string>
     <string name="warning_requires_at_least_1_field">Alespoň jedno pole nemůže být prázdné.</string>
+    <string name="warning_missing_title_or_author">Je třeba uvést název a/nebo autora.</string>
     <string name="warning_requires_isbn">Tato akce vyžaduje platné číslo ISBN.</string>
     <string name="warning_requires_site_and_id">Vyberte web a zadejte ID.</string>
     <string name="warning_select_at_least_1_field">Zvolte alespoň jedno pole k aktualizaci.</string>
@@ -722,6 +723,7 @@
     <string name="error_site_access_blocked">Přístup byl zablokován na webových stránkách.</string>
     <string name="pt_scan_mode">Režim skenování</string>
     <string name="option_sync_deleted_book_records">Synchronizace odstraněných knih</string>
+    <string name="info_site_search_field_optional">Nepovinné. Není podporováno všemi webovými stránkami.</string>
     <string name="site_description_dutch_catalogue">Holandština a další; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Nizozemština a další; Katalog; Evropský komiks</string>
     <string name="site_description_dutch_shopping">Nizozemština a další; Nakupování</string>

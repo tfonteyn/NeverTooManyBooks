@@ -669,6 +669,7 @@
     <string name="warning_no_site_supports_this_method">UYARI: Şu anda seçili sitelerin hiçbiri %1$s ile aramayı desteklemiyor. Alternatif siteleri etkinleştirmek için lütfen site menüsünü kullanın veya farklı bir arama yöntemi kullanın.</string>
     <string name="warning_nothing_selected">Hiçbir şey seçilmedi</string>
     <string name="warning_requires_at_least_1_field">En az bir alan boş bırakılmamalıdır.</string>
+    <string name="warning_missing_title_or_author">Başlık ve/veya yazar belirtilmelidir.</string>
     <string name="warning_requires_isbn">Bu işlem geçerli bir ISBN gerektirir.</string>
     <string name="warning_requires_site_and_id">Bir web sitesi seçin ve bir kimlik girin.</string>
     <string name="warning_select_at_least_1_field">Güncellemek için en azından bir alan seçin.</string>
@@ -721,6 +722,7 @@
     <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>
     <string name="pt_scan_mode">Tarama modu</string>
     <string name="option_sync_deleted_book_records">Silinen kitapları senkronize edin</string>
+    <string name="info_site_search_field_optional">İsteğe bağlı. Tüm web siteleri tarafından desteklenmez.</string>
     <string name="site_description_dutch_catalogue">Hollandaca ve daha fazlası; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Hollandaca ve daha fazlası; Katalog; Avrupa Çizgi Romanları</string>
     <string name="site_description_dutch_shopping">Hollandaca ve daha fazlası; Alışveriş</string>

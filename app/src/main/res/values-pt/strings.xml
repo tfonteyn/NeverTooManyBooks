@@ -220,6 +220,7 @@
     <string name="warning_select_at_least_1_group">Seleccione pelo menos um grupo.</string>
     <string name="warning_select_at_least_1_field">Selecione pelo menos um campo a ser atualizado.</string>
     <string name="warning_requires_at_least_1_field">Pelo menos um campo não deve estar em branco.</string>
+    <string name="warning_missing_title_or_author">O título e/ou o autor devem ser especificados.</string>
     <string name="warning_requires_isbn">Esta ação requer um ISBN válido.</string>
     <string name="warning_image_not_found">A imagem não pôde ser encontrada.</string>
     <string name="warning_no_editions">Nenhuma informação adicional de edição disponível.</string>
@@ -741,6 +742,7 @@
     <string name="error_site_access_blocked">O acesso foi bloqueado pelo sítio Web.</string>
     <string name="pt_scan_mode">Modo de leitura</string>
     <string name="option_sync_deleted_book_records">Sincronizar livros eliminados</string>
+    <string name="info_site_search_field_optional">Opcional. Não é suportado por todos os sítios Web.</string>
     <string name="site_description_dutch_catalogue">Holandês e mais; Catálogo</string>
     <string name="site_description_dutch_catalogue_eu_comics">Holandês e mais; Catálogo; Banda desenhada europeia</string>
     <string name="site_description_dutch_shopping">Holandês e mais; Compras</string>

@@ -667,6 +667,7 @@
     <string name="warning_no_site_supports_this_method">ACHTUNG: Keine der derzeit ausgewählten Websites unterstützt die Suche nach %1$s. Bitte verwenden Sie das Website-Menü, um alternative Websites zu aktivieren, oder verwenden Sie eine andere Suchmethode.</string>
     <string name="warning_nothing_selected">Nichts ausgewählt</string>
     <string name="warning_requires_at_least_1_field">Mindestens ein Feld darf nicht leer sein.</string>
+    <string name="warning_missing_title_or_author">Der Titel und/oder der Autor müssen angegeben werden.</string>
     <string name="warning_requires_isbn">Diese Aktion erfordert eine gültige ISBN.</string>
     <string name="warning_requires_site_and_id">Wählen Sie eine Website und geben Sie eine ID ein.</string>
     <string name="warning_select_at_least_1_field">Wählen Sie mindestens ein Feld zum Aktualisieren aus.</string>
@@ -712,6 +713,7 @@
     <string name="error_site_access_blocked">Der Zugang wurde von der Website blockiert.</string>
     <string name="pt_scan_mode">Modus des Scannens</string>
     <string name="option_sync_deleted_book_records">Gelöschte Bücher synchronisieren</string>
+    <string name="info_site_search_field_optional">Optional. Wird nicht von allen Websites unterstützt.</string>
     <string name="site_description_dutch_catalogue">Niederländisch und mehr; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Niederländisch und mehr; Katalog; Europäische Comics</string>
     <string name="site_description_dutch_shopping">Niederländisch und mehr; Einkaufen</string>
