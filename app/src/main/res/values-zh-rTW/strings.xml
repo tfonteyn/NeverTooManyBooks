@@ -222,4 +222,6 @@
     <string name="ok">確定</string>
     <string name="cancel">取消</string>
     <string name="dialog_alert_title">注意</string>
+    <string name="pv_reformat_titles_prefixes">|</string>
+    <string name="lbl_book">書本</string>
 </resources>

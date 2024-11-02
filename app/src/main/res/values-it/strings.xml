@@ -671,7 +671,7 @@
     <string name="warning_no_site_supports_this_method">ATTENZIONE: nessuno dei siti attualmente selezionati supporta la ricerca di %1$s. Utilizza il menu del sito per abilitare siti alternativi o utilizza un metodo di ricerca diverso.</string>
     <string name="warning_nothing_selected">Niente selezionato</string>
     <string name="warning_requires_at_least_1_field">Almeno un campo non deve essere vuoto.</string>
-    <string name="warning_missing_title_or_author">È necessario specificare il titolo e/o l\'autore.</string>
+    <string name="warning_missing_title_or_author">È necessario specificare il titolo e/o l’autore.</string>
     <string name="warning_requires_isbn">Questa azione richiede un codice ISBN valido.</string>
     <string name="warning_requires_site_and_id">Seleziona un sito Web e inserisci un ID.</string>
     <string name="warning_select_at_least_1_field">Seleziona almeno un campo da aggiornare.</string>

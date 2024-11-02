@@ -493,7 +493,7 @@
     <string name="option_level_reset">Voorkeur expansieniveau</string>
     <string name="option_moving_covers_from_x_to_y">Verplaats alle covers van „%1$s” naar „%2$s”</string>
     <string name="option_purge_bedetheque_authors_cache">Wis de cache van Bedetheque Authors</string>
-    <string name="pe_ui_context_menu_mode_by_size">Kleinere schermen geven lange menu\'s weer onderaan het scherm en korte menu\'s als klassieke contextmenu\'s.\nGrotere schermen, zoals tablets, gebruiken altijd klassieke contextmenu’s.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Kleinere schermen geven lange menu’s weer onderaan het scherm en korte menu’s als klassieke contextmenu’s.\nGrotere schermen, zoals tablets, gebruiken altijd klassieke contextmenu’s.</string>
     <string name="option_purge_files">Bestanden opschonen</string>
     <string name="option_purge_image_cache">Afbeeldingen cache wissen</string>
     <string name="option_rebuild_fts">Volledige tekst zoekgegevens opnieuw opbouwen</string>
@@ -526,7 +526,7 @@
     <string name="pe_bob_row_menu_button">Laat altijd een knop zien.</string>
     <string name="pe_bob_row_menu_button_when_space">Toon een knop als er ruimte is, gebruik anders lang klikken.</string>
     <string name="pe_bob_row_menu_long_click">Gebruik altijd een lange klik.</string>
-    <string name="pe_camera_back">Camera aan de achtezijde</string>
+    <string name="pe_camera_back">Camera aan de achterzijde</string>
     <string name="pe_camera_front">Camera aan de voorzijde</string>
     <string name="pe_camera_other">Overig</string>
     <string name="loose">Ruim</string>
