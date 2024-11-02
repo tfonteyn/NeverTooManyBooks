@@ -70,7 +70,7 @@ import org.jsoup.select.Elements;
  * The form on the site seems to insist on doing lookups for each field individually
  * e.g. when entering a series name, it wil do a lookup immediately and retrieve the internal
  * id for that series. The combined search relies on those type of fields having resolved
- * all id's before th actual search is done.
+ * all id's before the actual search is done.
  */
 public class BedethequeSearchEngine
         extends JsoupSearchEngineBase
@@ -235,8 +235,7 @@ public class BedethequeSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link org.jsoup.nodes.Document}.
-     * We only parse the <strong>first book</strong> found.
+     * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
      * @param context         Current context
      * @param document        to parse

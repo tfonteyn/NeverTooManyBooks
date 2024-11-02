@@ -338,8 +338,7 @@ public class AmazonSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link org.jsoup.nodes.Document}.
-     * We only parse the <strong>first book</strong> found.
+     * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
      * @param context     Current context
      * @param document    to parse
@@ -361,7 +360,7 @@ public class AmazonSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // Fr the some books the title will be "just" the title,
+        // For some books the title will be "just" the title,
         // for other books they will add the author and more info all in the same string.
         // It's too difficult to cover all possibilities, we're leaving that to the user.
         final Element titleElement = document.selectFirst("h1#title > span#productTitle");

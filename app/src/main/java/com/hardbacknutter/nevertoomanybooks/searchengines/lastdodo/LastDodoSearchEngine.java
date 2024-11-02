@@ -422,8 +422,7 @@ public class LastDodoSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link org.jsoup.nodes.Document}.
-     * We only parse the <strong>first book</strong> found.
+     * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
      * @param context         Current context
      * @param document        to parse

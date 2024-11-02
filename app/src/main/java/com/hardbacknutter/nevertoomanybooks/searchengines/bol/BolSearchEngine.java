@@ -162,6 +162,24 @@ public class BolSearchEngine
         return new Locale("nl", getCountry(context).toUpperCase(Locale.ROOT));
     }
 
+    @NonNull
+    @Override
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        final String url = getHostUrl(context) + String.format(BY_ISBN, getCountry(context),
+                                                               validIsbn);
+        final Document document = loadDocument(context, url, null);
+        final Book book = new Book();
+        if (!isCancelled()) {
+            // it's ALWAYS multi-result, even if only one result is returned.
+            parseMultiResult(context, document, fetchCovers, book);
+        }
+        return book;
+    }
+
     /**
      * Criteria supported: ALL.
      * Code: supported.
@@ -191,24 +209,6 @@ public class BolSearchEngine
 
         final String url = getHostUrl(context) + String.format(BY_TEXT, getCountry(context), words);
         final Document document = loadDocument(context, url, null);
-        if (!isCancelled()) {
-            // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
-        }
-        return book;
-    }
-
-    @NonNull
-    @Override
-    public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
-                             @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-
-        final String url = getHostUrl(context) + String.format(BY_ISBN, getCountry(context),
-                                                               validIsbn);
-        final Document document = loadDocument(context, url, null);
-        final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);
@@ -258,8 +258,7 @@ public class BolSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link org.jsoup.nodes.Document}.
-     * We only parse the <strong>first book</strong> found.
+     * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      * <p>
      * We're ignoring the label "Co Auteur" and "Hoofdredacteur" on purpose.
      *

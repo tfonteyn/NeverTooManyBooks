@@ -135,8 +135,7 @@ public class DnbSearchEngine
     }
 
     /**
-     * Parses the downloaded {@link org.jsoup.nodes.Document}.
-     * We only parse the <strong>first book</strong> found.
+     * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
      * @param context     Current context
      * @param document    to parse
@@ -282,6 +281,9 @@ public class DnbSearchEngine
      * Brüssel sehen und sterben : wie ich im Europaparlament meinen Glauben an (fast) alles verloren habe / Nico Semsrott
      * 978-3-96584-423-0
      * Der Glukose-Masterplan / Ernährungs-Doc Dr. med. Matthias Riedl ; mit Texten von Franziska Pfeiffer und Rezepten von Inga Pfannebecker
+     *
+     * @param element to parse
+     * @param book    Bundle to update
      */
     private void parseTitle(@NonNull final Element element,
                             @NonNull final Book book) {
@@ -453,8 +455,8 @@ public class DnbSearchEngine
      * </pre>
      *
      * @param context Current context
-     * @param td   to parse
-     * @param book to update
+     * @param td      to parse
+     * @param book    to update
      */
     private void parsePublisher(@NonNull final Context context,
                                 @NonNull final Element td,

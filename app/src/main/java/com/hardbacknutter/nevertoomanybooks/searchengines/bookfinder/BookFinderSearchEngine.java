@@ -51,6 +51,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+/**
+ * This is an experiment... the site is NOT exposed in release builds.
+ * <p>
+ * Searching by ISBN seems always to return a single book, but we have not done
+ * any exhaustive tests.
+ */
 public class BookFinderSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
@@ -111,6 +117,22 @@ public class BookFinderSearchEngine
         return book;
     }
 
+    /**
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
+     */
     @VisibleForTesting
     @WorkerThread
     public void parse(@NonNull final Context context,
