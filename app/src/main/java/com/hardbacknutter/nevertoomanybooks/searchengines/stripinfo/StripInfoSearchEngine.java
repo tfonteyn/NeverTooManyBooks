@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -125,6 +126,8 @@ public class StripInfoSearchEngine
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
     /** Delegate common Element handling. */
     private final JSoupHelper jSoupHelper = new JSoupHelper();
+    @NonNull
+    private final RatingParser ratingParser;
     @Nullable
     private StripInfoAuth loginHelper;
     @Nullable
@@ -140,6 +143,8 @@ public class StripInfoSearchEngine
     public StripInfoSearchEngine(@NonNull final Context appContext,
                                  @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        ratingParser = new RatingParser(10);
     }
 
     @NonNull
@@ -256,7 +261,7 @@ public class StripInfoSearchEngine
         }
 
         // Finally, try and replace potential invalid ISBN numbers
-        // with the barcode as  found on the site
+        // with the barcode as found on the site
         processBarcode(validIsbn, book);
     }
 
@@ -529,10 +534,18 @@ public class StripInfoSearchEngine
             }
         }
 
+        Element item;
         // find and process the description
-        final Element item = document.selectFirst("div.item > section.grid > div.row");
+        item = document.selectFirst("div.item > section.grid > div.row");
         if (item != null) {
             parseDescription(item, book);
+        }
+
+        // find and process the rating
+        item = document.selectFirst("a#stripsScore");
+        if (item != null) {
+            ratingParser.parse(item.text()).ifPresent(
+                    rating -> book.putFloat(DBKey.RATING, rating));
         }
 
         // are we logged in ? Then look for any user data.
