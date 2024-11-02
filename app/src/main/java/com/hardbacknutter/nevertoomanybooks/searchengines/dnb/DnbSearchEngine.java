@@ -32,6 +32,7 @@ import androidx.annotation.WorkerThread;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -62,15 +64,22 @@ import org.jsoup.select.Elements;
  */
 public class DnbSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn {
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText {
+
+    private static final String SELECT_SINGLE_RESULT = "div.l-catalog-single-content";
+    private static final String SELECT_MULTI_RESULT = "div.l-catalog-results__entry";
 
     /**
-     * param 1: the ISBN.
+     * Param 1: the search type.
+     * ISBN: "num" -> form dropdown set to "ID"
+     * Text: "all" -> form dropdown set to "Alles"
+     * Param 2: the search term(s)
      */
     private static final String SEARCH_URL = "/DE/list.html?"
-                                             + "key=num&"
-                                             + "key.GROUP=1&"
-                                             + "t=%1$s"
+                                             + "key=%1$s"
+                                             + "&key.GROUP=1"
+                                             + "&t=%2$s"
                                              + "&sortD=-dat"
                                              + "&sortA=bez"
                                              + "&pr=0"
@@ -121,17 +130,104 @@ public class DnbSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, "num", validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            // Not verified for multi-results
-            final Element table = document.selectFirst("div.l-catalog-single-content");
-            if (table != null) {
+            // Check single result first
+            final Element single = document.selectFirst(SELECT_SINGLE_RESULT);
+            if (single != null) {
                 parse(context, document, fetchCovers, book);
+            } else {
+                // Fallback to checking multi result
+                final Element multi = document.selectFirst(SELECT_MULTI_RESULT);
+                if (multi != null) {
+                    parseMultiResult(context, document, fetchCovers, book);
+                }
             }
         }
-
         return book;
+    }
+
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @Nullable final String code,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        // Searches are just a string of 'words', we can simply concatenate all available options.
+        final StringJoiner words = criteria.concat(" ");
+        if (code != null && !code.isEmpty()) {
+            words.add(code);
+        }
+
+        final Book book = new Book();
+
+        // Sanity check
+        if (words.length() == 0) {
+            return book;
+        }
+
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, "all", words);
+        final Document document = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            // Check multi result first
+            final Element multi = document.selectFirst(SELECT_MULTI_RESULT);
+            if (multi != null) {
+                parseMultiResult(context, document, fetchCovers, book);
+            } else {
+                // Fallback to checking single result
+                final Element single = document.selectFirst(SELECT_SINGLE_RESULT);
+                if (single != null) {
+                    parse(context, document, fetchCovers, book);
+                }
+            }
+        }
+        return book;
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
+    @VisibleForTesting
+    @WorkerThread
+    public void parseMultiResult(@NonNull final Context context,
+                                 @NonNull final Document document,
+                                 @NonNull final boolean[] fetchCovers,
+                                 @NonNull final Book book)
+            throws StorageException, SearchException, CredentialsException {
+        final Element section = document.selectFirst(SELECT_MULTI_RESULT);
+        // Paranoia/sanity, we already checked in the caller
+        if (section == null) {
+            return;
+        }
+
+        final Elements aas = section.select("a");
+        // The first one is an anchor only, while the 2nd one is the link we need to follow
+        if (aas.size() > 1) {
+            final Element aLink = aas.get(1);
+            String bookUrl = aLink.attr("href");
+            if (!bookUrl.startsWith("/")) {
+                bookUrl = "/" + bookUrl;
+            }
+            final Document redirected = loadDocument(context, getHostUrl(context) + bookUrl,
+                                                     null);
+            if (!isCancelled()) {
+                parse(context, redirected, fetchCovers, book);
+            }
+        }
     }
 
     /**
