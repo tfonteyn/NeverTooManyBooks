@@ -223,9 +223,9 @@ public class KbNlHtmlSearchEngine
             if (!show.isEmpty()) {
                 final String url = getHostUrl(context) + String.format(BOOK_URL, dbVersion, setNr,
                                                                        show);
-                final Document document = loadDocument(context, url, null);
+                final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, document, fetchCovers, book);
+                    parse(context, redirected, fetchCovers, book);
                 }
             }
         }

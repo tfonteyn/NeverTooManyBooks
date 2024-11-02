@@ -191,9 +191,9 @@ public class DoubanSearchEngine
             throws SearchException, CredentialsException, StorageException {
         final Optional<String> oUrl = extractBookUrl(context, document);
         if (oUrl.isPresent()) {
-            final Document d = loadDocument(context, oUrl.get(), null);
+            final Document redirected = loadDocument(context, oUrl.get(), null);
             if (!isCancelled()) {
-                parse(context, d, fetchCovers, book);
+                parse(context, redirected, fetchCovers, book);
             }
         } else {
             // Keep this as a fallback, but we're unlikely to ever get here.
