@@ -765,6 +765,13 @@ public enum EngineId
         return by.getSearchEngineClass().isAssignableFrom(clazz);
     }
 
+    /**
+     * Check if the given search interface is supported by this engine.
+     *
+     * @param by interface to test
+     *
+     * @return flag
+     */
     public boolean supports(@NonNull final Class<? extends SearchEngine> by) {
         return by.isAssignableFrom(clazz);
     }
@@ -775,6 +782,8 @@ public enum EngineId
      * @param context Current context
      *
      * @return a new instance
+     *
+     * @throws IllegalStateException on any error
      */
     @NonNull
     public SearchEngine createSearchEngine(@NonNull final Context context) {
