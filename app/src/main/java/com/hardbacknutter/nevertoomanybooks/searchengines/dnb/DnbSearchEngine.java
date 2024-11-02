@@ -611,7 +611,13 @@ public class DnbSearchEngine
     private void parsePageNumber(@NonNull final Element td,
                                  @NonNull final Book book) {
 
-        final Matcher matcher = PATTERN_PAGE_NUMBER.matcher(td.text());
+        final String text = td.text();
+        // No idea if there are other such text snippets we can check for.
+        if (text.contains("Online-Ressource")) {
+            book.putString(DBKey.FORMAT, "ebook");
+        }
+
+        final Matcher matcher = PATTERN_PAGE_NUMBER.matcher(text);
         if (matcher.find()) {
             book.putString(DBKey.PAGE_COUNT, matcher.group());
         }

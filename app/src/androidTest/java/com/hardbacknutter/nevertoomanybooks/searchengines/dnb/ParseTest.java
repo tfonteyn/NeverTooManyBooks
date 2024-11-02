@@ -242,6 +242,7 @@ public class ParseTest
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("528", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("9783641285166", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
         assertEquals(1278243054, book.getLong(DBKey.SID_DNB));
 
