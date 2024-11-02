@@ -77,7 +77,7 @@ public class LastDodoSearchEngine
     /**
      * Hardcoded to: 147==comics.
      * Param 1: The search word(s)
-     *          When searching for an ISBN number, it must include the '-' characters! (2022-05-31)
+     * When searching for an ISBN number, it must include the '-' characters! (2022-05-31)
      */
     private static final String SEARCH = "/nl/areas/search?type_id=147&q=%1$s";
     private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
@@ -259,29 +259,7 @@ public class LastDodoSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
-        final StringJoiner words = new StringJoiner(" ");
-
-        final String title = criteria.getTitle();
-        if (!title.isEmpty()) {
-            words.add(title);
-        }
-        final String author = criteria.getAuthor();
-        if (!author.isEmpty()) {
-            words.add(author);
-        }
-        final String series = criteria.getSeries();
-        if (!series.isEmpty()) {
-            words.add(series);
-        }
-        final String seriesNr = criteria.getSeriesNr();
-        if (!seriesNr.isEmpty()) {
-            words.add(seriesNr);
-        }
-        final String publisher = criteria.getPublisher();
-        if (!publisher.isEmpty()) {
-            words.add(publisher);
-        }
-
+        final StringJoiner words = criteria.concat(" ");
         if (code != null && !code.isEmpty()) {
             final ISBN isbn = new ISBN(code, false);
             if (isbn.isValid(true)) {
