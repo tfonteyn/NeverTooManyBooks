@@ -149,29 +149,7 @@ public class DoubanSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
-        final StringJoiner words = new StringJoiner(" ");
-
-        final String title = criteria.getTitle();
-        if (!title.isEmpty()) {
-            words.add(title);
-        }
-        final String author = criteria.getAuthor();
-        if (!author.isEmpty()) {
-            words.add(author);
-        }
-        final String series = criteria.getSeries();
-        if (!series.isEmpty()) {
-            words.add(series);
-        }
-        final String seriesNr = criteria.getSeriesNr();
-        if (!seriesNr.isEmpty()) {
-            words.add(seriesNr);
-        }
-        final String publisher = criteria.getPublisher();
-        if (!publisher.isEmpty()) {
-            words.add(publisher);
-        }
-
+        final StringJoiner words = criteria.concat(" ");
         if (code != null && !code.isEmpty()) {
             words.add(code);
         }
@@ -193,10 +171,18 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Parse the given multi-result document.
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
      *
-     * @param context  Current context
-     * @param document to parse
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws StorageException     on storage related failures
      */
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
@@ -255,61 +241,65 @@ public class DoubanSearchEngine
      * the list of books found.
      *
      * <pre>
-     *         window.__DATA__ = {
-     *         "count": 15,
-     *         "error_info": "",
-     *         "items": [
-     *             {
-     *                 "abstract": "",
-     *                 "abstract_2": "",
-     *                 "cover_url": "https://img1.doubanio.com/cuphead/book-static/pics/book-default-lpic.gif",
-     *                 "extra_actions": [],
-     *                 "id": 25930607,
-     *                 "interest": null,
-     *                 "label_actions": [],
-     *                 "labels": [],
-     *                 "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',subject_id:'25930607',query:'9787532190294',i:'0',cat_id:'1001'})\"",
-     *                 "rating": {
-     *                     "count": 0,
-     *                     "rating_info": "目前无人评价",
-     *                     "star_count": 0,
-     *                     "value": 0
-     *                 },
-     *                 "title": "9787539190594",
-     *                 "topics": [],
-     *                 "tpl_name": "search_subject",
-     *                 "url": "https://book.douban.com/subject/25930607/"
-     *             },
-     *             {
-     *                 "abstract": "[英] 菲利普·高夫 / 傅星源 / 上海文艺出版社 / 2024-6 / 58",
-     *                 "abstract_2": "",
-     *                 "cover_url": "https://img1.doubanio.com/view/subject/m/public/s34875559.jpg",
-     *                 "extra_actions": [],
-     *                 "id": 36897178,
-     *                 "interest": null,
-     *                 "label_actions": [],
-     *                 "labels": [],
-     *                 "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',subject_id:'36897178',query:'9787532190294',i:'1',cat_id:'1001'})\"",
-     *                 "rating": {
-     *                     "count": 0,
-     *                     "rating_info": "评价人数不足",
-     *                     "star_count": 0,
-     *                     "value": 0
-     *                 },
-     *                 "title": "伽利略的错误 : 为一种新的意识科学奠基",
-     *                 "topics": [],
-     *                 "tpl_name": "search_subject",
-     *                 "url": "https://book.douban.com/subject/36897178/"
-     *             }
-     *         ],
-     *         "report": {
-     *             "qtype": "195",
-     *             "tags": "读书"
-     *         },
-     *         "start": 0,
-     *         "text": "9787532190294",
-     *         "total": 2
-     *     };
+     * {
+     *   "count": 15,
+     *   "error_info": "",
+     *   "items": [
+     *     {
+     *        "abstract": "",
+     *        "abstract_2": "",
+     *        "cover_url": "https://img1.doubanio.com/cuphead/book-static/pics/book-default-lpic.gif",
+     *        "extra_actions": [],
+     *        "id": 25930607,
+     *        "interest": null,
+     *        "label_actions": [],
+     *        "labels": [],
+     *        "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',
+     *                                       subject_id:'25930607',query:'9787532190294',
+     *                                       i:'0',cat_id:'1001'})\"",
+     *        "rating": {
+     *            "count": 0,
+     *            "rating_info": "目前无人评价",
+     *            "star_count": 0,
+     *            "value": 0
+     *        },
+     *        "title": "9787539190594",
+     *        "topics": [],
+     *        "tpl_name": "search_subject",
+     *        "url": "https://book.douban.com/subject/25930607/"
+     *     },
+     *     {
+     *        "abstract": "[英] 菲利普·高夫 / 傅星源 / 上海文艺出版社 / 2024-6 / 58",
+     *        "abstract_2": "",
+     *        "cover_url": "https://img1.doubanio.com/view/subject/m/public/s34875559.jpg",
+     *        "extra_actions": [],
+     *        "id": 36897178,
+     *        "interest": null,
+     *        "label_actions": [],
+     *        "labels": [],
+     *        "more_url": "onclick=\"moreurl(this,{from:'book_subject_search',
+     *                                       subject_id:'36897178',query:'9787532190294',
+     *                                       i:'1',cat_id:'1001'})\"",
+     *        "rating": {
+     *            "count": 0,
+     *            "rating_info": "评价人数不足",
+     *            "star_count": 0,
+     *            "value": 0
+     *        },
+     *        "title": "伽利略的错误 : 为一种新的意识科学奠基",
+     *        "topics": [],
+     *        "tpl_name": "search_subject",
+     *        "url": "https://book.douban.com/subject/36897178/"
+     *     }
+     *   ],
+     *   "report": {
+     *     "qtype": "195",
+     *     "tags": "读书"
+     *   },
+     *   "start": 0,
+     *   "text": "9787532190294",
+     *   "total": 2
+     * }
      * </pre>
      *
      * @param document to parse
@@ -419,6 +409,22 @@ public class DoubanSearchEngine
                                 .getBoolean(PK_FETCH_MOST_RECENT, true);
     }
 
+    /**
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
+     */
     @VisibleForTesting
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
@@ -549,14 +555,14 @@ public class DoubanSearchEngine
 
         // The content table - in the example we used, it's the chapter list.
         // TODO: check if there is a way of detecting chapter-list versus actual content-list
-//        final String sid = book.getString(DBKey.SID_DOUBAN, null);
-//        if (sid != null) {
-//            final Element tocElement = document.selectFirst("div#dir_" + sid + "_full");
-//            if (tocElement != null) {
-//                final String[] content = PATTERN_BR.split(tocElement.html());
-//                 .... numbered lines with chapter-titles
-//            }
-//        }
+        // final String sid = book.getString(DBKey.SID_DOUBAN, null);
+        // if (sid != null) {
+        //     final Element tocElement = document.selectFirst("div#dir_" + sid + "_full");
+        //     if (tocElement != null) {
+        //         final String[] content = PATTERN_BR.split(tocElement.html());
+        //         ... numbered lines with chapter-titles
+        //     }
+        // }
 
         // There is no language listed, we're assuming Simplified Chinese
         if (!book.contains(DBKey.LANGUAGE)) {
@@ -571,6 +577,8 @@ public class DoubanSearchEngine
     }
 
     /**
+     * Some of the data is available in the page meta-data.
+     *
      * <pre>{@code
      *     <meta property="og:title" content="三体" />
      *     <meta property="og:description" content="军方探寻外星文明的绝秘计划“..." />
