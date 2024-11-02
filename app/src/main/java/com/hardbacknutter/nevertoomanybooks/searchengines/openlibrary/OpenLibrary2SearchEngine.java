@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -61,22 +63,18 @@ import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * <a href="https://openlibrary.org/dev/docs/api/search">Open Library Search API</a>
- * <p>
- * ENHANCE: {@link SearchEngine.ByText} could be added now by using
- *   https://openlibrary.org/search.json?q=SEARCHTEXT
- *   &fields=key,editions
- *   &limit=1
- *   or without/a reasonable limit multiple results.
  */
 public class OpenLibrary2SearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
-    private static final String BASE_BOOK_URL = "/search.json?q=%1$s"
+    private static final String BASE_BOOK_URL = "/search.json?"
+                                                + "q=%1$s"
                                                 + "&fields=key,editions";
 
     /**
@@ -161,7 +159,33 @@ public class OpenLibrary2SearchEngine
         return book;
     }
 
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @Nullable final String code,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
 
+        // Searches are just a string of 'words', we can simply concatenate all available options.
+        final StringJoiner words = criteria.concat(" ");
+        if (code != null && !code.isEmpty()) {
+            words.add(code);
+        }
+
+        final Book book = new Book();
+
+        // Sanity check
+        if (words.length() == 0) {
+            return book;
+        }
+
+        // Limit the result to a single book for performance.
+        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, words) + "&limit=1";
+
+        fetchBook(context, url, fetchCovers, book);
+        return book;
+    }
 
     @Override
     public void cancel() {
@@ -434,7 +458,7 @@ public class OpenLibrary2SearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param book        Bundle to update
      *
-     * @throws IOException when fetching the Author details fails
+     * @throws IOException      when fetching the Author details fails
      * @throws StorageException on storage related failures
      */
     @VisibleForTesting
@@ -652,7 +676,7 @@ public class OpenLibrary2SearchEngine
      * @param a       array with author elements
      * @param book    destination
      *
-     * @throws IOException when fetching the Author details fails
+     * @throws IOException      when fetching the Author details fails
      * @throws StorageException on storage related failures
      */
     private void parseAuthors(@NonNull final Context context,
