@@ -157,9 +157,23 @@ public interface SearchEngine
      * @see ByText
      */
     enum SearchBy {
+        /**
+         * Search by a <strong>LOCALLY STORED</strong> external/website id.
+         * See the various {@code DBKey#SID_*} keys.
+         */
         ExternalId(ByExternalId.class),
+        /**
+         * Search with a <strong>VALID</strong> ISBN number.
+         */
         Isbn(ByIsbn.class),
+        /**
+         * Search with an <strong>INVALID</strong> ISBN number or actual barcode.
+         * i.e. a code which is specifically supported by the site.
+         */
         Barcode(ByBarcode.class),
+        /**
+         * Generic text search using (at least) title/author fields.
+         */
         Text(ByText.class);
 
         @NonNull
@@ -177,6 +191,8 @@ public interface SearchEngine
 
     /**
      * Optional.
+     * Search by a <strong>LOCALLY STORED</strong> external/website id.
+     * See the various {@code DBKey#SID_*} keys.
      *
      * @see SearchBy#ExternalId
      */
@@ -259,7 +275,14 @@ public interface SearchEngine
 
     /**
      * Optional.
-     * Implement if the engine can search generic bar codes, aside of strict ISBN only.
+     * Implement if the engine can search generic bar codes,
+     * or is known to store/support invalid ISBN numbers.
+     * <p>
+     * <strong>IMPORTANT</strong>: only use the default implementation
+     * if the engine's implementation of {@link ByIsbn} supports searching for non-valid
+     * ISBN codes as generic codes!
+     * Otherwise {@link #searchByBarcode(Context, String, boolean[])} <strong>MUST</strong>
+     * be properly implemented.
      *
      * @see SearchBy#Barcode
      */
@@ -268,7 +291,7 @@ public interface SearchEngine
 
         /**
          * Called by the {@link SearchCoordinator#search}.
-         *
+         * <p>
          * The default implementation redirect to
          * {@link SearchEngine.ByIsbn#searchByIsbn(Context, String, boolean[])}
          *
@@ -377,7 +400,7 @@ public interface SearchEngine
          * i.o.w.:
          * Engines which implement {@link AlternativeEditions} will collect a list of
          * potential {@link AltEdition}.
-         * These will then be passed to engines which implement {@link CoverByEdition}
+         * These will then be passed to engines which implement {@code CoverByEdition}
          * to fetch the covers if possible.
          * <p>
          * If the given {@link AltEdition} type is not supported, implementations of this method
