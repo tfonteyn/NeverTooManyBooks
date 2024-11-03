@@ -113,10 +113,11 @@ public class AmazonSearchEngine
     private static final String TAG = "AmazonSearchEngine";
 
     /**
-     * Search by ASIN. This is an absolute uri.
-     * Param 1: external book ID; the ASIN/ISBN10.
+     * Search by product id.
+     * <p>
+     * Param 1: ISBN13 or ASIN/ISBN10.
      */
-    private static final String BY_EXTERNAL_ID = "/gp/product/%1$s";
+    private static final String BY_PRODUCT_ID = "/gp/product/%1$s";
 
     /**
      * Parse "some text; more text (some more text)" into "some text" and "some more text".
@@ -137,6 +138,8 @@ public class AmazonSearchEngine
     private static final Pattern AUTHOR_TYPE_PATTERN =
             Pattern.compile("\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** Depending on the specific site, the labels translations we check for. */
     private static final String LABEL_FORMAT =
             // English, Dutch
             "hardcover,paperback"
@@ -246,27 +249,22 @@ public class AmazonSearchEngine
         return getLocale(context, getHostUrl(context));
     }
 
-    @NonNull
-    private Book genericSearch(@NonNull final Context context,
-                               @NonNull final String url,
-                               @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-        final Document document = loadDocument(context, url, null);
-
-        checkCaptcha(context, url, document);
-
-        final Book book = new Book();
-        if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
-        }
-        return book;
-    }
-
+    /**
+     * Check if we have been blocked by the captcha.
+     * If we are, this engine will be disabled.
+     * The user can re-enable it in the site settings.
+     *
+     * @param context  Current context
+     * @param url      the search url last used
+     * @param document to parse
+     *
+     * @throws SearchException if we were blocked
+     */
     private void checkCaptcha(@NonNull final Context context,
                               @NonNull final String url,
                               @NonNull final Document document)
             throws SearchException {
-        // FIXME: Amazon is blocking more and more... we'll have to stop supporting it soon.
+        // FIXME: Amazon captcha
         final Element block = document.selectFirst("form[action='/errors/validateCaptcha']");
         if (block != null) {
             if (BuildConfig.DEBUG /* always */) {
@@ -286,14 +284,20 @@ public class AmazonSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
+        // Try to convert an ISBN13 to ISBN10 (i.e. the ASIN)
         final ISBN tmp = new ISBN(validIsbn, true);
+        // If conversion is not possible, use the ISBN13 anyhow
         final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
-        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, asin);
 
+        final String url = getHostUrl(context) + String.format(BY_PRODUCT_ID, asin);
         return genericSearch(context, url, fetchCovers);
     }
 
+    /**
+     * Search by ASIN.
+     * <p>
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Book searchByBarcode(@NonNull final Context context,
@@ -302,12 +306,30 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
-            final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, barcode);
+            final String url = getHostUrl(context) + String.format(BY_PRODUCT_ID, barcode);
             return genericSearch(context, url, fetchCovers);
         } else {
-            // not supported
+            // Amazon only supports ISBN13 and ASIN codes
+            // Searching for valid ISBN numbers happens 'before' searching on barcodes,
+            // so we can/must just fail here due to an invalid code
             return new Book();
         }
+    }
+
+    @NonNull
+    private Book genericSearch(@NonNull final Context context,
+                               @NonNull final String url,
+                               @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        final Document document = loadDocument(context, url, null);
+
+        checkCaptcha(context, url, document);
+
+        final Book book = new Book();
+        if (!isCancelled()) {
+            parse(context, document, fetchCovers, book);
+        }
+        return book;
     }
 
     @NonNull
@@ -321,7 +343,7 @@ public class AmazonSearchEngine
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
             final String isbn = edition.getIsbn();
 
-            final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, isbn);
+            final String url = getHostUrl(context) + String.format(BY_PRODUCT_ID, isbn);
             final Document document = loadDocument(context, url, null);
 
             checkCaptcha(context, url, document);
