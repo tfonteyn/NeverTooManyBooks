@@ -269,6 +269,9 @@ public interface SearchEngine
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
+         * The default implementation redirect to
+         * {@link SearchEngine.ByIsbn#searchByIsbn(Context, String, boolean[])}
+         *
          * @param context     Current context
          * @param barcode     to search for, <strong>will</strong> be valid.
          * @param fetchCovers Set to {@code true} if we want to get covers
@@ -282,12 +285,14 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        Book searchByBarcode(@NonNull Context context,
-                             @NonNull String barcode,
-                             @NonNull boolean[] fetchCovers)
+        default Book searchByBarcode(@NonNull final Context context,
+                                     @NonNull final String barcode,
+                                     @NonNull final boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
-                       CredentialsException;
+                       CredentialsException {
+            return searchByIsbn(context, barcode, fetchCovers);
+        }
     }
 
     /**

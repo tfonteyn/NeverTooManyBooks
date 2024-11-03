@@ -265,17 +265,6 @@ public class StripInfoSearchEngine
         processBarcode(validIsbn, book);
     }
 
-    @NonNull
-    @Override
-    public Book searchByBarcode(@NonNull final Context context,
-                                @NonNull final String barcode,
-                                @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-        // the search url is the same but we need to specifically support barcodes
-        // to allow non-isbn codes.
-        return searchByIsbn(context, barcode, fetchCovers);
-    }
-
     private boolean isMultiResult(@NonNull final Document document) {
         return document.title().startsWith(MULTI_RESULT_PAGE_TITLE);
     }

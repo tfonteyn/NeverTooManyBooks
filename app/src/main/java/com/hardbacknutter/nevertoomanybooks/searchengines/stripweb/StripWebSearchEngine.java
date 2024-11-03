@@ -59,6 +59,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * <a href="https://www.stripweb.be">StripWeb</a>
+ * <p>
+ * The site also sells comic related merchandise, which has a site-specific code
+ * and can be searched as a generic code.
+ * The site treats this as a plain (but invalid) ISBN code.
+ */
 public class StripWebSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByText,
@@ -104,18 +111,6 @@ public class StripWebSearchEngine
     @NonNull
     private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
         return AuthorResolverFactory.getResolvers(context, this);
-    }
-
-    @NonNull
-    @Override
-    public Book searchByBarcode(@NonNull final Context context,
-                                @NonNull final String barcode,
-                                @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-        // The site also sells comic related merchandise, which has a site-specific code
-        // and can be searched as a generic code.
-        // The site treats this as a plain (but invalid) ISBN code.
-        return searchByIsbn(context, barcode, fetchCovers);
     }
 
     @NonNull
