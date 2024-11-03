@@ -23,8 +23,9 @@ Draft notes for next version:
 NEW:
 - Complete rewrite of the Google-Books site support. Supports more fields,
   multiple sizes of cover lookup, ...
-- Dnb, LastDodo, StripWeb sites: added support for searching "by text"
-- Searching for book "by text" now supports series/nr and publisher fields.
+- Dnb, LastDodo, StripWeb sites: now supporting searching "by title"
+- LastDodo now supports barcode and invalid-isbn searches
+- Searching for books "by title" now supports series/nr and publisher fields.
   Actual usage during a search depends on the site searched.
 
 FIXES:
