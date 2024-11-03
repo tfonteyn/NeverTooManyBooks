@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,9 +59,9 @@ public class ReaderResults
     /** The total #books that were present in the import data. */
     public int booksProcessed;
     /** #books we created. */
-    public int booksCreated;
+    private int booksCreated;
     /** #books we updated. */
-    public int booksUpdated;
+    private int booksUpdated;
     /** #books we deleted. */
     public int booksDeleted;
     /** #books we skipped for NON-failure reasons. */
@@ -128,6 +128,22 @@ public class ReaderResults
         coversDeleted += results.coversDeleted;
         coversSkipped += results.coversSkipped;
         coversFailed += results.coversFailed;
+    }
+
+    public void bookCreated(final long id) {
+        booksCreated++;
+    }
+
+    public int getBooksCreated() {
+        return booksCreated;
+    }
+
+    public void bookUpdated(final long id) {
+        booksUpdated++;
+    }
+
+    public int getBooksUpdated() {
+        return booksUpdated;
     }
 
     /**

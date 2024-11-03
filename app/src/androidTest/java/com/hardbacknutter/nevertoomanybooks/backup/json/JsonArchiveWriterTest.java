@@ -193,8 +193,8 @@ public class JsonArchiveWriterTest
         assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
         // we re-created the deleted book
-        assertEquals(1, importResults.booksCreated);
-        assertEquals(0, importResults.booksUpdated);
+        assertEquals(1, importResults.getBooksCreated());
+        assertEquals(0, importResults.getBooksUpdated());
         // we skipped the updated book
         assertEquals(exportResults.getBookCount() - 1, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
@@ -208,9 +208,9 @@ public class JsonArchiveWriterTest
         assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
 
-        assertEquals(0, importResults.booksCreated);
+        assertEquals(0, importResults.getBooksCreated());
         // we did an overwrite of ALL books
-        assertEquals(bookInDb, importResults.booksUpdated);
+        assertEquals(bookInDb, importResults.getBooksUpdated());
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);

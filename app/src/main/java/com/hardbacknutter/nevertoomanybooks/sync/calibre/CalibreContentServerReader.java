@@ -544,7 +544,7 @@ public class CalibreContentServerReader
         if (delta != null) {
             bookDao.update(context, delta, EnumSet.of(BookDao.BookFlag.RunInBatch,
                                                       BookDao.BookFlag.UseUpdateDateIfPresent));
-            results.booksUpdated++;
+            results.bookUpdated(book.getId());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                 LoggerFactory.getLogger()
@@ -567,8 +567,8 @@ public class CalibreContentServerReader
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
-        bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
-        results.booksCreated++;
+        final long id = bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
+        results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             LoggerFactory.getLogger()

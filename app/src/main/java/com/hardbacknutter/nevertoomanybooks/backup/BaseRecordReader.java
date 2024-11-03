@@ -167,9 +167,10 @@ public abstract class BaseRecordReader
         final long preImportId = book.getId();
 
         // explicitly allow the id to be reused if present
-        bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch,
-                                                 BookDao.BookFlag.UseIdIfPresent));
-        results.booksCreated++;
+        final long id = bookDao.insert(context, book,
+                                       EnumSet.of(BookDao.BookFlag.RunInBatch,
+                                                  BookDao.BookFlag.UseIdIfPresent));
+        results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "insertBook",
@@ -239,7 +240,7 @@ public abstract class BaseRecordReader
             throws StorageException, DaoWriteException {
         bookDao.update(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch,
                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
-        results.booksUpdated++;
+        results.bookUpdated(book.getId());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
             LoggerFactory.getLogger()

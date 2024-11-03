@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,8 +138,8 @@ public class ZipArchiveWriterTest
         assertEquals(expectedNrOfBooks, importResults.booksProcessed);
 
         // ImportHelper.Updates.OnlyNewer ... so we don't actually import anything
-        assertEquals(0, importResults.booksCreated);
-        assertEquals(0, importResults.booksUpdated);
+        assertEquals(0, importResults.getBooksCreated());
+        assertEquals(0, importResults.getBooksUpdated());
         // We skipped all of them
         assertEquals(expectedNrOfBooks, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);

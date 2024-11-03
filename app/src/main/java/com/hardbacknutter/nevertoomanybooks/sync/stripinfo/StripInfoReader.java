@@ -407,8 +407,8 @@ public class StripInfoReader
         final String preImportUuid = book.getString(DBKey.BOOK_UUID, null);
         final long preImportId = book.getId();
 
-        bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
-        results.booksCreated++;
+        final long id = bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
+        results.bookCreated(id);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "insertBook",
@@ -421,12 +421,12 @@ public class StripInfoReader
 
     private void updateBook(@NonNull final Context context,
                             final long externalId,
-                            final Book book,
-                            final Book delta)
+                            @NonNull final Book book,
+                            @NonNull final Book delta)
             throws StorageException, DaoWriteException {
         bookDao.update(context, delta, EnumSet.of(BookDao.BookFlag.RunInBatch,
                                                   BookDao.BookFlag.UseUpdateDateIfPresent));
-        results.booksUpdated++;
+        results.bookUpdated(book.getId());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "updateBook", updateOption,

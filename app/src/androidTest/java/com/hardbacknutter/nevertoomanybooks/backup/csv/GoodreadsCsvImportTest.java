@@ -125,8 +125,8 @@ public class GoodreadsCsvImportTest
         importResults = importHelper.read(context, new TestProgressListener(TAG));
 
         assertEquals(22, importResults.booksProcessed);
-        assertEquals(22, importResults.booksCreated);
-        assertEquals(0, importResults.booksUpdated);
+        assertEquals(22, importResults.getBooksCreated());
+        assertEquals(0, importResults.getBooksUpdated());
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
         assertEquals(booksPresent + 22, bookDao.count());

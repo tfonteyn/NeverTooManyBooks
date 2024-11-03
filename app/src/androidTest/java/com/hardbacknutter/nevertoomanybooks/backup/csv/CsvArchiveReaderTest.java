@@ -121,8 +121,8 @@ public class CsvArchiveReaderTest
         importResults = importHelper.read(context, new TestProgressListener(TAG));
 
         assertEquals(4, importResults.booksProcessed);
-        assertEquals(4, importResults.booksCreated);
-        assertEquals(0, importResults.booksUpdated);
+        assertEquals(4, importResults.getBooksCreated());
+        assertEquals(0, importResults.getBooksUpdated());
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
 
@@ -148,8 +148,8 @@ public class CsvArchiveReaderTest
         importResults = importHelper.read(context, new TestProgressListener(TAG));
 
         assertEquals(4, importResults.booksProcessed);
-        assertEquals(1, importResults.booksCreated);
-        assertEquals(3, importResults.booksUpdated);
+        assertEquals(1, importResults.getBooksCreated());
+        assertEquals(3, importResults.getBooksUpdated());
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
         assertEquals(booksPresent + 4, bookDao.count());
@@ -179,8 +179,8 @@ public class CsvArchiveReaderTest
             importResults = importHelper.read(context, new TestProgressListener(TAG));
 
             assertEquals(4, importResults.booksProcessed);
-            assertEquals(3, importResults.booksCreated);
-            assertEquals(0, importResults.booksUpdated);
+            assertEquals(3, importResults.getBooksCreated());
+            assertEquals(0, importResults.getBooksUpdated());
             assertEquals(1, importResults.booksSkipped);
             assertEquals(0, importResults.booksFailed);
             assertEquals(booksPresent + 4, bookDao.count());
@@ -204,8 +204,8 @@ public class CsvArchiveReaderTest
             importResults = importHelper.read(context, new TestProgressListener(TAG));
 
             assertEquals(4, importResults.booksProcessed);
-            assertEquals(0, importResults.booksCreated);
-            assertEquals(4, importResults.booksUpdated);
+            assertEquals(0, importResults.getBooksCreated());
+            assertEquals(4, importResults.getBooksUpdated());
             assertEquals(0, importResults.booksSkipped);
             assertEquals(0, importResults.booksFailed);
             assertEquals(booksPresent + 4, bookDao.count());
