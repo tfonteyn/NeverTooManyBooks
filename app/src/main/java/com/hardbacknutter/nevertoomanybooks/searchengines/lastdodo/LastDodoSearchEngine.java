@@ -61,10 +61,13 @@ import org.jsoup.select.Elements;
 
 /**
  * Current hardcoded to only search comics; could be extended to also search generic books.
+ * <p>
+ * {@link SearchEngine.ByBarcode}: for barcodes (explicitly supported by the site
+ * and invalid ISBN numbers (which the site stores as-is on purpose)
  */
 public class LastDodoSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn,
+        implements SearchEngine.ByBarcode,
                    SearchEngine.ByText,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
