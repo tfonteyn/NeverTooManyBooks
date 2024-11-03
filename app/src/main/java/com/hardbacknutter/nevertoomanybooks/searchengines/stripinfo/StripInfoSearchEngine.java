@@ -85,6 +85,12 @@ import org.jsoup.select.Elements;
  * <p>
  * {@link SearchEngine.ByBarcode}: for barcodes (explicitly supported by the site
  * and invalid ISBN numbers (which the site stores as-is on purpose)
+ * <p>
+ * ENHANCE: check if we can implement {@link SearchEngine.AlternativeEditions}
+ * and consequently {@link SearchEngine.CoverByEdition}
+ * Comics re-published by a different publisher do have different ISBN's.
+ * We need to check if there is a way of finding those alternative ISBN numbers.
+ * Same remark for LastDodo
  */
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
