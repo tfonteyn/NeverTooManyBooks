@@ -62,6 +62,7 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.stripweb.be">StripWeb</a>
  * <p>
+ * {@link SearchEngine.ByBarcode}: for barcodes and invalid ISBN numbers
  * The site also sells comic related merchandise, which has a site-specific code
  * and can be searched as a generic code.
  * The site treats this as a plain (but invalid) ISBN code.

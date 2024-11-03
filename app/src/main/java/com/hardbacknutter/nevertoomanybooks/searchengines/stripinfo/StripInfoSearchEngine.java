@@ -82,6 +82,9 @@ import org.jsoup.select.Elements;
  * which it will then use to search in distinct columns and list the results in a table
  * with the results in different areas.
  * (try the site to see what the above means...)
+ * <p>
+ * {@link SearchEngine.ByBarcode}: for barcodes (explicitly supported by the site
+ * and invalid ISBN numbers (which the site stores as-is on purpose)
  */
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
