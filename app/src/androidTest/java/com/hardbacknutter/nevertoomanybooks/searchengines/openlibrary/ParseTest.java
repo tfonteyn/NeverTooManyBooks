@@ -49,17 +49,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Test for the newer {@link OpenLibrary2SearchEngine} implementation.
- * <p>
- * This test will obviously fail if {@link EngineId#OpenLibrary}
- * is not configured to use {@link OpenLibrary2SearchEngine}.
- */
 @SuppressWarnings("MissingJavadoc")
-public class Parse2Test
+public class ParseTest
         extends BaseDBTest {
 
-    private static final String TAG = "Parse2Test";
+    private static final String TAG = "ParseTest";
 
     private OpenLibrary2SearchEngine searchEngine;
 
@@ -70,6 +64,9 @@ public class Parse2Test
 
         searchEngine = (OpenLibrary2SearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
     }
 
     @NonNull
