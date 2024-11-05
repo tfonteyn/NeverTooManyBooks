@@ -73,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -337,7 +338,8 @@ public class JsonRecordReader
         final JSONObject jsonRoot = root.optJSONObject(RecordType.Preferences.getName());
         if (jsonRoot != null) {
             // The coder itself will set/update the values directly.
-            new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context))
+            new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context),
+                                       Prefs.IGNORED_DURING_IMPORT)
                     .decode(jsonRoot);
             // Migrate/remove any obsolete keys
             DBHelper.migratePreferenceKeys(context);
