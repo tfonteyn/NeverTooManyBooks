@@ -106,21 +106,21 @@ public class FutureHttpGetBase<T>
         }
 
         while (retry > 0) {
+            // Preserve for a potential manual redirect
+            String requestUrlStr = initialRequest.getURL().toString();
+
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "connect", "url=" + requestUrlStr);
+            }
+
+            HttpURLConnection req = initialRequest;
+
             //noinspection OverlyBroadCatchBlock
             try {
+                // Initial try
                 if (throttler != null) {
                     throttler.waitUntilRequestAllowed();
                 }
-
-                // Preserve for potential enable404Redirect
-                String requestUrlStr = initialRequest.getURL().toString();
-
-                if (isLoggingEnabled()) {
-                    LoggerFactory.getLogger().d(TAG, "connect", "url=" + requestUrlStr);
-                }
-
-                HttpURLConnection req = initialRequest;
-                // Initial try
                 req.connect();
 
                 redirectCount = 0;
