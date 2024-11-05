@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -66,7 +65,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings({"TypeMayBeWeakened",
+@SuppressWarnings({
         "MismatchedQueryAndUpdateOfCollection",
         "MismatchedReadAndWriteOfArray",
         "OverlyBroadThrowsClause",
@@ -103,9 +102,6 @@ public class BookTest
         super.setup();
 
         coverStorage = serviceLocator.getCoverStorage();
-
-        final int actualVolume = CoverVolume.initVolume(context, 0);
-        assertEquals(0, actualVolume);
 
         final File coverDir = coverStorage.getDir();
         assertNotNull("Need a cover directory", coverDir);

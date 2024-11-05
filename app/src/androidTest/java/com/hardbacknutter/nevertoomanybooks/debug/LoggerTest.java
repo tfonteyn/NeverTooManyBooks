@@ -29,7 +29,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.util.logger.FileLogger;
 
 import org.junit.Test;
@@ -37,7 +36,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
+@SuppressWarnings({"MissingJavadoc", "OverlyBroadThrowsClause"})
 @SmallTest
 public class LoggerTest {
 
@@ -56,8 +55,6 @@ public class LoggerTest {
         }
 
         final FileLogger logger = new FileLogger(logDir, "test.log");
-
-        CoverVolume.initVolume(context, 0);
 
         FileUtils.deleteDirectory(logDir, null);
 
