@@ -180,7 +180,7 @@ public class JsoupLoader {
                 // Getting a 404 here is usually NOT an actual problem.
                 // We don't want to change the http response checker for debugging reason,
                 // but we DO change the message here:
-                e.setUserMessage(context.getString(R.string.warning_book_not_found));
+                e.setLocalizedMessage(context.getString(R.string.warning_book_not_found));
                 throw e;
 
             } catch (@NonNull final StorageException e) {

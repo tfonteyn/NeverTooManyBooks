@@ -53,8 +53,9 @@ public class HttpNotFoundException
         super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url, location);
     }
 
+    @Override
     @Nullable
-    public String getUserMessage() {
+    public String getLocalizedMessage() {
         return localisedMessage;
     }
 
@@ -63,7 +64,7 @@ public class HttpNotFoundException
      *
      * @param message to use
      */
-    public void setUserMessage(@NonNull final String message) {
+    public void setLocalizedMessage(@NonNull final String message) {
         this.localisedMessage = message;
     }
 }

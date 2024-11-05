@@ -184,7 +184,7 @@ public final class ExMsg {
             return context.getString(R.string.error_network_failed_try_again);
         } else if (e instanceof HttpNotFoundException) {
             final HttpNotFoundException he = (HttpNotFoundException) e;
-            final String msg = he.getUserMessage();
+            final String msg = he.getLocalizedMessage();
             if (msg != null) {
                 return msg;
             }
