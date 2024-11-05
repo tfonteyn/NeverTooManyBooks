@@ -36,6 +36,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 class Transformation {
@@ -295,8 +296,9 @@ class Transformation {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
 
-        // Abort if no size info, or to small to be any good.
-        if (CoverStorage.isTooSmall(options)) {
+        // Abort if no size info, or if the image is too small to be used.
+        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
+        if (!coverStorage.isAcceptableSize(options)) {
             return null;
         }
 

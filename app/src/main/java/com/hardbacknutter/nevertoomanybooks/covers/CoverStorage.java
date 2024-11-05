@@ -162,6 +162,18 @@ public class CoverStorage {
 
     /**
      * Check if a file is an image with an acceptable size.
+     *
+     * @param options of which the height/width will be checked
+     *
+     * @return {@code true} if the image is acceptable.
+     */
+    boolean isAcceptableSize(@NonNull final BitmapFactory.Options options) {
+        return options.outHeight >= MIN_VALID_IMAGE_SIDE
+               && options.outWidth >= MIN_VALID_IMAGE_SIDE;
+    }
+
+    /**
+     * Check if a file is an image with an acceptable size.
      * <p>
      * This is a slow check, use only when import/saving.
      * When displaying do a simple {@code srcFile.exists()} instead.
@@ -188,14 +200,12 @@ public class CoverStorage {
         opt.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
 
-        // minimal size required
-        final boolean tooSmall = isTooSmall(opt);
-
-        // cleanup bad files.
-        if (tooSmall) {
-            FileUtils.delete(srcFile);
+        if (isAcceptableSize(opt)) {
+            return true;
         }
-        return !tooSmall;
+
+        FileUtils.delete(srcFile);
+        return false;
     }
 
     /**
