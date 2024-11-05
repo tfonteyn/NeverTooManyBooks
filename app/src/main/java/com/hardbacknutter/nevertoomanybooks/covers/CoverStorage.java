@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.provider.MediaStore;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -79,7 +80,7 @@ public class CoverStorage {
     private static final String PK_CACHE_RESIZED_IMAGES = "image.cache.resized";
 
     /** Sub directory of the Covers directory. */
-    static final String TMP_SUB_DIR = "tmp";
+    private static final String TMP_SUB_DIR = "tmp";
 
     private static final String TAG = "CoverStorage";
     /** The minimum side (height/width) an image must be to be considered valid; in pixels. */
@@ -108,38 +109,6 @@ public class CoverStorage {
         this.coverCacheDaoSupplier = coverCacheDaoSupplier;
     }
 
-    static boolean isTooSmall(@NonNull final BitmapFactory.Options opt) {
-        return opt.outHeight < MIN_VALID_IMAGE_SIDE || opt.outWidth < MIN_VALID_IMAGE_SIDE;
-    }
-
-    /**
-     * Get the <strong>permanent</strong> directory where we store covers.
-     *
-     * @param context Current context
-     *
-     * @return directory
-     *
-     * @throws CoverStorageException The covers directory is not available
-     */
-    @NonNull
-    static File getDir(@NonNull final Context context)
-            throws CoverStorageException {
-
-        final int volume = CoverVolume.getVolume(context);
-
-        final File[] externalFilesDirs =
-                context.getExternalFilesDirs(Environment.DIRECTORY_PICTURES);
-
-        if (externalFilesDirs == null
-            || externalFilesDirs.length < volume
-            || externalFilesDirs[volume] == null
-            || !externalFilesDirs[volume].exists()) {
-            throw new CoverStorageException("Failed to access covers on volume: " + volume);
-        }
-
-        return externalFilesDirs[volume];
-    }
-
     @NonNull
     private static String createName(@NonNull final String uuid,
                                      @IntRange(from = 0, to = 1) final int cIdx) {
@@ -152,11 +121,51 @@ public class CoverStorage {
         return name;
     }
 
-    @NonNull
-    private VersionedFileService getVersionedFileService()
+    /**
+     * (Re)Initialize storage needs using the configured volume.
+     * <p>
+     * This method is called during startup, and when/if the user changes the cover volume
+     * in the preferences.
+     *
+     * @throws CoverStorageException The covers directory is not available
+     */
+    public void initDir()
             throws CoverStorageException {
-        // Don't cache... the backup directory depends on the .getExternalFilesDirs()
-        // which can change (i.e. when the user uses a replaceable sdcard)
+
+        final File coverDir = getDir();
+
+        // Prevent thumbnails showing up in the device Image Gallery.
+        final File mif = new File(coverDir, MediaStore.MEDIA_IGNORE_FILENAME);
+        if (!mif.exists()) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                mif.createNewFile();
+            } catch (@NonNull final IOException | SecurityException e) {
+                throw new CoverStorageException("Failed to write Pictures/.nomedia", e);
+            }
+        }
+
+        // Create the temporary sub directory if not done yet
+        final File tmpDir = new File(coverDir, TMP_SUB_DIR);
+        if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
+            throw new CoverStorageException("Failed to create covers directory: Pictures/tmp");
+        }
+    }
+
+    /**
+     * Create a {@link VersionedFileService} for the temporary directory.
+     * <p>
+     * <strong>Do NOT cache</strong>: the directory depends on
+     * {@link Context#getExternalFilesDirs(String)} which can change
+     * (e.g. when the user uses a replaceable sdcard).
+     *
+     * @return service
+     *
+     * @throws CoverStorageException on any error
+     */
+    @NonNull
+    private VersionedFileService createVersionedFileService()
+            throws CoverStorageException {
         return new VersionedFileService(getTempDir(), 1);
     }
 
@@ -178,11 +187,11 @@ public class CoverStorage {
      * This is a slow check, use only when import/saving.
      * When displaying do a simple {@code srcFile.exists()} instead.
      * <p>
-     * <strong>If the file is not acceptable, then it will be deleted.</strong>
+     * <strong>If the image is not acceptable, then the file will be deleted.</strong>
      *
      * @param srcFile to check
      *
-     * @return {@code true} if file is acceptable.
+     * @return {@code true} if image is acceptable.
      */
     @AnyThread
     public boolean isAcceptableSize(@Nullable final File srcFile) {
@@ -214,12 +223,26 @@ public class CoverStorage {
      * @return directory
      *
      * @throws CoverStorageException The covers directory is not available
-     * @see CoverStorage#getDir(Context)
      */
     @NonNull
     public File getDir()
             throws CoverStorageException {
-        return getDir(appContextSupplier.get());
+
+        final Context context = appContextSupplier.get();
+
+        final int volume = CoverVolume.getVolume(context);
+
+        final File[] externalFilesDirs = context
+                .getExternalFilesDirs(Environment.DIRECTORY_PICTURES);
+
+        if (externalFilesDirs == null
+            || externalFilesDirs.length <= volume
+            || externalFilesDirs[volume] == null
+            || !externalFilesDirs[volume].exists()) {
+            throw new CoverStorageException("Failed to access covers on volume: " + volume);
+        }
+
+        return externalFilesDirs[volume];
     }
 
     /**
@@ -268,7 +291,7 @@ public class CoverStorage {
 
         final File coverDir;
         try {
-            coverDir = getDir(appContextSupplier.get());
+            coverDir = getDir();
         } catch (@NonNull final CoverStorageException e) {
             return Optional.empty();
         }
@@ -333,7 +356,8 @@ public class CoverStorage {
             throws IOException, CoverStorageException {
 
         final String name = createName(uuid, cIdx) + EXT_JPG;
-        final File destination = new File(getDir(appContextSupplier.get()), name);
+        final File coverDir = getDir();
+        final File destination = new File(coverDir, name);
 
         return persist(source, destination);
     }
@@ -392,7 +416,7 @@ public class CoverStorage {
             throws CoverStorageException, IOException {
         try {
             if (isUndoEnabled()) {
-                getVersionedFileService().save(destination);
+                createVersionedFileService().save(destination);
             }
             FileUtils.rename(source, destination);
             return destination;
@@ -445,7 +469,7 @@ public class CoverStorage {
             final File file = persistedFile.get();
             if (isUndoEnabled()) {
                 try {
-                    getVersionedFileService().save(file);
+                    createVersionedFileService().save(file);
                 } catch (@NonNull final CoverStorageException e) {
                     LoggerFactory.getLogger().e(TAG, e);
                 }
@@ -481,7 +505,7 @@ public class CoverStorage {
 
         final File coverDir;
         try {
-            coverDir = getDir(appContextSupplier.get());
+            coverDir = getDir();
         } catch (@NonNull final CoverStorageException e) {
             return false;
         }
@@ -491,7 +515,7 @@ public class CoverStorage {
         final String name = createName(uuid, cIdx) + EXT_JPG;
 
         try {
-            return getVersionedFileService().restore(new File(coverDir, name));
+            return createVersionedFileService().restore(new File(coverDir, name));
         } catch (@NonNull final CoverStorageException ignore) {
             return false;
         }
@@ -514,7 +538,7 @@ public class CoverStorage {
 
         final File coverDir;
         try {
-            coverDir = getDir(appContextSupplier.get());
+            coverDir = getDir();
         } catch (@NonNull final CoverStorageException e) {
             return false;
         }
@@ -524,7 +548,7 @@ public class CoverStorage {
         final String name = createName(uuid, cIdx) + EXT_JPG;
 
         try {
-            return getVersionedFileService().hasBackup(new File(coverDir, name));
+            return createVersionedFileService().hasBackup(new File(coverDir, name));
         } catch (@NonNull final CoverStorageException ignore) {
             return false;
         }

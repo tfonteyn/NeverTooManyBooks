@@ -25,8 +25,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.provider.Settings;
 import android.text.Spannable;
@@ -52,16 +50,15 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -248,6 +245,9 @@ public class SettingsFragment
      * {@link CoverVolume#PK_VOLUME_INDEX} preference.
      */
     private class StorageVolumeHelper {
+        private static final int OPTION_USE = 0;
+        private static final int OPTION_MOVE = 1;
+
         @NonNull
         private final Context context;
         private final ListPreference storageVolumePref;
@@ -263,14 +263,7 @@ public class SettingsFragment
             this.storageVolumePref.setSummaryProvider(
                     ListPreference.SimpleSummaryProvider.getInstance());
 
-            final StorageManager storage = (StorageManager)
-                    this.context.getSystemService(Context.STORAGE_SERVICE);
-
-            final List<StorageVolume> storageVolumes =
-                    storage.getStorageVolumes()
-                           .stream()
-                           .filter(sv -> Environment.MEDIA_MOUNTED.equals(sv.getState()))
-                           .collect(Collectors.toList());
+            final List<StorageVolume> storageVolumes = CoverVolume.getAvailable(context);
 
             final int max = storageVolumes.size();
             final CharSequence[] entries = new CharSequence[max];
@@ -312,11 +305,13 @@ public class SettingsFragment
                 final CharSequence oldVolumeDesc = storageVolumePref.getEntries()[oldVolumeIndex];
 
                 final CharSequence[] items = {
+                        // OPTION_USE
                         context.getString(R.string.option_storage_select, newVolumeDesc),
+                        // OPTION_MOVE
                         context.getString(R.string.option_moving_covers_from_x_to_y,
                                           oldVolumeDesc, newVolumeDesc)};
                 // default to option_moving_covers_from_x_to_y
-                volumeChangedOptionChosen = 1;
+                volumeChangedOptionChosen = OPTION_MOVE;
 
                 new MaterialAlertDialogBuilder(context)
                         .setIcon(R.drawable.warning_24px)
@@ -339,11 +334,11 @@ public class SettingsFragment
         private void onVolumeChangedOptionChosen(final int oldVolumeIndex,
                                                  final int newVolumeIndex) {
             switch (volumeChangedOptionChosen) {
-                case 0: {
+                case OPTION_USE: {
                     setStorageVolume(newVolumeIndex);
                     break;
                 }
-                case 1: {
+                case OPTION_MOVE: {
                     // check space and start the task
                     if (!vm.moveData(context, oldVolumeIndex, newVolumeIndex)) {
                         //noinspection DataFlowIssue
@@ -357,16 +352,29 @@ public class SettingsFragment
             }
         }
 
+        /**
+         * Update the screen and sets the actual preference value,
+         * i.o.w. the value for {@link CoverVolume#PK_VOLUME_INDEX},
+         * and init the new volume/directory.
+         *
+         * @param volume index to store/use
+         *
+         * @return {@code true} on success
+         */
         private boolean setStorageVolume(final int volume) {
             storageVolumePref.setValue(String.valueOf(volume));
             //noinspection OverlyBroadCatchBlock
             try {
-                CoverVolume.initVolume(context, volume);
+                // Init the newly configured volume
+                ServiceLocator.getInstance().getCoverStorage().initDir();
                 vm.setOnBackRequiresActivityRecreation();
                 return true;
 
             } catch (@NonNull final StorageException e) {
                 // This should never happen... flw
+                // To get here the user would have to have displayed the dialog,
+                // manually removed the SDCARD
+                // and then choose the removed SDCARD from the dialog.
                 ErrorDialog.show(context, TAG, e);
                 return false;
             }

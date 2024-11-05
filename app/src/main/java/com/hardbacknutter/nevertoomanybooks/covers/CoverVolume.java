@@ -24,23 +24,23 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
-import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * The movable external volume for covers.
+ * <p>
+ * This class encapsulates interactions with {@code Context.STORAGE_SERVICE}
+ * and the preferences for the volume to use.
  * <p>
  * <strong>Dev. note:</strong> A device might have two (or seldom? more) external
  * file directories of the same type.
@@ -80,104 +80,13 @@ public final class CoverVolume {
     }
 
     /**
-     * Get the currently configured (user preferred) volume.
-     *
-     * @param context Current context
-     *
-     * @return the volume
-     */
-    public static int getVolumeIndex(@NonNull final Context context) {
-        return IntListPref.getInt(context, PK_VOLUME_INDEX, 0);
-    }
-
-    /**
-     * Initialize storage needs.
-     * <p>
-     * Dev note: if the desired volume index is not found, then we revert to '0'.
-     * Hence the return value will either be the desired==actual volume or '0'.
-     *
-     * @param context Current context
-     * @param volume  the desired volume
-     *
-     * @return the actual volume
-     *
-     * @throws CoverStorageException The covers directory is not available
-     */
-    public static int initVolume(@NonNull final Context context,
-                                 final int volume)
-            throws CoverStorageException {
-
-        final StorageManager storage = (StorageManager)
-                context.getSystemService(Context.STORAGE_SERVICE);
-        final int actualVolume = getActualVolume(storage, volume);
-
-        if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "initVolume", "volume=" + volume
-                                               + "|actualVolume=" + actualVolume);
-            dumpStorageInfo(context, storage);
-        }
-
-        // Make sure we can get the directory, no need to create.
-        final File coverDir = CoverStorage.getDir(context);
-
-        // Prevent thumbnails showing up in the device Image Gallery.
-        final File mif = new File(coverDir, MediaStore.MEDIA_IGNORE_FILENAME);
-        if (!mif.exists()) {
-            try {
-                //noinspection ResultOfMethodCallIgnored
-                mif.createNewFile();
-            } catch (@NonNull final IOException | SecurityException e) {
-                throw new CoverStorageException("Failed to write Pictures/.nomedia", e);
-            }
-        }
-
-        // Make sure we can get the directory, and create the sub directory if needed
-        final File tmpDir = new File(coverDir, CoverStorage.TMP_SUB_DIR);
-        if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
-            throw new CoverStorageException("Failed to create covers directory: Pictures/tmp");
-        }
-
-        return actualVolume;
-    }
-
-    private static int getActualVolume(@NonNull final StorageManager storage,
-                                       final int volume) {
-        final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
-
-        final int actualVolume;
-        if (volume >= storageVolumes.size()) {
-            // The most obvious issue:
-            // Storage was configured to be on SDCARD (index==1),
-            // but the SDCARD was ejected AND removed.
-            // We set "0" and go ahead for now, so at least we get a valid Log folder.
-            actualVolume = 0;
-
-        } else if (!Environment.MEDIA_MOUNTED.equals(storageVolumes.get(volume).getState())) {
-            // The second most obvious issue:
-            // Storage was configured to be on SDCARD (index==1),
-            // but the SDCARD was eject and NOT removed: status wil be MEDIA_UNMOUNTED.
-            // There are plenty of other possible issues but they are not as easy to handle
-            // so we won't...
-            // We set "0" and go ahead for now, so at least we get a valid Log folder.
-            actualVolume = 0;
-
-        } else {
-            //FIXME: add one more, elaborate, check for situations where the SDCARD was REPLACED.
-            // all fine.
-            actualVolume = volume;
-        }
-        return actualVolume;
-    }
-
-    /**
      * Set the user preferred volume.
      *
      * @param context Current context
      * @param volume  to set
      */
-    public static void setVolumeIndex(@NonNull final Context context,
-                                      final int volume) {
+    public static void setVolume(@NonNull final Context context,
+                                 final int volume) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          .putString(PK_VOLUME_INDEX, String.valueOf(volume))
@@ -185,18 +94,106 @@ public final class CoverVolume {
     }
 
     /**
-     * Get the user preferred volume.
+     * Get the currently configured (user preferred) volume.
      *
      * @param context Current context
      *
      * @return the volume
      */
     public static int getVolume(@NonNull final Context context) {
-        return IntListPref.getInt(context, Prefs.PK_STORAGE_VOLUME, 0);
+        return IntListPref.getInt(context, PK_VOLUME_INDEX, 0);
+    }
+
+    /**
+     * Check if the given volume index exists and is mounted/accessible.
+     *
+     * @param context Current context
+     * @param volume  of the volume
+     *
+     * @return flag
+     */
+    public static boolean isAvailable(@NonNull final Context context,
+                                      final int volume) {
+        final StorageManager manager = (StorageManager)
+                context.getSystemService(Context.STORAGE_SERVICE);
+
+        final List<StorageVolume> storageVolumes = manager.getStorageVolumes();
+
+        final boolean available;
+        if (volume >= storageVolumes.size()) {
+            // The most obvious issue:
+            // Storage was configured to be on SDCARD (index==1),
+            // but the SDCARD was ejected AND removed.
+            available = false;
+
+        } else //noinspection RedundantIfStatement
+            if (!Environment.MEDIA_MOUNTED.equals(storageVolumes.get(volume).getState())) {
+                // The second most obvious issue:
+                // Storage was configured to be on SDCARD (index==1),
+                // but the SDCARD was eject and NOT removed: status wil be MEDIA_UNMOUNTED.
+                // There are plenty of other possible issues but they are not as easy to handle
+                // so we won't...
+                available = false;
+
+            } else {
+                //FIXME: add one more, elaborate, check for situations
+                // where the SDCARD was REPLACED.
+                available = true;
+            }
+
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, "isAvailable",
+                                        "volumeWanted=" + volume
+                                        + "|available=" + available);
+            dumpStorageInfo(context, manager);
+        }
+
+        return available;
+    }
+
+    /**
+     * Get the list of available/mounted volumes.
+     *
+     * @param context Current context
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<StorageVolume> getAvailable(@NonNull final Context context) {
+        final StorageManager storage = (StorageManager)
+                context.getSystemService(Context.STORAGE_SERVICE);
+
+        return storage.getStorageVolumes()
+                      .stream()
+                      .filter(sv -> Environment.MEDIA_MOUNTED.equals(sv.getState()))
+                      .collect(Collectors.toList());
+    }
+
+    /**
+     * Get a reference to the volume at the given index.
+     *
+     * @param context Current context
+     * @param volume  of the volume
+     *
+     * @return volume
+     *
+     * @throws CoverStorageException if the indexed volume is not available
+     */
+    @NonNull
+    public static StorageVolume getStorageVolume(@NonNull final Context context,
+                                                 final int volume)
+            throws CoverStorageException {
+        final StorageManager storage = (StorageManager) context.getSystemService(
+                Context.STORAGE_SERVICE);
+        final List<StorageVolume> volumes = storage.getStorageVolumes();
+        if (volume >= volumes.size()) {
+            throw new CoverStorageException("Volume not available");
+        }
+        return volumes.get(volume);
     }
 
     private static void dumpStorageInfo(@NonNull final Context context,
-                                        @NonNull final StorageManager storage) {
+                                        @NonNull final StorageManager manager) {
         // Typical emulator output:
         // 0    uuid=null
         //      Description=Internal shared storage
@@ -216,7 +213,7 @@ public final class CoverVolume {
         //      isRemovable=true
         //      getState=mounted
         final Logger logger = LoggerFactory.getLogger();
-        final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
+        final List<StorageVolume> storageVolumes = manager.getStorageVolumes();
         for (final StorageVolume sv : storageVolumes) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 logger.d(TAG, "init",

@@ -24,8 +24,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +37,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
@@ -182,21 +179,18 @@ public class StartupActivity
     }
 
     private void initStorage() {
-        final int storedVolumeIndex = CoverVolume.getVolume(this);
-        final int actualVolumeIndex;
+        final int configuredVolume = CoverVolume.getVolume(this);
+        final boolean available = CoverVolume.isAvailable(this, configuredVolume);
         try {
-            actualVolumeIndex = CoverVolume.initVolume(this, storedVolumeIndex);
-
+            if (available) {
+                // Init the configured volume and continue starting up
+                ServiceLocator.getInstance().getCoverStorage().initDir();
+                nextStage(Stage.InitStorage);
+            } else {
+                onStorageVolumeChanged();
+            }
         } catch (@NonNull final CoverStorageException e) {
             onFailure(e);
-            return;
-        }
-
-        if (storedVolumeIndex == actualVolumeIndex) {
-            // all ok
-            nextStage(Stage.InitStorage);
-        } else {
-            onStorageVolumeChanged(actualVolumeIndex);
         }
     }
 
@@ -277,14 +271,20 @@ public class StartupActivity
                 .show();
     }
 
-    private void onStorageVolumeChanged(final int actualVolumeIndex) {
-        final StorageManager storage = (StorageManager) getSystemService(
-                Context.STORAGE_SERVICE);
-        final StorageVolume volume = storage.getStorageVolumes().get(actualVolumeIndex);
+    /**
+     * The previously configured volume was not available.
+     * Give the user some choices on how they want to continue.
+     *
+     * @throws CoverStorageException on any error
+     */
+    private void onStorageVolumeChanged()
+            throws CoverStorageException {
 
+        final String defStorageDescription = CoverVolume.getStorageVolume(this, 0)
+                                                        .getDescription(this);
         final CharSequence[] items = {
                 getString(R.string.option_storage_quit_and_reinsert_sdcard),
-                getString(R.string.option_storage_select, volume.getDescription(this)),
+                getString(R.string.option_storage_select, defStorageDescription),
                 getString(R.string.option_storage_edit_settings)};
 
         new MaterialAlertDialogBuilder(this)
@@ -295,18 +295,18 @@ public class StartupActivity
                 .setSingleChoiceItems(items, 0, (d, w) -> volumeChangedOptionChosen = w)
                 .setPositiveButton(R.string.ok, (d, w) -> {
                     switch (volumeChangedOptionChosen) {
-                        case 0: {
+                        case 0 /* R.string.option_storage_quit_and_reinsert_sdcard */: {
                             // exit the app, and let the user insert the correct sdcard
                             finishAndRemoveTask();
                             break;
                         }
-                        case 1: {
-                            // Just set the new location and continue startup
-                            CoverVolume.setVolume(this, actualVolumeIndex);
+                        case 1 /* R.string.option_storage_select */: {
+                            CoverVolume.setVolume(this, 0);
+                            // and repeat the InitStorage stage with the new volume set
                             nextStage(Stage.InitStorage);
                             break;
                         }
-                        case 2:
+                        case 2 /* R.string.option_storage_edit_settings */:
                         default: {
                             // take user to the settings screen
                             final Intent intent = FragmentHostActivity
@@ -316,7 +316,9 @@ public class StartupActivity
                                     .putExtra(SettingsViewModel.BKEY_MISSING_STORAGE_VOLUME, true);
 
                             startActivity(intent);
-                            // and quit, this will make sure the user exists our app afterwards
+                            // and quit this Activity!,
+                            // This will make sure the user is existing the app after
+                            // they finished with the settings.
                             finish();
                             break;
                         }
