@@ -89,13 +89,14 @@ public class OpenLibrary2SearchEngine
      * <p>
      * Where:
      * <p>
-     * key can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
-     * value is the value of the chosen key
-     * size can be one of S, M and L for small, medium and large respectively.
-     * <p>
-     * param 1: key-name, param 2: key-value, param 3: L/M/S for the size.
+     * param 1: key can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
+     * param 2: value of the chosen key
+     * param 3: one of S, M and L for small, medium and large respectively.
+     *
+     * When there is no cover, the server returns a blank image by default.
+     * Adding "?default=false": forces a 404 to be returned
      */
-    private static final String BASE_COVER_URL =
+    private static final String COVER_BY_KEY =
             "https://covers.openlibrary.org/b/%1$s/%2$s-%3$s.jpg?default=false";
 
     /**
@@ -1130,10 +1131,16 @@ public class OpenLibrary2SearchEngine
             }
         }
 
-        final String url = String.format(BASE_COVER_URL, key, id, sizeParam);
+        final String url = String.format(COVER_BY_KEY, key, id, sizeParam);
 
-        // see {@link FutureHttpGetBase#setEnable404Redirect(boolean)}
-        imageDownloader404redirect = true;
+        // The traffic from a simple request for a cover when using wget:
+        // $ wget -d -O image.jpg https://covers.openlibrary.org/b/id/13769253-L.jpg?default=false
+        //302 Found
+        //Location: https://archive.org/download/l_covers_0013/l_covers_0013_76.zip/0013769253-L.jpg [following]
+        //302 Found
+        //Location: https://ia801909.us.archive.org/view_archive.php?archive=/31/items/l_covers_0013/l_covers_0013_76.zip&file=0013769253-L.jpg [following]
+        //200 OK
+        //Saving to: ‘image.jpg’
 
         if ("isbn".equals(key)) {
             //noinspection DataFlowIssue
