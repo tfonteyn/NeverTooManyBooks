@@ -158,6 +158,9 @@ public class Parse2Test
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
+        //   "covers": [
+        //    5546156
+        //  ],
         assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
                                           + "_5546156_0_"));
     }
@@ -199,6 +202,11 @@ public class Parse2Test
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
+        // "covers": [
+        //  13769253
+        //  ],
+        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                          + "_13769253_0_"));
     }
 
     @Test
@@ -230,24 +238,19 @@ public class Parse2Test
         assertEquals("Rick", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(2, covers.size());
         //   "covers": [
         //    14615097,
         //    14615096,
         //    13011694
         //  ],
-        List<String> covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
         assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
                                           + "_14615097_0_"));
-
-        covers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
-        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+        assertTrue(covers.get(1).contains(EngineId.OpenLibrary.getPreferenceKey()
                                           + "_14615096_1_"));
     }
-
 
     @Test
     public void parse4()
@@ -291,14 +294,12 @@ public class Parse2Test
         assertEquals("Doris", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
-        //   "covers": [
-        //    14615097,
-        //    14615096,
-        //    13011694
-        //  ],
-        List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
+        //   "covers": [
+        //  12585189
+        //]
         assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
                                           + "_12585189_0_"));
     }
