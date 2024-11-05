@@ -125,5 +125,9 @@ public final class FutureHttpGet<T>
                 throw new UncheckedSAXException(e);
             }
         }));
+
+        // Note that we just let all Unchecked..Exceptions
+        // ripple upwards until they hit the task where the request came from.
+        // We always intercept and dissect unchecked exceptions in the task, so all is well.
     }
 }
