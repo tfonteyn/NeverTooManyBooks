@@ -39,11 +39,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -312,7 +312,7 @@ public class StartupActivity
                             final Intent intent = FragmentHostActivity
                                     .createIntent(this, SettingsFragment.class)
                                     .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                              Prefs.PK_STORAGE_VOLUME)
+                                              CoverVolume.PK_VOLUME_INDEX)
                                     .putExtra(SettingsViewModel.BKEY_MISSING_STORAGE_VOLUME, true);
 
                             startActivity(intent);

@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsCont
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -171,7 +172,7 @@ public class SettingsFragment
     }
 
     private void initStorageVolumePreference() {
-        final ListPreference pStorageVolume = findPreference(Prefs.PK_STORAGE_VOLUME);
+        final ListPreference pStorageVolume = findPreference(CoverVolume.PK_VOLUME_INDEX);
         // On Android 9+, the Context#getExternalFilesDirs method will return
         // both internal and sdcard directories.
         // Android 8.x it "depends" ... as this is quite old now,
@@ -244,7 +245,7 @@ public class SettingsFragment
 
     /**
      * Encapsulates all the code to handle the
-     * {@link Prefs#PK_STORAGE_VOLUME} preference.
+     * {@link CoverVolume#PK_VOLUME_INDEX} preference.
      */
     private class StorageVolumeHelper {
         @NonNull

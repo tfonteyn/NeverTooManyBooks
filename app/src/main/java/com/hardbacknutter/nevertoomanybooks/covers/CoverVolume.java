@@ -66,12 +66,29 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public final class CoverVolume {
 
+    /**
+     * Preference key with the <strong>index</strong> of the volume to store covers on.
+     * <p>
+     * {@code int}
+     */
+    public static final String PK_VOLUME_INDEX = "storage.volume.index";
+
     /** Log tag. */
     private static final String TAG = "CoverVolume";
 
     private CoverVolume() {
     }
 
+    /**
+     * Get the currently configured (user preferred) volume.
+     *
+     * @param context Current context
+     *
+     * @return the volume
+     */
+    public static int getVolumeIndex(@NonNull final Context context) {
+        return IntListPref.getInt(context, PK_VOLUME_INDEX, 0);
+    }
 
     /**
      * Initialize storage needs.
@@ -159,11 +176,11 @@ public final class CoverVolume {
      * @param context Current context
      * @param volume  to set
      */
-    public static void setVolume(@NonNull final Context context,
-                                 final int volume) {
+    public static void setVolumeIndex(@NonNull final Context context,
+                                      final int volume) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(Prefs.PK_STORAGE_VOLUME, String.valueOf(volume))
+                         .putString(PK_VOLUME_INDEX, String.valueOf(volume))
                          .apply();
     }
 
