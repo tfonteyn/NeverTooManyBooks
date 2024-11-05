@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -58,6 +57,26 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Serves as a wrapper over the file system AND the covers cache dao.
  */
 public class CoverStorage {
+
+    /**
+     * Preference key: whether backups will be taken of cover files,
+     * which will let te user undo transformation and other changes.
+     * <p>
+     * {@code boolean}
+     *
+     * @see #isUndoEnabled()
+     */
+    private static final String PK_ENABLE_UNDO = "image.undo.enabled";
+
+    /**
+     * Preference key: whether we're caching resized images in a temporary database.
+     * <p>
+     * {@code boolean}
+     *
+     * @see #setImageCachingEnabled(boolean)
+     * @see #isImageCachingEnabled()
+     */
+    private static final String PK_CACHE_RESIZED_IMAGES = "image.cache.resized";
 
     /** Sub directory of the Covers directory. */
     static final String TMP_SUB_DIR = "tmp";
@@ -510,7 +529,7 @@ public class CoverStorage {
      */
     private boolean isUndoEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(Prefs.PK_IMAGE_UNDO_ENABLED, true);
+                                .getBoolean(PK_ENABLE_UNDO, true);
     }
 
     /**
@@ -520,7 +539,7 @@ public class CoverStorage {
      */
     public boolean isImageCachingEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(Prefs.PK_IMAGE_CACHE_RESIZED, false);
+                                .getBoolean(PK_CACHE_RESIZED_IMAGES, false);
     }
 
     /**
@@ -531,16 +550,17 @@ public class CoverStorage {
     public void setImageCachingEnabled(final boolean enable) {
         PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                          .edit()
-                         .putBoolean(Prefs.PK_IMAGE_CACHE_RESIZED, enable)
+                         .putBoolean(PK_CACHE_RESIZED_IMAGES, enable)
                          .apply();
     }
 
     /**
      * Get a cached image.
      *
-     * @param uuid   UUID of the book
-     * @param cIdx   0..n image index
-     * @param width  desired/maximum width
+     * @param uuid  UUID of the book
+     * @param cIdx  0..n image index
+     * @param width desired/maximum width
+     *
      * @return Bitmap (if cached) or {@code null} if not cached or if the cache was busy
      *
      * @see CoverCacheDao#getCover(String, int, int)
@@ -562,6 +582,7 @@ public class CoverStorage {
      * @param cIdx   0..n image index
      * @param bitmap to save
      * @param width  desired/maximum width
+     *
      * @see CoverCacheDao#saveCover(String, int, Bitmap, int)
      */
     @UiThread
