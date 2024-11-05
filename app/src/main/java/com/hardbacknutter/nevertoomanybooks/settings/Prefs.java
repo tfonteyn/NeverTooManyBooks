@@ -24,13 +24,16 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.List;
+
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 /**
- * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml"
+ * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml".
  */
 @SuppressWarnings("WeakerAccess")
 public final class Prefs {
@@ -162,6 +165,12 @@ public final class Prefs {
      * {@code boolean}
      */
     public static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
+
+    /**
+     * The keys which will be ignored during export/import of preferences.
+     * i.e. these will NOT be written/read to/from the backup file.
+     */
+    public static final List<String> IGNORED_DURING_IMPORT = List.of(CoverVolume.PK_VOLUME_INDEX);
 
 
     private Prefs() {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -196,7 +197,8 @@ public class JsonRecordWriter
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
 
-                final JsonCoder<SharedPreferences> coder = new SharedPreferencesCoder();
+                final JsonCoder<SharedPreferences> coder =
+                        new SharedPreferencesCoder(Prefs.IGNORED_DURING_IMPORT);
                 jsonData.put(RecordType.Preferences.getName(), coder.encode(
                         PreferenceManager.getDefaultSharedPreferences(context)));
                 results.preferences = 1;

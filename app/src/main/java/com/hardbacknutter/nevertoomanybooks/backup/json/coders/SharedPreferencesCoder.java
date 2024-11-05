@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -33,23 +33,46 @@ import com.hardbacknutter.org.json.JSONObject;
 public class SharedPreferencesCoder
         implements JsonCoder<SharedPreferences> {
 
+    /** The prefix of all "acra" settings. These are always ignored. */
+    private static final String ACRA_PREFIX = "acra";
     @Nullable
     private final SharedPreferences out;
 
+    @NonNull
+    private final List<String> excludes;
+
     /**
      * Constructor for encoding.
+     *
+     * @param excludes list of keys to <strong>exclude</strong>
      */
-    public SharedPreferencesCoder() {
+    public SharedPreferencesCoder(@NonNull final List<String> excludes) {
         out = null;
+        this.excludes = excludes;
     }
 
     /**
      * Constructor for decoding.
      *
-     * @param out the SharedPreferences to write to
+     * @param out      the SharedPreferences to write to
+     * @param excludes list of keys to <strong>exclude</strong>
      */
-    public SharedPreferencesCoder(@NonNull final SharedPreferences out) {
+    public SharedPreferencesCoder(@NonNull final SharedPreferences out,
+                                  @NonNull final List<String> excludes) {
         this.out = out;
+        this.excludes = excludes;
+    }
+
+    /**
+     * Check if the given key should be <strong>included</strong>.
+     *
+     * @param key to check
+     *
+     * @return flag
+     */
+    private boolean include(final String key) {
+        // Skip all acra settings and other excludes.
+        return !key.startsWith(ACRA_PREFIX) && !excludes.contains(key);
     }
 
     @NonNull
@@ -58,16 +81,11 @@ public class SharedPreferencesCoder
             throws JSONException {
 
         final JSONObject encoded = new JSONObject();
-        for (final Map.Entry<String, ?> source : element.getAll().entrySet()) {
-            final String key = source.getKey();
-            // skip the acra settings
-            if (!key.startsWith("acra")) {
-                final Object value = source.getValue();
-                if (value != null) {
-                    encoded.put(key, value);
-                }
+        element.getAll().forEach((key, value) -> {
+            if (include(key) && value != null) {
+                encoded.put(key, value);
             }
-        }
+        });
 
         return encoded;
     }
@@ -82,24 +100,26 @@ public class SharedPreferencesCoder
         final Iterator<String> keys = data.keys();
         while (keys.hasNext()) {
             final String key = keys.next();
-            final Object o = data.get(key);
-            // JSONObject Tokenizer returns Integer, Long, or Double,
-            // in that order (never a float)
-            //noinspection ChainOfInstanceofChecks
-            if (o instanceof String) {
-                ed.putString(key, (String) o);
+            if (include(key)) {
+                final Object o = data.get(key);
+                // JSONObject Tokenizer returns Integer, Long, or Double,
+                // in that order (never a float)
+                //noinspection ChainOfInstanceofChecks
+                if (o instanceof String) {
+                    ed.putString(key, (String) o);
 
-            } else if (o instanceof Boolean) {
-                ed.putBoolean(key, (boolean) o);
+                } else if (o instanceof Boolean) {
+                    ed.putBoolean(key, (boolean) o);
 
-            } else if (o instanceof Integer) {
-                ed.putInt(key, (int) o);
+                } else if (o instanceof Integer) {
+                    ed.putInt(key, (int) o);
 
-            } else if (o instanceof Long) {
-                ed.putLong(key, (long) o);
+                } else if (o instanceof Long) {
+                    ed.putLong(key, (long) o);
 
-            } else if (o instanceof Double) {
-                ed.putFloat(key, (float) o);
+                } else if (o instanceof Double) {
+                    ed.putFloat(key, (float) o);
+                }
             }
         }
         ed.apply();
