@@ -26,6 +26,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
@@ -199,9 +200,21 @@ public final class SearchEngineConfig {
         }
     }
 
-    boolean isLogHttpGetRequests(@NonNull final Context context) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public boolean isLogHttpGetRequests(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
                 engineId.getPreferenceKey() + '.' + Prefs.PK_ENABLE_HTTP_LOGGING, false);
+    }
+
+    @VisibleForTesting
+    public void setLogHttpGetRequests(@NonNull final Context context,
+                                      final boolean flag) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putBoolean(engineId.getPreferenceKey()
+                                     + '.' + Prefs.PK_ENABLE_HTTP_LOGGING,
+                                     flag)
+                         .apply();
     }
 
     /**
