@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -166,7 +166,7 @@ public final class HttpConstants {
     public static final String DNT = "DNT";
 
     /** HTTP Response Header. */
-    public static final String RESPONSE_HEADER_LOCATION = "location";
+    public static final String RESPONSE_HEADER_LOCATION = "Location";
 
     private HttpConstants() {
     }

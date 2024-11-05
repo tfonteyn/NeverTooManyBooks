@@ -137,21 +137,27 @@ public abstract class FutureHttpBase<T> {
             return;
         }
 
+        @Nullable
+        final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
+
         switch (responseCode) {
             case HttpURLConnection.HTTP_UNAUTHORIZED:
                 throw new HttpUnauthorizedException(siteResId,
                                                     request.getResponseMessage(),
-                                                    request.getURL());
+                                                    request.getURL(),
+                                                    location);
 
             case HttpURLConnection.HTTP_FORBIDDEN:
                 throw new HttpForbiddenException(siteResId,
                                                  request.getResponseMessage(),
-                                                 request.getURL());
+                                                 request.getURL(),
+                                                 location);
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 throw new HttpNotFoundException(siteResId,
                                                 request.getResponseMessage(),
-                                                request.getURL());
+                                                request.getURL(),
+                                                location);
 
             case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
                 // for easier reporting issues to the user, map a 408 to an STE
@@ -161,7 +167,8 @@ public abstract class FutureHttpBase<T> {
                 throw new HttpStatusException(siteResId,
                                               responseCode,
                                               request.getResponseMessage(),
-                                              request.getURL());
+                                              request.getURL(),
+                                              location);
         }
     }
 

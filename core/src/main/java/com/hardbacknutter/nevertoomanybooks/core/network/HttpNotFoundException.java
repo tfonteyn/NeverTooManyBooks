@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,9 @@ import java.net.URL;
 
 /**
  * Dedicated 404 HTTP_NOT_FOUND providing a user readable/localized message.
+ * @noinspection CheckStyle
  */
+@SuppressWarnings("CheckStyle")
 public class HttpNotFoundException
         extends HttpStatusException {
 
@@ -42,11 +44,13 @@ public class HttpNotFoundException
      * @param siteResId     the site string res; which will be embedded in a default user message
      * @param statusMessage the original status message from the HTTP request
      * @param url           (optional) The full url, for debugging
+     * @param location      (optional) the content of the "Location" header
      */
     public HttpNotFoundException(@StringRes final int siteResId,
                                  @NonNull final String statusMessage,
-                                 @Nullable final URL url) {
-        super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url);
+                                 @Nullable final URL url,
+                                 @Nullable final String location) {
+        super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url, location);
     }
 
     @Nullable

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,10 +39,12 @@ public class HttpForbiddenException
      * @param siteResId     the site string res; which will be embedded in a default user message
      * @param statusMessage the original status message from the HTTP request
      * @param url           (optional) The full url, for debugging
+     * @param location      (optional) the content of the "Location" header
      */
     public HttpForbiddenException(@StringRes final int siteResId,
                                   @NonNull final String statusMessage,
-                                  @Nullable final URL url) {
-        super(siteResId, HttpURLConnection.HTTP_FORBIDDEN, statusMessage, url);
+                                  @Nullable final URL url,
+                                  @Nullable final String location) {
+        super(siteResId, HttpURLConnection.HTTP_FORBIDDEN, statusMessage, url, location);
     }
 }

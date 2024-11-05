@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,6 +40,8 @@ public class HttpStatusException
 
     @Nullable
     private final URL url;
+    @Nullable
+    private final String location;
 
     /** The site that caused the issue. */
     @StringRes
@@ -52,16 +54,19 @@ public class HttpStatusException
      * @param statusCode    the original status code from the HTTP request
      * @param statusMessage the original status message from the HTTP request
      * @param url           (optional) The full url, for debugging
+     * @param location      (optional) the content of the "Location" header
      */
     public HttpStatusException(@StringRes final int siteResId,
                                final int statusCode,
                                @NonNull final String statusMessage,
-                               @Nullable final URL url) {
+                               @Nullable final URL url,
+                               @Nullable final String location) {
         super(statusMessage);
         this.siteResId = siteResId;
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
         this.url = url;
+        this.location = location;
     }
 
     @StringRes
@@ -81,5 +86,10 @@ public class HttpStatusException
     @Nullable
     public URL getUrl() {
         return url;
+    }
+
+    @Nullable
+    public String getLocation() {
+        return location;
     }
 }
