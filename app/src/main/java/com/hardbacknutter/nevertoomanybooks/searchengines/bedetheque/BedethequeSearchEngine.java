@@ -103,7 +103,7 @@ public class BedethequeSearchEngine
      *
      * @see #requireCookieNameValueString(Context)
      */
-    private static final String BY_ISBN = SEARCH_URL + "albums?"
+    private static final String BY_ISBN = SEARCH_URL + "/albums?"
                                           + "RechIdSerie="
                                           + "&RechIdAuteur="
                                           // cookie name=value
