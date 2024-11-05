@@ -125,6 +125,15 @@ public class OpenLibrary2SearchEngine
 
     @NonNull
     @Override
+    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
+        final FutureHttpGet<T> futureGetRequest = super.createFutureGetRequest(context);
+        futureGetRequest.setEnable404Redirect(true);
+
+        return futureGetRequest;
+    }
+
+    @NonNull
+    @Override
     public String createBrowserUrl(@NonNull final Context context,
                                    @NonNull final String externalId) {
         return getHostUrl(context) + "/books/" + externalId;

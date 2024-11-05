@@ -77,8 +77,6 @@ public abstract class SearchEngineBase
     /** Helper to randomize some urls to avoid fingerprinting by the servers. */
     @NonNull
     private final Random random;
-    /** Workaround for Android not always following 302's. */
-    protected boolean imageDownloader404redirect;
     @Nullable
     private ImageDownloader imageDownloader;
     @Nullable
@@ -405,7 +403,6 @@ public abstract class SearchEngineBase
         synchronized (this) {
             if (imageDownloader == null) {
                 final FutureHttpGet<File> futureGetRequest = createFutureGetRequest(context);
-                futureGetRequest.setEnable404Redirect(imageDownloader404redirect);
                 imageDownloader = new ImageDownloader(futureGetRequest);
             }
         }
