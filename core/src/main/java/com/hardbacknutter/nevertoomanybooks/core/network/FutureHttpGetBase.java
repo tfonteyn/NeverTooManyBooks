@@ -32,17 +32,19 @@ import java.net.UnknownHostException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
+ * The base class for a {@code HEAD} and {@code GET} request.
+ *
  * @param <T> the type of the return value for the request
  */
 public class FutureHttpGetBase<T>
         extends FutureHttpBase<T> {
 
-    private static final String TAG = "FutureHttpHead";
+    private static final String TAG = "FutureHttpGetBase";
 
-    private static final int MAX_404_REDIRECTS = 5;
+    private static final int MAX_REDIRECTS = 5;
 
     private boolean enable404Redirect;
-    private int redirect404Count;
+    private int redirectCount;
 
     /**
      * Private constructor.
@@ -69,7 +71,7 @@ public class FutureHttpGetBase<T>
      */
     public void setEnable404Redirect(final boolean enable404Redirect) {
         this.enable404Redirect = enable404Redirect;
-        redirect404Count = 0;
+        redirectCount = 0;
     }
 
     /**
@@ -79,7 +81,7 @@ public class FutureHttpGetBase<T>
      * This is always enabled.
      * <p>
      * If the site sends a redirect which Android (in it's mysterious ways...) interprets
-     * as a {@code 404}, we will try to follow it manually up to {@link #MAX_404_REDIRECTS}.
+     * as a {@code 404}, we will try to follow it manually up to {@link #MAX_REDIRECTS}.
      * To enable this, set {@link #setEnable404Redirect(boolean)} to {@code true}.
      * The default is {@code false}.
      *
@@ -121,8 +123,8 @@ public class FutureHttpGetBase<T>
                 // Initial try
                 req.connect();
 
-                redirect404Count = 0;
-                while (enable404Redirect && redirect404Count < MAX_404_REDIRECTS
+                redirectCount = 0;
+                while (enable404Redirect && redirectCount < MAX_REDIRECTS
                        && req.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
 
                     final URL responseUrl = req.getURL();
@@ -133,7 +135,7 @@ public class FutureHttpGetBase<T>
                         this.enable404Redirect = false;
                     } else {
                         // follow the redirect
-                        redirect404Count++;
+                        redirectCount++;
 
                         req = createRequest(responseUrl, req.getRequestMethod(),
                                             req.getDoOutput());
@@ -143,7 +145,7 @@ public class FutureHttpGetBase<T>
                         if (isLoggingEnabled()) {
                             LoggerFactory.getLogger().d(
                                     TAG, "connect",
-                                    "redirect404Count=" + redirect404Count,
+                                    "redirect404Count=" + redirectCount,
                                     "url=" + requestUrlStr);
                         }
                         // Note we are NOT using the throttler here,
