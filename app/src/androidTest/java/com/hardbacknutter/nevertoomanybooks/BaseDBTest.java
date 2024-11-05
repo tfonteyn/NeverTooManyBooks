@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -70,7 +71,13 @@ public abstract class BaseDBTest {
                          .apply();
         context = serviceLocator.getLocalizedAppContext();
 
-        CoverVolume.initVolume(context, 0);
+        final int configuredVolume = CoverVolume.getVolume(context);
+        assertEquals(0, configuredVolume);
+        final boolean available = CoverVolume.isAvailable(context, configuredVolume);
+        assertTrue(available);
+
+        serviceLocator.getCoverStorage().initDir();
+
         serviceLocator.getDb();
     }
 
