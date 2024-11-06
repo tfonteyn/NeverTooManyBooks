@@ -129,7 +129,8 @@ public abstract class FutureHttpBase<T> {
         final int responseCode = request.getResponseCode();
 
         if (isLoggingEnabled()) {
-            LoggerFactory.getLogger().d(TAG, responseCode + " " + request.getURL().toString());
+            LoggerFactory.getLogger().d(TAG, "checkResponseCode",
+                                        responseCode + " " + request.getURL().toString());
         }
 
         if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
@@ -256,6 +257,16 @@ public abstract class FutureHttpBase<T> {
     public FutureHttpBase<T> setHostnameVerifier(@Nullable final HostnameVerifier hostnameVerifier) {
         this.hostnameVerifier = hostnameVerifier;
         return this;
+    }
+
+    @NonNull
+    public FutureHttpBase<T> enableLogging(final boolean enable) {
+        this.logHttpGetRequests = enable;
+        return this;
+    }
+
+    public boolean isLoggingEnabled() {
+        return logHttpGetRequests;
     }
 
     /**
@@ -455,13 +466,5 @@ public abstract class FutureHttpBase<T> {
                 futureHttp.cancel(true);
             }
         }
-    }
-
-    public void enableLogging(final boolean enable) {
-        this.logHttpGetRequests = enable;
-    }
-
-    public boolean isLoggingEnabled() {
-        return logHttpGetRequests;
     }
 }
