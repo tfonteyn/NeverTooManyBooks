@@ -61,7 +61,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (pEnabled != null && pEnabled.isChecked()) {
+                    if (pEnabled == null || pEnabled.isChecked()) {
                         proposeValidation();
                     } else {
                         popBackStackOrFinish();
@@ -89,7 +89,10 @@ public abstract class ConnectionValidationBasePreferenceFragment
     }
 
     /**
-     * Set a reference to the 'enabled' switch for this sync engine.
+     * Set a reference to the 'enabled' switch.
+     * <p>
+     * This is optional. If no such switch exists then we <strong>will</strong> validate
+     * upon leaving this fragment.
      *
      * @param pEnabled the SwitchPreference
      */
@@ -113,7 +116,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
     }
 
     /**
-     * Called when the user taps "back" AND if the sync engine is enabled.
+     * Called when the user taps "back" AND if validation/authentication is enabled.
      * <p>
      * Prompt the user to either start a connection test, or continue with the "back" action.
      */
