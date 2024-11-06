@@ -162,7 +162,7 @@ public class KbNlSearchEngine
 
         final Book book = new Book();
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createGetDocumentRequest(context);
 
         final DefaultHandler handler = new KbNlBookHandler(this, book);
 

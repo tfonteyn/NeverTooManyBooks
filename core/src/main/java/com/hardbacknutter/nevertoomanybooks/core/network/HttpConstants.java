@@ -74,12 +74,16 @@ public final class HttpConstants {
      */
     public static final String ACCEPT = "Accept";
     /**
+     * Value for {@link #ACCEPT}.
      * RELEASE: update with the current Firefox default "Accept" header. Last updated: 2024-11-06.
      */
     public static final String ACCEPT_KITCHEN_SINK =
             "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
-    /** Specify images only. */
+    /**
+     * Value for {@link #ACCEPT}.
+     * Specify images only.
+     */
     public static final String ACCEPT_IMAGE = "image/avif,image/webp,*/*";
 
     /**
@@ -97,10 +101,18 @@ public final class HttpConstants {
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding">
      * Accept-Encoding</a>
+     * <p>
+     * The Firefox default on 2024-11-06: "gzip, deflate, br, zstd".
      */
     public static final String ACCEPT_ENCODING = "Accept-Encoding";
-    /** The Firefox default on 2024-11-06: "gzip, deflate, br, zstd". */
+    /** Value for {@link #ACCEPT_ENCODING}. */
     public static final String ACCEPT_ENCODING_GZIP = "gzip";
+    /**
+     * Value for {@link #ACCEPT_ENCODING}.
+     * Indicates the identity function (that is, without modification or compression).
+     * This value is always considered as acceptable, even if omitted.
+     */
+    public static final String ACCEPT_ENCODING_IDENTITY = "identity";
 
     /**
      * HTTP Request Header.
@@ -127,28 +139,62 @@ public final class HttpConstants {
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Dest">
      * Sec-Fetch-Dest</a>
-     * <p>
-     * "document" or "image"
      */
     public static final String SEC_FETCH_DEST = "Sec-Fetch-Dest";
+    /** Value for {@link #SEC_FETCH_DEST}. */
+    public static final String SEC_FETCH_DEST_DOCUMENT = "document";
+    /** Value for {@link #SEC_FETCH_DEST}. */
+    public static final String SEC_FETCH_DEST_IMAGE = "image";
 
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Mode">
      * Sec-Fetch-Mode</a>
-     * <p>
-     * "navigate" or "no-cors"
      */
     public static final String SEC_FETCH_MODE = "Sec-Fetch-Mode";
+    /** Value for {@link #SEC_FETCH_MODE}. */
+    public static final String SEC_FETCH_MODE_CORS = "cors";
+    /** Value for {@link #SEC_FETCH_MODE}. */
+    public static final String SEC_FETCH_MODE_NO_CORS = "no-cors";
+    /** Value for {@link #SEC_FETCH_MODE}. */
+    public static final String SEC_FETCH_MODE_NAVIGATE = "navigate";
+    /** Value for {@link #SEC_FETCH_MODE}. */
+    public static final String SEC_FETCH_MODE_SAME_ORIGIN = "same-origin";
 
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site">
      * Sec-Fetch-Site</a>
-     * <p>
-     * "none" or "same-origin"
      */
     public static final String SEC_FETCH_SITE = "Sec-Fetch-Site";
+    /**
+     * Value for {@link #SEC_FETCH_SITE}.
+     * <p>
+     * This request is a user-originated operation.
+     * For example: entering a URL into the address bar, opening a bookmark,
+     * or dragging-and-dropping a file into the browser window.
+     */
+    public static final String SEC_FETCH_SITE_NONE = "none";
+    /**
+     * Value for {@link #SEC_FETCH_SITE}.
+     * The request initiator and the server hosting the resource have
+     * a different site (i.e. a request by "potentially-evil.com" for a resource at "example.com").
+     */
+    public static final String SEC_FETCH_SITE_CROSS_SITE = "cross-site";
+    /**
+     * Value for {@link #SEC_FETCH_SITE}.
+     * The request initiator and the server hosting the resource have
+     * the same origin (same scheme, host and port).
+     */
+    public static final String SEC_FETCH_SITE_SAME_ORIGIN = "same-origin";
+    /**
+     * Value for {@link #SEC_FETCH_SITE}.
+     * <p>
+     * The request initiator and the server hosting the resource have
+     * the same site, including the scheme.
+     */
+    public static final String SEC_FETCH_SITE_SAME_SITE = "same-site";
+
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-User">

@@ -238,7 +238,30 @@ public abstract class SearchEngineBase
 
     /**
      * Convenience method which uses the engines specific network configuration
+     * to create a suitable {@link FutureHttpHead}.
+     *
+     * @param context Current context
+     * @param <T>     return type
+     *
+     * @return new {@link FutureHttpHead} instance
+     */
+    @SuppressWarnings("WeakerAccess")
+    @NonNull
+    public <T> FutureHttpHead<T> createFutureHeadRequest(@NonNull final Context context) {
+        final FutureHttpHead<T> httpHead = new FutureHttpHead<>(
+                config.getEngineId().getLabelResId());
+        httpHead.setConnectTimeout(config.getConnectTimeoutInMs(context))
+                .setReadTimeout(config.getReadTimeoutInMs(context))
+                .setThrottler(config.getThrottler())
+                .enableLogging(config.isLogHttpGetRequests(context));
+        return httpHead;
+    }
+
+    /**
+     * Convenience method which uses the engines specific network configuration
      * to create a suitable {@link FutureHttpGet}.
+     * <p>
+     * The headers are set to the defaults as used by Firefox to request a "document"
      *
      * @param context Current context
      * @param <T>     return type
@@ -246,9 +269,13 @@ public abstract class SearchEngineBase
      * @return new {@link FutureHttpGet} instance
      */
     @NonNull
-    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getEngineId().getLabelResId());
-        httpGet.enableLogging(config.isLogHttpGetRequests(context));
+    public <T> FutureHttpGet<T> createGetDocumentRequest(@NonNull final Context context) {
+        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(
+                config.getEngineId().getLabelResId());
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
+               .setReadTimeout(config.getReadTimeoutInMs(context))
+               .setThrottler(config.getThrottler())
+               .enableLogging(config.isLogHttpGetRequests(context));
 
         // Improve compatibility by sending standard headers.
         // Some headers are overridden in the ImageDownloader as needed.
@@ -284,6 +311,7 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
                                    HttpConstants.ACCEPT_ENCODING_GZIP);
 
+        // Deprecated but Firefox/Chrome are still sending it by default.
         httpGet.setRequestProperty(HttpConstants.DNT, "1");
 
         httpGet.setRequestProperty(HttpConstants.CONNECTION,
@@ -291,21 +319,22 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
                                    HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
 
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST, "document");
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE, "navigate");
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE, "none");
+        // We want a generic document, e.g. html, xml, json, ...
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
+                                   HttpConstants.SEC_FETCH_DEST_DOCUMENT);
+        // The request is initiated by navigation between HTML documents.
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE,
+                                   HttpConstants.SEC_FETCH_MODE_NAVIGATE);
+
+        // The request was send by a "user" (our app) and not some auto/link/etc...
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
+                                   HttpConstants.SEC_FETCH_SITE_NONE);
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
 
         // TODO: could add Platform in combo with the Randomizer
         // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
         // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
 
-        // httpGet.setRequestProperty(HttpConstants.CACHE_CONTROL, HttpConstants.CACHE_CONTROL_0);
-
-
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
-               .setReadTimeout(config.getReadTimeoutInMs(context))
-               .setThrottler(config.getThrottler());
         return httpGet;
     }
 
@@ -374,28 +403,6 @@ public abstract class SearchEngineBase
     }
 
     /**
-     * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@link FutureHttpHead}.
-     *
-     * @param context Current context
-     * @param <T>     return type
-     *
-     * @return new {@link FutureHttpHead} instance
-     */
-    @SuppressWarnings("WeakerAccess")
-    @NonNull
-    public <T> FutureHttpHead<T> createFutureHeadRequest(@NonNull final Context context) {
-        final FutureHttpHead<T> httpHead = new FutureHttpHead<>(
-                config.getEngineId().getLabelResId());
-        httpHead.enableLogging(config.isLogHttpGetRequests(context));
-
-        httpHead.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                .setReadTimeout(config.getReadTimeoutInMs(context))
-                .setThrottler(config.getThrottler());
-        return httpHead;
-    }
-
-    /**
      * Convenience method to save an image using the engines specific network configuration.
      *
      * @param context Current context
@@ -419,7 +426,7 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final FutureHttpGet<File> request = createFutureGetRequest(context);
+                final FutureHttpGet<File> request = createGetDocumentRequest(context);
                 DEFAULT_IMAGE_HEADERS.forEach(request::setRequestProperty);
                 imageDownloader = new ImageDownloader(request);
             }

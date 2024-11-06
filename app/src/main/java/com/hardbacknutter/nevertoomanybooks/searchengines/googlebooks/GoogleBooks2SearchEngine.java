@@ -198,7 +198,7 @@ public class GoogleBooks2SearchEngine
             throws StorageException,
                    SearchException {
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createGetDocumentRequest(context);
 
         try {
             // get and store the result into a string.

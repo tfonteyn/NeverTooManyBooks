@@ -98,7 +98,7 @@ public abstract class JsoupSearchEngineBase
             throws SearchException, CredentialsException {
         try {
             if (jsoupLoader == null) {
-                jsoupLoader = new JsoupLoader(createFutureGetRequest(context));
+                jsoupLoader = new JsoupLoader(createGetDocumentRequest(context));
                 jsoupLoader.setCharSetName(charSetName);
             }
             return jsoupLoader.loadDocument(context, url, requestProperties);

@@ -125,8 +125,8 @@ public class OpenLibrary2SearchEngine
 
     @NonNull
     @Override
-    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> futureGetRequest = super.createFutureGetRequest(context);
+    public <T> FutureHttpGet<T> createGetDocumentRequest(@NonNull final Context context) {
+        final FutureHttpGet<T> futureGetRequest = super.createGetDocumentRequest(context);
         futureGetRequest.setEnable404Redirect(true);
 
         return futureGetRequest;
@@ -225,7 +225,7 @@ public class OpenLibrary2SearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createGetDocumentRequest(context);
 
         try {
             // get and store the result into a string.
@@ -696,7 +696,7 @@ public class OpenLibrary2SearchEngine
 
         // depending how we got here, we might not have GET build
         if (futureHttpGet == null) {
-            futureHttpGet = createFutureGetRequest(context);
+            futureHttpGet = createGetDocumentRequest(context);
         }
 
         JSONObject element;
@@ -861,7 +861,7 @@ public class OpenLibrary2SearchEngine
                                                                  @NonNull final String validIsbn)
             throws SearchException {
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createGetDocumentRequest(context);
 
         String url = getHostUrl(context) + "/isbn/" + validIsbn + ".json";
 

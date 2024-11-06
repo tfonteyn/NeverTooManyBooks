@@ -1637,7 +1637,7 @@ public class IsfdbSearchEngine
                                          @SuppressWarnings("SameParameterValue") final int maxRecords)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createGetDocumentRequest(context);
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, this, fetchCovers, maxRecords);
