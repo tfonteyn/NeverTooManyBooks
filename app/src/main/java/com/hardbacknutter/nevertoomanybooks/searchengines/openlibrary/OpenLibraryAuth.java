@@ -17,7 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
+
+package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,42 +42,41 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.org.json.JSONException;
-import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Handles all authentication for stripinfo.be access.
+ * 2024-11-06 There are 2 cookies.
+ * <p>
+ * "pd" with no value ("") set.
+ * "session": which is an array with 3 values separated by %2C:
+ * "/people/myUserName  %2C  2024-11-06T17%3A15%3A00  %2C  sessionkey"
  */
-public class StripInfoAuth
+public class OpenLibraryAuth
         implements ConnectionValidator {
 
+    /** Log tag. */
+    private static final String TAG = "OpenLibraryAuth";
+
     /** Preferences prefix. */
-    private static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
+    private static final String PREF_KEY = EngineId.OpenLibrary.getPreferenceKey();
 
-    public static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
-    public static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
+    static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
+    static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
 
-    static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
+    static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
 
-    public static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
-    /** Log tag. */
-    private static final String TAG = "StripInfoAuth";
 
-    private static final String USER_LOGIN_URL = "/user/login";
+    private static final String USER_LOGIN_URL = "/account/login";
 
-    /**
-     * si_userdata={"userid":"66","password":"blah","settings":{"acceptCookies":true}};
-     * expires=Tue, 08-Mar-2022 14:22:43 GMT; Max-Age=31536000; path=/; domain=stripinfo.be
-     */
-    private static final String COOKIE_SI_USERDATA = "si_userdata";
-    private static final String COOKIE_DOMAIN = "stripinfo.be";
+    private static final String COOKIE_DOMAIN = "openlibrary.org";
+    private static final String COOKIE_USERDATA = "session";
 
     @NonNull
     private final FutureHttpPost<Void> futureHttpPost;
@@ -96,17 +96,17 @@ public class StripInfoAuth
      * @param context       Current context
      * @param cookieManager to use
      */
-    public StripInfoAuth(@NonNull final Context context,
-                         @NonNull final CookieManager cookieManager) {
+    public OpenLibraryAuth(@NonNull final Context context,
+                           @NonNull final CookieManager cookieManager) {
         this.cookieManager = cookieManager;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
+        final SearchEngineConfig config = EngineId.OpenLibrary.requireConfig();
 
         hostUrl = config.getHostUrl(context);
 
-        futureHttpPost = new FutureHttpPost<>(EngineId.StripInfoBe.getLabelResId());
+        futureHttpPost = new FutureHttpPost<>(EngineId.OpenLibrary.getLabelResId());
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
                       .setReadTimeout(config.getReadTimeoutInMs(context))
                       .setThrottler(config.getThrottler());
@@ -121,8 +121,8 @@ public class StripInfoAuth
      * @return {@code true} if we should perform a login
      */
     @AnyThread
-    public static boolean isLoginToSearch(@NonNull final Context context) {
-        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+    static boolean isLoginToSearch(@NonNull final Context context) {
+        if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
             return PreferenceManager.getDefaultSharedPreferences(context)
                                     .getBoolean(PK_LOGIN_TO_SEARCH, false);
         } else {
@@ -131,17 +131,23 @@ public class StripInfoAuth
     }
 
     /**
-     * Check if the username is configured. We take this as the configuration being valid.
+     * Get the username as configured in the settings.
      *
      * @param context Current context
      *
-     * @return {@code true} if at least the username has been setup in preferences
+     * @return username
+     *
+     * @see #getUserId()
      */
     @AnyThread
-    static boolean isUsernameSet(@NonNull final Context context) {
-        return !PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getString(PK_HOST_USER, "")
-                                 .isEmpty();
+    @NonNull
+    public static Optional<String> getUsername(@NonNull final Context context) {
+        final String username = PreferenceManager.getDefaultSharedPreferences(context)
+                                                 .getString(PK_HOST_USER, null);
+        if (username != null && !username.isEmpty()) {
+            return Optional.of(username);
+        }
+        return Optional.empty();
     }
 
     /**
@@ -153,44 +159,32 @@ public class StripInfoAuth
      */
     @NonNull
     public Optional<String> getUserId() {
-        return getUserId(cookieManager);
-    }
-
-    /**
-     * Get the user id for the <strong>current</strong> session.
-     * <p>
-     * In the website html sometimes referred to as "member".
-     *
-     * @param cookieManager to get it from
-     *
-     * @return a valid non-empty user id if present
-     */
-    @NonNull
-    private Optional<String> getUserId(@NonNull final CookieManager cookieManager) {
         final Optional<HttpCookie> oCookie =
                 cookieManager.getCookieStore()
                              .getCookies()
                              .stream()
                              .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
-                                          && COOKIE_SI_USERDATA.equals(c.getName()))
+                                          && COOKIE_USERDATA.equals(c.getName()))
                              .findFirst();
 
         if (oCookie.isPresent()) {
             final HttpCookie cookie = oCookie.get();
             if (!cookie.hasExpired()) {
-                try {
-                    final String cookieValue = URLDecoder.decode(cookie.getValue(),
-                                                                 StandardCharsets.UTF_8);
-                    // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
-                    final JSONObject jsonCookie = new JSONObject(cookieValue);
-                    final String userId = jsonCookie.optString("userid");
-                    if (userId != null && !userId.isEmpty()) {
-                        return Optional.of(userId);
-                    }
-                } catch (@NonNull final JSONException e) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger()
-                                     .e(TAG, e, "cookie.getValue()=" + cookie.getValue());
+                final String value = cookie.getValue();
+                if (value != null && !value.isEmpty()) {
+                    try {
+                        final String cookieValue = URLDecoder.decode(value,
+                                                                     StandardCharsets.UTF_8);
+                        final String[] parts = cookieValue.split(",");
+                        final String userId = parts[0];
+                        if (userId != null && userId.startsWith("/people/")) {
+                            return Optional.of(userId.substring(8));
+                        }
+                    } catch (@NonNull final RuntimeException e) {
+                        if (BuildConfig.DEBUG /* always */) {
+                            LoggerFactory.getLogger()
+                                         .e(TAG, e, "cookie.getValue()=" + value);
+                        }
                     }
                 }
             }
@@ -227,35 +221,35 @@ public class StripInfoAuth
         final String username = prefs.getString(PK_HOST_USER, "");
         final String password = prefs.getString(PK_HOST_PASS, "");
         if (username.isEmpty() || password.isEmpty()) {
-            throw new CredentialsException(R.string.site_stripinfo_be, "missing password");
+            throw new CredentialsException(R.string.site_open_library, "missing password");
         }
 
         // Secondly check if we're already logged in ?
-        String userId = getUserId(cookieManager).orElse(null);
+        String userId = getUserId().orElse(null);
         if (userId != null) {
             prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
             return userId;
         }
 
         final String url = hostUrl + USER_LOGIN_URL;
+
         final String postBody = new StringJoiner("&")
-                .add("userName=" + URLEncoder.encode(username, StandardCharsets.UTF_8))
-                .add("passw=" + URLEncoder.encode(password, StandardCharsets.UTF_8))
-                .add("submit=Inloggen")
-                .add("frmName=login")
+                .add("username=" + URLEncoder.encode(username, StandardCharsets.UTF_8))
+                .add("password=" + URLEncoder.encode(password, StandardCharsets.UTF_8))
+                .add("redirect=")
+                .add("debug_token=")
                 .toString();
 
+        futureHttpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
+                                          "application/x-www-form-urlencoded");
         futureHttpPost.post(url, postBody, null);
 
-        userId = getUserId(cookieManager).orElse(null);
-        if (userId != null) {
-            prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
-            return userId;
-        }
+        userId = getUserId().orElseThrow(
+                () -> new CredentialsException(R.string.site_open_library, "login failed"));
 
-        throw new CredentialsException(R.string.site_stripinfo_be, "login failed");
+        prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
+        return userId;
     }
-
 
     public void cancel() {
         futureHttpPost.cancel();

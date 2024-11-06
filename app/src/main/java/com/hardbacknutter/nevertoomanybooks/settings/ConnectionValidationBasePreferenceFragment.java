@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -52,16 +51,13 @@ public abstract class ConnectionValidationBasePreferenceFragment
     private ConnectionValidatorViewModel vm;
 
     @Nullable
-    private SwitchPreference pEnabled;
-
-    @Nullable
     private ProgressDelegate progressDelegate;
 
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (pEnabled == null || pEnabled.isChecked()) {
+                    if (shouldProposeValidation()) {
                         proposeValidation();
                     } else {
                         popBackStackOrFinish();
@@ -88,18 +84,6 @@ public abstract class ConnectionValidationBasePreferenceFragment
         vm.init(siteResId);
     }
 
-    /**
-     * Set a reference to the 'enabled' switch.
-     * <p>
-     * This is optional. If no such switch exists then we <strong>will</strong> validate
-     * upon leaving this fragment.
-     *
-     * @param pEnabled the SwitchPreference
-     */
-    protected void initEnableSwitch(@Nullable final SwitchPreference pEnabled) {
-        this.pEnabled = pEnabled;
-    }
-
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -114,6 +98,8 @@ public abstract class ConnectionValidationBasePreferenceFragment
         vm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
     }
+
+    protected abstract boolean shouldProposeValidation();
 
     /**
      * Called when the user taps "back" AND if validation/authentication is enabled.

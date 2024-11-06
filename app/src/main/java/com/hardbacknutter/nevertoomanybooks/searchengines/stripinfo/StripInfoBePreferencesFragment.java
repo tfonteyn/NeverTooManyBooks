@@ -25,6 +25,7 @@ import android.text.InputType;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
+import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -43,6 +44,9 @@ public class StripInfoBePreferencesFragment
     // category
     private static final String PSK_SYNC_OPTIONS = "psk_sync_options";
 
+    private SwitchPreference pSyncEnabled;
+    private SwitchPreference pLoginToSearch;
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
@@ -50,20 +54,22 @@ public class StripInfoBePreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
         initValidator(R.string.site_stripinfo_be);
-        initEnableSwitch(findPreference(StripInfoHandler.PK_ENABLED));
 
-        final boolean useRealAuthor = ServiceLocator.getInstance()
-                                                    .isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
         //noinspection DataFlowIssue
         findPreference("stripinfo.resolve.authors.bedetheque")
-                .setEnabled(useRealAuthor);
+                .setEnabled(ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR));
 
+        // Hide the whole category if it's not included in the build.
         //noinspection DataFlowIssue
         findPreference(PSK_SYNC_OPTIONS)
                 .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
 
-        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+        //noinspection DataFlowIssue
+        pSyncEnabled = findPreference(StripInfoHandler.PK_ENABLED);
+        //noinspection DataFlowIssue
+        pLoginToSearch = findPreference(StripInfoAuth.PK_LOGIN_TO_SEARCH);
 
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
             EditTextPreference etp;
 
             etp = findPreference(StripInfoAuth.PK_HOST_USER);
@@ -89,5 +95,11 @@ public class StripInfoBePreferencesFragment
                 }
             });
         }
+    }
+
+    @Override
+    protected boolean shouldProposeValidation() {
+        return pLoginToSearch.isChecked()
+               || pSyncEnabled.isChecked();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.security.cert.CertificateException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 
@@ -46,7 +47,8 @@ public final class ConnectionValidatorFactory {
      *
      * @return new instance
      *
-     * @throws CertificateException on failures related to a user installed CA
+     * @throws CertificateException     on failures related to a user installed CA
+     * @throws IllegalArgumentException for site which do not support connection validation
      */
     @NonNull
     public static ConnectionValidator create(@NonNull final Context context,
@@ -54,11 +56,20 @@ public final class ConnectionValidatorFactory {
             throws CertificateException {
         if (siteResId == R.string.site_calibre) {
             return new CalibreContentServer.Builder(context).build();
+
         } else if (siteResId == R.string.site_stripinfo_be) {
             final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
             return new StripInfoAuth(context, cookieManager);
+
+        } else if (siteResId == R.string.site_open_library) {
+            final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
+            return new OpenLibraryAuth(context, cookieManager);
+
         } else {
-            throw new IllegalArgumentException(String.valueOf(siteResId));
+            // The error message is slightly misleading but will have to do.
+            // We should never get here anyway... flw
+            throw new IllegalArgumentException(context.getString(R.string.error_unknown_host,
+                                                                 context.getString(siteResId)));
         }
     }
 }

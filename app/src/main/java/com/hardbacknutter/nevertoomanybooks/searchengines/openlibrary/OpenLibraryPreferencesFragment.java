@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,21 +20,72 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import android.os.Bundle;
+import android.text.InputType;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.preference.EditTextPreference;
+import androidx.preference.SwitchPreference;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
 
 @Keep
 public class OpenLibraryPreferencesFragment
-        extends BasePreferenceFragment {
+        extends ConnectionValidationBasePreferenceFragment {
+
+    // category
+    private static final String PSK_SYNC_OPTIONS = "psk_sync_options";
+
+    private SwitchPreference pLoginToSearch;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_openlibrary, rootKey);
+
+        initValidator(R.string.site_open_library);
+
+        //noinspection DataFlowIssue
+        pLoginToSearch = findPreference(OpenLibraryAuth.PK_LOGIN_TO_SEARCH);
+
+        // Hide the whole category if it's not included in the build.
+        //noinspection DataFlowIssue
+        findPreference(PSK_SYNC_OPTIONS)
+                .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
+
+        if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
+            EditTextPreference etp;
+
+            etp = findPreference(OpenLibraryAuth.PK_HOST_USER);
+            //noinspection DataFlowIssue
+            etp.setOnBindEditTextListener(editText -> {
+                editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                editText.selectAll();
+            });
+
+            etp = findPreference(OpenLibraryAuth.PK_HOST_PASS);
+            //noinspection DataFlowIssue
+            etp.setOnBindEditTextListener(editText -> {
+                editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                      | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                editText.selectAll();
+            });
+            etp.setSummaryProvider(preference -> {
+                final String value = ((EditTextPreference) preference).getText();
+                if (value == null || value.isEmpty()) {
+                    return getString(R.string.preference_not_set);
+                } else {
+                    return "********";
+                }
+            });
+        }
+    }
+
+    @Override
+    protected boolean shouldProposeValidation() {
+        return pLoginToSearch.isChecked();
     }
 }

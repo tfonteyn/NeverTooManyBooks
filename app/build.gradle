@@ -108,6 +108,7 @@ android {
 
         // Under development; disabled for release builds in buildTypes.release
         buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
+        buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
         buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "true")
     }
@@ -127,6 +128,7 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
+            buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "false")
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }

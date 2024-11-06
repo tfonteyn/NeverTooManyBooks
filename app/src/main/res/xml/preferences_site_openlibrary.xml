@@ -36,6 +36,37 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="psk_sync_options"
+        android:title="@string/lbl_credentials">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/login_24px"
+            android:key="openlibrary.login.to.search"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_login_to_search" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:icon="@drawable/person_24px"
+            android:key="openlibrary.host.user"
+            android:title="@string/username"
+            app:useSimpleSummaryProvider="true"
+            />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:icon="@drawable/password_24px"
+            android:key="openlibrary.host.password"
+            android:summary="@string/preference_not_set"
+            android:title="@string/password"
+            />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/lbl_timeouts">
         <SeekBarPreference
             android:defaultValue="20"

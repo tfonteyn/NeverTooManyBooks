@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
+import androidx.preference.SwitchPreference;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -63,12 +64,14 @@ public class CalibrePreferencesFragment
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> pickFolderLauncher;
 
-    private Preference folderPref;
-    private Preference caPref;
+    private SwitchPreference pSyncEnabled;
+    private Preference pDownloadFolder;
+    private EditTextPreference pHostUrl;
+    private Preference pCACert;
+
     private final ActivityResultLauncher<String> openCaUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenCaUri));
-    private EditTextPreference pHostUrl;
     private HostUrlValidator hostUrlValidator;
 
     @Override
@@ -78,7 +81,30 @@ public class CalibrePreferencesFragment
         setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
 
         initValidator(R.string.site_calibre);
-        initEnableSwitch(findPreference(CalibreHandler.PK_ENABLED));
+
+        pSyncEnabled = findPreference(CalibreHandler.PK_ENABLED);
+
+        pDownloadFolder = findPreference(PSK_PICK_FOLDER);
+        //noinspection DataFlowIssue
+        setDownloadFolderSummary(pDownloadFolder);
+        pDownloadFolder.setOnPreferenceClickListener(preference -> {
+            //noinspection DataFlowIssue
+            pickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
+                                                          .orElse(null));
+            return true;
+        });
+
+        pHostUrl = findPreference(CalibreContentServer.PK_HOST_URL);
+        //noinspection DataFlowIssue
+        hostUrlValidator = initHostUrlPreference(pHostUrl);
+
+        pCACert = findPreference(PSK_CA_FROM_FILE);
+        //noinspection DataFlowIssue
+        pCACert.setSummary(createCaSummary());
+        pCACert.setOnPreferenceClickListener(preference -> {
+            openCaUriLauncher.launch("*/*");
+            return true;
+        });
 
         EditTextPreference etp;
 
@@ -104,28 +130,6 @@ public class CalibrePreferencesFragment
                 return "********";
             }
         });
-
-        pHostUrl = findPreference(CalibreContentServer.PK_HOST_URL);
-        //noinspection DataFlowIssue
-        hostUrlValidator = initHostUrlPreference(pHostUrl);
-
-        caPref = findPreference(PSK_CA_FROM_FILE);
-        //noinspection DataFlowIssue
-        caPref.setSummary(createCaSummary());
-        caPref.setOnPreferenceClickListener(preference -> {
-            openCaUriLauncher.launch("*/*");
-            return true;
-        });
-
-        folderPref = findPreference(PSK_PICK_FOLDER);
-        //noinspection DataFlowIssue
-        setFolderSummary(folderPref);
-        folderPref.setOnPreferenceClickListener(preference -> {
-            //noinspection DataFlowIssue
-            pickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
-                                                          .orElse(null));
-            return true;
-        });
     }
 
     @Override
@@ -137,8 +141,13 @@ public class CalibrePreferencesFragment
                 new GetDirectoryUriContract(), o -> {
                     //noinspection DataFlowIssue
                     o.ifPresent(uri -> CalibreContentServer.setFolderUri(getContext(), uri));
-                    setFolderSummary(folderPref);
+                    setDownloadFolderSummary(pDownloadFolder);
                 });
+    }
+
+    @Override
+    protected boolean shouldProposeValidation() {
+        return pSyncEnabled.isChecked();
     }
 
     @Override
@@ -155,7 +164,7 @@ public class CalibrePreferencesFragment
      *
      * @param preference to use
      */
-    private void setFolderSummary(@NonNull final Preference preference) {
+    private void setDownloadFolderSummary(@NonNull final Preference preference) {
         //noinspection DataFlowIssue
         final Uri uri = CalibreContentServer.getFolderUri(getContext()).orElse(null);
         if (uri == null) {
@@ -191,11 +200,11 @@ public class CalibrePreferencesFragment
                 CalibreContentServer.setCertificate(getContext(), ca);
             }
         } catch (@NonNull final IOException | CertificateException e) {
-            caPref.setSummary(R.string.error_certificate_invalid);
+            pCACert.setSummary(R.string.error_certificate_invalid);
             return;
         }
 
-        caPref.setSummary(createCaSummary());
+        pCACert.setSummary(createCaSummary());
     }
 
     /**
