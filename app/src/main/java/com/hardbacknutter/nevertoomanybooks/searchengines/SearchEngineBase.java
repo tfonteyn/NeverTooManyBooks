@@ -37,7 +37,6 @@ import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -67,14 +66,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public abstract class SearchEngineBase
         implements SearchEngine {
 
-    public static final Map<String, String> DEFAULT_IMAGE_HEADERS = Map.of(
-            HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE,
-            // We want a generic image
-            HttpConstants.SEC_FETCH_DEST, HttpConstants.SEC_FETCH_DEST_IMAGE,
-
-            HttpConstants.SEC_FETCH_MODE, HttpConstants.SEC_FETCH_MODE_NO_CORS,
-            HttpConstants.SEC_FETCH_SITE, HttpConstants.SEC_FETCH_SITE_SAME_ORIGIN
-    );
     @NonNull
     private final SearchEngineConfig config;
 
@@ -270,15 +261,10 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttpGet<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(
-                config.getEngineId().getLabelResId());
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
-               .setReadTimeout(config.getReadTimeoutInMs(context))
-               .setThrottler(config.getThrottler())
-               .enableLogging(config.isLogHttpGetRequests(context));
+        final FutureHttpGet<T> httpGet = createRawGetRequest(context);
 
         // Improve compatibility by sending standard headers.
-        // Some headers are overridden in the ImageDownloader as needed.
+        // Some headers are overridden in #createGetImageRequest as needed.
 
         // Host & User-Agent are set in {@link FutureHttpBase#execute}
         // but can be overridden as needed.
@@ -335,6 +321,32 @@ public abstract class SearchEngineBase
         // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
         // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
 
+        return httpGet;
+    }
+
+    @NonNull
+    public <T> FutureHttpGet<T> createGetImageRequest(@NonNull final Context context) {
+        final FutureHttpGet<T> httpGet = createGetDocumentRequest(context);
+        httpGet.setRequestProperty(HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE);
+        // We want a generic image
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
+                                   HttpConstants.SEC_FETCH_DEST_IMAGE);
+
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE,
+                                   HttpConstants.SEC_FETCH_MODE_NO_CORS);
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
+                                   HttpConstants.SEC_FETCH_SITE_SAME_ORIGIN);
+        return httpGet;
+    }
+
+    @NonNull
+    protected <T> FutureHttpGet<T> createRawGetRequest(@NonNull final Context context) {
+        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(
+                config.getEngineId().getLabelResId());
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
+               .setReadTimeout(config.getReadTimeoutInMs(context))
+               .setThrottler(config.getThrottler())
+               .enableLogging(config.isLogHttpGetRequests(context));
         return httpGet;
     }
 
@@ -426,9 +438,7 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final FutureHttpGet<File> request = createGetDocumentRequest(context);
-                DEFAULT_IMAGE_HEADERS.forEach(request::setRequestProperty);
-                imageDownloader = new ImageDownloader(request);
+                imageDownloader = new ImageDownloader(createGetImageRequest(context));
             }
         }
         final String tempFilename = ImageDownloader.getTempFilename(
