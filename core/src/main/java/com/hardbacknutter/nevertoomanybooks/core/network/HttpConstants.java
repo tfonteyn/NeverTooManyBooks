@@ -27,6 +27,13 @@ import java.net.HttpURLConnection;
 public final class HttpConstants {
 
     /**
+     * RELEASE: BROWSER_USER_AGENT: Last updated: 2024-11-06.
+     * Some sites don't return full data unless the user agent is set to a valid browser.
+     */
+    public static final String BROWSER_USER_AGENT =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0";
+
+    /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization">
      * Authorization</a>
@@ -46,7 +53,9 @@ public final class HttpConstants {
      * Connection</a>
      */
     public static final String CONNECTION = "Connection";
+    /** Value for {@link #CONNECTION}. */
     public static final String CONNECTION_CLOSE = "close";
+    /** Value for {@link #CONNECTION}. */
     public static final String CONNECTION_KEEP_ALIVE = "keep-alive";
 
     /**
@@ -55,6 +64,7 @@ public final class HttpConstants {
      * Cache-Control</a>
      */
     public static final String CACHE_CONTROL = "Cache-Control";
+    /** Value for {@link #CACHE_CONTROL}. */
     public static final String CACHE_CONTROL_0 = "max-age=0";
 
     /**
@@ -63,9 +73,11 @@ public final class HttpConstants {
      * Accept</a>
      */
     public static final String ACCEPT = "Accept";
-    /** Firefox sends (2023-10-31) this default. */
+    /**
+     * RELEASE: update with the current Firefox default "Accept" header. Last updated: 2024-11-06.
+     */
     public static final String ACCEPT_KITCHEN_SINK =
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
+            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
     /** Specify images only. */
     public static final String ACCEPT_IMAGE = "image/avif,image/webp,*/*";
@@ -87,7 +99,7 @@ public final class HttpConstants {
      * Accept-Encoding</a>
      */
     public static final String ACCEPT_ENCODING = "Accept-Encoding";
-    /** Firefox sends (2023-05-22): "gzip, deflate, br". */
+    /** The Firefox default on 2024-11-06: "gzip, deflate, br, zstd". */
     public static final String ACCEPT_ENCODING_GZIP = "gzip";
 
     /**
@@ -96,6 +108,7 @@ public final class HttpConstants {
      * Upgrade-Insecure-Requests</a>
      */
     public static final String UPGRADE_INSECURE_REQUESTS = "Upgrade-Insecure-Requests";
+    /** Value for {@link #UPGRADE_INSECURE_REQUESTS}. */
     public static final String UPGRADE_INSECURE_REQUESTS_TRUE = "1";
 
     /**
@@ -104,7 +117,9 @@ public final class HttpConstants {
      * Content-Type</a>
      */
     public static final String CONTENT_TYPE = "Content-Type";
+    /** Value for {@link #CONTENT_TYPE}. */
     public static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
+    /** Value for {@link #CONTENT_TYPE}. */
     public static final String CONTENT_TYPE_FORM_URL_ENCODED =
             "application/x-www-form-urlencoded; charset=UTF-8";
 
@@ -134,30 +149,26 @@ public final class HttpConstants {
      * "none" or "same-origin"
      */
     public static final String SEC_FETCH_SITE = "Sec-Fetch-Site";
-
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-User">
      * Sec-Fetch-User</a>
      * <p>
-     * "?1" or {@code null}
+     * "?1"
      */
     public static final String SEC_FETCH_USER = "Sec-Fetch-User";
-
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host">
      * Host</a>
      */
     public static final String HOST = "Host";
-
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent">
      * User-Agent</a>
      */
     public static final String USER_AGENT = "User-Agent";
-
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/DNT">
@@ -165,8 +176,19 @@ public final class HttpConstants {
      */
     public static final String DNT = "DNT";
 
-    /** HTTP Response Header. */
+    /**
+     * HTTP Response Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location">
+     * Location</a>
+     */
     public static final String RESPONSE_HEADER_LOCATION = "Location";
+
+    /**
+     * HTTP Response Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding">
+     * Content-Encoding</a>
+     */
+    public static final String RESPONSE_HEADER_CONTENT_ENCODING = "Content-Encoding";
 
     private HttpConstants() {
     }
@@ -179,6 +201,6 @@ public final class HttpConstants {
      * @return {@code true} if the content-encoding was "gzip"
      */
     public static boolean isZipped(@NonNull final HttpURLConnection response) {
-        return "gzip".equals(response.getHeaderField("content-encoding"));
+        return "gzip".equalsIgnoreCase(response.getHeaderField(RESPONSE_HEADER_CONTENT_ENCODING));
     }
 }
