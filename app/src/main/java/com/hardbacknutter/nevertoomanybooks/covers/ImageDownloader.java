@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -77,12 +76,6 @@ public class ImageDownloader {
      */
     public ImageDownloader(@NonNull final FutureHttpGet<File> futureHttpGet) {
         this.futureHttpGet = futureHttpGet;
-        this.futureHttpGet.setRequestProperty(HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE);
-
-        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST, "image");
-        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE, "no-cors");
-        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE, "same-origin");
-        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, null);
     }
 
     /**

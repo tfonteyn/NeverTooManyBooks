@@ -37,6 +37,7 @@ import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -66,6 +67,14 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public abstract class SearchEngineBase
         implements SearchEngine {
 
+    public static final Map<String, String> DEFAULT_IMAGE_HEADERS = Map.of(
+            HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE,
+            // We want a generic image
+            HttpConstants.SEC_FETCH_DEST, HttpConstants.SEC_FETCH_DEST_IMAGE,
+
+            HttpConstants.SEC_FETCH_MODE, HttpConstants.SEC_FETCH_MODE_NO_CORS,
+            HttpConstants.SEC_FETCH_SITE, HttpConstants.SEC_FETCH_SITE_SAME_ORIGIN
+    );
     @NonNull
     private final SearchEngineConfig config;
 
@@ -410,8 +419,9 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final FutureHttpGet<File> futureGetRequest = createFutureGetRequest(context);
-                imageDownloader = new ImageDownloader(futureGetRequest);
+                final FutureHttpGet<File> request = createFutureGetRequest(context);
+                DEFAULT_IMAGE_HEADERS.forEach(request::setRequestProperty);
+                imageDownloader = new ImageDownloader(request);
             }
         }
         final String tempFilename = ImageDownloader.getTempFilename(
