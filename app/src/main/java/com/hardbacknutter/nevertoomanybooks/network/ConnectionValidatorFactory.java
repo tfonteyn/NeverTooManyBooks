@@ -32,8 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuth;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 
 public final class ConnectionValidatorFactory {
     private ConnectionValidatorFactory() {

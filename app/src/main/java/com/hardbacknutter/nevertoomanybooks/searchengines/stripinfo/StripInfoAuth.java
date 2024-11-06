@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
+package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -55,28 +55,31 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class StripInfoAuth
         implements ConnectionValidator {
 
-    /** Preferences prefix. */
-    private static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
-
-    public static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
-    public static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
-
-    static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
-
-    public static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
-    /** the id returned in the cookie. Stored for easy access. */
-    private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
     /** Log tag. */
     private static final String TAG = "StripInfoAuth";
 
+    /** Preferences prefix. */
+    private static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
+
+    static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
+    static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
+
+    static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
+
+    /** the id returned in the cookie. Stored for easy access. */
+    private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
+
     private static final String USER_LOGIN_URL = "/user/login";
 
+    private static final String COOKIE_DOMAIN = "stripinfo.be";
+
     /**
+     * Cookie with the userdata as a JSON object.
+     * <p>
      * si_userdata={"userid":"66","password":"blah","settings":{"acceptCookies":true}};
      * expires=Tue, 08-Mar-2022 14:22:43 GMT; Max-Age=31536000; path=/; domain=stripinfo.be
      */
-    private static final String COOKIE_SI_USERDATA = "si_userdata";
-    private static final String COOKIE_DOMAIN = "stripinfo.be";
+    private static final String COOKIE_USERDATA = "si_userdata";
 
     @NonNull
     private final FutureHttpPost<Void> futureHttpPost;
@@ -114,14 +117,13 @@ public class StripInfoAuth
 
     /**
      * Check whether the user should be logged in to the website during a <strong>search</strong>.
-     * This is independent from synchronization actions (where obviously login is always required).
      *
      * @param context Current context
      *
      * @return {@code true} if we should perform a login
      */
     @AnyThread
-    public static boolean isLoginToSearch(@NonNull final Context context) {
+    static boolean isLoginToSearch(@NonNull final Context context) {
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
             return PreferenceManager.getDefaultSharedPreferences(context)
                                     .getBoolean(PK_LOGIN_TO_SEARCH, false);
@@ -131,66 +133,64 @@ public class StripInfoAuth
     }
 
     /**
-     * Check if the username is configured. We take this as the configuration being valid.
+     * Get the username as configured in the settings.
      *
      * @param context Current context
      *
-     * @return {@code true} if at least the username has been setup in preferences
+     * @return username
+     *
+     * @see #getUserId()
      */
     @AnyThread
-    static boolean isUsernameSet(@NonNull final Context context) {
-        return !PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getString(PK_HOST_USER, "")
-                                 .isEmpty();
+    @NonNull
+    public static Optional<String> getUsername(@NonNull final Context context) {
+        final String username = PreferenceManager.getDefaultSharedPreferences(context)
+                                                 .getString(PK_HOST_USER, null);
+        if (username != null && !username.isEmpty()) {
+            return Optional.of(username);
+        }
+        return Optional.empty();
     }
 
     /**
      * Get the user id for the <strong>current</strong> session.
+     * This is not necessarily the same as the username.
      * <p>
      * In the website html sometimes referred to as "member".
      *
      * @return a valid non-empty user id if present
+     *
+     * @see #getUsername(Context)
      */
     @NonNull
     public Optional<String> getUserId() {
-        return getUserId(cookieManager);
-    }
-
-    /**
-     * Get the user id for the <strong>current</strong> session.
-     * <p>
-     * In the website html sometimes referred to as "member".
-     *
-     * @param cookieManager to get it from
-     *
-     * @return a valid non-empty user id if present
-     */
-    @NonNull
-    private Optional<String> getUserId(@NonNull final CookieManager cookieManager) {
         final Optional<HttpCookie> oCookie =
                 cookieManager.getCookieStore()
                              .getCookies()
                              .stream()
                              .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
-                                          && COOKIE_SI_USERDATA.equals(c.getName()))
+                                          && COOKIE_USERDATA.equals(c.getName()))
                              .findFirst();
 
         if (oCookie.isPresent()) {
             final HttpCookie cookie = oCookie.get();
             if (!cookie.hasExpired()) {
-                try {
-                    final String cookieValue = URLDecoder.decode(cookie.getValue(),
-                                                                 StandardCharsets.UTF_8);
-                    // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
-                    final JSONObject jsonCookie = new JSONObject(cookieValue);
-                    final String userId = jsonCookie.optString("userid");
-                    if (userId != null && !userId.isEmpty()) {
-                        return Optional.of(userId);
-                    }
-                } catch (@NonNull final JSONException e) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger()
-                                     .e(TAG, e, "cookie.getValue()=" + cookie.getValue());
+                final String value = cookie.getValue();
+                if (value != null && !value.isEmpty()) {
+                    try {
+                        final String cookieValue = URLDecoder.decode(value,
+                                                                     StandardCharsets.UTF_8);
+                        // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
+                        final JSONObject jsonCookie = new JSONObject(cookieValue);
+                        final String userId = jsonCookie.optString("userid");
+                        if (!userId.isEmpty()) {
+                            return Optional.of(userId);
+                        }
+                    } catch (@NonNull final JSONException e) {
+                        if (BuildConfig.DEBUG /* always */) {
+                            LoggerFactory.getLogger()
+                                         .e(TAG, e, "cookie.getValue()=" + value);
+                        }
                     }
                 }
             }
@@ -231,7 +231,7 @@ public class StripInfoAuth
         }
 
         // Secondly check if we're already logged in ?
-        String userId = getUserId(cookieManager).orElse(null);
+        String userId = getUserId().orElse(null);
         if (userId != null) {
             prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
             return userId;
@@ -247,15 +247,12 @@ public class StripInfoAuth
 
         futureHttpPost.post(url, postBody, null);
 
-        userId = getUserId(cookieManager).orElse(null);
-        if (userId != null) {
-            prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
-            return userId;
-        }
+        userId = getUserId().orElseThrow(
+                () -> new CredentialsException(R.string.site_stripinfo_be, "login failed"));
 
-        throw new CredentialsException(R.string.site_stripinfo_be, "login failed");
+        prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
+        return userId;
     }
-
 
     public void cancel() {
         futureHttpPost.cancel();

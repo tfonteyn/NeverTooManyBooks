@@ -38,6 +38,7 @@ import androidx.fragment.app.FragmentManager;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncStripinfoBinding;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoBePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -77,7 +78,7 @@ public class StripInfoSyncFragment
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         vb.btnLibMap.setOnClickListener(v -> {
-            if (StripInfoAuth.isUsernameSet(v.getContext())) {
+            if (StripInfoAuth.getUsername(v.getContext()).isPresent()) {
                 replaceFragment(StripInfoBookshelfMappingFragment.create(),
                                 StripInfoBookshelfMappingFragment.TAG);
             } else {
@@ -85,7 +86,7 @@ public class StripInfoSyncFragment
             }
         });
         vb.btnImport.setOnClickListener(v -> {
-            if (StripInfoAuth.isUsernameSet(v.getContext())) {
+            if (StripInfoAuth.getUsername(v.getContext()).isPresent()) {
                 replaceFragment(SyncReaderFragment.create(SyncServer.StripInfo),
                                 SyncReaderFragment.TAG);
             } else {
@@ -93,7 +94,7 @@ public class StripInfoSyncFragment
             }
         });
         vb.btnExport.setOnClickListener(v -> {
-            if (StripInfoAuth.isUsernameSet(v.getContext())) {
+            if (StripInfoAuth.getUsername(v.getContext()).isPresent()) {
                 replaceFragment(SyncWriterFragment.create(SyncServer.StripInfo),
                                 SyncWriterFragment.TAG);
             } else {

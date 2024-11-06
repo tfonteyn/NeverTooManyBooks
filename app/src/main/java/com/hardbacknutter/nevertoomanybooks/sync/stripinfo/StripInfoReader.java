@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
@@ -279,7 +280,7 @@ public class StripInfoReader
         PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .edit()
-                .putString(StripInfoAuth.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
+                .putString(StripInfoHandler.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
                         DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .apply();
 
