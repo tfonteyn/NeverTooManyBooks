@@ -49,13 +49,13 @@ ext {
     // https://developer.android.com/jetpack/androidx/versions
 
     androidxActivityVersion = '1.9.3'
-    androidxAnnotationVersion = '1.9.0'
+    androidxAnnotationVersion = '1.9.1'
     androidxAppcompatVersion = '1.7.0'
-    androidxCameraxVersion = '1.3.4'
+    androidxCameraxVersion = '1.4.0'
     androidxCardviewVersion = "1.0.0"
-    androidxCollectionVersion = '1.4.4'
-    androidxConstraintlayoutCoreVersion = "1.0.4"
-    androidxConstraintlayoutVersion = "2.1.4"
+    androidxCollectionVersion = '1.4.5'
+    androidxConstraintlayoutCoreVersion = '1.1.0'
+    androidxConstraintlayoutVersion = '2.2.0'
     androidxCoordinatorlayoutVersion = "1.2.0"
     androidxCoreSplashscreenVersion = '1.0.1'
     androidxCoreVersion = '1.15.0'
@@ -63,9 +63,9 @@ ext {
     androidxDocumentfileVersion = "1.1.0-alpha01"
     androidxDrawerlayoutVersion = "1.2.0"
     androidxExifinterfaceVersion = '1.3.7'
-    androidxFragmentVersion = '1.8.4'
+    androidxFragmentVersion = '1.8.5'
     androidxInterpolatorVersion = "1.0.0"
-    androidxLifecycleVersion = '2.8.6'
+    androidxLifecycleVersion = '2.8.7'
     androidxPreferenceVersion = "1.2.1"
     androidxRecyclerviewVersion = '1.3.2'
     androidxViewpager2Version = '1.1.0'
@@ -84,7 +84,7 @@ ext {
     zxingCoreVersion = '3.5.3'
 
     // https://github.com/ACRA/acra
-    acraVersion = '5.11.4'
+    acraVersion = '5.12.0'
 
     // https://github.com/mockito/mockito
     mockitoVersion = '5.14.2'
