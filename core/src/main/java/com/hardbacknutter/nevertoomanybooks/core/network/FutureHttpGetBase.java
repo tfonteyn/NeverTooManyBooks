@@ -110,7 +110,9 @@ public class FutureHttpGetBase<T>
             String requestUrlStr = initialRequest.getURL().toString();
 
             if (isLoggingEnabled()) {
-                LoggerFactory.getLogger().d(TAG, "connect", "url=" + requestUrlStr);
+                LoggerFactory.getLogger().d(TAG, "Connect",
+                                            "retry=" + retry,
+                                            "url=" + requestUrlStr);
             }
 
             HttpURLConnection req = initialRequest;
@@ -130,6 +132,14 @@ public class FutureHttpGetBase<T>
                     final URL responseUrl = req.getURL();
                     final String responseUrlStr = responseUrl.toString();
 
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "Response",
+                                                    "retry=" + retry,
+                                                    "redirectCount=" + redirectCount,
+                                                    "responseCode=" + req.getResponseCode(),
+                                                    "responseUrlStr=" + responseUrlStr);
+                    }
+
                     if (requestUrlStr.equals(responseUrlStr)) {
                         // request and response URL are the same, it's a genuine 404
                         this.enable404Redirect = false;
@@ -143,10 +153,10 @@ public class FutureHttpGetBase<T>
                         requestUrlStr = responseUrlStr;
 
                         if (isLoggingEnabled()) {
-                            LoggerFactory.getLogger().d(
-                                    TAG, "connect",
-                                    "redirect404Count=" + redirectCount,
-                                    "url=" + requestUrlStr);
+                            LoggerFactory.getLogger().d(TAG, "Connect",
+                                                        "retry=" + retry,
+                                                        "redirectCount=" + redirectCount,
+                                                        "requestUrlStr=" + requestUrlStr);
                         }
                         // Note we are NOT using the throttler here,
                         // Android was SUPPOSED to redirect immediately.
@@ -166,8 +176,10 @@ public class FutureHttpGetBase<T>
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. A retry and the site was ok.
                 if (isLoggingEnabled()) {
-                    LoggerFactory.getLogger().d(TAG, "connect", "retry=" + retry,
-                                                "url=`" + initialRequest.getURL() + '`', "e=" + e);
+                    LoggerFactory.getLogger().e(TAG, e,
+                                                "Recoverable error",
+                                                "retry=" + retry,
+                                                "url=`" + initialRequest.getURL() + '`');
                 }
 
                 retry--;
