@@ -168,6 +168,39 @@ public class FutureHttpGetBase<T>
                 // all fine, we're connected
                 return req;
 
+            } catch (@NonNull final HttpForbiddenException e) {
+                // 2024-11-07: There are ongoing issues with OpenLibrary fetching cover images.
+                // The issues seem to be limited to running in AndroidTest
+                // (i.e. the ParseTest class) and do not seem to happen when doing a manual
+                // search in the emulator or on a real device.
+                //
+                // This "catch" code is mainly meant for those test cases:
+                // OpenLibrary is returning a 403 upon the first request to the cover api url:
+                //
+                // example:  ISBN: 9780141346830 => OL28508809M
+                // https://openlibrary.org/books/OL28508809M.json
+                // contains:
+                //   "covers": [
+                //    14615097,
+                //    14615096,
+                //    13011694
+                //  ],
+                // and using the API:
+                // https://openlibrary.org/dev/docs/api/covers
+                // we access:
+                // https://covers.openlibrary.org/b/id/14615097-L.jpg?default=false
+                // ==> IMMEDIATELY a 403....
+                // but using that last url in a browser or with wget will return a 302
+                if (isLoggingEnabled()) {
+                    LoggerFactory.getLogger().e(TAG, e, "fetch",
+                                                "url=" + e.getUrl(),
+                                                "Location=" + e.getLocation());
+                }
+
+                initialRequest.disconnect();
+                // Cannot recover from this, just quit
+                throw e;
+
             } catch (@NonNull final InterruptedIOException
                                     | FileNotFoundException
                                     | UnknownHostException e) {
