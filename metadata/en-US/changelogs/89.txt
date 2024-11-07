@@ -1,0 +1,1 @@
+FIX for #77 Importing Zip file to new device: the book covers are not imported.

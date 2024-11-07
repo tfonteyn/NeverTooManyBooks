@@ -1,3 +1,13 @@
+### 6.3.1
+
+FIXES
+
+- #77 Importing Zip file to new device: the book covers are not imported.
+  This happened when the 'old' device had the covers on secondary/SDCARD storage
+  while the 'new' device does not have secondary storage.
+
+---
+
 ### 6.3.0
 
 NEW:
