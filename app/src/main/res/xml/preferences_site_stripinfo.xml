@@ -42,11 +42,13 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_resolve_authors_bedetheque" />
 
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="psk_sync_options"
-        android:title="@string/action_synchronize">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/login_24px"
+            android:key="stripinfo.login.to.search"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_login_to_search" />
 
         <SwitchPreference
             android:defaultValue="false"
@@ -54,10 +56,14 @@
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
             android:title="@string/option_enable_sync_options" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="psk_credentials"
+        android:title="@string/lbl_credentials">
 
         <EditTextPreference
             android:defaultValue=""
-            android:dependency="stripinfo.enabled"
             android:icon="@drawable/person_24px"
             android:key="stripinfo.host.user"
             android:title="@string/username"
@@ -66,21 +72,11 @@
 
         <EditTextPreference
             android:defaultValue=""
-            android:dependency="stripinfo.enabled"
             android:icon="@drawable/password_24px"
             android:key="stripinfo.host.password"
             android:summary="@string/preference_not_set"
             android:title="@string/password"
             />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:dependency="stripinfo.enabled"
-            android:icon="@drawable/login_24px"
-            android:key="stripinfo.login.to.search"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/lbl_login_to_search" />
 
     </PreferenceCategory>
 

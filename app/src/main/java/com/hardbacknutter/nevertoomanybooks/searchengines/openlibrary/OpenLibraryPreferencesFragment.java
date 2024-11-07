@@ -20,11 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import android.os.Bundle;
-import android.text.InputType;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.preference.EditTextPreference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -36,9 +35,10 @@ public class OpenLibraryPreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
     // category
-    private static final String PSK_SYNC_OPTIONS = "psk_sync_options";
+    private static final String PSK_CREDENTIALS = "psk_credentials";
 
     private SwitchPreference pLoginToSearch;
+    private PreferenceCategory pcCredentials;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -46,46 +46,39 @@ public class OpenLibraryPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_openlibrary, rootKey);
 
-        initValidator(R.string.site_open_library);
-
-        //noinspection DataFlowIssue
-        pLoginToSearch = findPreference(OpenLibraryAuth.PK_LOGIN_TO_SEARCH);
-
-        // Hide the whole category if it's not included in the build.
-        //noinspection DataFlowIssue
-        findPreference(PSK_SYNC_OPTIONS)
-                .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
+        initLoginPrefs();
 
         if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
-            EditTextPreference etp;
-
-            etp = findPreference(OpenLibraryAuth.PK_HOST_USER);
-            //noinspection DataFlowIssue
-            etp.setOnBindEditTextListener(editText -> {
-                editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                editText.selectAll();
-            });
-
-            etp = findPreference(OpenLibraryAuth.PK_HOST_PASS);
-            //noinspection DataFlowIssue
-            etp.setOnBindEditTextListener(editText -> {
-                editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                      | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                editText.selectAll();
-            });
-            etp.setSummaryProvider(preference -> {
-                final String value = ((EditTextPreference) preference).getText();
-                if (value == null || value.isEmpty()) {
-                    return getString(R.string.preference_not_set);
-                } else {
-                    return "********";
-                }
-            });
+            initValidator(R.string.site_open_library);
+            initCredentialPreferences(OpenLibraryAuth.PK_HOST_USER,
+                                      OpenLibraryAuth.PK_HOST_PASS);
         }
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    private void initLoginPrefs() {
+        pLoginToSearch = findPreference(OpenLibraryAuth.PK_LOGIN_TO_SEARCH);
+        pLoginToSearch.setVisible(BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN);
+        pLoginToSearch.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue instanceof Boolean) {
+                final boolean loginOn = (Boolean) newValue;
+                pcCredentials.setEnabled(loginOn);
+            }
+            return true;
+        });
+
+        pcCredentials = findPreference(PSK_CREDENTIALS);
+        pcCredentials.setVisible(BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN);
+        pcCredentials.setEnabled(BuildConfig.ENABLE_STRIP_INFO_LOGIN
+                                 && pLoginToSearch.isChecked());
     }
 
     @Override
     protected boolean shouldProposeValidation() {
-        return pLoginToSearch.isChecked();
+        if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
+            return pLoginToSearch.isChecked();
+        } else {
+            return false;
+        }
     }
 }

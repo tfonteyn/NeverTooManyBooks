@@ -50,11 +50,12 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * 2024-11-06 There are 2 cookies.
+ * Handles all authentication for openlibrary.org access.
  * <p>
- * "pd" with no value ("") set.
- * "session": which is an array with 3 values separated by %2C:
- * "/people/myUserName  %2C  2024-11-06T17%3A15%3A00  %2C  sessionkey"
+ * Note that once we have been authenticated, a cookie is set
+ * <strong>for the duration</strong> of our session.
+ * <p>
+ * TODO: add "Forget credentials" for the current session
  */
 public class OpenLibraryAuth
         implements ConnectionValidator {
@@ -76,6 +77,15 @@ public class OpenLibraryAuth
     private static final String USER_LOGIN_URL = "/account/login";
 
     private static final String COOKIE_DOMAIN = "openlibrary.org";
+
+    /**
+     * Cookie with the userdata.
+     * <p>
+     * It contains 3 values separated by %2C (spaces for clarity)
+     * <pre>
+     * {@code "/people/myUserName  %2C  2024-11-06T17%3A15%3A00  %2C  hexSessionKey"}
+     * </pre>
+     */
     private static final String COOKIE_USERDATA = "session";
 
     @NonNull
@@ -114,7 +124,6 @@ public class OpenLibraryAuth
 
     /**
      * Check whether the user should be logged in to the website during a <strong>search</strong>.
-     * This is independent from synchronization actions (where obviously login is always required).
      *
      * @param context Current context
      *

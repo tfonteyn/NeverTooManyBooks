@@ -33,12 +33,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="psk_sync_options"
-        android:title="@string/lbl_credentials">
-
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/login_24px"
@@ -47,7 +41,13 @@
             android:summaryOn="@string/yes"
             android:title="@string/lbl_login_to_search" />
 
-        <EditTextPreference
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="psk_credentials"
+        android:title="@string/lbl_credentials">
+
+    <EditTextPreference
             android:defaultValue=""
             android:icon="@drawable/person_24px"
             android:key="openlibrary.host.user"
@@ -62,7 +62,6 @@
             android:summary="@string/preference_not_set"
             android:title="@string/password"
             />
-
 
     </PreferenceCategory>
 

@@ -20,11 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import android.os.Bundle;
-import android.text.InputType;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.preference.EditTextPreference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -40,11 +39,12 @@ public class StripInfoBePreferencesFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "StripInfoBePrefFrag";
-    // category
-    private static final String PSK_SYNC_OPTIONS = "psk_sync_options";
+    /** Category. */
+    private static final String PSK_CREDENTIALS = "psk_credentials";
 
     private SwitchPreference pSyncEnabled;
     private SwitchPreference pLoginToSearch;
+    private PreferenceCategory pcCredentials;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -52,53 +52,56 @@ public class StripInfoBePreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
-        initValidator(R.string.site_stripinfo_be);
-
         //noinspection DataFlowIssue
         findPreference("stripinfo.resolve.authors.bedetheque")
                 .setEnabled(ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR));
 
-        // Hide the whole category if it's not included in the build.
-        //noinspection DataFlowIssue
-        findPreference(PSK_SYNC_OPTIONS)
-                .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
-
-        //noinspection DataFlowIssue
-        pSyncEnabled = findPreference(StripInfoHandler.PK_ENABLED);
-        //noinspection DataFlowIssue
-        pLoginToSearch = findPreference(StripInfoAuth.PK_LOGIN_TO_SEARCH);
+        initLoginPrefs();
 
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            EditTextPreference etp;
-
-            etp = findPreference(StripInfoAuth.PK_HOST_USER);
-            //noinspection DataFlowIssue
-            etp.setOnBindEditTextListener(editText -> {
-                editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                editText.selectAll();
-            });
-
-            etp = findPreference(StripInfoAuth.PK_HOST_PASS);
-            //noinspection DataFlowIssue
-            etp.setOnBindEditTextListener(editText -> {
-                editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                      | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                editText.selectAll();
-            });
-            etp.setSummaryProvider(preference -> {
-                final String value = ((EditTextPreference) preference).getText();
-                if (value == null || value.isEmpty()) {
-                    return getString(R.string.preference_not_set);
-                } else {
-                    return "********";
-                }
-            });
+            initValidator(R.string.site_stripinfo_be);
+            initCredentialPreferences(StripInfoAuth.PK_HOST_USER,
+                                      StripInfoAuth.PK_HOST_PASS);
         }
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    private void initLoginPrefs() {
+        pLoginToSearch = findPreference(StripInfoAuth.PK_LOGIN_TO_SEARCH);
+        pLoginToSearch.setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
+        pLoginToSearch.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue instanceof Boolean) {
+                final boolean loginOn = (Boolean) newValue;
+                final boolean syncOn = pSyncEnabled.isChecked();
+                pcCredentials.setEnabled(loginOn || syncOn);
+            }
+            return true;
+        });
+
+        pSyncEnabled = findPreference(StripInfoHandler.PK_ENABLED);
+        pSyncEnabled.setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
+        pSyncEnabled.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue instanceof Boolean) {
+                final boolean loginOn = pLoginToSearch.isChecked();
+                final boolean syncOn = (Boolean) newValue;
+                pcCredentials.setEnabled(loginOn || syncOn);
+            }
+            return true;
+        });
+
+        pcCredentials = findPreference(PSK_CREDENTIALS);
+        pcCredentials.setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
+        pcCredentials.setEnabled(BuildConfig.ENABLE_STRIP_INFO_LOGIN
+                                 && (pLoginToSearch.isChecked() || pSyncEnabled.isChecked()));
     }
 
     @Override
     protected boolean shouldProposeValidation() {
-        return pLoginToSearch.isChecked()
-               || pSyncEnabled.isChecked();
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            return pLoginToSearch.isChecked()
+                   || pSyncEnabled.isChecked();
+        } else {
+            return false;
+        }
     }
 }

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
@@ -28,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.EditTextPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -82,6 +84,39 @@ public abstract class ConnectionValidationBasePreferenceFragment
      */
     protected void initValidator(@StringRes final int siteResId) {
         vm.init(siteResId);
+    }
+
+    /**
+     * Setup the credentials preferences with the required listeners
+     * and summary providers.
+     *
+     * @param pkHostUser preference key for the username field
+     * @param pkHostPass preference key for the password field
+     */
+    protected void initCredentialPreferences(@NonNull final CharSequence pkHostUser,
+                                             @NonNull final CharSequence pkHostPass) {
+        final EditTextPreference pUsername = findPreference(pkHostUser);
+        //noinspection DataFlowIssue
+        pUsername.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT);
+            editText.selectAll();
+        });
+
+        final EditTextPreference pPassword = findPreference(pkHostPass);
+        //noinspection DataFlowIssue
+        pPassword.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            editText.selectAll();
+        });
+        pPassword.setSummaryProvider(preference -> {
+            final String value = ((EditTextPreference) preference).getText();
+            if (value == null || value.isEmpty()) {
+                return getString(R.string.preference_not_set);
+            } else {
+                return "********";
+            }
+        });
     }
 
     @Override

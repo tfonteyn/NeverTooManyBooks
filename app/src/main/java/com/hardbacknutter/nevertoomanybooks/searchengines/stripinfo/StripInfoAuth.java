@@ -51,6 +51,11 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Handles all authentication for stripinfo.be access.
+ * <p>
+ * Note that once we have been authenticated, a cookie is set
+ * <strong>for the duration</strong> of our session.
+ * <p>
+ * TODO: add "Forget credentials" for the current session
  */
 public class StripInfoAuth
         implements ConnectionValidator {
@@ -75,9 +80,17 @@ public class StripInfoAuth
 
     /**
      * Cookie with the userdata as a JSON object.
-     * <p>
-     * si_userdata={"userid":"66","password":"blah","settings":{"acceptCookies":true}};
-     * expires=Tue, 08-Mar-2022 14:22:43 GMT; Max-Age=31536000; path=/; domain=stripinfo.be
+     *
+     * <pre>{@code
+     *      {
+     *          "userid": "66",
+     *          "password": "blah",
+     *          "settings": {
+     *              "acceptCookies":true
+     *          }
+     *      }
+     * }
+     * </pre>
      */
     private static final String COOKIE_USERDATA = "si_userdata";
 
