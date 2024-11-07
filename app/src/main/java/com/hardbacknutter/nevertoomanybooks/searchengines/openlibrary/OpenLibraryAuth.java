@@ -69,8 +69,6 @@ public class OpenLibraryAuth
     static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
     static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
 
-    static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
-
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
 
@@ -120,23 +118,6 @@ public class OpenLibraryAuth
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
                       .setReadTimeout(config.getReadTimeoutInMs(context))
                       .setThrottler(config.getThrottler());
-    }
-
-    /**
-     * Check whether the user should be logged in to the website during a <strong>search</strong>.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if we should perform a login
-     */
-    @AnyThread
-    static boolean isLoginToSearch(@NonNull final Context context) {
-        if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
-            return PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
-        } else {
-            return false;
-        }
     }
 
     /**

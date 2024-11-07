@@ -26,6 +26,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -76,6 +78,8 @@ public class OpenLibrary2SearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
+    static final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
+                                             + ".login.to.search";
     private static final String BASE_BOOK_URL = "/search.json?"
                                                 + "q=%1$s"
                                                 + "&fields=key,editions";
@@ -111,10 +115,10 @@ public class OpenLibrary2SearchEngine
      */
     private static final int COVER_BY_ISBN_REQUEST_DELAY = 3_000;
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
-    @Nullable
-    private FutureHttpGet<String> futureHttpGet;
     @NonNull
     private final CookieManager cookieManager;
+    @Nullable
+    private FutureHttpGet<String> futureHttpGet;
     @Nullable
     private OpenLibraryAuth loginHelper;
 
@@ -130,6 +134,22 @@ public class OpenLibrary2SearchEngine
         super(appContext, config);
 
         cookieManager = ServiceLocator.getInstance().getCookieManager();
+    }
+
+    /**
+     * Check whether the user should be logged in to the website during a <strong>search</strong>.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we should perform a login
+     */
+    private static boolean isLoginToSearch(@NonNull final Context context) {
+        if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
+        } else {
+            return false;
+        }
     }
 
     @NonNull
@@ -148,7 +168,7 @@ public class OpenLibrary2SearchEngine
 
     private void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
-        if (OpenLibraryAuth.isLoginToSearch(context)) {
+        if (isLoginToSearch(context)) {
             // depending if we get here from a search or from a sync,
             // the loginHelper MIGHT already exist so don't login twice!
             if (loginHelper == null) {
@@ -243,8 +263,8 @@ public class OpenLibrary2SearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param book        Bundle to update
      *
-     * @throws StorageException on storage related failures
-     * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
     private void fetchBook(@NonNull final Context context,

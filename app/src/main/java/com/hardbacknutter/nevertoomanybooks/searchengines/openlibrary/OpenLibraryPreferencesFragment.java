@@ -57,7 +57,7 @@ public class OpenLibraryPreferencesFragment
 
     @SuppressWarnings("DataFlowIssue")
     private void initLoginPrefs() {
-        pLoginToSearch = findPreference(OpenLibraryAuth.PK_LOGIN_TO_SEARCH);
+        pLoginToSearch = findPreference(OpenLibrary2SearchEngine.PK_LOGIN_TO_SEARCH);
         pLoginToSearch.setVisible(BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN);
         pLoginToSearch.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof Boolean) {
