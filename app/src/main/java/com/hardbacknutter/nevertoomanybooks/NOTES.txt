@@ -32,6 +32,7 @@ FIXES:
 - #77 Importing Zip file to new device, no book covers.
       This happened when the 'old' device had the covers on secondary/SDCARD storage
       while the 'new' device does not have secondary storage.
+- improve some author parsing issues with OpenLibrary
 
 REMOVED:
 
