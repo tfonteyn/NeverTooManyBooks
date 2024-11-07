@@ -174,6 +174,28 @@ public class StripInfoSearchEngine
         this.loginHelper = loginHelper;
     }
 
+    private void login(@NonNull final Context context)
+            throws CredentialsException, SearchException {
+        if (StripInfoAuth.isLoginToSearch(context)) {
+            // depending if we get here from a search or from a sync,
+            // the loginHelper MIGHT already exist so don't login twice!
+            if (loginHelper == null) {
+                loginHelper = new StripInfoAuth(context, cookieManager);
+                try {
+                    loginHelper.login();
+                } catch (@NonNull final IOException | StorageException e) {
+                    loginHelper = null;
+                    throw new SearchException(getEngineId(), e);
+                }
+            }
+        }
+
+        if (loginHelper != null) {
+            // Recreate every time we load a doc; the user could have changed the preferences.
+            collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
+        }
+    }
+
     @Override
     public void cancel() {
         synchronized (this) {
@@ -194,25 +216,7 @@ public class StripInfoSearchEngine
                                  @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
 
-        if (StripInfoAuth.isLoginToSearch(context)) {
-            // depending if we get here from a search or from a sync,
-            // the loginHelper MIGHT already exist so don't login twice!
-            if (loginHelper == null) {
-                loginHelper = new StripInfoAuth(context, cookieManager);
-                try {
-                    loginHelper.login();
-                } catch (@NonNull final IOException | StorageException e) {
-                    loginHelper = null;
-                    throw new SearchException(getEngineId(), e);
-                }
-            }
-        }
-
-        if (loginHelper != null) {
-            // Recreate every time we load a doc; the user could have changed the preferences.
-            collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
-        }
-
+        login(context);
         return super.loadDocument(context, url, requestProperties);
     }
 
