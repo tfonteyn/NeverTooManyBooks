@@ -781,11 +781,14 @@ public class OpenLibrary2SearchEngine
                 final String name = c.optString("name", null);
                 if (name != null) {
                     final Author author = Author.from(name);
+                    final int type;
                     final String role = c.optString("role", null);
                     if (role != null) {
-                        author.setType(authorTypeMapper.map(getLocale(context), role));
+                        type = authorTypeMapper.map(getLocale(context), role);
+                    } else {
+                        type = Author.TYPE_UNKNOWN;
                     }
-                    book.add(author);
+                    addAuthor(author, type, book);
                 }
             }
         }
