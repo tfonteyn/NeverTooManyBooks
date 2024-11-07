@@ -72,7 +72,8 @@ public class ParseTest
     }
 
     @NonNull
-    private Book getBook(final int resId)
+    private Book getBook(final int resId,
+                         @NonNull final boolean[] fetchCovers)
             throws IOException, StorageException, SearchException, CredentialsException {
         final Book book = new Book();
 
@@ -81,8 +82,7 @@ public class ParseTest
                                                      .getResources().openRawResource(resId)) {
             assertNotNull(is);
             final String response = searchEngine.readResponseStream(is);
-            searchEngine.parse(context, new JSONObject(response),
-                               new boolean[]{true, true}, book);
+            searchEngine.parse(context, new JSONObject(response), fetchCovers, book);
         }
         return book;
     }
@@ -93,7 +93,8 @@ public class ParseTest
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
         // https://openlibrary.org/books/OL22853304M.json
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9780980200447);
+                                          .R.raw.openlibrary2_9780980200447,
+                                  new boolean[]{true, true});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -169,7 +170,8 @@ public class ParseTest
             throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9780734418227);
+                                          .R.raw.openlibrary2_9780734418227,
+                                  new boolean[]{true, true});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -212,7 +214,8 @@ public class ParseTest
     public void parse3()
             throws IOException, StorageException, SearchException, CredentialsException {
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9780141346830);
+                                          .R.raw.openlibrary2_9780141346830,
+                                  new boolean[]{true, true});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -257,7 +260,8 @@ public class ParseTest
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
         // https://openlibrary.org/books/OL36696710M.json
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9783103971422);
+                                          .R.raw.openlibrary2_9783103971422,
+                                  new boolean[]{true, true});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -301,5 +305,70 @@ public class ParseTest
         //]
         assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
                                           + "_12585189_0_"));
+    }
+
+    @Test
+    public void parse5()
+            throws IOException, StorageException, SearchException, CredentialsException {
+        // https://openlibrary.org/search.json?q=9780553276329&fields=key,editions
+        // https://openlibrary.org/books/OL7824144M.json
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.openlibrary2_9780553276329,
+                                  new boolean[]{false, false});
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        //Log.d(TAG, book.toString());
+
+        assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
+        assertEquals("9780553276329", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("OL7824144M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("1984-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("270", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Mass Market Paperback", book.getString(DBKey.FORMAT, null));
+
+        assertEquals("361081", book.getString(DBKey.SID_GOODREADS_BOOK, null));
+        assertEquals("1182484", book.getString(DBKey.SID_LIBRARY_THING, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Bantam", allPublishers.get(0).getName());
+
+        // author_list=[
+        // Author{id=0, familyName=`Cussler`, givenNames=`Clive`, complete=false, type=0b0: Type{}, realAuthor=null},
+        // Author{id=0, familyName=`Cussler`, givenNames=`Clive`, complete=false, type=0b100: Type{Author.TYPE_FOREWORD}, realAuthor=null}],
+
+        final List<Author> authors = book.getAuthors();
+        Author author;
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        author = authors.get(0);
+        assertEquals("Cussler", author.getFamilyName());
+        assertEquals("Clive", author.getGivenNames());
+        assertEquals(Author.TYPE_FOREWORD, author.getType());
+
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(2, allSeries.size());
+
+        assertEquals("NUMA Files, 1; Dirk Pitt Adventures", allSeries.get(0).getTitle());
+        assertEquals("1", allSeries.get(0).getNumber());
+
+        assertEquals("Dirk Pitt Adventures", allSeries.get(0).getTitle());
+        assertEquals("1", allSeries.get(0).getNumber());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        //  "covers": [
+        //    368945
+        //  ],
+        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                          + "_368945_0_"));
     }
 }
