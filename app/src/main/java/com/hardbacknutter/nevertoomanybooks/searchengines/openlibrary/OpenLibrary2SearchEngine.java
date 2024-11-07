@@ -591,6 +591,8 @@ public class OpenLibrary2SearchEngine
             book.putString(DBKey.PAGE_COUNT, String.valueOf(i));
         }
 
+        // TODO: There is another field "physical_dimensions".
+        //  Maybe use that if the format is not present?
         s = document.optString("physical_format", null);
         if (s != null && !s.isEmpty()) {
             book.putString(DBKey.FORMAT, s);
@@ -609,7 +611,6 @@ public class OpenLibrary2SearchEngine
             processIdentifiers(element, book);
         }
 
-        // seemingly unstructured
         a = document.optJSONArray("series");
         if (a != null && !a.isEmpty()) {
             processSeries(a, book);
@@ -625,11 +626,28 @@ public class OpenLibrary2SearchEngine
             addPublicationDate(context, getLocale(context), s, book);
         }
 
+        //TODO: parse the "copyright_date" but need more examples of data.
+        //  "copyright_date": "1982, 1994",
+        //        s = document.optString("copyright_date", null);
+        //        if (s != null && !s.isEmpty()) {
+        //
+        //        }
+
         // "subjects": [
         //            {
         //                "name": "History",
         //                "url": "https://openlibrary.org/subjects/history"
         //            },
+        //
+        // Also seen in a different format:
+        //  "subjects": [
+        //    "Fiction - Espionage / Thriller",
+        //    "Fiction",
+        //    "Espionage/Intrigue",
+        //    "Thrillers",
+        //    "Fiction / Thrillers",
+        //    "Action & Adventure"
+        //  ]
         // could be used for genres... but the subject list for a single book can be very large
 
 
@@ -692,6 +710,25 @@ public class OpenLibrary2SearchEngine
         }
     }
 
+    /**
+     * The series object is rather unstructured.
+     * It's an array, but my (limited) tests have only ever found 1 entry.
+     * However, a single entry can apparently have data for 2 series (oh boy...).
+     * We are NOT even going to attempt to parse the latter case....
+     *
+     * <pre>
+     * "series": [
+     *     "Nevermoor"
+     * ]
+     *
+     * "series": [
+     *     "NUMA Files, 1; Dirk Pitt Adventures, 1"
+     *  ],
+     * </pre>
+     *
+     * @param a    array with series elements
+     * @param book destination
+     */
     private void processSeries(@NonNull final JSONArray a,
                                @NonNull final Book book) {
         String name;
