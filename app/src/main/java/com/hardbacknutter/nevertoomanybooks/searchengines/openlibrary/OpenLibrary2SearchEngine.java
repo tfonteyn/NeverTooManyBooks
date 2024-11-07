@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.net.CookieManager;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,8 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -92,7 +95,7 @@ public class OpenLibrary2SearchEngine
      * param 1: key can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
      * param 2: value of the chosen key
      * param 3: one of S, M and L for small, medium and large respectively.
-     *
+     * <p>
      * When there is no cover, the server returns a blank image by default.
      * Adding "?default=false": forces a 404 to be returned
      */
@@ -110,6 +113,10 @@ public class OpenLibrary2SearchEngine
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @Nullable
     private FutureHttpGet<String> futureHttpGet;
+    @NonNull
+    private final CookieManager cookieManager;
+    @Nullable
+    private OpenLibraryAuth loginHelper;
 
     /**
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
@@ -121,15 +128,8 @@ public class OpenLibrary2SearchEngine
     public OpenLibrary2SearchEngine(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-    }
 
-    @NonNull
-    @Override
-    public <T> FutureHttpGet<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> futureGetRequest = super.createGetDocumentRequest(context);
-        futureGetRequest.setEnable404Redirect(true);
-
-        return futureGetRequest;
+        cookieManager = ServiceLocator.getInstance().getCookieManager();
     }
 
     @NonNull
@@ -137,6 +137,43 @@ public class OpenLibrary2SearchEngine
     public String createBrowserUrl(@NonNull final Context context,
                                    @NonNull final String externalId) {
         return getHostUrl(context) + "/books/" + externalId;
+    }
+
+    public void setLoginHelper(@NonNull final OpenLibraryAuth loginHelper) {
+        if (BuildConfig.DEBUG /* always */) {
+            loginHelper.getUserId().orElseThrow();
+        }
+        this.loginHelper = loginHelper;
+    }
+
+    private void login(@NonNull final Context context)
+            throws CredentialsException, SearchException {
+        if (OpenLibraryAuth.isLoginToSearch(context)) {
+            // depending if we get here from a search or from a sync,
+            // the loginHelper MIGHT already exist so don't login twice!
+            if (loginHelper == null) {
+                loginHelper = new OpenLibraryAuth(context, cookieManager);
+                try {
+                    loginHelper.login();
+                } catch (@NonNull final IOException | StorageException e) {
+                    loginHelper = null;
+                    throw new SearchException(getEngineId(), e);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (futureHttpGet != null) {
+                futureHttpGet.cancel();
+            }
+            if (loginHelper != null) {
+                loginHelper.cancel();
+            }
+        }
     }
 
     @NonNull
@@ -197,16 +234,6 @@ public class OpenLibrary2SearchEngine
         return book;
     }
 
-    @Override
-    public void cancel() {
-        synchronized (this) {
-            super.cancel();
-            if (futureHttpGet != null) {
-                futureHttpGet.cancel();
-            }
-        }
-    }
-
     /**
      * Fetch and parse.
      *
@@ -218,14 +245,17 @@ public class OpenLibrary2SearchEngine
      *
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Book book)
-            throws StorageException, SearchException {
+            throws StorageException, SearchException, CredentialsException {
 
         futureHttpGet = createGetDocumentRequest(context);
+
+        login(context);
 
         try {
             // get and store the result into a string.
@@ -476,17 +506,21 @@ public class OpenLibrary2SearchEngine
                @NonNull final JSONObject document,
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
-            throws StorageException, IOException {
+            throws StorageException, IOException, SearchException, CredentialsException {
 
         JSONObject element;
         JSONArray a;
         String s;
         final int i;
 
+        @Nullable
+        String olid = null;
+
         // "/books/OL22853304M"
         s = document.optString("key", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.SID_OPEN_LIBRARY, s.substring("/books/".length()));
+            olid = s.substring("/books/".length());
+            book.putString(DBKey.SID_OPEN_LIBRARY, olid);
         }
 
         s = document.optString("title", null);
@@ -616,16 +650,16 @@ public class OpenLibrary2SearchEngine
         // ]
         a = document.optJSONArray("covers");
         if (a != null && !a.isEmpty()) {
-            fetchCovers(context, a, fetchCovers, book);
+            fetchCoverByCoverId(context, a, fetchCovers, book);
         }
     }
 
 
-    private void fetchCovers(@NonNull final Context context,
-                             @NonNull final JSONArray coverIds,
-                             @NonNull final boolean[] fetchCovers,
-                             @NonNull final Book book)
-            throws StorageException {
+    private void fetchCoverByCoverId(@NonNull final Context context,
+                                     @NonNull final JSONArray coverIds,
+                                     @NonNull final boolean[] fetchCovers,
+                                     @NonNull final Book book)
+            throws StorageException, SearchException, CredentialsException {
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             if (fetchCovers[cIdx] && coverIds.length() > cIdx) {
                 final int coverId = coverIds.optInt(cIdx);
@@ -1043,7 +1077,7 @@ public class OpenLibrary2SearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 1) final int cIdx,
                                                  @Nullable final Size size)
-            throws StorageException {
+            throws StorageException, SearchException, CredentialsException {
 
         if (altEdition instanceof AltEditionOpenLibrary) {
             final AltEditionOpenLibrary edition = (AltEditionOpenLibrary) altEdition;
@@ -1083,14 +1117,16 @@ public class OpenLibrary2SearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @NonNull
     private Optional<String> searchBestCover(@NonNull final Context context,
                                              @NonNull final String key,
                                              @NonNull final String id,
                                              final int cIdx)
-            throws StorageException {
+            throws StorageException, SearchException, CredentialsException {
 
         Optional<String> oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Large);
         if (oFileSpec.isEmpty()) {
@@ -1113,7 +1149,9 @@ public class OpenLibrary2SearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @NonNull
     private Optional<String> searchCoverByKey(@NonNull final Context context,
@@ -1121,7 +1159,10 @@ public class OpenLibrary2SearchEngine
                                               @NonNull final String id,
                                               @IntRange(from = 0, to = 1) final int cIdx,
                                               @Nullable final Size size)
-            throws StorageException {
+            throws StorageException, SearchException, CredentialsException {
+
+        login(context);
+
         final String sizeParam;
         if (size == null) {
             sizeParam = "L";
@@ -1145,9 +1186,9 @@ public class OpenLibrary2SearchEngine
         // The traffic from a simple request for a cover when using wget:
         // $ wget -d -O image.jpg https://covers.openlibrary.org/b/id/13769253-L.jpg?default=false
         //302 Found
-        //Location: https://archive.org/download/l_covers_0013/l_covers_0013_76.zip/0013769253-L.jpg [following]
+        //Location: https://archive.org/download/l_covers_0013/l_covers_0013_76.zip/0013769253-L.jpg
         //302 Found
-        //Location: https://ia801909.us.archive.org/view_archive.php?archive=/31/items/l_covers_0013/l_covers_0013_76.zip&file=0013769253-L.jpg [following]
+        //Location: https://ia801909.us.archive.org/view_archive.php?archive=/31/items/l_covers_0013/l_covers_0013_76.zip&file=0013769253-L.jpg
         //200 OK
         //Saving to: ‘image.jpg’
 
@@ -1157,5 +1198,26 @@ public class OpenLibrary2SearchEngine
                     COVER_BY_ISBN_REQUEST_DELAY);
         }
         return saveImage(context, url, id, cIdx, size);
+    }
+
+    @NonNull
+    @Override
+    public <T> FutureHttpGet<T> createGetDocumentRequest(@NonNull final Context context) {
+        final FutureHttpGet<T> request = super.createGetDocumentRequest(context);
+        request.setEnable404Redirect(true);
+
+        return request;
+    }
+
+    @NonNull
+    public <T> FutureHttpGet<T> createGetImageRequest(@NonNull final Context context) {
+        final FutureHttpGet<T> request = createGetDocumentRequest(context);
+        request.setInstanceFollowRedirects(true);
+        request.setEnable404Redirect(true);
+
+        //        request.setRequestProperty(HttpConstants.ACCEPT, "*/*");
+        //        request.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
+        //                                   HttpConstants.ACCEPT_ENCODING_IDENTITY);
+        return request;
     }
 }

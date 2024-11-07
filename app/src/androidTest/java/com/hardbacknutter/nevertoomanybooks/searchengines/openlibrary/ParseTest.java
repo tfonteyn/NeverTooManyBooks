@@ -29,6 +29,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -38,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -71,7 +73,7 @@ public class ParseTest
 
     @NonNull
     private Book getBook(final int resId)
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
         final Book book = new Book();
 
         // getContext(): we want the "androidTest" context which is where our test resources live
@@ -87,7 +89,7 @@ public class ParseTest
 
     @Test
     public void parse1()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
         // https://openlibrary.org/books/OL22853304M.json
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
@@ -164,7 +166,7 @@ public class ParseTest
 
     @Test
     public void parse2()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
                                           .R.raw.openlibrary2_9780734418227);
@@ -208,7 +210,7 @@ public class ParseTest
 
     @Test
     public void parse3()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
                                           .R.raw.openlibrary2_9780141346830);
 
@@ -251,7 +253,7 @@ public class ParseTest
 
     @Test
     public void parse4()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
         // https://openlibrary.org/books/OL36696710M.json
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
