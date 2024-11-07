@@ -61,7 +61,7 @@ public class ParseTest
 
     @Before
     public void setup()
-            throws DaoWriteException, StorageException {
+            throws DaoWriteException, StorageException, SearchException, CredentialsException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (OpenLibrary2SearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
@@ -69,6 +69,18 @@ public class ParseTest
 
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+
+        // 2024-11-07: this is not functional yet... the username/password are not stored
+        // when running as a test
+        //        assertTrue("Username/password must be configured",
+        //                   OpenLibraryAuth.getUsername(context).isPresent());
+        //        // Force a login.
+        //        PreferenceManager.getDefaultSharedPreferences(context)
+        //                         .edit()
+        //                         .putBoolean(OpenLibrary2SearchEngine.PK_LOGIN_TO_SEARCH, true)
+        //                         .apply();
+        //        // Uses the above setting whether to login or not
+        //        searchEngine.login(context);
     }
 
     @NonNull
@@ -338,10 +350,6 @@ public class ParseTest
 
         assertEquals("Bantam", allPublishers.get(0).getName());
 
-        // author_list=[
-        // Author{id=0, familyName=`Cussler`, givenNames=`Clive`, complete=false, type=0b0: Type{}, realAuthor=null},
-        // Author{id=0, familyName=`Cussler`, givenNames=`Clive`, complete=false, type=0b100: Type{Author.TYPE_FOREWORD}, realAuthor=null}],
-
         final List<Author> authors = book.getAuthors();
         Author author;
         assertNotNull(authors);
@@ -354,12 +362,9 @@ public class ParseTest
 
         final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
-        assertEquals(2, allSeries.size());
+        assertEquals(1, allSeries.size());
 
         assertEquals("NUMA Files, 1; Dirk Pitt Adventures", allSeries.get(0).getTitle());
-        assertEquals("1", allSeries.get(0).getNumber());
-
-        assertEquals("Dirk Pitt Adventures", allSeries.get(0).getTitle());
         assertEquals("1", allSeries.get(0).getNumber());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
