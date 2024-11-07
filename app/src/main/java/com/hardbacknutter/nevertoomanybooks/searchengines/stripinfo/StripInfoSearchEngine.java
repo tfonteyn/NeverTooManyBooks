@@ -254,17 +254,17 @@ public class StripInfoSearchEngine
         final String url = getHostUrl(context) + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            processDocument(context, validIsbn, document, fetchCovers, book);
+            parseRootDocument(context, validIsbn, document, fetchCovers, book);
         }
         return book;
     }
 
     @VisibleForTesting
-    public void processDocument(@NonNull final Context context,
-                                @NonNull final String validIsbn,
-                                @NonNull final Document document,
-                                @NonNull final boolean[] fetchCovers,
-                                @NonNull final Book book)
+    public void parseRootDocument(@NonNull final Context context,
+                                  @NonNull final String validIsbn,
+                                  @NonNull final Document document,
+                                  @NonNull final boolean[] fetchCovers,
+                                  @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
         if (isMultiResult(document)) {
             parseMultiResult(context, document, fetchCovers, book);
@@ -272,8 +272,8 @@ public class StripInfoSearchEngine
             parse(context, document, fetchCovers, book, getAuthorResolvers(context));
         }
 
-        // Finally, try and replace potential invalid ISBN numbers
-        // with the barcode as found on the site
+        // Finally, replace potential invalid ISBN numbers.
+        // See method docs for details
         processBarcode(validIsbn, book);
     }
 
@@ -296,10 +296,10 @@ public class StripInfoSearchEngine
      * @throws StorageException     on storage related failures
      */
     @WorkerThread
-    private void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
+    public void parseMultiResult(@NonNull final Context context,
+                                 @NonNull final Document document,
+                                 @NonNull final boolean[] fetchCovers,
+                                 @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
@@ -362,7 +362,7 @@ public class StripInfoSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // extracted from the page header.
-        final String primarySeriesTitle = processPrimarySeriesTitle(document);
+        final String primarySeriesTitle = parsePrimarySeriesTitle(document);
         // extracted from the title section.
         String primarySeriesBookNr = null;
 
@@ -389,7 +389,7 @@ public class StripInfoSearchEngine
                         book.putString(DBKey.TITLE, SearchEngineUtils
                                 .cleanText(titleUrlElement.text()));
                         // extract the external (site) id from the url
-                        externalId = processExternalId(titleUrlElement, book);
+                        externalId = parseExternalId(titleUrlElement, book);
 
                         final Elements tds = row.select("td");
                         int i = 0;
@@ -480,7 +480,7 @@ public class StripInfoSearchEngine
                                     break;
                                 }
                                 case "Collectie": {
-                                    i += processSeriesOrCollection(td, book);
+                                    i += parseSeriesOrCollection(td, book);
                                     break;
                                 }
                                 case "Oplage": {
@@ -500,7 +500,7 @@ public class StripInfoSearchEngine
                                     break;
                                 }
                                 case "": {
-                                    i += processEmptyLabel(td, book);
+                                    i += parseEmptyLabel(td, book);
                                     break;
                                 }
                                 case "Cycli":
@@ -551,7 +551,7 @@ public class StripInfoSearchEngine
 
         // are we logged in ? Then look for any user data.
         if (loginHelper != null) {
-            processUserdata(document, book, externalId);
+            parseUserdata(document, book, externalId);
         }
 
         // post-process all found data.
@@ -609,7 +609,11 @@ public class StripInfoSearchEngine
     }
 
     /**
-     * Parse the barcode found during the search.
+     * Try and replace potential invalid ISBN numbers
+     * with the barcode as found on the site.
+     * We do this because the site will ON PURPOSE list invalid ISBN
+     * numbers as present of the physical book,
+     * while the barcode field will (usually) contain the correct ISBN number.
      *
      * @param searchIsbnText the ISBN which we searched for
      * @param book           Bundle to update
@@ -815,8 +819,8 @@ public class StripInfoSearchEngine
      * @return the website book id, or {@code 0} if not found.
      *         The latter should never happen unless the website structure was changed.
      */
-    private long processExternalId(@NonNull final Element titleUrlElement,
-                                   @NonNull final Book book) {
+    private long parseExternalId(@NonNull final Element titleUrlElement,
+                                 @NonNull final Book book) {
         long bookId = 0;
         try {
             final String titleUrl = titleUrlElement.attr("href");
@@ -863,8 +867,8 @@ public class StripInfoSearchEngine
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processEmptyLabel(@NonNull final Element td,
-                                  @NonNull final Book book) {
+    private int parseEmptyLabel(@NonNull final Element td,
+                                @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
             final String text = dataElement.text().strip();
@@ -910,7 +914,7 @@ public class StripInfoSearchEngine
      * @return title, or {@code null} for none
      */
     @Nullable
-    private String processPrimarySeriesTitle(@NonNull final Element document) {
+    private String parsePrimarySeriesTitle(@NonNull final Element document) {
         final Element seriesElement = document.selectFirst("h1.c12");
         // Two possibilities:
         // <h1 class="c12">
@@ -948,8 +952,8 @@ public class StripInfoSearchEngine
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processSeriesOrCollection(@NonNull final Element td,
-                                          @NonNull final Book book) {
+    private int parseSeriesOrCollection(@NonNull final Element td,
+                                        @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
@@ -1039,9 +1043,9 @@ public class StripInfoSearchEngine
      * @param book       Bundle to update
      * @param externalId StripInfo id for the book
      */
-    private void processUserdata(@NonNull final Element document,
-                                 @NonNull final Book book,
-                                 final long externalId) {
+    private void parseUserdata(@NonNull final Element document,
+                               @NonNull final Book book,
+                               final long externalId) {
 
         jSoupHelper.getPositiveLong(document, "stripCollectie-" + externalId).ifPresent(
                 collectionId -> {

@@ -537,8 +537,8 @@ public class ParseTest
         final Book book = new Book();
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
-        searchEngine.processDocument(context, "9782756010830",
-                                     document, new boolean[]{false, false}, book);
+        searchEngine.parseRootDocument(context, "9782756010830",
+                                       document, new boolean[]{false, false}, book);
 
         assertFalse(book.isEmpty());
         // Log.d(TAG, book.toString());
