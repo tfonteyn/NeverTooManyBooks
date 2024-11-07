@@ -23,7 +23,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.LocaleList;
-import android.text.InputType;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -82,8 +81,10 @@ public class CalibrePreferencesFragment
 
         initValidator(R.string.site_calibre);
 
+        //noinspection DataFlowIssue
         pSyncEnabled = findPreference(CalibreHandler.PK_ENABLED);
 
+        //noinspection DataFlowIssue
         pDownloadFolder = findPreference(PSK_PICK_FOLDER);
         //noinspection DataFlowIssue
         setDownloadFolderSummary(pDownloadFolder);
@@ -94,10 +95,12 @@ public class CalibrePreferencesFragment
             return true;
         });
 
+        //noinspection DataFlowIssue
         pHostUrl = findPreference(CalibreContentServer.PK_HOST_URL);
         //noinspection DataFlowIssue
         hostUrlValidator = initHostUrlPreference(pHostUrl);
 
+        //noinspection DataFlowIssue
         pCACert = findPreference(PSK_CA_FROM_FILE);
         //noinspection DataFlowIssue
         pCACert.setSummary(createCaSummary());
@@ -106,30 +109,8 @@ public class CalibrePreferencesFragment
             return true;
         });
 
-        EditTextPreference etp;
-
-        etp = findPreference(CalibreContentServer.PK_HOST_USER);
-        //noinspection DataFlowIssue
-        etp.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT);
-            editText.selectAll();
-        });
-
-        etp = findPreference(CalibreContentServer.PK_HOST_PASS);
-        //noinspection DataFlowIssue
-        etp.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                  | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            editText.selectAll();
-        });
-        etp.setSummaryProvider(preference -> {
-            final String value = ((EditTextPreference) preference).getText();
-            if (value == null || value.isEmpty()) {
-                return getString(R.string.preference_not_set);
-            } else {
-                return "********";
-            }
-        });
+        initCredentialPreferences(CalibreContentServer.PK_HOST_USER,
+                                  CalibreContentServer.PK_HOST_PASS);
     }
 
     @Override
