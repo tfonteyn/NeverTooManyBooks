@@ -67,7 +67,7 @@ public class StripInfoBePreferencesFragment
 
     @SuppressWarnings("DataFlowIssue")
     private void initLoginPrefs() {
-        pLoginToSearch = findPreference(StripInfoAuth.PK_LOGIN_TO_SEARCH);
+        pLoginToSearch = findPreference(StripInfoSearchEngine.PK_LOGIN_TO_SEARCH);
         pLoginToSearch.setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
         pLoginToSearch.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof Boolean) {

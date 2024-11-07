@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -98,6 +100,8 @@ public class StripInfoSearchEngine
                    SearchEngine.ByBarcode {
 
     public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
+    static final String PK_LOGIN_TO_SEARCH = EngineId.StripInfoBe.getPreferenceKey()
+                                             + ".login.to.search";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
     /** Color string values as used on the site. Complete 2019-10-29. */
@@ -155,6 +159,22 @@ public class StripInfoSearchEngine
         ratingParser = new RatingParser(10);
     }
 
+    /**
+     * Check whether the user should be logged in to the website during a <strong>search</strong>.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we should perform a login
+     */
+    private static boolean isLoginToSearch(@NonNull final Context context) {
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
+        } else {
+            return false;
+        }
+    }
+
     @NonNull
     private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
         return AuthorResolverFactory.getResolvers(context, this);
@@ -176,7 +196,7 @@ public class StripInfoSearchEngine
 
     private void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
-        if (StripInfoAuth.isLoginToSearch(context)) {
+        if (isLoginToSearch(context)) {
             // depending if we get here from a search or from a sync,
             // the loginHelper MIGHT already exist so don't login twice!
             if (loginHelper == null) {
