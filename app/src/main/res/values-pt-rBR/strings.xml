@@ -1,2 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<!--
+  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  --><!--
+    Reference sites:
+    https://www.abbreviations.com/
+
+     Some linguists, especially in British English, believe that "loan" should only
+     be used as a noun, while the correct verb is only "lend."
+
+
+    ENTITY:
+    Define entities that can be used inside of other string (not possible with standard Android
+    resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
+    cannot put these into an external file: https://issuetracker.google.com/issues/68434088
+
+    Each language string.xml file uses localized quotes as per
+    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
+    See top of each language resource file for the "quotes" comment.
+
+    Plurals:
+    http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+        cardinal
+--><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">%1$d Livro</item>
+        <item quantity="many">%1$d Livros</item>
+        <item quantity="other">%1$d Livros</item>
+    </plurals>
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d livro encontrado</item>
+        <item quantity="many">%1$d livros encontrados</item>
+        <item quantity="other">%1$d livros encontrados</item>
+    </plurals>
+    <plurals name="n_stars">
+        <item quantity="one">%1$s estrela</item>
+        <item quantity="many">%1$s estrelas</item>
+        <item quantity="other">%1$s estrelas</item>
+    </plurals>
+    <string name="a_b">%1$s%2$s</string>
+    <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="list_element">• %s</string>
+    <string name="notification_channel_error">Erro</string>
+    <string name="notification_channel_warn">Aviso</string>
+    <string name="notification_channel_info">Informações</string>
+    <string name="acra_report_saved">Agora você pode visitar a página do projeto no Github e registrar um novo problema. Anexe o relatório salvo anteriormente ao problema. Se você ainda não tem uma conta no Github, precisará criar uma.</string>
+    <string name="httpErrorTimeout">A conexão com o servidor expirou.</string>
+    <string name="httpErrorFailedSslHandshake">Não foi possível estabelecer uma conexão segura.</string>
+    <string name="httpErrorFile">Não foi possível acessar o arquivo.</string>
+    <string name="error_invalid_url">Endereço inválido (URL)</string>
+    <string name="error_unexpected">Ocorreu um erro inesperado.</string>
+    <string name="error_import_failed">Falha na importação</string>
+    <string name="error_import_csv_missing_columns_x">O arquivo deve conter uma coluna com um dos seguintes nomes: %1$s</string>
+    <string name="error_import_csv_line">Erro desconhecido na linha %1$d</string>
+    <string name="warning_import_failed_for_these_books">A importação falhou para estes livros/linhas:</string>
+    <string name="warning_import_failed_for_these_books_and_more">e %1$d mais.</string>
+    <string name="warning_export_contains_no_data">Não havia nada para exportar.</string>
+    <string name="warning_book_not_found">Não foi possível encontrar o livro especificado.</string>
+    <string name="warning_no_search_data_for_active_sites">Não há dados de pesquisa válidos para sites ativos.</string>
+    <string name="warning_immediate_global_changes">AVISO: As alterações salvas são aplicadas instantaneamente a todos os livros.</string>
+    <string name="warning_x_already_exists">%1$s já existe.</string>
+    <string name="warning_select_at_least_1_group">Selecione pelo menos um grupo.</string>
+    <string name="warning_nothing_selected">Nada selecionado</string>
+    <string name="warning_requires_at_least_1_field">Pelo menos um campo não deve estar em branco.</string>
+    <string name="warning_missing_title_or_author">O título e/ou o autor devem ser especificados.</string>
+    <string name="warning_requires_isbn">Esta ação requer um ISBN válido.</string>
+    <string name="warning_requires_site_and_id">Selecione um site e insira um ID.</string>
+    <string name="warning_cannot_delete_1st_bs">A primeira Estante não pode ser excluída.</string>
+    <string name="warning_already_in_list">Já está na lista!</string>
+    <string name="warning_no_matching_book_found">Nenhum livro correspondente encontrado</string>
+    <string name="warning_image_copy_failed">A imagem não pôde ser copiada.</string>
+    <string name="warning_if_day_set_month_and_year_must_be">Se um dia for especificado, tanto o mês quanto o ano deverão ser especificados.</string>
+    <string name="warning_if_month_set_year_must_be">Se um mês for especificado, um ano também deverá ser especificado.</string>
+    <string name="warning_backup_request">Gostaria de fazer backup do seu banco de dados no seu cartão SD?</string>
+    <string name="warning_restart_required">É necessário reiniciar o app</string>
+    <string name="warning_requires_android_x">Requer Android %1$d ou superior</string>
+    <string name="vldt_failure">Falha de validação</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
+    <string name="vldt_integer_expected_for_x">Esperava-se um valor inteiro para “%1$s”</string>
+    <string name="vldt_real_expected_for_x">Esperava um número real para “%1$s”</string>
+    <string name="vldt_date_expected_for_x">Esperava-se uma data para “%1$s”</string>
+    <string name="vldt_boolean_expected_for_x">Esperava-se um valor booleano (0,1,t,f,true,false) para “%1$s”</string>
+    <string name="vldt_non_blank_required">Valor não vazio necessário</string>
+    <string name="vldt_non_blank_required_for_x">Valor não vazio necessário para “%1$s”</string>
+    <string name="vldt_blank_required_for_x">Valor vazio necessário para “%1$s”</string>
+    <string name="progress_msg_please_wait">Por favor, aguarde…</string>
+    <string name="progress_msg_loading">Carregando…</string>
+    <string name="progress_msg_loading_page">Carregando página %1$d…</string>
+    <string name="progress_msg_starting_up">Iniciando…</string>
+    <string name="progress_msg_upgrading">Atualizando…</string>
+    <string name="progress_msg_rebuilding_search_index">Reconstruindo o Índice de Pesquisa…</string>
+    <string name="progress_msg_optimizing">Otimizando…</string>
+    <string name="progress_msg_searching">Procurando…</string>
+    <string name="progress_msg_searching_site">Pesquisando %1$s</string>
+    <string name="progress_msg_searching_editions">Procurando outras edições…</string>
+    <string name="progress_msg_connecting">Conectando…</string>
+    <string name="progress_msg_downloading">Baixando…</string>
+    <string name="progress_msg_skip_s">Ignorando “%1$s”</string>
+    <string name="progress_msg_x_created">%1$d criado</string>
+    <string name="progress_msg_x_skipped">%1$d ignorado</string>
+    <string name="progress_msg_cleaning_up">Limpando…</string>
+    <string name="info_nothing_to_do">Nada a fazer.</string>
+    <string name="bookshelf_my_books">Meus Livros</string>
+    <string name="bookshelf_all_books">Todos os livros</string>
+    <string name="lbl_assign_bookshelves">Atribuir estantes</string>
+    <string name="lbl_author_type_cover_inking">Tinta de capa</string>
+    <string name="option_moving_covers_from_x_to_y">Mova todas as capas de “%1$s” para “%2$s”</string>
+    <string name="option_goto_next_book_without_cover">Pular para o próximo livro sem capa</string>
+    <string name="option_cover_replace_from_gallery">Da Galeria…</string>
+    <string name="option_cover_replace_from_camera">Da Câmera…</string>
+    <string name="option_cover_rotate">Girar…</string>
+    <string name="option_cover_rotate_automatic">Automático</string>
+    <string name="option_cover_rotate_cw">Sentido horário</string>
+    <string name="option_cover_rotate_ccw">Sentido anti-horário</string>
+    <string name="option_restore_cover">Restaurar imagem anterior</string>
+    <string name="option_fab_add_book_by_isbn">Pesquisar por ISBN</string>
+    <string name="pt_scan_mode">Modo de Scan</string>
+    <string name="option_fab_add_book_by_barcode_scan">Escanear um código de barras</string>
+    <string name="lbl_all_bookshelves">Todas as estantes</string>
+    <string name="option_barcode_scan_mode_continuous">Escanear continuamente</string>
+    <string name="confirm_overwrite_cover">Isso atualizará os campos selecionados conforme mostrado, mas as imagens podem ser baixadas opcionalmente para TODOS os livros.\n\nVocê quer sobrescrever todas as imagens existentes? Aviso, isso pode levar muito tempo.</string>
+    <string name="confirm_no_missing_covers_search_from_top">Todos os livros abaixo desta linha têm capas. Pesquisar novamente a partir do topo?</string>
+    <string name="action_add_with_details">Adicionar com detalhes</string>
+    <string name="action_import">Importar</string>
+    <string name="action_stop_scanning">Parar de escanear</string>
+    <string name="lbl_import">Importar</string>
+    <string name="lbl_importing">Importando…</string>
+    <string name="lbl_details_have_changed">Os detalhes mudaram</string>
+    <string name="lbl_bookshelf">Estante de livros</string>
+    <string name="lbl_bookshelves">Estantes de livros</string>
+    <string name="lbl_cover_front">Capa</string>
+    <string name="lbl_covers">Capas</string>
+    <string name="lbl_covers_long">Imagens de capa</string>
+    <string name="lbl_dust_cover">Capa de proteção contra poeira</string>
+    <string name="option_import_books_option_new_only">Somente livros novos</string>
+    <string name="info_import_complete">Importação concluída</string>
+    <string name="info_import_partially_complete">Importação parcial concluída</string>
+    <string name="pt_scanning_beep_on_invalid">Bipe se o ISBN digitalizado for inválido</string>
+    <string name="pt_cover_undo_enabled">Desfazendo operações em capas de livros</string>
+    <string name="ps_cover_undo_disabled">Uma edição/substituição de capa não pode ser desfeita (usa menos armazenamento)</string>
+    <string name="ps_cover_undo_enabled">Uma edição/substituição de capa pode ser desfeita (usa mais armazenamento)</string>
+    <string name="pe_ui_theme_from_device">Tema do dispositivo</string>
+    <string name="pe_ui_theme_dark">Escuro</string>
+    <string name="pt_ui_theme_colors">Cores do tema</string>
+    <string name="pt_bob_header">Detalhes do resumo no cabeçalho</string>
+    <string name="pt_bob_cover_show">Mostrar capas</string>
+    <string name="pe_bob_cover_click_zoom">Ampliará a imagem da capa.</string>
+    <string name="pt_bob_cover_long_click">Abra o menu do livro.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Ao clicar longamente em uma imagem de capa.</string>
+    <string name="pt_bob_cover_scale">Tamanho da capa</string>
+    <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
+    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="a_space_b">%1$s %2$s</string>
+    <string name="x_of_y">%1$d de %2$d</string>
+    <string name="httpErrorFileNotFound">Não foi possível encontrar o arquivo solicitado.</string>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="and_others">%1$s …</string>
+    <string name="fallback_currency_format">%1$s %2$.2f</string>
+    <string name="debug_select_items">Selecione o que você gostaria de incluir:</string>
+    <string name="pt_ui_theme">Tema</string>
+    <string name="acra_dialog_message">Parece que &APP_NAME; travou. Toque em “%1$s” para salvar um relatório em um local de sua escolha. Você pode usar este relatório para relatar um novo problema no site do projeto.</string>
+    <string name="httpErrorAuth">Não foi possível autenticar.</string>
+    <string name="X_httpErrorIO">Não foi possível comunicar com o servidor. Tente novamente mais tarde.</string>
+    <string name="httpError">Ocorreu um erro de rede.</string>
+    <string name="error_import_archive_invalid">O arquivo está corrompido ou inválido.</string>
+    <string name="warning_no_editions">Nenhuma informação adicional sobre a edição disponível.</string>
+    <string name="error_import_failed_for_record">Falha na importação (%1$s)</string>
+    <string name="warning_enable_at_least_1_website">Habilite pelo menos um site para cada categoria.</string>
+    <string name="warning_image_not_found">Não foi possível encontrar a imagem.</string>
+    <string name="warning_book_not_always_found">Nem todos os sites retornaram dados válidos.</string>
+    <string name="vldt_real_author_must_be_valid">Deve estar em branco ou ser um autor existente</string>
+    <string name="warning_import_csv">AVISO: A importação de dados pode atualizar registros de livros existentes com novas informações se a coluna UUID não estiver presente e o ID no arquivo de importação for o mesmo que um ID existente. Isso geralmente é bom se você alterou um campo em um arquivo exportado. Se você criou um novo registro de livro ou está importando os livros de outra pessoa, certifique-se de que o campo UUID esteja presente ou que o campo ID esteja em branco.</string>
+    <string name="warning_select_at_least_1_field">Selecione pelo menos um campo para atualizar.</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
+    <string name="vldt_read_start_after_end">A data de início da leitura é posterior à data de término</string>
+    <string name="warning_toc_confirm">Por favor, confirme se esses títulos estão (na maioria) corretos.</string>
+    <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites selecionados atualmente suporta busca por %1$s. Use o menu do site para habilitar sites alternativos ou use um método de busca diferente.</string>
+    <string name="info_story_in_multiple_books">“%1$s” está presente em vários livros:\n\n%2$s</string>
+    <string name="progress_msg_x_updated">%1$d atualizado</string>
+    <string name="progress_msg_x_deleted">%1$d excluído</string>
+    <string name="info_authorized">Autorizado</string>
+    <string name="bookshelf_my_wishlist">Lista de desejos</string>
+    <string name="pe_ui_theme_light">Claro</string>
+    <string name="pe_ui_theme_colors_dynamic">Cores dinâmicas</string>
+    <string name="pe_ui_theme_colors_blue_grey">Azul-cinzento</string>
+    <string name="option_storage_edit_settings">Editar configurações</string>
+    <string name="action_edit_defaults">Editar configurações padrão</string>
+    <string name="option_info_import_books_option_new_only">Importe apenas novos livros. Quaisquer atualizações em livros existentes serão ignoradas.</string>
+    <string name="lbl_storage_settings">Armazenar</string>
+    <string name="lbl_settings">Configurações</string>
+    <string name="X_style_type_defaults">Configurações padrão de estilos</string>
+    <string name="error_import_file_not_supported">O arquivo selecionado não pode ser importado.</string>
+    <string name="option_import">Importar</string>
+    <string name="lbl_import_books">Importar Livros</string>
+    <string name="option_info_lbl_archive_is_export_only">Isso serve apenas para exportar dados; a importação não é suportada.</string>
+    <string name="lbl_import_options">Selecione o que será importado.</string>
+    <string name="option_import_books_option_new_and_updated">Livros novos e atualizados</string>
+    <string name="option_info_import_books_option_new_and_updated">Importe novos livros e sincronize os existentes com base na data da última modificação.</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importar apenas livros modificados desde</string>
+    <string name="option_import_books_option_all">Todos os livros</string>
+    <string name="option_info_import_books_option_all">Importe novos livros e sobrescreva livros existentes. Use isso para restaurar um backup.</string>
+    <string name="pt_barcode_scanner">Leitor de código de barras</string>
+    <string name="option_fab_add_book_by_internet_search">Pesquisar por título</string>
+    <string name="lbl_tab_details">Detalhes</string>
+    <string name="option_fab_add_book_manually">Adicionar manualmente</string>
+    <string name="pt_scanning_beep_on_valid">Bipe se o ISBN digitalizado for válido</string>
+    <string name="pt_scanning_beep_on_barcode_found">Bipe quando um código de barras for encontrado</string>
+    <string name="option_barcode_scan_mode_manual">Manual</string>
+    <string name="option_fab_add_book_by_barcode_scan_batch">Escanear códigos de barras em lote</string>
+    <string name="option_author_details">Todas as obras deste autor</string>
+    <string name="pc_book_detail_screen">Página de detalhes do livro</string>
+    <string name="pe_bob_cover_click_details">Abrirá a página de detalhes do livro.</string>
+    <string name="pt_bob_show_details">Detalhes do livro mostrados na lista</string>
+    <string name="lbl_genre">Gênero</string>
+    <string name="confirm_delete_bookshelf">Excluir a estante “%1$s”? Os livros em si não serão excluídos. Eles ainda estarão presentes em quaisquer outras estantes, ou na estante “%2$s”.</string>
+    <string name="confirm_merge_bookshelves">A estante que você está modificando já existe. Gostaria de mesclá-las?</string>
+    <string name="info_bulk_set_bookshelves">Selecione as estantes que você deseja atribuir a todos os livros listados no nó selecionado.</string>
+    <string name="lbl_condition_dust_cover_none">Nenhum</string>
+    <string name="lbl_author_type_cover_artist">Arte da capa</string>
+    <string name="lbl_author_type_cover_colorist">Colorista de capa</string>
+    <string name="option_cover_replace">Substituir…</string>
+    <string name="option_cover_replace_from_alt_editions">De outras edições…</string>
+    <string name="lbl_cover_back">Contracapa</string>
+    <string name="pt_bob_cover_click">Tocando em uma imagem de capa.</string>
+    <string name="pe_bob_cover_long_click_ignore">Ao tocar em um botão.</string>
+</resources>
