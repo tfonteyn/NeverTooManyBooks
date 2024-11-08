@@ -87,7 +87,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class ISBN {
 
-    private static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
+    @VisibleForTesting
+    public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
     /** Log tag. */
     private static final String TAG = "ISBN";

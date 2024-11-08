@@ -32,12 +32,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -68,6 +73,40 @@ public abstract class BaseDBTest {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          .putString(Prefs.PK_UI_LOCALE, localeCode)
+
+                         .putBoolean(Prefs.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
+                         .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
+                         .putBoolean(Prefs.PK_SEARCH_REFORMAT_COLOR, true)
+                         .putBoolean(Prefs.PK_SEARCH_REFORMAT_FORMAT, true)
+                         .putBoolean("search.site.amazon.data.enabled", false)
+                         .putBoolean("search.site.bedetheque.data.enabled", false)
+                         .putBoolean("search.site.bol.data.enabled", false)
+                         .putBoolean("search.site.bookfinder.data.enabled", false)
+                         .putBoolean("search.site.dnb.data.enabled", false)
+                         .putBoolean("search.site.douban.data.enabled", false)
+                         .putBoolean("search.site.googlebooks.data.enabled", false)
+                         .putBoolean("search.site.isfdb.data.enabled", true)
+                         .putBoolean("search.site.kbnl.data.enabled", false)
+                         .putBoolean("search.site.lastdodo.data.enabled", false)
+                         .putBoolean("search.site.openlibrary.data.enabled", false)
+                         .putBoolean("search.site.stripinfo.data.enabled", false)
+                         .putBoolean("search.site.stripweb.data.enabled", false)
+                         .putBoolean(ReorderHelper.PK_SORT_TITLE_REORDERED, true)
+                         .putBoolean("tips.tip.book_list", false)
+                         .putBoolean("tips.tip.booklist_styles_editor", false)
+                         .putBoolean("tips.tip.configure_sites", false)
+                         .putBoolean("tips.tip.view_only_help", false)
+                         .putInt(ExportHelper.PK_BACKUP_COUNTDOWN, 5)
+                         // Bit pattern with all valid field bits turned on
+                         .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
+                                  9223372036854775807L)
+                         .putString(Prefs.PK_BOOKLIST_CONTEXT_MENU, "0")
+                         .putString(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY, "3")
+                         .putString(Prefs.PK_BOOKLIST_REBUILD_STATE, "0")
+                         .putString(ISBN.PK_EDIT_BOOK_ISBN_CHECKS, "1")
+                         .putString("search.siteOrder.data",
+                                    "amazon,googlebooks,isfdb,bookfinder,openlibrary,stripinfo"
+                                    + ",lastdodo,stripweb,bedetheque,kbnl,bol,dnb,douban")
                          .apply();
         context = serviceLocator.getLocalizedAppContext();
 
