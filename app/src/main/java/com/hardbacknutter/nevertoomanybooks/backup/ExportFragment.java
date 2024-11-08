@@ -66,6 +66,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+// ENHANCE: offer an option to in/exclude username and passwords.
+//  Release builds include the Calibre u/p which is presumable only used on private/home servers.
+//  In the future we will also have StripInfo and OpenLibrary u/p which will be more critical.
 public class ExportFragment
         extends BaseFragment {
 
