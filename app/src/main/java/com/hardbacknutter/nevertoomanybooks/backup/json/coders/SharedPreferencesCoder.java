@@ -26,29 +26,35 @@ import androidx.annotation.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
-public class SharedPreferencesCoder
+public final class SharedPreferencesCoder
         implements JsonCoder<SharedPreferences> {
 
-    /** The prefix of all "acra" settings. These are always ignored. */
-    private static final String ACRA_PREFIX = "acra";
     @Nullable
     private final SharedPreferences out;
 
     @NonNull
-    private final List<String> excludes;
+    private final List<Pattern> excludes;
 
     /**
-     * Constructor for encoding.
+     * Private Constructor.
      *
+     * @param out      Decoder: the SharedPreferences to write to
+     *                 Encoder: use {@code null}
      * @param excludes list of keys to <strong>exclude</strong>
      */
-    public SharedPreferencesCoder(@NonNull final List<String> excludes) {
-        out = null;
-        this.excludes = excludes;
+    private SharedPreferencesCoder(@Nullable final SharedPreferences out,
+                                   @NonNull final List<String> excludes) {
+        this.out = out;
+        this.excludes = excludes.stream()
+                                .map(Pattern::compile)
+                                .collect(Collectors.toList());
     }
 
     /**
@@ -56,12 +62,27 @@ public class SharedPreferencesCoder
      *
      * @param out      the SharedPreferences to write to
      * @param excludes list of keys to <strong>exclude</strong>
+     *
+     * @return encoder
      */
-    public SharedPreferencesCoder(@NonNull final SharedPreferences out,
-                                  @NonNull final List<String> excludes) {
-        this.out = out;
-        this.excludes = excludes;
+    @NonNull
+    public static SharedPreferencesCoder createDecoder(@NonNull final SharedPreferences out,
+                                                       @NonNull final List<String> excludes) {
+        return new SharedPreferencesCoder(out, excludes);
     }
+
+    /**
+     * Constructor for encoding.
+     *
+     * @param excludes list of keys to <strong>exclude</strong>
+     *
+     * @return encoder
+     */
+    @NonNull
+    public static SharedPreferencesCoder createSharedEncoder(@NonNull final List<String> excludes) {
+        return new SharedPreferencesCoder(null, excludes);
+    }
+
 
     /**
      * Check if the given key should be <strong>included</strong>.
@@ -70,9 +91,10 @@ public class SharedPreferencesCoder
      *
      * @return flag
      */
-    private boolean include(final String key) {
-        // Skip all acra settings and other excludes.
-        return !key.startsWith(ACRA_PREFIX) && !excludes.contains(key);
+    private boolean include(@NonNull final CharSequence key) {
+        return excludes.stream()
+                       .map(ex -> ex.matcher(key))
+                       .noneMatch(Matcher::find);
     }
 
     @NonNull

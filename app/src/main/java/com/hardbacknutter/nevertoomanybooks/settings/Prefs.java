@@ -163,12 +163,20 @@ public final class Prefs {
      */
     public static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
 
-    /**
-     * The keys which will be ignored during export/import of preferences.
-     * i.e. these will NOT be written/read to/from the backup file.
-     */
-    public static final List<String> IGNORED_DURING_IMPORT = List.of(CoverVolume.PK_VOLUME_INDEX);
+    /** The prefix of all "acra" settings which need to be excluded during import/export. */
+    public static final String ACRA_EXCLUDE_PREFIX = "^acra\\..*";
+    /** The keys which will be excluded during an import of the preferences. */
+    public static final List<String> EXCLUDE_WHEN_IMPORTING = List.of(
+            ACRA_EXCLUDE_PREFIX,
+            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\.")
+    );
 
+    /** The keys which will be excluded during export of the preferences. */
+    public static final List<String> EXCLUDE_WHEN_EXPORTING = List.of(
+            /* The prefix of all "acra" settings. These are always ignored. */
+            ACRA_EXCLUDE_PREFIX,
+            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\.")
+    );
 
     private Prefs() {
     }

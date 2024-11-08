@@ -338,9 +338,10 @@ public class JsonRecordReader
         final JSONObject jsonRoot = root.optJSONObject(RecordType.Preferences.getName());
         if (jsonRoot != null) {
             // The coder itself will set/update the values directly.
-            new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context),
-                                       Prefs.IGNORED_DURING_IMPORT)
-                    .decode(jsonRoot);
+            SharedPreferencesCoder.createDecoder(
+                                          PreferenceManager.getDefaultSharedPreferences(context),
+                                          Prefs.EXCLUDE_WHEN_IMPORTING)
+                                  .decode(jsonRoot);
             // Migrate/remove any obsolete keys
             DBHelper.migratePreferenceKeys(context);
             results.preferences = 1;

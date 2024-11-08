@@ -198,7 +198,7 @@ public class JsonRecordWriter
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
 
                 final JsonCoder<SharedPreferences> coder =
-                        new SharedPreferencesCoder(Prefs.IGNORED_DURING_IMPORT);
+                        SharedPreferencesCoder.createSharedEncoder(Prefs.EXCLUDE_WHEN_EXPORTING);
                 jsonData.put(RecordType.Preferences.getName(), coder.encode(
                         PreferenceManager.getDefaultSharedPreferences(context)));
                 results.preferences = 1;
