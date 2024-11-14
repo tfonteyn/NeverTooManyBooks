@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
@@ -130,7 +129,8 @@ public class FragmentHostActivity
 
     private void initNavDrawer(@Nullable final DrawerLayout drawerLayout) {
         if (drawerLayout != null) {
-            navDrawer = new NavDrawer(drawerLayout, this::onNavigationItemSelected);
+            navDrawer = new NavDrawer(drawerLayout, menuItem ->
+                    onNavigationItemSelected(menuItem.getItemId()));
 
             final OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
 
@@ -215,16 +215,15 @@ public class FragmentHostActivity
     /**
      * Handle the {@link NavigationView} menu.
      *
-     * @param menuItem The menu item that was invoked.
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if the menuItem was handled.
      */
-    private boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+    private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
         if (navDrawer != null) {
             navDrawer.close();
         }
 
-        final int menuItemId = menuItem.getItemId();
         if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
             // child classes which have a 'current bookshelf' should
             // override and pass the current bookshelf id instead of 0L
