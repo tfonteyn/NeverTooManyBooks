@@ -71,11 +71,11 @@ android {
 
         signingConfig(signingConfigs.release)
 
-        // NEWTHINGS: add app language,
+        // NEWTHINGS: add app language: add the string res file. No other app changes needed.
         // Keep the two sub-lists in alphabetic order
         def supportedLocales = [
                 // Primary translations - done/checked by native speaker or pretty good.
-                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "tr", "vi", "zh_CN",
+                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "pt_BR", "tr", "vi", "zh_CN",
                 // Secondary translations - These really need checking by a native speaker
                 "cs", "el", "pl", "ru"]
         resourceConfigurations += supportedLocales

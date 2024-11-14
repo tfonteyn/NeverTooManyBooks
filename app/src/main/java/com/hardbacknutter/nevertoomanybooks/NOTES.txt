@@ -21,6 +21,8 @@ Draft notes for next version:
 ### 6.4.0
 
 NEW:
+- Add Portuguese (Brazil) to the supported UI languages. Contributed by
+  https://github.com/Suburbanno
 - Complete rewrite of the Google-Books site support. Supports more fields,
   multiple sizes of cover lookup, ...
 - Dnb, LastDodo, StripWeb sites: now supporting searching "by title"
