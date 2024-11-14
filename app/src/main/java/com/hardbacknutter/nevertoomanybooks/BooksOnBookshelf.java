@@ -465,7 +465,7 @@ public class BooksOnBookshelf
         final FragmentManager fm = getSupportFragmentManager();
         final LifecycleOwner lifecycleOwner = this;
 
-        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onRowMenuItemSelected);
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onSomeMenuItemSelected);
         menuLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         stylePickerLauncher = new StylePickerLauncher(this::onStyleSelected);
@@ -914,7 +914,7 @@ public class BooksOnBookshelf
      * This should be called each time the user starts a potentially list-changing action.
      * Examples:
      * {@link #onRowClicked(View, int)},
-     * {@link #onRowMenuItemSelected(View, int, int)}
+     * {@link #onSomeMenuItemSelected(int, int)}
      * {@link #onNavigationItemSelected(int)}
      */
     private void saveListPosition() {
@@ -1043,26 +1043,12 @@ public class BooksOnBookshelf
                         .setTitle(menuTitle)
                         .setMenuOwner(adapterPosition)
                         .setMenu(menu, true)
-                        .setListener(this::onRowMenuItemSelected)
+                        .setListener(this::onSomeMenuItemSelected)
                         .show(v, menuMode);
             } else {
                 menuLauncher.launch(this, menuTitle, null, adapterPosition, menu, true);
             }
         }
-    }
-
-    private boolean onRowMenuItemSelected(final int adapterPosition,
-                                          @IdRes final int menuItemId) {
-        View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
-        // Paranoia check to protect from the adapterPosition having
-        // scrolled off screen.
-        if (view == null) {
-            // While we never should get a null here, tests have shown that
-            // using the list view as a substitute works ok,
-            // as the bottom-sheet does not need that view as an anchor anyhow.
-            view = vb.content.list;
-        }
-        return onRowMenuItemSelected(view, adapterPosition, menuItemId);
     }
 
     /**
@@ -1072,16 +1058,34 @@ public class BooksOnBookshelf
      * but due to an R8 bug confusing it with "onMenuItemSelected(int, android.view.MenuItem)"
      * ended throwing a "java.lang.LinkageError" ... so the name had to be changed.
      *
-     * @param v               View clicked; the anchor for a potential popup menu
      * @param adapterPosition The {@link #adapter} position of the row menu from which
      *                        the user made a selection.
      * @param menuItemId      The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onRowMenuItemSelected(@NonNull final View v,
-                                          final int adapterPosition,
-                                          @IdRes final int menuItemId) {
+    private boolean onSomeMenuItemSelected(final int adapterPosition,
+                                           @IdRes final int menuItemId) {
+
+        // we're getting here for
+        // - navigation menu choice, either direct or via a submenu which can
+        //   be a popup or bottomsheet menu
+        // - popup menu for a specific row
+        // - bottomsheet menu for a specific row
+        // ... so ALWAYS check for nav menu FIRST
+        if (onNavigationItemSelected(menuItemId)) {
+            return true;
+        }
+
+        View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
+        // Paranoia check to protect from the adapterPosition having
+        // scrolled off screen.
+        if (view == null) {
+            // While we never should get a null here, tests have shown that
+            // using the list view as a substitute works ok,
+            // as the bottom-sheet does not need that view as an anchor anyhow.
+            view = vb.content.list;
+        }
         saveListPosition();
 
         //noinspection DataFlowIssue
@@ -1115,7 +1119,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             // This is the 1st step in the updateBooksFromInternet process.
-            return onRowMenuGroupUpdateFromInternet(v, adapterPosition, rowData);
+            return onRowMenuGroupUpdateFromInternet(view, adapterPosition, rowData);
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES
                    || menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
@@ -1123,10 +1127,10 @@ public class BooksOnBookshelf
             return updateBooksFromInternetData(menuItemId, rowData);
 
         } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
-            return onRowMenuGroupSetBookshelves(v, rowData);
+            return onRowMenuGroupSetBookshelves(view, rowData);
         }
 
-        final Context context = v.getContext();
+        final Context context = view.getContext();
 
         // Finally check for specific row-group options
         if (rowGroupMenuHelper.onMenuItemSelected(context, menuItemId, rowData, adapterPosition)) {
@@ -1149,6 +1153,7 @@ public class BooksOnBookshelf
                  .stream()
                  .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
     }
+
 
     /**
      * Handle {@link R.id#MENU_SET_BOOKSHELVES}.
@@ -1374,7 +1379,7 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if handled.
      *
-     * @see #onRowMenuItemSelected(View, int, int)
+     * @see #onSomeMenuItemSelected(int, int)
      */
     private boolean updateBooksFromInternetData(final int menuItemId,
                                                 @NonNull final DataHolder rowData) {
