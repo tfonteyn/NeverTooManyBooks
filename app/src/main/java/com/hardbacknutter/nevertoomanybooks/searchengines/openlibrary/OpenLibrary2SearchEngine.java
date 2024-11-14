@@ -450,7 +450,7 @@ public class OpenLibrary2SearchEngine
      *     "publishers": [
      *         "Litwin Books"
      *     ],
-     *     "description": "\"A study of voluntary slow reading from diverse angles\"--Provided by publisher.",
+     *     "description": "\"A study of voluntary slow reading from diverse angles....",
      *     "physical_format": "Paperback",
      *     "key": "/books/OL22853304M",
      *     "authors": [
@@ -518,8 +518,10 @@ public class OpenLibrary2SearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param book        Bundle to update
      *
-     * @throws IOException      when fetching the Author details fails
-     * @throws StorageException on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws IOException          when fetching the Author details fails
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @VisibleForTesting
     void parse(@NonNull final Context context,
@@ -533,14 +535,10 @@ public class OpenLibrary2SearchEngine
         String s;
         final int i;
 
-        @Nullable
-        String olid = null;
-
         // "/books/OL22853304M"
         s = document.optString("key", null);
         if (s != null && !s.isEmpty()) {
-            olid = s.substring("/books/".length());
-            book.putString(DBKey.SID_OPEN_LIBRARY, olid);
+            book.putString(DBKey.SID_OPEN_LIBRARY, s.substring("/books/".length()));
         }
 
         s = document.optString("title", null);
@@ -581,7 +579,7 @@ public class OpenLibrary2SearchEngine
 
         a = document.optJSONArray("contributors");
         if (a != null && !a.isEmpty()) {
-            processContributors(context, a, book);
+            parseContributors(context, a, book);
         }
 
         // There is also a key "pagination" which I believe to be the number of
@@ -600,20 +598,20 @@ public class OpenLibrary2SearchEngine
 
         a = document.optJSONArray("languages");
         if (a != null && !a.isEmpty()) {
-            processLanguages(a, book);
+            parseLanguages(a, book);
         }
 
         // Root level contains ISBN etc
-        processIdentifiers(document, book);
+        parseIdentifiers(document, book);
         // "identifiers" contains foreign-site codes (e.g. amazon ASIN)
         element = document.optJSONObject("identifiers");
         if (element != null) {
-            processIdentifiers(element, book);
+            parseIdentifiers(element, book);
         }
 
         a = document.optJSONArray("series");
         if (a != null && !a.isEmpty()) {
-            processSeries(a, book);
+            parseSeries(a, book);
         }
 
         a = document.optJSONArray("publishers");
@@ -676,7 +674,7 @@ public class OpenLibrary2SearchEngine
 
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
-            processToc(context, a, book);
+            parseToc(context, a, book);
         }
 
         if (isCancelled()) {
@@ -706,36 +704,6 @@ public class OpenLibrary2SearchEngine
                     searchBestCover(context, "id", String.valueOf(coverId), cIdx).ifPresent(
                             fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
                 }
-            }
-        }
-    }
-
-    /**
-     * The series object is rather unstructured.
-     * It's an array, but my (limited) tests have only ever found 1 entry.
-     * However, a single entry can apparently have data for 2 series (oh boy...).
-     * We are NOT even going to attempt to parse the latter case....
-     *
-     * <pre>
-     * "series": [
-     *     "Nevermoor"
-     * ]
-     *
-     * "series": [
-     *     "NUMA Files, 1; Dirk Pitt Adventures, 1"
-     *  ],
-     * </pre>
-     *
-     * @param a    array with series elements
-     * @param book destination
-     */
-    private void processSeries(@NonNull final JSONArray a,
-                               @NonNull final Book book) {
-        String name;
-        for (int ai = 0; ai < a.length(); ai++) {
-            name = a.optString(ai, null);
-            if (name != null && !name.isEmpty()) {
-                book.add(Series.from(name));
             }
         }
     }
@@ -809,9 +777,9 @@ public class OpenLibrary2SearchEngine
         }
     }
 
-    private void processContributors(@NonNull final Context context,
-                                     @NonNull final JSONArray a,
-                                     @NonNull final Book book) {
+    private void parseContributors(@NonNull final Context context,
+                                   @NonNull final JSONArray a,
+                                   @NonNull final Book book) {
         for (int ai = 0; ai < a.length(); ai++) {
             final JSONObject c = a.optJSONObject(ai);
             if (c != null) {
@@ -831,13 +799,32 @@ public class OpenLibrary2SearchEngine
         }
     }
 
-    private void processLanguages(@NonNull final JSONArray a,
-                                  @NonNull final Book book) {
-        final JSONObject element = a.optJSONObject(0);
-        if (element != null) {
-            final String s = element.optString("key", null);
-            if (s != null && s.startsWith("/languages/")) {
-                book.putString(DBKey.LANGUAGE, s.substring("/languages/".length()));
+    /**
+     * The series object is rather unstructured.
+     * It's an array, but my (limited) tests have only ever found 1 entry.
+     * However, a single entry can apparently have data for 2 series (oh boy...).
+     * We are NOT even going to attempt to parse the latter case....
+     *
+     * <pre>
+     * "series": [
+     *     "Nevermoor"
+     * ]
+     *
+     * "series": [
+     *     "NUMA Files, 1; Dirk Pitt Adventures, 1"
+     *  ],
+     * </pre>
+     *
+     * @param a    array with series elements
+     * @param book destination
+     */
+    private void parseSeries(@NonNull final JSONArray a,
+                             @NonNull final Book book) {
+        String name;
+        for (int ai = 0; ai < a.length(); ai++) {
+            name = a.optString(ai, null);
+            if (name != null && !name.isEmpty()) {
+                book.add(Series.from(name));
             }
         }
     }
@@ -849,8 +836,19 @@ public class OpenLibrary2SearchEngine
         }
     }
 
-    private void processIdentifiers(@NonNull final JSONObject element,
-                                    @NonNull final Book book) {
+    private void parseLanguages(@NonNull final JSONArray a,
+                                @NonNull final Book book) {
+        final JSONObject element = a.optJSONObject(0);
+        if (element != null) {
+            final String s = element.optString("key", null);
+            if (s != null && s.startsWith("/languages/")) {
+                book.putString(DBKey.LANGUAGE, s.substring("/languages/".length()));
+            }
+        }
+    }
+
+    private void parseIdentifiers(@NonNull final JSONObject element,
+                                  @NonNull final Book book) {
 
         JSONArray a;
 
@@ -900,9 +898,9 @@ public class OpenLibrary2SearchEngine
         }
     }
 
-    private void processToc(@NonNull final Context context,
-                            @NonNull final JSONArray a,
-                            @NonNull final Book book) {
+    private void parseToc(@NonNull final Context context,
+                          @NonNull final JSONArray a,
+                          @NonNull final Book book) {
         JSONObject element;
         // always use the first author only for TOC entries.
         Author tocAuthor = book.getPrimaryAuthor();
