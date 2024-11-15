@@ -886,6 +886,10 @@ public class OpenLibrary2SearchEngine
         if (a != null && !a.isEmpty()) {
             book.putString(DBKey.SID_LCCN, a.getString(0));
         }
+        a = element.optJSONArray("wikidata");
+        if (a != null && !a.isEmpty()) {
+            book.putString(DBKey.SID_WIKIDATA, a.getString(0));
+        }
 
         a = element.optJSONArray("oclc_numbers");
         if (a != null && !a.isEmpty()) {
