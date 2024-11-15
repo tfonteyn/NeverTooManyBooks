@@ -47,6 +47,8 @@ public class SearchTask
     /** Log tag. */
     private static final String TAG = "SearchTask";
 
+    private static final String ERROR_ISBN_STR_NOT_SET = "isbnStr not set";
+
     @NonNull
     private final SearchEngine searchEngine;
     /** Whether to fetch covers. {false,false} by default. */
@@ -171,9 +173,6 @@ public class SearchTask
                    IOException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
-        publishProgress(1, context.getString(R.string.progress_msg_searching_site,
-                                             searchEngine.getName(context)));
-
         // Checking this each time a search starts is not needed...
         // But it makes error handling slightly easier and doing
         // it here offloads it from the UI thread.
@@ -183,6 +182,18 @@ public class SearchTask
 
         // can we reach the site ?
         searchEngine.ping(context);
+
+        if (searchEngine instanceof SearchEngine.Login) {
+            final SearchEngine.Login sel = (SearchEngine.Login) searchEngine;
+            if (sel.isLoginToSearch(context)) {
+                publishProgress(1, context.getString(R.string.progress_msg_authenticating_to_site,
+                                                     searchEngine.getName(context)));
+                sel.login(context);
+            }
+        }
+
+        publishProgress(1, context.getString(R.string.progress_msg_searching_site,
+                                             searchEngine.getName(context)));
 
         @Nullable
         final String isbnStr;
@@ -210,7 +221,7 @@ public class SearchTask
 
             case Isbn:
                 if (isbnStr == null || isbnStr.isEmpty()) {
-                    throw new IllegalArgumentException("isbnStr not set");
+                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
                 }
                 book = ((SearchEngine.ByIsbn) searchEngine)
                         .searchByIsbn(context, isbnStr, fetchCovers);
@@ -218,7 +229,7 @@ public class SearchTask
 
             case Barcode:
                 if (isbnStr == null || isbnStr.isEmpty()) {
-                    throw new IllegalArgumentException("isbnStr not set");
+                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
                 }
                 book = ((SearchEngine.ByBarcode) searchEngine)
                         .searchByBarcode(context, isbnStr, fetchCovers);

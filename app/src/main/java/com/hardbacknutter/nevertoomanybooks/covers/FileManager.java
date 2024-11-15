@@ -39,6 +39,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -172,6 +173,16 @@ class FileManager {
                         }
 
                         try {
+                            if (se instanceof SearchEngine.Login) {
+                                final SearchEngine.Login sel = (SearchEngine.Login) se;
+                                if (sel.isLoginToSearch(context)) {
+                                    progressListener.publishProgress(1, context.getString(
+                                            R.string.progress_msg_authenticating_to_site,
+                                            se.getName(context)));
+                                    sel.login(context);
+                                }
+                            }
+
                             // Note that the SearchEngine might not support the given edition
                             // type in which case, it will simply return an Optional.empty()
                             final Optional<String> oFileSpec =
