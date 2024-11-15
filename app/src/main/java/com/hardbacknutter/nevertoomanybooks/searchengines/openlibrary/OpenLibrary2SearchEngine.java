@@ -166,17 +166,15 @@ public class OpenLibrary2SearchEngine
     @Override
     public void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
-        if (isLoginToSearch(context)) {
-            // depending if we get here from a search or from a sync,
-            // the module MIGHT already exist so don't login twice!
-            if (siteAuthModule == null) {
-                siteAuthModule = new OpenLibraryAuth(context, cookieManager);
-                try {
-                    siteAuthModule.login();
-                } catch (@NonNull final IOException | StorageException e) {
-                    siteAuthModule = null;
-                    throw new SearchException(getEngineId(), e);
-                }
+        // depending if we get here from a search or from a sync,
+        // the module MIGHT already exist so don't login twice!
+        if (siteAuthModule == null) {
+            siteAuthModule = new OpenLibraryAuth(context, cookieManager);
+            try {
+                siteAuthModule.login();
+            } catch (@NonNull final IOException | StorageException e) {
+                siteAuthModule = null;
+                throw new SearchException(getEngineId(), e);
             }
         }
     }
@@ -272,8 +270,6 @@ public class OpenLibrary2SearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         futureHttpGet = createGetDocumentRequest(context);
-
-        login(context);
 
         try {
             // get and store the result into a string.
@@ -1220,8 +1216,6 @@ public class OpenLibrary2SearchEngine
                                               @IntRange(from = 0, to = 1) final int cIdx,
                                               @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
-
-        login(context);
 
         final String sizeParam;
         if (size == null) {

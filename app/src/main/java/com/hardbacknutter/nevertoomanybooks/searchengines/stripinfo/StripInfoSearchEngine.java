@@ -39,7 +39,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -194,24 +193,20 @@ public class StripInfoSearchEngine
     @Override
     public void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
-        if (isLoginToSearch(context)) {
-            // depending if we get here from a search or from a sync,
-            // the module MIGHT already exist so don't login twice!
-            if (siteAuthModule == null) {
-                siteAuthModule = new StripInfoAuth(context, cookieManager);
-                try {
-                    siteAuthModule.login();
-                } catch (@NonNull final IOException | StorageException e) {
-                    siteAuthModule = null;
-                    throw new SearchException(getEngineId(), e);
-                }
+        // depending if we get here from a search or from a sync,
+        // the module MIGHT already exist so don't login twice!
+        if (siteAuthModule == null) {
+            siteAuthModule = new StripInfoAuth(context, cookieManager);
+            try {
+                siteAuthModule.login();
+            } catch (@NonNull final IOException | StorageException e) {
+                siteAuthModule = null;
+                throw new SearchException(getEngineId(), e);
             }
         }
 
-        if (siteAuthModule != null) {
-            // Recreate every time we load a doc; the user could have changed the preferences.
-            collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
-        }
+        // Recreate every time we load a doc; the user could have changed the preferences.
+        collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
     }
 
     @Override
@@ -225,17 +220,6 @@ public class StripInfoSearchEngine
                 siteAuthModule.cancel();
             }
         }
-    }
-
-    @NonNull
-    @Override
-    public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @Nullable final Map<String, String> requestProperties)
-            throws SearchException, CredentialsException {
-
-        login(context);
-        return super.loadDocument(context, url, requestProperties);
     }
 
     @NonNull
