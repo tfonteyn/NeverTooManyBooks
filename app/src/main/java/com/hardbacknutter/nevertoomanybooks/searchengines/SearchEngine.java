@@ -201,6 +201,8 @@ public interface SearchEngine
 
         /**
          * Called by the {@link SearchCoordinator#search}.
+         * <p>
+         * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
          * @param externalId  the external id (as a String) for this particular search site.
@@ -229,6 +231,8 @@ public interface SearchEngine
 
         /**
          * Create a url to open a book on the website with the external id.
+         * <p>
+         * {@link SearchEngine.Login} will NOT be called upon.
          *
          * @param context    Current context
          * @param externalId to open
@@ -251,6 +255,8 @@ public interface SearchEngine
 
         /**
          * Called by the {@link SearchCoordinator#search}.
+         * <p>
+         * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
          * @param validIsbn   to search for, <strong>will</strong> be valid.
@@ -293,7 +299,9 @@ public interface SearchEngine
          * Called by the {@link SearchCoordinator#search}.
          * <p>
          * The default implementation redirect to
-         * {@link SearchEngine.ByIsbn#searchByIsbn(Context, String, boolean[])}
+         * {@link ByIsbn#searchByIsbn(Context, String, boolean[])}
+         * <p>
+         * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
          * @param barcode     to search for, <strong>will</strong> be valid.
@@ -335,6 +343,8 @@ public interface SearchEngine
          * <p>
          * The engine can simply return an empty {@link Book} if it deems
          * the criteria not usable. It <strong>MUST NOT</strong> throw in such a situation.
+         * <p>
+         * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
          * @param criteria    text strings to search for
@@ -372,10 +382,7 @@ public interface SearchEngine
          *
          * @return {@code true} if we should perform a login
          */
-
-        default boolean isLoginToSearch(@NonNull final Context context) {
-            return true;
-        }
+        boolean isLoginToSearch(@NonNull Context context);
 
         /**
          * For use by synchronization if implemented to avoid multiple logins.
@@ -407,6 +414,9 @@ public interface SearchEngine
 
         /**
          * Find alternative editions for the given ISBN.
+         * <p>
+         * {@link Login} will NOT be called upon.
+         *
          *
          * @param context   Current context
          * @param validIsbn to search for, <strong>must</strong> be valid.
@@ -441,6 +451,9 @@ public interface SearchEngine
          * <p>
          * If the given {@link AltEdition} type is not supported, implementations of this method
          * <strong>MUST</strong> return {@code Optional.empty()}.
+         * <p>
+         * If applicable, {@link SearchEngine.Login} will be called upon
+         * before this method is called.
          * <p>
          * <strong>Important</strong> this method should never throw any {@link RuntimeException}.
          * For the latter, simply return {@code Optional.empty()} when an error occurs
