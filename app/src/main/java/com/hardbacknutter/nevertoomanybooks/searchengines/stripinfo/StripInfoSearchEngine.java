@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
@@ -97,7 +98,8 @@ public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
-                   SearchEngine.ByBarcode {
+                   SearchEngine.ByBarcode,
+                   SearchEngine.Login {
 
     public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
     static final String PK_LOGIN_TO_SEARCH = EngineId.StripInfoBe.getPreferenceKey()
@@ -141,7 +143,7 @@ public class StripInfoSearchEngine
     @NonNull
     private final RatingParser ratingParser;
     @Nullable
-    private StripInfoAuth loginHelper;
+    private SiteAuthModule siteAuthModule;
     @Nullable
     private CollectionFormParser collectionFormParser;
 
@@ -159,14 +161,8 @@ public class StripInfoSearchEngine
         ratingParser = new RatingParser(10);
     }
 
-    /**
-     * Check whether the user should be logged in to the website during a <strong>search</strong>.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if we should perform a login
-     */
-    private static boolean isLoginToSearch(@NonNull final Context context) {
+    @Override
+    public boolean isLoginToSearch(@NonNull final Context context) {
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
             return PreferenceManager.getDefaultSharedPreferences(context)
                                     .getBoolean(PK_LOGIN_TO_SEARCH, false);
@@ -187,30 +183,32 @@ public class StripInfoSearchEngine
         return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
     }
 
-    public void setLoginHelper(@NonNull final StripInfoAuth loginHelper) {
+    @Override
+    public void setAuthModule(@NonNull final SiteAuthModule authModule) {
         if (BuildConfig.DEBUG /* always */) {
-            loginHelper.getUserId().orElseThrow();
+            authModule.getUserId().orElseThrow();
         }
-        this.loginHelper = loginHelper;
+        this.siteAuthModule = authModule;
     }
 
-    private void login(@NonNull final Context context)
+    @Override
+    public void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
         if (isLoginToSearch(context)) {
             // depending if we get here from a search or from a sync,
-            // the loginHelper MIGHT already exist so don't login twice!
-            if (loginHelper == null) {
-                loginHelper = new StripInfoAuth(context, cookieManager);
+            // the module MIGHT already exist so don't login twice!
+            if (siteAuthModule == null) {
+                siteAuthModule = new StripInfoAuth(context, cookieManager);
                 try {
-                    loginHelper.login();
+                    siteAuthModule.login();
                 } catch (@NonNull final IOException | StorageException e) {
-                    loginHelper = null;
+                    siteAuthModule = null;
                     throw new SearchException(getEngineId(), e);
                 }
             }
         }
 
-        if (loginHelper != null) {
+        if (siteAuthModule != null) {
             // Recreate every time we load a doc; the user could have changed the preferences.
             collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
         }
@@ -223,8 +221,8 @@ public class StripInfoSearchEngine
             if (collectionFormParser != null) {
                 collectionFormParser.cancel();
             }
-            if (loginHelper != null) {
-                loginHelper.cancel();
+            if (siteAuthModule != null) {
+                siteAuthModule.cancel();
             }
         }
     }
@@ -570,7 +568,7 @@ public class StripInfoSearchEngine
         }
 
         // are we logged in ? Then look for any user data.
-        if (loginHelper != null) {
+        if (siteAuthModule != null) {
             parseUserdata(document, book, externalId);
         }
 

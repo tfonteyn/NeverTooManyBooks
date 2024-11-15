@@ -361,6 +361,42 @@ public interface SearchEngine
                        CredentialsException;
     }
 
+    interface Login
+            extends SearchEngine {
+
+        /**
+         * Check whether the user should be logged in to the website
+         * before starting a <strong>search</strong>.
+         *
+         * @param context Current context
+         *
+         * @return {@code true} if we should perform a login
+         */
+
+        default boolean isLoginToSearch(@NonNull final Context context) {
+            return true;
+        }
+
+        /**
+         * For use by synchronization if implemented to avoid multiple logins.
+         *
+         * @param authModule to use
+         */
+        void setAuthModule(@NonNull SiteAuthModule authModule);
+
+        /**
+         * Request a login. This is an <strong>attempt</strong>.
+         * Failing or disregarding this request is an actual error.
+         *
+         * @param context Current context
+         *
+         * @throws CredentialsException on authentication/login failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
+         */
+        void login(@NonNull Context context)
+                throws CredentialsException, SearchException;
+    }
+
     /**
      * Optional.
      *

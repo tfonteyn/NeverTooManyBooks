@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -228,10 +229,10 @@ public class StripInfoReader
         searchEngine.setCaller(progressListener);
 
         final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
-        final StripInfoAuth loginHelper = new StripInfoAuth(context, cookieManager);
-        final String userId = loginHelper.login();
+        final SiteAuthModule siteAuthModule = new StripInfoAuth(context, cookieManager);
+        final String userId = siteAuthModule.login();
 
-        searchEngine.setLoginHelper(loginHelper);
+        searchEngine.setAuthModule(siteAuthModule);
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
@@ -300,8 +301,10 @@ public class StripInfoReader
      * @param context Current context
      * @param siBook  the book data to import
      *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on generic/other IO failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     The covers directory is not available
+     * @throws IOException          on generic/other IO failures
      */
     private void importBook(@NonNull final Context context,
                             @NonNull final Book siBook)

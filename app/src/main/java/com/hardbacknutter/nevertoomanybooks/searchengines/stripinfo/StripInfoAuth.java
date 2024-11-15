@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -58,7 +59,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * TODO: add "Forget credentials" for the current session
  */
 public class StripInfoAuth
-        implements ConnectionValidator {
+        implements SiteAuthModule,
+                   ConnectionValidator {
 
     /** Log tag. */
     private static final String TAG = "StripInfoAuth";

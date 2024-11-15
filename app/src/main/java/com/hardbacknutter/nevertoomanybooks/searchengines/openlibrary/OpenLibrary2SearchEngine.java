@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -76,6 +77,7 @@ public class OpenLibrary2SearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition,
+                   SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
     static final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
@@ -120,7 +122,7 @@ public class OpenLibrary2SearchEngine
     @Nullable
     private FutureHttpGet<String> futureHttpGet;
     @Nullable
-    private OpenLibraryAuth loginHelper;
+    private SiteAuthModule siteAuthModule;
 
     /**
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
@@ -136,14 +138,8 @@ public class OpenLibrary2SearchEngine
         cookieManager = ServiceLocator.getInstance().getCookieManager();
     }
 
-    /**
-     * Check whether the user should be logged in to the website during a <strong>search</strong>.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if we should perform a login
-     */
-    private static boolean isLoginToSearch(@NonNull final Context context) {
+    @Override
+    public boolean isLoginToSearch(@NonNull final Context context) {
         if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
             return PreferenceManager.getDefaultSharedPreferences(context)
                                     .getBoolean(PK_LOGIN_TO_SEARCH, false);
@@ -159,24 +155,26 @@ public class OpenLibrary2SearchEngine
         return getHostUrl(context) + "/books/" + externalId;
     }
 
-    public void setLoginHelper(@NonNull final OpenLibraryAuth loginHelper) {
+    @Override
+    public void setAuthModule(@NonNull final SiteAuthModule authModule) {
         if (BuildConfig.DEBUG /* always */) {
-            loginHelper.getUserId().orElseThrow();
+            authModule.getUserId().orElseThrow();
         }
-        this.loginHelper = loginHelper;
+        this.siteAuthModule = authModule;
     }
 
-    private void login(@NonNull final Context context)
+    @Override
+    public void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
         if (isLoginToSearch(context)) {
             // depending if we get here from a search or from a sync,
-            // the loginHelper MIGHT already exist so don't login twice!
-            if (loginHelper == null) {
-                loginHelper = new OpenLibraryAuth(context, cookieManager);
+            // the module MIGHT already exist so don't login twice!
+            if (siteAuthModule == null) {
+                siteAuthModule = new OpenLibraryAuth(context, cookieManager);
                 try {
-                    loginHelper.login();
+                    siteAuthModule.login();
                 } catch (@NonNull final IOException | StorageException e) {
-                    loginHelper = null;
+                    siteAuthModule = null;
                     throw new SearchException(getEngineId(), e);
                 }
             }
@@ -190,8 +188,8 @@ public class OpenLibrary2SearchEngine
             if (futureHttpGet != null) {
                 futureHttpGet.cancel();
             }
-            if (loginHelper != null) {
-                loginHelper.cancel();
+            if (siteAuthModule != null) {
+                siteAuthModule.cancel();
             }
         }
     }

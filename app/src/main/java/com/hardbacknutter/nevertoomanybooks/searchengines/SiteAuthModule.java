@@ -17,33 +17,48 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.core.network;
 
-import androidx.annotation.WorkerThread;
+package com.hardbacknutter.nevertoomanybooks.searchengines;
+
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
-public interface ConnectionValidator {
+public interface SiteAuthModule {
+
 
     /**
-     * Make a short call to test the connection.
+     * Performs a login using the stored credentials.
+     * <p>
+     * Implementations should check (e.g check the cookie locally) if we're already
+     * logged in during this session* and return with success immediately.
      *
-     * @return {@code true} if al is well.
+     * @return the valid user id
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
+     * @throws StorageException     on storage related failures
      */
-    @WorkerThread
-    boolean validateConnection()
-            throws CredentialsException,
-                   StorageException,
-                   IOException;
+    @NonNull
+    String login()
+            throws IOException, CredentialsException, StorageException;
 
     /**
-     * Cancel any current/ongoing connection request to the website.
+     * Get the user id for the <strong>current</strong> session.
+     * This is not necessarily the same as the username.
+     *
+     * @return a valid non-empty user id if present
+     */
+    @NonNull
+    Optional<String> getUserId();
+
+    /**
+     * Cancel any current/ongoing authentication request to the website.
      */
     void cancel();
+
 }
