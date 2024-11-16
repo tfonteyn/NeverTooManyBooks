@@ -75,6 +75,7 @@ public abstract class JsoupSearchEngineBase
         super(appContext, config);
         this.charSetName = charSetName;
 
+        // We MUST bootstrap it here to ensure it's active before the first http request send
         cookieManager = ServiceLocator.getInstance().getCookieManager();
     }
 
