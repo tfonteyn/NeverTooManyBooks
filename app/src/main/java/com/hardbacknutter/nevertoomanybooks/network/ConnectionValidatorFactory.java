@@ -60,12 +60,14 @@ public final class ConnectionValidatorFactory {
         } else if (siteResId == R.string.site_stripinfo_be) {
             // We MUST bootstrap it here to ensure it's active before the first http request send
             final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
-            return new StripInfoAuth(context, cookieManager);
+            // The auth module login IS the validation
+            return new StripInfoAuth(cookieManager);
 
         } else if (siteResId == R.string.site_open_library) {
             // We MUST bootstrap it here to ensure it's active before the first http request send
             final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
-            return new OpenLibraryAuth(context, cookieManager);
+            // The auth module login IS the validation
+            return new OpenLibraryAuth(cookieManager);
 
         } else {
             // The error message is slightly misleading but will have to do.

@@ -230,8 +230,9 @@ public class StripInfoReader
 
         // We MUST bootstrap it here to ensure it's active before the first http request send
         final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
-        final SiteAuthModule siteAuthModule = new StripInfoAuth(context, cookieManager);
-        final String userId = siteAuthModule.login();
+
+        final SiteAuthModule siteAuthModule = new StripInfoAuth(cookieManager);
+        final String userId = siteAuthModule.login(context);
 
         searchEngine.setAuthModule(siteAuthModule);
 

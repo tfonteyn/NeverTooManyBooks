@@ -196,7 +196,7 @@ public class StripInfoSearchEngine
         // depending if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
-            siteAuthModule = new StripInfoAuth(context, cookieManager);
+            siteAuthModule = new StripInfoAuth(cookieManager);
             try {
                 siteAuthModule.login(context);
             } catch (@NonNull final IOException | StorageException e) {

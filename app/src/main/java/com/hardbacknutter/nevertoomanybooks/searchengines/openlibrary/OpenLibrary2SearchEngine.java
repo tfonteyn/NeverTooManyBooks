@@ -135,6 +135,7 @@ public class OpenLibrary2SearchEngine
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
+        // We MUST bootstrap it here to ensure it's active before the first http request send
         cookieManager = ServiceLocator.getInstance().getCookieManager();
     }
 
@@ -169,7 +170,7 @@ public class OpenLibrary2SearchEngine
         // depending if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
-            siteAuthModule = new OpenLibraryAuth(context, cookieManager);
+            siteAuthModule = new OpenLibraryAuth(cookieManager);
             try {
                 siteAuthModule.login(context);
             } catch (@NonNull final IOException | StorageException e) {
