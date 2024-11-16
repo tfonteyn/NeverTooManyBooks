@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -87,39 +88,18 @@ public class OpenLibraryAuth
      * </pre>
      */
     private static final String COOKIE_USERDATA = "session";
-
-    @NonNull
-    private final FutureHttpPost<Void> futureHttpPost;
-
-    @NonNull
-    private final String hostUrl;
-
     @NonNull
     private final CookieManager cookieManager;
-
-    @NonNull
-    private final SharedPreferences prefs;
+    @Nullable
+    private FutureHttpPost<Void> futureHttpPost;
 
     /**
      * Constructor.
      *
-     * @param context       Current context
-     * @param cookieManager to use
+     * @param cookieManager previously initialised cookie manager
      */
-    public OpenLibraryAuth(@NonNull final Context context,
-                           @NonNull final CookieManager cookieManager) {
+    public OpenLibraryAuth(@NonNull final CookieManager cookieManager) {
         this.cookieManager = cookieManager;
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        final SearchEngineConfig config = EngineId.OpenLibrary.requireConfig();
-
-        hostUrl = config.getHostUrl(context);
-
-        futureHttpPost = new FutureHttpPost<>(EngineId.OpenLibrary.getLabelResId());
-        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                      .setReadTimeout(config.getReadTimeoutInMs(context))
-                      .setThrottler(config.getThrottler());
     }
 
     /**
@@ -145,7 +125,7 @@ public class OpenLibraryAuth
     /**
      * Get the user id for the <strong>current</strong> session.
      * <p>
-     * In the website html sometimes referred to as "member".
+     * In the website html code sometimes referred to as "member".
      *
      * @return a valid non-empty user id if present
      */
@@ -164,6 +144,7 @@ public class OpenLibraryAuth
             if (!cookie.hasExpired()) {
                 final String value = cookie.getValue();
                 if (value != null && !value.isEmpty()) {
+                    //noinspection CheckStyle
                     try {
                         final String cookieValue = URLDecoder.decode(value,
                                                                      StandardCharsets.UTF_8);
@@ -198,6 +179,8 @@ public class OpenLibraryAuth
     public String login(@NonNull final Context context)
             throws IOException, CredentialsException, StorageException {
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         // Always FIRST check the configuration for having a username/password.
         final String username = prefs.getString(PK_HOST_USER, "");
         final String password = prefs.getString(PK_HOST_PASS, "");
@@ -212,8 +195,9 @@ public class OpenLibraryAuth
             return userId;
         }
 
-        final String url = hostUrl + USER_LOGIN_URL;
+        final SearchEngineConfig config = EngineId.OpenLibrary.requireConfig();
 
+        final String url = config.getHostUrl(context) + USER_LOGIN_URL;
         final String postBody = new StringJoiner("&")
                 .add("username=" + URLEncoder.encode(username, StandardCharsets.UTF_8))
                 .add("password=" + URLEncoder.encode(password, StandardCharsets.UTF_8))
@@ -221,8 +205,14 @@ public class OpenLibraryAuth
                 .add("debug_token=")
                 .toString();
 
-        futureHttpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                          "application/x-www-form-urlencoded");
+        if (futureHttpPost == null) {
+            futureHttpPost = new FutureHttpPost<>(EngineId.OpenLibrary.getLabelResId());
+            futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
+                          .setReadTimeout(config.getReadTimeoutInMs(context))
+                          .setThrottler(config.getThrottler());
+            futureHttpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
+                                              "application/x-www-form-urlencoded");
+        }
         futureHttpPost.post(url, postBody, null);
 
         userId = getUserId().orElseThrow(
@@ -232,7 +222,12 @@ public class OpenLibraryAuth
         return userId;
     }
 
+    @Override
     public void cancel() {
-        futureHttpPost.cancel();
+        synchronized (this) {
+            if (futureHttpPost != null) {
+                futureHttpPost.cancel();
+            }
+        }
     }
 }

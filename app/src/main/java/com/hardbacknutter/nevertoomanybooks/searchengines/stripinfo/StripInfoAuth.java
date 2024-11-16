@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -93,41 +94,19 @@ public class StripInfoAuth
      * </pre>
      */
     private static final String COOKIE_USERDATA = "si_userdata";
-
-    @NonNull
-    private final FutureHttpPost<Void> futureHttpPost;
-
-    @NonNull
-    private final String hostUrl;
-
     @NonNull
     private final CookieManager cookieManager;
-
-    @NonNull
-    private final SharedPreferences prefs;
+    @Nullable
+    private FutureHttpPost<Void> futureHttpPost;
 
     /**
      * Constructor.
      *
-     * @param context       Current context
-     * @param cookieManager to use
+     * @param cookieManager previously initialised cookie manager
      */
-    public StripInfoAuth(@NonNull final Context context,
-                         @NonNull final CookieManager cookieManager) {
+    public StripInfoAuth(@NonNull final CookieManager cookieManager) {
         this.cookieManager = cookieManager;
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
-
-        hostUrl = config.getHostUrl(context);
-
-        futureHttpPost = new FutureHttpPost<>(EngineId.StripInfoBe.getLabelResId());
-        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                      .setReadTimeout(config.getReadTimeoutInMs(context))
-                      .setThrottler(config.getThrottler());
     }
-
 
     /**
      * Get the username as configured in the settings.
@@ -209,6 +188,8 @@ public class StripInfoAuth
     public String login(@NonNull final Context context)
             throws IOException, CredentialsException, StorageException {
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         // Always FIRST check the configuration for having a username/password.
         final String username = prefs.getString(PK_HOST_USER, "");
         final String password = prefs.getString(PK_HOST_PASS, "");
@@ -223,7 +204,9 @@ public class StripInfoAuth
             return userId;
         }
 
-        final String url = hostUrl + USER_LOGIN_URL;
+        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
+
+        final String url = config.getHostUrl(context) + USER_LOGIN_URL;
         final String postBody = new StringJoiner("&")
                 .add("userName=" + URLEncoder.encode(username, StandardCharsets.UTF_8))
                 .add("passw=" + URLEncoder.encode(password, StandardCharsets.UTF_8))
@@ -231,6 +214,12 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
+        if (futureHttpPost == null) {
+            futureHttpPost = new FutureHttpPost<>(EngineId.StripInfoBe.getLabelResId());
+            futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
+                          .setReadTimeout(config.getReadTimeoutInMs(context))
+                          .setThrottler(config.getThrottler());
+        }
         futureHttpPost.post(url, postBody, null);
 
         userId = getUserId().orElseThrow(
@@ -240,7 +229,13 @@ public class StripInfoAuth
         return userId;
     }
 
+    @Override
     public void cancel() {
-        futureHttpPost.cancel();
+        synchronized (this) {
+            if (futureHttpPost != null) {
+                futureHttpPost.cancel();
+            }
+        }
     }
+
 }
