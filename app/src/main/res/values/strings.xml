@@ -314,7 +314,7 @@
     <string name="progress_msg_searching">Searching…</string>
 
     <!-- Param 1: the website name -->
-    <string name="progress_msg_authenticating_to_site">Authenticating %1$s</string>
+    <string name="progress_msg_authenticating_to_site">Authenticating on %1$s</string>
     <!-- Param 1: the website name -->
     <string name="progress_msg_searching_site">Searching %1$s</string>
     <!-- displayed while searching for alternative editions of the book, to get cover images. -->
