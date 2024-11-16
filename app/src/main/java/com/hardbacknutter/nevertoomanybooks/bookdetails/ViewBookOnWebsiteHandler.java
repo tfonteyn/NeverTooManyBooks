@@ -64,8 +64,7 @@ public class ViewBookOnWebsiteHandler
                     .stream()
                     .map(Site::getEngineId)
                     .forEach(engineId -> {
-                        final SearchEngineConfig config =
-                                Objects.requireNonNull(engineId.getConfig());
+                        final SearchEngineConfig config = engineId.requireConfig();
                         //noinspection DataFlowIssue
                         subMenu.add(R.id.MENU_GROUP_BOOK,
                                     config.getDomainMenuResId(),
