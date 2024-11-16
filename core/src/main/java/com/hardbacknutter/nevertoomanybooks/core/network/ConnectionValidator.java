@@ -19,6 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -30,6 +33,8 @@ public interface ConnectionValidator {
     /**
      * Make a short call to test the connection.
      *
+     * @param context Current context
+     *
      * @return {@code true} if al is well.
      *
      * @throws CredentialsException on authentication/login failures
@@ -37,7 +42,7 @@ public interface ConnectionValidator {
      * @throws IOException          on generic/other IO failures
      */
     @WorkerThread
-    boolean validateConnection()
+    boolean validateConnection(@NonNull Context context)
             throws CredentialsException,
                    StorageException,
                    IOException;

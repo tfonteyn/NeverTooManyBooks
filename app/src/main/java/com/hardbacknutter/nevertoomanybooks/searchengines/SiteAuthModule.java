@@ -20,7 +20,10 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -37,14 +40,17 @@ public interface SiteAuthModule {
      * Implementations should check (e.g check the cookie locally) if we're already
      * logged in during this session* and return with success immediately.
      *
+     * @param context Current context
+     *
      * @return the valid user id
      *
      * @throws CredentialsException on authentication/login failures
      * @throws IOException          on generic/other IO failures
      * @throws StorageException     on storage related failures
      */
+    @WorkerThread
     @NonNull
-    String login()
+    String login(@NonNull Context context)
             throws IOException, CredentialsException, StorageException;
 
     /**
