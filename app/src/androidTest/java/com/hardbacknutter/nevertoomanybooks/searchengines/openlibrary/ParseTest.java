@@ -57,14 +57,14 @@ public class ParseTest
 
     private static final String TAG = "ParseTest";
 
-    private OpenLibrary2SearchEngine searchEngine;
+    private OpenLibrarySearchEngine searchEngine;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException, SearchException, CredentialsException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (OpenLibrary2SearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
+        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         //noinspection DataFlowIssue
@@ -77,7 +77,7 @@ public class ParseTest
         //        // Force a login.
         //        PreferenceManager.getDefaultSharedPreferences(context)
         //                         .edit()
-        //                         .putBoolean(OpenLibrary2SearchEngine.PK_LOGIN_TO_SEARCH, true)
+        //                         .putBoolean(OpenLibrarySearchEngine.PK_LOGIN_TO_SEARCH, true)
         //                         .apply();
         //        // Uses the above setting whether to login or not
         //        searchEngine.login(context);

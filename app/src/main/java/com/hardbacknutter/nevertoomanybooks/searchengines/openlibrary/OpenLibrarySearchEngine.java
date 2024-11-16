@@ -70,7 +70,7 @@ import com.hardbacknutter.org.json.JSONObject;
 /**
  * <a href="https://openlibrary.org/dev/docs/api/search">Open Library Search API</a>
  */
-public class OpenLibrary2SearchEngine
+public class OpenLibrarySearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
@@ -131,8 +131,8 @@ public class OpenLibrary2SearchEngine
      * @param config     the search engine configuration
      */
     @Keep
-    public OpenLibrary2SearchEngine(@NonNull final Context appContext,
-                                    @NonNull final SearchEngineConfig config) {
+    public OpenLibrarySearchEngine(@NonNull final Context appContext,
+                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
         // We MUST bootstrap it here to ensure it's active before the first http request send

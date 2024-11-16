@@ -43,14 +43,14 @@ public class AltEditionsTest
 
     private static final String TAG = "AltEditionsTest";
 
-    private OpenLibrary2SearchEngine searchEngine;
+    private OpenLibrarySearchEngine searchEngine;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (OpenLibrary2SearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
+        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
