@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,12 +37,12 @@ public class CredentialsException
     /**
      * Constructor.
      *
-     * @param siteResId the site string res; which will be embedded in a default user message
-     * @param message   internal message for the log file
+     * @param siteResId  the site string res; which will be embedded in a default user message
+     * @param logMessage internal message for the log file
      */
     public CredentialsException(@StringRes final int siteResId,
-                                @NonNull final String message) {
-        super(message);
+                                @NonNull final String logMessage) {
+        super(logMessage);
         this.siteResId = siteResId;
     }
 
