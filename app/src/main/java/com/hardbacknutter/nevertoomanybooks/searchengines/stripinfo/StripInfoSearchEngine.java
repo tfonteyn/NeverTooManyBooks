@@ -198,7 +198,7 @@ public class StripInfoSearchEngine
         if (siteAuthModule == null) {
             siteAuthModule = new StripInfoAuth(context, cookieManager);
             try {
-                siteAuthModule.login();
+                siteAuthModule.login(context);
             } catch (@NonNull final IOException | StorageException e) {
                 siteAuthModule = null;
                 throw new SearchException(getEngineId(), e);

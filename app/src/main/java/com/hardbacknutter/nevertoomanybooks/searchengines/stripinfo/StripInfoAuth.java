@@ -197,27 +197,16 @@ public class StripInfoAuth
 
     @WorkerThread
     @Override
-    public boolean validateConnection()
+    public boolean validateConnection(@NonNull final Context context)
             throws IOException, CredentialsException, StorageException {
-        login();
+        login(context);
         return true;
     }
 
-    /**
-     * Performs a login using the stored credentials.
-     * <p>
-     * Will check the cookie to see if we're already logged in,
-     * and return with success immediately.
-     *
-     * @return the valid user id
-     *
-     * @throws CredentialsException on authentication/login failures
-     * @throws IOException          on generic/other IO failures
-     * @throws StorageException     on storage related failures
-     */
     @WorkerThread
+    @Override
     @NonNull
-    public String login()
+    public String login(@NonNull final Context context)
             throws IOException, CredentialsException, StorageException {
 
         // Always FIRST check the configuration for having a username/password.

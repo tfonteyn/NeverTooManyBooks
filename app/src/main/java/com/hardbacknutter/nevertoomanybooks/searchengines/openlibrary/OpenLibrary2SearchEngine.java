@@ -171,7 +171,7 @@ public class OpenLibrary2SearchEngine
         if (siteAuthModule == null) {
             siteAuthModule = new OpenLibraryAuth(context, cookieManager);
             try {
-                siteAuthModule.login();
+                siteAuthModule.login(context);
             } catch (@NonNull final IOException | StorageException e) {
                 siteAuthModule = null;
                 throw new SearchException(getEngineId(), e);
