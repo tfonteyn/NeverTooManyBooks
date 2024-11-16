@@ -58,16 +58,18 @@ public final class ConnectionValidatorFactory {
             return new CalibreContentServer.Builder(context).build();
 
         } else if (siteResId == R.string.site_stripinfo_be) {
+            // We MUST bootstrap it here to ensure it's active before the first http request send
             final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
             return new StripInfoAuth(context, cookieManager);
 
         } else if (siteResId == R.string.site_open_library) {
+            // We MUST bootstrap it here to ensure it's active before the first http request send
             final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
             return new OpenLibraryAuth(context, cookieManager);
 
         } else {
             // The error message is slightly misleading but will have to do.
-            // We should never get here anyway... flw
+            // We should never get here anyway as that would be bug... flw
             throw new IllegalArgumentException(context.getString(R.string.error_unknown_host,
                                                                  context.getString(siteResId)));
         }
