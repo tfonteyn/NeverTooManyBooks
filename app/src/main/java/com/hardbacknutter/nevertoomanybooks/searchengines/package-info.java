@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@
 /**
  * <ul>
  *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId} :
- *          Static setup of identifier, key, name and class.
+ *          Immutable setup of identifier, key, name and class.
  *          This is where a new engine can be added.
  *     </li>
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine} :
@@ -29,7 +29,7 @@
  *      </li>
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig} :
  *          Configuration for the engine class. There is a 1:1 relation with the EngineId.
- *          Keeps a static registry of all configured engines.
+ *          The enum represents a static registry of all configured engines.
  *      </li>
  * </ul>
  * <p>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site} :

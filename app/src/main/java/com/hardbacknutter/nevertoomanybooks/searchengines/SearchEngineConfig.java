@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -43,17 +44,14 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
- * Configuration data for a {@link SearchEngine}.
- * <p>
- * TODO: this class should/could be merged with {@link EngineId}.
- * However... do we remove the config entirely, or do we move all fixed settings from EngineId
- * to the config?
+ * This class provides the <strong>mutable</strong> configuration
+ * data for a {@link SearchEngine}.
  *
  * @see EngineId
  * @see SearchEngine
  * @see Site
  */
-public final class SearchEngineConfig {
+public class SearchEngineConfig {
 
     @NonNull
     private final EngineId engineId;
@@ -85,7 +83,7 @@ public final class SearchEngineConfig {
      *
      * @param builder with configuration data
      */
-    private SearchEngineConfig(@NonNull final Builder builder) {
+    public SearchEngineConfig(@NonNull final Builder builder) {
         engineId = builder.engineId;
 
         prefersIsbn10 = builder.prefersIsbn10;
@@ -422,9 +420,11 @@ public final class SearchEngineConfig {
 
         /**
          * Finish the build. Initialise the engine with the configuration.
+         *
+         * @param configSupplier the base or superclass for the configuration.
          */
-        public void build() {
-            engineId.setConfig(new SearchEngineConfig(this));
+        public void build(@NonNull final Function<Builder, SearchEngineConfig> configSupplier) {
+            engineId.setConfig(configSupplier.apply(this));
         }
 
         @NonNull
