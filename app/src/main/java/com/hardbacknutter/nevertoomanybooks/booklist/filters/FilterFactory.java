@@ -43,28 +43,39 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public final class FilterFactory {
 
     // Not always the same mapping as {@link MapDBKey}
-    public static final Map<String, Integer> SUPPORTED = Map.of(
-            DBKey.BOOK_ISBN, R.string.lbl_isbn,
-            DBKey.COLOR, R.string.lbl_color,
-            DBKey.EDITION__BITMASK, R.string.lbl_edition,
-            DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf,
+    public static final Map<String, Integer> SUPPORTED = Map.ofEntries(
+            Map.entry(DBKey.BOOK_ISBN, R.string.lbl_isbn),
+            Map.entry(DBKey.EDITION__BITMASK, R.string.lbl_edition),
+            Map.entry(DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf),
             //FIXME: the key name is a mistake but makes no difference
             // in functionality.
             // It should have been BOOK_CONTENT_TYPE
             // fix this during an upgrade where we can update
             // the TBL_BOOKSHELF_FILTERS#filter_name column.
-            DBKey.FK_TOC_ENTRY, R.string.lbl_book_type,
-            DBKey.FORMAT, R.string.lbl_format,
-            DBKey.LANGUAGE, R.string.lbl_language,
+            Map.entry(DBKey.FK_TOC_ENTRY, R.string.lbl_book_type),
+
+            Map.entry(DBKey.COLOR, R.string.lbl_color),
+            Map.entry(DBKey.FORMAT, R.string.lbl_format),
+            Map.entry(DBKey.GENRE, R.string.lbl_genre),
+            Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
+            Map.entry(DBKey.LOCATION, R.string.lbl_location),
             // Different from MapDBKey. Here it MUST be "lbl_lend_out"
-            DBKey.LOANEE_NAME, R.string.lbl_lend_out,
-            DBKey.READ__BOOL, R.string.lbl_read,
-            DBKey.SIGNED__BOOL, R.string.lbl_signed
+            Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lend_out),
+
+            Map.entry(DBKey.READ__BOOL, R.string.lbl_read),
+            Map.entry(DBKey.SIGNED__BOOL, R.string.lbl_signed)
     );
 
     private FilterFactory() {
     }
 
+    /**
+     * Create a suitable {@link PFilter} for the given {@link DBKey}.
+     *
+     * @param dbKey for the filter
+     *
+     * @return a filter
+     */
     @Nullable
     public static PFilter<?> createFilter(@NonNull final String dbKey) {
         switch (dbKey) {
@@ -102,6 +113,11 @@ public final class FilterFactory {
                         dbKey, R.string.lbl_format,
                         TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
             }
+            case DBKey.GENRE: {
+                return new PStringEqualityFilter(
+                        dbKey, R.string.lbl_genre,
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_GENRE);
+            }
             case DBKey.LANGUAGE: {
                 final PStringEqualityFilter filter = new PStringEqualityFilter(
                         dbKey, R.string.lbl_language,
@@ -112,7 +128,11 @@ public final class FilterFactory {
                         ServiceLocator.getInstance().getLanguages()));
                 return filter;
             }
-
+            case DBKey.LOCATION: {
+                return new PStringEqualityFilter(
+                        dbKey, R.string.lbl_location,
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_LOCATION);
+            }
 
             case DBKey.EDITION__BITMASK: {
                 return new PBitmaskFilter(
@@ -164,6 +184,10 @@ public final class FilterFactory {
                 return FieldArrayAdapter.createStringDropDown(
                         context, serviceLocator.getFormatDao().getList(), null);
             }
+            case DBKey.GENRE: {
+                return FieldArrayAdapter.createStringDropDown(
+                        context, serviceLocator.getGenreDao().getList(), null);
+            }
             case DBKey.LANGUAGE: {
                 final Locale userLocale = context.getResources().getConfiguration()
                                                  .getLocales().get(0);
@@ -173,6 +197,11 @@ public final class FilterFactory {
                         serviceLocator.getLanguageDao().getList(),
                         new LanguageFormatter(userLocale, serviceLocator.getLanguages()));
             }
+            case DBKey.LOCATION: {
+                return FieldArrayAdapter.createStringDropDown(
+                        context, serviceLocator.getLocationDao().getList(), null);
+            }
+
             case DBKey.FK_TOC_ENTRY: {
                 // FIXME: see note with SUPPORTED above
                 return FieldArrayAdapter.createEntityDropDown(
