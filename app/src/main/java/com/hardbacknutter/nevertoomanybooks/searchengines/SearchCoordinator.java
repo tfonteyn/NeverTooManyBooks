@@ -757,7 +757,7 @@ public class SearchCoordinator
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "startSearch",
-                                        "searchEngine=" + config.getEngineId().getPreferenceKey());
+                                        "searchEngine=" + config.getEngineId().name());
         }
 
         task.startSearch();
@@ -1029,14 +1029,13 @@ public class SearchCoordinator
 
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                        "finished=" + engineId.getPreferenceKey());
+                                        "finished=" + engineId.name());
 
             synchronized (activeTasks) {
                 for (final SearchTask task : activeTasks.values()) {
                     LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
                                                 "running="
-                                                + task.getSearchEngine().getEngineId()
-                                                      .getPreferenceKey());
+                                                + task.getSearchEngine().getEngineId().name());
                 }
             }
         }
