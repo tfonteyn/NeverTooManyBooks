@@ -825,4 +825,5 @@
     <string name="dialog_alert_title">注意</string>
     <string name="info_site_search_field_optional">可选。不是所有网站都支持。</string>
     <string name="warning_missing_title_or_author">必须指定标题和/或作者。</string>
+    <string name="progress_msg_authenticating_to_site">正在 %1$s 上进行身份验证</string>
 </resources>
