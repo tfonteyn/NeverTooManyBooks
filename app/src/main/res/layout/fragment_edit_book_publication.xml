@@ -186,7 +186,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/print_run"
-                style="@style/notesTextEntry"
+                style="@style/TIE.Notes"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="limited to 150 copies"

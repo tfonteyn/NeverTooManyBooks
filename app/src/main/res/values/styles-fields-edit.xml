@@ -206,6 +206,14 @@
 
     </style>
 
+    <!-- Personal Notes, Description, Print-run. -->
+    <style name="TIE.Notes"
+           parent="Base.TIE">
+        <item name="android:inputType">
+            textLongMessage|textMultiLine|textCapSentences|textAutoCorrect
+        </item>
+    </style>
+
     <!-- Generic number field. Accepts only positive integer values.
          Not localized.
     -->

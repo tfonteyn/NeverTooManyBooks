@@ -175,7 +175,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/description"
-                style="@style/notesTextEntry"
+                style="@style/TIE.Notes"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:maxLines="10"
