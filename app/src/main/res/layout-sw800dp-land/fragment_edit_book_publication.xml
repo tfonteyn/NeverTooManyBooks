@@ -62,7 +62,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/format"
-                style="@style/autoCompleteTextEntry"
+                style="@style/TIA.InlineStringField"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/format/name"
@@ -81,7 +81,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/color"
-                style="@style/autoCompleteTextEntry"
+                style="@style/TIA.InlineStringField"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/color/name"
@@ -423,7 +423,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/location"
-                style="@style/autoCompleteTextEntry"
+                style="@style/TIA.InlineStringField"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />

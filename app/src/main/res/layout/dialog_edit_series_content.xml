@@ -53,7 +53,7 @@
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/series_title"
-            style="@style/acTitleTextEntry"
+            style="@style/TIA.Title"
             android:imeOptions="actionDone"
             tools:ignore="LabelFor"
             />

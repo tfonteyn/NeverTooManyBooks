@@ -83,7 +83,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/family_name"
-                style="@style/acPersonalNameTextEntry"
+                style="@style/TIA.PersonalName"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
@@ -99,7 +99,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/given_names"
-                style="@style/acPersonalNameTextEntry"
+                style="@style/TIA.PersonalName"
                 android:imeOptions="actionDone"
                 tools:ignore="LabelFor"
                 />
@@ -136,7 +136,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/real_author"
-                style="@style/acPersonalNameTextEntry"
+                style="@style/TIA.PersonalName"
                 android:imeOptions="actionDone"
                 tools:ignore="LabelFor"
                 />

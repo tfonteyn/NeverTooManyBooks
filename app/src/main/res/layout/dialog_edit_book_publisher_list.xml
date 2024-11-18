@@ -60,7 +60,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/publisher_name"
-                style="@style/acPersonalNameTextEntry"
+                style="@style/TIA.PersonalName"
                 android:imeOptions="actionDone"
                 tools:ignore="LabelFor"
                 />

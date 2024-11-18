@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.InputType;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -28,10 +29,12 @@ import android.widget.EditText;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
@@ -62,6 +65,9 @@ public class EditTextField<T, V extends EditText>
 
     @Nullable
     private List<View.OnFocusChangeListener> focusChangeListeners;
+
+    @NonNull
+    private Capitalization capitalization = Capitalization.DoNotChange;
 
     /**
      * Constructor.
@@ -129,6 +135,12 @@ public class EditTextField<T, V extends EditText>
         }
     }
 
+    @NonNull
+    public EditTextField<T, V> setCapitalization(@NonNull final Capitalization capitalization) {
+        this.capitalization = capitalization;
+        return this;
+    }
+
     /**
      * Set the end-icon to use.
      *
@@ -153,9 +165,14 @@ public class EditTextField<T, V extends EditText>
         super.setParentView(parent);
 
         final V view = requireView();
+
+        if (capitalization != Capitalization.DoNotChange) {
+            capitalization.apply(view);
+        }
+
         view.addTextChangedListener(this);
         // REMINDER: this overrides the default listener which would show/remove the "end_icon"
-        // This is in fact what we want - finally... and android "issue" we like.
+        // This is in fact what we want - finally... an android "issue" we like.
         view.setOnFocusChangeListener(this);
     }
 
@@ -255,4 +272,73 @@ public class EditTextField<T, V extends EditText>
         notifyIfChanged(previous);
     }
 
+    /**
+     * Used/defined in xml/preferences.xml
+     */
+    public enum Capitalization {
+        /**
+         * The default value for all fields.
+         * <p>
+         * Don't change, use/keep xml or manual code settings.
+         */
+        DoNotChange("", 0),
+
+        /**
+         * Book, Series and TocEntry titles.
+         * Overrides textCapCharacters, textCapWords, textCapSentences.
+         * Does NOT modify any others.
+         */
+        Title("edit.capitalize.title", InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+
+        static final int MASK = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+                                | InputType.TYPE_TEXT_FLAG_CAP_WORDS
+                                | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+        @NonNull
+        private final String prefKey;
+        private final int defaultVal;
+
+        Capitalization(@NonNull final String prefKey,
+                       final int defaultVal) {
+            this.prefKey = prefKey;
+            this.defaultVal = defaultVal;
+        }
+
+        @VisibleForTesting
+        @NonNull
+        public String getPrefKey() {
+            return prefKey;
+        }
+
+        private int getBits(@NonNull final Context context) {
+            switch (IntListPref.getInt(context, prefKey, -1)) {
+                case 0:
+                    return 0;
+                case 1:
+                    return InputType.TYPE_TEXT_FLAG_CAP_WORDS;
+                case 2:
+                    return InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+                case 3:
+                    return InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+                default:
+                    return defaultVal;
+            }
+        }
+
+        /**
+         * Apply the preferred mode.
+         *
+         * @param editText to process
+         */
+        public void apply(@NonNull final EditText editText) {
+            if (this == DoNotChange) {
+                return;
+            }
+            // get all current bits, nulling out the 3 values we handle.
+            final int current = editText.getInputType() & ~MASK;
+            // determine the bits to turn on
+            final int value = getBits(editText.getContext());
+
+            editText.setInputType(current | value);
+        }
+    }
 }

@@ -120,6 +120,16 @@
             android:title="@string/pt_covers"
             />
 
+        <!-- default 1: capitalize all words. -->
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_edit_capitalize"
+            android:entryValues="@array/pv_edit_capitalize"
+            android:icon="@drawable/titlecase_24px"
+            android:key="edit.capitalize.title"
+            android:title="@string/pt_capitalize_title"
+            app:useSimpleSummaryProvider="true"
+            />
         <ListPreference
             android:defaultValue="1"
             android:entries="@array/pe_edit_book_isbn_checks"

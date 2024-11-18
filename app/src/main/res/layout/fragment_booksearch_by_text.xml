@@ -74,7 +74,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
-                style="@style/acTitleTextEntry"
+                style="@style/TIA.Title"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 />
@@ -95,7 +95,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/author"
-                style="@style/acPersonalNameTextEntry"
+                style="@style/TIA.PersonalName"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
@@ -115,7 +115,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/series_title"
-                style="@style/acTitleTextEntry"
+                style="@style/TIA.Title"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
@@ -156,7 +156,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/publisher"
-                style="@style/acPersonalNameTextEntry"
+                style="@style/TIA.PersonalName"
                 android:imeOptions="actionSearch"
                 tools:ignore="LabelFor"
                 />

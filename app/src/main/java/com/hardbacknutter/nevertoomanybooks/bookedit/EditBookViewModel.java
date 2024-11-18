@@ -960,12 +960,14 @@ public class EditBookViewModel
 
         fields.add(new EditTextField<>(fragmentId, R.id.title, DBKey.TITLE)
                            .setTextInputLayoutId(R.id.lbl_title)
+                           .setCapitalization(EditTextField.Capitalization.Title)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
         fields.add(new EditTextField<>(fragmentId, R.id.original_title, DBKey.TITLE_ORIGINAL_LANG)
                            .setTextInputLayoutId(R.id.lbl_original_title)
+                           .setCapitalization(EditTextField.Capitalization.Title)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)

@@ -110,7 +110,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
-                style="@style/titleTextEntry"
+                style="@style/TIE.Title"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="@sample/data.json/book/title"
@@ -127,7 +127,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/language"
-                style="@style/autoCompleteTextEntry"
+                style="@style/TIA.InlineStringField"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/language/name"
@@ -147,7 +147,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/original_title"
-                style="@style/titleTextEntry"
+                style="@style/TIE.Title"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="@sample/data.json/book/title"
@@ -231,7 +231,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/genre"
-                style="@style/autoCompleteTextEntry"
+                style="@style/TIA.InlineStringField"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/genre/name"

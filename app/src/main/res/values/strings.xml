@@ -313,7 +313,9 @@
     <!-- [VERIFIED] Progress message. -->
     <string name="progress_msg_searching">Searching…</string>
 
-    <!-- Param 1: the website name -->
+    <!-- Progress msg displayed while a login request is send to website.
+         Param 1: the website name
+    -->
     <string name="progress_msg_authenticating_to_site">Authenticating on %1$s</string>
     <!-- Param 1: the website name -->
     <string name="progress_msg_searching_site">Searching %1$s</string>
@@ -1275,6 +1277,17 @@
          -->
     <string name="ps_show_titles_reordered_on">Move an article at the start of a title to the end,\ne.g. “Lord of The Rings, The”</string>
 
+    <!-- ListPreference title. Book titles can be capitalized automatically according to user preferences. -->
+    <string name="pt_capitalize_title">Capitalize titles</string>
+    <!-- Option: title capitalization: the title will be used exactly as typed. -->
+    <string name="lbl_capitalize_none">No changes</string>
+    <!-- Option: title capitalization: the first character of each word in the title will be capitalized. -->
+    <string name="lbl_capitalize_words">Start of words</string>
+    <!-- Option: title capitalization: the first character of each sentence in the title will be capitalized. -->
+    <string name="lbl_capitalize_sentence">Start of sentences</string>
+    <!-- Option: title capitalization: the whole title will be capitalized. -->
+    <string name="lbl_capitalize_full">All uppercase</string>
+
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Allow mobile data usage</string>
     <!-- SwitchPreference - Some web sites expose their website book id.
@@ -1844,4 +1857,5 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
+
 </resources>

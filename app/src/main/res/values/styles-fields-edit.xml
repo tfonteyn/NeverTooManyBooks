@@ -27,7 +27,8 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Base.TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+    <style name="Base.TIL"
+           parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -40,7 +41,8 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
-    <style name="TIL.Text" parent="Base.TIL">
+    <style name="TIL.Text"
+           parent="Base.TIL">
         <item name="endIconMode">custom</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
         <item name="android:layout_marginTop">@dimen/til_margin</item>
@@ -101,7 +103,8 @@
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->
-    <style name="TIL.ListPicker" parent="Base.TIL">
+    <style name="TIL.ListPicker"
+           parent="Base.TIL">
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/edit_24px</item>
         <item name="android:focusable">false</item>
@@ -114,7 +117,8 @@
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick a date; the end-icon clears the field -->
-    <style name="TIL.DatePicker" parent="Base.TIL">
+    <style name="TIL.DatePicker"
+           parent="Base.TIL">
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/cancel_24px</item>
         <item name="android:focusable">false</item>
@@ -157,12 +161,14 @@
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
     </style>
 
-    <style name="TIL.Currency" parent="TIL.AutoCompleteTextView">
+    <style name="TIL.Currency"
+           parent="TIL.AutoCompleteTextView">
         <item name="android:hint">@string/lbl_currency</item>
         <item name="android:layout_width">@dimen/til_fixed_width_currency</item>
     </style>
 
-    <style name="TIL.Language" parent="TIL.AutoCompleteTextView">
+    <style name="TIL.Language"
+           parent="TIL.AutoCompleteTextView">
         <item name="android:hint">@string/lbl_language</item>
         <item name="android:layout_width">@dimen/til_fixed_width_language</item>
     </style>
@@ -181,7 +187,8 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="Base.TIE" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
+    <style name="Base.TIE"
+           parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -190,7 +197,8 @@
          Not localized.
          See "TIL.DatePicker" + "TIL.ListPicker"
      -->
-    <style name="TIE.ReadOnly" parent="Base.TIE">
+    <style name="TIE.ReadOnly"
+           parent="Base.TIE">
         <item name="android:inputType">none</item>
         <!-- installing an onClickListener will flip this to 'true' -->
         <item name="android:clickable">false</item>
@@ -202,12 +210,13 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
-    <style name="TIE.Generic" parent="Base.TIE">
+    <style name="TIE.Generic"
+           parent="Base.TIE">
 
     </style>
 
     <style name="TIE.Bookshelf"
-           parent="TIE.Generic">
+           parent="Base.TIE">
         <item name="android:inputType">textCapWords</item>
     </style>
 
@@ -219,9 +228,21 @@
         </item>
     </style>
 
-    <!-- Generic number field. Accepts only positive integer values.
-         Not localized.
-    -->
+    <!-- Titles of Books, Series, TocEntry's (Anthology titles).
+
+        See {@link EditTextField#setCapitalization()}
+
+        The inputType here is really for documentation,
+        as it will be overwritten by the {@link EditTextField.Capitalization} class.
+
+        See also "TIA.Title"
+     -->
+    <style name="TIE.Title"
+           parent="Base.TIE">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- Generic number field. Accepts only positive integer values. -->
     <style name="TIE.Number"
            parent="Base.TIE">
         <item name="android:inputType">number</item>
@@ -230,26 +251,23 @@
         <item name="android:maxLines">1</item>
     </style>
 
-    <!-- Dedicated series-number field. Note this is a TEXT field.
-         Not localized.
-     -->
-    <style name="TIE.SeriesNumber" parent="Base.TIE">
+    <!-- Dedicated series-number field. Note this is a TEXT field. -->
+    <style name="TIE.SeriesNumber"
+           parent="Base.TIE">
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
     </style>
 
-    <!-- Plain 4 digit year field.
-         Not localized.
-     -->
-    <style name="TIE.Year" parent="Base.TIE">
+    <!-- Plain 4 digit year field. -->
+    <style name="TIE.Year"
+           parent="Base.TIE">
         <item name="android:inputType">number</item>
         <item name="android:maxLength">4</item>
     </style>
 
-    <!-- ISBN / EAN or other code
-         Not localized.
-     -->
-    <style name="TIE.Isbn" parent="Base.TIE">
+    <!-- ISBN / EAN or other code. -->
+    <style name="TIE.Isbn"
+           parent="Base.TIE">
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
         <item name="android:digits">1234567890xX</item>
     </style>
@@ -261,32 +279,56 @@
         <item name="android:background">@null</item>
     </style>
 
-    <!-- The price LISTED field. This field can come from a search, hence it must be text based.
-        Not localized.
-    -->
-    <style name="TIE.Price.Listed" parent="Base.TIE.Price">
+    <!-- The price LISTED field. Data can come from a search, hence it must be text based. -->
+    <style name="TIE.Price.Listed"
+           parent="Base.TIE.Price">
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <!-- Price PAID is user input only
-        Not localized.
-    -->
-    <style name="TIE.Price.Paid" parent="Base.TIE.Price">
+    <!-- Price PAID is user input only. -->
+    <style name="TIE.Price.Paid"
+           parent="Base.TIE.Price">
         <item name="android:inputType">numberDecimal</item>
     </style>
 
     <!-- *************************************************************************************** -->
 
     <!-- generic auto-complete. -->
-    <style name="TIA" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
+    <style name="TIA"
+           parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:completionThreshold">2</item>
     </style>
 
-    <!-- International three character currency code (uppercase).
-         Not localized.
+
+    <!-- AutoComplete; Titles of Books, Series, TocEntry's (Anthology titles)
+
+        See {@link EditTextField#setCapitalization()}
+
+        The inputType here is really for documentation,
+        as it will be overwritten by the {@link EditTextField.Capitalization} class.
+
+        See also "TIE.Title"
     -->
+    <style name="TIA.Title"
+           parent="TIA">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- AutoComplete; 'human' names: Author (family/given), Publisher. -->
+    <style name="TIA.PersonalName"
+           parent="TIA">
+        <item name="android:inputType">textPersonName|textCapWords</item>
+    </style>
+
+    <!-- AutoComplete fields: format, genre, language, color,location. -->
+    <style name="TIA.InlineStringField"
+           parent="TIA">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- International three character currency code (uppercase). -->
     <style name="TIA.Currency">
         <item name="android:completionThreshold">1</item>
         <item name="android:textAlignment">viewEnd</item>
@@ -299,7 +341,8 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="AuthorStyleCheckBox" parent="Widget.App.CheckBox">
+    <style name="AuthorStyleCheckBox"
+           parent="Widget.App.CheckBox">
         <item name="android:layout_width">@dimen/cbx_fixed_width_author_type</item>
         <item name="android:layout_height">wrap_content</item>
     </style>

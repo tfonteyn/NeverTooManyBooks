@@ -51,7 +51,7 @@
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/edit_string"
-            style="@style/autoCompleteTextEntry"
+            style="@style/TIA.InlineStringField"
             android:imeOptions="actionDone"
             tools:ignore="LabelFor"
             />

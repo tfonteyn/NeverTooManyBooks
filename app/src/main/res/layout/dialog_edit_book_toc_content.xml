@@ -52,7 +52,7 @@
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/author"
-            style="@style/acPersonalNameTextEntry"
+            style="@style/TIA.PersonalName"
             android:imeOptions="actionNext"
             tools:ignore="LabelFor"
             />
@@ -70,7 +70,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title"
-            style="@style/titleTextEntry"
+            style="@style/TIE.Title"
             android:imeOptions="actionNext"
             tools:ignore="Autofill"
             />

@@ -30,6 +30,7 @@ NEW:
 - Searching for books "by title" now supports series/nr and publisher fields.
   Actual usage during a search depends on the site searched.
 - Added filters for Location and Genre
+- Title capitalization is now configurable.
 
 FIXES:
 - #77 Importing Zip file to new device, no book covers.

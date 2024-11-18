@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
@@ -121,6 +122,7 @@ class EditTocEntryDelegate
         //ENHANCE: should we provide a AuthorWorksAdapter to aid manually adding TOC titles?
         // What about the publication year?
         vb.title.setText(currentEdit.getTitle());
+        EditTextField.Capitalization.Title.apply(vb.title);
         TilUtil.autoRemoveError(vb.title, vb.lblTitle);
 
         final PartialDate firstPublicationDate = currentEdit.getFirstPublicationDate();
