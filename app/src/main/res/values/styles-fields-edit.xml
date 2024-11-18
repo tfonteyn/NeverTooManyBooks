@@ -206,6 +206,11 @@
 
     </style>
 
+    <style name="TIE.Bookshelf"
+           parent="TIE.Generic">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
     <!-- Personal Notes, Description, Print-run. -->
     <style name="TIE.Notes"
            parent="Base.TIE">

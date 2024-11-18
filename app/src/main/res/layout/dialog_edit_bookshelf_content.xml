@@ -55,7 +55,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/bookshelf"
-            style="@style/titleTextEntry"
+            style="@style/TIE.Bookshelf"
             android:imeOptions="actionDone"
             tools:ignore="LabelFor"
             />
