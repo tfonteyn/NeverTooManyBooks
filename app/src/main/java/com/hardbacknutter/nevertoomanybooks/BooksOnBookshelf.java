@@ -160,14 +160,18 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <ol>Advanced:
  *     <li>User clicks navigation panel menu search option</li>
  *     <li>{@link SearchFtsFragment} is started</li>
- *     <li>{@link SearchFtsFragment} returns an id-list and the fts search terms</li>
+ *     <li>As the user types in criteria, the search is done in real-time and
+ *         the <strong>number of results</strong> is shown to the user</li>
+ *     <li>When the user taps the 'display' button, {@link SearchFtsFragment} returns
+ *         an id-list and the fts search terms</li>
  *     <li>{@link #ftsSearchLauncher} sets the incoming fts criteria</li>
  *     <li>{@link #onResume} builds the list</li>
  * </ol>
  *
  * <ol>Standard:
  *     <li>User clicks option menu search icon</li>
- *     <li>shows the search widget, user types</li>
+ *     <li>shows the search widget, user types keywords and <strong>a real-time search</strong>
+ *         is done while displaying titles only.</li>
  *     <li>{@link #onNewIntent} gets called with the query data</li>
  *     <li>build the list</li>
  * </ol>
@@ -181,6 +185,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     <li>{@link #onBackPressed} checks if there are search criteria, if so, clears and
  *     rebuild and suppresses the 'back' action</li>
  * </ol>
+ *
+ * As an alternative to advanced/standard search, the user can also define filters on per-bookshelf
+ * basis. These are static and applied at the time the list is build.
  */
 public class BooksOnBookshelf
         extends BaseActivity
