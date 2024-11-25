@@ -533,6 +533,7 @@
     <string name="progress_msg_x_updated">%1$d mis à jour</string>
     <string name="progress_msg_x_skipped">%1$d ignorées</string>
     <string name="pt_allow_editing_external_id">Autoriser la modification de l’ID du livre du site Web natif</string>
+    <string name="lbl_capitalize_full">Tout en majuscules</string>
     <string name="pt_allow_metered_network_data">Autoriser l’utilisation de données mobiles</string>
     <string name="pt_bob_books_under_multiple_authors">Livres d’auteurs multiples</string>
     <string name="pt_bob_books_under_multiple_publishers">Afficher des livres avec plusieurs éditeurs</string>
@@ -798,4 +799,8 @@
     <string name="info_bulk_set_bookshelves">Sélectionnez les étagères que vous souhaitez attribuer à tous les livres répertoriés sous le nœud sélectionné.</string>
     <string name="ok">OK</string>
     <string name="dialog_alert_title">Attention</string>
+    <string name="pt_capitalize_title">Capitalisation des titres</string>
+    <string name="lbl_capitalize_none">Pas de changement</string>
+    <string name="lbl_capitalize_words">Début des mots</string>
+    <string name="lbl_capitalize_sentence">Début de phrase</string>
 </resources>

@@ -545,6 +545,7 @@
     <string name="progress_msg_x_updated">%1$d обновлено</string>
     <string name="progress_msg_x_skipped">%1$d пропущена</string>
     <string name="pt_allow_editing_external_id">Разрешить редактировать родной идентификатор книги сайта</string>
+    <string name="lbl_capitalize_full">Все в верхнем регистре</string>
     <string name="pt_allow_metered_network_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_publishers">Показать книги с несколькими издателями</string>
@@ -814,4 +815,8 @@
     <string name="pe_search_result_order_first_found">Первая найденная книга</string>
     <string name="info_bulk_set_bookshelves">Выберите книжные полки, которые нужно назначить всем книгам, перечисленным в выбранном узле.</string>
     <string name="dialog_alert_title">Внимание!</string>
+    <string name="pt_capitalize_title">Капитализация названия</string>
+    <string name="lbl_capitalize_none">Без изменений</string>
+    <string name="lbl_capitalize_words">Начало слов</string>
+    <string name="lbl_capitalize_sentence">Начало предложений</string>
 </resources>

@@ -1017,6 +1017,7 @@
          -->
     <string name="ps_show_titles_reordered_on">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “Lord of The Rings, The”</string>
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
+    <string name="lbl_capitalize_full">Tất cả đều viết hoa</string>
     <string name="pt_allow_metered_network_data">Cho phép sử dụng dữ liệu di động</string>
     <!-- SwitchPreference - Some web sites expose their website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
@@ -1448,4 +1449,8 @@
     <string name="anonymous_author">[Vô danh]</string>
     <string name="info_bulk_set_bookshelves">Chọn giá sách bạn muốn gán cho tất cả sách được liệt kê trong nút đã chọn.</string>
     <string name="dialog_alert_title">Chú ý</string>
+    <string name="pt_capitalize_title">Tiêu đề viết hoa</string>
+    <string name="lbl_capitalize_none">Không thay đổi</string>
+    <string name="lbl_capitalize_words">Bắt đầu từ</string>
+    <string name="lbl_capitalize_sentence">Bắt đầu câu</string>
 </resources>

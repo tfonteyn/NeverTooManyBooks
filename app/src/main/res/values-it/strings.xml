@@ -532,6 +532,7 @@
     <string name="progress_msg_x_updated">%1$d aggiornati</string>
     <string name="progress_msg_x_skipped">%1$d saltate</string>
     <string name="pt_allow_editing_external_id">Consenti la modifica dell’ID libro del sito Web nativo</string>
+    <string name="lbl_capitalize_full">Tutto in maiuscolo</string>
     <string name="pt_allow_metered_network_data">Consenti l’utilizzo dei dati mobili</string>
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
     <string name="pt_bob_books_under_multiple_publishers">Mostra libri con più editori</string>
@@ -797,4 +798,8 @@
     <string name="info_bulk_set_bookshelves">Selezionare le librerie che si desidera assegnare a tutti i libri elencati nel nodo selezionato.</string>
     <string name="ok">OK</string>
     <string name="dialog_alert_title">Attenzione</string>
+    <string name="pt_capitalize_title">Capitalizzazione del titolo</string>
+    <string name="lbl_capitalize_none">Nessuna modifica</string>
+    <string name="lbl_capitalize_words">Inizio delle parole</string>
+    <string name="lbl_capitalize_sentence">Inizio delle frasi</string>
 </resources>

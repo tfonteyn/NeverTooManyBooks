@@ -570,6 +570,7 @@
     <string name="error_type_not_supported">Type niet ondersteund: %1$s …</string>
     <string name="ps_show_titles_reordered_on">Verplaats een lidwoord aan de start van een titel naar het einde,\nbvb. „schat van Beersel, De”</string>
     <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe</string>
+    <string name="lbl_capitalize_full">Alles in hoofdletters</string>
     <string name="pt_allow_metered_network_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>
     <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Franse) naamgeving</string>
@@ -793,4 +794,8 @@
     <string name="pe_search_result_order_first_found">Eerste boek gevonden</string>
     <string name="info_bulk_set_bookshelves">Selecteer de boekenplanken die je wilt toewijzen aan alle boeken die onder het geselecteerde knooppunt staan.</string>
     <string name="dialog_alert_title">Let op</string>
+    <string name="pt_capitalize_title">Hoofdletters in een titel</string>
+    <string name="lbl_capitalize_none">Geen wijzigingen</string>
+    <string name="lbl_capitalize_words">Begin van woorden</string>
+    <string name="lbl_capitalize_sentence">Begin van zinnen</string>
 </resources>

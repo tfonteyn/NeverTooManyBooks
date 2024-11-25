@@ -544,6 +544,7 @@
     <string name="progress_msg_x_updated">%1$d aktualizováno</string>
     <string name="progress_msg_x_skipped">%1$d přeskočeno</string>
     <string name="pt_allow_editing_external_id">Povolit úpravy ID nativní webové knihy</string>
+    <string name="lbl_capitalize_full">Všechna velká písmena</string>
     <string name="pt_allow_metered_network_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
     <string name="pt_bob_books_under_multiple_publishers">Zobrazit knihy s více vydavateli</string>
@@ -813,4 +814,8 @@
     <string name="info_bulk_set_bookshelves">Vyberte regály, které chcete přiřadit všem knihám uvedeným pod vybraným uzlem.</string>
     <string name="ok">OK</string>
     <string name="dialog_alert_title">Upozornění</string>
+    <string name="pt_capitalize_title">Psaní velkých písmen v názvu</string>
+    <string name="lbl_capitalize_none">Žádné změny</string>
+    <string name="lbl_capitalize_words">Začátek slov</string>
+    <string name="lbl_capitalize_sentence">Začátek vět</string>
 </resources>

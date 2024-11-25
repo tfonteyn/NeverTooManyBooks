@@ -535,6 +535,7 @@
     <string name="progress_msg_x_updated">%1$d güncellendi</string>
     <string name="progress_msg_x_skipped">%1$d atlandı</string>
     <string name="pt_allow_editing_external_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver</string>
+    <string name="lbl_capitalize_full">Hepsi büyük harfle</string>
     <string name="pt_allow_metered_network_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
     <string name="pt_bob_books_under_multiple_publishers">Birden çok yayıncının bulunduğu kitapları gösterin</string>
@@ -804,4 +805,8 @@
     <string name="info_bulk_set_bookshelves">Seçilen düğüm altında listelenen tüm kitaplara atamak istediğiniz kitap raflarını seçin.</string>
     <string name="ok">Tamam</string>
     <string name="dialog_alert_title">Dikkat</string>
+    <string name="pt_capitalize_title">Başlık büyük harf kullanımı</string>
+    <string name="lbl_capitalize_none">Değişiklik yok</string>
+    <string name="lbl_capitalize_words">Sözcüklerin başlangıcı</string>
+    <string name="lbl_capitalize_sentence">Cümlelerin başlangıcı</string>
 </resources>

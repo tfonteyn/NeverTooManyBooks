@@ -629,6 +629,7 @@
     <string name="info_import_partially_complete">Importação parcial concluída</string>
     <string name="pc_ui">Interface do utilizador</string>
     <string name="pc_image_cache">Cache de imagens</string>
+    <string name="lbl_capitalize_full">Tudo em maiúsculas</string>
     <string name="pt_allow_metered_network_data">Permitir o uso de dados móveis</string>
     <string name="pt_scanning_beep_on_invalid">Apitar se o ISBN lido é inválido</string>
     <string name="pt_search_resolve_authors_bedetheque">Resolver pseudónimos de autor usando o site Bedetheque</string>
@@ -823,4 +824,8 @@
     <string name="info_bulk_set_bookshelves">Selecione as estantes que pretende atribuir a todos os livros listados no nó selecionado.</string>
     <string name="ok">OK</string>
     <string name="dialog_alert_title">Atenção</string>
+    <string name="pt_capitalize_title">Capitalização do título</string>
+    <string name="lbl_capitalize_none">Sem alterações</string>
+    <string name="lbl_capitalize_words">Início das palavras</string>
+    <string name="lbl_capitalize_sentence">Início de frases</string>
 </resources>

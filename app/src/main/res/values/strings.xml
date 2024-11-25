@@ -1286,7 +1286,7 @@
     <!-- Option: title capitalization: the first character of each sentence in the title will be capitalized. -->
     <string name="lbl_capitalize_sentence">Start of sentences</string>
     <!-- Option: title capitalization: the whole title will be capitalized. -->
-    <string name="lbl_capitalize_full">All uppercase</string>
+    <string name="lbl_capitalize_full">All in uppercase</string>
 
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Allow mobile data usage</string>

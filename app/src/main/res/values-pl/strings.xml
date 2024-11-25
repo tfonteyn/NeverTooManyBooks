@@ -548,6 +548,7 @@
     <string name="progress_msg_x_updated">%1$d zaktualizowano</string>
     <string name="progress_msg_x_skipped">%1$d pominięto</string>
     <string name="pt_allow_editing_external_id">Zezwalaj na edycję natywnego identyfikatora książki w witrynie</string>
+    <string name="lbl_capitalize_full">Wszystko wielkimi literami</string>
     <string name="pt_allow_metered_network_data">Włącz mobilne korzystanie z danych</string>
     <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
     <string name="pt_bob_books_under_multiple_publishers">Pokaż książki wielu wydawcom</string>
@@ -816,4 +817,8 @@
     <string name="pe_search_result_order_first_found">Pierwsza znaleziona książka</string>
     <string name="info_bulk_set_bookshelves">Wybierz półki z książkami, które chcesz przypisać do wszystkich książek wymienionych w wybranym węźle.</string>
     <string name="dialog_alert_title">Uwaga</string>
+    <string name="pt_capitalize_title">Kapitalizacja tytułu</string>
+    <string name="lbl_capitalize_none">Bez zmian</string>
+    <string name="lbl_capitalize_words">Początek wyrazów</string>
+    <string name="lbl_capitalize_sentence">Początek zdania</string>
 </resources>

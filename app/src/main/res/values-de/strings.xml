@@ -529,6 +529,7 @@
     <string name="progress_msg_x_updated">%1$d aktualisiert</string>
     <string name="progress_msg_x_skipped">%1$d übersprungen</string>
     <string name="pt_allow_editing_external_id">Bearbeitung der Website-Buch-ID zulassen</string>
+    <string name="lbl_capitalize_full">Alles in Großbuchstaben</string>
     <string name="pt_allow_metered_network_data">Mobile Datennutzung zulassen</string>
     <string name="pt_bob_books_under_multiple_authors">Bücher mit mehreren Autoren</string>
     <string name="pt_bob_books_under_multiple_publishers">Bücher mit mehreren Verlagen anzeigen</string>
@@ -793,4 +794,8 @@
     <string name="pe_search_result_order_first_found">Erstes gefundenes Buch</string>
     <string name="info_bulk_set_bookshelves">Wählen Sie die Bücherregale aus, die Sie allen unter dem ausgewählten Knoten aufgeführten Büchern zuordnen möchten.</string>
     <string name="dialog_alert_title">Achtung</string>
+    <string name="pt_capitalize_title">Großschreibung des Titels</string>
+    <string name="lbl_capitalize_none">Keine Änderungen</string>
+    <string name="lbl_capitalize_words">Beginn von Wörtern</string>
+    <string name="lbl_capitalize_sentence">Beginn von Sätzen</string>
 </resources>
