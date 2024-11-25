@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 public class PartialDatePickerLauncher
         extends DialogLauncher {

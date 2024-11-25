@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 
 import android.os.Bundle;
 
@@ -27,19 +27,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-public class MultiChoiceViewModel
+public class SingleChoiceViewModel
         extends ViewModel {
 
-    private Set<Long> previousSelection;
-    private Set<Long> selectedItems;
+    /** The selected item. */
     @Nullable
-    private Bundle extras;
+    private Long selectedItem;
+
+    private boolean initDone;
 
     /**
      * Pseudo constructor.
@@ -47,30 +42,20 @@ public class MultiChoiceViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (selectedItems == null) {
-            final long[] items = Objects.requireNonNull(
-                    args.getLongArray(MultiChoiceLauncher.BKEY_SELECTED_ITEMS),
-                    MultiChoiceLauncher.BKEY_SELECTED_ITEMS);
-
-            previousSelection = Arrays.stream(items).boxed().collect(Collectors.toSet());
-            selectedItems = new HashSet<>(previousSelection);
-
-            extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
+        if (!initDone) {
+            initDone = true;
+            if (args.containsKey(SingleChoiceLauncher.BKEY_SELECTED)) {
+                selectedItem = args.getLong(SingleChoiceLauncher.BKEY_SELECTED);
+            }
         }
     }
 
-    @NonNull
-    public Set<Long> getPreviousSelection() {
-        return previousSelection;
-    }
-
-    @NonNull
-    Set<Long> getSelectedItems() {
-        return selectedItems;
-    }
-
     @Nullable
-    Bundle getExtras() {
-        return extras;
+    Long getSelectedItem() {
+        return selectedItem;
+    }
+
+    void setSelectedItem(@Nullable final Long selectedItem) {
+        this.selectedItem = selectedItem;
     }
 }

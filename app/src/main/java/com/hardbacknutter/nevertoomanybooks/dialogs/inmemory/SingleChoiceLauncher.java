@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 public class SingleChoiceLauncher<T extends Parcelable & Entity>

@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 
 import android.os.Bundle;
 
@@ -27,14 +27,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-public class SingleChoiceViewModel
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class MultiChoiceViewModel
         extends ViewModel {
 
-    /** The selected item. */
+    private Set<Long> previousSelection;
+    private Set<Long> selectedItems;
     @Nullable
-    private Long selectedItem;
-
-    private boolean initDone;
+    private Bundle extras;
 
     /**
      * Pseudo constructor.
@@ -42,20 +47,30 @@ public class SingleChoiceViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (!initDone) {
-            initDone = true;
-            if (args.containsKey(SingleChoiceLauncher.BKEY_SELECTED)) {
-                selectedItem = args.getLong(SingleChoiceLauncher.BKEY_SELECTED);
-            }
+        if (selectedItems == null) {
+            final long[] items = Objects.requireNonNull(
+                    args.getLongArray(MultiChoiceLauncher.BKEY_SELECTED_ITEMS),
+                    MultiChoiceLauncher.BKEY_SELECTED_ITEMS);
+
+            previousSelection = Arrays.stream(items).boxed().collect(Collectors.toSet());
+            selectedItems = new HashSet<>(previousSelection);
+
+            extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
         }
     }
 
-    @Nullable
-    Long getSelectedItem() {
-        return selectedItem;
+    @NonNull
+    public Set<Long> getPreviousSelection() {
+        return previousSelection;
     }
 
-    void setSelectedItem(@Nullable final Long selectedItem) {
-        this.selectedItem = selectedItem;
+    @NonNull
+    Set<Long> getSelectedItems() {
+        return selectedItems;
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
     }
 }

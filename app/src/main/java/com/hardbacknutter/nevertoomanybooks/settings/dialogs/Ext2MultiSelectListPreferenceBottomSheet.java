@@ -50,7 +50,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleSimpleBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 /**

@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DateRangePic
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.PartialDatePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;

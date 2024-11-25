@@ -17,15 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-public class MultiChoiceBottomSheet
-        extends BaseBottomSheetDialogFragment {
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
+
+public class MultiChoiceDialogFragment
+        extends BaseFFDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

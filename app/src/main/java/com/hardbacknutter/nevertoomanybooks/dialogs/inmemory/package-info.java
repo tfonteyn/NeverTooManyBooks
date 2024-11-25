@@ -18,18 +18,8 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
-
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-
-public class PartialDatePickerBottomSheet
-        extends BaseBottomSheetDialogFragment {
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        delegate = new PartialDatePickerDelegate(this, requireArguments());
-    }
-}
+/**
+ * The dialogs in this package will <strong>NOT save</strong> the modifications to storage.
+ * It is up to the result-listeners to do so if required.
+ */
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
