@@ -179,172 +179,94 @@
     <!-- endregion -->
     <!-- region ========== Warning messages. -->
     <string name="warning_import_csv">CẢNH BÁO: Việc nhập dữ liệu có thể cập nhật các bản ghi sổ hiện có với thông tin mới nếu cột UUID không xuất hiện và ID trong tệp nhập giống với ID hiện có. Điều này thường ổn nếu bạn thay đổi một trường trong tệp đã xuất. Nếu bạn đã tạo một bản ghi sách mới hoặc đang nhập sách của người khác, hãy đảm bảo có trường UUID hoặc trường ID trống.</string>
-    <!-- Importing a CSV book list; an individual line failed: report the exact position. -->
     <string name="warning_import_csv_unescaped_quote">Trích dẫn không thoát tại hàng %1$d, vị trí %2$d</string>
-    <!-- Importing a list of books partially failed. This text is displayed as a header above a list of failures. -->
     <string name="warning_import_failed_for_these_books">Nhập không thành công cho các sách/hàng này:</string>
-    <!-- Importing a book list partially failed with more than 10 lines failing. Only 10 line numbers will be listed.
-         This text is displayed as a footer below a list of failures stating how many more lines failed. -->
     <string name="warning_import_failed_for_these_books_and_more">và %1$d nữa.</string>
     <string name="warning_export_contains_no_data">Không có gì để xuất.</string>
-    <!-- A search WAS done, but there is no book-data available; this is not an error. -->
     <string name="warning_book_not_found">Không thể tìm thấy sách được chỉ định.</string>
-    <!-- A search WAS done, but it partially failed. Some book-data might be available anyhow. -->
     <string name="warning_book_not_always_found">Không phải tất cả các trang web đều trả về dữ liệu hợp lệ.</string>
-    <!-- The user tried to start a search but did not enter any/sufficient data to actually search for -->
     <string name="warning_no_search_data_for_active_sites">Không có dữ liệu tìm kiếm hợp lệ cho các trang web đang hoạt động.</string>
-    <!-- Information note when a user changes a globally linked name; e.g. an Author name, a location... -->
     <string name="warning_immediate_global_changes">CẢNH BÁO: Các thay đổi đã lưu sẽ được áp dụng ngay lập tức cho tất cả sách.</string>
-    <!-- some unique field already exists; e.g. accidentally creating a duplicate Bookshelf -->
     <string name="warning_x_already_exists">%1$s đã tồn tại.</string>
-    <!-- Pref. screen for enabling/disabling/ordering search websites -->
     <string name="warning_enable_at_least_1_website">Kích hoạt ít nhất một trang web cho mỗi danh mục.</string>
-    <!-- Pref. screen for a style: sub-screen for selecting which groups to use. -->
     <string name="warning_select_at_least_1_group">Chọn ít nhất một nhóm.</string>
-    <!-- Config screen for automatic updating a (list of) book with info from the internet -->
     <string name="warning_select_at_least_1_field">Chọn ít nhất một trường để cập nhật.</string>
     <string name="warning_nothing_selected">Không có gì được chọn</string>
     <string name="warning_requires_at_least_1_field">Ít nhất một trường không được để trống.</string>
     <string name="warning_missing_title_or_author">Tiêu đề và/hoặc tác giả phải được chỉ định.</string>
     <string name="warning_requires_isbn">Hành động này yêu cầu ISBN hợp lệ.</string>
-    <!-- Search using a websites native book-id -->
     <string name="warning_requires_site_and_id">Chọn một trang web và nhập id.</string>
     <string name="warning_cannot_delete_1st_bs">Không thể xóa kệ sách đầu tiên.</string>
-    <!-- When the user tries to add e.g. an Author which is already listed on the book -->
     <string name="warning_already_in_list">Đã có trong danh sách!</string>
-    <!-- result of a search -->
     <string name="warning_no_matching_book_found">Không tìm thấy sách phù hợp</string>
-    <!-- the ISBN (or similar codes) entered is not valid -->
     <string name="warning_x_is_not_a_valid_code">“%1$s” không phải là mã hợp lệ</string>
     <string name="warning_image_not_found">Không thể tìm thấy hình ảnh.</string>
     <string name="warning_image_copy_failed">Không thể sao chép hình ảnh.</string>
-    <!-- a search for alternative editions of a book failed to find any -->
     <string name="warning_no_editions">Không có thông tin bổ sung về phiên bản.</string>
-    <!-- when entering a partial date; e.g. publication data.  -->
     <string name="warning_if_day_set_month_and_year_must_be">Nếu chỉ định ngày thì phải chỉ định cả tháng và năm.</string>
-    <!-- when entering a partial date; e.g. publication data.  -->
     <string name="warning_if_month_set_year_must_be">Nếu chỉ định tháng thì cũng phải chỉ định năm.</string>
-    <!-- When trying to automatically fetching the TOC of a book/anthology, we're not 100%
-         if we indeed got the right content. So ask the user first. -->
     <string name="warning_toc_confirm">Vui lòng xác nhận rằng những nhan đề này (hầu hết) là chính xác.</string>
-    <!-- Periodic reminder to make a backup -->
     <string name="warning_backup_request">Bạn có muốn sao lưu cơ sở dữ liệu vào thẻ sd của mình không?</string>
-    <!-- If the user has enabled/disabled  website to search on and for example disabled ALL sites which can search by ISBN, and then the user tries to to search by ISBN.
-        Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
     <string name="warning_no_site_supports_this_method">CẢNH BÁO: không có trang nào hiện được chọn hỗ trợ tìm kiếm theo %1$s. Vui lòng sử dụng thực đơn trang để kích hoạt các trang thay thế hoặc sử dụng phương pháp tìm kiếm khác.</string>
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->
-    <!-- Dialog title for validation messages. -->
     <string name="vldt_failure">Thẩm định thất bại</string>
-    <!-- param 1: number 1..; param 2: the error message. -->
     <string name="vldt_list_message">(%1$d) %2$s</string>
-    <!-- generic type errors; e.g. the user entered text in a number field. -->
     <string name="vldt_integer_expected_for_x">Cần một giá trị số nguyên cho “%1$s”</string>
-    <!-- generic type errors; e.g. the user entered text in a number field. -->
     <string name="vldt_real_expected_for_x">Cần một số thực cho “%1$s”</string>
-    <!-- generic type errors; e.g. the user entered text in a date field. -->
     <string name="vldt_date_expected_for_x">Cần một ngày cho “%1$s”</string>
-    <!-- generic type errors; e.g. the user entered text in a boolean field. -->
     <string name="vldt_boolean_expected_for_x">Cần một giá trị boolean (0,1,t,f,true,false) cho “%1$s”</string>
-    <!-- Some fields have to be blank or non-blank. -->
     <string name="vldt_non_blank_required">Cần có giá trị không trống</string>
-    <!-- The (param 1) field must not be blank -->
     <string name="vldt_non_blank_required_for_x">Cần có giá trị không trống cho “%1$s”</string>
-    <!-- The (param 1) field MUST be blank. (todo: is this actually used?) -->
     <string name="vldt_blank_required_for_x">Cần có giá trị trống cho “%1$s”</string>
-    <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
     <string name="vldt_read_start_after_end">Ngày bắt đầu đọc là sau ngày kết thúc</string>
-    <!-- Specific msg for when the user edits the 'real' name for an Author who normally uses a pseudonym. -->
     <string name="vldt_real_author_must_be_valid">Phải để trống hoặc phải có Tác giả</string>
     <!-- endregion -->
     <!-- region ========== Progress messages for 'lengthy' actions. -->
-    <!-- [VERIFIED] -->
     <string name="progress_msg_please_wait">Vui lòng đợi…</string>
-    <!-- [VERIFIED] -->
     <string name="progress_msg_loading">Đang tải…</string>
     <string name="progress_msg_loading_page">Đang tải trang %1$d…</string>
-    <!-- During startup. -->
     <string name="progress_msg_starting_up">Đang khởi động…</string>
-    <!-- During startup. -->
     <string name="progress_msg_upgrading">Đang nâng cấp…</string>
-    <!-- During startup. -->
     <string name="progress_msg_rebuilding_search_index">Xây dựng lại chỉ mục tìm kiếm…</string>
-    <!-- During startup. -->
     <string name="progress_msg_optimizing">Đang tối ưu hóa…</string>
-    <!-- [VERIFIED] Progress message. -->
     <string name="progress_msg_searching">Đang tìm kiếm…</string>
-    <!-- Param 1: the website name -->
+    <string name="progress_msg_authenticating_to_site">Xác thực trên %1$s</string>
     <string name="progress_msg_searching_site">Đang tìm kiếm %1$s</string>
-    <!-- displayed while searching for alternative editions of the book, to get cover images. -->
     <string name="progress_msg_searching_editions">Đang tìm kiếm các ấn bản khác…</string>
-    <!-- [VERIFIED] Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Đang kết nối…</string>
     <string name="progress_msg_downloading">Đang tải xuống…</string>
-    <!-- Progress message displayed when automatically updating book fields. Param 1: a book title  -->
     <string name="progress_msg_skip_s">Đang bỏ qua “%1$s”</string>
-    <!-- Progress message displayed when importing: the number of books/covers created so far. -->
     <string name="progress_msg_x_created">%1$d đã được tạo</string>
-    <!-- Progress message displayed when importing: the number of books/covers updated so far. -->
     <string name="progress_msg_x_updated">%1$d đã cập nhật</string>
-    <!-- Progress message displayed when importing: the number of books/covers skipped so far. -->
     <string name="progress_msg_x_skipped">%1$d bị bỏ qua</string>
-    <!-- Progress message displayed when importing: the number of books/covers deleted so far. -->
     <string name="progress_msg_x_deleted">%1$d đã xóa</string>
-    <!-- e.g. after an import -->
     <string name="progress_msg_cleaning_up">Đang dọn dẹp…</string>
     <!-- endregion -->
     <!-- region ========== Informational/Explanatory messages. -->
-    <!-- Shown after a successful connection or login to a remote service. -->
     <string name="info_authorized">Được ủy quyền</string>
-    <!-- Shown after a requested action when there was nothing to do. -->
     <string name="info_nothing_to_do">Không có gì để làm.</string>
-    <!-- Param 1: story title -->
     <string name="info_story_in_multiple_books">“%1$s” hiện diện trong nhiều sách:\n\n%2$s</string>
-    <!-- Param 1: story title -->
     <string name="info_story_in_single_book">“%1$s” hiện diện trong một cuốn sách duy nhất:\n\n%2$s</string>
-    <!-- Show when the user searches for books which have no cover (with the intention to add one) -->
     <string name="info_all_books_have_covers">Tất cả sách trên kệ này đều có bìa</string>
-    <!-- Shown in the heading of booklist. Param 1: nr of unique books; Param 2: total number (books can appear more than once) -->
     <string name="info_displaying_n_books_in_m_entries">%1$d sách, trong %2$d mục</string>
-    <!-- The default 'share' message.
-        Param 1: book title.
-        Param 2: series.
-        Param 3: author.
-        Param 4: rating; e.g. "4/5"
-    -->
     <string name="info_share_book_im_reading">Tôi đang đọc “%1$s” %2$s của %3$s %4$s</string>
-    <!--Shown when browsing alternative edition book covers. -->
     <string name="info_tap_on_thumbnail_to_zoom">Nhấn vào hình thu nhỏ để hiển thị hình ảnh lớn hơn.</string>
-    <!--Shown when browsing alternative edition book covers. -->
     <string name="X_info_tap_on_image_to_select">Nhấn vào hình ảnh lớn hơn để chọn nó.</string>
     <string name="info_download_successful">Tải xuống thành công</string>
-    <!-- See GitHub docs... there is optional code to be added to Calibre. -->
     <string name="info_calibre_content_server_extension">Tiện ích mở rộng Máy chủ Nội dung Calibre chưa được cài đặt. Thư viện ảo sẽ không có sẵn.</string>
-    <!-- ContentDescription text for the drag handle button in re-order-able lists -->
     <string name="cd_btn_drag_handle">Kéo để sắp xếp lại danh sách này</string>
-    <!-- [VERIFIED] ContentDescription text for the delete (cross) icon at the end of an input box. -->
     <string name="cd_clear_text_end_icon">Xóa văn bản</string>
-    <!-- ISFDB specific
-     Some functionality is limited to the ISFDB web site only.
-     This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
     <string name="info_isfdb_warning_limited_to">(chỉ được hỗ trợ bởi trang web ISFDB)</string>
-    <!-- Information on which websites will be searched. Param 1: list of website names. -->
     <string name="info_site_list">Tìm kiếm bị giới hạn ở: %1$s</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="info_site_search_field_optional">Tùy chọn. Không được hỗ trợ bởi tất cả các trang web.</string>
     <string name="site_description_dutch_catalogue">Tiếng Hà Lan và hơn thế nữa; Bảng tổng kê</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue_eu_comics">Tiếng Hà Lan và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_shopping">Tiếng Hà Lan và hơn thế nữa; Mua sắm</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="site_description_english_catalogue">Tiếng Anh và hơn thế nữa; Bảng tổng kê</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="site_description_chinese_catalogue">Người Trung Quốc; Mục lục</string>
     <string name="site_description_english_catalogue_FSF">Tiếng Anh và hơn thế nữa; Bảng tổng kê; Giả tưởng và khoa học viễn tưởng</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="site_description_french_catalogue_eu_comics">Tiếng Pháp và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="site_description_general_shopping">Tổng quan; Mua sắm</string>
     <string name="site_description_german_catalogue">Tiếng Đức; Mục lục</string>
     <!-- endregion -->
@@ -361,22 +283,13 @@
     <string name="tip_authors_book_may_appear_more_than_once">Nếu sách được hiển thị cho mọi tác giả của cuốn sách đó thì chúng có thể xuất hiện nhiều lần trong danh sách. Xóa một trong những cuốn sách đó có tác dụng loại bỏ tất cả các bản sao khỏi danh sách.</string>
     <string name="tip_series_book_may_appear_more_than_once">Nếu sách được hiển thị trong tất cả các bộ sách có chứa cuốn sách đó thì chúng có thể xuất hiện nhiều lần trong danh sách. Xóa một trong những cuốn sách đó có tác dụng loại bỏ tất cả các bản sao khỏi danh sách.</string>
     <string name="tip_autorotate_camera_images">Nếu bạn thấy mình luôn xoay hình ảnh camera theo cùng một hướng, hãy thử thay đổi tùy chọn ứng dụng để chỉ định cách xoay để áp dụng tự động.</string>
-    <!-- Tip text displayed when user enters the 'read-only' book view -->
     <string name="tip_view_only_help">Bạn có thể vuốt sang trái hoặc phải để điều hướng tới các sách khác.</string>
-    <!-- Tip text displayed when user enters the booklist -->
     <string name="tip_book_list">Nhấn vào một cuốn sách sẽ hiển thị cho bạn các chi tiết của cuốn sách. Nhấn và giữ một mục trong danh sách sẽ cung cấp cho bạn nhiều lựa chọn hơn.</string>
-    <!-- Tip text displayed when user enters the 'Update fields from internet' screen
-     The referred "View on…" is "option_view_book_at"
-     TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
     <string name="tip_update_fields_from_internet">Các liên kết trang bên ngoài chỉ được xử lý nếu trang đó thực sự được liên hệ. Do đó, thực đơn “Xem trên…” cũng sẽ chỉ hiển thị những gì có sẵn.</string>
     <string name="tip_configure_sites">Các trang web riêng lẻ có thể được định cấu hình bằng biểu tượng thiết đặt ở đầu màn hình.</string>
-    <!-- tip title and explanations for the icons used. -->
     <string name="tip_authors_works">Các biểu tượng đã dùng</string>
-    <!-- shown next to the Book icon -->
     <string name="tip_authors_works_book">Sách.</string>
-    <!-- shown next to related icon / contentDescription for button. -->
     <string name="tip_authors_works_multiple_books">Tiêu đề này hiện diện trong nhiều cuốn sách.</string>
-    <!-- shown next to related icon / contentDescription for button. -->
     <string name="tip_authors_works_single_book">Tiêu đề hiện diện trong một cuốn sách duy nhất.</string>
     <!-- endregion -->
     <!-- region ========== BoB specific place holder text for empty fields. -->

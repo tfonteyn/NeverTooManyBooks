@@ -536,6 +536,7 @@
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
     <string name="progress_msg_searching">Поиск…</string>
     <string name="progress_msg_searching_editions">Поиск изданий…</string>
+    <string name="progress_msg_authenticating_to_site">Аутентификация на %1$s</string>
     <string name="progress_msg_searching_site">Поиск в %1$s</string>
     <string name="progress_msg_skip_s">Пропустить - %1$s</string>
     <string name="progress_msg_starting_up">Запуск…</string>

@@ -140,6 +140,7 @@
     <string name="progress_msg_please_wait">請稍等…</string>
     <string name="progress_msg_rebuilding_search_index">正在重建搜尋索引…</string>
     <string name="progress_msg_searching">正在搜尋…</string>
+    <string name="progress_msg_authenticating_to_site">在 %1$s 上進行身份驗證</string>
     <string name="progress_msg_searching_site">正在搜尋 %1$s</string>
     <string name="progress_msg_starting_up">正在啟動…</string>
     <string name="progress_msg_upgrading">正在升級…</string>

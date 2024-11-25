@@ -535,6 +535,7 @@
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
     <string name="progress_msg_searching">Hledání…</string>
     <string name="progress_msg_searching_editions">Hledání edicí…</string>
+    <string name="progress_msg_authenticating_to_site">Ověřování na %1$s</string>
     <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
     <string name="progress_msg_skip_s">Vynechat - %1$s</string>
     <string name="progress_msg_starting_up">Spouštění…</string>

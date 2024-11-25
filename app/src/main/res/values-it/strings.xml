@@ -523,6 +523,7 @@
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_searching">Ricerca…</string>
     <string name="progress_msg_searching_editions">Ricerca edizioni…</string>
+    <string name="progress_msg_authenticating_to_site">Autenticazione su %1$s</string>
     <string name="progress_msg_searching_site">Ricerca in %1$s</string>
     <string name="progress_msg_skip_s">Salta - %1$s</string>
     <string name="progress_msg_starting_up">Avvio…</string>

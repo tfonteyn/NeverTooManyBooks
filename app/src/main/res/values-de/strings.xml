@@ -520,6 +520,7 @@
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
     <string name="progress_msg_searching">Suche läuft…</string>
     <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
+    <string name="progress_msg_authenticating_to_site">Authentifizierung auf %1$s</string>
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="progress_msg_skip_s">Überspringe - %1$s</string>
     <string name="progress_msg_starting_up">Gleich geht’s los…</string>

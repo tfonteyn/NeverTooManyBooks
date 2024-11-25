@@ -521,6 +521,7 @@
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
     <string name="progress_msg_searching">Αναζήτηση…</string>
     <string name="progress_msg_searching_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
+    <string name="progress_msg_authenticating_to_site">Πιστοποίηση ταυτότητας στο %1$s</string>
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
     <string name="progress_msg_skip_s">Παράβλεψη - %1$s</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>

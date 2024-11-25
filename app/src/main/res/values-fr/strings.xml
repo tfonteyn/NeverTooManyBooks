@@ -524,6 +524,7 @@
     <string name="progress_msg_rebuilding_search_index">Construction de l’index de recherche en cours…</string>
     <string name="progress_msg_searching">Recherche en cours…</string>
     <string name="progress_msg_searching_editions">Éditions en cours de recherche…</string>
+    <string name="progress_msg_authenticating_to_site">Authentification sur %1$s</string>
     <string name="progress_msg_searching_site">Recherche en cours sur %1$s</string>
     <string name="progress_msg_skip_s">Passer - %1$s</string>
     <string name="progress_msg_starting_up">Démarrage…</string>

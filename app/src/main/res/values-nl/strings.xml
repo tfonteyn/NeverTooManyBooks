@@ -548,6 +548,7 @@
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_searching">Zoeken…</string>
     <string name="progress_msg_searching_editions">Zoeken naar uitgaven…</string>
+    <string name="progress_msg_authenticating_to_site">Authentificeren op %1$s</string>
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
     <string name="progress_msg_skip_s">Overslaan van - %1$s</string>
     <string name="progress_msg_starting_up">Opstarten…</string>

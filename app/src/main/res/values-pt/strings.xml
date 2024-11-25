@@ -235,6 +235,7 @@
     <string name="progress_msg_starting_up">A iniciar…</string>
     <string name="progress_msg_upgrading">A actualizar…</string>
     <string name="progress_msg_rebuilding_search_index">A reconstruir o índice de pesquisa…</string>
+    <string name="progress_msg_authenticating_to_site">Autenticação em %1$s</string>
     <string name="progress_msg_searching_site">A pesquisar %1$s</string>
     <string name="progress_msg_searching_editions">À procura de outras edições…</string>
     <string name="progress_msg_downloading">A transferir…</string>

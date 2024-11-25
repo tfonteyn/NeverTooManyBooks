@@ -539,6 +539,7 @@
     <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>
     <string name="progress_msg_searching">Wyszukiwanie…</string>
     <string name="progress_msg_searching_editions">Szukanie wydań…</string>
+    <string name="progress_msg_authenticating_to_site">Uwierzytelnianie na %1$s</string>
     <string name="progress_msg_searching_site">Wyszukiwanie %1$s</string>
     <string name="progress_msg_skip_s">Pomiń - %1$s</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
