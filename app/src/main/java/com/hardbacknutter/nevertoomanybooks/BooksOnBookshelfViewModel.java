@@ -43,7 +43,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
@@ -991,15 +993,21 @@ public class BooksOnBookshelfViewModel
     /**
      * Add/move the given books to the given list of Bookshelves.
      *
-     * @param context      Current context
-     * @param bookshelves  to set
-     * @param extras       containing "bookIds"
+     * @param context     Current context
+     * @param selectedIds bookshelf ids to set
+     * @param extras      containing "bookIds"
      *
      * @throws IllegalArgumentException if the extras or bookIds are missing
      */
     void setBookshelves(@NonNull final Context context,
-                        @NonNull final List<Bookshelf> bookshelves,
+                        @NonNull final Set<Long> selectedIds,
                         @Nullable final Bundle extras) {
+
+        final List<Bookshelf> bookshelves = bookshelfDao
+                .getAll()
+                .stream()
+                .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
+                .collect(Collectors.toList());
 
         if (extras == null) {
             throw new IllegalArgumentException("No extras?");

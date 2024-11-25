@@ -479,7 +479,9 @@ public class BooksOnBookshelf
         stylePickerLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(
-                RK_SET_BOOKSHELVES, this::onBulkSetBookshelves);
+                RK_SET_BOOKSHELVES,
+                (previousSelection, selectedIds, extras)
+                        -> vm.setBookshelves(this, selectedIds, extras));
         bulkSetBookshelvesLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
@@ -1170,6 +1172,7 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if handled.
      */
+    @SuppressWarnings("SameReturnValue")
     private boolean onRowMenuGroupSetBookshelves(@NonNull final View v,
                                                  @NonNull final DataHolder rowData) {
 
@@ -1202,25 +1205,6 @@ public class BooksOnBookshelf
                                           allShelves, selected,
                                           extras);
         return true;
-    }
-
-    private void onBulkSetBookshelves(@NonNull final Set<Long> previousSelection,
-                                      @NonNull final Set<Long> selectedIds,
-                                      @Nullable final Bundle extras) {
-        if (previousSelection.equals(selectedIds)) {
-            // No changes made
-            return;
-        }
-
-        final List<Bookshelf> selected = ServiceLocator
-                .getInstance()
-                .getBookshelfDao()
-                .getAll()
-                .stream()
-                .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
-                .collect(Collectors.toList());
-
-        vm.setBookshelves(this, selected, extras);
     }
 
     /**
