@@ -141,6 +141,8 @@ public abstract class DialogLauncher
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
      * @param args    to pass
+     *
+     * @throws IllegalArgumentException for unsupported {@link DialogMode}s.
      */
     protected void showDialog(@NonNull final Context context,
                               @NonNull final Bundle args) {
@@ -158,7 +160,7 @@ public abstract class DialogLauncher
                 break;
             }
             default:
-                throw new IllegalArgumentException("requestKey=" + requestKey + ", type=" + mode);
+                throw new IllegalArgumentException("requestKey=" + requestKey + ", mode=" + mode);
         }
 
         args.putString(BKEY_REQUEST_KEY, requestKey);
