@@ -1278,7 +1278,7 @@
     <string name="ps_show_titles_reordered_on">Move an article at the start of a title to the end,\ne.g. “Lord of The Rings, The”</string>
 
     <!-- ListPreference title. Book titles can be capitalized automatically according to user preferences. -->
-    <string name="pt_capitalize_title">Capitalize titles</string>
+    <string name="pt_capitalize_title">Title capitalization</string>
     <!-- Option: title capitalization: the title will be used exactly as typed. -->
     <string name="lbl_capitalize_none">No changes</string>
     <!-- Option: title capitalization: the first character of each word in the title will be capitalized. -->
