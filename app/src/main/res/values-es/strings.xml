@@ -796,4 +796,9 @@
     <string name="warning_missing_title_or_author">Debe especificarse el título y/o el autor.</string>
     <string name="info_site_search_field_optional">Opcional. No es compatible con todos las páginas web.</string>
     <string name="progress_msg_authenticating_to_site">Autentificándose en %1$s</string>
+    <string name="lbl_capitalize_full">Todo en mayúsculas</string>
+    <string name="lbl_capitalize_none">Sin cambios</string>
+    <string name="lbl_capitalize_words">Comienzo de las palabras</string>
+    <string name="lbl_capitalize_sentence">Inicio de oraciones</string>
+    <string name="pt_capitalize_title">Título en mayúsculas</string>
 </resources>
