@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,6 +34,10 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.OnAddListener;
+import com.hardbacknutter.nevertoomanybooks.dialogs.OnEditInPlaceListener;
+import com.hardbacknutter.nevertoomanybooks.dialogs.OnEditListener;
 
 /**
  * Launcher to edit a Parcelable object.
