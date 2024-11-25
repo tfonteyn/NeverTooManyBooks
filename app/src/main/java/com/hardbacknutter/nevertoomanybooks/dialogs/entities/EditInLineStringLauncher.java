@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -45,15 +46,14 @@ public class EditInLineStringLauncher
         extends DialogLauncher {
 
     private static final String TAG = "Launcher";
-
     /** Input value: the text (String) to edit. */
-    static final String BKEY_TEXT = TAG + ":text";
-
+    static final String BKEY_ITEM = TAG + ":item";
+    private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
     /** Return value: the modified text. */
     private static final String MODIFIED = TAG + ":m";
 
-    @NonNull
-    private final OnEditListener<String> onEditListener;
+    @Nullable
+    private OnEditListener<String> onEditListener;
 
     /**
      * Constructor.
@@ -62,14 +62,11 @@ public class EditInLineStringLauncher
      *                            Typically the {@code DBKey} for the column we're editing.
      * @param dialogSupplier      a supplier for a new plain DialogFragment
      * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
-     * @param onEditListener      callback for results
      */
     public EditInLineStringLauncher(@NonNull final String requestKey,
-                                     @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                     @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                                    @NonNull final OnEditListener<String> onEditListener) {
+                                    @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                    @NonNull final Supplier<DialogFragment> bottomSheetSupplier) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
-        this.onEditListener = onEditListener;
     }
 
     /**
@@ -88,9 +85,13 @@ public class EditInLineStringLauncher
                           @NonNull final String original,
                           @NonNull final String modified) {
         final Bundle result = new Bundle(2);
-        result.putString(BKEY_TEXT, original);
+        result.putString(BKEY_ITEM, original);
         result.putString(MODIFIED, modified);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public void setOnEditListener(@NonNull final OnEditListener<String> listener) {
+        this.onEditListener = listener;
     }
 
     /**
@@ -100,10 +101,12 @@ public class EditInLineStringLauncher
      *                but another UI {@code Context} will also do.
      * @param text    to edit.
      */
-    public void launch(@NonNull final Context context,
-                       @NonNull final String text) {
+    public void edit(@NonNull final Context context,
+                     @NonNull final String text) {
+        Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
+
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_TEXT, text);
+        args.putString(BKEY_ITEM, text);
 
         showDialog(context, args);
     }
@@ -111,7 +114,9 @@ public class EditInLineStringLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        onEditListener.onEdit(Objects.requireNonNull(result.getString(BKEY_TEXT), BKEY_TEXT),
+        Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
+
+        onEditListener.onEdit(Objects.requireNonNull(result.getString(BKEY_ITEM), BKEY_ITEM),
                               Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
     }
 }

@@ -55,48 +55,23 @@ public final class EditParcelableLauncher<T extends Parcelable>
     private static final String ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER = "onEditInPlaceListener";
 
     @Nullable
-    private final OnAddListener<T> onAddListener;
+    private OnAddListener<T> onAddListener;
     @Nullable
-    private final OnEditListener<T> onEditListener;
+    private OnEditListener<T> onEditListener;
     @Nullable
-    private final OnEditInPlaceListener<T> onEditInPlaceListener;
+    private OnEditInPlaceListener<T> onEditInPlaceListener;
 
     /**
-     * Constructor for doing {@link EditAction#Add} or {@link EditAction#Edit}.
+     * Constructor.
      *
      * @param requestKey          FragmentResultListener request key to use for our response.
      * @param dialogSupplier      a supplier for a new plain DialogFragment
      * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
-     * @param onAddListener       results listener
-     * @param onEditListener      results listener
      */
     public EditParcelableLauncher(@NonNull final String requestKey,
                                   @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                  @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                                  @Nullable final OnAddListener<T> onAddListener,
-                                  @Nullable final OnEditListener<T> onEditListener) {
+                                  @NonNull final Supplier<DialogFragment> bottomSheetSupplier) {
         super(requestKey, dialogSupplier, bottomSheetSupplier);
-        this.onAddListener = onAddListener;
-        this.onEditListener = onEditListener;
-        this.onEditInPlaceListener = null;
-    }
-
-    /**
-     * Constructor for doing {@link EditAction#EditInPlace}.
-     *
-     * @param requestKey            FragmentResultListener request key to use for our response.
-     * @param dialogSupplier        a supplier for a new plain DialogFragment
-     * @param bottomSheetSupplier   a supplier for a new BottomSheetDialogFragment.
-     * @param onEditInPlaceListener results listener
-     */
-    public EditParcelableLauncher(@NonNull final String requestKey,
-                                  @NonNull final Supplier<DialogFragment> dialogSupplier,
-                                  @NonNull final Supplier<DialogFragment> bottomSheetSupplier,
-                                  @NonNull final OnEditInPlaceListener<T> onEditInPlaceListener) {
-        super(requestKey, dialogSupplier, bottomSheetSupplier);
-        this.onAddListener = null;
-        this.onEditListener = null;
-        this.onEditInPlaceListener = onEditInPlaceListener;
     }
 
     /**
@@ -144,6 +119,18 @@ public final class EditParcelableLauncher<T extends Parcelable>
         result.putParcelable(BKEY_ITEM, original);
         result.putParcelable(MODIFIED, modified);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public void setOnAddListener(@NonNull final OnAddListener<T> listener) {
+        this.onAddListener = listener;
+    }
+
+    public void setOnEditListener(@NonNull final OnEditListener<T> listener) {
+        this.onEditListener = listener;
+    }
+
+    public void setOnEditInPlaceListener(@NonNull final OnEditInPlaceListener<T> listener) {
+        this.onEditInPlaceListener = listener;
     }
 
     /**

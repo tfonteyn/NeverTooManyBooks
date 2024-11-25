@@ -62,8 +62,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
@@ -1674,59 +1672,68 @@ public class BooksOnBookshelf
             editBookshelfLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_BOOKSHELF,
                     EditBookshelfDialogFragment::new,
-                    EditBookshelfBottomSheet::new,
+                    EditBookshelfBottomSheet::new);
+            editBookshelfLauncher.setOnEditInPlaceListener(
                     bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
 
             editAuthorLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_AUTHOR,
                     EditAuthorDialogFragment::new,
-                    EditAuthorBottomSheet::new,
+                    EditAuthorBottomSheet::new);
+            editAuthorLauncher.setOnEditInPlaceListener(
                     author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
 
             editSeriesLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_SERIES,
                     EditSeriesDialogFragment::new,
-                    EditSeriesBottomSheet::new,
+                    EditSeriesBottomSheet::new);
+            editSeriesLauncher.setOnEditInPlaceListener(
                     series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
 
             editPublisherLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_PUBLISHER,
                     EditPublisherDialogFragment::new,
-                    EditPublisherBottomSheet::new,
+                    EditPublisherBottomSheet::new);
+            editPublisherLauncher.setOnEditInPlaceListener(
                     publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
 
             editColorLauncher = new EditInLineStringLauncher(
                     DBKey.COLOR,
                     EditColorDialogFragment::new,
-                    EditColorBottomSheet::new,
+                    EditColorBottomSheet::new);
+            editColorLauncher.setOnEditListener(
                     (original, modified)
                             -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
 
             editFormatLauncher = new EditInLineStringLauncher(
                     DBKey.FORMAT,
                     EditFormatDialogFragment::new,
-                    EditFormatBottomSheet::new,
+                    EditFormatBottomSheet::new);
+            editFormatLauncher.setOnEditListener(
                     (original, modified)
                             -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
 
             editGenreLauncher = new EditInLineStringLauncher(
                     DBKey.GENRE,
                     EditGenreDialogFragment::new,
-                    EditGenreBottomSheet::new,
+                    EditGenreBottomSheet::new);
+            editGenreLauncher.setOnEditListener(
                     (original, modified)
                             -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
 
             editLanguageLauncher = new EditInLineStringLauncher(
                     DBKey.LANGUAGE,
                     EditLanguageDialogFragment::new,
-                    EditLanguageBottomSheet::new,
+                    EditLanguageBottomSheet::new);
+            editLanguageLauncher.setOnEditListener(
                     (original, modified)
                             -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
 
             editLocationLauncher = new EditInLineStringLauncher(
                     DBKey.LOCATION,
                     EditLocationDialogFragment::new,
-                    EditLocationBottomSheet::new,
+                    EditLocationBottomSheet::new);
+            editLocationLauncher.setOnEditListener(
                     (original, modified)
                             -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
         }
@@ -2272,7 +2279,7 @@ public class BooksOnBookshelf
                                              .map(Locale::getDisplayLanguage)
                                              .orElse(text);
                 }
-                editLanguageLauncher.launch(context, editLang);
+                editLanguageLauncher.edit(context, editLang);
                 return true;
             }
             return false;
@@ -2296,7 +2303,7 @@ public class BooksOnBookshelf
                                    @IdRes final int menuItemId,
                                    @NonNull final DataHolder rowData) {
             if (menuItemId == R.id.MENU_LOCATION_EDIT) {
-                editLocationLauncher.launch(context, rowData.getString(DBKey.LOCATION));
+                editLocationLauncher.edit(context, rowData.getString(DBKey.LOCATION));
                 return true;
             }
             return false;
@@ -2320,7 +2327,7 @@ public class BooksOnBookshelf
                                 @IdRes final int menuItemId,
                                 @NonNull final DataHolder rowData) {
             if (menuItemId == R.id.MENU_GENRE_EDIT) {
-                editGenreLauncher.launch(context, rowData.getString(DBKey.GENRE));
+                editGenreLauncher.edit(context, rowData.getString(DBKey.GENRE));
                 return true;
             }
             return false;
@@ -2344,7 +2351,7 @@ public class BooksOnBookshelf
                                  @IdRes final int menuItemId,
                                  @NonNull final DataHolder rowData) {
             if (menuItemId == R.id.MENU_FORMAT_EDIT) {
-                editFormatLauncher.launch(context, rowData.getString(DBKey.FORMAT));
+                editFormatLauncher.edit(context, rowData.getString(DBKey.FORMAT));
                 return true;
             }
             return false;
@@ -2368,7 +2375,7 @@ public class BooksOnBookshelf
                                 @IdRes final int menuItemId,
                                 @NonNull final DataHolder rowData) {
             if (menuItemId == R.id.MENU_COLOR_EDIT) {
-                editColorLauncher.launch(context, rowData.getString(DBKey.COLOR));
+                editColorLauncher.edit(context, rowData.getString(DBKey.COLOR));
                 return true;
             }
             return false;

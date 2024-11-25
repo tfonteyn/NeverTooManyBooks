@@ -42,7 +42,7 @@ public class EditInLineStringViewModel
      */
     void init(@NonNull final Bundle args) {
         if (originalText == null) {
-            originalText = args.getString(EditInLineStringLauncher.BKEY_TEXT, "");
+            originalText = args.getString(EditInLineStringLauncher.BKEY_ITEM, "");
 
             currentText = originalText;
         }

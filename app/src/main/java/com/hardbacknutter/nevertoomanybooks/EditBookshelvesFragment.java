@@ -156,8 +156,8 @@ public class EditBookshelvesFragment
 
         editLauncher = new EditParcelableLauncher<>(DBKey.FK_BOOKSHELF,
                                                     EditBookshelfDialogFragment::new,
-                                                    EditBookshelfBottomSheet::new,
-                                                    this::onModified);
+                                                    EditBookshelfBottomSheet::new);
+        editLauncher.setOnEditInPlaceListener(this::onModified);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
