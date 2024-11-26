@@ -158,7 +158,8 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editTocEntryLauncher = new EditTocEntryLauncher(this::onEntryUpdated);
+        editTocEntryLauncher = new EditTocEntryLauncher();
+        editTocEntryLauncher.setResultListener(this::onEntryUpdated);
         editTocEntryLauncher.registerForFragmentResult(fm, this);
 
         confirmTocResultsLauncher = new ConfirmTocDialogFragment.Launcher(

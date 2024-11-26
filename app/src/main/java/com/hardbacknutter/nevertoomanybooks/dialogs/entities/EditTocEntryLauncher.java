@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -36,19 +37,18 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class EditTocEntryLauncher
         extends DialogLauncher {
 
-    @NonNull
-    private final ResultListener resultListener;
+    private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
+
+    @Nullable
+    private ResultListener resultListener;
 
     /**
      * Constructor.
-     *
-     * @param resultListener listener
      */
-    public EditTocEntryLauncher(@NonNull final ResultListener resultListener) {
+    public EditTocEntryLauncher() {
         super(DBKey.FK_TOC_ENTRY,
               EditTocEntryDialogFragment::new,
               EditTocEntryBottomSheet::new);
-        this.resultListener = resultListener;
     }
 
     /**
@@ -73,6 +73,10 @@ public class EditTocEntryLauncher
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    public void setResultListener(@NonNull final ResultListener resultListener) {
+        this.resultListener = resultListener;
+    }
+
     /**
      * Constructor.
      *
@@ -89,6 +93,8 @@ public class EditTocEntryLauncher
                        @NonNull final TocEntry tocEntry,
                        final boolean isAnthology) {
 
+        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
+
         final Bundle args = new Bundle(5);
         args.putString(DBKey.TITLE, book.getTitle());
         args.putBoolean(EditTocEntryViewModel.BKEY_ANTHOLOGY, isAnthology);
@@ -101,6 +107,7 @@ public class EditTocEntryLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
         resultListener.onResult(
                 Objects.requireNonNull(result.getParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY),
                                        EditTocEntryViewModel.BKEY_TOC_ENTRY),
@@ -113,7 +120,7 @@ public class EditTocEntryLauncher
          * Callback handler.
          *
          * @param tocEntry the modified entry
-         * @param position the position in the list we we're editing
+         * @param position the position in the list we were editing
          */
         void onResult(@NonNull TocEntry tocEntry,
                       int position);
