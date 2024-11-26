@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,17 +25,25 @@ import androidx.fragment.app.Fragment;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 
 /**
- * Interface supported by an editor object.
+ * Interface supported by all fragments used to edit a Book.
  *
  * @param <T> type of {@link DataManager}
  */
 public interface DataEditor<T extends DataManager> {
 
-    /** A non-null replacement for {@link Fragment#getTag()}. */
+    /**
+     * A non-null replacement for {@link Fragment#getTag()}.
+     *
+     * @return unique (enum) identifier
+     */
     @NonNull
     FragmentId getFragmentId();
 
-    /** {@link Fragment#isResumed()}. */
+    /**
+     * Implemented as {@link Fragment#isResumed()}.
+     *
+     * @return {@code true} if the fragment is in the resumed state.
+     */
     boolean isResumed();
 
     /**
