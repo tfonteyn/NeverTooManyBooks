@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -329,13 +329,13 @@ public class AuthorWorksAdapter
                             .getString(R.string.info_story_in_multiple_books,
                                        work.getLabel(context, Details.AutoSelect, style),
                                        titles);
-                    StandardDialogs.infoPopup(anchor, XOFF, YOFF, msg);
+                    InfoPopup.show(anchor, XOFF, YOFF, msg);
                 } else {
                     final String msg = context
                             .getString(R.string.info_story_in_single_book,
                                        work.getLabel(context, Details.AutoSelect, style),
                                        titles);
-                    StandardDialogs.infoPopup(anchor, XOFF, YOFF, msg);
+                    InfoPopup.show(anchor, XOFF, YOFF, msg);
                 }
             });
         }

@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
@@ -160,9 +160,9 @@ public class SyncReaderFragment
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .setRecordType(isChecked, RecordType.Cover));
 
-        vb.infImportNewOnly.setOnClickListener(StandardDialogs::infoPopup);
-        vb.infImportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
-        vb.infImportAll.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infImportNewOnly.setOnClickListener(InfoPopup::show);
+        vb.infImportNewAndUpdated.setOnClickListener(InfoPopup::show);
+        vb.infImportAll.setOnClickListener(InfoPopup::show);
 
         vb.rbgBooks.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == vb.rbImportNewOnly.getId()) {

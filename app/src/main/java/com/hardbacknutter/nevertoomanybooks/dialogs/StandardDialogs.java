@@ -19,12 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,43 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 public final class StandardDialogs {
 
     private StandardDialogs() {
-    }
-
-    /**
-     * Show a popup info text.
-     *
-     * @param infoView the View from which we'll take the content-description as text to display
-     *                 and anchor the popup to.
-     */
-    public static void infoPopup(@NonNull final View infoView) {
-        infoPopup(infoView, 0, 0, infoView.getContentDescription());
-    }
-
-    /**
-     * Show a popup info text. A tap outside of the popup will make it go away again.
-     *
-     * @param anchor the view on which to pin the popup window
-     * @param xoff   A horizontal offset from the anchor in pixels
-     * @param yoff   A vertical offset from the anchor in pixels
-     * @param text   to display
-     */
-    @SuppressLint("UseCompatLoadingForDrawables")
-    public static void infoPopup(@NonNull final View anchor,
-                                 final int xoff,
-                                 final int yoff,
-                                 @NonNull final CharSequence text) {
-        final Context context = anchor.getContext();
-        @SuppressLint("InflateParams")
-        final View root = LayoutInflater.from(context).inflate(R.layout.popup_info, null);
-        final TextView infoView = root.findViewById(R.id.info);
-        infoView.setText(text);
-
-        final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(root);
-        // make the rounded corners transparent
-        popup.setBackgroundDrawable(context.getDrawable(R.drawable.bg_info_popup));
-        popup.setFocusable(true);
-        popup.showAsDropDown(anchor, xoff, yoff);
     }
 
     /**

@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -160,10 +160,10 @@ public class ImportFragment
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         // Hookup the [I] information icons with their popup text
-        vb.infNewOnly.setOnClickListener(StandardDialogs::infoPopup);
-        vb.infNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
-        vb.infAll.setOnClickListener(StandardDialogs::infoPopup);
-        vb.infRemovedBooks.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infNewOnly.setOnClickListener(InfoPopup::show);
+        vb.infNewAndUpdated.setOnClickListener(InfoPopup::show);
+        vb.infAll.setOnClickListener(InfoPopup::show);
+        vb.infRemovedBooks.setOnClickListener(InfoPopup::show);
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             vm.setRecordType(isChecked, RecordType.Books);

@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -121,7 +121,7 @@ public class SyncWriterFragment
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .setRecordType(isChecked, RecordType.Cover));
 
-        vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infExportNewAndUpdated.setOnClickListener(InfoPopup::show);
 
         vb.rbgBooks.setOnCheckedChangeListener((group, checkedId) -> vm
                 .setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));

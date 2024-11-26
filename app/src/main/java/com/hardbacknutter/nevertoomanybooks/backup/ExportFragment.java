@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -137,7 +137,7 @@ public class ExportFragment
         vb.archiveFormat.setOnItemClickListener(
                 (p, v, position, id) -> updateFormatSelection(vm.getEncoding(position)));
 
-        vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infExportNewAndUpdated.setOnClickListener(InfoPopup::show);
 
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.upload_24px);
