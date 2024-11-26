@@ -26,7 +26,6 @@ import android.os.Bundle;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import java.time.LocalDate;
@@ -39,12 +38,16 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 public class PartialDatePickerLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "PartialDatePickerLaunch";
-    /** a standard sql style date string, must be correct. */
+    private static final String TAG = "PDatePickerLauncher";
+    static final String BKEY_DIALOG_TITLE = TAG + ":title";
+    /**
+     * The selected date.
+     * a standard sql style date string, must/will be valid.
+     */
     static final String BKEY_DATE = TAG + ":date";
+    /** The destination view id hosting the date. */
     static final String BKEY_FIELD_ID = TAG + ":fieldId";
-    static final String BKEY_DIALOG_TITLE_ID = TAG + ":titleId";
-    private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
+
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
     @Nullable
@@ -52,18 +55,13 @@ public class PartialDatePickerLauncher
 
     /**
      * Constructor.
+     *
+     * @param requestKey FragmentResultListener request key to use for our response.
      */
-    public PartialDatePickerLauncher() {
-        super(RK_DATE_PICKER_PARTIAL,
+    public PartialDatePickerLauncher(@NonNull final String requestKey) {
+        super(requestKey,
               PartialDatePickerDialogFragment::new,
               PartialDatePickerBottomSheet::new);
-    }
-
-    public PartialDatePickerLauncher(@NonNull final ResultListener resultListener) {
-        super(RK_DATE_PICKER_PARTIAL,
-              PartialDatePickerDialogFragment::new,
-              PartialDatePickerBottomSheet::new);
-        this.resultListener = resultListener;
     }
 
     /**
@@ -95,16 +93,16 @@ public class PartialDatePickerLauncher
     /**
      * Launch the dialog.
      *
-     * @param context       preferably the {@code Activity}
-     *                      but another UI {@code Context} will also do.
-     * @param dialogTitleId resource id for the dialog title
-     * @param fieldId       this dialog operates on
-     *                      (one launcher can serve multiple fields)
-     * @param currentValue  the current value of the field
-     * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
+     * @param context      preferably the {@code Activity}
+     *                     but another UI {@code Context} will also do.
+     * @param dialogTitle  the dialog title
+     * @param fieldId      this dialog operates on
+     *                     (one launcher can serve multiple fields)
+     * @param currentValue the current value of the field
+     * @param todayIfNone  {@code true} if we should use 'today' if the field was empty.
      */
     public void launch(@NonNull final Context context,
-                       @StringRes final int dialogTitleId,
+                       @NonNull final String dialogTitle,
                        @IdRes final int fieldId,
                        @Nullable final String currentValue,
                        final boolean todayIfNone) {
@@ -119,7 +117,8 @@ public class PartialDatePickerLauncher
         }
 
         final Bundle args = new Bundle(4);
-        args.putInt(BKEY_DIALOG_TITLE_ID, dialogTitleId);
+        args.putString(BKEY_DIALOG_TITLE, dialogTitle);
+
         args.putInt(BKEY_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, dateStr);
 

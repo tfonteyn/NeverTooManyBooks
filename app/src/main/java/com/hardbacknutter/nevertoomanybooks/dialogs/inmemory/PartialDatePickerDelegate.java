@@ -124,9 +124,8 @@ class PartialDatePickerDelegate
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
-        //noinspection DataFlowIssue
-        dialogTitle = owner.getContext().getString(
-                args.getInt(PartialDatePickerLauncher.BKEY_DIALOG_TITLE_ID, R.string.action_edit));
+        dialogTitle = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_TITLE,
+                                     owner.getString(R.string.action_edit));
 
         fieldId = args.getInt(PartialDatePickerLauncher.BKEY_FIELD_ID);
 

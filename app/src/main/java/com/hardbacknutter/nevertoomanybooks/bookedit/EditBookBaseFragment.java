@@ -68,6 +68,9 @@ public abstract class EditBookBaseFragment
         extends BaseFragment
         implements DataEditor<Book> {
 
+    private static final String TAG = "EditBookBaseFragment";
+    private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
+
     /** The view model. */
     EditBookViewModel vm;
 
@@ -103,7 +106,7 @@ public abstract class EditBookBaseFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        partialDatePickerLauncher = new PartialDatePickerLauncher();
+        partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL);
         partialDatePickerLauncher.setResultListener(
                 (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
         partialDatePickerLauncher.registerForFragmentResult(fm, this);
@@ -328,7 +331,8 @@ public abstract class EditBookBaseFragment
         if (field.isUsed()) {
             //noinspection DataFlowIssue
             field.requireView().setOnClickListener(v -> partialDatePickerLauncher
-                    .launch(getActivity(), pickerTitleId, field.getFieldViewId(),
+                    .launch(getActivity(), getString(pickerTitleId),
+                            field.getFieldViewId(),
                             field.getValue(), false));
         }
     }
