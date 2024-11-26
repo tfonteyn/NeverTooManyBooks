@@ -43,7 +43,7 @@ public class AutoCompletePickerViewModel
      */
     void init(@NonNull final Bundle args) {
         if (selectedItem == null) {
-            selectedItem = args.getString(AutoCompletePickerLauncher.BKEY_SELECTED_ITEM, "");
+            selectedItem = args.getString(AutoCompletePickerLauncher.BKEY_CURRENT_SELECTION, "");
             previousSelection = selectedItem;
 
             extras = args.getBundle(AutoCompletePickerLauncher.BKEY_EXTRAS);

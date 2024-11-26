@@ -82,12 +82,12 @@ class MultiChoiceDelegate
         dialogMessage = args.getString(MultiChoiceLauncher.BKEY_DIALOG_MESSAGE, null);
 
         items = Arrays.stream(Objects.requireNonNull(
-                              args.getLongArray(MultiChoiceLauncher.BKEY_ITEMS),
-                              MultiChoiceLauncher.BKEY_ITEMS))
+                              args.getLongArray(MultiChoiceLauncher.BKEY_ITEM_LIST_ID),
+                              MultiChoiceLauncher.BKEY_ITEM_LIST_ID))
                       .boxed().collect(Collectors.toList());
         itemLabels = Arrays.stream(Objects.requireNonNull(
-                                   args.getStringArray(MultiChoiceLauncher.BKEY_ITEM_LABELS),
-                                   MultiChoiceLauncher.BKEY_ITEM_LABELS))
+                                   args.getStringArray(MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT),
+                                   MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT))
                            .collect(Collectors.toList());
 
         vm = new ViewModelProvider(owner).get(MultiChoiceViewModel.class);

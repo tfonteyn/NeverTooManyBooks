@@ -38,10 +38,12 @@ public class AutoCompletePickerLauncher
     private static final String TAG = "ACPickerLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
+
     static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
-    static final String BKEY_SELECTED_ITEM = TAG + ":selected";
+    static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
     static final String BKEY_EXTRAS = TAG + ":extras";
-    static final String BKEY_ITEMS = TAG + ":items";
+
+    static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -80,13 +82,18 @@ public class AutoCompletePickerLauncher
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
         result.putString(BKEY_PREVIOUS_SELECTION, previousSelection);
-        result.putString(BKEY_SELECTED_ITEM, selectedItem);
+        result.putString(BKEY_CURRENT_SELECTION, selectedItem);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    /**
+     * Set the results listener.
+     *
+     * @param resultListener to use
+     */
     public void setResultListener(@NonNull final ResultListener resultListener) {
         this.resultListener = resultListener;
     }
@@ -118,8 +125,8 @@ public class AutoCompletePickerLauncher
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        args.putStringArray(BKEY_ITEMS, allItems.toArray(String[]::new));
-        args.putString(BKEY_SELECTED_ITEM, selectedItem);
+        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems.toArray(String[]::new));
+        args.putString(BKEY_CURRENT_SELECTION, selectedItem);
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);
@@ -134,9 +141,8 @@ public class AutoCompletePickerLauncher
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         resultListener.onResult(result.getString(BKEY_PREVIOUS_SELECTION, null),
-                                result.getString(BKEY_SELECTED_ITEM, null),
+                                result.getString(BKEY_CURRENT_SELECTION, null),
                                 result.getBundle(BKEY_EXTRAS));
-
     }
 
     @FunctionalInterface
@@ -146,12 +152,12 @@ public class AutoCompletePickerLauncher
          *
          * @param previousSelection the selection as it was before the user (potentially)
          *                          made changes
-         * @param selectedItem      the selected/entered text
+         * @param currentSelection  the selected/entered text
          * @param extras            the optional Bundle as provided to
          *                          {@link #launch(Context, String, String, List, String, Bundle)}
          */
         void onResult(@NonNull String previousSelection,
-                      @NonNull String selectedItem,
+                      @NonNull String currentSelection,
                       @Nullable Bundle extras);
     }
 }

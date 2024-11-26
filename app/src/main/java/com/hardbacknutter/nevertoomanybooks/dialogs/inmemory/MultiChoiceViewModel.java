@@ -50,8 +50,8 @@ public class MultiChoiceViewModel
     void init(@NonNull final Bundle args) {
         if (selectedItems == null) {
             final long[] items = Objects.requireNonNull(
-                    args.getLongArray(MultiChoiceLauncher.BKEY_SELECTED_ITEMS),
-                    MultiChoiceLauncher.BKEY_SELECTED_ITEMS);
+                    args.getLongArray(MultiChoiceLauncher.BKEY_CURRENT_SELECTION),
+                    MultiChoiceLauncher.BKEY_CURRENT_SELECTION);
 
             previousSelection = Arrays.stream(items).boxed().collect(Collectors.toSet());
             selectedItems = new HashSet<>(previousSelection);

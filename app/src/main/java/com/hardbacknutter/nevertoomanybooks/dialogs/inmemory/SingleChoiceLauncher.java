@@ -40,9 +40,11 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     private static final String TAG = "SingleChoiceLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
-    static final String BKEY_SELECTED = TAG + ":selected";
-    static final String BKEY_ALL_IDS = TAG + ":ids";
-    static final String BKEY_ALL_LABELS = TAG + ":labels";
+
+    static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
+
+    static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
+    static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -75,11 +77,16 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
                           @Nullable final Long selectedItem) {
         final Bundle result = new Bundle(1);
         if (selectedItem != null) {
-            result.putLong(BKEY_SELECTED, selectedItem);
+            result.putLong(BKEY_CURRENT_SELECTION, selectedItem);
         }
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    /**
+     * Set the results listener.
+     *
+     * @param resultListener to use
+     */
     public void setResultListener(@NonNull final ResultListener resultListener) {
         this.resultListener = resultListener;
     }
@@ -103,13 +110,13 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
         final Bundle args = new Bundle(5);
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
 
-        args.putLongArray(BKEY_ALL_IDS, allItems
+        args.putLongArray(BKEY_ITEM_LIST_ID, allItems
                 .stream().mapToLong(Entity::getId).toArray());
-        args.putStringArray(BKEY_ALL_LABELS, allItems
+        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
         if (selectedItem != null) {
-            args.putLong(BKEY_SELECTED, selectedItem.getId());
+            args.putLong(BKEY_CURRENT_SELECTION, selectedItem.getId());
         }
 
         showDialog(context, args);
@@ -120,7 +127,7 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(result.getLong(BKEY_SELECTED));
+        resultListener.onResult(result.getLong(BKEY_CURRENT_SELECTION));
     }
 
     @FunctionalInterface
@@ -128,8 +135,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
         /**
          * Callback handler with the user's selection.
          *
-         * @param selectedItem the <strong>checked</strong> item, can be {@code null} for none.
+         * @param currentSelection the <strong>checked</strong> item, can be {@code null} for none.
          */
-        void onResult(@Nullable Long selectedItem);
+        void onResult(@Nullable Long currentSelection);
     }
 }

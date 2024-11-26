@@ -78,8 +78,8 @@ public class AutoCompletePickerDelegate
         dialogMessage = args.getString(AutoCompletePickerLauncher.BKEY_DIALOG_MESSAGE, null);
 
         items = Arrays.stream(Objects.requireNonNull(
-                              args.getStringArray(AutoCompletePickerLauncher.BKEY_ITEMS),
-                              AutoCompletePickerLauncher.BKEY_ITEMS))
+                              args.getStringArray(AutoCompletePickerLauncher.BKEY_ITEM_LIST_TEXT),
+                              AutoCompletePickerLauncher.BKEY_ITEM_LIST_TEXT))
                       .collect(Collectors.toList());
 
         vm = new ViewModelProvider(owner).get(AutoCompletePickerViewModel.class);

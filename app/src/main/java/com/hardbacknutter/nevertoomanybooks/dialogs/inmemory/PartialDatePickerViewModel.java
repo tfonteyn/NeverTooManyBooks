@@ -49,7 +49,7 @@ public class PartialDatePickerViewModel
     void init(@NonNull final Bundle args) {
         if (!initDone) {
             initDone = true;
-            parseDate(args.getString(PartialDatePickerLauncher.BKEY_DATE));
+            parseDate(args.getString(PartialDatePickerLauncher.BKEY_CURRENT_SELECTION));
         }
 
         // can't have a 0 year. (but month/day can be 0)

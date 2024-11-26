@@ -44,8 +44,8 @@ public class SingleChoiceViewModel
     void init(@NonNull final Bundle args) {
         if (!initDone) {
             initDone = true;
-            if (args.containsKey(SingleChoiceLauncher.BKEY_SELECTED)) {
-                selectedItem = args.getLong(SingleChoiceLauncher.BKEY_SELECTED);
+            if (args.containsKey(SingleChoiceLauncher.BKEY_CURRENT_SELECTION)) {
+                selectedItem = args.getLong(SingleChoiceLauncher.BKEY_CURRENT_SELECTION);
             }
         }
     }

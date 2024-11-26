@@ -44,7 +44,7 @@ public class PartialDatePickerLauncher
      * The selected date.
      * a standard sql style date string, must/will be valid.
      */
-    static final String BKEY_DATE = TAG + ":date";
+    static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
     /** The destination view id hosting the date. */
     static final String BKEY_FIELD_ID = TAG + ":fieldId";
 
@@ -81,11 +81,16 @@ public class PartialDatePickerLauncher
                           @NonNull final PartialDate date) {
         final Bundle result = new Bundle(4);
         result.putInt(BKEY_FIELD_ID, fieldId);
-        result.putParcelable(BKEY_DATE, date);
+        result.putParcelable(BKEY_CURRENT_SELECTION, date);
 
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    /**
+     * Set the results listener.
+     *
+     * @param resultListener to use
+     */
     public void setResultListener(@NonNull final ResultListener resultListener) {
         this.resultListener = resultListener;
     }
@@ -120,7 +125,7 @@ public class PartialDatePickerLauncher
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
 
         args.putInt(BKEY_FIELD_ID, fieldId);
-        args.putString(BKEY_DATE, dateStr);
+        args.putString(BKEY_CURRENT_SELECTION, dateStr);
 
         showDialog(context, args);
     }
@@ -132,8 +137,8 @@ public class PartialDatePickerLauncher
 
         resultListener.onResult(result.getInt(BKEY_FIELD_ID),
                                 Objects.requireNonNull(
-                                        result.getParcelable(BKEY_DATE),
-                                        BKEY_DATE));
+                                        result.getParcelable(BKEY_CURRENT_SELECTION),
+                                        BKEY_CURRENT_SELECTION));
     }
 
     @FunctionalInterface
@@ -141,10 +146,10 @@ public class PartialDatePickerLauncher
         /**
          * Callback handler with the user's selection.
          *
-         * @param fieldId this destination field id
-         * @param date    the picked date
+         * @param fieldId          this destination field id
+         * @param currentSelection the picked date
          */
         void onResult(@IdRes int fieldId,
-                      @NonNull PartialDate date);
+                      @NonNull PartialDate currentSelection);
     }
 }

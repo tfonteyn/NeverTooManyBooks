@@ -43,11 +43,13 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     private static final String TAG = "MultiChoiceLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
+
     static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
-    static final String BKEY_SELECTED_ITEMS = TAG + ":selected";
+    static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
     static final String BKEY_EXTRAS = TAG + ":extras";
-    static final String BKEY_ITEMS = TAG + ":ids";
-    static final String BKEY_ITEM_LABELS = TAG + ":labels";
+
+    static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
+    static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -87,7 +89,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         final Bundle result = new Bundle(3);
         result.putLongArray(BKEY_PREVIOUS_SELECTION,
                             previousSelection.stream().mapToLong(o -> o).toArray());
-        result.putLongArray(BKEY_SELECTED_ITEMS,
+        result.putLongArray(BKEY_CURRENT_SELECTION,
                             selectedItems.stream().mapToLong(o -> o).toArray());
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
@@ -95,6 +97,11 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    /**
+     * Set the results listener.
+     *
+     * @param resultListener to use
+     */
     public void setResultListener(@NonNull final ResultListener resultListener) {
         this.resultListener = resultListener;
     }
@@ -126,12 +133,12 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        args.putLongArray(BKEY_ITEMS, allItems
+        args.putLongArray(BKEY_ITEM_LIST_ID, allItems
                 .stream().mapToLong(Entity::getId).toArray());
-        args.putStringArray(BKEY_ITEM_LABELS, allItems
+        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-        args.putLongArray(BKEY_SELECTED_ITEMS, selectedItems
+        args.putLongArray(BKEY_CURRENT_SELECTION, selectedItems
                 .stream().mapToLong(Entity::getId).toArray());
 
         if (extras != null && !extras.isEmpty()) {
@@ -152,8 +159,8 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
                 .collect(Collectors.toSet());
 
         final Set<Long> selectedIds = Arrays
-                .stream(Objects.requireNonNull(result.getLongArray(BKEY_SELECTED_ITEMS),
-                                               BKEY_SELECTED_ITEMS))
+                .stream(Objects.requireNonNull(result.getLongArray(BKEY_CURRENT_SELECTION),
+                                               BKEY_CURRENT_SELECTION))
                 .boxed()
                 .collect(Collectors.toSet());
 
@@ -167,12 +174,12 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
          *
          * @param previousSelection the selection as it was before the user (potentially)
          *                          made changes
-         * @param selectedItems     the set of <strong>checked</strong> items
+         * @param currentSelection  the set of <strong>checked</strong> items
          * @param extras            the optional Bundle as provided to
          *                          {@link #launch(Context, String, String, List, List, Bundle)}
          */
         void onResult(@NonNull Set<Long> previousSelection,
-                      @NonNull Set<Long> selectedItems,
+                      @NonNull Set<Long> currentSelection,
                       @Nullable Bundle extras);
     }
 }

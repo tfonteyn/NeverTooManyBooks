@@ -78,12 +78,12 @@ class SingleChoiceDelegate {
         dialogMessage = args.getString(SingleChoiceLauncher.BKEY_DIALOG_MESSAGE, null);
 
         itemIds = Arrays.stream(Objects.requireNonNull(
-                                args.getLongArray(SingleChoiceLauncher.BKEY_ALL_IDS),
-                                SingleChoiceLauncher.BKEY_ALL_IDS))
+                                args.getLongArray(SingleChoiceLauncher.BKEY_ITEM_LIST_ID),
+                                SingleChoiceLauncher.BKEY_ITEM_LIST_ID))
                         .boxed().collect(Collectors.toList());
         itemLabels = Arrays.stream(Objects.requireNonNull(
-                                   args.getStringArray(SingleChoiceLauncher.BKEY_ALL_LABELS),
-                                   SingleChoiceLauncher.BKEY_ALL_LABELS))
+                                   args.getStringArray(SingleChoiceLauncher.BKEY_ITEM_LIST_TEXT),
+                                   SingleChoiceLauncher.BKEY_ITEM_LIST_TEXT))
                            .collect(Collectors.toList());
 
         vm = new ViewModelProvider(owner).get(SingleChoiceViewModel.class);
