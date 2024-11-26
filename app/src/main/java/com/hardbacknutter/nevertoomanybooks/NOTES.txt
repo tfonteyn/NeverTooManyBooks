@@ -31,6 +31,7 @@ NEW:
   Actual usage during a search depends on the site searched.
 - Added filters for Location and Genre
 - Title capitalization is now configurable.
+- Option to set the Location for all books for a node in the list
 
 FIXES:
 - #77 Importing Zip file to new device, no book covers.
