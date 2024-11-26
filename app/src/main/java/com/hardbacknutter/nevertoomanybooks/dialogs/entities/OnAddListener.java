@@ -18,19 +18,17 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import androidx.annotation.NonNull;
 
 @FunctionalInterface
-public interface OnEditListener<T> {
+public interface OnAddListener<T> {
 
     /**
-     * Callback handler.
+     * Callback handler..
      *
-     * @param original the original item
-     * @param modified the modified item
+     * @param item the new item
      */
-    void onEdit(@NonNull T original,
-                @NonNull T modified);
+    void onAdd(@NonNull T item);
 }

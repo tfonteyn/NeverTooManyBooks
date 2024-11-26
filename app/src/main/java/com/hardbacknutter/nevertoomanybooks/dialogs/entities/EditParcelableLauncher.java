@@ -35,9 +35,6 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.OnAddListener;
-import com.hardbacknutter.nevertoomanybooks.dialogs.OnEditInPlaceListener;
-import com.hardbacknutter.nevertoomanybooks.dialogs.OnEditListener;
 
 /**
  * Launcher to edit a Parcelable object.

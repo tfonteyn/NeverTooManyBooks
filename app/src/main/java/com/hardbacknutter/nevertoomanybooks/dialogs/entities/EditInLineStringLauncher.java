@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.OnEditListener;
 
 /**
  * Launcher for one of the inline-string fields in the Books table.
