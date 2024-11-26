@@ -473,6 +473,7 @@
     <string name="option_set_read">Okundu olarak işaretle</string>
     <string name="option_set_unread">Okunmamış olarak işaretle</string>
     <string name="menu_update_books">Kitapları güncelle</string>
+    <string name="info_bulk_set_location">Seçilen düğüm altında listelenen tüm kitaplara atamak istediğiniz konumu seçin.</string>
     <string name="menu_update_fields">Alanları güncelle</string>
     <string name="option_view_book_at">Üzerinde görüntülemek…</string>
     <string name="name_colon_value">%1$s: %2$s</string>

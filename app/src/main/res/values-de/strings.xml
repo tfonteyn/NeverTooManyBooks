@@ -467,6 +467,7 @@
     <string name="option_set_read">Als gelesen markieren</string>
     <string name="option_set_unread">Als ungelesen markieren</string>
     <string name="menu_update_books">Bücher aktualisieren</string>
+    <string name="info_bulk_set_location">Wählen Sie den Ort aus, den Sie allen unter dem ausgewählten Knoten aufgeführten Büchern zuweisen möchten.</string>
     <string name="menu_update_fields">Aktualisieren</string>
     <string name="option_view_book_at">Anschauen auf…</string>
     <string name="name_colon_value">%1$s: %2$s</string>

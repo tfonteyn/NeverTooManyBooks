@@ -653,6 +653,7 @@
     <string name="lbl_filters">Filtros</string>
     <string name="lbl_add_filter">Adicionar filtro</string>
     <string name="menu_update_books">Atualizar livros</string>
+    <string name="info_bulk_set_location">Selecione a localização que pretende atribuir a todos os livros listados no nó selecionado.</string>
     <string name="menu_update_fields">Atualizar campos</string>
     <string name="option_field_usage_overwrite">Substitui os dados existentes</string>
     <string name="strict">Estrito</string>

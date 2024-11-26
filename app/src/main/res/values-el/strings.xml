@@ -468,6 +468,7 @@
     <string name="option_set_read">Ορίστε ως «διαβάσετε»</string>
     <string name="option_set_unread">Ορίστε ως «μη αναγνωσμένο»</string>
     <string name="menu_update_books">Ενημέρωση βιβλίων</string>
+    <string name="info_bulk_set_location">Επιλέξτε τη θέση που θέλετε να εκχωρήσετε σε όλα τα βιβλία που παρατίθενται στον επιλεγμένο κόμβο.</string>
     <string name="menu_update_fields">Ενημέρωση πεδίων</string>
     <string name="option_view_book_at">Προβολή στο…</string>
     <string name="name_colon_value">%1$s: %2$s</string>

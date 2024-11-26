@@ -486,6 +486,7 @@
     <string name="option_set_read">Ustaw jako „czytaj”</string>
     <string name="option_set_unread">Ustaw jako „nieprzeczytane”</string>
     <string name="menu_update_books">Zaktualizuj książki</string>
+    <string name="info_bulk_set_location">Wybierz lokalizację, którą chcesz przypisać do wszystkich książek wymienionych w wybranym węźle.</string>
     <string name="menu_update_fields">Aktualizuj pola</string>
     <string name="option_view_book_at">Widok na…</string>
     <string name="name_colon_value">%1$s: %2$s</string>

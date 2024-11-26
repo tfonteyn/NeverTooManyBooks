@@ -471,6 +471,7 @@
     <string name="option_set_read">Marqué comme lu</string>
     <string name="option_set_unread">Maqué comme non lu</string>
     <string name="menu_update_books">Mise à jour des livres</string>
+    <string name="info_bulk_set_location">Sélectionnez l\'emplacement que vous souhaitez attribuer à tous les livres répertoriés sous le nœud sélectionné.</string>
     <string name="menu_update_fields">Mise à jour des champs</string>
     <string name="option_view_book_at">Voir sur…</string>
     <string name="name_colon_value">%1$s : %2$s</string>

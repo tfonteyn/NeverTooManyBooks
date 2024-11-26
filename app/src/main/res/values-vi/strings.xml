@@ -76,7 +76,6 @@
     <!-- region ========== Fatal/Crash/Debug messages. -->
     <string name="debug_select_items">Chọn những gì bạn muốn đưa vào:</string>
     <string name="acra_dialog_message">Có vẻ như &APP_NAME; đã gặp sự cố. Nhấn vào “%1$s” để lưu báo cáo vào vị trí bạn chọn. Bạn có thể sử dụng báo cáo này để báo cáo vấn đề mới trên trang web của dự án.</string>
-    <string name="acra_report_saved">Bây giờ bạn có thể truy cập trang dự án trên Github và ghi lại vấn đề mới. Vui lòng đính kèm báo cáo đã lưu trước đó về vấn đề này. Nếu bạn chưa có tài khoản Github, bạn cần tạo một tài khoản.</string>
     <!-- endregion -->
     <!-- region ========== HTTP(S) error messages. -->
     <!-- All the httpError strings were copied from:
@@ -1263,6 +1262,7 @@
     <!-- region ========== Automatic update book fields from the internet. -->
     <!-- Booklist screen / Book details screen - context/options menu.
          Update Fields from internet for a SINGLE book -->
+    <string name="info_bulk_set_location">Chọn vị trí bạn muốn chỉ định cho tất cả sách được liệt kê trong nút đã chọn.</string>
     <string name="menu_update_fields">Cập nhật các trường</string>
     <!-- Booklist screen - context menu for NON-book rows.
          Update Fields from internet for a set of books -->

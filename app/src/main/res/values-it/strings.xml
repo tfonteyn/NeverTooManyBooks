@@ -470,6 +470,7 @@
     <string name="option_set_read">Contrassegna come letto</string>
     <string name="option_set_unread">Contrassegna come non letto</string>
     <string name="menu_update_books">Aggiorna i libri</string>
+    <string name="info_bulk_set_location">Selezionare la posizione che si desidera assegnare a tutti i libri elencati nel nodo selezionato.</string>
     <string name="menu_update_fields">Aggiorna i campi</string>
     <string name="option_view_book_at">Visualizza su…</string>
     <string name="name_colon_value">%1$s: %2$s</string>

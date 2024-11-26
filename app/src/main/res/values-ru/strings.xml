@@ -483,6 +483,7 @@
     <string name="option_set_read">Марк читать</string>
     <string name="option_set_unread">Марк не читается</string>
     <string name="menu_update_books">Обновите книги</string>
+    <string name="info_bulk_set_location">Выберите место, которое вы хотите назначить всем книгам, перечисленным в выбранном узле.</string>
     <string name="menu_update_fields">обновить поля</string>
     <string name="option_view_book_at">Смотреть на…</string>
     <string name="name_colon_value">%1$s: %2$s</string>
