@@ -476,8 +476,8 @@ public class BooksOnBookshelf
         stylePickerLauncher = new StylePickerLauncher(this::onStyleSelected);
         stylePickerLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
-        bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(
-                RK_SET_BOOKSHELVES,
+        bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(RK_SET_BOOKSHELVES);
+        bulkSetBookshelvesLauncher.setResultListener(
                 (previousSelection, selectedIds, extras)
                         -> vm.setBookshelves(this, selectedIds, extras));
         bulkSetBookshelvesLauncher.registerForFragmentResult(fm, lifecycleOwner);

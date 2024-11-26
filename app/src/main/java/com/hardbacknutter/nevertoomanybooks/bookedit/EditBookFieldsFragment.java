@@ -104,8 +104,8 @@ public class EditBookFieldsFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editBookshelvesLauncher = new MultiChoiceLauncher<>(DBKey.FK_BOOKSHELF,
-                                                            this::onBookshelvesSelection);
+        editBookshelvesLauncher = new MultiChoiceLauncher<>(DBKey.FK_BOOKSHELF);
+        editBookshelvesLauncher.setResultListener(this::onBookshelvesSelection);
         editBookshelvesLauncher.registerForFragmentResult(fm, this);
     }
 
