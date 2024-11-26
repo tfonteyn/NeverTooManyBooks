@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("WeakerAccess")
 public class MultiChoiceViewModel
         extends ViewModel {
 
@@ -60,7 +61,7 @@ public class MultiChoiceViewModel
     }
 
     @NonNull
-    public Set<Long> getPreviousSelection() {
+    Set<Long> getPreviousSelection() {
         return previousSelection;
     }
 
