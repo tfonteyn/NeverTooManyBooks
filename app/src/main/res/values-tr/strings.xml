@@ -810,4 +810,5 @@
     <string name="lbl_capitalize_none">Değişiklik yok</string>
     <string name="lbl_capitalize_words">Sözcüklerin başlangıcı</string>
     <string name="lbl_capitalize_sentence">Cümlelerin başlangıcı</string>
+    <string name="lbl_assign_location">Konum atama</string>
 </resources>

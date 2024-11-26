@@ -822,4 +822,5 @@
     <string name="lbl_capitalize_none">Bez zmian</string>
     <string name="lbl_capitalize_words">Początek wyrazów</string>
     <string name="lbl_capitalize_sentence">Początek zdania</string>
+    <string name="lbl_assign_location">Przypisywanie lokalizacji</string>
 </resources>

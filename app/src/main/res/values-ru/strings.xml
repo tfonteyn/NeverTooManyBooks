@@ -820,4 +820,5 @@
     <string name="lbl_capitalize_none">Без изменений</string>
     <string name="lbl_capitalize_words">Начало слов</string>
     <string name="lbl_capitalize_sentence">Начало предложений</string>
+    <string name="lbl_assign_location">Назначить местоположение</string>
 </resources>

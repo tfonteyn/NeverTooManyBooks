@@ -799,4 +799,5 @@
     <string name="lbl_capitalize_none">Geen wijzigingen</string>
     <string name="lbl_capitalize_words">Begin van woorden</string>
     <string name="lbl_capitalize_sentence">Begin van zinnen</string>
+    <string name="lbl_assign_location">Locatie toewijzen</string>
 </resources>

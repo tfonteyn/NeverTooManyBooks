@@ -800,4 +800,5 @@
     <string name="lbl_capitalize_none">Καμία αλλαγή</string>
     <string name="lbl_capitalize_words">Αρχή λέξεων</string>
     <string name="lbl_capitalize_sentence">Αρχή προτάσεων</string>
+    <string name="lbl_assign_location">Ανάθεση τοποθεσίας</string>
 </resources>

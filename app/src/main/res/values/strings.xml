@@ -591,11 +591,11 @@
     <!--
           1. Header for a screen where the user can map/assign local bookshelves
              to remote bookshelves. Used for specific websites where supported.
-          2. Menu option to mass-assign a set of books to one or more bookshelves.
+          2. Menu option to bulk-assign a set of books to one or more bookshelves.
     -->
     <string name="lbl_assign_bookshelves">Assign bookshelves</string>
-    <!-- Menu option to mass-assign a set of books to a location. -->
-    <string name="lbl_assign_location">Assign a location</string>
+    <!-- Menu option to bulk-assign a set of books to a (physical) location. -->
+    <string name="lbl_assign_location">Assign location</string>
 
 
     <string name="lbl_strip_info_bookshelf_assigned_to_wishlist"

@@ -819,4 +819,5 @@
     <string name="lbl_capitalize_none">Žádné změny</string>
     <string name="lbl_capitalize_words">Začátek slov</string>
     <string name="lbl_capitalize_sentence">Začátek vět</string>
+    <string name="lbl_assign_location">Přiřazení umístění</string>
 </resources>

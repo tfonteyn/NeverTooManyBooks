@@ -804,4 +804,5 @@
     <string name="lbl_capitalize_none">Pas de changement</string>
     <string name="lbl_capitalize_words">Début des mots</string>
     <string name="lbl_capitalize_sentence">Début de phrase</string>
+    <string name="lbl_assign_location">Attribuer un lieu</string>
 </resources>

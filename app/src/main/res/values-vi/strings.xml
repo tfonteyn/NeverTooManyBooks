@@ -1454,4 +1454,5 @@
     <string name="lbl_capitalize_none">Không thay đổi</string>
     <string name="lbl_capitalize_words">Bắt đầu từ</string>
     <string name="lbl_capitalize_sentence">Bắt đầu câu</string>
+    <string name="lbl_assign_location">Chỉ định vị trí</string>
 </resources>
