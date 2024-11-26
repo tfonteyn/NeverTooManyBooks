@@ -168,9 +168,9 @@ public interface BookDao {
     int deleteByUuid(@NonNull List<String> uuids);
 
     /**
-     * Add/move the given books to the given list of Bookshelves.
+     * Bulk operation to set the Bookshelves.
      * <p>
-     * If successful, the book objects will have been updated with the new bookshelves.
+     * Assign the given list of Bookshelves to the given list of Books.
      *
      * @param context     Current context
      * @param bookIds     to update
@@ -181,6 +181,21 @@ public interface BookDao {
     boolean setBookshelves(@NonNull Context context,
                            @NonNull Collection<Long> bookIds,
                            @NonNull List<Bookshelf> bookshelves);
+
+    /**
+     * Bulk operation to set the {@link DBKey#LOCATION} field.
+     * <p>
+     * Assign the given Location to the given list of Books.
+     *
+     * @param context  Current context
+     * @param bookIds  to update
+     * @param location to set
+     *
+     * @return {@code true} for success.
+     */
+    boolean setLocation(@NonNull Context context,
+                        @NonNull List<Long> bookIds,
+                        @Nullable String location);
 
     /**
      * Update the 'read' status of a book.

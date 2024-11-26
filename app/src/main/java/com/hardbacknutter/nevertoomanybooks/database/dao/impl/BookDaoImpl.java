@@ -589,6 +589,30 @@ public class BookDaoImpl
     }
 
     @Override
+    public boolean setLocation(@NonNull final Context context,
+                               @NonNull final List<Long> bookIds,
+                               @Nullable final String location) {
+        // Sanity check
+        if (bookIds.isEmpty()) {
+            return false;
+        }
+
+        final String sql = UPDATE_ + TBL_BOOKS.getName()
+                           + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                           + ',' + DBKey.LOCATION + "=?"
+                           + _WHERE_ + Sql.inClause(DBKey.PK_ID, bookIds);
+
+        final boolean success;
+
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+            stmt.bindString(1, location);
+            success = 0 < stmt.executeUpdateDelete();
+        }
+
+        return success;
+    }
+
+    @Override
     public boolean setRead(@NonNull final Book book,
                            final boolean read) {
         final String now = SqlEncode.dateTime(LocalDateTime.now());
