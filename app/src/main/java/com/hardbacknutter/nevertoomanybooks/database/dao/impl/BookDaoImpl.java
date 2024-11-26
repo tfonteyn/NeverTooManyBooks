@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.text.TextUtils;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -718,8 +717,7 @@ public class BookDaoImpl
 
         } else {
             return getBookCursor(TBL_BOOKS.dot(DBKey.AUTO_UPDATE) + "=1"
-                                 + _AND_ + TBL_BOOKS.dot(DBKey.PK_ID)
-                                 + " IN (" + TextUtils.join(",", idList) + ')',
+                                 + _AND_ + Sql.inClause(TBL_BOOKS.dot(DBKey.PK_ID), idList),
                                  null,
                                  TBL_BOOKS.dot(DBKey.PK_ID));
         }
@@ -1084,6 +1082,22 @@ public class BookDaoImpl
                                + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
                                + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
                                + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION);
+        }
+
+        /**
+         * Create an sql fragment "column IN (csv-list)".
+         *
+         * @param column to use
+         * @param idList the ids
+         *
+         * @return a valid IN clause for use with a WHERE
+         */
+        @NonNull
+        private static String inClause(@NonNull final String column,
+                                       @NonNull final List<Long> idList) {
+            return idList.stream()
+                         .map(String::valueOf)
+                         .collect(Collectors.joining(",", column + " IN (", ")"));
         }
     }
 }
