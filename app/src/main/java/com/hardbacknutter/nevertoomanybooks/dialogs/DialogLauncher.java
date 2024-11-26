@@ -44,8 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
  * Initialization phase:
  * <ol>
  *     <li>The HOST creates a new instance of (child-class of) DialogLauncher</li>
- *     <li>A dedicated listener (interface) is set in the constructor so we can later send
- *         the results from the DialogLauncher back to the HOST.</li>
+ *     <li>A dedicated listener (interface) must be set in the constructor,
+ *         or immediately after, so we can later send the results from
+ *         the DialogLauncher back to the HOST.</li>
  *     <li>The HOST calls {@link #registerForFragmentResult(FragmentManager, LifecycleOwner)}
  *         to indicate the DialogLauncher wants to receive the results from
  *         the FragmentManager.</li>
@@ -53,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
  * <p>
  * Launch phase:
  * <ol>
- *     <li>The HOST calls 'launch' on the launcher</li>
+ *     <li>The HOST calls a 'launch' method on the launcher</li>
  *     <li>Depending on the DialogMode, the method {@link #showDialog(Context, Bundle)}
  *         will create either a BottomSheetDialogFragment or a plain DialogFragment
  *         and show it</li>
