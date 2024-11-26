@@ -40,21 +40,25 @@ public class PartialDatePickerLauncher
         extends DialogLauncher {
 
     private static final String TAG = "PartialDatePickerLaunch";
-    private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
-
     /** a standard sql style date string, must be correct. */
     static final String BKEY_DATE = TAG + ":date";
     static final String BKEY_FIELD_ID = TAG + ":fieldId";
     static final String BKEY_DIALOG_TITLE_ID = TAG + ":titleId";
+    private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
+    private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
-    @NonNull
-    private final ResultListener resultListener;
+    @Nullable
+    private ResultListener resultListener;
 
     /**
      * Constructor.
-     *
-     * @param resultListener listener
      */
+    public PartialDatePickerLauncher() {
+        super(RK_DATE_PICKER_PARTIAL,
+              PartialDatePickerDialogFragment::new,
+              PartialDatePickerBottomSheet::new);
+    }
+
     public PartialDatePickerLauncher(@NonNull final ResultListener resultListener) {
         super(RK_DATE_PICKER_PARTIAL,
               PartialDatePickerDialogFragment::new,
@@ -84,10 +88,15 @@ public class PartialDatePickerLauncher
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    public void setResultListener(@NonNull final ResultListener resultListener) {
+        this.resultListener = resultListener;
+    }
+
     /**
      * Launch the dialog.
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
+     *
+     * @param context       preferably the {@code Activity}
+     *                      but another UI {@code Context} will also do.
      * @param dialogTitleId resource id for the dialog title
      * @param fieldId       this dialog operates on
      *                      (one launcher can serve multiple fields)
@@ -99,6 +108,9 @@ public class PartialDatePickerLauncher
                        @IdRes final int fieldId,
                        @Nullable final String currentValue,
                        final boolean todayIfNone) {
+
+        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
+
         final String dateStr;
         if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
             dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
@@ -117,6 +129,7 @@ public class PartialDatePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         resultListener.onResult(result.getInt(BKEY_FIELD_ID),
                                 Objects.requireNonNull(

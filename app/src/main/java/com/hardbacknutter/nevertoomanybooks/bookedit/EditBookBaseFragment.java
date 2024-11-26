@@ -103,7 +103,8 @@ public abstract class EditBookBaseFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        partialDatePickerLauncher = new PartialDatePickerLauncher(
+        partialDatePickerLauncher = new PartialDatePickerLauncher();
+        partialDatePickerLauncher.setResultListener(
                 (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
         partialDatePickerLauncher.registerForFragmentResult(fm, this);
     }
