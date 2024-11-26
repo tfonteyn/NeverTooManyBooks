@@ -826,4 +826,9 @@
     <string name="info_site_search_field_optional">可选。不是所有网站都支持。</string>
     <string name="warning_missing_title_or_author">必须指定标题和/或作者。</string>
     <string name="progress_msg_authenticating_to_site">正在 %1$s 上进行身份验证</string>
+    <string name="lbl_capitalize_sentence">句子的首字符</string>
+    <string name="pt_capitalize_title">书名大写</string>
+    <string name="lbl_capitalize_none">无更改</string>
+    <string name="lbl_capitalize_words">单词的首字符</string>
+    <string name="lbl_capitalize_full">大写整个书名</string>
 </resources>
