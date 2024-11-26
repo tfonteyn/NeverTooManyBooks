@@ -801,4 +801,6 @@
     <string name="lbl_capitalize_words">Comienzo de las palabras</string>
     <string name="lbl_capitalize_sentence">Inicio de oraciones</string>
     <string name="pt_capitalize_title">Título en mayúsculas</string>
+    <string name="lbl_assign_location">Asignar una ubicación</string>
+    <string name="info_bulk_set_location">Seleccione la ubicación que desea asignar a todos los libros listados en el nodo seleccionado.</string>
 </resources>
