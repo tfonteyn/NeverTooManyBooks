@@ -1023,6 +1023,24 @@ public class BooksOnBookshelfViewModel
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
+    void setLocation(@NonNull final Context context,
+                     @NonNull final String location,
+                     @Nullable final Bundle extras) {
+
+        if (extras == null) {
+            throw new IllegalArgumentException("No extras?");
+        }
+
+        final List<Long> bookIds = ParcelUtils.unwrap(extras, BKEY_BOOK_IDS);
+        if (bookIds == null || bookIds.isEmpty()) {
+            throw new IllegalArgumentException("No bookIds?");
+        }
+
+        bookDao.setLocation(context, bookIds, location);
+        // ALWAYS rebuild
+        triggerRebuildList.setValue(LiveDataEvent.of(false));
+    }
+
     /**
      * Update the 'read' status of the given book.
      *

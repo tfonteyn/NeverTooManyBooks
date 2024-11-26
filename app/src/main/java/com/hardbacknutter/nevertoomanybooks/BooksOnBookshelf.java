@@ -122,6 +122,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottom
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.AutoCompletePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -198,6 +199,7 @@ public class BooksOnBookshelf
     private static final String RK_MENU = TAG + ":rk:menu";
 
     private static final String RK_SET_BOOKSHELVES = TAG + ":rk:setBookshelves";
+    private static final String RK_SET_LOCATION = TAG + ":rk:setLocation";
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
     private static final int OFFSCREEN_CACHE_SIZE = 20;
@@ -317,6 +319,8 @@ public class BooksOnBookshelf
 
     /** Row menu launcher to add/move a set of Books to the selected Bookshelves. */
     private MultiChoiceLauncher<Bookshelf> bulkSetBookshelvesLauncher;
+    private AutoCompletePickerLauncher bulkSetLocationLauncher;
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
     /** Encapsulate all row menus for {@link BooklistGroup}s. */
@@ -481,6 +485,12 @@ public class BooksOnBookshelf
                 (previousSelection, selectedIds, extras)
                         -> vm.setBookshelves(this, selectedIds, extras));
         bulkSetBookshelvesLauncher.registerForFragmentResult(fm, lifecycleOwner);
+
+        bulkSetLocationLauncher = new AutoCompletePickerLauncher(RK_SET_LOCATION);
+        bulkSetLocationLauncher.setResultListener(
+                (previousSelection, selectedItem, extras)
+                        -> vm.setLocation(this, selectedItem, extras));
+        bulkSetLocationLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, lifecycleOwner);
@@ -1243,17 +1253,11 @@ public class BooksOnBookshelf
         final Bundle extras = new Bundle(1);
         extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
 
-        Location
         bulkSetLocationLauncher.launch(this, dialogTitle, dialogMessage,
                                        all, selected,
                                        extras);
         return true;
     }
-
-    private void onBulkSetLocation() {
-
-    }
-
 
     /**
      * Handle {@link R.id#MENU_UPDATE_FROM_INTERNET}.

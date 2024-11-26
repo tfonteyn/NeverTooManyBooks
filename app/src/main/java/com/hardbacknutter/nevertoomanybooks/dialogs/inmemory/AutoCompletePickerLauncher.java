@@ -53,7 +53,7 @@ public class AutoCompletePickerLauncher
      *
      * @param requestKey FragmentResultListener request key to use for our response.
      */
-    protected AutoCompletePickerLauncher(@NonNull final String requestKey) {
+    public AutoCompletePickerLauncher(@NonNull final String requestKey) {
         super(requestKey,
               AutoCompletePickerDialogFragment::new,
               AutoCompletePickerBottomSheet::new);
