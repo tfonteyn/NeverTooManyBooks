@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -42,21 +43,21 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     static final String BKEY_SELECTED = TAG + ":selected";
     static final String BKEY_ALL_IDS = TAG + ":ids";
     static final String BKEY_ALL_LABELS = TAG + ":labels";
-    @NonNull
-    private final ResultListener resultListener;
+
+    private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
+
+    @Nullable
+    private ResultListener resultListener;
 
     /**
      * Constructor.
      *
-     * @param requestKey     FragmentResultListener request key to use for our response.
-     * @param resultListener listener
+     * @param requestKey FragmentResultListener request key to use for our response.
      */
-    public SingleChoiceLauncher(@NonNull final String requestKey,
-                                @NonNull final ResultListener resultListener) {
+    public SingleChoiceLauncher(@NonNull final String requestKey) {
         super(requestKey,
               SingleChoiceDialogFragment::new,
               SingleChoiceBottomSheet::new);
-        this.resultListener = resultListener;
     }
 
     /**
@@ -79,6 +80,10 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    public void setResultListener(@NonNull final ResultListener resultListener) {
+        this.resultListener = resultListener;
+    }
+
     /**
      * Launch the dialog.
      *
@@ -92,6 +97,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
                        @NonNull final String dialogTitle,
                        @NonNull final List<T> allItems,
                        @Nullable final T selectedItem) {
+
+        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Bundle args = new Bundle(5);
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
@@ -111,6 +118,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
+
         resultListener.onResult(result.getLong(BKEY_SELECTED));
     }
 
