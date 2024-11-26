@@ -23,10 +23,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
 public class EditBookSeriesDialogFragment
-        extends BaseFFDialogFragment {
+        extends FlexClassicDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

@@ -24,10 +24,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseBottomSheetDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexBottomSheetDialogFragment;
 
 public class CoverBrowserBottomSheet
-        extends BaseBottomSheetDialogFragment {
+        extends FlexBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

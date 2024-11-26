@@ -37,7 +37,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 
 /**
- * Note that we're NOT extending BaseBottomSheetDialogFragment.
+ * Note that we're NOT extending FlexBottomSheetDialogFragment.
  * The view is simplified and does not use a toolbar.
  * There is no dedicated 'save' button.
  * {@link #onDismiss(DialogInterface)} will <strong>save</strong> the selection.

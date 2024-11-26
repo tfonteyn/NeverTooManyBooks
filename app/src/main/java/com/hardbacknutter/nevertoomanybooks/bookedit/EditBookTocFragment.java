@@ -96,7 +96,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * the user to reject the first (book)TOC found, and get the next one (etc...).
  * <p>
  * 2024-04-27: not converting {@link ConfirmTocDialogFragment} to
- * a BottomSheet or BaseFFDialogFragment.
+ * a BottomSheet or FlexClassicDialogFragment.
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {

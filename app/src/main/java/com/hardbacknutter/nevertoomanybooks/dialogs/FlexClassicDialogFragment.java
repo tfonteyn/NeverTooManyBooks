@@ -72,7 +72,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     </li>
  * </ol>
  */
-public abstract class BaseFFDialogFragment
+public abstract class FlexClassicDialogFragment
         extends DialogFragment {
 
     /** Must be created/set in {@link #onCreate(Bundle)}. */

@@ -149,7 +149,7 @@ public class EditBookPublisherListDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // See notes in {@link BaseFFDialogFragment#onCreateDialog}
+        // See notes in {@link FlexClassicDialogFragment#onCreateDialog}
         return new Dialog(requireContext(), R.style.Theme_App);
     }
 

@@ -25,10 +25,10 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
 public class EditGenreDialogFragment
-        extends BaseFFDialogFragment {
+        extends FlexClassicDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

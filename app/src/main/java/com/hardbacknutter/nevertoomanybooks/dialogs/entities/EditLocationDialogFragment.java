@@ -25,13 +25,13 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Location.
  */
 public class EditLocationDialogFragment
-        extends BaseFFDialogFragment {
+        extends FlexClassicDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

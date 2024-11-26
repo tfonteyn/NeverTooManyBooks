@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 
 /**
- * Note we're NOT extending BaseFFDialogFragment.
+ * Note we're NOT extending FlexClassicDialogFragment.
  * This dialog is only used/shown as a floating-dialog.
  * The view uses a simple Material AlertDialog.
  */

@@ -40,7 +40,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public class BaseBottomSheetDialogFragment
+public class FlexBottomSheetDialogFragment
         extends BottomSheetDialogFragment {
 
     /** Must be created/set in {@link #onCreate(Bundle)}. */

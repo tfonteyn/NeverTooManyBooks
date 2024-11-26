@@ -41,8 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
  * It should be enabled in the {@code onCreateView} method of the below base classes with
  * {@code getLifecycle().addObserver(delegate);}
  *
- * @see BaseFFDialogFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)
- * @see BaseBottomSheetDialogFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)
+ * @see FlexClassicDialogFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)
+ * @see FlexBottomSheetDialogFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)
  */
 public interface FlexDialogDelegate
         extends FlexToolbar, DefaultLifecycleObserver {

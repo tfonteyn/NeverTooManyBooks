@@ -25,10 +25,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseFFDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
 public class CoverBrowserDialogFragment
-        extends BaseFFDialogFragment {
+        extends FlexClassicDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
