@@ -319,6 +319,7 @@ public class BooksOnBookshelf
 
     /** Row menu launcher to add/move a set of Books to the selected Bookshelves. */
     private MultiChoiceLauncher<Bookshelf> bulkSetBookshelvesLauncher;
+    /** Row menu launcher to set the location of a set of Books. */
     private AutoCompletePickerLauncher bulkSetLocationLauncher;
 
     /** Encapsulates the FAB button/menu. */
