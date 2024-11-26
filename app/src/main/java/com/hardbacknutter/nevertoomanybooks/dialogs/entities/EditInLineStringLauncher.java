@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.OnEditListener;
 public class EditInLineStringLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "Launcher";
+    private static final String TAG = "EditILStringLauncher";
     /** Input value: the text (String) to edit. */
     static final String BKEY_ITEM = TAG + ":item";
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
