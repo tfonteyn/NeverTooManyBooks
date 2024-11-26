@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+@SuppressWarnings("WeakerAccess")
 public class AutoCompletePickerViewModel
         extends ViewModel {
 
@@ -50,17 +51,21 @@ public class AutoCompletePickerViewModel
     }
 
     @NonNull
-    public String getPreviousSelection() {
+    String getPreviousSelection() {
         return previousSelection;
     }
 
     @NonNull
-    public String getSelectedItem() {
+    String getSelectedItem() {
         return selectedItem;
     }
 
+    void setSelectedItem(@NonNull final String selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
     @Nullable
-    public Bundle getExtras() {
+    Bundle getExtras() {
         return extras;
     }
 }

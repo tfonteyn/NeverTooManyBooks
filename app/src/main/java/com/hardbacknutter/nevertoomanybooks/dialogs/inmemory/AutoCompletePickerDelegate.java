@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Arrays;
@@ -67,8 +68,8 @@ public class AutoCompletePickerDelegate
     @Nullable
     private Toolbar toolbar;
 
-    public AutoCompletePickerDelegate(@NonNull final DialogFragment owner,
-                                      @NonNull final Bundle args) {
+    AutoCompletePickerDelegate(@NonNull final DialogFragment owner,
+                               @NonNull final Bundle args) {
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
@@ -134,6 +135,7 @@ public class AutoCompletePickerDelegate
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, items);
         vb.editString.setAdapter(adapter);
+        // set the initial location == the current location of the first book
         vb.editString.setText(vm.getSelectedItem());
         vb.editString.requestFocus();
     }
@@ -146,7 +148,6 @@ public class AutoCompletePickerDelegate
 
     @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
-
         if (button != null) {
             final int id = button.getId();
             if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
@@ -159,7 +160,14 @@ public class AutoCompletePickerDelegate
         return false;
     }
 
+    @Override
+    public void onPause(@NonNull final LifecycleOwner lifecycleOwner) {
+        viewToModel();
+    }
+
     private boolean saveChanges() {
+        viewToModel();
+
         AutoCompletePickerLauncher.setResult(owner, requestKey,
                                              vm.getPreviousSelection(),
                                              vm.getSelectedItem(),
@@ -167,4 +175,7 @@ public class AutoCompletePickerDelegate
         return true;
     }
 
+    private void viewToModel() {
+        vm.setSelectedItem(vb.editString.getText().toString().trim());
+    }
 }
