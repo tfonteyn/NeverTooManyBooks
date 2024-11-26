@@ -208,8 +208,6 @@
     <string name="warning_toc_confirm">Vui lòng xác nhận rằng những nhan đề này (hầu hết) là chính xác.</string>
     <string name="warning_backup_request">Bạn có muốn sao lưu cơ sở dữ liệu vào thẻ sd của mình không?</string>
     <string name="warning_no_site_supports_this_method">CẢNH BÁO: không có trang nào hiện được chọn hỗ trợ tìm kiếm theo %1$s. Vui lòng sử dụng thực đơn trang để kích hoạt các trang thay thế hoặc sử dụng phương pháp tìm kiếm khác.</string>
-    <!-- endregion -->
-    <!-- region ========== ValidatorException error messages. -->
     <string name="vldt_failure">Thẩm định thất bại</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Cần một giá trị số nguyên cho “%1$s”</string>
@@ -221,8 +219,6 @@
     <string name="vldt_blank_required_for_x">Cần có giá trị trống cho “%1$s”</string>
     <string name="vldt_read_start_after_end">Ngày bắt đầu đọc là sau ngày kết thúc</string>
     <string name="vldt_real_author_must_be_valid">Phải để trống hoặc phải có Tác giả</string>
-    <!-- endregion -->
-    <!-- region ========== Progress messages for 'lengthy' actions. -->
     <string name="progress_msg_please_wait">Vui lòng đợi…</string>
     <string name="progress_msg_loading">Đang tải…</string>
     <string name="progress_msg_loading_page">Đang tải trang %1$d…</string>
@@ -242,8 +238,6 @@
     <string name="progress_msg_x_skipped">%1$d bị bỏ qua</string>
     <string name="progress_msg_x_deleted">%1$d đã xóa</string>
     <string name="progress_msg_cleaning_up">Đang dọn dẹp…</string>
-    <!-- endregion -->
-    <!-- region ========== Informational/Explanatory messages. -->
     <string name="info_authorized">Được ủy quyền</string>
     <string name="info_nothing_to_do">Không có gì để làm.</string>
     <string name="info_story_in_multiple_books">“%1$s” hiện diện trong nhiều sách:\n\n%2$s</string>
@@ -269,8 +263,6 @@
     <string name="site_description_french_catalogue_eu_comics">Tiếng Pháp và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>
     <string name="site_description_general_shopping">Tổng quan; Mua sắm</string>
     <string name="site_description_german_catalogue">Tiếng Đức; Mục lục</string>
-    <!-- endregion -->
-    <!-- region ========== Tips which are shown in some places on how to use a screen. -->
     <string name="tip_dialog_title">Mẹo</string>
     <string name="tip_reset_all">Đặt lại mẹo</string>
     <string name="tip_reset_done">Mẹo đã được đặt lại</string>
@@ -291,138 +283,61 @@
     <string name="tip_authors_works_book">Sách.</string>
     <string name="tip_authors_works_multiple_books">Tiêu đề này hiện diện trong nhiều cuốn sách.</string>
     <string name="tip_authors_works_single_book">Tiêu đề hiện diện trong một cuốn sách duy nhất.</string>
-    <!-- endregion -->
-    <!-- region ========== BoB specific place holder text for empty fields. -->
-    <!-- [VERIFIED] from android-29#keyguard_accessibility_widget_empty_slot
-        BoB generic place holder text for EMPTY fields.
-        The actual text is different from info_not_set in Translations. -->
     <string name="bob_empty_field">(Trống)</string>
-    <!-- BoB specific place holder text for Author rows.
-     Theoretically this string will never be shown unless there is ever bad data. -->
     <string name="bob_empty_author">(Đang thiếu tác giả)</string>
-    <!-- BoB specific place holder text for Series rows. -->
     <string name="bob_empty_series">(Không bộ sách)</string>
-    <!-- BoB specific place holder text for Publisher rows. -->
     <string name="bob_empty_publisher">(Không nhà xuất bản)</string>
-    <!-- BoB specific place holder text for Language rows. -->
     <string name="bob_empty_language">(Chưa đặt ngôn ngữ)</string>
-    <!-- BoB specific place holder text for Read/Unread rows.
-         Theoretically this string will never be shown unless there is ever bad data. -->
     <string name="bob_empty_read_status">(Không rõ trạng thái đọc)</string>
-    <!-- BoB specific place holder text for Rating rows. -->
     <string name="bob_empty_rating">(Chưa được xếp hạng)</string>
-    <!-- BoB specific place holder text for Year rows. -->
     <string name="bob_empty_year">(Chưa đặt năm)</string>
-    <!-- BoB specific place holder text for Month rows. -->
     <string name="bob_empty_month">(Chưa đặt tháng)</string>
-    <!-- BoB specific place holder text for Day rows. -->
     <string name="bob_empty_day">(Chưa đặt ngày)</string>
-    <!-- endregion -->
-    <!-- region ========== Size measurements. -->
-    <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <string name="size_megabytes">%1$.2fMB</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="size_bytes">%1$.0fB</string>
-    <!-- Cover sizes -->
     <string name="size_hidden">Ẩn</string>
-    <!-- Cover sizes -->
     <string name="size_x_small">Cực Nhỏ</string>
-    <!-- Cover sizes -->
     <string name="size_small">Nhỏ</string>
-    <!-- Cover sizes -->
     <string name="size_medium">Vừa</string>
-    <!-- Cover sizes -->
     <string name="size_large">Lớn</string>
-    <!-- Cover sizes -->
     <string name="size_x_large">Cực Lớn</string>
-    <!-- endregion -->
-    <!-- region ========== List values used to unify terminology from internet websites. -->
-    <!--  book format - traditional 'hardcover' also known as 'hardback' -->
     <string name="book_format_hardcover">Bìa cứng</string>
-    <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
     <string name="book_format_paperback">Bìa mềm</string>
-    <!--  book format - a large format paperback -->
     <string name="book_format_paperback_large">Bìa mềm thương mại</string>
-    <!-- book format - A Softcover is not necessarily a paperback - mostly used by comics -->
     <string name="book_format_softcover">Bìa mềm</string>
-    <!-- -book format - oblong, landscape, A l'italienne -->
     <string name="book_format_hardcover_oblong">Bìa cứng - Thuôn dài</string>
-    <!-- -book format - oblong, landscape, A l'italienne -->
     <string name="book_format_softcover_oblong">Bìa mềm - Thuôn dài</string>
     <string name="book_format_comic">Truyện tranh</string>
     <string name="book_format_other">Khác</string>
-    <!--  book format - mostly used for magazines like 'readers digest'
-          A lot of english monthly magazines use the same format.
-          In French this is semi-officially known as "Petit format" or "Small size". -->
     <string name="book_format_digest">Tổng hợp</string>
-    <!--  book format - string used if a website indicates it's an eBook -->
     <string name="book_format_ebook">Sách điện tử</string>
-    <!-- book format - used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">Sách nói</string>
-    <!--  book format - string used when a website gives exact dimensions of the book. -->
     <string name="book_format_dimensions">Kích thước</string>
-    <!-- Color - content is full color. -->
     <string name="book_color_full_color">Có màu</string>
-    <!-- Color - content is black and white / single color only. -->
     <string name="book_color_black_and_white">Đen &amp; trắng</string>
-    <!-- uncolored, but with 1 or 2 support-colors.
-         e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Hai màu</string>
-    <!-- endregion -->
-    <!-- region ========== Names of builtin styles. -->
-    <!-- builtin style name -->
     <string name="style_builtin_author_series">Tác giả, Bộ sách</string>
-    <!-- builtin style name -->
     <string name="style_builtin_author_year">Tác giả, Năm</string>
-    <!-- endregion -->
-    <!-- region ========== Style terminology. -->
-    <!-- Single Style -->
     <string name="lbl_style">Phong cách</string>
-    <!-- Multiple Styles - Short label. -->
     <string name="lbl_styles">Đa phong cách</string>
-    <!-- Multiple Styles - Long label. -->
     <string name="lbl_styles_long">Kiểu dáng kệ sách</string>
-    <!-- Style type -->
     <string name="style_type_builtin">Tích hợp</string>
-    <!-- Style type -->
     <string name="style_type_user_defined">Do người dùng xác định</string>
-    <!-- endregion -->
-    <!-- region ========== Booklist Group names. -->
-    <!-- Booklist Group name -->
     <string name="lbl_group_read_and_unread">Đọc &amp; Chưa đọc</string>
-    <!-- Booklist Group name -->
     <string name="lbl_group_1st_char_author_family_name">Ký tự đầu tiên của họ Tác giả</string>
-    <!-- Booklist Group name -->
     <string name="lbl_group_1st_char_series_title">Ký tự đầu tiên của nhan đề Bộ sách</string>
-    <!-- Booklist Group name -->
     <string name="lbl_group_1st_char_publisher_name">Ký tự đầu tiên của tên Nhà xuất bản</string>
-    <!-- Booklist Group name -->
     <string name="lbl_group_1st_char_book_title">Ký tự đầu tiên của tên sách</string>
-    <!-- endregion -->
-    <!-- region ========== Defaults for bookshelf names. -->
-    <!-- Name of virtual bookshelf which displays all books. -->
     <string name="bookshelf_all_books">Tất cả sách</string>
-    <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
     <string name="bookshelf_my_books">Sách của tôi</string>
-    <!-- Predefined/proposed name for a bookshelf when synchronizing with
-         a wishlist from some websites. -->
     <string name="bookshelf_my_wishlist">Danh sách muốn đọc</string>
-    <!-- header for a screen where the user can map/assign local bookshelves to remote bookshelves. -->
     <string name="lbl_assign_bookshelves">Chỉ định kệ sách</string>
-    <!-- endregion -->
-    <!-- region ========== Book editions values NEWTHINGS: add book edition: add label here. -->
-    <!-- Book edition -->
     <string name="lbl_edition_first_edition">Ấn bản đầu tiên</string>
-    <!-- Book edition -->
     <string name="lbl_edition_first_impression">Ấn tượng đầu tiên</string>
-    <!-- Book edition -->
     <string name="lbl_edition_limited">Bị giới hạn</string>
-    <!-- Book edition -->
     <string name="lbl_edition_slipcase">Hộp đựng</string>
-    <!-- Book edition -->
     <string name="lbl_edition_book_club">Ấn bản câu lạc bộ sách</string>
-    <!-- endregion -->
-    <!-- region ========== Book / Dust cover condition values. -->
     <string name="lbl_condition_fine">Như mới</string>
     <string name="lbl_condition_very_good">Rất tốt</string>
     <string name="lbl_condition_good">Tốt</string>
@@ -430,133 +345,75 @@
     <string name="lbl_condition_reading_copy">Đọc bản sao</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Thiếu/Khá</string>
     <string name="lbl_condition_dust_cover_none">Không có</string>
-    <!-- endregion -->
-    <!-- region ========== Author types. -->
     <string name="lbl_author_type_writer">Người viết</string>
     <string name="lbl_author_type_translator">Dịch giả</string>
     <string name="lbl_author_type_editor">Biên tập viên</string>
     <string name="lbl_author_type_contributor">Cộng tác</string>
     <string name="lbl_author_type_intro">Giới thiệu v.v.</string>
     <string name="lbl_author_type_narrator">Người kể chuyện</string>
-    <!-- Interior art / illustrations -->
     <string name="lbl_author_type_artist">Minh họa</string>
     <string name="lbl_author_type_inking">Vẽ mực</string>
     <string name="lbl_author_type_colorist">Chỉnh màu</string>
-    <!-- Cover art / Cover illustration -->
     <string name="lbl_author_type_cover_artist">Ảnh bìa</string>
     <string name="lbl_author_type_cover_inking">Bìa vẽ mực</string>
     <string name="lbl_author_type_cover_colorist">Chỉnh màu bìa</string>
-    <!-- endregion -->
-    <!-- region ========== Options - radio, checkbox, preferences or menus. -->
-    <!-- Move covers from one storage device to another (e.g. internal to sdcard) -->
     <string name="option_moving_covers_from_x_to_y">Di chuyển tất cả bìa từ “%1$s” sang “%2$s”</string>
-    <!-- If the storage volume has changed, offer the use these options: -->
-    <!-- Option to use a particular storage device. (e.g. to store covers on) -->
     <string name="option_storage_select">Sử dụng “%1$s”</string>
-    <!-- Option to manually edit the storage settings. -->
     <string name="option_storage_edit_settings">Chỉnh sửa thiết đặt</string>
-    <!-- Option to simply swap the memory card with the correct one. -->
     <string name="option_storage_quit_and_reinsert_sdcard">Thoát và lắp lại thẻ SD chính xác</string>
-    <!-- Booklist menu option -->
     <string name="option_sort_and_style_ellipsis">Sắp xếp &amp; Kiểu dáng…</string>
-    <!-- Booklist menu option -->
     <string name="option_level_reset">Mở rộng cấp độ ưa thích</string>
-    <!-- Booklist menu option -->
     <string name="option_level_expand">Mở rộng tất cả</string>
-    <!-- Booklist menu option -->
     <string name="option_level_collapse">Thu gọn tất cả</string>
-    <!-- Booklist menu option when running with book-details fragment in embedded mode. -->
     <string name="option_book_sync_list_with_details">Đồng bộ hóa/định vị danh sách</string>
-    <!-- Book context/options menu option: set the current book as 'read' -->
     <string name="option_set_read">Đặt là đã đọc</string>
-    <!-- Book context/options menu option: set the current book as 'unread' ('to read')-->
     <string name="option_set_unread">Đặt là chưa đọc</string>
-    <!-- Book context/options menu option: lend out the current book. -->
     <string name="option_lend_out_book">Cho mượn…</string>
-    <!-- Book context/options menu option: the current book was returned. -->
     <string name="option_lend_return_book">Sách cho mượn đã được trả lại</string>
-    <!-- Booklist context menu -->
     <string name="option_goto_next_book_without_cover">Chuyển sang cuốn sách tiếp theo mà không cần bìa</string>
-    <!-- booklist screen - context menu for Author/Series/... -->
     <string name="option_set_complete">Đặt “hoàn thành”</string>
-    <!-- booklist screen - context menu for Author/Series/... -->
     <string name="option_set_incomplete">Đặt “chưa hoàn thành”</string>
-    <!-- booklist screen - context menu for Author/Series/... -->
     <string name="option_author_details">Tất cả tác phẩm của tác giả này</string>
-    <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
     <string name="option_view_book_at">Xem trên…</string>
-    <!-- submenu options for the "amazon" menu -->
     <string name="option_shop_books_in_series">Sách trong bộ này</string>
-    <!-- submenu options for the "amazon" menu -->
     <string name="option_shop_books_by_author">Sách của tác giả này</string>
-    <!-- submenu options for the "amazon" menu -->
     <string name="option_shop_books_by_author_in_series">Sách theo tác giả/bộ</string>
-    <!-- "view all works of an author" menu option - show only Books -->
     <string name="option_author_works_book">Chỉ sách</string>
-    <!-- "view all works of an author" menu option - show only TOC entries -->
     <string name="option_author_works_toc">Chỉ có tiêu đề Mục lục</string>
-    <!-- [VERIFIED] Cover image context menu option -->
     <string name="action_crop">Cắt</string>
-    <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#replace"
-        Context menu for a cover image submenu title -->
     <string name="option_cover_replace">Thay thế…</string>
-    <!-- Cover image context menu option -->
     <string name="option_cover_replace_from_gallery">Từ Thư viện…</string>
-    <!-- Cover image context menu option -->
     <string name="option_cover_replace_from_camera">Từ Máy ảnh…</string>
-    <!-- Cover image context menu option -->
     <string name="option_cover_replace_from_alt_editions">Từ các ấn bản khác…</string>
-    <!-- Context menu for a cover image submenu title -->
     <string name="option_cover_rotate">Xoay…</string>
-    <!-- [VERIFIED] Cover image context menu option -->
     <string name="option_cover_rotate_automatic">Tự động</string>
-    <!-- Cover image context menu option -->
     <string name="option_cover_rotate_cw">Theo chiều kim đồng hồ</string>
-    <!-- Cover image context menu option -->
     <string name="option_cover_rotate_ccw">Ngược chiều kim đồng hồ</string>
     <string name="option_restore_cover">Khôi phục hình ảnh trước đó</string>
-    <!-- Booklist FAB menu option; Start the barcode scanner and scan a single barcode/book. -->
     <string name="option_fab_add_book_by_barcode_scan">Quét mã vạch</string>
-    <!-- Booklist FAB menu option; Start the barcode scanner and scan a batch of barcodes/books. -->
     <string name="option_fab_add_book_by_barcode_scan_batch">Quét mã vạch hàng loạt</string>
-    <!-- Booklist FAB menu option -->
     <string name="option_fab_add_book_by_isbn">Tìm kiếm theo ISBN</string>
-    <!-- Booklist FAB menu option -->
     <string name="option_fab_add_book_by_internet_search">Tìm kiếm theo nhan đề</string>
-    <!-- Booklist FAB menu option -->
     <string name="option_fab_add_book_manually">Thêm thủ công</string>
-    <!-- Booklist FAB menu option / screen title -->
     <string name="option_fab_add_book_by_external_id">Id sách trang web</string>
-    <!-- [VERIFIED] -->
     <string name="option_select_all">Chọn tất cả</string>
-    <!-- [VERIFIED] -->
     <string name="option_select_none">Bỏ chọn tất cả</string>
-    <!-- Whether an action will apply to all bookshelves, or... -->
     <string name="lbl_all_bookshelves">Tất cả kệ sách</string>
-    <!-- whether an action will only apply to the current bookshelf. -->
     <string name="btn_just_this_shelf">Chỉ kệ này</string>
     <string name="btn_show_list">Hiển thị danh sách</string>
-    <!-- whether an action will apply only to the selected booklist (tree) node. -->
     <string name="option_apply_to_this_node_only">Chỉ nút này</string>
-    <!-- whether an action will apply to all items related to the selected booklist (tree) node. -->
     <string name="option_apply_to_all_related_books">Tất cả sách liên quan</string>
     <string name="pt_scan_mode">Chế độ quét</string>
-    <!-- [VERIFIED] -->
     <string name="option_barcode_scan_mode_manual">Hướng dẫn sử dụng</string>
     <string name="option_barcode_scan_mode_continuous">Quét liên tục</string>
-    <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
     <string name="option_isbn_strict">ISBN nghiêm ngặt</string>
-    <!-- ISFDB specific - used in the "book edit / toc" menu -->
     <string name="option_isfdb_menu_populate_toc">Nhan đề phổ biến (chỉ ISFDB)</string>
-    <!-- Whether a book can be updated without user-permission. -->
     <string name="option_toc_list_update_with_main_author">Cập nhật tác giả</string>
     <string name="option_auto_updates">Cho phép cập nhật tự động từ internet.</string>
-    <!-- [VERIFIED] -->
     <string name="option_import">Nhập</string>
     <string name="option_download_set_folder">Đặt thư mục tải xuống</string>
     <string name="option_download_folder">Thư mục tải xuống cục bộ</string>
     <string name="option_download_ebook_format">Tải xuống sách điện tử (%1$s)</string>
-    <!-- Whether the menu/options for a particular 'Sync' site are enabled or hidden. -->
     <string name="option_enable_sync_options">Bật tùy chọn đồng bộ hóa</string>
     <!-- endregion -->
     <!-- region ========== Messages for actions that need confirming first. -->
