@@ -588,8 +588,16 @@
          a wishlist from some websites. -->
     <string name="bookshelf_my_wishlist">Wish List</string>
 
-    <!-- header for a screen where the user can map/assign local bookshelves to remote bookshelves. -->
+    <!--
+          1. Header for a screen where the user can map/assign local bookshelves
+             to remote bookshelves. Used for specific websites where supported.
+          2. Menu option to mass-assign a set of books to one or more bookshelves.
+    -->
     <string name="lbl_assign_bookshelves">Assign bookshelves</string>
+    <!-- Menu option to mass-assign a set of books to a location. -->
+    <string name="lbl_assign_location">Assign a location</string>
+
+
     <string name="lbl_strip_info_bookshelf_assigned_to_wishlist"
             translatable="false">@string/bookshelf_my_wishlist</string>
     <string name="lbl_strip_info_bookshelf_assigned_to_owned_books"
@@ -1602,6 +1610,9 @@
     <!-- Dialog message: assigning a list of books to a set of Bookshelves.
      i.o.w. Bulk move/Add books to Bookshelves. -->
     <string name="info_bulk_set_bookshelves">Select the bookshelves you want to assign to all books listed under the selected node.</string>
+    <!-- Dialog message: assigning a list of books to a Location.
+     i.o.w. Bulk move/Add books to a location. -->
+    <string name="info_bulk_set_location">Select the location you want to assign to all books listed under the selected node.</string>
     <!-- endregion -->
     <!-- region ========== Automatic update book fields from the internet. -->
     <!-- Booklist screen / Book details screen - context/options menu.

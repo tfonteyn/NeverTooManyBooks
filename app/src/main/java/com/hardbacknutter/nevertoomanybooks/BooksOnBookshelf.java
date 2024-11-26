@@ -1135,6 +1135,8 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
             return onRowMenuGroupSetBookshelves(view, rowData);
+        } else if (menuItemId == R.id.MENU_SET_LOCATION) {
+            return onRowMenuGroupSetLocation(view, rowData);
         }
 
         final Context context = view.getContext();
@@ -1204,6 +1206,54 @@ public class BooksOnBookshelf
                                           extras);
         return true;
     }
+
+    /**
+     * Handle {@link R.id#MENU_SET_LOCATION}.
+     *
+     * @param v       View clicked; the anchor for a potential popup menu
+     * @param rowData the row data
+     *
+     * @return {@code true} if handled.
+     */
+    @SuppressWarnings("SameReturnValue")
+    private boolean onRowMenuGroupSetLocation(@NonNull final View v,
+                                              @NonNull final DataHolder rowData) {
+        final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
+        final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
+
+        //noinspection DataFlowIssue
+        final List<Long> bookIds = adapter.getBookIds(nodeKey, level);
+        if (bookIds.isEmpty()) {
+            // We should never get here... flw
+            // Theoretically this can happen as we do set the menu visibility
+            // depending on books being under the node at the adapter position (or not).
+            Snackbar.make(v, getString(R.string.warning_no_matching_book_found),
+                          Snackbar.LENGTH_LONG).show();
+            return true;
+        }
+
+        final String dialogTitle = vm.getRowLabel(this, rowData);
+        final String dialogMessage = getString(R.string.info_bulk_set_location);
+
+        final List<String> all = ServiceLocator.getInstance().getLocationDao().getList();
+        // We simply grab the FIRST book to get the pre-selected location.
+        final String selected = Book.from(bookIds.get(0)).getString(DBKey.LOCATION);
+
+        // We're using the extras to pass the set of book ids
+        final Bundle extras = new Bundle(1);
+        extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
+
+        Location
+        bulkSetLocationLauncher.launch(this, dialogTitle, dialogMessage,
+                                       all, selected,
+                                       extras);
+        return true;
+    }
+
+    private void onBulkSetLocation() {
+
+    }
+
 
     /**
      * Handle {@link R.id#MENU_UPDATE_FROM_INTERNET}.
@@ -1817,6 +1867,11 @@ public class BooksOnBookshelf
                              getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                              R.string.lbl_assign_bookshelves)
                         .setIcon(R.drawable.library_books_24px);
+                    menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                             getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                             R.string.lbl_assign_location)
+                        .setIcon(R.drawable.edit_location_24px);
+
                     menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                              getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                              R.string.menu_update_books)
@@ -2092,6 +2147,11 @@ public class BooksOnBookshelf
                          getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                          R.string.lbl_assign_bookshelves)
                     .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
+
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
@@ -2152,6 +2212,11 @@ public class BooksOnBookshelf
                          getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                          R.string.lbl_assign_bookshelves)
                     .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
+
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
@@ -2243,14 +2308,19 @@ public class BooksOnBookshelf
         private void forLanguage(@NonNull final DataHolder rowData,
                                  @NonNull final Menu menu) {
             if (!rowData.getString(DBKey.LANGUAGE).isEmpty()) {
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
                 menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                          getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
                     .setIcon(R.drawable.edit_24px);
+
+                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                         R.string.lbl_assign_bookshelves)
+                    .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
             }
         }
 
@@ -2292,10 +2362,15 @@ public class BooksOnBookshelf
                          getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
                     .setIcon(R.drawable.edit_24px);
+
                 menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
                          getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                          R.string.lbl_assign_bookshelves)
                     .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
             }
         }
 
@@ -2316,10 +2391,15 @@ public class BooksOnBookshelf
                          getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
                     .setIcon(R.drawable.edit_24px);
+
                 menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
                          getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                          R.string.lbl_assign_bookshelves)
                     .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
             }
         }
 
@@ -2340,10 +2420,15 @@ public class BooksOnBookshelf
                          getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
                     .setIcon(R.drawable.edit_24px);
+
                 menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
                          getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                          R.string.lbl_assign_bookshelves)
                     .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
             }
         }
 
@@ -2364,10 +2449,15 @@ public class BooksOnBookshelf
                          getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
                     .setIcon(R.drawable.edit_24px);
+
                 menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
                          getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                          R.string.lbl_assign_bookshelves)
                     .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
             }
         }
 
