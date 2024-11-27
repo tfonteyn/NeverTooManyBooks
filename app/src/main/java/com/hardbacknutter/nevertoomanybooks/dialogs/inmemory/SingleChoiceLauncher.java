@@ -65,19 +65,20 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
-     * @param fragment     the calling DialogFragment
-     * @param requestKey   to use
-     * @param selectedItem the  <strong>checked</strong> item, can be {@code null} for none.
+     * @param fragment         the calling DialogFragment
+     * @param requestKey       to use
+     * @param currentSelection the <strong>checked</strong> item,
+     *                         can be {@code null} for none selected.
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @Nullable final Long selectedItem) {
+                          @Nullable final Long currentSelection) {
         final Bundle result = new Bundle(1);
-        if (selectedItem != null) {
-            result.putLong(BKEY_CURRENT_SELECTION, selectedItem);
+        if (currentSelection != null) {
+            result.putLong(BKEY_CURRENT_SELECTION, currentSelection);
         }
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }

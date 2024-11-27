@@ -139,12 +139,12 @@ class MultiChoiceDelegate
 
         final Context context = vb.getRoot().getContext();
         final ChecklistRecyclerAdapter<Long> adapter = new ChecklistRecyclerAdapter<>(
-                context, items, itemLabels::get, vm.getSelectedItems(),
+                context, items, itemLabels::get, vm.getCurrentSelection(),
                 (id, checked) -> {
                     if (checked) {
-                        vm.getSelectedItems().add(id);
+                        vm.getCurrentSelection().add(id);
                     } else {
-                        vm.getSelectedItems().remove(id);
+                        vm.getCurrentSelection().remove(id);
                     }
                 });
         vb.itemList.setAdapter(adapter);
@@ -173,7 +173,7 @@ class MultiChoiceDelegate
     private boolean saveChanges() {
         MultiChoiceLauncher.setResult(owner, requestKey,
                                       vm.getPreviousSelection(),
-                                      vm.getSelectedItems(),
+                                      vm.getCurrentSelection(),
                                       vm.getExtras());
         return true;
     }

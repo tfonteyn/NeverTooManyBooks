@@ -74,7 +74,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      * @param requestKey        to use
      * @param previousSelection the selection as it was before the user (potentially)
      *                          made changes
-     * @param selectedItems     the set of <strong>checked</strong> items
+     * @param currentSelection  the set of <strong>checked</strong> items
      * @param extras            the optional Bundle as provided to
      *                          {@link #launch(Context, String, String, List, List, Bundle)}
      *
@@ -84,13 +84,13 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
                           @NonNull final Set<Long> previousSelection,
-                          @NonNull final Set<Long> selectedItems,
+                          @NonNull final Set<Long> currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
         result.putLongArray(BKEY_PREVIOUS_SELECTION,
                             previousSelection.stream().mapToLong(o -> o).toArray());
         result.putLongArray(BKEY_CURRENT_SELECTION,
-                            selectedItems.stream().mapToLong(o -> o).toArray());
+                            currentSelection.stream().mapToLong(o -> o).toArray());
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -109,19 +109,19 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Launch the dialog.
      *
-     * @param context       preferably the {@code Activity}
-     *                      but another UI {@code Context} will also do.
-     * @param dialogTitle   the dialog title
-     * @param dialogMessage optional message to display at the top of the dialog
-     * @param allItems      list of all possible items
-     * @param selectedItems list of item which are currently selected
-     * @param extras        optional Bundle which will be passed back to the result-listener.
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
+     * @param dialogTitle      the dialog title
+     * @param dialogMessage    optional message to display at the top of the dialog
+     * @param allItems         list of all possible items
+     * @param currentSelection list of item which are currently selected
+     * @param extras           optional Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,
-                       @NonNull final List<T> selectedItems,
+                       @NonNull final List<T> currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -138,7 +138,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-        args.putLongArray(BKEY_CURRENT_SELECTION, selectedItems
+        args.putLongArray(BKEY_CURRENT_SELECTION, currentSelection
                 .stream().mapToLong(Entity::getId).toArray());
 
         if (extras != null && !extras.isEmpty()) {
@@ -158,13 +158,13 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
                 .boxed()
                 .collect(Collectors.toSet());
 
-        final Set<Long> selectedIds = Arrays
+        final Set<Long> currentSelection = Arrays
                 .stream(Objects.requireNonNull(result.getLongArray(BKEY_CURRENT_SELECTION),
                                                BKEY_CURRENT_SELECTION))
                 .boxed()
                 .collect(Collectors.toSet());
 
-        resultListener.onResult(previousSelection, selectedIds, result.getBundle(BKEY_EXTRAS));
+        resultListener.onResult(previousSelection, currentSelection, result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface

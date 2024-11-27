@@ -38,7 +38,7 @@ public class MultiChoiceViewModel
         extends ViewModel {
 
     private Set<Long> previousSelection;
-    private Set<Long> selectedItems;
+    private Set<Long> currentSelection;
     @Nullable
     private Bundle extras;
 
@@ -48,13 +48,13 @@ public class MultiChoiceViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (selectedItems == null) {
+        if (currentSelection == null) {
             final long[] items = Objects.requireNonNull(
                     args.getLongArray(MultiChoiceLauncher.BKEY_CURRENT_SELECTION),
                     MultiChoiceLauncher.BKEY_CURRENT_SELECTION);
 
             previousSelection = Arrays.stream(items).boxed().collect(Collectors.toSet());
-            selectedItems = new HashSet<>(previousSelection);
+            currentSelection = new HashSet<>(previousSelection);
 
             extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
         }
@@ -65,9 +65,10 @@ public class MultiChoiceViewModel
         return previousSelection;
     }
 
+    // adding/removing items is done directly on the set.
     @NonNull
-    Set<Long> getSelectedItems() {
-        return selectedItems;
+    Set<Long> getCurrentSelection() {
+        return currentSelection;
     }
 
     @Nullable

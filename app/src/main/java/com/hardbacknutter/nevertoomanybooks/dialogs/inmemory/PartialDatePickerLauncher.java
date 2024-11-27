@@ -67,21 +67,21 @@ public class PartialDatePickerLauncher
     /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
-     * @param fragment   the calling DialogFragment
-     * @param requestKey to use
-     * @param date       the picked date
-     * @param extras     the optional Bundle as provided to
-     *                   {@link #launch(Context, String, String, Bundle)}
+     * @param fragment         the calling DialogFragment
+     * @param requestKey       to use
+     * @param currentSelection the picked date
+     * @param extras           the optional Bundle as provided to
+     *                         {@link #launch(Context, String, String, Bundle)}
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final PartialDate date,
+                          @NonNull final PartialDate currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(4);
-        result.putParcelable(BKEY_CURRENT_SELECTION, date);
+        result.putParcelable(BKEY_CURRENT_SELECTION, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -100,15 +100,15 @@ public class PartialDatePickerLauncher
     /**
      * Launch the dialog.
      *
-     * @param context      preferably the {@code Activity}
-     *                     but another UI {@code Context} will also do.
-     * @param dialogTitle  the dialog title
-     * @param currentValue the current value of the field
-     * @param extras       optional Bundle which will be passed back to the result-listener.
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
+     * @param dialogTitle      the dialog title
+     * @param currentSelection the current value of the field
+     * @param extras           optional Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
-                       @Nullable final String currentValue,
+                       @Nullable final String currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -116,7 +116,7 @@ public class PartialDatePickerLauncher
         final Bundle args = new Bundle(4);
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
 
-        args.putString(BKEY_CURRENT_SELECTION, currentValue);
+        args.putString(BKEY_CURRENT_SELECTION, currentSelection);
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);

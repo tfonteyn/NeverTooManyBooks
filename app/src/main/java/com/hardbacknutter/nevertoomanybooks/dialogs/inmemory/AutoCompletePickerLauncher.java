@@ -68,7 +68,7 @@ public class AutoCompletePickerLauncher
      * @param requestKey        to use
      * @param previousSelection the selection as it was before the user (potentially)
      *                          made changes
-     * @param selectedItem      item currently selected
+     * @param currentSelection  item currently selected
      * @param extras            the optional Bundle as provided to
      *                          {@link #launch(Context, String, String, List, String, Bundle)}
      *
@@ -78,11 +78,11 @@ public class AutoCompletePickerLauncher
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
                           @NonNull final String previousSelection,
-                          @NonNull final String selectedItem,
+                          @NonNull final String currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
         result.putString(BKEY_PREVIOUS_SELECTION, previousSelection);
-        result.putString(BKEY_CURRENT_SELECTION, selectedItem);
+        result.putString(BKEY_CURRENT_SELECTION, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -101,19 +101,19 @@ public class AutoCompletePickerLauncher
     /**
      * Launch the dialog.
      *
-     * @param context       preferably the {@code Activity}
-     *                      but another UI {@code Context} will also do.
-     * @param dialogTitle   the dialog title
-     * @param dialogMessage optional message to display at the top of the dialog
-     * @param allItems      list of all possible items
-     * @param selectedItem  item currently selected
-     * @param extras        optional Bundle which will be passed back to the result-listener.
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
+     * @param dialogTitle      the dialog title
+     * @param dialogMessage    optional message to display at the top of the dialog
+     * @param allItems         list of all possible items
+     * @param currentSelection item currently selected
+     * @param extras           optional Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<String> allItems,
-                       @NonNull final String selectedItem,
+                       @NonNull final String currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -126,7 +126,7 @@ public class AutoCompletePickerLauncher
         }
 
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems.toArray(String[]::new));
-        args.putString(BKEY_CURRENT_SELECTION, selectedItem);
+        args.putString(BKEY_CURRENT_SELECTION, currentSelection);
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);
