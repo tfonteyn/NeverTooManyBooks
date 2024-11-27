@@ -30,9 +30,12 @@ import androidx.lifecycle.ViewModel;
 public class SingleChoiceViewModel
         extends ViewModel {
 
-    /** The selected item. */
     @Nullable
-    private Long selectedItem;
+    private Long previousSelection;
+    @Nullable
+    private Long currentSelection;
+    @Nullable
+    private Bundle extras;
 
     private boolean initDone;
 
@@ -44,18 +47,32 @@ public class SingleChoiceViewModel
     void init(@NonNull final Bundle args) {
         if (!initDone) {
             initDone = true;
+
             if (args.containsKey(SingleChoiceLauncher.BKEY_CURRENT_SELECTION)) {
-                selectedItem = args.getLong(SingleChoiceLauncher.BKEY_CURRENT_SELECTION);
+                currentSelection = args.getLong(SingleChoiceLauncher.BKEY_CURRENT_SELECTION);
             }
+            previousSelection = currentSelection;
+
+            extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
         }
     }
 
     @Nullable
-    Long getSelectedItem() {
-        return selectedItem;
+    Long getPreviousSelection() {
+        return previousSelection;
     }
 
-    void setSelectedItem(@Nullable final Long selectedItem) {
-        this.selectedItem = selectedItem;
+    @Nullable
+    Long getCurrentSelection() {
+        return currentSelection;
+    }
+
+    void setCurrentSelection(@Nullable final Long currentSelection) {
+        this.currentSelection = currentSelection;
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
     }
 }

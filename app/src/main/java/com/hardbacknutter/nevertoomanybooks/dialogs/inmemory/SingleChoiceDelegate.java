@@ -91,7 +91,7 @@ class SingleChoiceDelegate {
     }
 
     /**
-     * For use as a {@link SingleChoiceDialogFragment}.
+     * There is no toolbar; the dialog or bottomsheet will set the title directly.
      *
      * @return the title for the hosting dialog.
      */
@@ -112,11 +112,15 @@ class SingleChoiceDelegate {
 
         final Context context = vb.getRoot().getContext();
         final RadioGroupRecyclerAdapter<Long> adapter = new RadioGroupRecyclerAdapter<>(
-                context, itemIds, itemLabels::get, vm.getSelectedItem(), vm::setSelectedItem);
+                context, itemIds, itemLabels::get, vm.getCurrentSelection(),
+                vm::setCurrentSelection);
         vb.itemList.setAdapter(adapter);
     }
 
     void saveChanges() {
-        SingleChoiceLauncher.setResult(owner, requestKey, vm.getSelectedItem());
+        SingleChoiceLauncher.setResult(owner, requestKey,
+                                       vm.getPreviousSelection(),
+                                       vm.getCurrentSelection(),
+                                       vm.getExtras());
     }
 }

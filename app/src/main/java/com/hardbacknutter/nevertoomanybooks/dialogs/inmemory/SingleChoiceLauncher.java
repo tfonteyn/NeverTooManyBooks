@@ -41,7 +41,9 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
+    static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
     static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
+    static final String BKEY_EXTRAS = TAG + ":extras";
 
     static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
     static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
@@ -65,20 +67,33 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
-     * @param fragment         the calling DialogFragment
-     * @param requestKey       to use
-     * @param currentSelection the <strong>checked</strong> item,
-     *                         can be {@code null} for none selected.
+     * @param fragment          the calling DialogFragment
+     * @param requestKey        to use
+     * @param previousSelection the selection as it was before the user (potentially)
+     *                          made changes
+     *                          can be {@code null} for none selected.
+     * @param currentSelection  the <strong>checked</strong> item,
+     *                          can be {@code null} for none selected.
+     * @param extras            the optional Bundle as provided to
+     *                          {@link #launch(Context, String, String, List, Parcelable, Bundle)}
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @Nullable final Long currentSelection) {
-        final Bundle result = new Bundle(1);
+                          @Nullable final Long previousSelection,
+                          @Nullable final Long currentSelection,
+                          @Nullable final Bundle extras) {
+        final Bundle result = new Bundle(3);
+        if (previousSelection != null) {
+            result.putLong(BKEY_PREVIOUS_SELECTION, previousSelection);
+        }
         if (currentSelection != null) {
             result.putLong(BKEY_CURRENT_SELECTION, currentSelection);
+        }
+        if (extras != null && !extras.isEmpty()) {
+            result.putBundle(BKEY_EXTRAS, extras);
         }
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -95,31 +110,42 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Launch the dialog.
      *
-     * @param context      preferably the {@code Activity}
-     *                     but another UI {@code Context} will also do.
-     * @param dialogTitle  the dialog title
-     * @param allItems     list of all possible items
-     * @param selectedItem item which is currently selected; can be {@code null} for none
+     * @param context          preferably the {@code Activity}
+     *                         but another UI {@code Context} will also do.
+     * @param dialogTitle      the dialog title
+     * @param dialogMessage    optional message to display at the top of the dialog
+     * @param allItems         list of all possible items
+     * @param currentSelection item which is currently selected; can be {@code null} for none
+     * @param extras           optional Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
+                       @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,
-                       @Nullable final T selectedItem) {
+                       @Nullable final T currentSelection,
+                       @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Bundle args = new Bundle(5);
+        final Bundle args = new Bundle();
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
+
+        if (dialogMessage != null) {
+            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
+        }
 
         args.putLongArray(BKEY_ITEM_LIST_ID, allItems
                 .stream().mapToLong(Entity::getId).toArray());
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-        if (selectedItem != null) {
-            args.putLong(BKEY_CURRENT_SELECTION, selectedItem.getId());
+        if (currentSelection != null) {
+            args.putLong(BKEY_CURRENT_SELECTION, currentSelection.getId());
         }
 
+        if (extras != null && !extras.isEmpty()) {
+            args.putBundle(BKEY_EXTRAS, extras);
+        }
         showDialog(context, args);
     }
 
@@ -128,7 +154,13 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(result.getLong(BKEY_CURRENT_SELECTION));
+        final long previousSelection = result.getLong(BKEY_PREVIOUS_SELECTION, -1);
+        final long currentSelection = result.getLong(BKEY_CURRENT_SELECTION, -1);
+
+        resultListener.onResult(
+                previousSelection == -1 ? null : previousSelection,
+                currentSelection == -1 ? null : currentSelection,
+                result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface
@@ -136,8 +168,16 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
         /**
          * Callback handler with the user's selection.
          *
-         * @param currentSelection the <strong>checked</strong> item, can be {@code null} for none.
+         * @param previousSelection the selection as it was before the user (potentially)
+         *                          made changes
+         *                          can be {@code null} for none.
+         * @param currentSelection  the <strong>checked</strong> item,
+         *                          can be {@code null} for none.
+         * @param extras            the optional Bundle as provided to
+         *                          {@link #launch(Context, String, String, List, Parcelable, Bundle)}
          */
-        void onResult(@Nullable Long currentSelection);
+        void onResult(@Nullable Long previousSelection,
+                      @Nullable Long currentSelection,
+                      @Nullable Bundle extras);
     }
 }
