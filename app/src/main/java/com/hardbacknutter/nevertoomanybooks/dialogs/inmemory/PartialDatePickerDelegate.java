@@ -45,7 +45,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -282,9 +281,7 @@ class PartialDatePickerDelegate
 
         } else {
             PartialDatePickerLauncher.setResult(owner, requestKey,
-                                                new PartialDate(vm.getYear(),
-                                                                vm.getMonth(),
-                                                                vm.getDay()),
+                                                vm.getCurrentValue(),
                                                 vm.getExtras());
             return true;
         }

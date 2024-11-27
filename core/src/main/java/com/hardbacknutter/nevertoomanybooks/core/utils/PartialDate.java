@@ -38,6 +38,7 @@ import java.util.StringJoiner;
 
 /**
  * Provides storage for an partial/incomplete date.
+ * <strong>Immutable</strong>.
  * A partial date can consist of just a year, a year+month, or year+month+day value.
  * <p>
  * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
@@ -141,6 +142,9 @@ public class PartialDate
         }
     }
 
+    /**
+     * Internal 'reset' to recover after parsing issues.
+     */
     private void unset() {
         localDate = LocalDate.of(1, 1, 1);
         yearSet = false;

@@ -28,8 +28,14 @@ import androidx.lifecycle.ViewModel;
 
 import java.time.LocalDate;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 
+/**
+ * We're handling the current value as separate year/month/day components instead
+ * of the {@link com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate} they represent.
+ * The latter is immutable; we don't want to keep recreating a new object all the time.
+ */
 @SuppressWarnings("WeakerAccess")
 public class PartialDatePickerViewModel
         extends ViewModel {
@@ -62,11 +68,6 @@ public class PartialDatePickerViewModel
         }
     }
 
-    @Nullable
-    Bundle getExtras() {
-        return extras;
-    }
-
     int getYear() {
         return year;
     }
@@ -92,11 +93,24 @@ public class PartialDatePickerViewModel
     }
 
     /**
+     * Create and get the output.
+     *
+     * @return current value
+     */
+    @NonNull
+    PartialDate getCurrentValue() {
+        return new PartialDate(year, month, day);
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
+    }
+
+    /**
      * Parse the input ISO date string into the individual components.
      * <p>
-     * Note we don't use {@link FullDateParser}
-     * as we the current implementation always returns full dates.
-     * Here, we explicitly need to support partial dates.
+     * TODO: Note we don't use {@link PartialDateParser}... maybe we should...
      * <p>
      * Allowed formats:
      * <ul>
