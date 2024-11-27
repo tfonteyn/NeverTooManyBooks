@@ -831,4 +831,6 @@
     <string name="lbl_capitalize_none">无更改</string>
     <string name="lbl_capitalize_words">单词的首字符</string>
     <string name="lbl_capitalize_full">大写整个书名</string>
+    <string name="lbl_assign_location">分配位置</string>
+    <string name="info_bulk_set_location">选择你要把所选节点下列举的所有书籍分配到的位置。</string>
 </resources>
