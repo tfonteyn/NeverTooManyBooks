@@ -41,6 +41,8 @@ public class PartialDatePickerLauncher
 
     private static final String TAG = "PDatePickerLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
+    static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
+
     /**
      * The selected date.
      * a standard sql style date string, must/will be valid.
@@ -71,7 +73,7 @@ public class PartialDatePickerLauncher
      * @param requestKey       to use
      * @param currentSelection the picked date
      * @param extras           the optional Bundle as provided to
-     *                         {@link #launch(Context, String, String, Bundle)}
+     *                         {@link #launch(Context, String, String, String, Bundle)}
      *
      * @see #onFragmentResult(String, Bundle)
      */
@@ -103,11 +105,13 @@ public class PartialDatePickerLauncher
      * @param context          preferably the {@code Activity}
      *                         but another UI {@code Context} will also do.
      * @param dialogTitle      the dialog title
+     * @param dialogMessage    optional message to display at the top of the dialog
      * @param currentSelection the current value of the field
      * @param extras           optional Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
+                       @Nullable final String dialogMessage,
                        @Nullable final String currentSelection,
                        @Nullable final Bundle extras) {
 
@@ -115,6 +119,10 @@ public class PartialDatePickerLauncher
 
         final Bundle args = new Bundle(4);
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
+
+        if (dialogMessage != null) {
+            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
+        }
 
         args.putString(BKEY_CURRENT_SELECTION, currentSelection);
 
@@ -142,7 +150,7 @@ public class PartialDatePickerLauncher
          *
          * @param currentSelection the picked date
          * @param extras           the optional Bundle as provided to
-         *                         {@link #launch(Context, String, String, Bundle)}
+         *                         {@link #launch(Context, String, String, String, Bundle)}
          */
         void onResult(@NonNull PartialDate currentSelection,
                       @Nullable Bundle extras);

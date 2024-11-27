@@ -83,6 +83,9 @@ class PartialDatePickerDelegate
     private final String requestKey;
     @NonNull
     private final String dialogTitle;
+    @Nullable
+    private final String dialogMessage;
+
     private PartialDatePickerViewModel vm;
     private DialogPartialDatePickerContentBinding vb;
     @Nullable
@@ -122,6 +125,7 @@ class PartialDatePickerDelegate
                                             DialogLauncher.BKEY_REQUEST_KEY);
         dialogTitle = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_TITLE,
                                      owner.getString(R.string.action_edit));
+        dialogMessage = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_MESSAGE, null);
 
         vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
         vm.init(args);
@@ -221,6 +225,13 @@ class PartialDatePickerDelegate
             }
             initToolbar(owner, dialogType, toolbar);
             toolbar.setTitle(dialogTitle);
+        }
+
+        if (dialogMessage != null && !dialogMessage.isEmpty()) {
+            vb.message.setText(dialogMessage);
+            vb.message.setVisibility(View.VISIBLE);
+        } else {
+            vb.message.setVisibility(View.GONE);
         }
 
         // 0: 'not set'

@@ -347,6 +347,7 @@ public abstract class EditBookBaseFragment
                 partialDatePickerLauncher.launch(
                         getActivity(),
                         getString(pickerTitleId),
+                        null,
                         DateUtils.todayIfNone(field.getValue(), false),
                         extras);
             });
