@@ -29,4 +29,13 @@
     <string name="pe_ui_theme_colors_dynamic">Dynamic Colours</string>
     <string name="pt_search_reformat_color">Standardize “book colour” names</string>
     <string name="pt_ui_theme_colors">Theme Colours</string>
+
+    <string name="site_description_dutch_catalogue">Dutch and more; Catalogue</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Dutch and more; Catalogue; European Comics</string>
+    <string name="site_description_english_catalogue">English and more; Catalogue</string>
+    <string name="site_description_german_catalogue">German; Catalogue</string>
+    <string name="site_description_chinese_catalogue">Chinese; Catalogue</string>
+    <string name="site_description_english_catalogue_FSF">English and more; Catalogue; Fantasy and Science Fiction</string>
+    <string name="site_description_french_catalogue_eu_comics">French and more; Catalogue; European Comics</string>
+
 </resources>
