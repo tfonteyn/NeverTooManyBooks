@@ -483,14 +483,14 @@ public class BooksOnBookshelf
 
         bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(RK_SET_BOOKSHELVES);
         bulkSetBookshelvesLauncher.setResultListener(
-                (previousSelection, selectedIds, extras)
-                        -> vm.setBookshelves(this, selectedIds, extras));
+                (previousSelection, currentSelection, extras)
+                        -> vm.setBookshelves(this, currentSelection, extras));
         bulkSetBookshelvesLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bulkSetLocationLauncher = new AutoCompletePickerLauncher(RK_SET_LOCATION);
         bulkSetLocationLauncher.setResultListener(
-                (previousSelection, selectedItem, extras)
-                        -> vm.setLocation(this, selectedItem, extras));
+                (previousSelection, currentSelection, extras)
+                        -> vm.setLocation(this, currentSelection, extras));
         bulkSetLocationLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
@@ -1206,14 +1206,14 @@ public class BooksOnBookshelf
 
         final List<Bookshelf> allShelves = ServiceLocator.getInstance().getBookshelfDao().getAll();
         // We simply grab the FIRST book to get the pre-selected bookshelves.
-        final List<Bookshelf> selected = Book.from(bookIds.get(0)).getBookshelves();
+        final List<Bookshelf> bookshelves = Book.from(bookIds.get(0)).getBookshelves();
 
         // We're using the extras to pass the set of book ids
         final Bundle extras = new Bundle(1);
         extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
 
         bulkSetBookshelvesLauncher.launch(this, dialogTitle, dialogMessage,
-                                          allShelves, selected,
+                                          allShelves, bookshelves,
                                           extras);
         return true;
     }
@@ -1246,16 +1246,16 @@ public class BooksOnBookshelf
         final String dialogTitle = vm.getRowLabel(this, rowData);
         final String dialogMessage = getString(R.string.info_bulk_set_location);
 
-        final List<String> all = ServiceLocator.getInstance().getLocationDao().getList();
+        final List<String> allLocations = ServiceLocator.getInstance().getLocationDao().getList();
         // We simply grab the FIRST book to get the pre-selected location.
-        final String selected = Book.from(bookIds.get(0)).getString(DBKey.LOCATION);
+        final String currentLocation = Book.from(bookIds.get(0)).getString(DBKey.LOCATION);
 
         // We're using the extras to pass the set of book ids
         final Bundle extras = new Bundle(1);
         extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
 
         bulkSetLocationLauncher.launch(this, dialogTitle, dialogMessage,
-                                       all, selected,
+                                       allLocations, currentLocation,
                                        extras);
         return true;
     }

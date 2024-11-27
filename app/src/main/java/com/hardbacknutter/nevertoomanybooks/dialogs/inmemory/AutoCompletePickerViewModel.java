@@ -32,7 +32,7 @@ public class AutoCompletePickerViewModel
         extends ViewModel {
 
     private String previousSelection;
-    private String selectedItem;
+    private String currentSelection;
     @Nullable
     private Bundle extras;
 
@@ -42,9 +42,10 @@ public class AutoCompletePickerViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (selectedItem == null) {
-            selectedItem = args.getString(AutoCompletePickerLauncher.BKEY_CURRENT_SELECTION, "");
-            previousSelection = selectedItem;
+        if (currentSelection == null) {
+            currentSelection = args.getString(AutoCompletePickerLauncher.BKEY_CURRENT_SELECTION,
+                                              "");
+            previousSelection = currentSelection;
 
             extras = args.getBundle(AutoCompletePickerLauncher.BKEY_EXTRAS);
         }
@@ -56,12 +57,12 @@ public class AutoCompletePickerViewModel
     }
 
     @NonNull
-    String getSelectedItem() {
-        return selectedItem;
+    String getCurrentSelection() {
+        return currentSelection;
     }
 
-    void setSelectedItem(@NonNull final String selectedItem) {
-        this.selectedItem = selectedItem;
+    void setCurrentSelection(@NonNull final String currentSelection) {
+        this.currentSelection = currentSelection;
     }
 
     @Nullable

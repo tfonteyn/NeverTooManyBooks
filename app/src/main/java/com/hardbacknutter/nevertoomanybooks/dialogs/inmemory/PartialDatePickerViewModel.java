@@ -98,7 +98,7 @@ public class PartialDatePickerViewModel
      * @return current value
      */
     @NonNull
-    PartialDate getCurrentValue() {
+    PartialDate getCurrentSelection() {
         return new PartialDate(year, month, day);
     }
 

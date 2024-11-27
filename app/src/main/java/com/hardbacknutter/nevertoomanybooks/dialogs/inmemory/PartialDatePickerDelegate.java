@@ -281,7 +281,7 @@ class PartialDatePickerDelegate
 
         } else {
             PartialDatePickerLauncher.setResult(owner, requestKey,
-                                                vm.getCurrentValue(),
+                                                vm.getCurrentSelection(),
                                                 vm.getExtras());
             return true;
         }

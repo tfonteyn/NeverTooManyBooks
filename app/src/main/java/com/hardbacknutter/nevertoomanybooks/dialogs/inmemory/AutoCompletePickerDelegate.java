@@ -136,7 +136,7 @@ public class AutoCompletePickerDelegate
                 ExtArrayAdapter.FilterType.Diacritic, items);
         vb.editString.setAdapter(adapter);
         // set the initial location == the current location of the first book
-        vb.editString.setText(vm.getSelectedItem());
+        vb.editString.setText(vm.getCurrentSelection());
         vb.editString.requestFocus();
     }
 
@@ -170,12 +170,12 @@ public class AutoCompletePickerDelegate
 
         AutoCompletePickerLauncher.setResult(owner, requestKey,
                                              vm.getPreviousSelection(),
-                                             vm.getSelectedItem(),
+                                             vm.getCurrentSelection(),
                                              vm.getExtras());
         return true;
     }
 
     private void viewToModel() {
-        vm.setSelectedItem(vb.editString.getText().toString().trim());
+        vm.setCurrentSelection(vb.editString.getText().toString().trim());
     }
 }

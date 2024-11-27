@@ -246,21 +246,20 @@ public class EditBookFieldsFragment
     }
 
     private void onBookshelvesSelection(@NonNull final Set<Long> previousSelection,
-                                        @NonNull final Set<Long> selectedIds,
+                                        @NonNull final Set<Long> bookshelfIds,
                                         @Nullable final Bundle extras) {
-        if (previousSelection.equals(selectedIds)) {
+        if (previousSelection.equals(bookshelfIds)) {
             // No changes made
             return;
         }
 
-        final Field<List<Bookshelf>, TextView> field =
-                vm.requireField(R.id.bookshelves);
+        final Field<List<Bookshelf>, TextView> field = vm.requireField(R.id.bookshelves);
         final List<Bookshelf> previous = field.getValue();
 
         final List<Bookshelf> selected =
                 vm.getAllBookshelves()
                   .stream()
-                  .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
+                  .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
                   .collect(Collectors.toList());
 
         // Update BOTH the book and the field
