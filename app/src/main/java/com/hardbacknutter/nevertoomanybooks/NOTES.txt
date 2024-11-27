@@ -38,6 +38,8 @@ FIXES:
       This happened when the 'old' device had the covers on secondary/SDCARD storage
       while the 'new' device does not have secondary storage.
 - improve some author parsing issues with OpenLibrary
+- editing a books bookshelf list when you have many shelves will no longer push the ok/cancel
+  buttons offscreen
 
 REMOVED:
 
