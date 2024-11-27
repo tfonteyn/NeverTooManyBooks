@@ -234,8 +234,8 @@
     <string name="X_lbl_general">一般</string>
     <string name="X_lbl_image">圖片</string>
     <string name="X_lbl_system">(系統)</string>
-    <string name="X_whichImageCaptureApplication">使用以下應用程式擷取圖片：</string>
-    <string name="X_whichSendToApplication">透過以下應用程式傳送：</string>
+    <string name="X_whichImageCaptureApplication">使用以下應用程式擷取圖片</string>
+    <string name="X_whichSendToApplication">透過以下應用程式傳送</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="action_add">新增</string>
