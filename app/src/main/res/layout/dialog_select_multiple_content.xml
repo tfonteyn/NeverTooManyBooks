@@ -24,7 +24,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_content"
-    style="@style/Dialog.Content">
+    style="@style/Dialog.Content"
+    android:minHeight="@dimen/floating_dialog_recycler_view_min_height">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
         android:id="@+id/drag_handle"
