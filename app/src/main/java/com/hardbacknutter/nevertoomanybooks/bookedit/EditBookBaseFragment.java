@@ -109,7 +109,7 @@ public abstract class EditBookBaseFragment
 
         partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL);
         partialDatePickerLauncher.setResultListener(
-                (date, extras) -> {
+                (currentSelection, extras) -> {
                     if (extras == null) {
                         throw new IllegalArgumentException("No extras?");
                     }
@@ -117,7 +117,7 @@ public abstract class EditBookBaseFragment
                     if (fieldId == -1) {
                         throw new IllegalArgumentException("No fieldId?");
                     }
-                    onDateSet(fieldId, date.getIsoString());
+                    onDateSet(fieldId, currentSelection.getIsoString());
                 });
         partialDatePickerLauncher.registerForFragmentResult(fm, this);
     }
