@@ -65,6 +65,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *           {@code style="@style/Dialog.Body.RecyclerView"}<br>
  *           {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
+ *     <li>add to the button_panel_layout:<br>
+ *           {@code app:layout_constraintBottom_toBottomOf="parent"}
+ *     </li>
  *     <li>
  *         Special cases<br>
  *         Call {@link #adjustWindowSize(RecyclerView, float)}
@@ -254,14 +257,15 @@ public abstract class FlexClassicDialogFragment
      * <p>
      * <strong>MUST</strong> be called as the last thing from {@link #onViewCreated(View, Bundle)}.
      * <p>
-     * URGENT: RecyclerView in a dialog is cursed... we need to redo this whole floating
-     *  dialog code
+     * Depending on the screen width/height this method may adjust:
+     * <ul>
+     *     <li>Dialog Window width/height</li>
+     *     <li>RecyclerView height</li>
+     * </ul>
      *
      * @param recyclerView optional RecyclerView to adjust the height of
      * @param heightRatio  the ratio to apply to the screen height;
-     *                     The resulting value is used to set the RecyclerView absolute height.
-     *                     2024-11-27: currently only applied when
-     *                     screenSize.getHeight() == ScreenSize.Value.Expanded
+     *                     with the resulting value used to set the RecyclerView absolute height.
      */
     protected void adjustWindowSize(@Nullable final RecyclerView recyclerView,
                                     final float heightRatio) {

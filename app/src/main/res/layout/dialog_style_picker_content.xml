@@ -58,6 +58,7 @@
         tools:listitem="@layout/row_choice_single"
         />
 
+    <!-- RecyclerView above =>  layout_constraintBottom_toBottomOf="parent" -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
         style="@style/ButtonPanel.Container"
