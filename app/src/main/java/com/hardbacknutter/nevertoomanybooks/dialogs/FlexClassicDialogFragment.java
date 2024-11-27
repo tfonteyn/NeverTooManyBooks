@@ -260,6 +260,8 @@ public abstract class FlexClassicDialogFragment
      * @param recyclerView optional RecyclerView to adjust the height of
      * @param heightRatio  the ratio to apply to the screen height;
      *                     The resulting value is used to set the RecyclerView absolute height.
+     *                     2024-11-27: currently only applied when
+     *                     screenSize.getHeight() == ScreenSize.Value.Expanded
      */
     protected void adjustWindowSize(@Nullable final RecyclerView recyclerView,
                                     final float heightRatio) {
