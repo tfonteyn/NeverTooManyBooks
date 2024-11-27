@@ -759,7 +759,7 @@
     <string name="ps_sort_author_name_family_first">Ordinamento in base al nome della famiglia,\nes. «Alighieri, Dante»</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Assegnare gli scaffali</string>
-    <string name="site_description_dutch_comics_shopping">Olandese e altro; Fumetti; Shopping</string>
+    <string name="site_description_dutch_comics_shopping">Olandese e altro; Shopping; Fumetti</string>
     <string name="lbl_author_type_storyboard">Scénarimage</string>
     <string name="lbl_author_type_lettering">Lettering</string>
     <string name="lbl_percentage">Percentuale</string>

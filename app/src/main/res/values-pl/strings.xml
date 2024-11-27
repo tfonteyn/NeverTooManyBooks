@@ -779,7 +779,7 @@
     <string name="ps_sort_author_name_family_first">Sortuj według nazwiska w pierwszej kolejności,\nnp. „Lem, Stanisław”</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Przypisywanie półek na książki</string>
-    <string name="site_description_dutch_comics_shopping">Niderlandzki i więcej; Komiksy; Zakupy</string>
+    <string name="site_description_dutch_comics_shopping">Niderlandzki i więcej; Zakupy; Komiksy</string>
     <string name="lbl_author_type_storyboard">Scenorys</string>
     <string name="lbl_author_type_lettering">Lettering</string>
     <string name="lbl_percentage">Procent</string>

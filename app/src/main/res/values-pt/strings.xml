@@ -785,7 +785,7 @@
     <string name="ps_sort_author_name_family_first">Ordenar primeiro pelo apelido,\npor exemplo, “de Camões, Luís”</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Atribuir estantes de livros</string>
-    <string name="site_description_dutch_comics_shopping">Holandês e mais; Banda desenhada; Compras</string>
+    <string name="site_description_dutch_comics_shopping">Holandês e mais; Compras; Banda desenhada</string>
     <string name="lbl_author_type_storyboard">Guião</string>
     <string name="lbl_percentage">Percentagem</string>
     <string name="lbl_current_page">Página atual</string>

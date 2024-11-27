@@ -775,7 +775,7 @@
     <string name="ps_sort_author_name_family_first">Řazení podle příjmení na prvním místě,\ntj. „Čapek, Karel“</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Přiřazení polic na knihy</string>
-    <string name="site_description_dutch_comics_shopping">Nizozemština a další; Komiks; Nakupování</string>
+    <string name="site_description_dutch_comics_shopping">Nizozemština a další; Nakupování; Komiks</string>
     <string name="lbl_author_type_storyboard">Scénáře</string>
     <string name="lbl_author_type_lettering">Písmo</string>
     <string name="lbl_percentage">Procento</string>

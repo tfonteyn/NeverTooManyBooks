@@ -479,7 +479,7 @@
     <string name="lbl_condition_good">好</string>
     <string name="confirm_create_real_author">“%1$s”尚不存在。要创建吗？</string>
     <string name="action_clear_queue">清空队列</string>
-    <string name="site_description_dutch_comics_shopping">荷兰语及其他；漫画；商店</string>
+    <string name="site_description_dutch_comics_shopping">荷兰语及其他；商店；漫画</string>
     <string name="site_description_english_catalogue_FSF">英语及其他；目录；奇幻与科幻小说</string>
     <string name="site_description_french_catalogue_eu_comics">法语及其他；目录；欧洲漫画</string>
     <string name="site_description_general_shopping">通用；商店</string>

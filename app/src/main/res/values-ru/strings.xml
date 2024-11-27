@@ -777,7 +777,7 @@
     <string name="ps_sort_author_name_family_first">Сортировка по фамилии в первую очередь,\nнапример «Достоевский, Фёдор»</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Назначение книжных полок</string>
-    <string name="site_description_dutch_comics_shopping">Голландский и не только; комиксы; Покупки</string>
+    <string name="site_description_dutch_comics_shopping">Голландский и не только; Покупки; комиксы</string>
     <string name="lbl_author_type_storyboard">Раскадровка</string>
     <string name="lbl_author_type_lettering">Надпись</string>
     <string name="lbl_percentage">Процент</string>
