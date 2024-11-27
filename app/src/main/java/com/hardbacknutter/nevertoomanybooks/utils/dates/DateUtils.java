@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -32,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
+import java.util.Objects;
 
 public final class DateUtils {
 
@@ -91,6 +93,24 @@ public final class DateUtils {
             return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
                                     .withLocale(userLocale)
                                     .format(localDateTime);
+        }
+    }
+
+    /**
+     * Normalize the given date string.
+     *
+     * @param dateStr     to normalize
+     * @param todayIfNone {@code true} if we should use 'today' if the field was empty.
+     *
+     * @return date string
+     */
+    @NonNull
+    public static String todayIfNone(@Nullable final String dateStr,
+                                     final boolean todayIfNone) {
+        if (todayIfNone && (dateStr == null || dateStr.isEmpty())) {
+            return LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        } else {
+            return Objects.requireNonNullElse(dateStr, "");
         }
     }
 }

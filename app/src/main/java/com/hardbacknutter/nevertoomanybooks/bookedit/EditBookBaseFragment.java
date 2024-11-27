@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 
 public abstract class EditBookBaseFragment
         extends BaseFragment
@@ -70,7 +71,7 @@ public abstract class EditBookBaseFragment
 
     private static final String TAG = "EditBookBaseFragment";
     private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
-
+    private static final String BKEY_DATE_PICKER_FIELD_ID = TAG + ":pd:fieldId";
     /** The view model. */
     EditBookViewModel vm;
 
@@ -108,7 +109,16 @@ public abstract class EditBookBaseFragment
 
         partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL);
         partialDatePickerLauncher.setResultListener(
-                (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
+                (date, extras) -> {
+                    if (extras == null) {
+                        throw new IllegalArgumentException("No extras?");
+                    }
+                    final int fieldId = extras.getInt(BKEY_DATE_PICKER_FIELD_ID, -1);
+                    if (fieldId == -1) {
+                        throw new IllegalArgumentException("No fieldId?");
+                    }
+                    onDateSet(fieldId, date.getIsoString());
+                });
         partialDatePickerLauncher.registerForFragmentResult(fm, this);
     }
 
@@ -329,11 +339,17 @@ public abstract class EditBookBaseFragment
                                       @IdRes final int fieldId) {
         final Field<String, TextView> field = vm.requireField(fieldId);
         if (field.isUsed()) {
-            //noinspection DataFlowIssue
-            field.requireView().setOnClickListener(v -> partialDatePickerLauncher
-                    .launch(getActivity(), getString(pickerTitleId),
-                            field.getFieldViewId(),
-                            field.getValue(), false));
+            field.requireView().setOnClickListener(v -> {
+                // We're using the extras to pass the field id
+                final Bundle extras = new Bundle(1);
+                extras.putInt(BKEY_DATE_PICKER_FIELD_ID, field.getFieldViewId());
+                //noinspection DataFlowIssue
+                partialDatePickerLauncher.launch(
+                        getActivity(),
+                        getString(pickerTitleId),
+                        DateUtils.todayIfNone(field.getValue(), false),
+                        extras);
+            });
         }
     }
 

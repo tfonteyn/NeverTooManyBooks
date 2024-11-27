@@ -23,18 +23,19 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
+/**
+ * IMPORTANT: The <strong>input</strong> current-value/selection is a {@code String}.
+ * The <strong>output</strong> for the same is a {@link PartialDate}.
+ */
 public class PartialDatePickerLauncher
         extends DialogLauncher {
 
@@ -45,8 +46,7 @@ public class PartialDatePickerLauncher
      * a standard sql style date string, must/will be valid.
      */
     static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
-    /** The destination view id hosting the date. */
-    static final String BKEY_FIELD_ID = TAG + ":fieldId";
+    static final String BKEY_EXTRAS = TAG + ":extras";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -69,20 +69,22 @@ public class PartialDatePickerLauncher
      *
      * @param fragment   the calling DialogFragment
      * @param requestKey to use
-     * @param fieldId    this destination field id
      * @param date       the picked date
+     * @param extras     the optional Bundle as provided to
+     *                   {@link #launch(Context, String, String, Bundle)}
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @IdRes final int fieldId,
-                          @NonNull final PartialDate date) {
+                          @NonNull final PartialDate date,
+                          @Nullable final Bundle extras) {
         final Bundle result = new Bundle(4);
-        result.putInt(BKEY_FIELD_ID, fieldId);
         result.putParcelable(BKEY_CURRENT_SELECTION, date);
-
+        if (extras != null && !extras.isEmpty()) {
+            result.putBundle(BKEY_EXTRAS, extras);
+        }
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
@@ -101,32 +103,24 @@ public class PartialDatePickerLauncher
      * @param context      preferably the {@code Activity}
      *                     but another UI {@code Context} will also do.
      * @param dialogTitle  the dialog title
-     * @param fieldId      this dialog operates on
-     *                     (one launcher can serve multiple fields)
      * @param currentValue the current value of the field
-     * @param todayIfNone  {@code true} if we should use 'today' if the field was empty.
+     * @param extras       optional Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
-                       @IdRes final int fieldId,
                        @Nullable final String currentValue,
-                       final boolean todayIfNone) {
+                       @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
-
-        final String dateStr;
-        if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
-            dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        } else {
-            dateStr = Objects.requireNonNullElse(currentValue, "");
-        }
 
         final Bundle args = new Bundle(4);
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
 
-        args.putInt(BKEY_FIELD_ID, fieldId);
-        args.putString(BKEY_CURRENT_SELECTION, dateStr);
+        args.putString(BKEY_CURRENT_SELECTION, currentValue);
 
+        if (extras != null && !extras.isEmpty()) {
+            args.putBundle(BKEY_EXTRAS, extras);
+        }
         showDialog(context, args);
     }
 
@@ -135,10 +129,10 @@ public class PartialDatePickerLauncher
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(result.getInt(BKEY_FIELD_ID),
-                                Objects.requireNonNull(
+        resultListener.onResult(Objects.requireNonNull(
                                         result.getParcelable(BKEY_CURRENT_SELECTION),
-                                        BKEY_CURRENT_SELECTION));
+                                        BKEY_CURRENT_SELECTION),
+                                result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface
@@ -146,10 +140,11 @@ public class PartialDatePickerLauncher
         /**
          * Callback handler with the user's selection.
          *
-         * @param fieldId          this destination field id
          * @param currentSelection the picked date
+         * @param extras           the optional Bundle as provided to
+         *                         {@link #launch(Context, String, String, Bundle)}
          */
-        void onResult(@IdRes int fieldId,
-                      @NonNull PartialDate currentSelection);
+        void onResult(@NonNull PartialDate currentSelection,
+                      @Nullable Bundle extras);
     }
 }

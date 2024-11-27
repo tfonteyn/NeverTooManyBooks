@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -85,8 +84,6 @@ class PartialDatePickerDelegate
     private final String requestKey;
     @NonNull
     private final String dialogTitle;
-    @IdRes
-    private final int fieldId;
     private PartialDatePickerViewModel vm;
     private DialogPartialDatePickerContentBinding vb;
     @Nullable
@@ -126,8 +123,6 @@ class PartialDatePickerDelegate
                                             DialogLauncher.BKEY_REQUEST_KEY);
         dialogTitle = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_TITLE,
                                      owner.getString(R.string.action_edit));
-
-        fieldId = args.getInt(PartialDatePickerLauncher.BKEY_FIELD_ID);
 
         vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
         vm.init(args);
@@ -209,14 +204,14 @@ class PartialDatePickerDelegate
         return view;
     }
 
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
-    }
-
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 
     @Override
@@ -286,10 +281,11 @@ class PartialDatePickerDelegate
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            PartialDatePickerLauncher.setResult(owner, requestKey, fieldId,
+            PartialDatePickerLauncher.setResult(owner, requestKey,
                                                 new PartialDate(vm.getYear(),
                                                                 vm.getMonth(),
-                                                                vm.getDay()));
+                                                                vm.getDay()),
+                                                vm.getExtras());
             return true;
         }
 

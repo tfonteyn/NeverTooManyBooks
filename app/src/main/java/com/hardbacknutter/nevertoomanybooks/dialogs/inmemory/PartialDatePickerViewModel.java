@@ -43,13 +43,16 @@ public class PartialDatePickerViewModel
     private int month;
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int day;
-
+    @Nullable
+    private Bundle extras;
     private boolean initDone;
 
     void init(@NonNull final Bundle args) {
         if (!initDone) {
             initDone = true;
             parseDate(args.getString(PartialDatePickerLauncher.BKEY_CURRENT_SELECTION));
+
+            extras = args.getBundle(PartialDatePickerLauncher.BKEY_EXTRAS);
         }
 
         // can't have a 0 year. (but month/day can be 0)
@@ -57,6 +60,11 @@ public class PartialDatePickerViewModel
         if (year == 0) {
             year = LocalDate.now().getYear();
         }
+    }
+
+    @Nullable
+    Bundle getExtras() {
+        return extras;
     }
 
     int getYear() {
