@@ -97,8 +97,10 @@ public class BooksOnBookshelfViewModel
     /** Passed in by the {@link StartupActivity} if the user confirmed to take a backup. */
     static final String BKEY_PROPOSE_BACKUP = TAG + ":pb";
 
-    private static final String GROUP_NOT_DEFINED = "Group not defined: ";
+    private static final String ERROR_GROUP_NOT_DEFINED = "Group not defined: ";
     private static final String ERROR_NULL_BOOKLIST = "booklist";
+    private static final String ERROR_NO_EXTRAS = "No extras?";
+    private static final String ERROR_NO_BOOK_IDS = "No bookIds?";
 
     @SuppressWarnings("NonFinalStaticVariableUsedInClassInitialization")
     private static final Map<Integer, BLGRecord> BLG_RECORD = Map.ofEntries(
@@ -859,8 +861,9 @@ public class BooksOnBookshelfViewModel
 
         @BooklistGroup.Id
         final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
-        final BLGRecord blgRecord = Objects.requireNonNull(BLG_RECORD.get(groupId),
-                                                           () -> GROUP_NOT_DEFINED + groupId);
+        final BLGRecord blgRecord = Objects.requireNonNull(
+                BLG_RECORD.get(groupId),
+                () -> ERROR_GROUP_NOT_DEFINED + groupId);
 
         final List<Long> books;
 
@@ -929,8 +932,9 @@ public class BooksOnBookshelfViewModel
 
         @BooklistGroup.Id
         final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
-        final BLGDateRecord blgRecord = Objects.requireNonNull(BLG_DATE_RECORD.get(groupId),
-                                                               () -> GROUP_NOT_DEFINED + groupId);
+        final BLGDateRecord blgRecord = Objects.requireNonNull(
+                BLG_DATE_RECORD.get(groupId),
+                () -> ERROR_GROUP_NOT_DEFINED + groupId);
 
         final StringJoiner sj = new StringJoiner("-");
         for (final String key : blgRecord.dbKeys) {
@@ -1010,12 +1014,12 @@ public class BooksOnBookshelfViewModel
                 .collect(Collectors.toList());
 
         if (extras == null) {
-            throw new IllegalArgumentException("No extras?");
+            throw new IllegalArgumentException(ERROR_NO_EXTRAS);
         }
 
         final List<Long> bookIds = ParcelUtils.unwrap(extras, BKEY_BOOK_IDS);
         if (bookIds == null || bookIds.isEmpty()) {
-            throw new IllegalArgumentException("No bookIds?");
+            throw new IllegalArgumentException(ERROR_NO_BOOK_IDS);
         }
 
         bookDao.setBookshelves(context, bookIds, bookshelves);
@@ -1028,12 +1032,12 @@ public class BooksOnBookshelfViewModel
                      @Nullable final Bundle extras) {
 
         if (extras == null) {
-            throw new IllegalArgumentException("No extras?");
+            throw new IllegalArgumentException(ERROR_NO_EXTRAS);
         }
 
         final List<Long> bookIds = ParcelUtils.unwrap(extras, BKEY_BOOK_IDS);
         if (bookIds == null || bookIds.isEmpty()) {
-            throw new IllegalArgumentException("No bookIds?");
+            throw new IllegalArgumentException(ERROR_NO_BOOK_IDS);
         }
 
         bookDao.setLocation(context, bookIds, location);
@@ -1063,6 +1067,7 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} if a full rebuild of the list was triggered
      *         {@code false} if we only triggered a positional update
      */
+    @SuppressWarnings("UnusedReturnValue")
     private boolean onBookReadStatusChanged(@NonNull final Book book) {
         if (getStyle().hasGroup(BooklistGroup.READ_STATUS)) {
             // The book might move to another group - no choice, we must rebuild
@@ -1104,6 +1109,7 @@ public class BooksOnBookshelfViewModel
      *
      * @return {@code true} if a full rebuild of the list was triggered
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
                                 @SuppressWarnings("SameParameterValue")
                                 @Nullable final String loanee) {
@@ -1137,6 +1143,7 @@ public class BooksOnBookshelfViewModel
      *
      * @return {@code true} if a full rebuild of the list was triggered
      */
+    @SuppressWarnings("UnusedReturnValue")
     private boolean onBookCoverChanged(@IntRange(from = 1) final long bookId) {
         // The change will not affect the group the book is in.
         final int[] positions = getVisibleBookNodes(bookId)
