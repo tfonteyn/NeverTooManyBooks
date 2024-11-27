@@ -30,7 +30,6 @@
     <plurals name="n_stars">
         <item quantity="other">%1$s 顆星</item>
     </plurals>
-
     <string name="X_httpErrorIO">無法與伺服器通訊。稍後再試一次。</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="acra_dialog_message">&APP_NAME;
