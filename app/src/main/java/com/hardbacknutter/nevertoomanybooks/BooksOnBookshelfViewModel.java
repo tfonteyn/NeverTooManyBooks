@@ -1027,6 +1027,15 @@ public class BooksOnBookshelfViewModel
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
+    /**
+     * Bulk update the location for the given set of books.
+     *
+     * @param context  Current context
+     * @param location to set
+     * @param extras   containing "bookIds"
+     *
+     * @throws IllegalArgumentException if the extras or bookIds are missing
+     */
     void setLocation(@NonNull final Context context,
                      @NonNull final String location,
                      @Nullable final Bundle extras) {

@@ -195,7 +195,7 @@ public interface BookDao {
      */
     boolean setLocation(@NonNull Context context,
                         @NonNull List<Long> bookIds,
-                        @Nullable String location);
+                        @NonNull String location);
 
     /**
      * Update the 'read' status of a book.
