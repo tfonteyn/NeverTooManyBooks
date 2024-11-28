@@ -65,9 +65,10 @@ class MultiChoiceDelegate
 
     /** The list of items to display. */
     @NonNull
-    private final List<Long> items;
+    private final List<String> items;
+    /** The ids for the list of items to display. */
     @NonNull
-    private final List<String> itemLabels;
+    private final List<Long> itemIds;
 
     private DialogSelectMultipleContentBinding vb;
     @Nullable
@@ -82,14 +83,14 @@ class MultiChoiceDelegate
                                      owner.getString(R.string.action_edit));
         dialogMessage = args.getString(MultiChoiceLauncher.BKEY_DIALOG_MESSAGE, null);
 
-        items = Arrays.stream(Objects.requireNonNull(
+        itemIds = Arrays.stream(Objects.requireNonNull(
                               args.getLongArray(MultiChoiceLauncher.BKEY_ITEM_LIST_ID),
                               MultiChoiceLauncher.BKEY_ITEM_LIST_ID))
-                      .boxed().collect(Collectors.toList());
-        itemLabels = Arrays.stream(Objects.requireNonNull(
+                        .boxed().collect(Collectors.toList());
+        items = Arrays.stream(Objects.requireNonNull(
                                    args.getStringArray(MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT),
                                    MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT))
-                           .collect(Collectors.toList());
+                      .collect(Collectors.toList());
 
         vm = new ViewModelProvider(owner).get(MultiChoiceViewModel.class);
         vm.init(args);
@@ -140,7 +141,7 @@ class MultiChoiceDelegate
 
         final Context context = vb.getRoot().getContext();
         final ChecklistRecyclerAdapter<Long> adapter = new ChecklistRecyclerAdapter<>(
-                context, items, itemLabels::get, vm.getCurrentSelection(),
+                context, itemIds, items::get, vm.getCurrentSelection(),
                 (id, checked) -> {
                     if (checked) {
                         vm.getCurrentSelection().add(id);
@@ -163,7 +164,6 @@ class MultiChoiceDelegate
 
     @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
-
         if (button != null) {
             final int id = button.getId();
             if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
@@ -177,6 +177,8 @@ class MultiChoiceDelegate
     }
 
     private boolean saveChanges() {
+        // the model is already updated by the adapters selection listener.
+
         MultiChoiceLauncher.setResult(owner, requestKey,
                                       vm.getPreviousSelection(),
                                       vm.getCurrentSelection(),

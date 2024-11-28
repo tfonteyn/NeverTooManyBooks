@@ -64,9 +64,10 @@ class SingleChoiceDelegate {
 
     /** The list of items to display. */
     @NonNull
-    private final List<Long> itemIds;
+    private final List<String> items;
+    /** The ids for the list of items to display. */
     @NonNull
-    private final List<String> itemLabels;
+    private final List<Long> itemIds;
 
     SingleChoiceDelegate(@NonNull final DialogFragment owner,
                          @NonNull final Bundle args) {
@@ -81,10 +82,10 @@ class SingleChoiceDelegate {
                                 args.getLongArray(SingleChoiceLauncher.BKEY_ITEM_LIST_ID),
                                 SingleChoiceLauncher.BKEY_ITEM_LIST_ID))
                         .boxed().collect(Collectors.toList());
-        itemLabels = Arrays.stream(Objects.requireNonNull(
+        items = Arrays.stream(Objects.requireNonNull(
                                    args.getStringArray(SingleChoiceLauncher.BKEY_ITEM_LIST_TEXT),
                                    SingleChoiceLauncher.BKEY_ITEM_LIST_TEXT))
-                           .collect(Collectors.toList());
+                      .collect(Collectors.toList());
 
         vm = new ViewModelProvider(owner).get(SingleChoiceViewModel.class);
         vm.init(args);
@@ -112,12 +113,14 @@ class SingleChoiceDelegate {
 
         final Context context = vb.getRoot().getContext();
         final RadioGroupRecyclerAdapter<Long> adapter = new RadioGroupRecyclerAdapter<>(
-                context, itemIds, itemLabels::get, vm.getCurrentSelection(),
+                context, itemIds, items::get, vm.getCurrentSelection(),
                 vm::setCurrentSelection);
         vb.itemList.setAdapter(adapter);
     }
 
     void saveChanges() {
+        // the model is already updated by the adapters selection listener.
+
         SingleChoiceLauncher.setResult(owner, requestKey,
                                        vm.getPreviousSelection(),
                                        vm.getCurrentSelection(),
