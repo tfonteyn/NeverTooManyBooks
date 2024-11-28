@@ -118,14 +118,16 @@ public class PartialDatePickerLauncher
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Bundle args = new Bundle(4);
+        final Bundle args = new Bundle();
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
-
-        if (dialogMessage != null) {
+        if (dialogMessage != null && !dialogMessage.isEmpty()) {
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        args.putString(BKEY_CURRENT_SELECTION, currentSelection);
+        // be consistent: don't pass null, DO pass empty (i.e. PartialDate#NOT_SET)
+        if (currentSelection != null) {
+            args.putString(BKEY_CURRENT_SELECTION, currentSelection);
+        }
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);
