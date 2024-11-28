@@ -31,10 +31,14 @@ import androidx.lifecycle.ViewModel;
 public class AutoCompletePickerViewModel
         extends ViewModel {
 
-    private String previousSelection;
-    private String currentSelection;
+    @NonNull
+    private String previousSelection = "";
+    @NonNull
+    private String currentSelection = "";
     @Nullable
     private Bundle extras;
+
+    private boolean initDone;
 
     /**
      * Pseudo constructor.
@@ -42,7 +46,9 @@ public class AutoCompletePickerViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (currentSelection == null) {
+        if (!initDone) {
+            initDone = true;
+
             currentSelection = args.getString(AutoCompletePickerLauncher.BKEY_CURRENT_SELECTION,
                                               "");
             previousSelection = currentSelection;
