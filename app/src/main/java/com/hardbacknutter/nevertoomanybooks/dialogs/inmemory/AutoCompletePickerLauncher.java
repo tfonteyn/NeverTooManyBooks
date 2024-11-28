@@ -113,20 +113,24 @@ public class AutoCompletePickerLauncher
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<String> allItems,
-                       @NonNull final String currentSelection,
+                       @Nullable final String currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Bundle args = new Bundle();
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
-
-        if (dialogMessage != null) {
+        if (dialogMessage != null && !dialogMessage.isEmpty()) {
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
+        // pass in the texts; there are no ids
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems.toArray(String[]::new));
-        args.putString(BKEY_CURRENT_SELECTION, currentSelection);
+
+        // be consistent: don't pass null, DO pass empty
+        if (currentSelection != null) {
+            args.putString(BKEY_CURRENT_SELECTION, currentSelection);
+        }
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);
@@ -140,8 +144,8 @@ public class AutoCompletePickerLauncher
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(result.getString(BKEY_PREVIOUS_SELECTION, null),
-                                result.getString(BKEY_CURRENT_SELECTION, null),
+        resultListener.onResult(result.getString(BKEY_PREVIOUS_SELECTION, ""),
+                                result.getString(BKEY_CURRENT_SELECTION, ""),
                                 result.getBundle(BKEY_EXTRAS));
     }
 
@@ -150,11 +154,10 @@ public class AutoCompletePickerLauncher
         /**
          * Callback handler with the user's selection.
          *
-         * @param previousSelection the selection as it was before the user (potentially)
-         *                          made changes
-         * @param currentSelection  the selected/entered text
-         * @param extras            the optional Bundle as provided to
-         *                          {@link #launch(Context, String, String, List, String, Bundle)}
+         * @param previousSelection the previous selection/value
+         * @param currentSelection  the new selection/value
+         * @param extras            (optional) Bundle as provided to one of the
+         *                          {@code Launcher#launch} methods
          */
         void onResult(@NonNull String previousSelection,
                       @NonNull String currentSelection,
