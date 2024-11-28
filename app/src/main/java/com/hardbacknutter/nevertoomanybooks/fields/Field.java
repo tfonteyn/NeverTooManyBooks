@@ -250,9 +250,17 @@ public interface Field<T, V extends View> {
 
     /**
      * Interface for all field-level validators.
+     * <p>
+     * A file validator works on the field (duh) itself.
+     * It will NOT stop the potentially invalid to be saved.
+     * I will usually take care of displaying an error message urging, but
+     * not forcing, the user to correct the data.
+     * These validators are activated whenever the field data changes.
      *
      * @param <T> type of Field value.
      * @param <V> type of View for this field
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator
      */
     @FunctionalInterface
     interface Validator<T, V extends View> {

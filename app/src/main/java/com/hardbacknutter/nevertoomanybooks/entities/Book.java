@@ -1464,6 +1464,13 @@ public class Book
                                      nonBlankValidator, R.string.lbl_title);
         validatorConfig.addValidator(BKEY_AUTHOR_LIST,
                                      nonBlankValidator, R.string.lbl_author);
+        //URGENT: force a bookshelf te be entered?
+        // 2024-11-28: up to now, no-shelf automatically adds the book
+        // to the default shell, which we presume is ok for the large majority of users.
+        // We came across this situation when manually edit the bookshelves list
+        // and deliberately removing all.
+        //validatorConfig.addValidator(BKEY_BOOKSHELF_LIST,
+        //                             nonBlankValidator, R.string.lbl_bookshelf);
 
         validatorConfig.addValidator(DBKey.LANGUAGE,
                                      nonBlankValidator, R.string.lbl_language);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,10 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * Interface for all data-level validators.
+ *
+ * These are called at "save" time only, and will prevent invalid data to saved.
+ *
+ * @see com.hardbacknutter.nevertoomanybooks.fields.Field.Validator
  */
 @FunctionalInterface
 public interface DataValidator {
