@@ -72,13 +72,11 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
      *
      * @param fragment          the calling DialogFragment
      * @param requestKey        to use
-     * @param previousSelection the selection as it was before the user (potentially)
-     *                          made changes
-     *                          can be {@code null} for none selected.
-     * @param currentSelection  the <strong>checked</strong> item,
-     *                          can be {@code null} for none selected.
-     * @param extras            the optional Bundle as provided to
-     *                          {@link #launch(Context, String, String, List, Parcelable, Bundle)}
+     * @param previousSelection the previous selection/value
+     *                          Can be {@code null} for none selected.
+     * @param currentSelection  the new selection/value
+     *                          Can be {@code null} for none selected.
+     * @param extras            (optional) Bundle as provided to {@link #launch}
      *
      * @see #onFragmentResult(String, Bundle)
      */

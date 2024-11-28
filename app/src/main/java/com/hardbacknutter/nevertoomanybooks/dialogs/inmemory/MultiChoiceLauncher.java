@@ -75,11 +75,9 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      *
      * @param fragment          the calling DialogFragment
      * @param requestKey        to use
-     * @param previousSelection the selection as it was before the user (potentially)
-     *                          made changes
-     * @param currentSelection  the set of <strong>checked</strong> items
-     * @param extras            the optional Bundle as provided to
-     *                          {@link #launch(Context, String, String, List, List, Bundle)}
+     * @param previousSelection the previous selection/value
+     * @param currentSelection  the new selection/value
+     * @param extras            (optional) Bundle as provided to {@link #launch}
      *
      * @see #onFragmentResult(String, Bundle)
      */

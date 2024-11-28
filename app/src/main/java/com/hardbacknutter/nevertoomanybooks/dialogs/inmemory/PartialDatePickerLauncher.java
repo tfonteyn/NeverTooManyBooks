@@ -68,11 +68,11 @@ public class PartialDatePickerLauncher
     /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
-     * @param fragment         the calling DialogFragment
-     * @param requestKey       to use
-     * @param currentSelection the picked date
-     * @param extras           the optional Bundle as provided to
-     *                         {@link #launch(Context, String, String, String, Bundle)}
+     * @param fragment          the calling DialogFragment
+     * @param requestKey        to use
+     * @param previousSelection the previous selection/value
+     * @param currentSelection  the new selection/value
+     * @param extras            (optional) Bundle as provided to {@link #launch}
      *
      * @see #onFragmentResult(String, Bundle)
      */
