@@ -30,7 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IntRange;
@@ -42,8 +41,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -105,7 +102,7 @@ public class EditBookFieldsFragment
         final FragmentManager fm = getChildFragmentManager();
 
         editBookshelvesLauncher = new MultiChoiceLauncher<>(DBKey.FK_BOOKSHELF);
-        editBookshelvesLauncher.setResultListener(this::onBookshelvesSelection);
+        editBookshelvesLauncher.setResultListener(vm::updateBookshelves);
         editBookshelvesLauncher.registerForFragmentResult(fm, this);
     }
 
@@ -243,29 +240,6 @@ public class EditBookFieldsFragment
                                        vm.getAllBookshelves(),
                                        vm.getBook().getBookshelves(),
                                        null);
-    }
-
-    private void onBookshelvesSelection(@NonNull final Set<Long> previousSelection,
-                                        @NonNull final Set<Long> bookshelfIds,
-                                        @Nullable final Bundle extras) {
-        if (previousSelection.equals(bookshelfIds)) {
-            // No changes made
-            return;
-        }
-
-        final Field<List<Bookshelf>, TextView> field = vm.requireField(R.id.bookshelves);
-        final List<Bookshelf> previous = field.getValue();
-
-        final List<Bookshelf> selected =
-                vm.getAllBookshelves()
-                  .stream()
-                  .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
-                  .collect(Collectors.toList());
-
-        // Update BOTH the book and the field
-        vm.getBook().setBookshelves(selected);
-        field.setValue(selected);
-        field.notifyIfChanged(previous);
     }
 
     private final class ToolbarMenuProvider

@@ -786,6 +786,29 @@ public class EditBookViewModel
         requireField(R.id.publisher).setValue(list);
     }
 
+    void updateBookshelves(@NonNull final Set<Long> previousSelection,
+                           @NonNull final Set<Long> bookshelfIds,
+                           @Nullable final Bundle extras) {
+        if (previousSelection.equals(bookshelfIds)) {
+            // No changes made
+            return;
+        }
+
+        final Field<List<Bookshelf>, TextView> field = requireField(R.id.bookshelves);
+        final List<Bookshelf> previous = field.getValue();
+
+        final List<Bookshelf> selected =
+                getAllBookshelves()
+                        .stream()
+                        .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
+                        .collect(Collectors.toList());
+
+        // Update BOTH the book and the field
+        book.setBookshelves(selected);
+        field.setValue(selected);
+        field.notifyIfChanged(previous);
+    }
+
     void changeForThisBook(@NonNull final Context context,
                            @NonNull final Author original,
                            @NonNull final Author modified)
