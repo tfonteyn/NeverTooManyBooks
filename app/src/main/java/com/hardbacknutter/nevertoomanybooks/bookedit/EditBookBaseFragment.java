@@ -109,7 +109,7 @@ public abstract class EditBookBaseFragment
 
         partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL);
         partialDatePickerLauncher.setResultListener(
-                (currentSelection, extras) -> {
+                (previousSelection, currentSelection, extras) -> {
                     if (extras == null) {
                         throw new IllegalArgumentException("No extras?");
                     }

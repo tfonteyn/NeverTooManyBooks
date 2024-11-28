@@ -282,6 +282,8 @@ class PartialDatePickerDelegate
     }
 
     private boolean saveChanges() {
+        // the model is already updated by the valueChangeListener.
+
         if (vm.getDay() != 0 && vm.getMonth() == 0) {
             Snackbar.make(vb.getRoot(), R.string.warning_if_day_set_month_and_year_must_be,
                           Snackbar.LENGTH_LONG).show();
@@ -292,6 +294,7 @@ class PartialDatePickerDelegate
 
         } else {
             PartialDatePickerLauncher.setResult(owner, requestKey,
+                                                vm.getPreviousSelection(),
                                                 vm.getCurrentSelection(),
                                                 vm.getExtras());
             return true;

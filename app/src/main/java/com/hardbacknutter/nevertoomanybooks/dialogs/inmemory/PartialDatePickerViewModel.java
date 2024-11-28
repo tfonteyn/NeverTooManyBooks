@@ -49,22 +49,22 @@ public class PartialDatePickerViewModel
     private int month;
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int day;
+
+    private PartialDate previousSelection;
+
     @Nullable
     private Bundle extras;
+
     private boolean initDone;
 
     void init(@NonNull final Bundle args) {
         if (!initDone) {
             initDone = true;
+            // parsing sets both previousSelection and currentSelection.
+            // The latter as individual year/mont/day components
             parseDate(args.getString(PartialDatePickerLauncher.BKEY_CURRENT_SELECTION));
 
             extras = args.getBundle(PartialDatePickerLauncher.BKEY_EXTRAS);
-        }
-
-        // can't have a 0 year. (but month/day can be 0)
-        // The user can/should use the "clear" button if they want no date at all.
-        if (year == 0) {
-            year = LocalDate.now().getYear();
         }
     }
 
@@ -92,8 +92,15 @@ public class PartialDatePickerViewModel
         this.day = day;
     }
 
+    @NonNull
+    PartialDate getPreviousSelection() {
+        return previousSelection;
+    }
+
     /**
      * Create and get the output.
+     * <p>
+     * It will never be {@code null} but can be {@link PartialDate#NOT_SET}.
      *
      * @return current value
      */
@@ -109,6 +116,9 @@ public class PartialDatePickerViewModel
 
     /**
      * Parse the input ISO date string into the individual components.
+     * If the parsed year is {@code 0} it will be substituted with the current year as we
+     * can't have a 0 year. (but month/day can be 0)
+     * The user can/should use the "clear" button if they want no date at all.
      * <p>
      * TODO: Note we don't use {@link PartialDateParser}... maybe we should...
      * <p>
@@ -124,32 +134,43 @@ public class PartialDatePickerViewModel
      */
     private void parseDate(@Nullable final String dateString) {
         if (dateString == null || dateString.isEmpty()) {
-            year = 0;
+            // currentSelection
+            year = LocalDate.now().getYear();
             month = 0;
             day = 0;
+
+            previousSelection = PartialDate.NOT_SET;
             return;
         }
 
-        int yyyy = 0;
-        int mm = 0;
-        //noinspection QuestionableName
-        int dd = 0;
+        int tmpYear = 0;
+        int tmpMonth = 0;
+        int tmpDay = 0;
         try {
             final String[] dateAndTime = dateString.split(" ");
             final String[] date = dateAndTime[0].split("-");
-            yyyy = Integer.parseInt(date[0]);
+
+            tmpYear = Integer.parseInt(date[0]);
+
             if (date.length > 1) {
-                mm = Integer.parseInt(date[1]);
+                tmpMonth = Integer.parseInt(date[1]);
             }
             if (date.length > 2) {
-                dd = Integer.parseInt(date[2]);
+                tmpDay = Integer.parseInt(date[2]);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore. Any values we did get, are used.
         }
 
-        year = yyyy;
-        month = mm;
-        day = dd;
+        // currentSelection as components
+        if (tmpYear == 0) {
+            year = LocalDate.now().getYear();
+        } else {
+            year = tmpYear;
+        }
+        month = tmpMonth;
+        day = tmpDay;
+
+        previousSelection = new PartialDate(year, month, day);
     }
 }

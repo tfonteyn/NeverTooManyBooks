@@ -79,9 +79,11 @@ public class PartialDatePickerLauncher
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
+                          @NonNull final PartialDate previousSelection,
                           @NonNull final PartialDate currentSelection,
                           @Nullable final Bundle extras) {
-        final Bundle result = new Bundle(4);
+        final Bundle result = new Bundle(3);
+        result.putParcelable(BKEY_PREVIOUS_SELECTION, previousSelection);
         result.putParcelable(BKEY_CURRENT_SELECTION, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
@@ -136,10 +138,12 @@ public class PartialDatePickerLauncher
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(Objects.requireNonNull(
-                                        result.getParcelable(BKEY_CURRENT_SELECTION),
-                                        BKEY_CURRENT_SELECTION),
-                                result.getBundle(BKEY_EXTRAS));
+        resultListener.onResult(
+                Objects.requireNonNull(result.getParcelable(BKEY_PREVIOUS_SELECTION),
+                                       BKEY_PREVIOUS_SELECTION),
+                Objects.requireNonNull(result.getParcelable(BKEY_CURRENT_SELECTION),
+                                       BKEY_CURRENT_SELECTION),
+                result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface
@@ -147,11 +151,13 @@ public class PartialDatePickerLauncher
         /**
          * Callback handler with the user's selection.
          *
-         * @param currentSelection the picked date
-         * @param extras           the optional Bundle as provided to
-         *                         {@link #launch(Context, String, String, String, Bundle)}
+         * @param previousSelection the previous selection/value
+         * @param currentSelection  the new selection/value
+         * @param extras            (optional) Bundle as provided to one of the
+         *                          {@code Launcher#launch} methods
          */
-        void onResult(@NonNull PartialDate currentSelection,
+        void onResult(@NonNull PartialDate previousSelection,
+                      @NonNull PartialDate currentSelection,
                       @Nullable Bundle extras);
     }
 }
