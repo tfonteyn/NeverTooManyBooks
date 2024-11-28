@@ -41,12 +41,15 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
-    static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
-    static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
     static final String BKEY_EXTRAS = TAG + ":extras";
 
-    static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
+    /** The list of strings to display. */
     static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
+    /** The ids for the list of strings to display. */
+    static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
+
+    static final String BKEY_CURRENT_SELECTION = TAG + ":current";
+    private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 

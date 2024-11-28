@@ -43,12 +43,11 @@ public class PartialDatePickerLauncher
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
-    /**
-     * The selected date.
-     * a standard sql style date string, must/will be valid.
-     */
-    static final String BKEY_CURRENT_SELECTION = TAG + ":selected";
     static final String BKEY_EXTRAS = TAG + ":extras";
+
+    /** A standard sql style (partial) date string, must/will be valid. */
+    static final String BKEY_CURRENT_SELECTION = TAG + ":current";
+    private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 

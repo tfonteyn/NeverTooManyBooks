@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+@SuppressWarnings("WeakerAccess")
 public class SingleChoiceViewModel
         extends ViewModel {
 
@@ -53,7 +54,7 @@ public class SingleChoiceViewModel
             }
             previousSelection = currentSelection;
 
-            extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
+            extras = args.getBundle(SingleChoiceLauncher.BKEY_EXTRAS);
         }
     }
 
