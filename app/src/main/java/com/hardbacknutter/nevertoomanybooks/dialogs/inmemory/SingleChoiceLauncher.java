@@ -116,8 +116,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
      * @param dialogTitle      the dialog title
      * @param dialogMessage    optional message to display at the top of the dialog
      * @param allItems         list of all possible items
-     * @param currentSelection item which is currently selected; can be {@code null} for none
-     * @param extras           optional Bundle which will be passed back to the result-listener.
+     * @param currentSelection (optional) the current value of the field
+     * @param extras           (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,

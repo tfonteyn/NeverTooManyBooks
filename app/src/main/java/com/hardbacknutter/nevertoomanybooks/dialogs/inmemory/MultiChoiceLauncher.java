@@ -113,10 +113,10 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      * @param context          preferably the {@code Activity}
      *                         but another UI {@code Context} will also do.
      * @param dialogTitle      the dialog title
-     * @param dialogMessage    optional message to display at the top of the dialog
+     * @param dialogMessage    (optional) message to display at the top of the dialog
      * @param allItems         list of all possible items
-     * @param currentSelection list of item which are currently selected
-     * @param extras           optional Bundle which will be passed back to the result-listener.
+     * @param currentSelection (optional) list of items which are currently selected
+     * @param extras           (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
