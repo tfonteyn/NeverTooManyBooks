@@ -75,7 +75,7 @@ ext {
     googleMaterialVersion = '1.12.0'
 
     // https://jsoup.org/
-    jsoupVersion = '1.18.1'
+    jsoupVersion = '1.18.2'
 
     // https://github.com/tfonteyn/TinyZXingWrapper
     tinyZxingWrapperVersion = "1.0.1"
