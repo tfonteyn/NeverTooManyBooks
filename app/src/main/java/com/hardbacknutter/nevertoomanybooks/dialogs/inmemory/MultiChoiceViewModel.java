@@ -29,7 +29,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,9 +37,12 @@ public class MultiChoiceViewModel
         extends ViewModel {
 
     private Set<Long> previousSelection;
-    private Set<Long> currentSelection;
+    @NonNull
+    private final Set<Long> currentSelection = new HashSet<>();
     @Nullable
     private Bundle extras;
+
+    private boolean initDone;
 
     /**
      * Pseudo constructor.
@@ -48,13 +50,17 @@ public class MultiChoiceViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (currentSelection == null) {
-            final long[] items = Objects.requireNonNull(
-                    args.getLongArray(MultiChoiceLauncher.BKEY_CURRENT_SELECTION),
-                    MultiChoiceLauncher.BKEY_CURRENT_SELECTION);
+        if (!initDone) {
+            initDone = true;
 
-            previousSelection = Arrays.stream(items).boxed().collect(Collectors.toSet());
-            currentSelection = new HashSet<>(previousSelection);
+            @Nullable
+            final long[] selected = args.getLongArray(MultiChoiceLauncher.BKEY_CURRENT_SELECTION);
+            if (selected != null) {
+                currentSelection.addAll(Arrays.stream(selected)
+                                              .boxed()
+                                              .collect(Collectors.toSet()));
+            }
+            previousSelection = new HashSet<>(currentSelection);
 
             extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
         }
