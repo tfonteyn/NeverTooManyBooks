@@ -122,25 +122,28 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,
-                       @NonNull final List<T> currentSelection,
+                       @Nullable final List<T> currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Bundle args = new Bundle();
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
-
-        if (dialogMessage != null) {
+        if (dialogMessage != null && !dialogMessage.isEmpty()) {
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
+        // pass in id/labels as two arrays
         args.putLongArray(BKEY_ITEM_LIST_ID, allItems
                 .stream().mapToLong(Entity::getId).toArray());
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-        args.putLongArray(BKEY_CURRENT_SELECTION, currentSelection
-                .stream().mapToLong(Entity::getId).toArray());
+        // be consistent: don't pass null, DO pass empty
+        if (currentSelection != null) {
+            args.putLongArray(BKEY_CURRENT_SELECTION, currentSelection
+                    .stream().mapToLong(Entity::getId).toArray());
+        }
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);
@@ -151,21 +154,24 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Set<Long> previousSelection = Arrays
-                .stream(Objects.requireNonNull(result.getLongArray(BKEY_PREVIOUS_SELECTION),
-                                               BKEY_PREVIOUS_SELECTION))
-                .boxed()
-                .collect(Collectors.toSet());
+        final Set<Long> previousSelection =
+                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_PREVIOUS_SELECTION),
+                                                     BKEY_PREVIOUS_SELECTION))
+                      .boxed()
+                      .collect(Collectors.toSet());
 
-        final Set<Long> currentSelection = Arrays
-                .stream(Objects.requireNonNull(result.getLongArray(BKEY_CURRENT_SELECTION),
-                                               BKEY_CURRENT_SELECTION))
-                .boxed()
-                .collect(Collectors.toSet());
+        final Set<Long> currentSelection =
+                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_CURRENT_SELECTION),
+                                                     BKEY_CURRENT_SELECTION))
+                      .boxed()
+                      .collect(Collectors.toSet());
 
-        resultListener.onResult(previousSelection, currentSelection, result.getBundle(BKEY_EXTRAS));
+        resultListener.onResult(previousSelection,
+                                currentSelection,
+                                result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface
@@ -173,11 +179,10 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         /**
          * Callback handler with the user's selection.
          *
-         * @param previousSelection the selection as it was before the user (potentially)
-         *                          made changes
-         * @param currentSelection  the set of <strong>checked</strong> items
-         * @param extras            the optional Bundle as provided to
-         *                          {@link #launch(Context, String, String, List, List, Bundle)}
+         * @param previousSelection the previous selection/value
+         * @param currentSelection  the new selection/value
+         * @param extras            (optional) Bundle as provided to one of the
+         *                          {@code Launcher#launch} methods
          */
         void onResult(@NonNull Set<Long> previousSelection,
                       @NonNull Set<Long> currentSelection,
