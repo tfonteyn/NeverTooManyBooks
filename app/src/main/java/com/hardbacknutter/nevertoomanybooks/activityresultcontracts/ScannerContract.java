@@ -48,6 +48,14 @@ public class ScannerContract
 
     private static final String TAG = "ScannerContract";
 
+    /**
+     * Create a default {@link ScanOptions} objects using the user-configured
+     * camera and a set of barcodes suited for ISBN and UPC codes.
+     *
+     * @param context Current context
+     *
+     * @return options
+     */
     @NonNull
     public static ScanOptions createDefaultOptions(@NonNull final Context context) {
         return new ScanOptions()
@@ -69,7 +77,7 @@ public class ScannerContract
                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
