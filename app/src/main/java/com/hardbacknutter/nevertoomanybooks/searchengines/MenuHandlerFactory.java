@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,10 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -41,10 +44,19 @@ public final class MenuHandlerFactory {
      */
     @NonNull
     public static List<MenuHandler> create() {
+        final List<MenuHandler> list = new ArrayList<>();
 
+        list.add(new ViewBookOnWebsiteHandler());
 
-        return List.of(new ViewBookOnWebsiteHandler(),
-                       new AmazonMenuHandler(),
-                       new BolMenuHandler());
+        if (BuildConfig.ENABLE_AMAZON) {
+            list.add(new AmazonMenuHandler());
+        }
+        if (BuildConfig.ENABLE_BERTRAND_PT) {
+            list.add(new BertrandMenuHandler());
+        }
+        if (BuildConfig.ENABLE_BOL) {
+            list.add(new BolMenuHandler());
+        }
+        return list;
     }
 }

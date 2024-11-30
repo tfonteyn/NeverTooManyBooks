@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
@@ -148,6 +149,14 @@ public enum EngineId
                Locale.FRANCE,
                BedethequeSearchEngine.class,
                BuildConfig.ENABLE_BEDETHEQUE),
+
+    BertrandPt("bertrandpt",
+               R.string.site_bertrand_pt,
+               R.string.site_info_bertrand_pt,
+               "https://www.bertrand.pt/",
+               new Locale("pt", "PT"),
+               BertrandPtSearchEngine.class,
+               BuildConfig.ENABLE_BERTRAND_PT),
 
     /**
      * All genres; dutch and many other languages.

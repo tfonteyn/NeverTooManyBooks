@@ -403,6 +403,8 @@
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_french_catalogue_eu_comics">French and more; Catalog; European Comics</string>
     <!-- website info: languages; type; specifics. -->
+    <string name="site_description_portuguese_shopping">Portuguese and more; Shopping</string>
+    <!-- website info: languages; type; specifics. -->
     <string name="site_description_general_shopping">General; Shop</string>
     <!-- endregion -->
     <!-- region ========== Tips which are shown in some places on how to use a screen. -->
