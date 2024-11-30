@@ -112,6 +112,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          Look at the other engines for more complex examples.
  *      </li>
  *
+ *      <li>Optional: create a {@link ShoppingMenuHandler} instance and enable it in
+ *          {@link MenuHandlerFactory}.
+ *      </li>
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
  *          TODO: document steps: search the code for "NEWTHINGS: adding a new search engine"
@@ -374,19 +377,19 @@ public enum EngineId
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
             new SearchEngineConfig.Builder(Amazon)
-                  // .setDomainKey(DBKey.SID_ASIN)
-                  // .setDomainViewId(R.id.site_amazon)
-                  // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
-                  .build(SearchEngineConfig::new);
+                    // .setDomainKey(DBKey.SID_ASIN)
+                    // .setDomainViewId(R.id.site_amazon)
+                    // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
+                    .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
             new SearchEngineConfig.Builder(Bedetheque)
-                      .setDomainKey(DBKey.SID_BEDETHEQUE)
+                    .setDomainKey(DBKey.SID_BEDETHEQUE)
 
-                      // default timeouts based on limited testing
-                      .setConnectTimeoutMs(15_000)
-                      .setReadTimeoutMs(60_000)
-                      .build(SearchEngineConfig::new);
+                    // default timeouts based on limited testing
+                    .setConnectTimeoutMs(15_000)
+                    .setReadTimeoutMs(60_000)
+                    .build(SearchEngineConfig::new);
         }
         if (Bol.isEnabled()) {
             new SearchEngineConfig.Builder(Bol)
@@ -406,72 +409,72 @@ public enum EngineId
         }
         if (Goodreads.isEnabled()) {
             new SearchEngineConfig.Builder(Goodreads)
-                     .setDomainKey(DBKey.SID_GOODREADS_BOOK)
-                     .setDomainViewId(R.id.site_goodreads)
-                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
-                     .build(SearchEngineConfig::new);
+                    .setDomainKey(DBKey.SID_GOODREADS_BOOK)
+                    .setDomainViewId(R.id.site_goodreads)
+                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
+                    .build(SearchEngineConfig::new);
         }
         if (GoogleBooks.isEnabled()) {
             new SearchEngineConfig.Builder(GoogleBooks)
-                       .setSupportsMultipleCoverSizes(true)
-                       .build(SearchEngineConfig::new);
+                    .setSupportsMultipleCoverSizes(true)
+                    .build(SearchEngineConfig::new);
         }
         if (Isfdb.isEnabled()) {
             new SearchEngineConfig.Builder(Isfdb)
-                 .setDomainKey(DBKey.SID_ISFDB)
-                 .setDomainViewId(R.id.site_isfdb)
-                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                                  R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
-                 // default timeouts based on limited testing
-                 .setConnectTimeoutMs(20_000)
-                 .setReadTimeoutMs(60_000)
-                 .build(SearchEngineConfig::new);
+                    .setDomainKey(DBKey.SID_ISFDB)
+                    .setDomainViewId(R.id.site_isfdb)
+                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
+                    // default timeouts based on limited testing
+                    .setConnectTimeoutMs(20_000)
+                    .setReadTimeoutMs(60_000)
+                    .build(SearchEngineConfig::new);
         }
         if (KbNl.isEnabled()) {
             new SearchEngineConfig.Builder(KbNl)
-                .setSupportsMultipleCoverSizes(true)
-                .build(SearchEngineConfig::new);
+                    .setSupportsMultipleCoverSizes(true)
+                    .build(SearchEngineConfig::new);
         }
         if (LastDodoNl.isEnabled()) {
             new SearchEngineConfig.Builder(LastDodoNl)
-                      .setPrefersIsbn10(true)
+                    .setPrefersIsbn10(true)
 
-                      .setDomainKey(DBKey.SID_LAST_DODO_NL)
-                      .setDomainViewId(R.id.site_last_dodo_nl)
-                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
-                                       R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
-                      .build(SearchEngineConfig::new);
+                    .setDomainKey(DBKey.SID_LAST_DODO_NL)
+                    .setDomainViewId(R.id.site_last_dodo_nl)
+                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
+                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
+                    .build(SearchEngineConfig::new);
         }
         if (LibraryThing.isEnabled()) {
             new SearchEngineConfig.Builder(LibraryThing)
-                        .setDomainKey(DBKey.SID_LIBRARY_THING)
-                        .setDomainViewId(R.id.site_library_thing)
-                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
-                        .build(SearchEngineConfig::new);
+                    .setDomainKey(DBKey.SID_LIBRARY_THING)
+                    .setDomainViewId(R.id.site_library_thing)
+                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
+                    .build(SearchEngineConfig::new);
         }
         if (OpenLibrary.isEnabled()) {
             new SearchEngineConfig.Builder(OpenLibrary)
-                       .setSupportsMultipleCoverSizes(true)
+                    .setSupportsMultipleCoverSizes(true)
 
-                       .setDomainKey(DBKey.SID_OPEN_LIBRARY)
-                       .setDomainViewId(R.id.site_open_library)
-                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
-                       .build(SearchEngineConfig::new);
+                    .setDomainKey(DBKey.SID_OPEN_LIBRARY)
+                    .setDomainViewId(R.id.site_open_library)
+                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
+                    .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
             new SearchEngineConfig.Builder(StripInfoBe)
-                       .setDomainKey(DBKey.SID_STRIP_INFO)
-                       .setDomainViewId(R.id.site_strip_info_be)
-                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
-                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
+                    .setDomainKey(DBKey.SID_STRIP_INFO)
+                    .setDomainViewId(R.id.site_strip_info_be)
+                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
+                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
 
-                       // default timeouts based on limited testing
-                       .setConnectTimeoutMs(7_000)
-                       .setReadTimeoutMs(60_000)
-                       .build(SearchEngineConfig::new);
+                    // default timeouts based on limited testing
+                    .setConnectTimeoutMs(7_000)
+                    .setReadTimeoutMs(60_000)
+                    .build(SearchEngineConfig::new);
         }
         if (StripWebBe.isEnabled()) {
             new SearchEngineConfig.Builder(StripWebBe)
