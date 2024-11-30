@@ -734,6 +734,7 @@
     <string name="site_description_chinese_catalogue">Čínština; katalog</string>
     <string name="site_description_english_catalogue_FSF">Angličtina a více; Katalog; Fantasy a science fiction</string>
     <string name="site_description_french_catalogue_eu_comics">Francouzština a další; Katalog; Evropský komiks</string>
+    <string name="site_description_portuguese_shopping">Portugalština a další; Nakupování</string>
     <string name="site_description_general_shopping">Obecné; Nakupování</string>
     <string name="info_maintenance_sync_deleted_book_records">Zkontroluje se historie smazaných knih z předchozího importu z jiného zařízení a tato smazání se synchronizují. Jinými slovy, knihy smazané v jiném zařízení budou smazány i v tomto zařízení.</string>
     <string name="option_clear_deleted_book_records">Vymazání historie smazaných knih</string>

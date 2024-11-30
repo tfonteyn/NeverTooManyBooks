@@ -727,6 +727,7 @@
     <string name="site_description_chinese_catalogue">Cinese; Catalogo</string>
     <string name="site_description_english_catalogue_FSF">Inglese e altro; Catalogo; Fantasy e fantascienza</string>
     <string name="site_description_french_catalogue_eu_comics">Francese e altro; Catalogo; Fumetti europei</string>
+    <string name="site_description_portuguese_shopping">Portoghese e altro; Shopping</string>
     <string name="site_description_general_shopping">Generale; Shopping</string>
     <string name="info_maintenance_sync_deleted_book_records">In questo modo si controllerà la cronologia dei libri eliminati da una precedente importazione da un altro dispositivo e si sincronizzeranno tali eliminazioni. In altre parole, i libri eliminati sull’altro dispositivo saranno eliminati anche su questo dispositivo.</string>
     <string name="option_clear_deleted_book_records">Cancella la cronologia dei libri eliminati</string>

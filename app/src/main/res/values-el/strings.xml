@@ -725,6 +725,7 @@
     <string name="site_description_chinese_catalogue">Κινέζικα; Κατάλογος</string>
     <string name="site_description_english_catalogue_FSF">Φαντασία και επιστημονική φαντασία</string>
     <string name="site_description_french_catalogue_eu_comics">Γαλλικά και άλλα- Κατάλογος- Ευρωπαϊκά κόμικς</string>
+    <string name="site_description_portuguese_shopping">Πορτογαλικά και άλλα; Αγορές</string>
     <string name="site_description_general_shopping">Γενικά- Αγορές</string>
     <string name="info_maintenance_sync_deleted_book_records">Αυτό θα ελέγξει το ιστορικό των διαγραμμένων βιβλίων από μια προηγούμενη εισαγωγή από άλλη συσκευή και θα συγχρονίσει αυτές τις διαγραφές. Με άλλα λόγια, τα βιβλία που έχουν διαγραφεί στην άλλη συσκευή θα διαγραφούν και σε αυτή τη συσκευή.</string>
     <string name="option_clear_deleted_book_records">Διαγραφή του ιστορικού διαγραμμένων βιβλίων</string>

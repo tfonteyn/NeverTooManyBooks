@@ -725,6 +725,7 @@
     <string name="site_description_chinese_catalogue">Chinees; Catalogus</string>
     <string name="site_description_english_catalogue_FSF">Engels en meer; Catalogus; Fantasy en Science Fiction</string>
     <string name="site_description_french_catalogue_eu_comics">Frans en meer; Catalogus; Europese Strips</string>
+    <string name="site_description_portuguese_shopping">Portugees en meer; Winkel</string>
     <string name="site_description_general_shopping">Algemeen; Winkel</string>
     <string name="info_maintenance_sync_deleted_book_records">Dit controleert de geschiedenis van verwijderde boeken van een eerdere import vanaf een ander apparaat en synchroniseert deze verwijderingen. Met andere woorden, boeken die op het andere apparaat verwijderd zijn, worden ook op dit apparaat verwijderd.</string>
     <string name="option_clear_deleted_book_records">Wis de geschiedenis van verwijderde boeken</string>
