@@ -1,0 +1,206 @@
+/*
+ * @Copyright 2018-2024 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
+
+import android.util.Log;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+
+import org.jsoup.nodes.Document;
+import org.junit.Before;
+import org.junit.Test;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+@SuppressWarnings("MissingJavadoc")
+public class ParseTest
+        extends BaseDBTest {
+
+    private static final String TAG = "ParseTest";
+    private static final String UTF_8 = "UTF-8";
+
+    private BertrandPtSearchEngine searchEngine;
+
+    @Before
+    public void setup()
+            throws DaoWriteException, StorageException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        searchEngine = (BertrandPtSearchEngine) EngineId.BertrandPt.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
+    }
+
+    @Test
+    public void parseMultiResult01()
+            throws SearchException, IOException, CredentialsException, StorageException {
+
+        final String locationHeader =
+                "https://www.bertrand.pt/pesquisa/9789895812899";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bertrandpt_multi_9789895812899;
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
+//        Log.d(TAG, book.toString());
+
+        assertEquals("A Livraria Cinnamon Bun", book.getString(DBKey.TITLE, null));
+        assertEquals("9789895812899", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2024-11", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("320", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
+        assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Livros > Livros em Português > Literatura > Romance",
+                     book.getString(DBKey.GENRE, null));
+
+        assertEquals("Da mesma autora de <i>O Café Pumpkin Spice</i>,"
+                     + " chega um romance delicioso e picante.<br><br>\n"
+                     + " Hazel encontra uma mensagem secreta escondida num dos livros da"
+                     + " Livraria Cinnamon Bun, mas não a consegue decifrar. À medida que"
+                     + " aparecem mais códigos secretos entre as páginas dos livros, ela"
+                     + " decide investigar... só que precisa de alguém para a ajudar. <br><br>\n"
+                     + " Noah, um pescador atraente e extrovertido, está sempre pronto para"
+                     + " uma aventura. E adora a ideia de uma caça ao tesouro. Sobretudo se"
+                     + " isso implicar ajudar a livreira linda de morrer por quem está"
+                     + " apaixonado há meses! <br><br>\n"
+                     + " Hazel não estava à espera de encontrar o amor, mas à medida que a"
+                     + " caça ao tesouro a leva e a Noah por Dream Harbor, a química inegável"
+                     + " entre ambos é tão quente como os deliciosos bolos de canela que"
+                     + " vende na livraria..."
+                , book.getString(DBKey.DESCRIPTION, null));
+
+        // test is a dynamic download, can fail / needs updating
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(17.55d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Quinta Essência", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        final Author author = authors.get(0);
+        assertEquals("Gilmore", author.getFamilyName());
+        assertEquals("Laurie", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.BertrandPt.getPreferenceKey()
+                                          + "_9789895812899_0_.jpg"));
+    }
+
+    @Test
+    public void parseMultiResult02()
+            throws SearchException, IOException, CredentialsException, StorageException {
+
+        final String locationHeader =
+                "https://www.bertrand.pt/pesquisa/9789897734939";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bertrandpt_multi_9789897734939;
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Fundação e Terra", book.getString(DBKey.TITLE, null));
+        assertEquals("9789897734939", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("416", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
+        assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Livros > Livros em Português > Literatura > Ficção Científica",
+                     book.getString(DBKey.GENRE, null));
+
+        final String desc = book.getString(DBKey.DESCRIPTION, null);
+        assertEquals("Golan Trevize escolheu o futuro — Gaia, um superorganismo"
+                     + " com uma consciência comum. Um mundo onde a privacidade não é apenas"
+                     + " indesejável como incompreensível. Mas será a escolha certa para o"
+                     + " destino da Humanidade? Apesar de Trevize sentir que sim, isso não é"
+                     + " suficiente. Ele tem de saber.<br><br>\n"
+                     + " Trevize acredita que a resposta se encontra no local onde a Humanidade"
+                     + " tem as suas raízes: a lendária Terra… se esta ainda existir. Porque"
+                     + " ninguém tem a certeza da sua exata localização. Tal como ninguém"
+                     + " consegue explicar porque não foi preservado qualquer registo do"
+                     + " planeta «perdido». É um enigma que Trevize está determinado a resolver,"
+                     + " uma jornada que vai empreender a qualquer custo.<br><br>\n"
+                     + " Em 1966, a série Fundação foi eleita a melhor série de ficção"
+                     + " científica de todos os tempos."
+                , desc);
+
+        // test is a dynamic download, can fail / needs updating
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(17.91d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Saída de Emergência", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        final Author author = authors.get(0);
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.BertrandPt.getPreferenceKey()
+                                          + "_9789897734939_0_.jpg"));
+    }
+}

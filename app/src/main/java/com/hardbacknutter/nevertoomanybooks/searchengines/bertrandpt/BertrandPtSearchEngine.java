@@ -60,13 +60,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * 2023-06-23: the site started responding with 403.
+ * Initially written around 2023-06-23  more or less exactly when the site started
+ * using cloudflare. This gave 403's all the time... so this engine was put on ice.
  * <p>
- * wget -d --referer='https://www.bertrand.pt/' https://www.bertrand.pt/pesquisa/9789899087774
- * <p>
- * and it shows cloudflare is responsible for the block.
- * <p>
- * Leaving this engine here for potential future use, but completely disabled.
+ * 2024-11-30: imported and updated the old code, and it seems the cloudflare issues
+ * have gone away. We're presuming "they" tuned the cloudflare settings to behave...
  */
 public class BertrandPtSearchEngine
         extends JsoupSearchEngineBase
@@ -90,6 +88,7 @@ public class BertrandPtSearchEngine
     public BertrandPtSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+        // based on wget experimentation
         extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext),
                                         HttpConstants.SEC_FETCH_SITE, "same-origin");
     }
@@ -155,8 +154,9 @@ public class BertrandPtSearchEngine
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws StorageException     on storage related failures
      */
+    @VisibleForTesting
     @WorkerThread
-    private void parseMultiResult(@NonNull final Context context,
+    public void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)

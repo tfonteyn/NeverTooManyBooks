@@ -153,10 +153,16 @@ public enum EngineId
                BedethequeSearchEngine.class,
                BuildConfig.ENABLE_BEDETHEQUE),
 
+    /**
+     * All genres; portuguese and some other languages.
+     * Shopping site from Portugal.
+     * Added upon recommendation from our portuguese translator maverick74
+     * who stated this site is much better than amazon in portugal.
+     */
     BertrandPt("bertrandpt",
                R.string.site_bertrand_pt,
                R.string.site_info_bertrand_pt,
-               "https://www.bertrand.pt/",
+               "https://www.bertrand.pt",
                new Locale("pt", "PT"),
                BertrandPtSearchEngine.class,
                BuildConfig.ENABLE_BERTRAND_PT),
@@ -395,6 +401,10 @@ public enum EngineId
             new SearchEngineConfig.Builder(Bol)
                     .build(SearchEngineConfig::new);
         }
+        if (BertrandPt.isEnabled()) {
+            new SearchEngineConfig.Builder(BertrandPt)
+                    .build(SearchEngineConfig::new);
+        }
         if (BookFinder.isEnabled()) {
             new SearchEngineConfig.Builder(BookFinder)
                     .build(SearchEngineConfig::new);
@@ -501,6 +511,7 @@ public enum EngineId
         final boolean isDutch = languages.isUserLanguage(context, "nld");
         final boolean isFrench = languages.isUserLanguage(context, "fra");
         final boolean isGerman = languages.isUserLanguage(context, "deu");
+        final boolean isPortuguese = languages.isUserLanguage(context, "por");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 
@@ -534,8 +545,8 @@ public enum EngineId
 
                 type.addSite(KbNl, isDutch);
                 type.addSite(Bol, isDutch || isFrench);
-
                 type.addSite(Dnb, isGerman);
+                type.addSite(BertrandPt, isPortuguese);
 
                 if (!isChinese) {
                     type.addSite(Douban, false);
