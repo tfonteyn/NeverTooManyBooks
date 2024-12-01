@@ -42,7 +42,9 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -68,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrar
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * This class contains the <strong>immutable</strong> configuration
@@ -116,8 +119,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *      </li>
  *
  *      <li>Optional: create a {@link ShoppingMenuHandler} instance and add it in
- *          {@link #createEngineConfigurations()} using
- *          {@link SearchEngineConfig.Builder#setShoppingMenuHandler}.
+ *          {@link #createEngineConfigurations()} using {@link EngineId#setShoppingMenuHandler}.
  *      </li>
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
@@ -349,6 +351,9 @@ public enum EngineId
     @Nullable
     private SearchEngineConfig config;
 
+    @Nullable
+    private Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier;
+
     /**
      * Constructor.
      *
@@ -384,11 +389,11 @@ public enum EngineId
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
+            Amazon.setShoppingMenuHandler(AmazonMenuHandler::new);
             new SearchEngineConfig.Builder(Amazon)
                     // .setDomainKey(DBKey.SID_ASIN)
                     // .setDomainViewId(R.id.site_amazon)
                     // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
-                    .setShoppingMenuHandler(AmazonMenuHandler::new)
                     .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
@@ -401,13 +406,13 @@ public enum EngineId
                     .build(SearchEngineConfig::new);
         }
         if (Bol.isEnabled()) {
+            Bol.setShoppingMenuHandler(BolMenuHandler::new);
             new SearchEngineConfig.Builder(Bol)
-                    .setShoppingMenuHandler(BolMenuHandler::new)
                     .build(SearchEngineConfig::new);
         }
         if (BertrandPt.isEnabled()) {
+            BertrandPt.setShoppingMenuHandler(BertrandMenuHandler::new);
             new SearchEngineConfig.Builder(BertrandPt)
-                    .setShoppingMenuHandler(BertrandMenuHandler::new)
                     .build(SearchEngineConfig::new);
         }
         if (BookFinder.isEnabled()) {
@@ -683,6 +688,13 @@ public enum EngineId
         }
     }
 
+    @NonNull
+    EngineId setShoppingMenuHandler(@Nullable final
+                                    Supplier<ShoppingMenuHandler> handlerSupplier) {
+        this.shoppingMenuHandlerSupplier = handlerSupplier;
+        return this;
+    }
+
     /**
      * Is this engine enabled <strong>AT ALL</strong>.
      * <p>
@@ -823,6 +835,22 @@ public enum EngineId
         }
     }
 
+    /**
+     * Create the shopping menu handler if there is one enabled.
+     * <p>
+     * URGENT: UNIFY WITH ShoppingMenuHandler#isShowMenu
+     *
+     * @param context Current context
+     *
+     * @return handler
+     */
+    @NonNull
+    Optional<MenuHandler> createShoppingMenuHandler(@NonNull final Context context) {
+        if (isEnabled() && shoppingMenuHandlerSupplier != null) {
+            return Optional.of(shoppingMenuHandlerSupplier.get());
+        }
+        return Optional.empty();
+    }
 
     /**
      * ENHANCE: when needed... this method parked here for future thoughts.

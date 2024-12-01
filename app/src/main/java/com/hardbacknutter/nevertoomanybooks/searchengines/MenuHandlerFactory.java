@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
@@ -50,14 +49,11 @@ public final class MenuHandlerFactory {
 
         list.add(new ViewBookOnWebsiteHandler());
 
-        //noinspection DataFlowIssue
         Site.Type.Data
                 .getSites()
                 .stream()
                 .map(Site::getEngineId)
-                .map(EngineId::getConfig)
-                .filter(Objects::nonNull)
-                .map(config -> config.createShoppingMenuHandler(context))
+                .map(engineId -> engineId.createShoppingMenuHandler(context))
                 .flatMap(Optional::stream)
                 .forEach(list::add);
 
