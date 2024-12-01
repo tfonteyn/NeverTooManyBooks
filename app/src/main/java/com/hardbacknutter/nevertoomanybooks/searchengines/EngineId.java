@@ -223,9 +223,7 @@ public enum EngineId
               GoodreadsSearchEngine.class,
               BuildConfig.ENABLE_GOODREADS_BY_EXT_ID),
 
-    /**
-     * All genres.
-     */
+    /** All genres. */
     GoogleBooks("googlebooks",
                 R.string.site_google_books,
                 R.string.site_info_google_books,
