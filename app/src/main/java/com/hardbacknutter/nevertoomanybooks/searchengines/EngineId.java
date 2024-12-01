@@ -395,7 +395,7 @@ public enum EngineId
         }
         if (Bedetheque.isEnabled()) {
             new SearchEngineConfig.Builder(Bedetheque)
-                    .setDomainKey(DBKey.SID_BEDETHEQUE)
+                    .setExternalIdDomainKey(DBKey.SID_BEDETHEQUE)
 
                     // default timeouts based on limited testing
                     .setConnectTimeoutMs(15_000)
@@ -426,7 +426,7 @@ public enum EngineId
         }
         if (Goodreads.isEnabled()) {
             new SearchEngineConfig.Builder(Goodreads)
-                    .setDomainKey(DBKey.SID_GOODREADS_BOOK)
+                    .setExternalIdDomainKey(DBKey.SID_GOODREADS_BOOK)
                     .setDomainViewId(R.id.site_goodreads)
                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
@@ -439,7 +439,7 @@ public enum EngineId
         }
         if (Isfdb.isEnabled()) {
             new SearchEngineConfig.Builder(Isfdb)
-                    .setDomainKey(DBKey.SID_ISFDB)
+                    .setExternalIdDomainKey(DBKey.SID_ISFDB)
                     .setDomainViewId(R.id.site_isfdb)
                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
@@ -457,7 +457,7 @@ public enum EngineId
             new SearchEngineConfig.Builder(LastDodoNl)
                     .setPrefersIsbn10(true)
 
-                    .setDomainKey(DBKey.SID_LAST_DODO_NL)
+                    .setExternalIdDomainKey(DBKey.SID_LAST_DODO_NL)
                     .setDomainViewId(R.id.site_last_dodo_nl)
                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
@@ -465,7 +465,7 @@ public enum EngineId
         }
         if (LibraryThing.isEnabled()) {
             new SearchEngineConfig.Builder(LibraryThing)
-                    .setDomainKey(DBKey.SID_LIBRARY_THING)
+                    .setExternalIdDomainKey(DBKey.SID_LIBRARY_THING)
                     .setDomainViewId(R.id.site_library_thing)
                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
@@ -475,7 +475,7 @@ public enum EngineId
             new SearchEngineConfig.Builder(OpenLibrary)
                     .setSupportsMultipleCoverSizes(true)
 
-                    .setDomainKey(DBKey.SID_OPEN_LIBRARY)
+                    .setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
                     .setDomainViewId(R.id.site_open_library)
                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
@@ -483,7 +483,7 @@ public enum EngineId
         }
         if (StripInfoBe.isEnabled()) {
             new SearchEngineConfig.Builder(StripInfoBe)
-                    .setDomainKey(DBKey.SID_STRIP_INFO)
+                    .setExternalIdDomainKey(DBKey.SID_STRIP_INFO)
                     .setDomainViewId(R.id.site_strip_info_be)
                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
