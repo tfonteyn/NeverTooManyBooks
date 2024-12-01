@@ -51,7 +51,7 @@
                 optional: external id KEY add a RadioButton widget
                 and add the name to the ConstraintRadioGroup#constraint_referenced_ids. -->
 
-        <!-- Amazon search is disabled. -->
+        <!-- Amazon ASIN is disabled. -->
         <RadioButton
             android:id="@+id/site_amazon"
             android:layout_width="0dp"
