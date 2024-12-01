@@ -22,26 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -58,15 +48,6 @@ public class SearchEngineConfig {
     @NonNull
     private final EngineId engineId;
 
-    /** {@link SearchEngine.ByExternalId} only. */
-    @Nullable
-    private final Domain externalIdDomain;
-    @IdRes
-    private final int domainViewId;
-    @IdRes
-    private final int domainMenuId;
-    @IntegerRes
-    private final int domainMenuOrder;
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
     /**
@@ -91,11 +72,6 @@ public class SearchEngineConfig {
         prefersIsbn10 = builder.prefersIsbn10;
         supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
 
-        externalIdDomain = builder.externalIdDomain;
-        domainViewId = builder.domainViewId;
-        domainMenuId = builder.domainMenuId;
-        domainMenuOrder = builder.domainMenuOrder;
-
         connectTimeoutMs = builder.connectTimeoutMs;
         readTimeoutMs = builder.readTimeoutMs;
         if (builder.throttlerTimeoutMs > 0) {
@@ -118,64 +94,6 @@ public class SearchEngineConfig {
             Arrays.stream(Site.Type.values())
                   .forEach(type -> type.createList(context, languages));
         }
-    }
-
-    /**
-     * Search for the configuration defined by the given viewId.
-     *
-     * @param viewId for the engine
-     *
-     * @return Optional with the configuration
-     */
-    @NonNull
-    public static Optional<SearchEngineConfig> getByViewId(@IdRes final int viewId) {
-        return getAll()
-                .stream()
-                .filter(config -> config.getDomainViewId() == viewId)
-                .findFirst();
-    }
-
-    /**
-     * Search for the configuration defined by the given menuId.
-     *
-     * @param menuId to get
-     *
-     * @return Optional with the configuration
-     */
-    @NonNull
-    public static Optional<SearchEngineConfig> getByMenuId(@IdRes final int menuId) {
-        return getAll()
-                .stream()
-                .filter(config -> config.getDomainMenuResId() == menuId)
-                .findFirst();
-    }
-
-    /**
-     * Convenience method to get the list of <strong>configured</strong> (i.e. non-null)
-     * external-id domains.
-     *
-     * @return list
-     */
-    @NonNull
-    public static List<Domain> getExternalIdDomains() {
-        return getAll()
-                .stream()
-                .map(SearchEngineConfig::getExternalIdDomain)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Convenience method. Get all configurations (i.e. non-null).
-     *
-     * @return list
-     */
-    @NonNull
-    public static List<SearchEngineConfig> getAll() {
-        return Arrays.stream(EngineId.values())
-                     .map(EngineId::getConfig)
-                     .filter(Objects::nonNull)
-                     .collect(Collectors.toList());
     }
 
     /**
@@ -241,11 +159,6 @@ public class SearchEngineConfig {
                 engineId.getDefaultUrl());
     }
 
-    @Nullable
-    public Domain getExternalIdDomain() {
-        return externalIdDomain;
-    }
-
     /**
      * {@link SearchEngine.CoverByEdition} only.
      * <p>
@@ -282,39 +195,6 @@ public class SearchEngineConfig {
         } else {
             return preferences.getBoolean(Prefs.PK_SEARCH_ISBN_PREFER_10, false);
         }
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    @IdRes
-    public int getDomainViewId() {
-        return domainViewId;
-    }
-
-    /**
-     * Get the resource id to use for the "View on" menu item.
-     *
-     * @return res id
-     */
-    @IdRes
-    public int getDomainMenuResId() {
-        return domainMenuId;
-    }
-
-    /**
-     * Get the <strong>resource id</strong> to use for the "View on" menu item order.
-     * Typical use will require code like this:
-     * <pre>
-     * {@code
-     *  int resId = x.getDomainMenuOrderResId();
-     *  int order = context.getResources().getInteger(resId)
-     *  }
-     *  </pre>
-     *
-     * @return res id
-     */
-    @IntegerRes
-    public int getDomainMenuOrderResId() {
-        return domainMenuOrder;
     }
 
     /**
@@ -360,10 +240,6 @@ public class SearchEngineConfig {
     public String toString() {
         return "SearchEngineConfig{"
                + "engineId=" + engineId
-               + ", externalIdDomain=" + externalIdDomain
-               + ", domainViewId=" + domainViewId
-               + ", domainMenuId=" + domainMenuId
-               + ", domainMenuOrder=" + domainMenuOrder
                + ", connectTimeoutMs=" + connectTimeoutMs
                + ", readTimeoutMs=" + readTimeoutMs
                + ", throttler=" + throttler
@@ -386,17 +262,6 @@ public class SearchEngineConfig {
 
         @NonNull
         private final EngineId engineId;
-
-        @Nullable
-        private Domain externalIdDomain;
-
-        @IdRes
-        private int domainViewId;
-
-        @IdRes
-        private int domainMenuId;
-        @IntegerRes
-        private int domainMenuOrder;
 
         /** The DEFAULT for the engine. */
         private int connectTimeoutMs = FIVE_SECONDS;
@@ -444,53 +309,6 @@ public class SearchEngineConfig {
         @NonNull
         Builder setReadTimeoutMs(final int timeoutInMillis) {
             readTimeoutMs = timeoutInMillis;
-            return this;
-        }
-
-        /**
-         * Set the {@link DBKey} for the column name in the Books table which stores
-         * the website specific identifier for a book.
-         *
-         * @param domainKey dbKey
-         *
-         * @return {@code this} (for chaining)
-         */
-        @NonNull
-        Builder setExternalIdDomainKey(@NonNull final String domainKey) {
-            if (domainKey.isEmpty()) {
-                externalIdDomain = null;
-            } else {
-                externalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(domainKey);
-            }
-            return this;
-        }
-
-        /**
-         * Set the resource id's to use for the "View on" menu item.
-         *
-         * @param domainMenuId    the menu id
-         * @param domainMenuOrder the menu order value
-         *
-         * @return {@code this} (for chaining)
-         */
-        @NonNull
-        Builder setDomainMenuId(@IdRes final int domainMenuId,
-                                @IntegerRes final int domainMenuOrder) {
-            this.domainMenuId = domainMenuId;
-            this.domainMenuOrder = domainMenuOrder;
-            return this;
-        }
-
-        /**
-         * Set the View id which is used in {@link SearchBookByExternalIdFragment}.
-         *
-         * @param domainViewId id
-         *
-         * @return {@code this} (for chaining)
-         */
-        @NonNull
-        Builder setDomainViewId(@IdRes final int domainViewId) {
-            this.domainViewId = domainViewId;
             return this;
         }
 

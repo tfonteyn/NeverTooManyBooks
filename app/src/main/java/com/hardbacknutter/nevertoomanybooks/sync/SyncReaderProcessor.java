@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -489,8 +489,8 @@ public final class SyncReaderProcessor {
          * Convenience method wrapper for {@link #add(String, String, SyncAction)}.
          * The default SyncAction is always {@link SyncAction#CopyIfBlank}.
          *
-         * @param label   Field label
-         * @param keys    {Field key} OR {Preference key, Field key}
+         * @param label Field label
+         * @param keys  {Field key} OR {Preference key, Field key}
          *
          * @throws IllegalArgumentException if there are more then 2 keys
          */
@@ -579,10 +579,10 @@ public final class SyncReaderProcessor {
         @NonNull
         public Builder addSidFields(@NonNull final Context context) {
             final SortedMap<String, String> sidMap = new TreeMap<>();
-            SearchEngineConfig.getAll().forEach(seConfig -> {
-                final Domain domain = seConfig.getExternalIdDomain();
+            EngineId.getEnabledEngines().forEach(engineId -> {
+                final Domain domain = engineId.getExternalIdDomain();
                 if (domain != null) {
-                    sidMap.put(seConfig.getEngineId().getName(context), domain.getName());
+                    sidMap.put(engineId.getName(context), domain.getName());
                 }
             });
             sidMap.forEach((label, key) -> add(label, key, SyncAction.Overwrite));

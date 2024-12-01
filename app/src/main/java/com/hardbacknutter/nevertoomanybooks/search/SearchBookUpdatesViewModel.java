@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
@@ -381,12 +380,13 @@ public class SearchBookUpdatesViewModel
 
                     // Collect external ID's we can use
                     final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
-                    SearchEngineConfig.getAll().forEach(seConfig -> {
-                        final Domain domain = seConfig.getExternalIdDomain();
+                    EngineId.getEnabledEngines().forEach(engineId -> {
+                        final Domain domain = engineId.getExternalIdDomain();
                         if (domain != null) {
-                            final String value = currentBook.getString(domain.getName(), null);
+                            final String value = currentBook.getString(
+                                    domain.getName(), null);
                             if (value != null && !value.isEmpty() && !"0".equals(value)) {
-                                externalIds.put(seConfig.getEngineId(), value);
+                                externalIds.put(engineId, value);
                             }
                         }
                     });

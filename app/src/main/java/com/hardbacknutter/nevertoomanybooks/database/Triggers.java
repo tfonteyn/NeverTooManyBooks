@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -253,7 +253,7 @@ final class Triggers {
                + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
-        body += SearchEngineConfig
+        body += EngineId
                 .getExternalIdDomains()
                 .stream()
                 .map(domain -> domain.getName() + "=null")

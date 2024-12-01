@@ -26,6 +26,8 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -38,8 +40,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,7 +53,10 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
@@ -352,6 +359,16 @@ public enum EngineId
     private SearchEngineConfig config;
 
     @Nullable
+    private Domain externalIdDomain;
+    @IdRes
+    private int domainViewId;
+
+    @IdRes
+    private int domainMenuId;
+    @IntegerRes
+    private int domainMenuOrder;
+
+    @Nullable
     private Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier;
 
     /**
@@ -385,123 +402,169 @@ public enum EngineId
      * Create all {@link SearchEngine} configurations; called during startup.
      */
     static void createEngineConfigurations() {
-        // The engine order here is not important
+        // The engine order here is not important; just keep them alphabetical
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
-            Amazon.setShoppingMenuHandler(AmazonMenuHandler::new);
-            new SearchEngineConfig.Builder(Amazon)
-                    // .setDomainKey(DBKey.SID_ASIN)
-                    // .setDomainViewId(R.id.site_amazon)
-                    // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
-                    .build(SearchEngineConfig::new);
+            Amazon.setShoppingMenuHandler(AmazonMenuHandler::new)
+                  // .setExternalIdDomainKey(DBKey.SID_ASIN)
+                  // .setDomainViewId(R.id.site_amazon)
+                  // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
+                  .createConfig()
+                  .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
-            new SearchEngineConfig.Builder(Bedetheque)
-                    .setExternalIdDomainKey(DBKey.SID_BEDETHEQUE)
-
-                    // default timeouts based on limited testing
-                    .setConnectTimeoutMs(15_000)
-                    .setReadTimeoutMs(60_000)
-                    .build(SearchEngineConfig::new);
+            Bedetheque.setExternalIdDomainKey(DBKey.SID_BEDETHEQUE)
+                      .createConfig()
+                      // default timeouts based on limited testing
+                      .setConnectTimeoutMs(15_000)
+                      .setReadTimeoutMs(60_000)
+                      .build(SearchEngineConfig::new);
         }
         if (Bol.isEnabled()) {
-            Bol.setShoppingMenuHandler(BolMenuHandler::new);
-            new SearchEngineConfig.Builder(Bol)
-                    .build(SearchEngineConfig::new);
+            Bol.setShoppingMenuHandler(BolMenuHandler::new)
+               .createConfig()
+               .build(SearchEngineConfig::new);
         }
         if (BertrandPt.isEnabled()) {
-            BertrandPt.setShoppingMenuHandler(BertrandMenuHandler::new);
-            new SearchEngineConfig.Builder(BertrandPt)
-                    .build(SearchEngineConfig::new);
+            BertrandPt.setShoppingMenuHandler(BertrandMenuHandler::new)
+                      .createConfig()
+                      .build(SearchEngineConfig::new);
         }
         if (BookFinder.isEnabled()) {
-            new SearchEngineConfig.Builder(BookFinder)
-                    .build(SearchEngineConfig::new);
+            BookFinder.createConfig()
+                      .build(SearchEngineConfig::new);
         }
         if (Dnb.isEnabled()) {
-            new SearchEngineConfig.Builder(Dnb)
-                    .build(SearchEngineConfig::new);
+            Dnb.createConfig()
+               .build(SearchEngineConfig::new);
         }
         if (Douban.isEnabled()) {
-            new SearchEngineConfig.Builder(Douban)
-                    .build(SearchEngineConfig::new);
+            Douban.createConfig()
+                  .build(SearchEngineConfig::new);
         }
         if (Goodreads.isEnabled()) {
-            new SearchEngineConfig.Builder(Goodreads)
-                    .setExternalIdDomainKey(DBKey.SID_GOODREADS_BOOK)
-                    .setDomainViewId(R.id.site_goodreads)
-                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
-                    .build(SearchEngineConfig::new);
+            Goodreads.setExternalIdDomainKey(DBKey.SID_GOODREADS_BOOK)
+                     .setDomainViewId(R.id.site_goodreads)
+                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
+                     .createConfig()
+                     .build(SearchEngineConfig::new);
         }
         if (GoogleBooks.isEnabled()) {
-            new SearchEngineConfig.Builder(GoogleBooks)
-                    .setSupportsMultipleCoverSizes(true)
-                    .build(SearchEngineConfig::new);
+            GoogleBooks.createConfig()
+                       .setSupportsMultipleCoverSizes(true)
+                       .build(SearchEngineConfig::new);
         }
         if (Isfdb.isEnabled()) {
-            new SearchEngineConfig.Builder(Isfdb)
-                    .setExternalIdDomainKey(DBKey.SID_ISFDB)
-                    .setDomainViewId(R.id.site_isfdb)
-                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
-                    // default timeouts based on limited testing
-                    .setConnectTimeoutMs(20_000)
-                    .setReadTimeoutMs(60_000)
-                    .build(SearchEngineConfig::new);
+            Isfdb.setExternalIdDomainKey(DBKey.SID_ISFDB)
+                 .setDomainViewId(R.id.site_isfdb)
+                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                                  R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
+                 .createConfig()
+                 // default timeouts based on limited testing
+                 .setConnectTimeoutMs(20_000)
+                 .setReadTimeoutMs(60_000)
+                 .build(SearchEngineConfig::new);
         }
         if (KbNl.isEnabled()) {
-            new SearchEngineConfig.Builder(KbNl)
-                    .setSupportsMultipleCoverSizes(true)
-                    .build(SearchEngineConfig::new);
+            KbNl.createConfig()
+                .setSupportsMultipleCoverSizes(true)
+                .build(SearchEngineConfig::new);
         }
         if (LastDodoNl.isEnabled()) {
-            new SearchEngineConfig.Builder(LastDodoNl)
-                    .setPrefersIsbn10(true)
-
-                    .setExternalIdDomainKey(DBKey.SID_LAST_DODO_NL)
-                    .setDomainViewId(R.id.site_last_dodo_nl)
-                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
-                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
-                    .build(SearchEngineConfig::new);
+            LastDodoNl.setExternalIdDomainKey(DBKey.SID_LAST_DODO_NL)
+                      .setDomainViewId(R.id.site_last_dodo_nl)
+                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
+                                       R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
+                      .createConfig()
+                      .setPrefersIsbn10(true)
+                      .build(SearchEngineConfig::new);
         }
         if (LibraryThing.isEnabled()) {
-            new SearchEngineConfig.Builder(LibraryThing)
-                    .setExternalIdDomainKey(DBKey.SID_LIBRARY_THING)
-                    .setDomainViewId(R.id.site_library_thing)
-                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
-                    .build(SearchEngineConfig::new);
+            LibraryThing.setExternalIdDomainKey(DBKey.SID_LIBRARY_THING)
+                        .setDomainViewId(R.id.site_library_thing)
+                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
+                        .createConfig()
+                        .build(SearchEngineConfig::new);
         }
         if (OpenLibrary.isEnabled()) {
-            new SearchEngineConfig.Builder(OpenLibrary)
-                    .setSupportsMultipleCoverSizes(true)
-
-                    .setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
-                    .setDomainViewId(R.id.site_open_library)
-                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
-                    .build(SearchEngineConfig::new);
+            OpenLibrary.setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
+                       .setDomainViewId(R.id.site_open_library)
+                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
+                       .createConfig()
+                       .setSupportsMultipleCoverSizes(true)
+                       .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
-            new SearchEngineConfig.Builder(StripInfoBe)
-                    .setExternalIdDomainKey(DBKey.SID_STRIP_INFO)
-                    .setDomainViewId(R.id.site_strip_info_be)
-                    .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
-                                     R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
-
-                    // default timeouts based on limited testing
-                    .setConnectTimeoutMs(7_000)
-                    .setReadTimeoutMs(60_000)
-                    .build(SearchEngineConfig::new);
+            StripInfoBe.setExternalIdDomainKey(DBKey.SID_STRIP_INFO)
+                       .setDomainViewId(R.id.site_strip_info_be)
+                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
+                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
+                       .createConfig()
+                       // default timeouts based on limited testing
+                       .setConnectTimeoutMs(7_000)
+                       .setReadTimeoutMs(60_000)
+                       .build(SearchEngineConfig::new);
         }
         if (StripWebBe.isEnabled()) {
-            new SearchEngineConfig.Builder(StripWebBe)
-                    .build(SearchEngineConfig::new);
+            StripWebBe.createConfig()
+                      .build(SearchEngineConfig::new);
         }
 
         // NEWTHINGS: adding a new search engine: add the search engine configuration
+    }
+
+    public static List<EngineId> getEnabledEngines() {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .collect(Collectors.toList());
+    }
+
+    /**
+     * Search for an enabled Engine defined by the given menuId.
+     *
+     * @param menuId to get
+     *
+     * @return Optional with the engine
+     */
+    @NonNull
+    public static Optional<EngineId> getByMenuId(@IdRes final int menuId) {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .filter(engineId -> engineId.getDomainMenuResId() == menuId)
+                     .findFirst();
+    }
+
+    /**
+     * Search for an enabled Engine defined by the given viewId.
+     *
+     * @param viewId for the engine
+     *
+     * @return Optional with the engine
+     */
+    @NonNull
+    public static Optional<EngineId> getByViewId(@IdRes final int viewId) {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .filter(engineId -> engineId.getDomainViewId() == viewId)
+                     .findFirst();
+    }
+
+    /**
+     * Get the list of all external-id domains.
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<Domain> getExternalIdDomains() {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .map(EngineId::getExternalIdDomain)
+                     .filter(Objects::nonNull)
+                     .collect(Collectors.toList());
     }
 
     /**
@@ -688,9 +751,39 @@ public enum EngineId
         }
     }
 
+    /**
+     * Set the {@link DBKey} for the column name in the Books table which stores
+     * the website specific identifier for a book.
+     *
+     * @param domainKey dbKey
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
-    EngineId setShoppingMenuHandler(@Nullable final
-                                    Supplier<ShoppingMenuHandler> handlerSupplier) {
+    private EngineId setExternalIdDomainKey(@NonNull final String domainKey) {
+        externalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(domainKey);
+        return this;
+    }
+
+    /**
+     * Set the resource id's to use for the "View on" menu item.
+     *
+     * @param domainMenuId    the menu id
+     * @param domainMenuOrder the menu order value
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    private EngineId setDomainMenuId(@IdRes final int domainMenuId,
+                                     @IntegerRes final int domainMenuOrder) {
+        this.domainMenuId = domainMenuId;
+        this.domainMenuOrder = domainMenuOrder;
+        return this;
+    }
+
+    @NonNull
+    private EngineId setShoppingMenuHandler(@Nullable final
+                                            Supplier<ShoppingMenuHandler> handlerSupplier) {
         this.shoppingMenuHandlerSupplier = handlerSupplier;
         return this;
     }
@@ -764,6 +857,59 @@ public enum EngineId
         return defaultLocale;
     }
 
+    @Nullable
+    public Domain getExternalIdDomain() {
+        return externalIdDomain;
+    }
+
+    @IdRes
+    private int getDomainViewId() {
+        return domainViewId;
+    }
+
+    /**
+     * Set the View id which is used in {@link SearchBookByExternalIdFragment}.
+     *
+     * @param domainViewId id
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    private EngineId setDomainViewId(@IdRes final int domainViewId) {
+        if (this.domainViewId != 0) {
+            throw new IllegalStateException("domainViewId already set");
+        }
+        this.domainViewId = domainViewId;
+        return this;
+    }
+
+    /**
+     * Get the resource id to use for the "View on" menu item.
+     *
+     * @return res id
+     */
+    @IdRes
+    public int getDomainMenuResId() {
+        return domainMenuId;
+    }
+
+    /**
+     * Get the <strong>resource id</strong> to use for the "View on" menu item order.
+     * Typical use will require code like this:
+     * <pre>
+     * {@code
+     *  int intResId = x.getDomainMenuOrder();
+     *  int order = context.getResources().getInteger(intResId)
+     *  }
+     *  </pre>
+     *
+     * @return res id
+     */
+    @IntegerRes
+    public int getDomainMenuOrderResId() {
+        return domainMenuOrder;
+    }
+
     /**
      * Get the configuration.
      *
@@ -774,8 +920,13 @@ public enum EngineId
         return config;
     }
 
-    public void setConfig(@NonNull final SearchEngineConfig config) {
+    void setConfig(@NonNull final SearchEngineConfig config) {
         this.config = config;
+    }
+
+    @NonNull
+    private SearchEngineConfig.Builder createConfig() {
+        return new SearchEngineConfig.Builder(this);
     }
 
     /**
@@ -980,6 +1131,11 @@ public enum EngineId
                + ", locale=" + defaultLocale
                + ", clazz=" + clazz.getName()
                + ", enabled=" + enabled
+
+               + ", externalIdDomain=" + externalIdDomain
+               + ", domainViewId=" + domainViewId
+               + ", domainMenuId=" + domainMenuId
+               + ", domainMenuOrder=" + domainMenuOrder
                + '}';
     }
 

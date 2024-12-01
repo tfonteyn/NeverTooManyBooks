@@ -74,7 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -1078,7 +1078,7 @@ public class BookDaoImpl
                     //NEWTHINGS: adding a new search engine: optional: add engine specific keys
             )
 
-                               + ',' + TBL_BOOKS.dotAs(SearchEngineConfig.getExternalIdDomains())
+                               + ',' + TBL_BOOKS.dotAs(EngineId.getExternalIdDomains())
 
                                // LEFT OUTER JOIN, COALESCE nulls to ""
                                + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"

@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -161,21 +160,20 @@ public class SearchBookByExternalIdFragment
 
         // on false->true transition
 
-        final SearchEngineConfig config = SearchEngineConfig
-                .getByViewId(viewId).orElseThrow(IllegalStateException::new);
+        this.engineId = EngineId.getByViewId(viewId)
+                                .orElseThrow(IllegalStateException::new);
 
-        this.engineId = config.getEngineId();
         //noinspection DataFlowIssue
         EngineId.promptToRegister(getContext(), List.of(Site.Type.Data.getSite(engineId)),
-                                  "searchByExternalId", () -> updateUI(config));
+                                  "searchByExternalId", () -> updateUI(engineId));
     }
 
-    private void updateUI(@NonNull final SearchEngineConfig config) {
+    private void updateUI(@NonNull final EngineId engineId) {
 
         final int keyboardIcon;
         final int inputType;
         //noinspection DataFlowIssue
-        if (config.getExternalIdDomain().getSqLiteDataType() == SqLiteDataType.Text) {
+        if (engineId.getExternalIdDomain().getSqLiteDataType() == SqLiteDataType.Text) {
             // display an alphanumeric keyboard icon
             keyboardIcon = R.drawable.keyboard_24px;
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;

@@ -37,9 +37,9 @@ public class EngineIdTest {
 
     @Test
     public void dumpEngines() {
-        SearchEngineConfig.getAll().forEach(config -> {
-            assertNotNull(config);
-            Log.d(TAG, "\n" + config);
+        EngineId.getEnabledEngines().forEach(engineId -> {
+            assertNotNull(engineId);
+            Log.d(TAG, "\n" + engineId);
         });
     }
 

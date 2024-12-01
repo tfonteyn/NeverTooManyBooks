@@ -80,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
@@ -214,7 +214,7 @@ public class Book
 
     /** the stage of the book entity. */
     private final EntityStage stage;
-
+    private final PartialDateParser partialDateParser = new PartialDateParser();
     /**
      * Validator and validator results.
      * <p>
@@ -222,8 +222,6 @@ public class Book
      */
     @Nullable
     private ValidatorConfig validatorConfig;
-
-    private final PartialDateParser partialDateParser = new PartialDateParser();
 
     /**
      * Constructor.
@@ -800,16 +798,16 @@ public class Book
      * @param context Current context
      */
     public void pruneSeries(@NonNull final Context context) {
-            final List<Series> seriesList = getSeries();
-            if (!seriesList.isEmpty()) {
-                final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+        final List<Series> seriesList = getSeries();
+        if (!seriesList.isEmpty()) {
+            final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
-                if (seriesDao.pruneList(context, seriesList,
-                                        series -> series.getLocale(context).orElseGet(
-                                                () -> getLocaleOrUserLocale(context)))) {
-                    stage.setStage(EntityStage.Stage.Dirty);
-                }
+            if (seriesDao.pruneList(context, seriesList,
+                                    series -> series.getLocale(context).orElseGet(
+                                            () -> getLocaleOrUserLocale(context)))) {
+                stage.setStage(EntityStage.Stage.Dirty);
             }
+        }
 
         // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
@@ -1131,7 +1129,7 @@ public class Book
 
     /**
      * FIXME: 27/09/2024 unify 'isRead' with 'getReadingProgress()'
-     *
+     * <p>
      * Get the Read/Unread status.
      *
      * @return {@code true} if this book was read/finished.
@@ -1628,25 +1626,25 @@ public class Book
      * @param bookData to copy from
      */
     public void copyExternalIdsFrom(@NonNull final Book bookData) {
-        SearchEngineConfig.getExternalIdDomains()
-                          .stream()
-                          .filter(domain -> bookData.contains(domain.getName()))
-                          .forEach(domain -> {
-                              final String key = domain.getName();
-                              if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
-                                  final String id = bookData.getString(key);
-                                  // Sanity check
-                                  if (!id.isEmpty()) {
-                                      putString(key, id);
-                                  }
-                              } else {
-                                  final long id = bookData.getLong(key);
-                                  // Sanity check
-                                  if (id != 0) {
-                                      putLong(key, id);
-                                  }
-                              }
-                          });
+        EngineId.getExternalIdDomains()
+                .stream()
+                .filter(domain -> bookData.contains(domain.getName()))
+                .forEach(domain -> {
+                    final String key = domain.getName();
+                    if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
+                        final String id = bookData.getString(key);
+                        // Sanity check
+                        if (!id.isEmpty()) {
+                            putString(key, id);
+                        }
+                    } else {
+                        final long id = bookData.getLong(key);
+                        // Sanity check
+                        if (id != 0) {
+                            putLong(key, id);
+                        }
+                    }
+                });
     }
 
     /**

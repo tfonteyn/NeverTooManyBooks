@@ -37,8 +37,8 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -64,11 +64,10 @@ public class ViewBookOnWebsiteHandler
                     .stream()
                     .map(Site::getEngineId)
                     .forEach(engineId -> {
-                        final SearchEngineConfig config = engineId.requireConfig();
                         //noinspection DataFlowIssue
                         subMenu.add(R.id.MENU_GROUP_BOOK,
-                                    config.getDomainMenuResId(),
-                                    res.getInteger(config.getDomainMenuOrderResId()),
+                                    engineId.getDomainMenuResId(),
+                                    res.getInteger(engineId.getDomainMenuOrderResId()),
                                     engineId.getLabelResId())
                                .setIcon(R.drawable.link_24px);
                     });
@@ -98,12 +97,12 @@ public class ViewBookOnWebsiteHandler
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
             final boolean visible =
-                    SearchEngineConfig.getByMenuId(menuItem.getItemId())
-                                      .map(SearchEngineConfig::getExternalIdDomain)
-                                      .filter(Objects::nonNull)
-                                      .map(domain -> rowData.getString(domain.getName()))
-                                      .filter(value -> !value.isEmpty() && !"0".equals(value))
-                                      .isPresent();
+                    EngineId.getByMenuId(menuItem.getItemId())
+                            .map(EngineId::getExternalIdDomain)
+                            .filter(Objects::nonNull)
+                            .map(domain -> rowData.getString(domain.getName()))
+                            .filter(value -> !value.isEmpty() && !"0".equals(value))
+                            .isPresent();
 
             menuItem.setVisible(visible);
             if (visible) {
@@ -118,14 +117,13 @@ public class ViewBookOnWebsiteHandler
                                       @IdRes final int menuItemId,
                                       @NonNull final DataHolder rowData) {
 
-        final Optional<SearchEngineConfig> oConfig = SearchEngineConfig.getByMenuId(menuItemId);
-        if (oConfig.isPresent()) {
-            final SearchEngineConfig config = oConfig.get();
-            final Domain domain = config.getExternalIdDomain();
+        final Optional<EngineId> oEngineId = EngineId.getByMenuId(menuItemId);
+        if (oEngineId.isPresent()) {
+            final EngineId engineId = oEngineId.get();
+            final Domain domain = engineId.getExternalIdDomain();
             if (domain != null) {
                 final SearchEngine.ViewBookByExternalId searchEngine =
-                        (SearchEngine.ViewBookByExternalId)
-                                config.getEngineId().createSearchEngine(context);
+                        (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
 
                 final String externalId = rowData.getString(domain.getName());
                 final String url = searchEngine.createBrowserUrl(context, externalId);

@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -366,12 +366,12 @@ public class BoBTask
         }
 
         // external site ID's; needed for the context menu "View on..."
-        SearchEngineConfig.getExternalIdDomains()
-                          .stream()
-                          .map(domain -> new DomainExpression(
-                                  domain, DBDefinitions.TBL_BOOKS.dot(domain),
-                                  Sort.Unsorted))
-                          .forEach(builder::addDomain);
+        EngineId.getExternalIdDomains()
+                .stream()
+                .map(domain -> new DomainExpression(
+                        domain, DBDefinitions.TBL_BOOKS.dot(domain),
+                        Sort.Unsorted))
+                .forEach(builder::addDomain);
 
         // If enabled, join with and add the Calibre fields.
         if (CalibreHandler.isSyncEnabled(context)) {

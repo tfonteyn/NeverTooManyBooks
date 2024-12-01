@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -315,7 +315,7 @@ public class BookDaoHelper {
      */
     @VisibleForTesting
     public void processExternalIds() {
-        final List<Domain> domains = SearchEngineConfig.getExternalIdDomains();
+        final List<Domain> domains = EngineId.getExternalIdDomains();
 
         domains.stream()
                .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Integer)
