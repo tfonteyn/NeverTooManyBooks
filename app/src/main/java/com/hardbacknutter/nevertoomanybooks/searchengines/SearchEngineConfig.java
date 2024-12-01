@@ -40,6 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -445,8 +447,16 @@ public class SearchEngineConfig {
             return this;
         }
 
+        /**
+         * Set the {@link DBKey} for the column name in the Books table which stores
+         * the website specific identifier for a book.
+         *
+         * @param domainKey dbKey
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
-        Builder setDomainKey(@NonNull final String domainKey) {
+        Builder setExternalIdDomainKey(@NonNull final String domainKey) {
             if (domainKey.isEmpty()) {
                 externalIdDomain = null;
             } else {
@@ -455,6 +465,14 @@ public class SearchEngineConfig {
             return this;
         }
 
+        /**
+         * Set the resource id's to use for the "View on" menu item.
+         *
+         * @param domainMenuId    the menu id
+         * @param domainMenuOrder the menu order value
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         Builder setDomainMenuId(@IdRes final int domainMenuId,
                                 @IntegerRes final int domainMenuOrder) {
@@ -463,6 +481,13 @@ public class SearchEngineConfig {
             return this;
         }
 
+        /**
+         * Set the View id which is used in {@link SearchBookByExternalIdFragment}.
+         *
+         * @param domainViewId id
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         Builder setDomainViewId(@IdRes final int domainViewId) {
             this.domainViewId = domainViewId;
