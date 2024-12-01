@@ -259,7 +259,8 @@ public class ShowBookDetailsFragment
         //noinspection DataFlowIssue
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
-        menuHandlers = MenuHandlerFactory.create();
+        //noinspection DataFlowIssue
+        menuHandlers = MenuHandlerFactory.create(getContext());
 
         createCoverDelegates();
 

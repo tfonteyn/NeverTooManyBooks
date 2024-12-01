@@ -20,16 +20,16 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandMenuHandler;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 public final class MenuHandlerFactory {
@@ -40,23 +40,27 @@ public final class MenuHandlerFactory {
     /**
      * Create the list of handlers.
      *
+     * @param context Current context
+     *
      * @return unmodifiable list
      */
     @NonNull
-    public static List<MenuHandler> create() {
+    public static List<MenuHandler> create(@NonNull final Context context) {
         final List<MenuHandler> list = new ArrayList<>();
 
         list.add(new ViewBookOnWebsiteHandler());
 
-        if (BuildConfig.ENABLE_AMAZON) {
-            list.add(new AmazonMenuHandler());
-        }
-        if (BuildConfig.ENABLE_BERTRAND_PT) {
-            list.add(new BertrandMenuHandler());
-        }
-        if (BuildConfig.ENABLE_BOL) {
-            list.add(new BolMenuHandler());
-        }
+        //noinspection DataFlowIssue
+        Site.Type.Data
+                .getSites()
+                .stream()
+                .map(Site::getEngineId)
+                .map(EngineId::getConfig)
+                .filter(Objects::nonNull)
+                .map(config -> config.createShoppingMenuHandler(context))
+                .flatMap(Optional::stream)
+                .forEach(list::add);
+
         return list;
     }
 }

@@ -48,9 +48,12 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
@@ -112,8 +115,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          Look at the other engines for more complex examples.
  *      </li>
  *
- *      <li>Optional: create a {@link ShoppingMenuHandler} instance and enable it in
- *          {@link MenuHandlerFactory}.
+ *      <li>Optional: create a {@link ShoppingMenuHandler} instance and add it in
+ *          {@link #createEngineConfigurations()} using
+ *          {@link SearchEngineConfig.Builder#setShoppingMenuHandler}.
  *      </li>
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
@@ -386,6 +390,7 @@ public enum EngineId
                     // .setDomainKey(DBKey.SID_ASIN)
                     // .setDomainViewId(R.id.site_amazon)
                     // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
+                    .setShoppingMenuHandler(AmazonMenuHandler::new)
                     .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
@@ -399,10 +404,12 @@ public enum EngineId
         }
         if (Bol.isEnabled()) {
             new SearchEngineConfig.Builder(Bol)
+                    .setShoppingMenuHandler(BolMenuHandler::new)
                     .build(SearchEngineConfig::new);
         }
         if (BertrandPt.isEnabled()) {
             new SearchEngineConfig.Builder(BertrandPt)
+                    .setShoppingMenuHandler(BertrandMenuHandler::new)
                     .build(SearchEngineConfig::new);
         }
         if (BookFinder.isEnabled()) {

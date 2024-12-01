@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -44,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * This class provides the <strong>mutable</strong> configuration
@@ -79,6 +81,8 @@ public class SearchEngineConfig {
     private final boolean prefersIsbn10;
     /** {@link SearchEngine.CoverByEdition} only. */
     private final boolean supportsMultipleCoverSizes;
+    @Nullable
+    private final Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier;
 
     /**
      * Constructor.
@@ -95,6 +99,8 @@ public class SearchEngineConfig {
         domainViewId = builder.domainViewId;
         domainMenuId = builder.domainMenuId;
         domainMenuOrder = builder.domainMenuOrder;
+
+        shoppingMenuHandlerSupplier = builder.shoppingMenuHandlerSupplier;
 
         connectTimeoutMs = builder.connectTimeoutMs;
         readTimeoutMs = builder.readTimeoutMs;
@@ -318,6 +324,23 @@ public class SearchEngineConfig {
     }
 
     /**
+     * Create the shopping menu handler if there is one enabled.
+     * <p>
+     * URGENT: UNFY WITH ShoppingMenuHandler#isShowMenu
+     *
+     * @param context Current context
+     *
+     * @return handler
+     */
+    @NonNull
+    public Optional<MenuHandler> createShoppingMenuHandler(@NonNull final Context context) {
+        if (engineId.isEnabled() && shoppingMenuHandlerSupplier != null) {
+            return Optional.of(shoppingMenuHandlerSupplier.get());
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Timeout we allow for a connection to be established.
      *
      * @param context Current context
@@ -411,6 +434,9 @@ public class SearchEngineConfig {
         /** The DEFAULT for the engine: {@code false}. */
         private boolean prefersIsbn10;
 
+        @Nullable
+        private Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier;
+
         /**
          * Constructor.
          *
@@ -503,6 +529,13 @@ public class SearchEngineConfig {
         @NonNull
         Builder setPrefersIsbn10(final boolean prefersIsbn10) {
             this.prefersIsbn10 = prefersIsbn10;
+            return this;
+        }
+
+        @NonNull
+        Builder setShoppingMenuHandler(@Nullable final
+                                       Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier) {
+            this.shoppingMenuHandlerSupplier = shoppingMenuHandlerSupplier;
             return this;
         }
     }

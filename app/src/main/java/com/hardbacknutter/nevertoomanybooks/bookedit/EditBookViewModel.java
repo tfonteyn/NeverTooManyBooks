@@ -192,7 +192,7 @@ public class EditBookViewModel
             errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
             errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
-            menuHandlers = MenuHandlerFactory.create();
+            menuHandlers = MenuHandlerFactory.create(context);
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 

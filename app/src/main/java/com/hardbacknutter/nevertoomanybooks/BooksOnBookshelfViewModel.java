@@ -361,7 +361,7 @@ public class BooksOnBookshelfViewModel
             rebuildMode = RebuildBooklist.FromSaved;
         }
 
-        menuHandlers = MenuHandlerFactory.create();
+        menuHandlers = MenuHandlerFactory.create(context);
 
         // create if not explicitly set above
         if (searchCriteria == null) {
