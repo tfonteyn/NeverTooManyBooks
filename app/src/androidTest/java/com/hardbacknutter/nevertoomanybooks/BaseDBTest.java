@@ -73,6 +73,7 @@ public abstract class BaseDBTest {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          .putString(Prefs.PK_UI_LOCALE, localeCode)
+                         .putString(CoverVolume.PK_VOLUME_INDEX, "0")
 
                          .putBoolean(Prefs.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
                          .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
