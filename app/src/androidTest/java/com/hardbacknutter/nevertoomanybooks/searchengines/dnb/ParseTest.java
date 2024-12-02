@@ -48,6 +48,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
 public class ParseTest
@@ -112,10 +113,9 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        // FIXME: 2024-11-02: the site is failing to display covers
-        assertEquals(0, covers.size());
-//        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
-//                                          + "_9783453321892_0_.jpg"));
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
+                                          + "_9783453321892_0_.jpg"));
     }
 
     @Test
@@ -159,10 +159,9 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        // FIXME: 2024-11-02: the site is failing to display covers
-        assertEquals(0, covers.size());
-//        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
-//                                          + "_9783426226681_0_.jpg"));
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
+                                          + "_9783426226681_0_.jpg"));
     }
 
     @Test
@@ -215,10 +214,9 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        // FIXME: 2024-11-02: the site is failing to display covers
-        assertEquals(0, covers.size());
-//        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
-//                                          + "_9783734163296_0_.jpg"));
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
+                                          + "_9783734163296_0_.jpg"));
     }
 
     /**
@@ -275,9 +273,8 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        // FIXME: 2024-11-02: the site is failing to display covers
-        assertEquals(0, covers.size());
-//        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
-//                                          + "_9783641285166_0_.jpg"));
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Dnb.getPreferenceKey()
+                                          + "_9783641285166_0_.jpg"));
     }
 }
