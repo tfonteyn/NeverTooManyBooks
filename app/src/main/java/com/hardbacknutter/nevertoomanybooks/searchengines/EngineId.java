@@ -876,9 +876,6 @@ public enum EngineId
      */
     @NonNull
     private EngineId setDomainViewId(@IdRes final int domainViewId) {
-        if (this.domainViewId != 0) {
-            throw new IllegalStateException("domainViewId already set");
-        }
         this.domainViewId = domainViewId;
         return this;
     }
