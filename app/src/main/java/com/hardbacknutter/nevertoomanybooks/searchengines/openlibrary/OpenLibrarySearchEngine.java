@@ -69,6 +69,16 @@ import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * <a href="https://openlibrary.org/dev/docs/api/search">Open Library Search API</a>
+ * <p>
+ * 2024-12-02: fetching covers using the
+ * "covers": [
+ * 5546156
+ * ],
+ * section is hit and miss. Due to the servers multiple redirect
+ * we sometimes get a cover and sometimes not. We see error 500, sometimes 403.
+ * <p>
+ * Leaving as-is for now. Based on past experience, and now this one...
+ * OpenLibrary does not seem to be the most stable server ...
  */
 public class OpenLibrarySearchEngine
         extends SearchEngineBase
