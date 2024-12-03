@@ -1224,6 +1224,9 @@ public class BooksOnBookshelfViewModel
         if (keys != null) {
             final List<String> keyList = Arrays.asList(keys);
 
+            // 2024-12-03: for now we never receive a combination of the below keys,
+            // hence we can 'return' when one (set of) key is present
+
             if (keyList.contains(DBKey.READ__BOOL) || keyList.contains(DBKey.READ_PROGRESS)) {
                 Objects.requireNonNull(book);
                 onBookReadStatusChanged(book);
