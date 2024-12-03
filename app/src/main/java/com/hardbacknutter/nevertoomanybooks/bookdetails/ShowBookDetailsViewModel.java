@@ -115,7 +115,7 @@ public class ShowBookDetailsViewModel
     private void updateUI() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         onBookLoaded.setValue(book);
-        onReadStatusChanged.setValue(null);
+        readStatusChanged();
     }
 
     /**
@@ -200,7 +200,7 @@ public class ShowBookDetailsViewModel
     public void setReadNow(final boolean read) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         ServiceLocator.getInstance().getBookDao().setRead(book, read);
-        onReadStatusChanged.setValue(null);
+        readStatusChanged();
     }
 
     @Override
@@ -219,7 +219,7 @@ public class ShowBookDetailsViewModel
     public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         ServiceLocator.getInstance().getBookDao().setReadingProgress(book, readingProgress);
-        onReadStatusChanged.setValue(null);
+        readStatusChanged();
     }
 
     @Override
