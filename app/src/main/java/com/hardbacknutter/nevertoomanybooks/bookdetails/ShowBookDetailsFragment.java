@@ -373,6 +373,10 @@ public class ShowBookDetailsFragment
             field.setVisibility(getView(), true, false);
         });
 
+        vm.getField(R.id.date_last_updated).ifPresent(field -> {
+            field.setValue(book.getString(DBKey.DATE_LAST_UPDATED__UTC));
+        });
+
         // when running in embedded mode, update the BoB list
         if (bookChangedListener != null) {
             bookChangedListener.onBookUpdated(book,
