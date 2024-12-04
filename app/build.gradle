@@ -87,30 +87,11 @@ android {
         testInstrumentationRunnerArguments["runnerBuilder"] =
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
-        buildConfigField("boolean", "ENABLE_AMAZON", "true")
-        buildConfigField("boolean", "ENABLE_BEDETHEQUE", "true")
-        buildConfigField("boolean", "ENABLE_BOL", "true")
-        buildConfigField("boolean", "ENABLE_DNB_DE", "true")
-        buildConfigField("boolean", "ENABLE_DOUBAN", "true")
-        buildConfigField("boolean", "ENABLE_GOOGLE_BOOKS", "true")
-        buildConfigField("boolean", "ENABLE_ISFDB", "true")
-        buildConfigField("boolean", "ENABLE_KB_NL", "true")
-        buildConfigField("boolean", "ENABLE_LAST_DODO", "true")
-        buildConfigField("boolean", "ENABLE_OPEN_LIBRARY", "true")
-        buildConfigField("boolean", "ENABLE_STRIP_INFO", "true")
-        buildConfigField("boolean", "ENABLE_STRIP_WEB", "true")
-
-        // Both Goodreads and LibraryThing have completely disabled their API's
-        // But we need to keep them enabled due to how
-        // ViewBookOnWebsiteHandler handles external-id's.
-        buildConfigField("boolean", "ENABLE_GOODREADS_BY_EXT_ID", "true")
-        buildConfigField("boolean", "ENABLE_LIBRARY_THING_BY_EXT_ID", "true")
-
         // Under development; disabled for release builds in buildTypes.release
-        buildConfigField("boolean", "ENABLE_BERTRAND_PT", "true")
         buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
         buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
+
         buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "true")
     }
 
@@ -128,10 +109,10 @@ android {
                     "${defaultConfig.applicationId}.GenericFileProvider")
 
             // under development
-            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "false")
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
             buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "false")
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
+
             buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }
         beta {

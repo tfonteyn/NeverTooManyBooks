@@ -155,7 +155,7 @@ public enum EngineId
            // The Locale will be dynamically set depending on the country site
            Locale.US,
            AmazonSearchEngine.class,
-           BuildConfig.ENABLE_AMAZON),
+           true),
 
     /** French language (and to some extend other languages) comics. */
     Bedetheque("bedetheque",
@@ -164,7 +164,7 @@ public enum EngineId
                "https://www.bedetheque.com",
                Locale.FRANCE,
                BedethequeSearchEngine.class,
-               BuildConfig.ENABLE_BEDETHEQUE),
+               true),
 
     /**
      * All genres; portuguese and some other languages.
@@ -178,7 +178,7 @@ public enum EngineId
                "https://www.bertrand.pt",
                new Locale("pt", "PT"),
                BertrandPtSearchEngine.class,
-               BuildConfig.ENABLE_BERTRAND_PT),
+               true),
 
     /**
      * All genres; dutch and many other languages.
@@ -190,7 +190,7 @@ public enum EngineId
         "https://www.bol.com",
         new Locale("nl", "NL"),
         BolSearchEngine.class,
-        BuildConfig.ENABLE_BOL),
+        true),
 
     /**
      * All genres. This is a portal site to other shopping sites.
@@ -212,7 +212,7 @@ public enum EngineId
         "https://katalog.dnb.de",
         new Locale("de", "DE"),
         DnbSearchEngine.class,
-        BuildConfig.ENABLE_DNB_DE),
+        true),
 
     /** Chinese language books & comics. */
     Douban("douban",
@@ -221,16 +221,19 @@ public enum EngineId
            "https://search.douban.com",
            Locale.CHINA,
            DoubanSearchEngine.class,
-           BuildConfig.ENABLE_DOUBAN),
+           true),
 
-    /** Only used for {@link SearchEngine.ViewBookByExternalId}. */
+    /**
+     * Goodreads has completely disabled their API's and we do NOT search on their site.
+     * Only used for {@link SearchEngine.ViewBookByExternalId}.
+     */
     Goodreads("goodreads",
               R.string.site_goodreads,
               R.string.site_info_goodreads,
               "https://www.goodreads.com",
               Locale.US,
               GoodreadsSearchEngine.class,
-              BuildConfig.ENABLE_GOODREADS_BY_EXT_ID),
+              true),
 
     /** All genres. */
     GoogleBooks("googlebooks",
@@ -239,7 +242,7 @@ public enum EngineId
                 "https://www.googleapis.com",
                 Locale.US,
                 GoogleBooks2SearchEngine.class,
-                BuildConfig.ENABLE_GOOGLE_BOOKS),
+                true),
 
     /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
     Isfdb("isfdb",
@@ -248,7 +251,7 @@ public enum EngineId
           "https://www.isfdb.org",
           Locale.US,
           IsfdbSearchEngine.class,
-          BuildConfig.ENABLE_ISFDB),
+          true),
 
     /** Dutch language books & comics. */
     KbNl("kbnl",
@@ -257,7 +260,7 @@ public enum EngineId
          "https://webggc.oclc.org",
          new Locale("nl", "NL"),
          KbNlSearchEngine.class,
-         BuildConfig.ENABLE_KB_NL),
+         true),
 
     /** Dutch language (and to some extend other languages) comics. */
     LastDodoNl("lastdodo",
@@ -266,16 +269,19 @@ public enum EngineId
                "https://www.lastdodo.nl",
                new Locale("nl", "NL"),
                LastDodoSearchEngine.class,
-               BuildConfig.ENABLE_LAST_DODO),
+               true),
 
-    /** Only used for {@link SearchEngine.ViewBookByExternalId}. */
+    /**
+     * LibraryThing has completely disabled their API's and we do NOT search on their site.
+     * Only used for {@link SearchEngine.ViewBookByExternalId}.
+     */
     LibraryThing("librarything",
                  R.string.site_library_thing,
                  R.string.site_info_library_thing,
                  "https://www.librarything.com",
                  Locale.US,
                  LibraryThingSearchEngine.class,
-                 BuildConfig.ENABLE_LIBRARY_THING_BY_EXT_ID),
+                 true),
 
     /** All genres. */
     OpenLibrary("openlibrary",
@@ -284,7 +290,7 @@ public enum EngineId
                 "https://openlibrary.org",
                 Locale.US,
                 OpenLibrarySearchEngine.class,
-                BuildConfig.ENABLE_OPEN_LIBRARY),
+                true),
 
     /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe("stripinfo",
@@ -293,7 +299,7 @@ public enum EngineId
                 "https://www.stripinfo.be",
                 new Locale("nl", "BE"),
                 StripInfoSearchEngine.class,
-                BuildConfig.ENABLE_STRIP_INFO),
+                true),
 
     /**
      * Dutch language (and to some extend other languages) comics.
@@ -307,7 +313,7 @@ public enum EngineId
                "https://www.stripweb.be",
                new Locale("nl", "BE"),
                StripWebSearchEngine.class,
-               BuildConfig.ENABLE_STRIP_WEB);
+               true);
 
     // NEWTHINGS: adding a new search engine: add an engine id definition
 
