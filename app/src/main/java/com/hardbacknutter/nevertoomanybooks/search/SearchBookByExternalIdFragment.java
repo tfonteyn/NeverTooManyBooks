@@ -37,6 +37,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -60,6 +61,18 @@ public class SearchBookByExternalIdFragment
 
     private static final String SIS_SELECTED_RB_ID = TAG + ":selectedResId";
     private static final String SIS_USER_INPUT = TAG + ":externalId";
+
+    /**
+     * NEWTHINGS: adding a new search engine:
+     * optional: add mapping between the RadioButton widget and the EngineId.
+     */
+    private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.of(
+            R.id.site_amazon, EngineId.Amazon,
+            R.id.site_open_library, EngineId.OpenLibrary,
+            R.id.site_isfdb, EngineId.Isfdb,
+            R.id.site_strip_info_be, EngineId.StripInfoBe,
+            R.id.site_last_dodo_nl, EngineId.LastDodoNl
+    );
 
     /** The currently selected radio button used by onPause/onSaveInstanceState. */
     private int selectedRbViewId = View.NO_ID;
@@ -160,8 +173,11 @@ public class SearchBookByExternalIdFragment
 
         // on false->true transition
 
-        this.engineId = EngineId.getByViewId(viewId)
-                                .orElseThrow(IllegalStateException::new);
+        this.engineId = VIEW_TO_ENGINE.get(viewId);
+        // Sanity check
+        if (this.engineId == null) {
+            throw new IllegalStateException("Bug: engine has no viewId defined");
+        }
 
         //noinspection DataFlowIssue
         EngineId.promptToRegister(getContext(), List.of(Site.Type.Data.getSite(engineId)),

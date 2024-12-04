@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
@@ -366,8 +365,6 @@ public enum EngineId
 
     @Nullable
     private Domain externalIdDomain;
-    @IdRes
-    private int domainViewId;
 
     @IdRes
     private int domainMenuId;
@@ -451,7 +448,6 @@ public enum EngineId
         }
         if (Goodreads.isEnabled()) {
             Goodreads.setExternalIdDomainKey(DBKey.SID_GOODREADS_BOOK)
-                     .setDomainViewId(R.id.site_goodreads)
                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
                                       R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
                      .createConfig()
@@ -464,7 +460,6 @@ public enum EngineId
         }
         if (Isfdb.isEnabled()) {
             Isfdb.setExternalIdDomainKey(DBKey.SID_ISFDB)
-                 .setDomainViewId(R.id.site_isfdb)
                  .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
                                   R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
                  .createConfig()
@@ -480,7 +475,6 @@ public enum EngineId
         }
         if (LastDodoNl.isEnabled()) {
             LastDodoNl.setExternalIdDomainKey(DBKey.SID_LAST_DODO_NL)
-                      .setDomainViewId(R.id.site_last_dodo_nl)
                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
                       .createConfig()
@@ -489,7 +483,6 @@ public enum EngineId
         }
         if (LibraryThing.isEnabled()) {
             LibraryThing.setExternalIdDomainKey(DBKey.SID_LIBRARY_THING)
-                        .setDomainViewId(R.id.site_library_thing)
                         .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
                                          R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
                         .createConfig()
@@ -497,7 +490,6 @@ public enum EngineId
         }
         if (OpenLibrary.isEnabled()) {
             OpenLibrary.setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
-                       .setDomainViewId(R.id.site_open_library)
                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
                        .createConfig()
@@ -506,7 +498,6 @@ public enum EngineId
         }
         if (StripInfoBe.isEnabled()) {
             StripInfoBe.setExternalIdDomainKey(DBKey.SID_STRIP_INFO)
-                       .setDomainViewId(R.id.site_strip_info_be)
                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
                        .createConfig()
@@ -535,21 +526,6 @@ public enum EngineId
         return Arrays.stream(values())
                      .filter(EngineId::isEnabled)
                      .filter(engineId -> engineId.getDomainMenuResId() == menuId)
-                     .findFirst();
-    }
-
-    /**
-     * Search for an enabled Engine defined by the given viewId.
-     *
-     * @param viewId for the engine
-     *
-     * @return Optional with the engine
-     */
-    @NonNull
-    public static Optional<EngineId> getByViewId(@IdRes final int viewId) {
-        return Arrays.stream(values())
-                     .filter(EngineId::isEnabled)
-                     .filter(engineId -> engineId.getDomainViewId() == viewId)
                      .findFirst();
     }
 
@@ -862,24 +838,6 @@ public enum EngineId
         return externalIdDomain;
     }
 
-    @IdRes
-    private int getDomainViewId() {
-        return domainViewId;
-    }
-
-    /**
-     * Set the View id which is used in {@link SearchBookByExternalIdFragment}.
-     *
-     * @param domainViewId id
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    private EngineId setDomainViewId(@IdRes final int domainViewId) {
-        this.domainViewId = domainViewId;
-        return this;
-    }
-
     /**
      * Get the resource id to use for the "View on" menu item.
      *
@@ -1130,7 +1088,6 @@ public enum EngineId
                + ", enabled=" + enabled
 
                + ", externalIdDomain=" + externalIdDomain
-               + ", domainViewId=" + domainViewId
                + ", domainMenuId=" + domainMenuId
                + ", domainMenuOrder=" + domainMenuOrder
                + '}';
