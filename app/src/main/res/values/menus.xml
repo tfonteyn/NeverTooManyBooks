@@ -64,13 +64,7 @@
     <integer name="MENU_ORDER_CALIBRE">750</integer>
 
     <integer name="MENU_ORDER_VIEW_BOOK_AT_SITE">800</integer>
-
-
-    <!-- NEWTHINGS: adding a new search engine: optional: adding a shopping menu : add a menu order value -->
-    <integer name="MENU_ORDER_SHOP_ON_SITE">880</integer>
-    <integer name="SUBMENU_ORDER_AMAZON">881</integer>
-    <integer name="SUBMENU_ORDER_BERTRAND">882</integer>
-    <integer name="SUBMENU_ORDER_BOL">883</integer>
+    <integer name="MENU_ORDER_SHOP_ON_SITE">900</integer>
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
