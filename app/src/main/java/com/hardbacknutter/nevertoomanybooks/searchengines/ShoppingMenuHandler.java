@@ -31,6 +31,7 @@ import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
@@ -72,14 +73,29 @@ public abstract class ShoppingMenuHandler
         this.midBySeries = midBySeries;
     }
 
+    /**
+     * To be called from {@link #onPrepareMenu(Context, Menu, DataHolder)}.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} to show; {@code false} to hide
+     */
     public abstract boolean isShowMenu(@NonNull Context context);
 
     @Override
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
+        // add the shopping submenu if not there yet
+        MenuItem shoppingSubmenu = menu.findItem(R.id.SUBMENU_SHOP_BOOK_ON_SITE);
+        if (shoppingSubmenu == null) {
+            inflater.inflate(R.menu.sm_shop_on_site, menu);
+            shoppingSubmenu = menu.findItem(R.id.SUBMENU_SHOP_BOOK_ON_SITE);
+        }
+
+        // add THIS submenu if not there yet
         if (menu.findItem(subMenuId) == null) {
-            inflater.inflate(menuResId, menu);
+            inflater.inflate(menuResId, shoppingSubmenu.getSubMenu());
         }
     }
 
