@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -37,10 +38,12 @@ public class EngineIdTest {
 
     @Test
     public void dumpEngines() {
-        EngineId.getEnabledEngines().forEach(engineId -> {
-            assertNotNull(engineId);
-            Log.d(TAG, "\n" + engineId);
-        });
+        Arrays.stream(EngineId.values())
+              .filter(EngineId::isEnabled)
+              .forEach(engineId -> {
+                  assertNotNull(engineId);
+                  Log.d(TAG, "\n" + engineId);
+              });
     }
 
     @Test

@@ -523,12 +523,6 @@ public enum EngineId
         // NEWTHINGS: adding a new search engine: add the search engine configuration
     }
 
-    public static List<EngineId> getEnabledEngines() {
-        return Arrays.stream(values())
-                     .filter(EngineId::isEnabled)
-                     .collect(Collectors.toList());
-    }
-
     /**
      * Search for an enabled Engine defined by the given menuId.
      *

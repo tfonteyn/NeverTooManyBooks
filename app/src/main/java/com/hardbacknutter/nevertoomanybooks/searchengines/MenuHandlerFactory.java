@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,13 +50,11 @@ public final class MenuHandlerFactory {
 
         list.add(new ViewBookOnWebsiteHandler());
 
-        Site.Type.Data
-                .getSites()
-                .stream()
-                .map(Site::getEngineId)
-                .map(engineId -> engineId.createShoppingMenuHandler(context))
-                .flatMap(Optional::stream)
-                .forEach(list::add);
+        Arrays.stream(EngineId.values())
+              .filter(EngineId::isEnabled)
+              .map(engineId -> engineId.createShoppingMenuHandler(context))
+              .flatMap(Optional::stream)
+              .forEach(list::add);
 
         return list;
     }

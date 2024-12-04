@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
@@ -380,16 +381,18 @@ public class SearchBookUpdatesViewModel
 
                     // Collect external ID's we can use
                     final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
-                    EngineId.getEnabledEngines().forEach(engineId -> {
-                        final Domain domain = engineId.getExternalIdDomain();
-                        if (domain != null) {
-                            final String value = currentBook.getString(
-                                    domain.getName(), null);
-                            if (value != null && !value.isEmpty() && !"0".equals(value)) {
-                                externalIds.put(engineId, value);
-                            }
-                        }
-                    });
+                    Arrays.stream(EngineId.values())
+                          .filter(EngineId::isEnabled)
+                          .forEach(engineId -> {
+                              final Domain domain = engineId.getExternalIdDomain();
+                              if (domain != null) {
+                                  final String value = currentBook.getString(
+                                          domain.getName(), null);
+                                  if (value != null && !value.isEmpty() && !"0".equals(value)) {
+                                      externalIds.put(engineId, value);
+                                  }
+                              }
+                          });
 
                     if (!externalIds.isEmpty()) {
                         setExternalIds(externalIds);

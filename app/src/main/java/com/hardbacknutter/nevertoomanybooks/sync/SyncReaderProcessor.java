@@ -579,12 +579,14 @@ public final class SyncReaderProcessor {
         @NonNull
         public Builder addSidFields(@NonNull final Context context) {
             final SortedMap<String, String> sidMap = new TreeMap<>();
-            EngineId.getEnabledEngines().forEach(engineId -> {
-                final Domain domain = engineId.getExternalIdDomain();
-                if (domain != null) {
-                    sidMap.put(engineId.getName(context), domain.getName());
-                }
-            });
+            Arrays.stream(EngineId.values())
+                  .filter(EngineId::isEnabled)
+                  .forEach(engineId -> {
+                      final Domain domain = engineId.getExternalIdDomain();
+                      if (domain != null) {
+                          sidMap.put(engineId.getName(context), domain.getName());
+                      }
+                  });
             sidMap.forEach((label, key) -> add(label, key, SyncAction.Overwrite));
 
             return this;
