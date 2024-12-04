@@ -361,6 +361,10 @@ public enum EngineId
     @Nullable
     private SearchEngineConfig config;
 
+
+    /** {@link SearchEngine.CoverByEdition} only. */
+    private boolean supportsMultipleCoverSizes;
+
     @Nullable
     private Domain externalIdDomain;
 
@@ -443,8 +447,8 @@ public enum EngineId
                      .build(SearchEngineConfig::new);
         }
         if (GoogleBooks.isEnabled()) {
-            GoogleBooks.createConfig()
-                       .setSupportsMultipleCoverSizes(true)
+            GoogleBooks.setSupportsMultipleCoverSizes(true)
+                       .createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (Isfdb.isEnabled()) {
@@ -456,8 +460,8 @@ public enum EngineId
                  .build(SearchEngineConfig::new);
         }
         if (KbNl.isEnabled()) {
-            KbNl.createConfig()
-                .setSupportsMultipleCoverSizes(true)
+            KbNl.setSupportsMultipleCoverSizes(true)
+                .createConfig()
                 .build(SearchEngineConfig::new);
         }
         if (LastDodoNl.isEnabled()) {
@@ -473,8 +477,8 @@ public enum EngineId
         }
         if (OpenLibrary.isEnabled()) {
             OpenLibrary.setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
-                       .createConfig()
                        .setSupportsMultipleCoverSizes(true)
+                       .createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
@@ -706,6 +710,12 @@ public enum EngineId
     }
 
     @NonNull
+    private EngineId setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
+        this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
+        return this;
+    }
+
+    @NonNull
     private EngineId setShoppingMenuHandler(@Nullable final
                                             Supplier<ShoppingMenuHandler> handlerSupplier) {
         this.shoppingMenuHandlerSupplier = handlerSupplier;
@@ -784,6 +794,17 @@ public enum EngineId
     @Nullable
     public Domain getExternalIdDomain() {
         return externalIdDomain;
+    }
+
+    /**
+     * {@link SearchEngine.CoverByEdition} only.
+     * <p>
+     * A site can support a single (default) or multiple sizes.
+     *
+     * @return {@code true} if multiple sizes are supported.
+     */
+    public boolean supportsMultipleCoverSizes() {
+        return supportsMultipleCoverSizes;
     }
 
     /**

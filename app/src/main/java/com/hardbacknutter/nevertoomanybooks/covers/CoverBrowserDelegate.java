@@ -372,7 +372,7 @@ class CoverBrowserDelegate
             // the gallery image is not already a large image,
             // start a task to fetch a larger image.
             //noinspection DataFlowIssue
-            if (imageFileInfo.getEngineId().getConfig().supportsMultipleCoverSizes()
+            if (imageFileInfo.getEngineId().supportsMultipleCoverSizes()
                 && Size.Large != imageFileInfo.getSize()) {
                 vb.lblPreview.setVisibility(View.INVISIBLE);
                 vb.preview.setVisibility(View.INVISIBLE);

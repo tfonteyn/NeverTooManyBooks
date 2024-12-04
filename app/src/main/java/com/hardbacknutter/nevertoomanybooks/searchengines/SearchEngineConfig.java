@@ -58,8 +58,6 @@ public class SearchEngineConfig {
     private final Throttler throttler;
 
     private final boolean prefersIsbn10;
-    /** {@link SearchEngine.CoverByEdition} only. */
-    private final boolean supportsMultipleCoverSizes;
 
     /**
      * Constructor.
@@ -70,7 +68,6 @@ public class SearchEngineConfig {
         engineId = builder.engineId;
 
         prefersIsbn10 = builder.prefersIsbn10;
-        supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
 
         connectTimeoutMs = builder.connectTimeoutMs;
         readTimeoutMs = builder.readTimeoutMs;
@@ -160,17 +157,6 @@ public class SearchEngineConfig {
     }
 
     /**
-     * {@link SearchEngine.CoverByEdition} only.
-     * <p>
-     * A site can support a single (default) or multiple sizes.
-     *
-     * @return {@code true} if multiple sizes are supported.
-     */
-    public boolean supportsMultipleCoverSizes() {
-        return supportsMultipleCoverSizes;
-    }
-
-    /**
      * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
      * <p>
      * By default, we search on the ISBN entered by the user.
@@ -244,7 +230,6 @@ public class SearchEngineConfig {
                + ", readTimeoutMs=" + readTimeoutMs
                + ", throttler=" + throttler
                + ", searchPrefersIsbn10=" + prefersIsbn10
-               + ", supportsMultipleCoverSizes=" + supportsMultipleCoverSizes
                + '}';
     }
 
@@ -309,12 +294,6 @@ public class SearchEngineConfig {
         @NonNull
         Builder setReadTimeoutMs(final int timeoutInMillis) {
             readTimeoutMs = timeoutInMillis;
-            return this;
-        }
-
-        @NonNull
-        Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
-            this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
             return this;
         }
 
