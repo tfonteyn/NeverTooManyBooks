@@ -31,7 +31,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -71,11 +70,13 @@ public class BolPreferencesFragment
             p.setValue(DEF_COUNTRY);
         }
 
+        final EngineId engineId = EngineId.Bol;
         // We need to set this manually, as the default depends on the user language.
         final SwitchPreference pShoppingMenu = findPreference(
-                EngineId.Bol.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        final ShoppingMenuHandler shoppingMenuHandler = new BolMenuHandler();
+                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
         //noinspection DataFlowIssue
-        pShoppingMenu.setChecked(shoppingMenuHandler.isShowMenu(getContext()));
+        final boolean enabled = engineId.createShoppingMenuHandler(getContext()).isPresent();
+        //noinspection DataFlowIssue
+        pShoppingMenu.setChecked(enabled);
     }
 }

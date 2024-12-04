@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrar
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * This class contains the <strong>immutable</strong> configuration
@@ -884,16 +883,17 @@ public enum EngineId
     }
 
     /**
-     * Create the shopping menu handler if there is one enabled.
+     * Create the shopping menu handler if there is one.
      * <p>
-     * URGENT: UNIFY WITH ShoppingMenuHandler#isShowMenu
+     * We always create it, and leave it up to the handler itself
+     * whether to show it to the user or not.
      *
      * @param context Current context
      *
      * @return handler
      */
     @NonNull
-    Optional<MenuHandler> createShoppingMenuHandler(@NonNull final Context context) {
+    public Optional<ShoppingMenuHandler> createShoppingMenuHandler(@NonNull final Context context) {
         if (isEnabled() && shoppingMenuHandlerSupplier != null) {
             return Optional.of(shoppingMenuHandlerSupplier.get());
         }

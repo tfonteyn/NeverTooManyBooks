@@ -27,7 +27,6 @@ import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -41,11 +40,13 @@ public class BertrandPtPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_bertrandpt, rootKey);
 
+        final EngineId engineId = EngineId.BertrandPt;
         // We need to set this manually, as the default depends on the user language.
-        final SwitchPreference showShoppingMenu = findPreference(
-                EngineId.BertrandPt.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        final ShoppingMenuHandler shoppingMenuHandler = new BertrandMenuHandler();
+        final SwitchPreference pShoppingMenu = findPreference(
+                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
         //noinspection DataFlowIssue
-        showShoppingMenu.setChecked(shoppingMenuHandler.isShowMenu(getContext()));
+        final boolean enabled = engineId.createShoppingMenuHandler(getContext()).isPresent();
+        //noinspection DataFlowIssue
+        pShoppingMenu.setChecked(enabled);
     }
 }
