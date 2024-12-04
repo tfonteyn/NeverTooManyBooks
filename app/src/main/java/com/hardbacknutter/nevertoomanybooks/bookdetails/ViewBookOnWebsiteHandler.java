@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +30,8 @@ import android.view.SubMenu;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -57,17 +58,17 @@ public class ViewBookOnWebsiteHandler
 
             final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
             final SubMenu subMenu = subMenuItem.getSubMenu();
-            final Resources res = context.getResources();
-
+            // sort the engines by name to add to the submenu (Engine names are NOT translated)
             Site.Type.ViewOnSite
                     .getSites()
                     .stream()
                     .map(Site::getEngineId)
+                    .sorted(Comparator.comparing(Enum::name))
                     .forEach(engineId -> {
                         //noinspection DataFlowIssue
                         subMenu.add(R.id.MENU_GROUP_BOOK,
                                     engineId.getDomainMenuResId(),
-                                    res.getInteger(engineId.getDomainMenuOrderResId()),
+                                    0,
                                     engineId.getLabelResId())
                                .setIcon(R.drawable.link_24px);
                     });
@@ -96,13 +97,16 @@ public class ViewBookOnWebsiteHandler
         //noinspection DataFlowIssue
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
-            final boolean visible =
-                    EngineId.getByMenuId(menuItem.getItemId())
-                            .map(EngineId::getExternalIdDomain)
-                            .filter(Objects::nonNull)
-                            .map(domain -> rowData.getString(domain.getName()))
-                            .filter(value -> !value.isEmpty() && !"0".equals(value))
-                            .isPresent();
+            final int menuId = menuItem.getItemId();
+            //noinspection DataFlowIssue
+            final boolean visible = Arrays
+                    .stream(EngineId.values())
+                    .filter(EngineId::isEnabled)
+                    .filter(engineId -> engineId.getDomainMenuResId() == menuId)
+                    .map(EngineId::getExternalIdDomain)
+                    .filter(Objects::nonNull)
+                    .map(domain -> rowData.getString(domain.getName()))
+                    .anyMatch(value -> !value.isEmpty() && !"0".equals(value));
 
             menuItem.setVisible(visible);
             if (visible) {
@@ -117,7 +121,12 @@ public class ViewBookOnWebsiteHandler
                                       @IdRes final int menuItemId,
                                       @NonNull final DataHolder rowData) {
 
-        final Optional<EngineId> oEngineId = EngineId.getByMenuId(menuItemId);
+        final Optional<EngineId> oEngineId = Arrays
+                .stream(EngineId.values())
+                .filter(EngineId::isEnabled)
+                .filter(engineId -> engineId.getDomainMenuResId() == menuItemId)
+                .findFirst();
+        // Sanity check
         if (oEngineId.isPresent()) {
             final EngineId engineId = oEngineId.get();
             final Domain domain = engineId.getExternalIdDomain();

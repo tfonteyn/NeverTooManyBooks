@@ -24,7 +24,7 @@
         <item
             android:id="@+id/SUBMENU_AMAZON_SEARCH"
             android:icon="@drawable/search_24px"
-            android:orderInCategory="@integer/MENU_ORDER_AMAZON"
+            android:orderInCategory="@integer/SUBMENU_ORDER_AMAZON"
             android:title="@string/option_amazon_ellipsis"
             >
             <menu>

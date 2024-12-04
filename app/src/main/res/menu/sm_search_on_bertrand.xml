@@ -24,7 +24,7 @@
         <item
             android:id="@+id/SUBMENU_BERTRAND_SEARCH"
             android:icon="@drawable/search_24px"
-            android:orderInCategory="@integer/MENU_ORDER_BERTRAND"
+            android:orderInCategory="@integer/SUBMENU_ORDER_BERTRAND"
             android:title="@string/option_bertrand_ellipsis"
             >
             <menu>

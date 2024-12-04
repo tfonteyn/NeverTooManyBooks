@@ -24,7 +24,7 @@
         <item
             android:id="@+id/SUBMENU_BOL_SEARCH"
             android:icon="@drawable/search_24px"
-            android:orderInCategory="@integer/MENU_ORDER_BOL"
+            android:orderInCategory="@integer/SUBMENU_ORDER_BOL"
             android:title="@string/option_bol_ellipsis"
             >
             <menu>

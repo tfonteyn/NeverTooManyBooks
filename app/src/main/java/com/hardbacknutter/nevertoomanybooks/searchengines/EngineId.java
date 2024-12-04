@@ -27,7 +27,6 @@ import android.text.util.Linkify;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -368,8 +367,6 @@ public enum EngineId
 
     @IdRes
     private int domainMenuId;
-    @IntegerRes
-    private int domainMenuOrder;
 
     @Nullable
     private Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier;
@@ -448,8 +445,7 @@ public enum EngineId
         }
         if (Goodreads.isEnabled()) {
             Goodreads.setExternalIdDomainKey(DBKey.SID_GOODREADS_BOOK)
-                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
+                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
                      .createConfig()
                      .build(SearchEngineConfig::new);
         }
@@ -460,8 +456,7 @@ public enum EngineId
         }
         if (Isfdb.isEnabled()) {
             Isfdb.setExternalIdDomainKey(DBKey.SID_ISFDB)
-                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                                  R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
+                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
                  .createConfig()
                  // default timeouts based on limited testing
                  .setConnectTimeoutMs(20_000)
@@ -475,31 +470,27 @@ public enum EngineId
         }
         if (LastDodoNl.isEnabled()) {
             LastDodoNl.setExternalIdDomainKey(DBKey.SID_LAST_DODO_NL)
-                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
-                                       R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
+                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
                       .createConfig()
                       .setPrefersIsbn10(true)
                       .build(SearchEngineConfig::new);
         }
         if (LibraryThing.isEnabled()) {
             LibraryThing.setExternalIdDomainKey(DBKey.SID_LIBRARY_THING)
-                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
+                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
                         .createConfig()
                         .build(SearchEngineConfig::new);
         }
         if (OpenLibrary.isEnabled()) {
             OpenLibrary.setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
-                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
+                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
                        .createConfig()
                        .setSupportsMultipleCoverSizes(true)
                        .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
             StripInfoBe.setExternalIdDomainKey(DBKey.SID_STRIP_INFO)
-                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
-                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
+                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
                        .createConfig()
                        // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)
@@ -512,21 +503,6 @@ public enum EngineId
         }
 
         // NEWTHINGS: adding a new search engine: add the search engine configuration
-    }
-
-    /**
-     * Search for an enabled Engine defined by the given menuId.
-     *
-     * @param menuId to get
-     *
-     * @return Optional with the engine
-     */
-    @NonNull
-    public static Optional<EngineId> getByMenuId(@IdRes final int menuId) {
-        return Arrays.stream(values())
-                     .filter(EngineId::isEnabled)
-                     .filter(engineId -> engineId.getDomainMenuResId() == menuId)
-                     .findFirst();
     }
 
     /**
@@ -744,16 +720,13 @@ public enum EngineId
     /**
      * Set the resource id's to use for the "View on" menu item.
      *
-     * @param domainMenuId    the menu id
-     * @param domainMenuOrder the menu order value
+     * @param domainMenuId the menu id
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    private EngineId setDomainMenuId(@IdRes final int domainMenuId,
-                                     @IntegerRes final int domainMenuOrder) {
+    private EngineId setDomainMenuId(@IdRes final int domainMenuId) {
         this.domainMenuId = domainMenuId;
-        this.domainMenuOrder = domainMenuOrder;
         return this;
     }
 
@@ -846,23 +819,6 @@ public enum EngineId
     @IdRes
     public int getDomainMenuResId() {
         return domainMenuId;
-    }
-
-    /**
-     * Get the <strong>resource id</strong> to use for the "View on" menu item order.
-     * Typical use will require code like this:
-     * <pre>
-     * {@code
-     *  int intResId = x.getDomainMenuOrder();
-     *  int order = context.getResources().getInteger(intResId)
-     *  }
-     *  </pre>
-     *
-     * @return res id
-     */
-    @IntegerRes
-    public int getDomainMenuOrderResId() {
-        return domainMenuOrder;
     }
 
     /**
@@ -1089,7 +1045,6 @@ public enum EngineId
 
                + ", externalIdDomain=" + externalIdDomain
                + ", domainMenuId=" + domainMenuId
-               + ", domainMenuOrder=" + domainMenuOrder
                + '}';
     }
 
