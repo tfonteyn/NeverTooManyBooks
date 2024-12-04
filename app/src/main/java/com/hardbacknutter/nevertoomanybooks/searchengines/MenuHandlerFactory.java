@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +53,7 @@ public final class MenuHandlerFactory {
 
         Arrays.stream(EngineId.values())
               .filter(EngineId::isEnabled)
+              .sorted(Comparator.comparing(Enum::name))
               .map(engineId -> engineId.createShoppingMenuHandler(context))
               .flatMap(Optional::stream)
               .forEach(list::add);

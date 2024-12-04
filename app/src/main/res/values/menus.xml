@@ -233,24 +233,8 @@
     <item name="MENU_NEXT_MISSING_COVER"
           type="id" />
 
-    <!-- Book - View a book at an external site.
-     NEWTHINGS: adding a new search engine: optional: add a menu id
-    -->
+    <!-- Book - View a book at an external site. -->
     <item name="SUBMENU_VIEW_BOOK_AT_SITE"
-          type="id" />
-    <item name="MENU_VIEW_BOOK_AT_AMAZON"
-          type="id" />
-    <item name="MENU_VIEW_BOOK_AT_GOODREADS"
-          type="id" />
-    <item name="MENU_VIEW_BOOK_AT_ISFDB"
-          type="id" />
-    <item name="MENU_VIEW_BOOK_AT_LAST_DODO_NL"
-          type="id" />
-    <item name="MENU_VIEW_BOOK_AT_LIBRARY_THING"
-          type="id" />
-    <item name="MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
-          type="id" />
-    <item name="MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
           type="id" />
 
     <!-- Book - Calibre -->

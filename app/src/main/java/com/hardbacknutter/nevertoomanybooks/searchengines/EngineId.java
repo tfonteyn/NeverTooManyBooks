@@ -26,7 +26,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -365,9 +364,6 @@ public enum EngineId
     @Nullable
     private Domain externalIdDomain;
 
-    @IdRes
-    private int domainMenuId;
-
     @Nullable
     private Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier;
 
@@ -408,8 +404,6 @@ public enum EngineId
         if (Amazon.isEnabled()) {
             Amazon.setShoppingMenuHandler(AmazonMenuHandler::new)
                   // .setExternalIdDomainKey(DBKey.SID_ASIN)
-                  // .setDomainViewId(R.id.site_amazon)
-                  // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
                   .createConfig()
                   .build(SearchEngineConfig::new);
         }
@@ -445,7 +439,6 @@ public enum EngineId
         }
         if (Goodreads.isEnabled()) {
             Goodreads.setExternalIdDomainKey(DBKey.SID_GOODREADS_BOOK)
-                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
                      .createConfig()
                      .build(SearchEngineConfig::new);
         }
@@ -456,7 +449,6 @@ public enum EngineId
         }
         if (Isfdb.isEnabled()) {
             Isfdb.setExternalIdDomainKey(DBKey.SID_ISFDB)
-                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
                  .createConfig()
                  // default timeouts based on limited testing
                  .setConnectTimeoutMs(20_000)
@@ -470,27 +462,23 @@ public enum EngineId
         }
         if (LastDodoNl.isEnabled()) {
             LastDodoNl.setExternalIdDomainKey(DBKey.SID_LAST_DODO_NL)
-                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
                       .createConfig()
                       .setPrefersIsbn10(true)
                       .build(SearchEngineConfig::new);
         }
         if (LibraryThing.isEnabled()) {
             LibraryThing.setExternalIdDomainKey(DBKey.SID_LIBRARY_THING)
-                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
                         .createConfig()
                         .build(SearchEngineConfig::new);
         }
         if (OpenLibrary.isEnabled()) {
             OpenLibrary.setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
-                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
                        .createConfig()
                        .setSupportsMultipleCoverSizes(true)
                        .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
             StripInfoBe.setExternalIdDomainKey(DBKey.SID_STRIP_INFO)
-                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
                        .createConfig()
                        // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)
@@ -717,19 +705,6 @@ public enum EngineId
         return this;
     }
 
-    /**
-     * Set the resource id's to use for the "View on" menu item.
-     *
-     * @param domainMenuId the menu id
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    private EngineId setDomainMenuId(@IdRes final int domainMenuId) {
-        this.domainMenuId = domainMenuId;
-        return this;
-    }
-
     @NonNull
     private EngineId setShoppingMenuHandler(@Nullable final
                                             Supplier<ShoppingMenuHandler> handlerSupplier) {
@@ -809,16 +784,6 @@ public enum EngineId
     @Nullable
     public Domain getExternalIdDomain() {
         return externalIdDomain;
-    }
-
-    /**
-     * Get the resource id to use for the "View on" menu item.
-     *
-     * @return res id
-     */
-    @IdRes
-    public int getDomainMenuResId() {
-        return domainMenuId;
     }
 
     /**
@@ -1044,7 +1009,6 @@ public enum EngineId
                + ", enabled=" + enabled
 
                + ", externalIdDomain=" + externalIdDomain
-               + ", domainMenuId=" + domainMenuId
                + '}';
     }
 

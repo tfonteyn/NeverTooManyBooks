@@ -26,14 +26,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -49,27 +49,32 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 public class ViewBookOnWebsiteHandler
         implements MenuHandler {
 
+    private final Map<Integer, EngineId> menuIds = new HashMap<>();
+
     @Override
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
         if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
             inflater.inflate(R.menu.sm_view_on_site, menu);
+            menuIds.clear();
 
-            final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
-            final SubMenu subMenu = subMenuItem.getSubMenu();
-            // sort the engines by name to add to the submenu (Engine names are NOT translated)
+            final SubMenu subMenu = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE)
+                                        .getSubMenu();
             Site.Type.ViewOnSite
                     .getSites()
                     .stream()
                     .map(Site::getEngineId)
+                    // sort the engines by name to add to the submenu
+                    // (Engine names are NOT translated)
                     .sorted(Comparator.comparing(Enum::name))
                     .forEach(engineId -> {
+                        // generate a random id, and map it to the engine
+                        final int menuItemId = View.generateViewId();
+                        menuIds.put(menuItemId, engineId);
+
                         //noinspection DataFlowIssue
-                        subMenu.add(R.id.MENU_GROUP_BOOK,
-                                    engineId.getDomainMenuResId(),
-                                    0,
-                                    engineId.getLabelResId())
+                        subMenu.add(R.id.MENU_GROUP_BOOK, menuItemId, 0, engineId.getLabelResId())
                                .setIcon(R.drawable.link_24px);
                     });
         }
@@ -97,16 +102,11 @@ public class ViewBookOnWebsiteHandler
         //noinspection DataFlowIssue
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
-            final int menuId = menuItem.getItemId();
             //noinspection DataFlowIssue
-            final boolean visible = Arrays
-                    .stream(EngineId.values())
-                    .filter(EngineId::isEnabled)
-                    .filter(engineId -> engineId.getDomainMenuResId() == menuId)
-                    .map(EngineId::getExternalIdDomain)
-                    .filter(Objects::nonNull)
-                    .map(domain -> rowData.getString(domain.getName()))
-                    .anyMatch(value -> !value.isEmpty() && !"0".equals(value));
+            final Domain domain = menuIds.get(menuItem.getItemId()).getExternalIdDomain();
+            //noinspection DataFlowIssue
+            final String externalId = rowData.getString(domain.getName());
+            final boolean visible = !externalId.isEmpty() && !"0".equals(externalId);
 
             menuItem.setVisible(visible);
             if (visible) {
@@ -121,25 +121,19 @@ public class ViewBookOnWebsiteHandler
                                       @IdRes final int menuItemId,
                                       @NonNull final DataHolder rowData) {
 
-        final Optional<EngineId> oEngineId = Arrays
-                .stream(EngineId.values())
-                .filter(EngineId::isEnabled)
-                .filter(engineId -> engineId.getDomainMenuResId() == menuItemId)
-                .findFirst();
-        // Sanity check
-        if (oEngineId.isPresent()) {
-            final EngineId engineId = oEngineId.get();
-            final Domain domain = engineId.getExternalIdDomain();
-            if (domain != null) {
-                final SearchEngine.ViewBookByExternalId searchEngine =
-                        (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
+        final EngineId engineId = menuIds.get(menuItemId);
+        //noinspection DataFlowIssue
+        final Domain domain = engineId.getExternalIdDomain();
+        if (domain != null) {
+            final SearchEngine.ViewBookByExternalId searchEngine =
+                    (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
 
-                final String externalId = rowData.getString(domain.getName());
-                final String url = searchEngine.createBrowserUrl(context, externalId);
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                return true;
-            }
+            final String externalId = rowData.getString(domain.getName());
+            final String url = searchEngine.createBrowserUrl(context, externalId);
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            return true;
         }
+
         return false;
     }
 }
