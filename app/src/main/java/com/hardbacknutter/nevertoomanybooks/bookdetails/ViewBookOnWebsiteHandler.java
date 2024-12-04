@@ -122,18 +122,21 @@ public class ViewBookOnWebsiteHandler
                                       @NonNull final DataHolder rowData) {
 
         final EngineId engineId = menuIds.get(menuItemId);
-        //noinspection DataFlowIssue
-        final Domain domain = engineId.getExternalIdDomain();
-        if (domain != null) {
-            final SearchEngine.ViewBookByExternalId searchEngine =
-                    (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
+        // the engine will be not-null if the menuItemId was found; e.g. it's ours.
+        if (engineId != null) {
+            final Domain domain = engineId.getExternalIdDomain();
+            // Sanity check
+            if (domain != null) {
+                final SearchEngine.ViewBookByExternalId searchEngine =
+                        (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
 
-            final String externalId = rowData.getString(domain.getName());
-            final String url = searchEngine.createBrowserUrl(context, externalId);
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            return true;
+                final String externalId = rowData.getString(domain.getName());
+                final String url = searchEngine.createBrowserUrl(context, externalId);
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
+            }
         }
-
+        // Not our menuItemId
         return false;
     }
 }
