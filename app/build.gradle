@@ -153,6 +153,7 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        resValues true
     }
 
     // ENHANCE: https://developer.android.com/guide/topics/resources/app-languages#auto-localeconfig
