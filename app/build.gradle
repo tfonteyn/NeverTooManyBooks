@@ -75,8 +75,7 @@ android {
         // Keep the two sub-lists in alphabetic order
         def supportedLocales = [
                 // Primary translations - done/checked by native speaker or pretty good.
-                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "pt_BR", "tr", "vi",
-                "zh", "zh_CN", "zh_TW",
+                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "pt_BR", "tr", "vi", "zh_CN",
                 // Secondary translations - These really need checking by a native speaker
                 "cs", "el", "pl", "ru"]
         resourceConfigurations += supportedLocales
