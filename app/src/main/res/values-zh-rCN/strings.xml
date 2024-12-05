@@ -396,7 +396,7 @@
     <string name="lbl_author_type_translator">翻译者</string>
     <string name="lbl_author_type_cover_artist">封面</string>
     <string name="option_author_details">该作者的所有作品</string>
-    <string name="option_shop_book_on">购物...</string>
+    <string name="option_shop_book_on">购物…</string>
     <string name="option_shop_books_in_series">本系列图书</string>
     <string name="option_shop_books_by_author">该作者的图书</string>
     <string name="option_author_works_book">仅限图书</string>
