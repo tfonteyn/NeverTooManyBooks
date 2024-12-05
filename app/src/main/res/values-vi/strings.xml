@@ -376,6 +376,7 @@
     <string name="option_set_incomplete">Đặt “chưa hoàn thành”</string>
     <string name="option_author_details">Tất cả tác phẩm của tác giả này</string>
     <string name="option_view_book_at">Xem trên…</string>
+    <string name="option_shop_book_on">Mua sắm trên…</string>
     <string name="option_shop_books_in_series">Sách trong bộ này</string>
     <string name="option_shop_books_by_author">Sách của tác giả này</string>
     <string name="option_shop_books_by_author_in_series">Sách theo tác giả/bộ</string>

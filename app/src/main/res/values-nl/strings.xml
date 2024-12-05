@@ -422,6 +422,7 @@
     <string name="notification_channel_warn">Waarschuwing</string>
     <string name="option_shop_books_by_author">Boeken van deze auteur</string>
     <string name="option_shop_books_by_author_in_series">Boeken per auteur/reeks</string>
+    <string name="option_shop_book_on">Winkelen op...</string>
     <string name="option_shop_books_in_series">Boeken in deze reeks</string>
     <string name="option_archive_type_backup_zip">Backup kopie (.zip)</string>
     <string name="option_archive_type_csv">Boeken (.csv)</string>

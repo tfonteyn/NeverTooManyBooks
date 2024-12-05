@@ -692,6 +692,8 @@
     <string name="option_author_details">All works by this author</string>
     <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
     <string name="option_view_book_at">View on…</string>
+    <!-- Book context/options submenu - will contain links to shopping websites. -->
+    <string name="option_shop_book_on">Shop on…</string>
 
     <!-- submenu options for the "amazon" menu -->
     <string name="option_shop_books_in_series">Books in this series</string>
@@ -1870,6 +1872,5 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
-    <string name="option_shop_book_on">Shop on…</string>
 
 </resources>
