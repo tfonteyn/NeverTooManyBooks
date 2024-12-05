@@ -461,7 +461,7 @@
     <string name="pt_line_spacing">行距</string>
     <string name="lbl_add_filter">新增過濾器</string>
     <string name="ps_bob_books_under_multiple_series_each">在每個系列中</string>
-    <string name="pt_bob_books_under_multiple_publishers">顯示有​​多個出版商的圖書</string>
+    <string name="pt_bob_books_under_multiple_publishers">顯示有多個出版商的圖書</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">僅在其主要出版商下</string>
     <string name="option_bob_filter_signed_yes">已簽名圖書</string>
     <string name="option_bob_filter_signed_no">未簽名圖書</string>
