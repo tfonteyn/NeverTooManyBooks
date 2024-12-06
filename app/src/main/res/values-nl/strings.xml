@@ -665,13 +665,13 @@
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>
     <string name="vldt_date_expected_for_x">Verwachtte een datum voor „%1$s”</string>
     <string name="vldt_failure">Validatiefout</string>
-    <string name="vldt_integer_expected_for_x">Verwachtte een numerieke waarde voor „%1$s”</string>
+    <string name="vldt_integer_expected_for_x">Verwachtte een gehele waarde voor „%1$s”</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_non_blank_required">Veld mag niet leeg zijn</string>
     <string name="vldt_non_blank_required_for_x">Veld mag niet leeg zijn voor „%1$s”</string>
     <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen</string>
     <string name="vldt_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn</string>
-    <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
+    <string name="vldt_real_expected_for_x">Verwachtte een reëele waarde voor „%1$s”</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
     <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken?</string>
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>

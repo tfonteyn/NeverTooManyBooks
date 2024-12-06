@@ -31,7 +31,7 @@
         <item quantity="other">%1$s 顆星</item>
     </plurals>
 
-    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE... -->
+    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_on">將冠詞移到標題末尾，僅適用於使用冠詞的語言。 \n英文範例：「Lord of The Rings, The」</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_off">按原標題顯示，僅適用於使用冠詞的語言。 \n英文範例：「The Lord of The Rings」</string>
