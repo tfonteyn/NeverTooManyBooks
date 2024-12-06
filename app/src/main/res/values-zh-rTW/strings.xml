@@ -30,14 +30,12 @@
     <plurals name="n_stars">
         <item quantity="other">%1$s 顆星</item>
     </plurals>
-
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_on">將冠詞移到標題末尾，僅適用於使用冠詞的語言。 \n英文範例：「Lord of The Rings, The」</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_off">按原標題顯示，僅適用於使用冠詞的語言。 \n英文範例：「The Lord of The Rings」</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">|</string>
-
     <string name="X_action_clear_credentials">清除憑證</string>
     <string name="X_action_customize">自訂…</string>
     <string name="X_action_execute">執行</string>
@@ -653,7 +651,7 @@
     <string name="pt_barcode_scanner">條碼掃描器</string>
     <string name="pt_bedetheque_search_resolve_formats">保留 Bedetheque（法文）格式命名</string>
     <string name="pt_bob_books_under_multiple_authors">顯示多作者圖書</string>
-    <string name="pt_bob_books_under_multiple_publishers">顯示有​​多個出版商的圖書</string>
+    <string name="pt_bob_books_under_multiple_publishers">顯示有多個出版商的圖書</string>
     <string name="pt_bob_books_under_multiple_series">顯示多個系列中的圖書</string>
     <string name="pt_bob_cover_click">點擊封面圖時。</string>
     <string name="pt_bob_cover_long_click">開啟圖書的上下文選單。</string>
