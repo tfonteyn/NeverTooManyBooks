@@ -151,8 +151,8 @@
     <string name="cd_btn_drag_handle">拖曳可重新排序此列表</string>
     <string name="cd_clear_text_end_icon">清除文字</string>
     <string name="confirm_continue">你確定要繼續嗎？</string>
-    <string name="confirm_create_real_author">您想覆蓋所有已有影像嗎？注意，這可能會花較長時間。</string>
-    <string name="confirm_delete_book">這將完全刪除作者 %2$s 名為「%1$s」的書籍。</string>
+    <string name="confirm_create_real_author">「%1$s」尚不存在。要創建嗎？</string>
+    <string name="confirm_delete_book">這將完全刪除作者 %2$s 名為「%1$s」的書籍。\n\n您確定要繼續嗎？</string>
     <string name="confirm_delete_bookshelf">刪除書架「%1$s」嗎？將不會刪除圖書本身。它們仍會位於其他書架，或是「%2$s」書架上。</string>
     <string name="confirm_delete_publisher">刪除出版商「%1$s」嗎？\n\n將不會刪除圖書本身。\n\n若要保留此數據，請考慮編輯出版商，將其名稱改為另一出版商的名稱。</string>
     <string name="confirm_delete_series">刪除系列「%1$s」嗎？\n\n將不會刪除圖書本身。\n\n若要保留此數據，請考慮編輯系列，將其名稱改為另一系列的名稱。</string>
