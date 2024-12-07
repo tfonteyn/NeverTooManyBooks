@@ -42,7 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
- * Stateless.
+ * Collects all sites supporting {@link SearchEngine.ViewBookByExternalId}
+ * and builds/displays a menu suitable for a given book.
  */
 public class ViewBookOnWebsiteHandler
         implements MenuHandler {
