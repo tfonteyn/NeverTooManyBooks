@@ -130,6 +130,11 @@ public final class Site
         return type;
     }
 
+    /**
+     * Has the <strong>user</strong> enabled/activated this site.
+     *
+     * @return flag
+     */
     public boolean isActive() {
         return active;
     }
@@ -204,12 +209,7 @@ public final class Site
         /** {@link CoverBrowserDialogFragment} - Covers searches. */
         Covers("covers",
                R.string.lbl_tab_covers,
-               R.string.lbl_tab_covers_long),
-
-        /** List of sites for which we store an id. */
-        ViewOnSite("view",
-                   R.string.lbl_tab_view_on_site,
-                   R.string.lbl_tab_view_on_site_long);
+               R.string.lbl_tab_covers_long);
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -250,8 +250,8 @@ public final class Site
         /**
          * Constructor.
          *
-         * @param key              unique key string for internal usage
-         * @param labelResId       short displayable name
+         * @param key                     unique key string for internal usage
+         * @param labelResId              short displayable name
          * @param contentDescriptionResId short displayable name
          */
         Type(@NonNull final String key,

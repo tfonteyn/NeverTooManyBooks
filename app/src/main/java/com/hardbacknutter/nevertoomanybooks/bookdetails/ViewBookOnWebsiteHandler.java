@@ -31,7 +31,6 @@ import android.view.View;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
@@ -61,22 +59,16 @@ public class ViewBookOnWebsiteHandler
 
             final SubMenu subMenu = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE)
                                         .getSubMenu();
-            Site.Type.ViewOnSite
-                    .getSites()
-                    .stream()
-                    .map(Site::getEngineId)
-                    // sort the engines by name to add to the submenu
-                    // (Engine names are NOT translated)
-                    .sorted(Comparator.comparing(Enum::name))
-                    .forEach(engineId -> {
-                        // generate a random id, and map it to the engine
-                        final int menuItemId = View.generateViewId();
-                        menuIds.put(menuItemId, engineId);
 
-                        //noinspection DataFlowIssue
-                        subMenu.add(R.id.MENU_GROUP_BOOK, menuItemId, 0, engineId.getLabelResId())
-                               .setIcon(R.drawable.link_24px);
-                    });
+            EngineId.getViewOnSite().forEach(engineId -> {
+                // generate a random id, and map it to the engine
+                final int menuItemId = View.generateViewId();
+                menuIds.put(menuItemId, engineId);
+
+                //noinspection DataFlowIssue
+                subMenu.add(R.id.MENU_GROUP_BOOK, menuItemId, 0, engineId.getLabelResId())
+                       .setIcon(R.drawable.link_24px);
+            });
         }
     }
 

@@ -40,6 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
@@ -513,6 +514,22 @@ public enum EngineId
     }
 
     /**
+     * Collect the website engines for which we store an id which can be used
+     * to view a book on that site. Sorted by name.
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<EngineId> getViewOnSite() {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .filter(engineId -> engineId.supports(
+                             SearchEngine.ViewBookByExternalId.class))
+                     .sorted(Comparator.comparing(Enum::name))
+                     .collect(Collectors.toList());
+    }
+
+    /**
      * Register all {@link Site} instances; called during startup.
      *
      * @param context   Current context
@@ -608,17 +625,6 @@ public enum EngineId
                 type.addSite(Isfdb, true);
                 if (!isChinese) {
                     type.addSite(Douban, false);
-                }
-                break;
-            }
-
-            case ViewOnSite: {
-                // The order is irrelevant; just add all compliant ones
-                for (final EngineId engineId : values()) {
-                    if (engineId.isEnabled()
-                        && engineId.supports(SearchEngine.ViewBookByExternalId.class)) {
-                        type.addSite(engineId, true);
-                    }
                 }
                 break;
             }
