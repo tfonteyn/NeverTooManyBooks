@@ -896,7 +896,7 @@ public enum EngineId
      */
     @NonNull
     public Optional<ShoppingMenuHandler> createShoppingMenuHandler(@NonNull final Context context) {
-        if (isEnabled() && shoppingMenuHandlerSupplier != null) {
+        if (shoppingMenuHandlerSupplier != null) {
             return Optional.of(shoppingMenuHandlerSupplier.get());
         }
         return Optional.empty();
