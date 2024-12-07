@@ -556,7 +556,7 @@ public enum EngineId
 
                 type.addSite(StripInfoBe, isDutch);
                 type.addSite(LastDodoNl, isDutch);
-                type.addSite(StripWebBe, isDutch);
+                type.addSite(StripWebBe, isDutch || isFrench);
                 type.addSite(Bedetheque, isFrench);
 
                 type.addSite(KbNl, isDutch);

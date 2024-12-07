@@ -163,7 +163,7 @@ public abstract class ShoppingMenuHandler
     }
 
     /**
-     * Start an intent to search for an author and/or series on the BOL website.
+     * Start an intent to search for an author and/or series on the website.
      *
      * @param context Current context from which the Activity will be started
      * @param author  to search for

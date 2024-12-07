@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 public class BolMenuHandler
         extends ShoppingMenuHandler {
@@ -65,7 +66,9 @@ public class BolMenuHandler
         if (prefs.contains(key)) {
             return prefs.getBoolean(key, false);
         } else {
-            return ServiceLocator.getInstance().getLanguages().isUserLanguage(context, "nld");
+            final Languages languages = ServiceLocator.getInstance().getLanguages();
+            return languages.isUserLanguage(context, "nld")
+                   || languages.isUserLanguage(context, "fra");
         }
     }
 
