@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.SwitchPreference;
 
@@ -40,13 +41,19 @@ public class BertrandPtPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_bertrandpt, rootKey);
 
-        final EngineId engineId = EngineId.BertrandPt;
-        // We need to set this manually, as the default depends on the user language.
+        initShoppingMenuPref(EngineId.BertrandPt);
+    }
+
+    /**
+     * Set this manually, as the default depends on the user language.
+     *
+     * @param engineId to use
+     */
+    @SuppressWarnings("DataFlowIssue")
+    private void initShoppingMenuPref(@NonNull final EngineId engineId) {
         final SwitchPreference pShoppingMenu = findPreference(
                 engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        //noinspection DataFlowIssue
         final boolean enabled = engineId.createShoppingMenuHandler(getContext()).isPresent();
-        //noinspection DataFlowIssue
         pShoppingMenu.setChecked(enabled);
     }
 }

@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.SwitchPreference;
@@ -70,13 +71,19 @@ public class BolPreferencesFragment
             p.setValue(DEF_COUNTRY);
         }
 
-        final EngineId engineId = EngineId.Bol;
-        // We need to set this manually, as the default depends on the user language.
+        initShoppingMenuPref(EngineId.Bol);
+    }
+
+    /**
+     * Set this manually, as the default depends on the user language.
+     *
+     * @param engineId to use
+     */
+    @SuppressWarnings("DataFlowIssue")
+    private void initShoppingMenuPref(@NonNull final EngineId engineId) {
         final SwitchPreference pShoppingMenu = findPreference(
                 engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        //noinspection DataFlowIssue
         final boolean enabled = engineId.createShoppingMenuHandler(getContext()).isPresent();
-        //noinspection DataFlowIssue
         pShoppingMenu.setChecked(enabled);
     }
 }
