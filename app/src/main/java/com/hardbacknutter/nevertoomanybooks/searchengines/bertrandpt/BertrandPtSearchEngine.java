@@ -157,9 +157,9 @@ public class BertrandPtSearchEngine
     @VisibleForTesting
     @WorkerThread
     public void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
+                                 @NonNull final Document document,
+                                 @NonNull final boolean[] fetchCovers,
+                                 @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
         //  9789899087774
         // Grab the first search result, and redirect to that page

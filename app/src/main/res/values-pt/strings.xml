@@ -143,7 +143,7 @@
     <string name="progress_msg_please_wait">Aguarde…</string>
     <string name="progress_msg_searching">Pesquisar…</string>
     <string name="pt_bob_font_size">Tamanho da fonte</string>
-    <string name="pt_search_show_shopping_options">Padronizar</string>
+    <string name="pt_search_show_menu_options">Mostrar menus de pesquisa</string>
     <string name="pt_ui_language">Idioma</string>
     <string name="pt_website_search_order_and_enable">Prioridade, habilitar &amp; desabilitar</string>
     <string name="unknown">Desconhecido</string>
@@ -392,10 +392,10 @@
     <string name="X_info_tap_on_image_to_select">Toque na imagem maior para seleccioná-la.</string>
     <string name="size_small">Pequeno</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Ler Códigos de Barras em lote</string>
-    <string name="option_shop_book_on">Comprar em…</string>
-    <string name="option_shop_books_in_series">Livros desta série</string>
-    <string name="option_shop_books_by_author">Livros deste autor</string>
-    <string name="option_shop_books_by_author_in_series">Livros por autor/séries</string>
+    <string name="option_search_books_on">Pesquisar em…</string>
+    <string name="option_search_books_in_series">Livros desta série</string>
+    <string name="option_search_books_by_author">Livros deste autor</string>
+    <string name="option_search_books_by_author_in_series">Livros por autor/séries</string>
     <string name="option_cover_replace_from_camera">De câmera…</string>
     <string name="option_cover_replace_from_alt_editions">De outras edições…</string>
     <string name="option_cover_rotate_cw">No sentido horário</string>

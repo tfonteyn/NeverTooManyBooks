@@ -376,10 +376,10 @@
     <string name="option_set_incomplete">Đặt “chưa hoàn thành”</string>
     <string name="option_author_details">Tất cả tác phẩm của tác giả này</string>
     <string name="option_view_book_at">Xem trên…</string>
-    <string name="option_shop_book_on">Mua sắm trên…</string>
-    <string name="option_shop_books_in_series">Sách trong bộ này</string>
-    <string name="option_shop_books_by_author">Sách của tác giả này</string>
-    <string name="option_shop_books_by_author_in_series">Sách theo tác giả/bộ</string>
+    <string name="option_search_books_on">Tìm kiếm trên…</string>
+    <string name="option_search_books_in_series">Sách trong bộ này</string>
+    <string name="option_search_books_by_author">Sách của tác giả này</string>
+    <string name="option_search_books_by_author_in_series">Sách theo tác giả/bộ</string>
     <string name="option_author_works_book">Chỉ sách</string>
     <string name="option_author_works_toc">Chỉ có tiêu đề Mục lục</string>
     <string name="action_crop">Cắt</string>
@@ -703,268 +703,129 @@
     <string name="lbl_dust_cover">Bìa ngoài</string>
     <!-- a one line label, with the name of the person appended. Shown as a banner on the screen. -->
     <string name="lbl_lend_out_to_name">Cho %1$s mượn</string>
-    <!-- endregion -->
-    <!-- region ========== All date related labels. -->
-    <!-- [VERIFIED] Universal date strings -->
     <string name="lbl_year">Năm</string>
     <string name="lbl_month">Tháng</string>
-    <!-- [VERIFIED] -->
     <string name="lbl_day">Ngày</string>
-    <!-- The date a book was added to the database. -->
     <string name="lbl_date_added">Ngày thêm</string>
     <string name="lbl_date_added_year">Năm Thêm</string>
     <string name="lbl_date_added_month">Tháng Thêm</string>
     <string name="lbl_date_added_day">Ngày thêm</string>
-    <!-- The date a book was read -->
     <string name="lbl_date_read">Ngày đọc</string>
     <string name="lbl_date_read_year">Năm đọc</string>
     <string name="lbl_date_read_month">Tháng đọc</string>
     <string name="lbl_date_read_day">Ngày đọc</string>
     <string name="lbl_read_start">Ngày bắt đầu đọc</string>
     <string name="lbl_read_end">Ngày đọc xong</string>
-    <!-- The date the book was last updated. -->
     <string name="lbl_date_last_updated">Ngày cập nhật lần cuối</string>
     <string name="lbl_date_last_updated_year">Năm cập nhật lần cuối</string>
     <string name="lbl_date_last_updated_month">Tháng cập nhật lần cuối</string>
     <string name="lbl_date_last_updated_day">Ngày cập nhật lần cuối</string>
-    <!-- The date a user acquired the book. -->
     <string name="lbl_date_acquired">Ngày mua</string>
     <string name="lbl_date_acquired_year">Năm mua</string>
     <string name="lbl_date_acquired_month">Tháng mua</string>
     <string name="lbl_date_acquired_day">Ngày mua</string>
-    <!-- Publication Date for the book. -->
     <string name="lbl_date_published">Ngày xuất bản</string>
     <string name="lbl_date_published_year">Năm xuất bản</string>
     <string name="lbl_date_published_month">Tháng xuất bản</string>
-    <!-- First Publication Date for the CONTENT of the book. (e.g. magazine pub... etc... -->
     <string name="lbl_date_first_publication">Xuất bản lần đầu</string>
     <string name="lbl_date_first_publication_year">Năm xuất bản lần đầu</string>
     <string name="lbl_date_first_publication_month">Tháng xuất bản lần đầu</string>
-    <!-- endregion -->
-    <!-- region ========== Backup, Export and Import. -->
-    <!-- Dialog /screen / Navigation panel menu option -->
     <string name="title_backup_and_export">Sao lưu &amp; Xuất</string>
-    <!-- Dialog export all options. -->
     <string name="lbl_export_options">Chọn những gì sẽ được xuất.</string>
     <string name="lbl_export_books_option_all">Tất cả sách</string>
     <string name="lbl_export_books_option_since_last_full_backup">Sách mới và đã cập nhật</string>
-    <!-- Explanatory note 'lbl_export_books_option_since_last_full_backup' -->
     <string name="info_export_books_option_since_last_full_backup">Sách được thêm hoặc cập nhật kể từ lần sao lưu đầy đủ gần đây nhất.</string>
-    <!-- Label for the dropdown menu where the user selects the format of the export file/archive. -->
     <string name="lbl_archive_format">Định dạng</string>
-    <!-- Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_backup_zip">Sao lưu (.zip)</string>
     <string name="option_archive_type_csv">Sách (.csv)</string>
     <string name="option_archive_type_json">Xuất JSON (.json)</string>
     <string name="option_archive_type_db">Tệp cơ sở dữ liệu (.db)</string>
-    <!-- Explanatory note for 'lbl_archive_type_backup_zip' -->
     <string name="option_info_lbl_archive_type_backup">Sao lưu / Khôi phục toàn bộ kho lưu trữ</string>
-    <!-- Explanatory note for 'lbl_archive_type_csv' -->
     <string name="option_info_archive_type_csv">Xuất sách sang tệp CSV</string>
-    <!-- Explanatory note for 'lbl_archive_type_json' -->
     <string name="option_info_archive_format_json">Tất cả dữ liệu ở định dạng JSON.</string>
-    <!-- Explanatory note for 'lbl_archive_type_db' -->
     <string name="option_info_archive_format_db">Cơ sở dữ liệu SQLite.</string>
-    <!-- Explanatory note for 'lbl_archive_type_db' -->
     <string name="option_info_lbl_archive_is_export_only">Điều này chỉ dành cho việc xuất dữ liệu; việc nhập không được hỗ trợ.</string>
-    <!-- progress final message - all data was exported. -->
     <string name="info_backup_successful">Sao lưu thành công</string>
     <string name="info_export_successful">Xuất thành công</string>
-    <!-- progress final message - displayed when a Backup is done: 1: file size; 2: filename.  -->
     <string name="info_export_report">Tệp %1$s có tên “%2$s” đã được tạo trong thư mục đã chọn và bạn nên sao chép thủ công tệp đó sang nơi khác để bảo vệ dữ liệu trong trường hợp thiết bị của bạn bị hỏng, bị mất hoặc bị đánh cắp.</string>
-    <!-- Dialog import all options. -->
     <string name="lbl_import_options">Chọn những gì sẽ được nhập.</string>
-    <!-- Radio button text -->
     <string name="option_import_books_option_new_only">Chỉ sách mới</string>
-    <!-- Info text for "option_import_books_option_new_only" -->
     <string name="option_info_import_books_option_new_only">Chỉ nhập sách mới. Mọi cập nhật cho sách hiện có sẽ bị bỏ qua.</string>
-    <!-- Radio button text -->
     <string name="option_import_books_option_new_and_updated">Sách mới và đã cập nhật</string>
-    <!-- Info text for "option_import_books_option_new_and_updated" -->
     <string name="option_info_import_books_option_new_and_updated">Nhập sách mới và đồng bộ hóa sách hiện có dựa trên ngày sửa đổi gần đây nhất của chúng.</string>
-    <!-- Text above an EditText which has a label of "Since" and contains a date.
-         Hence this string can/should be read as "Only import books modified since this date"
-         Translated strings are usually longer... add one or more '\n' as needed.
-      . -->
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Chỉ nhập sách đã sửa đổi kể từ</string>
     <string name="lbl_sync_date">Kể từ</string>
-    <!-- Radio button text -->
     <string name="option_import_books_option_all">Tất cả sách</string>
-    <!-- Info text for "option_import_books_option_all" -->
     <string name="option_info_import_books_option_all">Nhập sách mới và ghi đè sách hiện có. Sử dụng cái này để khôi phục bản sao lưu.</string>
-    <!-- Option on the import screen to synchronize/mirror imported 'deleted-books' records by deleting the actual books.
-         Also used on the Maintenance screen for the same action. -->
     <string name="option_sync_deleted_book_records">Đồng bộ hóa sách đã xóa</string>
-    <!-- Info text for "option_sync_deleted_book_records" -->
     <string name="option_info_delete_removed_books">Sách đã xóa trên thiết bị kia cũng sẽ bị xóa trên thiết bị này.</string>
-    <!-- [VERIFIED] progress final message - all data was imported. -->
     <string name="info_import_complete">Nhập hoàn tất</string>
-    <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
     <string name="info_import_partially_complete">Đã nhập một phần</string>
     <string name="info_books_deleted">Sách đã xóa: %1$d</string>
-    <!-- endregion -->
-    <!-- region ========== Global settings. -->
-    <!-- [VERIFIED] -->
     <string name="lbl_defaults">Mặc định</string>
-    <!-- Generic place holder text for preference fields which are NOT SET.
-         The actual text is different from hint_empty_field in Translations.
-         [VERIFIED] Copied from androidx.preferences# not_set; WITHOUT brackets-->
     <string name="preference_not_set">Chưa đặt</string>
-    <!-- Preference Category -->
     <string name="pc_ui">Giao diện người dùng</string>
-    <!-- Preference Category -->
     <string name="pc_formatting">Định dạng</string>
-    <!-- Preference Category -->
     <string name="pc_lists">Danh sách</string>
-    <!-- [VERIFIED] - Preference Category -->
     <string name="pc_advanced_options">Nâng cao</string>
-    <!-- Preference Category -->
     <string name="pc_image_cache">Bộ đệm hình ảnh</string>
-    <!-- [VERIFIED] Preference Category -->
     <string name="pc_camera">Máy ảnh</string>
-    <!-- Preference option title: search websites ordering -->
     <string name="pt_website_search_order_and_enable">Ưu tiên, bật &amp; tắt</string>
-    <!-- Preference Category -->
     <string name="pt_barcode_scanner">Máy quét mã vạch</string>
-    <!-- Preference Category: the volume/sd-card where the covers will be stored.  -->
     <string name="pt_storage_volume">Dung lượng lưu trữ</string>
-    <!-- Preference Category -->
     <string name="pt_maintenance">Bảo trì</string>
-    <!-- Preference Category -->
     <string name="pt_field_visibility">Trường thấy được</string>
-    <!-- Preference summary: screen where the user can select/deselect fields to be shown; e.g. user might want to hide fields they don't use. -->
     <string name="ps_manage_fields">Các trường đã chọn sẽ thấy được trong màn hình thêm/chỉnh sửa sách. Các trường không được chọn sẽ bị ẩn.</string>
-    <!-- SwitchPreference title: How to display titles -->
     <string name="pt_show_title_reordered">Hiển thị nhan đề dưới dạng…</string>
-    <!-- SwitchPreference title: How to sort titles. -->
     <string name="pt_sort_title_reordered">Sắp xếp nhan đề theo</string>
-    <!--
-         These are the Locale specific title prefixes (grammar: 'article') that will be moved to
-         the end of a title, if automatic reformatting of titles is enabled by the user.
-
-         This is case-sensitive, so each locale can decide if it's appropriate to for example
-         move a word only if it starts with an uppercase, but not for the same word starting
-         with a lowercase character.
-
-         If this is not applicable to a language, then this string MUST be set to a
-         single vertical bar character: "|"
-
-         More info on languages and their article usage can be found at
-         https://en.wikipedia.org/wiki/Article_(grammar)#Tables
-    -->
     <string name="pv_reformat_titles_prefixes">|</string>
-    <!--
-        TRANSLATORS: FIRST READ the information for the string "pv_reformat_titles_prefixes".
-
-         Example of how a title is displayed, i.e. exactly as printed on the book.
-
-         For languages with a grammar which does not use articles, use the following text:
-         ==> "Only applicable to languages that use articles. English example: \"The Lord of The Rings\""
-         Use the book title as given IN ENGLISH.
-
-         -->
     <string name="ps_show_titles_reordered_off">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings”</string>
-    <!--
-        TRANSLATORS: FIRST READ the information for the string "pv_reformat_titles_prefixes".
-
-         Example of how a reordered title is displayed.
-
-         For languages with a grammar which does not use articles, use the following text:
-         ==> "Only applicable to languages that use articles. English example: \"Lord of The Rings, The\""
-         Use the book title as given IN ENGLISH.
-
-         -->
     <string name="ps_show_titles_reordered_on">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “Lord of The Rings, The”</string>
-    <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="lbl_capitalize_full">Tất cả đều viết hoa</string>
     <string name="pt_allow_metered_network_data">Cho phép sử dụng dữ liệu di động</string>
-    <!-- SwitchPreference - Some web sites expose their website book id.
-         Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_editing_external_id">Cho phép chỉnh sửa id sách trang web</string>
-    <!-- SwitchPreference title: beep when the barcode scanner found a valid code -->
     <string name="pt_scanning_beep_on_barcode_found">Bíp khi tìm thấy mã vạch</string>
-    <!-- SwitchPreference title -->
     <string name="pt_scanning_beep_on_valid">Bíp nếu ISBN được quét hợp lệ</string>
-    <!-- SwitchPreference title -->
     <string name="pt_scanning_beep_on_invalid">Bíp nếu ISBN được quét không hợp lệ</string>
-    <!-- SwitchPreference title: support undoing an edit or replacement of a cover image. -->
     <string name="pt_cover_undo_enabled">Hoàn tác các thao tác trên bìa sách</string>
     <string name="ps_cover_undo_disabled">Không thể hoàn tác việc chỉnh sửa/thay thế bìa (sử dụng ít bộ nhớ hơn)</string>
     <string name="ps_cover_undo_enabled">Việc chỉnh sửa/thay thế bìa có thể được hoàn tác (sử dụng nhiều bộ nhớ hơn)</string>
-    <!-- SwitchPreference title: Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Hình ảnh đã thay đổi kích thước được lưu trữ</string>
     <string name="pe_thumbnails_cache_resized_each_time">Thay đổi kích thước hình ảnh mỗi khi cần thiết (sử dụng ít bộ nhớ hơn, cuộn sẽ chậm hơn)</string>
     <string name="pe_thumbnails_cache_resized_stored">Hình ảnh đã được thay đổi kích thước trong bộ nhớ đệm (cuộn sẽ nhanh hơn, sử dụng nhiều bộ nhớ hơn)</string>
-    <!-- SwitchPreference title -->
     <string name="pt_search_reformat_format">Chuẩn hóa tên “định dạng sách”</string>
-    <!-- SwitchPreference title -->
     <string name="pt_search_reformat_color">Chuẩn hóa tên “màu sách”</string>
-    <!-- SwitchPreference title: some search engines can add the publisher to the search terms.
-         This is not always desirable, as they use "AND" to combine the terms.
-         So by default this is switched off. -->
     <string name="pt_search_uses_publisher">Tìm kiếm sử dụng nhà xuất bản</string>
-    <!-- SwitchPreference title: when an ISBN-13 number is entered for searching,
-         this option forces (if possible) the search to convert it to an ISBN-10
-         for the actual search. The data itself will keep using what the user entered.
- . -->
     <string name="pt_search_prefer_isbn10">Sử dụng ISBN-10 khi có thể</string>
-    <!-- SwitchPreference title: search engines can collect Series information from the toc.
-         This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Thu thập thông tin Bộ sách từ bảng nội dung</string>
     <string name="pt_search_resolve_authors_bedetheque">Giải quyết bút danh tác giả bằng cách sử dụng trang web Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Giữ nguyên cách đặt tên theo định dạng Bedetheque (tiếng Pháp)</string>
-    <!-- MultiSelectListPreference title -->
     <string name="pt_main_author_type">Loại tác giả chính</string>
-    <!-- [VERIFIED] ListPreference title: "UI Language" -->
     <string name="pt_ui_language">Ngôn ngữ</string>
-    <!-- [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
     <string name="pt_ui_system_locale">Ngôn ngữ hệ thống</string>
-    <!-- ListPreference title: UI Theme -->
     <string name="pt_ui_theme">Chủ đề giao diện</string>
-    <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_from_device">Giao diện thiết bị</string>
-    <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_dark">Tối</string>
-    <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_light">Sáng</string>
-    <!-- ListPreference title: option title -->
     <string name="pt_edit_book_isbn_checks">Kiểm tra tính hợp lệ của ISBN</string>
-    <!-- ListPreference title: Booklist startup-state preferences -->
     <string name="pt_bob_list_rebuild_state">Trạng thái khởi động danh mục sách</string>
-    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_preferred">Sử dụng phần mở rộng ưa thích</string>
-    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_preserve">Giữ nguyên trạng thái hiện tại</string>
-    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_expanded">Luôn bắt đầu mở rộng</string>
-    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_collapsed">Luôn bắt đầu thu gọn</string>
-    <!-- ListPreference title: context menu on a row in the booklist. -->
     <string name="pt_bob_row_menu">Thực đơn ngữ cảnh hàng</string>
-    <!-- ListPreference value: context menu on a row in the booklist. -->
     <string name="pe_bob_row_menu_button">Luôn hiển thị một nút.</string>
-    <!-- ListPreference value: context menu on a row in the booklist. -->
     <string name="pe_bob_row_menu_button_when_space">Hiển thị một nút nếu có không gian, nếu không thì hãy nhấn giữ.</string>
-    <!-- ListPreference value: context menu on a row in the booklist. -->
     <string name="pe_bob_row_menu_long_click">Luôn sử dụng nhấn giữ.</string>
-    <!-- ListPreference title: the popup bubble displayed while scrolling through a booklist. -->
     <string name="pt_fast_scroller_overlay">Bong bóng văn bản trong khi cuộn.</string>
-    <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_static">Tĩnh</string>
-    <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_dynamic">Động</string>
-    <!-- ListPreference title: Degrees by which to rotate camera pictures automatically -->
     <string name="pt_thumbnails_rotate_auto">Xoay ảnh</string>
-    <!-- ListPreference title: the user can choose which action to take after taking a picture -->
     <string name="camera_next_action">Hành động sau khi chụp ảnh</string>
-    <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_front">Máy ảnh mặt trước</string>
-    <!-- ListPreference value -->
     <string name="pe_camera_back">Máy ảnh mặt sau</string>
-    <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_other">Khác</string>
-    <!-- Preference option title -->
-    <string name="pt_search_show_shopping_options">Hiển thị thực đơn mua sắm</string>
+    <string name="pt_search_show_menu_options">Hiển thị menu tìm kiếm</string>
     <!-- endregion -->
     <!-- region ========== Maintenance. -->
     <!-- Cleanup log and other temp files -->

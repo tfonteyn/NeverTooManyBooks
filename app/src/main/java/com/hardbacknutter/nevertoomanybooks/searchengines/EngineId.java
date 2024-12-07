@@ -123,8 +123,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          Look at the other engines for more complex examples.
  *      </li>
  *
- *      <li>Optional: create a {@link ShoppingMenuHandler} instance and add it in
- *          {@link #createEngineConfigurations()} using {@link EngineId#setShoppingMenuHandler}.
+ *      <li>Optional: create a {@link SiteSearchMenuHandler} instance and add it in
+ *          {@link #createEngineConfigurations()} using {@link EngineId#setSearchMenuHandler}.
  *      </li>
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
@@ -370,7 +370,7 @@ public enum EngineId
     private Domain externalIdDomain;
 
     @Nullable
-    private Supplier<ShoppingMenuHandler> shoppingMenuHandlerSupplier;
+    private Supplier<SiteSearchMenuHandler> searchMenuHandlerSupplier;
 
     /**
      * Constructor.
@@ -407,7 +407,7 @@ public enum EngineId
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
-            Amazon.setShoppingMenuHandler(AmazonMenuHandler::new)
+            Amazon.setSearchMenuHandler(AmazonMenuHandler::new)
                   // .setExternalIdDomainKey(DBKey.SID_ASIN)
                   .createConfig()
                   .build(SearchEngineConfig::new);
@@ -421,12 +421,12 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
         if (Bol.isEnabled()) {
-            Bol.setShoppingMenuHandler(BolMenuHandler::new)
+            Bol.setSearchMenuHandler(BolMenuHandler::new)
                .createConfig()
                .build(SearchEngineConfig::new);
         }
         if (BertrandPt.isEnabled()) {
-            BertrandPt.setShoppingMenuHandler(BertrandMenuHandler::new)
+            BertrandPt.setSearchMenuHandler(BertrandMenuHandler::new)
                       .createConfig()
                       .build(SearchEngineConfig::new);
         }
@@ -491,7 +491,7 @@ public enum EngineId
                        .build(SearchEngineConfig::new);
         }
         if (StripWebBe.isEnabled()) {
-            StripWebBe.setShoppingMenuHandler(StripWebMenuHandler::new)
+            StripWebBe.setSearchMenuHandler(StripWebMenuHandler::new)
                       .createConfig()
                       .build(SearchEngineConfig::new);
         }
@@ -723,9 +723,9 @@ public enum EngineId
     }
 
     @NonNull
-    private EngineId setShoppingMenuHandler(@Nullable final
-                                            Supplier<ShoppingMenuHandler> handlerSupplier) {
-        this.shoppingMenuHandlerSupplier = handlerSupplier;
+    private EngineId setSearchMenuHandler(@Nullable final
+                                          Supplier<SiteSearchMenuHandler> handlerSupplier) {
+        this.searchMenuHandlerSupplier = handlerSupplier;
         return this;
     }
 
@@ -891,7 +891,7 @@ public enum EngineId
     }
 
     /**
-     * Create the shopping menu handler if there is one.
+     * Create the search menu handler if there is one.
      * <p>
      * We always create it, and leave it up to the handler itself
      * whether to show it to the user or not.
@@ -899,9 +899,9 @@ public enum EngineId
      * @return handler
      */
     @NonNull
-    public Optional<ShoppingMenuHandler> createShoppingMenuHandler() {
-        if (shoppingMenuHandlerSupplier != null) {
-            return Optional.of(shoppingMenuHandlerSupplier.get());
+    public Optional<SiteSearchMenuHandler> createSearchMenuHandler() {
+        if (searchMenuHandlerSupplier != null) {
+            return Optional.of(searchMenuHandlerSupplier.get());
         }
         return Optional.empty();
     }

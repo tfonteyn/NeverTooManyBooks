@@ -64,7 +64,7 @@
     <integer name="MENU_ORDER_CALIBRE">750</integer>
 
     <integer name="MENU_ORDER_VIEW_BOOK_AT_SITE">800</integer>
-    <integer name="MENU_ORDER_SHOP_ON_SITE">900</integer>
+    <integer name="MENU_ORDER_SEARCH_BOOKS_ON_SITE">900</integer>
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
@@ -232,7 +232,7 @@
     <!-- Book - View a book at an external site. -->
     <item name="SUBMENU_VIEW_BOOK_AT_SITE"
           type="id" />
-    <item name="SUBMENU_SHOP_BOOK_ON_SITE"
+    <item name="SUBMENU_SEARCH_BOOKS_ON_SITE"
           type="id" />
 
     <!-- Book - Calibre -->

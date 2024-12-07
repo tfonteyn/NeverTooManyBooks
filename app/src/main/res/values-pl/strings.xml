@@ -450,10 +450,10 @@
     <string name="list_and">i</string>
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
-    <string name="option_shop_books_by_author">Książki tego autora</string>
-    <string name="option_shop_books_by_author_in_series">Książki według autora / serii</string>
-    <string name="option_shop_book_on">Sklep na…</string>
-    <string name="option_shop_books_in_series">Książki z tej serii</string>
+    <string name="option_search_books_by_author">Książki tego autora</string>
+    <string name="option_search_books_by_author_in_series">Książki według autora / serii</string>
+    <string name="option_search_books_on">Szukaj na…</string>
+    <string name="option_search_books_in_series">Książki z tej serii</string>
     <string name="option_author_details">Wszystkie prace tego autora</string>
     <string name="option_author_works_book">Tylko książki</string>
     <string name="option_author_works_toc">Tylko tytuły treści</string>
@@ -724,7 +724,7 @@
     <string name="info_purge_blns_item_name">Wyczyścić stan węzła %1$s „%2$s”\?</string>
     <string name="error_updates_aborted">Aktualizacje przerwane</string>
     <string name="lbl_country">Kraj</string>
-    <string name="pt_search_show_shopping_options">Pokaż menu zakupów</string>
+    <string name="pt_search_show_menu_options">Pokaż menu wyszukiwania</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Tytuły</string>
     <string name="lbl_original_title">Tytuł oryginalny</string>

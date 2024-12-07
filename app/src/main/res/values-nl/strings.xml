@@ -420,10 +420,10 @@
     <string name="notification_channel_error">Fout</string>
     <string name="notification_channel_info">Informatie</string>
     <string name="notification_channel_warn">Waarschuwing</string>
-    <string name="option_shop_books_by_author">Boeken van deze auteur</string>
-    <string name="option_shop_books_by_author_in_series">Boeken per auteur/reeks</string>
-    <string name="option_shop_book_on">Winkelen op…</string>
-    <string name="option_shop_books_in_series">Boeken in deze reeks</string>
+    <string name="option_search_books_by_author">Boeken van deze auteur</string>
+    <string name="option_search_books_by_author_in_series">Boeken per auteur/reeks</string>
+    <string name="option_search_books_on">Zoek op…</string>
+    <string name="option_search_books_in_series">Boeken in deze reeks</string>
     <string name="option_archive_type_backup_zip">Backup kopie (.zip)</string>
     <string name="option_archive_type_csv">Boeken (.csv)</string>
     <string name="option_archive_type_db">Databasebestand (.db)</string>
@@ -710,7 +710,7 @@
     <string name="cancel">Annuleren</string>
     <string name="yes">Ja</string>
     <string name="lbl_country">Land</string>
-    <string name="pt_search_show_shopping_options">Toon shopping menu’s</string>
+    <string name="pt_search_show_menu_options">Zoekmenu’s tonen</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Titels</string>
     <string name="lbl_original_title">Oorspronkelijke titel</string>

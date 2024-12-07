@@ -564,10 +564,10 @@
     <string name="option_set_incomplete">设置为“未完成”</string>
     <string name="option_set_read">标为已读</string>
     <string name="option_set_unread">标为未读</string>
-    <string name="option_shop_book_on">购物…</string>
-    <string name="option_shop_books_by_author">该作者的图书</string>
-    <string name="option_shop_books_by_author_in_series">同作者/系列图书</string>
-    <string name="option_shop_books_in_series">本系列图书</string>
+    <string name="option_search_books_on">搜索…</string>
+    <string name="option_search_books_by_author">该作者的图书</string>
+    <string name="option_search_books_by_author_in_series">同作者/系列图书</string>
+    <string name="option_search_books_in_series">本系列图书</string>
     <string name="option_sort_and_style_ellipsis">排序与样式…</string>
     <string name="option_storage_edit_settings">编辑设置</string>
     <string name="option_storage_quit_and_reinsert_sdcard">退出并重新插入正确的 SD 卡</string>
@@ -691,7 +691,7 @@
     <string name="pt_search_reformat_format">标准化“图书格式”名称</string>
     <string name="pt_search_resolve_authors_bedetheque">用 Bedetheque 网站解析作者笔名</string>
     <string name="pt_search_result_order">搜索返回最新书籍或者第找到的第一本。</string>
-    <string name="pt_search_show_shopping_options">显示商店菜单</string>
+    <string name="pt_search_show_menu_options">显示搜索菜单</string>
     <string name="pt_search_uses_publisher">搜索时使用出版商</string>
     <string name="pt_show_title_reordered">将标题显示为…</string>
     <string name="pt_sort_title_reordered">标题排序方式</string>

@@ -29,17 +29,17 @@
             <item
                 android:id="@+id/MENU_STRIPWEB_BOOKS_BY_AUTHOR"
                 android:icon="@drawable/search_24px"
-                android:title="@string/option_shop_books_by_author" />
+                android:title="@string/option_search_books_by_author" />
 
             <item
                 android:id="@+id/MENU_STRIPWEB_BOOKS_BY_AUTHOR_IN_SERIES"
                 android:icon="@drawable/search_24px"
-                android:title="@string/option_shop_books_by_author_in_series" />
+                android:title="@string/option_search_books_by_author_in_series" />
 
             <item
                 android:id="@+id/MENU_STRIPWEB_BOOKS_IN_SERIES"
                 android:icon="@drawable/search_24px"
-                android:title="@string/option_shop_books_in_series" />
+                android:title="@string/option_search_books_in_series" />
         </menu>
     </item>
 </menu>

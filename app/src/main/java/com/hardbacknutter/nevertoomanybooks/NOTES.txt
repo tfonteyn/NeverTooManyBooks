@@ -30,7 +30,7 @@ NEW:
     multiple sizes of cover lookup, ...
   - Dnb, LastDodo, StripWeb sites: now supporting searching "by title"
   - LastDodo now supports barcode and invalid-isbn searches
-  - Shopping/search menus for StripWeb.be
+  - Search menu for StripWeb.be
 - Searching for books "by title" now supports series/nr and publisher fields.
   Actual usage during a search depends on the site searched.
 - Added filters for Location and Genre

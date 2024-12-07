@@ -432,10 +432,10 @@
     <string name="list_and">και</string>
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
-    <string name="option_shop_books_by_author">Βιβλία από αυτόν το συγγραφέα</string>
-    <string name="option_shop_books_by_author_in_series">Βιβλία από συγγραφέα/σειρά</string>
-    <string name="option_shop_book_on">Ψωνίστε στο…</string>
-    <string name="option_shop_books_in_series">Βιβλία σε αυτή τη σειρά</string>
+    <string name="option_search_books_by_author">Βιβλία από αυτόν το συγγραφέα</string>
+    <string name="option_search_books_by_author_in_series">Βιβλία από συγγραφέα/σειρά</string>
+    <string name="option_search_books_on">Αναζήτηση στο…</string>
+    <string name="option_search_books_in_series">Βιβλία σε αυτή τη σειρά</string>
     <string name="option_author_details">Όλα τα έργα αυτού του συγγραφέα</string>
     <string name="option_author_works_book">Μόνο βιβλία</string>
     <string name="option_author_works_toc">Μόνο τίτλοι περιεχομένου</string>
@@ -710,7 +710,7 @@
     <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s «%2$s»;</string>
     <string name="error_updates_aborted">Οι ενημερώσεις ματαιώθηκαν</string>
     <string name="lbl_country">Χώρα</string>
-    <string name="pt_search_show_shopping_options">Εμφάνιση μενού αγορών</string>
+    <string name="pt_search_show_menu_options">Εμφάνιση μενού αναζήτησης</string>
     <string name="lbl_author_pseudonym_of_X">ψε. %1$s</string>
     <string name="lbl_titles">Τίτλοι</string>
     <string name="lbl_original_title">Πρωτότυπος τίτλος</string>

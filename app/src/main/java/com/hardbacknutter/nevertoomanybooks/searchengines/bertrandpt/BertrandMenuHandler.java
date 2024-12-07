@@ -39,11 +39,11 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteSearchMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class BertrandMenuHandler
-        extends ShoppingMenuHandler {
+        extends SiteSearchMenuHandler {
 
     /**
      * Constructor.
@@ -59,7 +59,7 @@ public class BertrandMenuHandler
     @Override
     public boolean isShowMenu(@NonNull final Context context) {
         final String key = EngineId.BertrandPt.getPreferenceKey()
-                           + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU;
+                           + '.' + Prefs.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {

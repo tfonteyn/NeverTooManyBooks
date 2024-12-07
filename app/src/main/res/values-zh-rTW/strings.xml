@@ -561,10 +561,10 @@
     <string name="option_set_incomplete">設定為「未完成」</string>
     <string name="option_set_read">標為已讀</string>
     <string name="option_set_unread">標為未讀</string>
-    <string name="option_shop_book_on">線上購物…</string>
-    <string name="option_shop_books_by_author">該作者的圖書</string>
-    <string name="option_shop_books_by_author_in_series">同作者/系列圖書</string>
-    <string name="option_shop_books_in_series">本系列圖書</string>
+    <string name="option_search_books_on">搜尋…</string>
+    <string name="option_search_books_by_author">該作者的圖書</string>
+    <string name="option_search_books_by_author_in_series">同作者/系列圖書</string>
+    <string name="option_search_books_in_series">本系列圖書</string>
     <string name="option_sort_and_style_ellipsis">排序與樣式…</string>
     <string name="option_storage_edit_settings">編輯設定</string>
     <string name="option_storage_quit_and_reinsert_sdcard">退出並重新插入正確的 SD 卡</string>
@@ -684,7 +684,7 @@
     <string name="pt_search_reformat_format">標準化「圖書格式」名稱</string>
     <string name="pt_search_resolve_authors_bedetheque">用 Bedetheque 網站解析作者筆名</string>
     <string name="pt_search_result_order">搜尋返回最新書籍或第找到的第一本。</string>
-    <string name="pt_search_show_shopping_options">顯示商店選單</string>
+    <string name="pt_search_show_menu_options">顯示搜尋選單</string>
     <string name="pt_search_uses_publisher">搜尋時使用出版商</string>
     <string name="pt_show_title_reordered">將標題顯示為…</string>
     <string name="pt_sort_title_reordered">標題排序方式</string>

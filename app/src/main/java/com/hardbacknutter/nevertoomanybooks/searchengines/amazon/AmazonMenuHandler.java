@@ -36,14 +36,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteSearchMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Stateless.
  */
 public class AmazonMenuHandler
-        extends ShoppingMenuHandler {
+        extends SiteSearchMenuHandler {
 
     /**
      * The search url for books when opening a browser activity.
@@ -80,7 +80,7 @@ public class AmazonMenuHandler
     public boolean isShowMenu(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(EngineId.Amazon.getPreferenceKey()
-                                            + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU,
+                                            + '.' + Prefs.PK_SEARCH_WEBSITE_MENU,
                                             true);
 
     }

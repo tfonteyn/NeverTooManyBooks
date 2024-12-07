@@ -41,7 +41,7 @@ public class BertrandPtPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_bertrandpt, rootKey);
 
-        initShoppingMenuPref(EngineId.BertrandPt);
+        initSearchMenuPref(EngineId.BertrandPt);
     }
 
     /**
@@ -50,10 +50,10 @@ public class BertrandPtPreferencesFragment
      * @param engineId to use
      */
     @SuppressWarnings("DataFlowIssue")
-    private void initShoppingMenuPref(@NonNull final EngineId engineId) {
-        final SwitchPreference pShoppingMenu = findPreference(
-                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        final boolean enabled = engineId.createShoppingMenuHandler().isPresent();
-        pShoppingMenu.setChecked(enabled);
+    private void initSearchMenuPref(@NonNull final EngineId engineId) {
+        final SwitchPreference preference = findPreference(
+                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU);
+        final boolean enabled = engineId.createSearchMenuHandler().isPresent();
+        preference.setChecked(enabled);
     }
 }

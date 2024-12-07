@@ -76,13 +76,15 @@ public final class Prefs {
     public static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Whether a shopping menu should be shown.
+     * Whether a website-specific-search (using a url) menu should be shown.
      * <p>
      * {@code boolean}
      *
+     * The "shopping" part is legacy/misnamed.
+     *
      * @see com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig
      */
-    public static final String PK_SEARCH_SHOW_SHOPPING_MENU = "search.shopping.menu";
+    public static final String PK_SEARCH_WEBSITE_MENU = "search.shopping.menu";
 
     public static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
     public static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";

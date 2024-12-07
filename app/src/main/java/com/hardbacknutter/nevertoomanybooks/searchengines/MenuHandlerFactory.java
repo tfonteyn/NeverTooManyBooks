@@ -50,7 +50,7 @@ public final class MenuHandlerFactory {
         Arrays.stream(EngineId.values())
               .filter(EngineId::isEnabled)
               .sorted(Comparator.comparing(Enum::name))
-              .map(EngineId::createShoppingMenuHandler)
+              .map(EngineId::createSearchMenuHandler)
               .flatMap(Optional::stream)
               .forEach(list::add);
 

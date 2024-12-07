@@ -22,10 +22,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@id/MENU_GROUP_BOOK">
         <item
-            android:id="@id/SUBMENU_SHOP_BOOK_ON_SITE"
+            android:id="@id/SUBMENU_SEARCH_BOOKS_ON_SITE"
             android:icon="@drawable/link_24px"
-            android:orderInCategory="@integer/MENU_ORDER_SHOP_ON_SITE"
-            android:title="@string/option_shop_book_on"
+            android:orderInCategory="@integer/MENU_ORDER_SEARCH_BOOKS_ON_SITE"
+            android:title="@string/option_search_books_on"
             >
             <menu><!-- auto-generated from code --></menu>
         </item>

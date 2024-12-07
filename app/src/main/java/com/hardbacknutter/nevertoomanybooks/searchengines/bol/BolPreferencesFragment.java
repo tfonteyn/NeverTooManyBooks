@@ -71,7 +71,7 @@ public class BolPreferencesFragment
             p.setValue(DEF_COUNTRY);
         }
 
-        initShoppingMenuPref(EngineId.Bol);
+        initSearchMenuPref(EngineId.Bol);
     }
 
     /**
@@ -80,10 +80,10 @@ public class BolPreferencesFragment
      * @param engineId to use
      */
     @SuppressWarnings("DataFlowIssue")
-    private void initShoppingMenuPref(@NonNull final EngineId engineId) {
-        final SwitchPreference pShoppingMenu = findPreference(
-                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        final boolean enabled = engineId.createShoppingMenuHandler().isPresent();
-        pShoppingMenu.setChecked(enabled);
+    private void initSearchMenuPref(@NonNull final EngineId engineId) {
+        final SwitchPreference preference = findPreference(
+                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU);
+        final boolean enabled = engineId.createSearchMenuHandler().isPresent();
+        preference.setChecked(enabled);
     }
 }

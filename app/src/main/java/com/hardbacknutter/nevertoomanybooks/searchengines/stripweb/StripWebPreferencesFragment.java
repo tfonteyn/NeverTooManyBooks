@@ -49,7 +49,7 @@ public class StripWebPreferencesFragment
         findPreference("stripweb.resolve.authors.bedetheque")
                 .setEnabled(useRealAuthor);
 
-        initShoppingMenuPref(EngineId.StripWebBe);
+        initSearchMenuPref(EngineId.StripWebBe);
     }
 
     /**
@@ -58,10 +58,10 @@ public class StripWebPreferencesFragment
      * @param engineId to use
      */
     @SuppressWarnings("DataFlowIssue")
-    private void initShoppingMenuPref(@NonNull final EngineId engineId) {
-        final SwitchPreference pShoppingMenu = findPreference(
-                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        final boolean enabled = engineId.createShoppingMenuHandler().isPresent();
-        pShoppingMenu.setChecked(enabled);
+    private void initSearchMenuPref(@NonNull final EngineId engineId) {
+        final SwitchPreference preference = findPreference(
+                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU);
+        final boolean enabled = engineId.createSearchMenuHandler().isPresent();
+        preference.setChecked(enabled);
     }
 }

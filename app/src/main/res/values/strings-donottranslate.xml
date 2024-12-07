@@ -113,16 +113,16 @@
     <string name="site_calibre"
             translatable="false">Calibre</string>
 
-    <!-- Shopping submenu title -->
+    <!-- Site Search submenu title -->
     <string name="option_amazon_ellipsis"
             translatable="false">Amazon…</string>
-    <!-- Shopping submenu title -->
+    <!-- Site Search submenu title -->
     <string name="option_bertrand_ellipsis"
             translatable="false">Bertrand.pt…</string>
-    <!-- Shopping submenu title -->
+    <!-- Site Search submenu title -->
     <string name="option_bol_ellipsis"
             translatable="false">BOL…</string>
-    <!-- Shopping submenu title -->
+    <!-- Site Search submenu title -->
     <string name="option_stripweb_ellipsis"
             translatable="false">StripWeb…</string>
 

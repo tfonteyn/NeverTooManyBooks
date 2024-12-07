@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
-public abstract class ShoppingMenuHandler
+public abstract class SiteSearchMenuHandler
         implements MenuHandler {
 
     @MenuRes
@@ -61,11 +61,11 @@ public abstract class ShoppingMenuHandler
      * @param midByAuthorInSeries search by both author and series menu id
      * @param midBySeries         search by series menu id
      */
-    protected ShoppingMenuHandler(@MenuRes final int menuResId,
-                                  @IdRes final int subMenuId,
-                                  @IdRes final int midByAuthor,
-                                  @IdRes final int midByAuthorInSeries,
-                                  @IdRes final int midBySeries) {
+    protected SiteSearchMenuHandler(@MenuRes final int menuResId,
+                                    @IdRes final int subMenuId,
+                                    @IdRes final int midByAuthor,
+                                    @IdRes final int midByAuthorInSeries,
+                                    @IdRes final int midBySeries) {
         this.menuResId = menuResId;
         this.subMenuId = subMenuId;
         this.midByAuthor = midByAuthor;
@@ -86,16 +86,16 @@ public abstract class ShoppingMenuHandler
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
-        // add the shopping submenu if not there yet
-        MenuItem shoppingSubmenu = menu.findItem(R.id.SUBMENU_SHOP_BOOK_ON_SITE);
-        if (shoppingSubmenu == null) {
-            inflater.inflate(R.menu.sm_shop_on_site, menu);
-            shoppingSubmenu = menu.findItem(R.id.SUBMENU_SHOP_BOOK_ON_SITE);
+        // add the submenu if not there yet
+        MenuItem menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
+        if (menuItem == null) {
+            inflater.inflate(R.menu.sm_search_books_on_site, menu);
+            menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
         }
 
         // add THIS submenu if not there yet
         if (menu.findItem(subMenuId) == null) {
-            inflater.inflate(menuResId, shoppingSubmenu.getSubMenu());
+            inflater.inflate(menuResId, menuItem.getSubMenu());
         }
     }
 

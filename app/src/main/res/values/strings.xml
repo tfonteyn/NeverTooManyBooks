@@ -692,15 +692,16 @@
     <string name="option_author_details">All works by this author</string>
     <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
     <string name="option_view_book_at">View on…</string>
-    <!-- Book context/options submenu - will contain links to shopping websites. -->
-    <string name="option_shop_book_on">Shop on…</string>
+    <!-- Book/Author/...  context/options submenu - will contain links to external websites. -->
+    <string name="option_search_books_on">Search on…</string>
 
-    <!-- submenu options for the "amazon" menu -->
-    <string name="option_shop_books_in_series">Books in this series</string>
-    <!-- submenu options for the "amazon" menu -->
-    <string name="option_shop_books_by_author">Books by this author</string>
-    <!-- submenu options for the "amazon" menu -->
-    <string name="option_shop_books_by_author_in_series">Books by author/series</string>
+    <!-- submenu options for the "Search on a site" menu which will open the site in a browser. -->
+    <string name="option_search_books_in_series">Books in this series</string>
+    <!-- submenu options for the "Search on a site" menu which will open the site in a browser. -->
+    <string name="option_search_books_by_author">Books by this author</string>
+    <!-- submenu options for the "Search on a site" menu which will open the site in a browser. -->
+    <string name="option_search_books_by_author_in_series">Books by author/series</string>
+
     <!-- "view all works of an author" menu option - show only Books -->
     <string name="option_author_works_book">Books only</string>
     <!-- "view all works of an author" menu option - show only TOC entries -->
@@ -1388,7 +1389,7 @@
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_other">Other</string>
     <!-- Preference option title -->
-    <string name="pt_search_show_shopping_options">Show shopping menus</string>
+    <string name="pt_search_show_menu_options">Show search menus</string>
     <!-- endregion -->
     <!-- region ========== Global UI settings. -->
     <!-- Preference Category -->

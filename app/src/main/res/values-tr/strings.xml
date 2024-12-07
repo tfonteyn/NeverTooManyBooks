@@ -437,10 +437,10 @@
     <string name="list_and">ve</string>
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
-    <string name="option_shop_books_by_author">Bu yazarın kitapları</string>
-    <string name="option_shop_books_by_author_in_series">Yazara/diziye göre kitaplar</string>
-    <string name="option_shop_book_on">Alışveriş yapın…</string>
-    <string name="option_shop_books_in_series">Bu dizideki kitaplar</string>
+    <string name="option_search_books_by_author">Bu yazarın kitapları</string>
+    <string name="option_search_books_by_author_in_series">Yazara/diziye göre kitaplar</string>
+    <string name="option_search_books_on">Arayın…</string>
+    <string name="option_search_books_in_series">Bu dizideki kitaplar</string>
     <string name="option_author_details">Bu yazarın tüm eserleri</string>
     <string name="option_author_works_book">Sadece kitaplar</string>
     <string name="option_author_works_toc">Yalnızca içerik başlıkları</string>
@@ -710,7 +710,7 @@
     <string name="info_purge_blns_item_name">%1$s “%2$s” düğüm durumu temizlensin mi\?</string>
     <string name="error_updates_aborted">Güncellemeler iptal edildi</string>
     <string name="lbl_country">Ülke</string>
-    <string name="pt_search_show_shopping_options">Alışveriş menülerini göster</string>
+    <string name="pt_search_show_menu_options">Arama menülerini göster</string>
     <string name="lbl_author_pseudonym_of_X">ta. %1$s</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
     <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir.

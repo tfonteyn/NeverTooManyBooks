@@ -446,10 +446,10 @@
     <string name="list_and">a</string>
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
-    <string name="option_shop_books_by_author">Knihy tohoto autora</string>
-    <string name="option_shop_books_by_author_in_series">Knihy podle autora / série</string>
-    <string name="option_shop_book_on">Nakupujte na…</string>
-    <string name="option_shop_books_in_series">Knihy v této sérii</string>
+    <string name="option_search_books_by_author">Knihy tohoto autora</string>
+    <string name="option_search_books_by_author_in_series">Knihy podle autora / série</string>
+    <string name="option_search_books_on">Hledat na…</string>
+    <string name="option_search_books_in_series">Knihy v této sérii</string>
     <string name="option_author_details">Všechna díla tohoto autora</string>
     <string name="option_author_works_book">Pouze knihy</string>
     <string name="option_author_works_toc">Pouze tituly obsahu</string>
@@ -719,7 +719,7 @@
     <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“\?</string>
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
-    <string name="pt_search_show_shopping_options">Zobrazit nákupní nabídky</string>
+    <string name="pt_search_show_menu_options">Zobrazit nabídky pro vyhledávání</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Tituly</string>
     <string name="lbl_original_title">Originální název</string>
