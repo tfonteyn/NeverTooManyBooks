@@ -122,6 +122,9 @@
     <!-- Shopping submenu title -->
     <string name="option_bol_ellipsis"
             translatable="false">BOL…</string>
+    <!-- Shopping submenu title -->
+    <string name="option_stripweb_ellipsis"
+            translatable="false">StripWeb…</string>
 
     <!-- The project which inspired us. -->
     <string name="lbl_book_catalogue"

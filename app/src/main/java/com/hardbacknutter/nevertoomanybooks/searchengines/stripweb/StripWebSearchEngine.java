@@ -72,10 +72,13 @@ public class StripWebSearchEngine
         implements SearchEngine.ByText,
                    SearchEngine.ByBarcode {
 
+    /** Website character encoding. */
+    static final String CHARSET = "UTF-8";
+
     /**
      * Param 1: search terms.
      */
-    private static final String SEARCH_URL = "/nl-nl/zoeken?type=&text=%1$s";
+    static final String SEARCH_URL = "/nl-nl/zoeken?type=&text=%1$s";
 
     /**
      * Some titles have suffixes which we need to strip.

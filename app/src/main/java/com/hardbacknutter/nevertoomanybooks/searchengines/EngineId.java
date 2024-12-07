@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearc
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -489,7 +490,8 @@ public enum EngineId
                        .build(SearchEngineConfig::new);
         }
         if (StripWebBe.isEnabled()) {
-            StripWebBe.createConfig()
+            StripWebBe.setShoppingMenuHandler(StripWebMenuHandler::new)
+                      .createConfig()
                       .build(SearchEngineConfig::new);
         }
 

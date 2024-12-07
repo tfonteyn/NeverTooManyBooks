@@ -22,12 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @Keep
 public class StripWebPreferencesFragment
@@ -44,5 +48,20 @@ public class StripWebPreferencesFragment
         //noinspection DataFlowIssue
         findPreference("stripweb.resolve.authors.bedetheque")
                 .setEnabled(useRealAuthor);
+
+        initShoppingMenuPref(EngineId.StripWebBe);
+    }
+
+    /**
+     * Set this manually, as the default depends on the user language.
+     *
+     * @param engineId to use
+     */
+    @SuppressWarnings("DataFlowIssue")
+    private void initShoppingMenuPref(@NonNull final EngineId engineId) {
+        final SwitchPreference pShoppingMenu = findPreference(
+                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
+        final boolean enabled = engineId.createShoppingMenuHandler(getContext()).isPresent();
+        pShoppingMenu.setChecked(enabled);
     }
 }
