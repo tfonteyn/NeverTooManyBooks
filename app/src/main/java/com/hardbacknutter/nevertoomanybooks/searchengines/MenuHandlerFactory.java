@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -41,12 +39,10 @@ public final class MenuHandlerFactory {
     /**
      * Create the list of handlers.
      *
-     * @param context Current context
-     *
      * @return unmodifiable list
      */
     @NonNull
-    public static List<MenuHandler> create(@NonNull final Context context) {
+    public static List<MenuHandler> create() {
         final List<MenuHandler> list = new ArrayList<>();
 
         list.add(new ViewBookOnWebsiteHandler());
@@ -54,7 +50,7 @@ public final class MenuHandlerFactory {
         Arrays.stream(EngineId.values())
               .filter(EngineId::isEnabled)
               .sorted(Comparator.comparing(Enum::name))
-              .map(engineId -> engineId.createShoppingMenuHandler(context))
+              .map(EngineId::createShoppingMenuHandler)
               .flatMap(Optional::stream)
               .forEach(list::add);
 

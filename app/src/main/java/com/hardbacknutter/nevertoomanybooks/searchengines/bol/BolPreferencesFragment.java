@@ -83,7 +83,7 @@ public class BolPreferencesFragment
     private void initShoppingMenuPref(@NonNull final EngineId engineId) {
         final SwitchPreference pShoppingMenu = findPreference(
                 engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_SHOW_SHOPPING_MENU);
-        final boolean enabled = engineId.createShoppingMenuHandler(getContext()).isPresent();
+        final boolean enabled = engineId.createShoppingMenuHandler().isPresent();
         pShoppingMenu.setChecked(enabled);
     }
 }

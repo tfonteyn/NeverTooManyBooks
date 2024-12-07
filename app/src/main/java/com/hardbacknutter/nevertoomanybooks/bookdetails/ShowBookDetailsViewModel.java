@@ -60,7 +60,9 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
+import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Shared data between details and Read fragments.
@@ -78,6 +80,8 @@ public class ShowBookDetailsViewModel
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
     @Nullable
     private Book book;
+    private List<MenuHandler> menuHandlers;
+
     private boolean embedded;
 
     /**
@@ -95,6 +99,8 @@ public class ShowBookDetailsViewModel
             embedded = args.getBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, false);
 
             book = Book.from(args.getLong(DBKey.FK_BOOK, 0));
+
+            menuHandlers = MenuHandlerFactory.create();
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }
@@ -226,6 +232,12 @@ public class ShowBookDetailsViewModel
     @NonNull
     public MutableLiveData<Void> onReadStatusChanged() {
         return onReadStatusChanged;
+    }
+
+
+    @NonNull
+    List<MenuHandler> getMenuHandlers() {
+        return menuHandlers;
     }
 
     @NonNull

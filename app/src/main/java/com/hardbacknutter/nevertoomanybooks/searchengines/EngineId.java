@@ -890,12 +890,10 @@ public enum EngineId
      * We always create it, and leave it up to the handler itself
      * whether to show it to the user or not.
      *
-     * @param context Current context
-     *
      * @return handler
      */
     @NonNull
-    public Optional<ShoppingMenuHandler> createShoppingMenuHandler(@NonNull final Context context) {
+    public Optional<ShoppingMenuHandler> createShoppingMenuHandler() {
         if (shoppingMenuHandlerSupplier != null) {
             return Optional.of(shoppingMenuHandlerSupplier.get());
         }

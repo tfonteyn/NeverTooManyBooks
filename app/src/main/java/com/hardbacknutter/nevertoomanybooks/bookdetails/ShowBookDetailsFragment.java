@@ -80,11 +80,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -163,7 +161,6 @@ public class ShowBookDetailsFragment
 
     /** Handle the edit-lender dialog. */
     private EditLenderLauncher editLenderLauncher;
-    private List<MenuHandler> menuHandlers;
 
     /**
      * Constructor.
@@ -258,9 +255,6 @@ public class ShowBookDetailsFragment
         // Popup the search widget when the user starts to type.
         //noinspection DataFlowIssue
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-
-        //noinspection DataFlowIssue
-        menuHandlers = MenuHandlerFactory.create(getContext());
 
         createCoverDelegates();
 
@@ -648,7 +642,7 @@ public class ShowBookDetailsFragment
 
             final Context context = getContext();
             //noinspection DataFlowIssue
-            menuHandlers.forEach(h -> h.onCreateMenu(context, menu, inflater));
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater));
         }
 
         @Override
@@ -677,7 +671,7 @@ public class ShowBookDetailsFragment
             }
 
             //noinspection DataFlowIssue
-            menuHandlers.forEach(h -> h.onPrepareMenu(context, menu, book));
+            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, book));
         }
 
         @Override
@@ -749,7 +743,7 @@ public class ShowBookDetailsFragment
             }
 
             //noinspection DataFlowIssue
-            return menuHandlers.stream().anyMatch(
+            return vm.getMenuHandlers().stream().anyMatch(
                     h -> h.onMenuItemSelected(context, menuItemId, book));
         }
 
