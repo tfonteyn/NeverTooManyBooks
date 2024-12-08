@@ -24,9 +24,9 @@ Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
-### Download the latest release: 6.3.1
+### Download the latest release: 6.4.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.3.1/NeverTooManyBooks-6.3.1.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.4.0/NeverTooManyBooks-6.4.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
@@ -34,7 +34,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 
 ## User Interface languages:
 
-- Chinese, Dutch, English, French, German, Italian, Portuguese, Spanish, Turkish, Vietnamese.
+- Chinese Simplified(CN), Chinese Traditional(TW),
+  Dutch, English, French, German, Italian,
+  Portuguese, Portuguese(Brazil), Spanish, Turkish, Vietnamese.
 - Machine translated, no guarantees for quality: Czech, Greek, Polish, Russian.
 
 Translations are editable on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
@@ -64,9 +66,8 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 > GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
 > explaining what went wrong.
 
-> Please do not ask for GoodReads/LibraryThing/AbeBooks to be added.
-
 - **Bedetheque** (French and more; Catalogue; European Comics)
+- **Bertrand.pt** (Portuguese and more; Shop)
 - **BOL.com** (Dutch and more; Shop)
 - **dnb.de** (German; Catalogue)
 - **Douban.com** (Chinese; Catalogue)
@@ -78,6 +79,8 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - **StripInfo** (Dutch and more; Catalogue; European Comics)
 - **StripWeb** (Dutch/French; Shop; European Comics)
 - Supports synchronizing with a [Calibre](https://calibre-ebook.com/) Content Server.
+
+Please do not ask for GoodReads/LibraryThing/AbeBooks to be added.
 
 ## Device support:
 
@@ -103,7 +106,8 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
-- Chinese translation: [CloneWith](https://github.com/CloneWith)
+- Portuguese(Brazil): [Suburbanno](https://github.com/Suburbanno)
+- Chinese translation (Simplified): [CloneWith](https://github.com/CloneWith)
   and [evoke322](https://github.com/evoke322)
 - Vietnamese translation: [ngocanhtve](https://github.com/ngocanhtve).
 - Portuguese translation: [maverick74](https://github.com/maverick74).

@@ -1,3 +1,34 @@
+### 6.4.0
+
+NEW:
+
+- Supported UI languages added:
+  - Portuguese/Brazil. Contributed by [Suburbanno](https://github.com/Suburbanno)
+  - Traditional Chinese (zh-TW)
+- New/updated search sites:
+  - Added https://www.bertrand.pt for looking up portuguese books (see github #15)
+  - Complete rewrite of GoogleBooks searches. Supports more fields, multiple sizes of cover
+    lookup, ...
+  - Dnb, LastDodo, StripWeb sites: now supporting searching "by title"
+  - LastDodo now supports barcode and invalid-isbn searches
+  - Search menu for StripWeb.be
+- Searching for books "by title" now supports series/nr and publisher fields.
+  Actual usage during a search depends on the site searched.
+- Added filters for Location and Genre
+- Title capitalization is now configurable in the settings.
+- Menu-option to set the Location for all books for a selected node in the list
+
+FIXES:
+
+- #77 Importing Zip file to new device, no book covers.
+  This happened when the 'old' device had the covers on secondary/SDCARD storage
+  while the 'new' device does not have secondary storage.
+- improve some author parsing issues with OpenLibrary
+- editing a books bookshelf list when you have many shelves will no longer push the ok/cancel
+  buttons offscreen
+
+---
+
 ### 6.3.1
 
 FIXES
