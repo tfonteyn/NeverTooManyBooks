@@ -143,13 +143,13 @@ public abstract class SiteSearchMenuHandler
                 startSearchActivity(context, author, null);
                 return true;
             }
-        } else if (menuItemId == midByAuthorInSeries) {
+        } else if (menuItemId == midBySeries) {
             if (DataHolderUtils.hasSeries(rowData)) {
                 final Series series = DataHolderUtils.requireSeries(rowData);
                 startSearchActivity(context, null, series);
                 return true;
             }
-        } else if (menuItemId == midBySeries) {
+        } else if (menuItemId == midByAuthorInSeries) {
             if (DataHolderUtils.hasAuthor(rowData)
                 && DataHolderUtils.hasSeries(rowData)) {
                 final Author author = DataHolderUtils.requireAuthor(rowData);
