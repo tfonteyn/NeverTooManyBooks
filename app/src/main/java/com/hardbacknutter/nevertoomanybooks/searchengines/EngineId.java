@@ -481,53 +481,6 @@ public enum EngineId
     }
 
     /**
-     * Get the list of all external-id domains.
-     *
-     * @return list
-     */
-    @NonNull
-    public static List<Domain> getExternalIdDomains() {
-        return Arrays.stream(values())
-                     .filter(EngineId::isEnabled)
-                     .map(EngineId::getExternalIdDomain)
-                     .filter(Objects::nonNull)
-                     .collect(Collectors.toList());
-    }
-
-    /**
-     * Collect the website engines for which we store an id which can be used
-     * to view a book on that site.
-     * Sorted by name.
-     *
-     * @return list
-     */
-    @NonNull
-    public static List<EngineId> getViewOnSite() {
-        return Arrays.stream(values())
-                     .filter(EngineId::isEnabled)
-                     .filter(engineId -> engineId.supports(
-                             SearchEngine.ViewBookByExternalId.class))
-                     .sorted(Comparator.comparing(Enum::name))
-                     .collect(Collectors.toList());
-    }
-
-    /**
-     * Collect the website engines for which we support searching via url.
-     * Sorted by name.
-     *
-     * @return list
-     */
-    public static List<EngineId> getSearchOnSite() {
-        return Arrays.stream(values())
-                     .filter(EngineId::isEnabled)
-                     .filter(engineId -> engineId.supports(
-                             SearchEngine.SearchOnSite.class))
-                     .sorted(Comparator.comparing(Enum::name))
-                     .collect(Collectors.toList());
-    }
-
-
-    /**
      * Register all {@link Site} instances; called during startup.
      *
      * @param context   Current context
@@ -630,6 +583,52 @@ public enum EngineId
             default:
                 throw new IllegalArgumentException(String.valueOf(type));
         }
+    }
+
+    /**
+     * Get the list of all external-id domains.
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<Domain> getExternalIdDomains() {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .map(EngineId::getExternalIdDomain)
+                     .filter(Objects::nonNull)
+                     .collect(Collectors.toList());
+    }
+
+    /**
+     * Collect the website engines for which we store an id which can be used
+     * to view a book on that site.
+     * Sorted by name.
+     *
+     * @return list
+     */
+    @NonNull
+    static List<EngineId> getViewOnSite() {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .filter(engineId -> engineId.supports(
+                             SearchEngine.ViewBookByExternalId.class))
+                     .sorted(Comparator.comparing(Enum::name))
+                     .collect(Collectors.toList());
+    }
+
+    /**
+     * Collect the website engines for which we support searching via url.
+     * Sorted by name.
+     *
+     * @return list
+     */
+    static List<EngineId> getSearchOnSite() {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .filter(engineId -> engineId.supports(
+                             SearchEngine.SearchOnSite.class))
+                     .sorted(Comparator.comparing(Enum::name))
+                     .collect(Collectors.toList());
     }
 
     /**
