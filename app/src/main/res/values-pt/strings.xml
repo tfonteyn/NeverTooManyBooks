@@ -75,8 +75,8 @@
     <string name="action_select">Selecionar</string>
     <string name="action_show_all">Mostrar tudo</string>
     <string name="action_skip">Pular</string>
-    <string name="and_others">%1$s …</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others">%1$s…</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_field">(Vazio)</string>
     <string name="cancelled">Cancelado</string>
     <string name="acra_dialog_message">Parece que o &APP_NAME; foi bloqueado. Toque em “%1$s” para guardar um relatório numa localização à sua escolha. Pode utilizar este relatório para comunicar um novo problema no site do projeto.</string>
@@ -504,7 +504,7 @@
     <string name="info_export_successful">Exportação bem sucedida</string>
     <string name="pt_field_visibility">Visibilidade do campo</string>
     <string name="pt_show_title_reordered">Mostrar títulos como…</string>
-    <string name="error_type_not_supported">Tipo não suportado: %1$s …</string>
+    <string name="error_type_not_supported">Tipo não suportado: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Mover um artigo do início de um título para o final,\npor exemplo, “Senhor dos Anéis, O”</string>
     <string name="ps_show_author_name_family_first">Mostrar com o nome de família em primeiro lugar,\npor exemplo, “de Camões, Luís”</string>
     <string name="pt_bob_books_under_multiple_authors">Mostrar livros com vários autores</string>

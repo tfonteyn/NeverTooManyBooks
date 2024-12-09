@@ -92,8 +92,8 @@
     <string name="action_show_all">Mostra tutte</string>
     <string name="action_skip">Ignora</string>
     <string name="action_synchronize">Sincronizzare</string>
-    <string name="and_others">%1$s …</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others">%1$s…</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(L’autore è mancante)</string>
     <string name="bob_empty_day">(Giorno non impostato)</string>
     <string name="bob_empty_field">(Vuoto)</string>
@@ -568,7 +568,7 @@
     <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
     <string name="pt_show_title_reordered">Mostra titoli come…</string>
     <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «IIl Signore degli Anelli»</string>
-    <string name="error_type_not_supported">Tipo non supportato: %1$s …</string>
+    <string name="error_type_not_supported">Tipo non supportato: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «ignore degli Anelli, Il»</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>

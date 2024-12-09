@@ -150,13 +150,13 @@
     <string name="pe_bob_cover_long_click_popupmenu">Ao clicar longamente em uma imagem de capa.</string>
     <string name="pt_bob_cover_scale">Tamanho da capa</string>
     <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="httpErrorFileNotFound">Não foi possível encontrar o arquivo solicitado.</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
-    <string name="and_others">%1$s …</string>
+    <string name="and_others">%1$s…</string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="debug_select_items">Selecione o que você gostaria de incluir:</string>
     <string name="pt_ui_theme">Tema</string>

@@ -90,8 +90,8 @@
     <string name="action_show_all">Εμφάνιση όλων</string>
     <string name="action_skip">Παράλ</string>
     <string name="action_synchronize">Συγχρονίζω</string>
-    <string name="and_others">%1$s …</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others">%1$s…</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Ο συγγραφέας λείπει)</string>
     <string name="bob_empty_day">(Ημέρα δεν έχει οριστεί)</string>
     <string name="bob_empty_field">(Κενή)</string>
@@ -566,7 +566,7 @@
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
     <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
     <string name="ps_show_titles_reordered_off">Εμφάνιση όπως δίνεται,\nπ.χ. «Ο Άρχοντας των Δαχτυλιδιών»</string>
-    <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s …</string>
+    <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Μετακινήστε ένα άρθρο στην αρχή ενός τίτλου στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων με βάση</string>
     <string name="pt_cover_undo_enabled">Αναίρεση λειτουργιών σε εξώφυλλα βιβλίων</string>

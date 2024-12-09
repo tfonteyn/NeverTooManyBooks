@@ -109,8 +109,8 @@
     <string name="action_stop_scanning">停止掃描</string>
     <string name="action_synchronize">同步化</string>
     <string name="action_undo">復原</string>
-    <string name="and_others">%1$s…</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others">%1$s……</string>
+    <string name="and_others_plus"><![CDATA[%1$s…… <small>[+%2$d]</small>]]></string>
     <string name="anonymous_author">［匿名］</string>
     <string name="bob_empty_author">（無作者）</string>
     <string name="bob_empty_day">（未設定）</string>

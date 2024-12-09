@@ -96,8 +96,8 @@
     <string name="action_show_all">Zobrazit vše</string>
     <string name="action_skip">Přeskočit</string>
     <string name="action_synchronize">Synchronizovat</string>
-    <string name="and_others">%1$s …</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others">%1$s…</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Chybí autor)</string>
     <string name="bob_empty_day">(Den není nastaven)</string>
     <string name="bob_empty_field">(Prázdné)</string>
@@ -741,7 +741,7 @@
     <string name="info_maintenance_sync_deleted_book_records">Zkontroluje se historie smazaných knih z předchozího importu z jiného zařízení a tato smazání se synchronizují. Jinými slovy, knihy smazané v jiném zařízení budou smazány i v tomto zařízení.</string>
     <string name="option_clear_deleted_book_records">Vymazání historie smazaných knih</string>
     <string name="info_maintenance_clear_deleted_book_records">Tato funkce vymaže historii smazaných knih. Žádné skutečné knihy nebudou odstraněny.</string>
-    <string name="error_type_not_supported">Typ není podporován: %1$s …</string>
+    <string name="error_type_not_supported">Typ není podporován: %1$s…</string>
     <string name="info_books_deleted">Smazané knihy: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d smazáno</string>
     <string name="action_undo">Vrátit zpět</string>

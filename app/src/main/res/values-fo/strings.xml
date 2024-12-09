@@ -81,7 +81,7 @@
     <string name="option_author_works_book">Bara bøkur</string>
     <string name="option_search_books_by_author">Bøkur av hesum rithøvundi</string>
     <string name="option_search_books_by_author_in_series">Bøkur eftir rithøvundi/rað</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d bók</item>
@@ -90,7 +90,7 @@
     <string name="ellipsize">%1$s…</string>
     <string name="list_element">• %s</string>
     <string name="x_of_y">%1$d av %2$d</string>
-    <string name="and_others">%1$s …</string>
+    <string name="and_others">%1$s…</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="notification_channel_error">Villa</string>
     <string name="notification_channel_warn">Ávaring</string>

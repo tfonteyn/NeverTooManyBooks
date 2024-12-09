@@ -96,8 +96,8 @@
     <string name="action_show_all">Pokaż wszystko</string>
     <string name="action_skip">Pomiń</string>
     <string name="action_synchronize">Synchronizować</string>
-    <string name="and_others">%1$s …</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others">%1$s…</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Brakuje autora)</string>
     <string name="bob_empty_day">(Nie ustawiono dnia)</string>
     <string name="bob_empty_field">(Puste)</string>
@@ -746,7 +746,7 @@
     <string name="info_maintenance_sync_deleted_book_records">Spowoduje to sprawdzenie historii usuniętych książek z poprzedniego importu z innego urządzenia i synchronizację tych usunięć. Innymi słowy, książki usunięte na innym urządzeniu zostaną również usunięte na tym urządzeniu.</string>
     <string name="option_clear_deleted_book_records">Wyczyść historię usuniętych książek</string>
     <string name="info_maintenance_clear_deleted_book_records">Spowoduje to wyczyszczenie historii usuniętych książek. Żadne książki nie zostaną usunięte.</string>
-    <string name="error_type_not_supported">Typ nie jest obsługiwany: %1$s …</string>
+    <string name="error_type_not_supported">Typ nie jest obsługiwany: %1$s…</string>
     <string name="info_books_deleted">Książki usunięte: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d usunięty</string>
     <string name="action_undo">Cofnij</string>

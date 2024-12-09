@@ -111,8 +111,8 @@
     <string name="action_stop_scanning">停止扫描</string>
     <string name="action_synchronize">同步</string>
     <string name="action_undo">撤消</string>
-    <string name="and_others">%1$s …</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others">%1$s……</string>
+    <string name="and_others_plus"><![CDATA[%1$s…… <small>[+%2$d]</small>]]></string>
     <string name="anonymous_author">［匿名］</string>
     <string name="bob_empty_author">（无作者）</string>
     <string name="bob_empty_day">（未设置）</string>
@@ -217,7 +217,7 @@
     <string name="error_storage_not_accessible">请检查应用存储权限。</string>
     <string name="error_storage_not_writable">请检查存储是否可写，并确认有足够的空间。</string>
     <string name="error_total_pages_must_be_larger_than_current_page">必须大于或等于当前页面</string>
-    <string name="error_type_not_supported">类型不支持：%1$s …</string>
+    <string name="error_type_not_supported">类型不支持：%1$s……</string>
     <string name="error_unexpected">发生了一个意外的错误。</string>
     <string name="error_unexpected_long">发生了一个意外的错误。如果问题仍然存在，请使用设置页面底部的 “%1$s” 选项联系支持。</string>
     <string name="error_unknown_host">连接“%1$s”服务出现问题。</string>
