@@ -177,8 +177,8 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final Context context,
-                                   @NonNull final String externalId) {
+    public String createViewOnSiteUrl(@NonNull final Context context,
+                                      @NonNull final String externalId) {
         return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
     }
 

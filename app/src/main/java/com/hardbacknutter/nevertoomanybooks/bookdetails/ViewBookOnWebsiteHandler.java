@@ -124,7 +124,7 @@ public class ViewBookOnWebsiteHandler
                         (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
 
                 final String externalId = rowData.getString(domain.getName());
-                final String url = searchEngine.createBrowserUrl(context, externalId);
+                final String url = searchEngine.createViewOnSiteUrl(context, externalId);
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }

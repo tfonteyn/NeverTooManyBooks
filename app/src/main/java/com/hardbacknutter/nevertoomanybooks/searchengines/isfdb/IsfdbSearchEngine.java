@@ -271,8 +271,8 @@ public class IsfdbSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final Context context,
-                                   @NonNull final String externalId) {
+    public String createViewOnSiteUrl(@NonNull final Context context,
+                                      @NonNull final String externalId) {
         return getHostUrl(context) + CGI_BROWSER + externalId;
     }
 

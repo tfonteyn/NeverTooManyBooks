@@ -241,8 +241,8 @@ public interface SearchEngine
          */
         @AnyThread
         @NonNull
-        String createBrowserUrl(@NonNull Context context,
-                                @NonNull String externalId);
+        String createViewOnSiteUrl(@NonNull Context context,
+                                   @NonNull String externalId);
     }
 
     /**
