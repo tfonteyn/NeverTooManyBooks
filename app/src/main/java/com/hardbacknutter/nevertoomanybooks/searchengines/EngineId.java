@@ -45,9 +45,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -55,12 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
@@ -73,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearc
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -85,11 +79,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * <p>
  * To add a new site to search, follow these steps:
  * <ol>
- *     <li>Add a buildConfigField to build.gradle in th defaultConfig section
- *         and if needed in buildTypes/release</li>
- *
  *     <li>Add a string resource with the name of the site engine in:
- *         "src/main/res/values/donottranslate.xml" (look for existing entries named 'site_*')
+ *         "src/main/res/values/strings-donottranslate.xml"
+ *         (look for existing entries named 'site_*')
  *     </li>
  *
  *     <li>Implement {@link SearchEngine} to create the new engine class
@@ -121,10 +113,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          See the OpenLibrary engine for an simple example:
  *          a class, an xml file, and an entry in "src/main/res/xml/preferences_site_searches.xml"
  *          Look at the other engines for more complex examples.
- *      </li>
- *
- *      <li>Optional: create a {@link SiteSearchMenuHandler} instance and add it in
- *          {@link #createEngineConfigurations()} using {@link EngineId#setSearchMenuHandler}.
  *      </li>
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
@@ -369,9 +357,6 @@ public enum EngineId
     @Nullable
     private Domain externalIdDomain;
 
-    @Nullable
-    private Supplier<SiteSearchMenuHandler> searchMenuHandlerSupplier;
-
     /**
      * Constructor.
      *
@@ -407,10 +392,9 @@ public enum EngineId
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
-            Amazon.setSearchMenuHandler(AmazonMenuHandler::new)
-                  // .setExternalIdDomainKey(DBKey.SID_ASIN)
-                  .createConfig()
-                  .build(SearchEngineConfig::new);
+            Amazon // .setExternalIdDomainKey(DBKey.SID_ASIN)
+                   .createConfig()
+                   .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
             Bedetheque.setExternalIdDomainKey(DBKey.SID_BEDETHEQUE)
@@ -421,13 +405,11 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
         if (Bol.isEnabled()) {
-            Bol.setSearchMenuHandler(BolMenuHandler::new)
-               .createConfig()
+            Bol.createConfig()
                .build(SearchEngineConfig::new);
         }
         if (BertrandPt.isEnabled()) {
-            BertrandPt.setSearchMenuHandler(BertrandMenuHandler::new)
-                      .createConfig()
+            BertrandPt.createConfig()
                       .build(SearchEngineConfig::new);
         }
         if (BookFinder.isEnabled()) {
@@ -491,8 +473,7 @@ public enum EngineId
                        .build(SearchEngineConfig::new);
         }
         if (StripWebBe.isEnabled()) {
-            StripWebBe.setSearchMenuHandler(StripWebMenuHandler::new)
-                      .createConfig()
+            StripWebBe.createConfig()
                       .build(SearchEngineConfig::new);
         }
 
@@ -515,7 +496,8 @@ public enum EngineId
 
     /**
      * Collect the website engines for which we store an id which can be used
-     * to view a book on that site. Sorted by name.
+     * to view a book on that site.
+     * Sorted by name.
      *
      * @return list
      */
@@ -528,6 +510,22 @@ public enum EngineId
                      .sorted(Comparator.comparing(Enum::name))
                      .collect(Collectors.toList());
     }
+
+    /**
+     * Collect the website engines for which we support searching via url.
+     * Sorted by name.
+     *
+     * @return list
+     */
+    public static List<EngineId> getSearchOnSite() {
+        return Arrays.stream(values())
+                     .filter(EngineId::isEnabled)
+                     .filter(engineId -> engineId.supports(
+                             SearchEngine.SearchOnSite.class))
+                     .sorted(Comparator.comparing(Enum::name))
+                     .collect(Collectors.toList());
+    }
+
 
     /**
      * Register all {@link Site} instances; called during startup.
@@ -722,13 +720,6 @@ public enum EngineId
         return this;
     }
 
-    @NonNull
-    private EngineId setSearchMenuHandler(@Nullable final
-                                          Supplier<SiteSearchMenuHandler> handlerSupplier) {
-        this.searchMenuHandlerSupplier = handlerSupplier;
-        return this;
-    }
-
     /**
      * Is this engine enabled <strong>AT ALL</strong>.
      * <p>
@@ -888,22 +879,6 @@ public enum EngineId
             throw new IllegalStateException(
                     clazz + " must implement SearchEngine(Context, SearchEngineConfig)", e);
         }
-    }
-
-    /**
-     * Create the search menu handler if there is one.
-     * <p>
-     * We always create it, and leave it up to the handler itself
-     * whether to show it to the user or not.
-     *
-     * @return handler
-     */
-    @NonNull
-    public Optional<SiteSearchMenuHandler> createSearchMenuHandler() {
-        if (searchMenuHandlerSupplier != null) {
-            return Optional.of(searchMenuHandlerSupplier.get());
-        }
-        return Optional.empty();
     }
 
     /**

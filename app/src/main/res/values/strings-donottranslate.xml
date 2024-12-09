@@ -113,19 +113,6 @@
     <string name="site_calibre"
             translatable="false">Calibre</string>
 
-    <!-- Site Search submenu title -->
-    <string name="option_amazon_ellipsis"
-            translatable="false">Amazon…</string>
-    <!-- Site Search submenu title -->
-    <string name="option_bertrand_ellipsis"
-            translatable="false">Bertrand.pt…</string>
-    <!-- Site Search submenu title -->
-    <string name="option_bol_ellipsis"
-            translatable="false">BOL…</string>
-    <!-- Site Search submenu title -->
-    <string name="option_stripweb_ellipsis"
-            translatable="false">StripWeb…</string>
-
     <!-- The project which inspired us. -->
     <string name="lbl_book_catalogue"
             translatable="false">Book Catalogue</string>

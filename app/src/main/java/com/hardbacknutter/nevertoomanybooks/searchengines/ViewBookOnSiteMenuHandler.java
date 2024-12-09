@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.bookdetails;
+package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,15 +37,13 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Collects all sites supporting {@link SearchEngine.ViewBookByExternalId}
  * and builds/displays a menu suitable for a given book.
  */
-public class ViewBookOnWebsiteHandler
+public class ViewBookOnSiteMenuHandler
         implements MenuHandler {
 
     private final Map<Integer, EngineId> menuIds = new HashMap<>();

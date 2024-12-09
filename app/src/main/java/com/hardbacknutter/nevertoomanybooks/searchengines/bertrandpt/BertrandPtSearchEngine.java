@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -28,13 +29,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -52,7 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
@@ -69,12 +77,13 @@ import org.jsoup.select.Elements;
 public class BertrandPtSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.SearchOnSite {
 
     /** Website character encoding. */
-    static final String CHARSET = "UTF-8";
+    private static final String CHARSET = "UTF-8";
     /** Search url. Just concat whatever 'words' (or isbn) we're searching for. */
-    static final String SEARCH = "/pesquisa/";
+    private static final String SEARCH = "/pesquisa/";
     private static final String TAG = "BertrandPtSearchEngine";
     private final Map<String, String> extraRequestProperties;
 
@@ -426,5 +435,57 @@ public class BertrandPtSearchEngine
         }
         final String url = img.attr("src");
         return saveImage(context, url, bookId, cIdx, null);
+    }
+
+    @Override
+    public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
+        final String key = getEngineId().getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU;
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (prefs.contains(key)) {
+            return prefs.getBoolean(key, false);
+        } else {
+            return ServiceLocator.getInstance().getLanguages().isUserLanguage(context, "por");
+        }
+    }
+
+    @NonNull
+    @Override
+    public String createSearchOnSiteUrl(@NonNull final Context context,
+                                        @Nullable final Author author,
+                                        @Nullable final Series series) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (author == null && series == null) {
+                throw new IllegalArgumentException("both author and series are null");
+            }
+        }
+
+        final StringJoiner fields = new StringJoiner(" ");
+
+        if (author != null) {
+            final String cAuthor = SearchEngineUtils
+                    .encodeSearchString(author.getFormattedName(true));
+            if (!cAuthor.isEmpty()) {
+                try {
+                    fields.add(URLEncoder.encode(cAuthor, CHARSET));
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
+                }
+            }
+        }
+
+        if (series != null) {
+            final String cSeries = SearchEngineUtils
+                    .encodeSearchString(series.getTitle());
+            if (!cSeries.isEmpty()) {
+                try {
+                    fields.add(URLEncoder.encode(cSeries, CHARSET));
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
+                }
+            }
+        }
+
+        return getHostUrl(context) + SEARCH + fields;
     }
 }

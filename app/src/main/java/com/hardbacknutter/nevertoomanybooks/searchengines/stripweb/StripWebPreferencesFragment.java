@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -59,9 +60,10 @@ public class StripWebPreferencesFragment
      */
     @SuppressWarnings("DataFlowIssue")
     private void initSearchMenuPref(@NonNull final EngineId engineId) {
+        final SearchEngine.SearchOnSite searchEngine = (SearchEngine.SearchOnSite)
+                engineId.createSearchEngine(getContext());
         final SwitchPreference preference = findPreference(
                 engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU);
-        final boolean enabled = engineId.createSearchMenuHandler().isPresent();
-        preference.setChecked(enabled);
+        preference.setChecked(searchEngine.isShowSearchOnSiteMenu(getContext()));
     }
 }

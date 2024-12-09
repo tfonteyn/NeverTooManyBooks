@@ -39,7 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 /**
  * The interface a search engine for an {@link EngineId} needs to implement.
@@ -245,6 +247,41 @@ public interface SearchEngine
                                    @NonNull String externalId);
     }
 
+    /** Optional. */
+    interface SearchOnSite
+            extends SearchEngine {
+
+        /**
+         * Should the menu be visible.
+         *
+         * @param context Current context
+         *
+         * @return {@code true} to show
+         */
+        boolean isShowSearchOnSiteMenu(@NonNull Context context);
+
+        /**
+         * Create a url to search on the website with Author/Series.
+         * At least one of the Author/Series parameters must not be {@code null}.
+         * <p>
+         * {@link SearchEngine.Login} will NOT be called upon.
+         *
+         * @param context Current context
+         * @param author  to search for
+         * @param series  to search for
+         *
+         * @return url
+         *
+         * @throws IllegalArgumentException if both Author and Series are {@code null}
+         */
+        @AnyThread
+        @NonNull
+        String createSearchOnSiteUrl(@NonNull Context context,
+                                     @Nullable Author author,
+                                     @Nullable Series series)
+                throws IllegalArgumentException;
+    }
+
     /**
      * Optional. But every engine should really implement this.
      *
@@ -416,7 +453,6 @@ public interface SearchEngine
          * Find alternative editions for the given ISBN.
          * <p>
          * {@link Login} will NOT be called upon.
-         *
          *
          * @param context   Current context
          * @param validIsbn to search for, <strong>must</strong> be valid.

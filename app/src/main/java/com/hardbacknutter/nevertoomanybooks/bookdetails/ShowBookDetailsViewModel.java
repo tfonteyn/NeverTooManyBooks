@@ -100,7 +100,7 @@ public class ShowBookDetailsViewModel
 
             book = Book.from(args.getLong(DBKey.FK_BOOK, 0));
 
-            menuHandlers = MenuHandlerFactory.create();
+            menuHandlers = MenuHandlerFactory.create(context);
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }

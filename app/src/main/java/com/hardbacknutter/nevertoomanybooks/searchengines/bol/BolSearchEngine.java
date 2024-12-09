@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -29,12 +30,15 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
@@ -54,6 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -88,20 +94,21 @@ import org.jsoup.select.Elements;
 public class BolSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.SearchOnSite {
 
     /** one of {"","be","nl"}. */
     static final String PK_BOL_COUNTRY = EngineId.Bol.getPreferenceKey() + ".country";
 
     /** Website character encoding. */
-    static final String CHARSET = "UTF-8";
+    private static final String CHARSET = "UTF-8";
     /**
      * Search using a text-string.
      * <p>
      * param 1: the country "be" or "nl"
      * param 2: words, separated by spaces
      */
-    static final String BY_TEXT = "/%1$s/nl/s/?searchtext=%2$s";
+    private static final String BY_TEXT = "/%1$s/nl/s/?searchtext=%2$s";
     /**
      * Search using the ISBN.
      * <p>
@@ -135,7 +142,7 @@ public class BolSearchEngine
      * @return "be" or "nl"
      */
     @NonNull
-    static String getCountry(@NonNull final Context context) {
+    private static String getCountry(@NonNull final Context context) {
         String country = PreferenceManager.getDefaultSharedPreferences(context)
                                           .getString(PK_BOL_COUNTRY, null);
         if (country != null && !country.isEmpty()) {
@@ -637,6 +644,60 @@ public class BolSearchEngine
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
+        final String key = getEngineId().getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU;
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (prefs.contains(key)) {
+            return prefs.getBoolean(key, false);
+        } else {
+            final Languages languages = ServiceLocator.getInstance().getLanguages();
+            return languages.isUserLanguage(context, "nld")
+                   || languages.isUserLanguage(context, "fra");
+        }
+    }
+
+    @NonNull
+    @Override
+    public String createSearchOnSiteUrl(@NonNull final Context context,
+                                        @Nullable final Author author,
+                                        @Nullable final Series series) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (author == null && series == null) {
+                throw new IllegalArgumentException("both author and series are null");
+            }
+        }
+
+        final StringJoiner fields = new StringJoiner(" ");
+
+        if (author != null) {
+            final String cAuthor = SearchEngineUtils
+                    .encodeSearchString(author.getFormattedName(true));
+            if (!cAuthor.isEmpty()) {
+                try {
+                    fields.add(URLEncoder.encode(cAuthor, CHARSET));
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
+                }
+            }
+        }
+
+        if (series != null) {
+            final String cSeries = SearchEngineUtils
+                    .encodeSearchString(series.getTitle());
+            if (!cSeries.isEmpty()) {
+                try {
+                    fields.add(URLEncoder.encode(cSeries, CHARSET));
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
+                }
+            }
+        }
+
+        return getHostUrl(context) + String.format(BY_TEXT, getCountry(context), fields);
     }
 
     /**

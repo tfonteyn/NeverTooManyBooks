@@ -116,4 +116,33 @@ public final class SearchEngineUtils {
         final String tmp = cleanText(s.trim());
         return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").trim();
     }
+
+    /**
+     * Sanitize a parameter string for use in a url search.
+     *
+     * @param search to clean
+     *
+     * @return cleansed string
+     */
+    @NonNull
+    public static String encodeSearchString(@Nullable final String search) {
+        if (search == null || search.isEmpty()) {
+            return "";
+        }
+
+        final StringBuilder out = new StringBuilder(search.length());
+        char prev = ' ';
+        for (final char curr : search.toCharArray()) {
+            if (Character.isLetterOrDigit(curr)) {
+                out.append(curr);
+                prev = curr;
+            } else {
+                if (!Character.isWhitespace(prev)) {
+                    out.append(' ');
+                }
+                prev = ' ';
+            }
+        }
+        return out.toString().trim();
+    }
 }

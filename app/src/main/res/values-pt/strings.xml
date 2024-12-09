@@ -121,6 +121,7 @@
     <string name="lbl_tab_publication">Publicação</string>
     <string name="lbl_unread">Não lido</string>
     <string name="lbl_year">Ano</string>
+    <string name="ellipsize">%1$s…</string>
     <string name="list_element">• %s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>

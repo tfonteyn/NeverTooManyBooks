@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -55,7 +56,8 @@ public interface MenuHandler {
     /**
      * Called after the user selected a menu item.
      *
-     * @param context    Current context
+     * @param context    Current context;
+     *                   Must be suitable to use with {@link Context#startActivity(Intent)}
      * @param menuItemId The menu item that was invoked.
      * @param rowData    the row data
      *

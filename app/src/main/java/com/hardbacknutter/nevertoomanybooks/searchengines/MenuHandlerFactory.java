@@ -20,15 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 public final class MenuHandlerFactory {
@@ -39,21 +38,23 @@ public final class MenuHandlerFactory {
     /**
      * Create the list of handlers.
      *
+     * @param context Current context
+     *
      * @return unmodifiable list
      */
     @NonNull
-    public static List<MenuHandler> create() {
+    public static List<MenuHandler> create(@NonNull final Context context) {
         final List<MenuHandler> list = new ArrayList<>();
 
-        list.add(new ViewBookOnWebsiteHandler());
+        list.add(new ViewBookOnSiteMenuHandler());
 
-        Arrays.stream(EngineId.values())
-              .filter(EngineId::isEnabled)
-              .sorted(Comparator.comparing(Enum::name))
-              .map(EngineId::createSearchMenuHandler)
-              .flatMap(Optional::stream)
-              .forEach(list::add);
-
+        list.addAll(EngineId.getSearchOnSite()
+                            .stream()
+                            .map(engineId -> (SearchEngine.SearchOnSite)
+                                    engineId.createSearchEngine(context))
+                            .map(SiteSearchMenuHandler::new)
+                            .collect(Collectors.toList())
+        );
         return list;
     }
 }

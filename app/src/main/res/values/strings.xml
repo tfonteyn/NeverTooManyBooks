@@ -76,6 +76,12 @@
     <!-- generic "label: value"; support for RTL languages -->
     <string name="name_colon_value">%1$s: %2$s</string>
 
+    <!-- Append (or prepend) the ellipsis character to another string.
+         Support for RTL languages;
+         Allows translations to use language specific ellipsis character.
+         https://en.wikipedia.org/wiki/Ellipsis -->
+    <string name="ellipsize">%1$s…</string>
+
     <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern. -->
     <string name="list_element">• %s</string>
     <!-- "name #nr" where the # is a potential language dependent symbol for 'number'.-->

@@ -444,6 +444,7 @@
     <string name="bookshelf_my_wishlist">Seznam přání</string>
     <string name="lbl_year">Rokem</string>
     <string name="list_and">a</string>
+    <string name="ellipsize">%1$s…</string>
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_search_books_by_author">Knihy tohoto autora</string>

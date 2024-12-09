@@ -21,15 +21,19 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -38,49 +42,37 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
-public abstract class SiteSearchMenuHandler
+public class SiteSearchMenuHandler
         implements MenuHandler {
 
-    @MenuRes
-    private final int menuResId;
+    @NonNull
+    private final SearchEngine.SearchOnSite searchEngine;
+
     @IdRes
     private final int subMenuId;
+    /** Search by author menu id. */
     @IdRes
     private final int midByAuthor;
+    /** Search by both author and series menu id. */
     @IdRes
     private final int midByAuthorInSeries;
+    /** Search by series menu id. */
     @IdRes
     private final int midBySeries;
 
     /**
      * Constructor.
      *
-     * @param menuResId           the menu layout id
-     * @param subMenuId           the submenu
-     * @param midByAuthor         search by author menu id
-     * @param midByAuthorInSeries search by both author and series menu id
-     * @param midBySeries         search by series menu id
+     * @param searchEngine to search on
      */
-    protected SiteSearchMenuHandler(@MenuRes final int menuResId,
-                                    @IdRes final int subMenuId,
-                                    @IdRes final int midByAuthor,
-                                    @IdRes final int midByAuthorInSeries,
-                                    @IdRes final int midBySeries) {
-        this.menuResId = menuResId;
-        this.subMenuId = subMenuId;
-        this.midByAuthor = midByAuthor;
-        this.midByAuthorInSeries = midByAuthorInSeries;
-        this.midBySeries = midBySeries;
-    }
+    SiteSearchMenuHandler(@NonNull final SearchEngine.SearchOnSite searchEngine) {
+        this.searchEngine = searchEngine;
 
-    /**
-     * To be called from {@link #onPrepareMenu(Context, Menu, DataHolder)}.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} to show; {@code false} to hide
-     */
-    public abstract boolean isShowMenu(@NonNull Context context);
+        subMenuId = View.generateViewId();
+        midByAuthor = View.generateViewId();
+        midByAuthorInSeries = View.generateViewId();
+        midBySeries = View.generateViewId();
+    }
 
     @Override
     public void onCreateMenu(@NonNull final Context context,
@@ -95,7 +87,23 @@ public abstract class SiteSearchMenuHandler
 
         // add THIS submenu if not there yet
         if (menu.findItem(subMenuId) == null) {
-            inflater.inflate(menuResId, menuItem.getSubMenu());
+            final SubMenu parent = Objects.requireNonNull(menuItem.getSubMenu());
+
+            final String menuTitle = context.getString(
+                    R.string.ellipsize,
+                    context.getString(searchEngine.getEngineId().getLabelResId()));
+            final SubMenu subMenu = parent.addSubMenu(0, subMenuId, 0, menuTitle)
+                                          .setIcon(R.drawable.search_24px);
+
+            subMenu.add(0, midByAuthor, 0,
+                        R.string.option_search_books_by_author)
+                   .setIcon(R.drawable.search_24px);
+            subMenu.add(0, midByAuthorInSeries, 0,
+                        R.string.option_search_books_by_author_in_series)
+                   .setIcon(R.drawable.search_24px);
+            subMenu.add(0, midBySeries, 0,
+                        R.string.option_search_books_in_series)
+                   .setIcon(R.drawable.search_24px);
         }
     }
 
@@ -109,7 +117,7 @@ public abstract class SiteSearchMenuHandler
             return;
         }
 
-        boolean show = isShowMenu(context);
+        boolean show = searchEngine.isShowSearchOnSiteMenu(context);
         if (!show) {
             subMenuItem.setVisible(false);
             return;
@@ -169,29 +177,14 @@ public abstract class SiteSearchMenuHandler
      * @param author  to search for
      * @param series  to search for
      */
-    protected abstract void startSearchActivity(@NonNull Context context,
-                                                @Nullable Author author,
-                                                @Nullable Series series);
+    private void startSearchActivity(@NonNull final Context context,
+                                     @Nullable final Author author,
+                                     @Nullable final Series series) {
 
-    @NonNull
-    protected String encodeSearchString(@Nullable final String search) {
-        if (search == null || search.isEmpty()) {
-            return "";
-        }
-
-        final StringBuilder out = new StringBuilder(search.length());
-        char prev = ' ';
-        for (final char curr : search.toCharArray()) {
-            if (Character.isLetterOrDigit(curr)) {
-                out.append(curr);
-                prev = curr;
-            } else {
-                if (!Character.isWhitespace(prev)) {
-                    out.append(' ');
-                }
-                prev = ' ';
-            }
-        }
-        return out.toString().trim();
+        final String url = searchEngine.createSearchOnSiteUrl(context, author, series);
+        // Start the intent even if for some reason the fields string is empty.
+        // If we don't the user will not see anything happen / we'd need to popup
+        // an explanation why we cannot search.
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 }

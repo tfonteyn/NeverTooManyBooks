@@ -27,12 +27,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,13 +106,14 @@ import org.jsoup.nodes.Element;
 public class AmazonSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByBarcode,
-                   SearchEngine.CoverByEdition {
+                   SearchEngine.CoverByEdition,
+                   SearchEngine.SearchOnSite {
 
     /** Preferences - Type: {@code String}. */
     public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
                                              + '.' + Prefs.PK_HOST_URL;
     /** Website character encoding. */
-    static final String CHARSET = "UTF-8";
+    private static final String CHARSET = "UTF-8";
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 
@@ -118,6 +123,26 @@ public class AmazonSearchEngine
      * Param 1: ISBN13 or ASIN/ISBN10.
      */
     private static final String BY_PRODUCT_ID = "/gp/product/%1$s";
+
+    /**
+     * The search url for books when opening a browser activity.
+     * <p>
+     * Fields that can be added to the /gp URL:
+     * <ul>
+     *      <li>&field-isbn</li>
+     *      <li>&field-author</li>
+     *      <li>&field-title</li>
+     *      <li>&field-publisher</li>
+     *      <li>&field-keywords</li>
+     * </ul>
+     * <p>
+     * ENHANCE: add "Find by ISBN" menu item;
+     * ENHANCE: add "Find by Title+author" menu item
+     *
+     * @see <a href="https://www.amazon.co.uk/advanced-search/books/">
+     *         www.amazon.co.uk/advanced-search/books</a>
+     */
+    private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
 
     /**
      * Parse "some text; more text (some more text)" into "some text" and "some more text".
@@ -722,5 +747,53 @@ public class AmazonSearchEngine
         }
 
         return pagesPattern.matcher(data).replaceAll("").strip();
+    }
+
+    @Override
+    public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(getEngineId().getPreferenceKey()
+                                            + '.' + Prefs.PK_SEARCH_WEBSITE_MENU,
+                                            true);
+    }
+
+    @NonNull
+    @Override
+    public String createSearchOnSiteUrl(@NonNull final Context context,
+                                        @Nullable final Author author,
+                                        @Nullable final Series series) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (author == null && series == null) {
+                throw new IllegalArgumentException("both author and series are null");
+            }
+        }
+
+        final StringJoiner fields = new StringJoiner("&");
+        fields.add(ADV_SEARCH_BOOKS);
+
+        if (author != null) {
+            final String cAuthor = SearchEngineUtils
+                    .encodeSearchString(author.getFormattedName(true));
+            if (!cAuthor.isEmpty()) {
+                try {
+                    fields.add("field-author=" + URLEncoder.encode(cAuthor, CHARSET));
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
+                }
+            }
+        }
+        if (series != null) {
+            final String cSeries = SearchEngineUtils
+                    .encodeSearchString(series.getTitle());
+            if (!cSeries.isEmpty()) {
+                try {
+                    fields.add("field-keywords=" + URLEncoder.encode(cSeries, CHARSET));
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
+                }
+            }
+        }
+
+        return getHostUrl(context) + fields;
     }
 }
