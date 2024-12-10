@@ -215,7 +215,7 @@
     <string name="error_storage_not_accessible">請檢查儲存空間是否可以存取。</string>
     <string name="error_storage_not_writable">請檢查儲存空間是否可以寫入，並且有足夠的空間。</string>
     <string name="error_total_pages_must_be_larger_than_current_page">必須大於或等於目前頁面</string>
-    <string name="error_type_not_supported">不支援的類型：%1$s…</string>
+    <string name="error_type_not_supported">不支援的類型：%1$s……</string>
     <string name="error_unexpected">發生意外錯誤。</string>
     <string name="error_unexpected_long">發生了一個意外的錯誤。如果問題仍然存在，請使用設定頁面底部的 「%1$s」 選項聯絡支援。</string>
     <string name="error_unknown_host">連線「%1$s」服務出現問題。</string>
