@@ -52,12 +52,14 @@ public class ViewBookOnSiteMenuHandler
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
-        if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
+        // Sanity check
+        MenuItem menuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
+        if (menuItem == null) {
             inflater.inflate(R.menu.sm_view_on_site, menu);
+            menuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
             menuIds.clear();
 
-            final SubMenu subMenu = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE)
-                                        .getSubMenu();
+            final SubMenu subMenu = menuItem.getSubMenu();
 
             EngineId.getViewOnSite().forEach(engineId -> {
                 // generate a random id, and map it to the engine
@@ -84,12 +86,15 @@ public class ViewBookOnSiteMenuHandler
                               @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
+        // Sanity check
         if (subMenuItem == null) {
             return;
         }
 
         final SubMenu subMenu = subMenuItem.getSubMenu();
         boolean subMenuVisible = false;
+        // Set the visibility of each menu item.
+        // If all items are invisible, make the submenu invisible as well
         //noinspection DataFlowIssue
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
@@ -113,7 +118,7 @@ public class ViewBookOnSiteMenuHandler
                                       @NonNull final DataHolder rowData) {
 
         final EngineId engineId = menuIds.get(menuItemId);
-        // the engine will be not-null if the menuItemId was found; e.g. it's ours.
+        // the engine will be not-null if the menuItemId was found; i.e. it's ours to handle
         if (engineId != null) {
             final Domain domain = engineId.getExternalIdDomain();
             // Sanity check
