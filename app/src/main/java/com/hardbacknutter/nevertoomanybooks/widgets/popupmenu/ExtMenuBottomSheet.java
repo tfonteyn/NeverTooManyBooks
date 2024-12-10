@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -58,17 +57,17 @@ public class ExtMenuBottomSheet
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
-                public boolean onSubMenuClick(@NonNull final ExtMenuItem item) {
-                    vb.title.setText(item.getTitle());
+                public boolean onSubMenuClick(@NonNull final ExtMenuItem menuItem) {
+                    vb.title.setText(menuItem.getTitle());
                     vb.title.setVisibility(View.VISIBLE);
                     return true;
                 }
 
                 @Override
-                public void onMenuItemClick(@IdRes final int menuItemId) {
+                public void onMenuItemClick(@NonNull final ExtMenuItem menuItem) {
                     ExtMenuBottomSheet.this.dismiss();
                     ExtMenuLauncher.setResult(ExtMenuBottomSheet.this, requestKey, menuOwner,
-                                              menuItemId);
+                                              menuItem.getItemId());
                 }
             };
 

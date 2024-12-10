@@ -29,7 +29,6 @@ import android.view.View;
 import android.widget.PopupWindow;
 
 import androidx.annotation.Dimension;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -56,25 +55,25 @@ public class ExtMenuPopupWindow {
     @NonNull
     private final MenuItemListAdapter adapter;
 
-    private ExtMenuResultListener listener;
+    private ExtMenuResultListener resultListener;
     private int menuOwner;
 
     @SuppressWarnings("FieldCanBeLocal")
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
-                public boolean onSubMenuClick(@NonNull final ExtMenuItem item) {
-                    vb.title.setText(item.getTitle());
+                public boolean onSubMenuClick(@NonNull final ExtMenuItem menuItem) {
+                    vb.title.setText(menuItem.getTitle());
                     vb.title.setVisibility(View.VISIBLE);
-//                    final int[] wh = calculatePopupWindowWidthAndHeight();
-//                    popupWindow.update(wh[0], wh[1]);
+                    // final int[] wh = calculatePopupWindowWidthAndHeight();
+                    // popupWindow.update(wh[0], wh[1]);
                     return true;
                 }
 
                 @Override
-                public void onMenuItemClick(@IdRes final int menuItemId) {
+                public void onMenuItemClick(@NonNull final ExtMenuItem menuItem) {
                     popupWindow.dismiss();
-                    listener.onMenuItemClick(menuOwner, menuItemId);
+                    resultListener.onMenuItemClick(menuOwner, menuItem.getItemId());
                 }
             };
 
@@ -184,13 +183,13 @@ public class ExtMenuPopupWindow {
     /**
      * Set the listener which will received the selected menu-item-id.
      *
-     * @param listener to set
+     * @param resultListener to set
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtMenuPopupWindow setListener(@NonNull final ExtMenuResultListener listener) {
-        this.listener = listener;
+    public ExtMenuPopupWindow setListener(@NonNull final ExtMenuResultListener resultListener) {
+        this.resultListener = resultListener;
         return this;
     }
 

@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -112,7 +111,7 @@ class MenuItemListAdapter
                     notifyDataSetChanged();
                 }
             } else {
-                menuCallback.onMenuItemClick(item.getItemId());
+                menuCallback.onMenuItemClick(item);
             }
         }
     }
@@ -133,19 +132,19 @@ class MenuItemListAdapter
         /**
          * The user clicked a menu item which represents a sub-menu.
          *
-         * @param item The menu item that was invoked.
+         * @param menuItem The menu item that was invoked.
          *
          * @return {@code true} if the sub-menu should be shown.
          *         {@code false} to ignore the click
          */
-        boolean onSubMenuClick(@NonNull ExtMenuItem item);
+        boolean onSubMenuClick(@NonNull ExtMenuItem menuItem);
 
         /**
          * The user clicked a menu item.
          *
-         * @param menuItemId The menu item that was invoked.
+         * @param menuItem The menu item that was invoked.
          */
-        void onMenuItemClick(@IdRes int menuItemId);
+        void onMenuItemClick(@NonNull ExtMenuItem menuItem);
     }
 
     /**
