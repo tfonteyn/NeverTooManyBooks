@@ -50,8 +50,6 @@ public final class MenuHandlerFactory {
 
         list.addAll(EngineId.getSearchOnSite()
                             .stream()
-                            .map(engineId -> (SearchEngine.SearchOnSite)
-                                    engineId.createSearchEngine(context))
                             .map(SiteSearchMenuHandler::new)
                             .collect(Collectors.toList())
         );

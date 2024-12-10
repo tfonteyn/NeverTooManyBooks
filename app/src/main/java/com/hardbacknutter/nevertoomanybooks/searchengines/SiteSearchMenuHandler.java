@@ -45,9 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 public class SiteSearchMenuHandler
         implements MenuHandler {
 
-    @NonNull
-    private final SearchEngine.SearchOnSite searchEngine;
-
     @IdRes
     private final int subMenuId;
     /** Search by author menu id. */
@@ -59,19 +56,30 @@ public class SiteSearchMenuHandler
     /** Search by series menu id. */
     @IdRes
     private final int midBySeries;
+    @NonNull
+    private final EngineId engineId;
+    @Nullable
+    private SearchEngine.SearchOnSite searchEngine;
 
     /**
      * Constructor.
      *
-     * @param searchEngine to search on
+     * @param engineId to search on
      */
-    SiteSearchMenuHandler(@NonNull final SearchEngine.SearchOnSite searchEngine) {
-        this.searchEngine = searchEngine;
+    SiteSearchMenuHandler(@NonNull final EngineId engineId) {
+        this.engineId = engineId;
 
         subMenuId = View.generateViewId();
         midByAuthor = View.generateViewId();
         midByAuthorInSeries = View.generateViewId();
         midBySeries = View.generateViewId();
+    }
+
+    private SearchEngine.SearchOnSite getSearchEngine(@NonNull final Context context) {
+        if (searchEngine == null) {
+            searchEngine = (SearchEngine.SearchOnSite) engineId.createSearchEngine(context);
+        }
+        return searchEngine;
     }
 
     @Override
@@ -90,8 +98,7 @@ public class SiteSearchMenuHandler
             final SubMenu parent = Objects.requireNonNull(menuItem.getSubMenu());
 
             final String menuTitle = context.getString(
-                    R.string.ellipsize,
-                    context.getString(searchEngine.getEngineId().getLabelResId()));
+                    R.string.ellipsize, context.getString(engineId.getLabelResId()));
             final SubMenu subMenu = parent.addSubMenu(0, subMenuId, 0, menuTitle)
                                           .setIcon(R.drawable.search_24px);
 
@@ -117,7 +124,7 @@ public class SiteSearchMenuHandler
             return;
         }
 
-        boolean show = searchEngine.isShowSearchOnSiteMenu(context);
+        boolean show = getSearchEngine(context).isShowSearchOnSiteMenu(context);
         if (!show) {
             subMenuItem.setVisible(false);
             return;
@@ -181,7 +188,8 @@ public class SiteSearchMenuHandler
                                      @Nullable final Author author,
                                      @Nullable final Series series) {
 
-        final String url = searchEngine.createSearchOnSiteUrl(context, author, series);
+        final String url = getSearchEngine(context)
+                .createSearchOnSiteUrl(context, author, series);
         // Start the intent even if for some reason the fields string is empty.
         // If we don't the user will not see anything happen / we'd need to popup
         // an explanation why we cannot search.
