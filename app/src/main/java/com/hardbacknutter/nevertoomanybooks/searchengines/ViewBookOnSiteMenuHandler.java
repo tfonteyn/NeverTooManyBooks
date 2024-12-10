@@ -42,8 +42,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 /**
  * Collects all sites supporting {@link SearchEngine.ViewBookByExternalId}
  * and builds/displays a menu suitable for a given book.
+ * <p>
+ * We handle all engines in a single instance as we need to hide the entire submenu
+ * if there are no relevant engines (i.e. external book ids).
  */
-public class ViewBookOnSiteMenuHandler
+class ViewBookOnSiteMenuHandler
         implements MenuHandler {
 
     private final Map<Integer, EngineId> menuIds = new HashMap<>();
@@ -106,6 +109,7 @@ public class ViewBookOnSiteMenuHandler
 
             menuItem.setVisible(visible);
             if (visible) {
+                // at least one menu item is visible, show the menu
                 subMenuVisible = true;
             }
         }
