@@ -151,7 +151,7 @@ public class DBHelper
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context Application context
      */
     public DBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);

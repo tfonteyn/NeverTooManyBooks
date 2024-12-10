@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -178,7 +178,7 @@ public class CacheDbHelper
     /**
      * Constructor.
      *
-     * @param context                Current context
+     * @param context                Application context
      * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      */
     public CacheDbHelper(@NonNull final Context context,

@@ -860,7 +860,7 @@ public enum EngineId
     /**
      * Create a SearchEngine instance based on the registered configuration for the given id.
      *
-     * @param context Current context
+     * @param context Application context
      *
      * @return a new instance
      *
