@@ -85,19 +85,10 @@ final class IconMapper {
             Map.entry(R.id.MENU_CALIBRE_READ, R.drawable.menu_book_24px),
             Map.entry(R.id.MENU_CALIBRE_DOWNLOAD, R.drawable.cloud_download_24px),
             Map.entry(R.id.MENU_CALIBRE_SETTINGS, R.drawable.settings_24px),
-            // R.menu.sm_view_on_site
-            Map.entry(R.id.SUBMENU_VIEW_BOOK_AT_SITE, R.drawable.link_24px),
-            // R.menu.sm_search_on_amazon
-            Map.entry(R.id.SUBMENU_AMAZON_SEARCH, R.drawable.search_24px),
-            Map.entry(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.drawable.search_24px),
-            Map.entry(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.drawable.search_24px),
-            Map.entry(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.drawable.search_24px),
-            // R.menu.sm_search_on_bol
-            Map.entry(R.id.SUBMENU_BOL_SEARCH, R.drawable.search_24px),
-            Map.entry(R.id.MENU_BOL_BOOKS_BY_AUTHOR, R.drawable.search_24px),
-            Map.entry(R.id.MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES, R.drawable.search_24px),
-            Map.entry(R.id.MENU_BOL_BOOKS_IN_SERIES, R.drawable.search_24px),
 
+            // MenuHandlers
+            Map.entry(R.id.SUBMENU_VIEW_BOOK_AT_SITE, R.drawable.link_24px),
+            Map.entry(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE, R.drawable.search_24px),
 
             // common to several menus
             Map.entry(R.id.MENU_UPDATE_FROM_INTERNET, R.drawable.cloud_download_24px),
