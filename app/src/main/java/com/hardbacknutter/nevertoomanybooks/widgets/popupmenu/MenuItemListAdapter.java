@@ -108,8 +108,7 @@ class MenuItemListAdapter
             if (item.hasSubMenu()) {
                 if (menuCallback.onSubMenuClick(item)) {
                     //noinspection DataFlowIssue
-                    final List<ExtMenuItem> subMenuItems = item.getSubMenu().getItems();
-                    setMenu(subMenuItems);
+                    setMenu(item.getSubMenu());
                     notifyDataSetChanged();
                 }
             } else {

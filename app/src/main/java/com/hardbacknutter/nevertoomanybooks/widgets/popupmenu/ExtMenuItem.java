@@ -25,6 +25,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
@@ -33,12 +34,16 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * A lot of the methods in this class are in fact not used.
- * We added them with the idea of "implements MenuItem".
+ * The idea was to implement {@link MenuItem}.
  * To be revisited some day...
+ *
+ * @see IconMapper
  */
 public class ExtMenuItem
         implements Parcelable {
@@ -74,7 +79,7 @@ public class ExtMenuItem
     private boolean visible = true;
     private boolean enabled = true;
     @Nullable
-    private ExtMenu subMenu;
+    private List<ExtMenuItem> subMenu;
 
     /**
      * Constructor.
@@ -89,10 +94,41 @@ public class ExtMenuItem
         title = in.readString();
         visible = in.readByte() != 0;
         enabled = in.readByte() != 0;
-        subMenu = in.readParcelable(getClass().getClassLoader());
+        subMenu = in.createTypedArrayList(ExtMenuItem.CREATOR);
 
         // see notes in writeToParcel()
         iconResId = in.readInt();
+    }
+
+    /**
+     * Convert a {@link Menu} to a list of ExtMenuItems.
+     *
+     * @param menu                to convert
+     * @param groupDividerEnabled flag
+     *
+     * @return new list
+     */
+    @NonNull
+    public static ArrayList<ExtMenuItem> convert(@NonNull final Menu menu,
+                                                 final boolean groupDividerEnabled) {
+        final ArrayList<ExtMenuItem> list = new ArrayList<>();
+        int previousGroupId = menu.size() > 0 ? menu.getItem(0).getGroupId() : 0;
+
+        // We don't have to bother with the 'orderInCategory' as the Menu
+        // will have ordered all items at the time of adding them.
+        // Hence, menu.getItem(i) will deliver them in the correct order as needed.
+        for (int i = 0; i < menu.size(); i++) {
+            final MenuItem menuItem = menu.getItem(i);
+            final int groupId = menuItem.getGroupId();
+            if (menuItem.isVisible()) {
+                if (groupDividerEnabled && groupId != previousGroupId) {
+                    previousGroupId = groupId;
+                    list.add(createDivider(menuItem.getOrder()));
+                }
+                list.add(convert(menuItem, groupDividerEnabled));
+            }
+        }
+        return list;
     }
 
     /**
@@ -104,8 +140,8 @@ public class ExtMenuItem
      * @return new list
      */
     @NonNull
-    public static ExtMenuItem convert(@NonNull final MenuItem menuItem,
-                                      final boolean groupDividerEnabled) {
+    private static ExtMenuItem convert(@NonNull final MenuItem menuItem,
+                                       final boolean groupDividerEnabled) {
         final CharSequence tmpTitle = menuItem.getTitle();
         final String title = tmpTitle != null ? tmpTitle.toString() : "";
 
@@ -125,16 +161,14 @@ public class ExtMenuItem
 
         final SubMenu subMenu = menuItem.getSubMenu();
         if (subMenu != null) {
-            final ExtMenu extSubMenu = new ExtMenu();
-            extSubMenu.addAll(ExtMenu.convert(subMenu, groupDividerEnabled));
-            item.setSubMenu(extSubMenu);
+            item.setSubMenu(convert(subMenu, groupDividerEnabled));
         }
 
         return item;
     }
 
     @NonNull
-    public static ExtMenuItem createDivider(final int order) {
+    private static ExtMenuItem createDivider(final int order) {
         return new ExtMenuItem()
                 .setId(R.id.MENU_DIVIDER)
                 .setOrderInCategory(order)
@@ -183,6 +217,18 @@ public class ExtMenuItem
 
     /**
      * Resolve and load the icon.
+     * <p>
+     * Notes on parceling...
+     * When converting a {@link MenuItem} to an ExtMenuItem, we copy the actual
+     * {@link #icon} drawable, but resort to {@link IconMapper} to create/copy
+     * the {@link #iconResId} which ends up being {@code 0} if there is mapping.
+     * <strong>If/when</strong> parceling is not actually called upon when sending
+     * the structure to a Fragment using {@code #setArguments(args)} then all is well
+     * as the {@link #icon} is used and {@link #iconResId} is disregarded.
+     * <p>
+     * Based on observation, but NOT traced/debugged/read-in-docs... this seems to
+     * be ALWAYS true in this situation.
+     * This observation might be utter nonsense and incorrect... or be spot on!
      *
      * @param context Current context
      *
@@ -203,6 +249,7 @@ public class ExtMenuItem
         if (icon == null && iconResId != 0) {
             icon = context.getResources().getDrawable(iconResId, context.getTheme());
         }
+        // We either already had the icon set, or we just loaded it.
         return icon;
     }
 
@@ -256,12 +303,12 @@ public class ExtMenuItem
     }
 
     @Nullable
-    public ExtMenu getSubMenu() {
+    public List<ExtMenuItem> getSubMenu() {
         return subMenu;
     }
 
     @NonNull
-    public ExtMenuItem setSubMenu(@Nullable final ExtMenu subMenu) {
+    public ExtMenuItem setSubMenu(@Nullable final List<ExtMenuItem> subMenu) {
         this.subMenu = subMenu;
         return this;
     }
@@ -275,16 +322,18 @@ public class ExtMenuItem
         dest.writeString(title);
         dest.writeByte((byte) (visible ? 1 : 0));
         dest.writeByte((byte) (enabled ? 1 : 0));
-        dest.writeParcelable(subMenu, flags);
+        dest.writeTypedList(subMenu);
 
         // We cannot write the icon itself, and some menu items
-        // might not have an iconRedId set.... not much we can do about that.
+        // might not have an iconResId set.... not much we can do about that.
         // However, it's been seen that Parcelling this class
         // does not actually (ever?) calls the Parcelable interface?
         // Instead it seems Android proxies back to the original
         // and the icon Drawable IS FOUND AND USED anyhow.
         // Either way, the above is a reminder/info only.
         // Solved by using {@link IconMapper}
+        //
+        // But see the docs on #getIcon !
         dest.writeInt(iconResId);
     }
 

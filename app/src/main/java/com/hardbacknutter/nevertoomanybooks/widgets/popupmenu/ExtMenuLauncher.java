@@ -107,7 +107,7 @@ public class ExtMenuLauncher
                        @NonNull final Menu menu,
                        final boolean groupDividerEnabled) {
 
-        final ArrayList<ExtMenuItem> items = ExtMenu.convert(menu, groupDividerEnabled);
+        final ArrayList<ExtMenuItem> items = ExtMenuItem.convert(menu, groupDividerEnabled);
 
         final Bundle args = new Bundle(5);
         args.putInt(BKEY_MENU_OWNER, menuOwner);

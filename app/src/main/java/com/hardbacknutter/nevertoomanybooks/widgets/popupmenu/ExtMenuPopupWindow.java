@@ -222,7 +222,7 @@ public class ExtMenuPopupWindow {
     @NonNull
     public ExtMenuPopupWindow setMenu(@NonNull final Menu menu,
                                       final boolean groupDividerEnabled) {
-        adapter.setMenu(ExtMenu.convert(menu, groupDividerEnabled));
+        adapter.setMenu(ExtMenuItem.convert(menu, groupDividerEnabled));
         return this;
     }
 
