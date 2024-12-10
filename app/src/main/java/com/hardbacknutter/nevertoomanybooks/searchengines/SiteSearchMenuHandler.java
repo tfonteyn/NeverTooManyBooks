@@ -33,7 +33,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
+import java.util.EnumMap;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -42,75 +43,69 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
-public class SiteSearchMenuHandler
+/**
+ * Collects all sites supporting {@link SearchEngine.SearchOnSite}
+ * and builds/displays a menu suitable for a given book-list node.
+ * <p>
+ * We handle all engines in a single instance as we need to hide the entire submenu
+ * if there are no relevant engines.
+ */
+class SiteSearchMenuHandler
         implements MenuHandler {
 
-    @IdRes
-    private final int subMenuId;
-    /** Search by author menu id. */
-    @IdRes
-    private final int midByAuthor;
-    /** Search by both author and series menu id. */
-    @IdRes
-    private final int midByAuthorInSeries;
-    /** Search by series menu id. */
-    @IdRes
-    private final int midBySeries;
-    @NonNull
-    private final EngineId engineId;
-    @Nullable
-    private SearchEngine.SearchOnSite searchEngine;
+    private final Map<EngineId, Integer> submenuIds = new EnumMap<>(EngineId.class);
+    private final Map<EngineId, Integer> menuIdsByAuthor = new EnumMap<>(EngineId.class);
+    private final Map<EngineId, Integer> menuIdsByAuthorAndSeries = new EnumMap<>(EngineId.class);
+    private final Map<EngineId, Integer> menuIdsBySeries = new EnumMap<>(EngineId.class);
 
-    /**
-     * Constructor.
-     *
-     * @param engineId to search on
-     */
-    SiteSearchMenuHandler(@NonNull final EngineId engineId) {
-        this.engineId = engineId;
-
-        subMenuId = View.generateViewId();
-        midByAuthor = View.generateViewId();
-        midByAuthorInSeries = View.generateViewId();
-        midBySeries = View.generateViewId();
-    }
-
-    private SearchEngine.SearchOnSite getSearchEngine(@NonNull final Context context) {
-        if (searchEngine == null) {
-            searchEngine = (SearchEngine.SearchOnSite) engineId.createSearchEngine(context);
-        }
-        return searchEngine;
-    }
+    private final Map<EngineId, SearchEngine.SearchOnSite> engines = new EnumMap<>(EngineId.class);
 
     @Override
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
-        // add the submenu if not there yet
+        // Sanity check
         MenuItem menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
         if (menuItem == null) {
             inflater.inflate(R.menu.sm_search_books_on_site, menu);
             menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
-        }
+            menuIdsByAuthor.clear();
+            menuIdsByAuthorAndSeries.clear();
+            menuIdsBySeries.clear();
 
-        // add THIS submenu if not there yet
-        if (menu.findItem(subMenuId) == null) {
-            final SubMenu parent = Objects.requireNonNull(menuItem.getSubMenu());
+            final SubMenu parent = menuItem.getSubMenu();
 
-            final String menuTitle = context.getString(
-                    R.string.ellipsize, context.getString(engineId.getLabelResId()));
-            final SubMenu subMenu = parent.addSubMenu(0, subMenuId, 0, menuTitle)
-                                          .setIcon(R.drawable.search_24px);
+            EngineId.getSearchOnSite().forEach(engineId -> {
+                final String menuTitle = context.getString(
+                        R.string.ellipsize, context.getString(engineId.getLabelResId()));
+                @IdRes
+                final int engineMenuId = View.generateViewId();
+                submenuIds.put(engineId, engineMenuId);
+                //noinspection DataFlowIssue
+                final SubMenu engineMenu = parent.addSubMenu(0, engineMenuId, 0, menuTitle)
+                                                 .setIcon(R.drawable.search_24px);
 
-            subMenu.add(0, midByAuthor, 0,
-                        R.string.option_search_books_by_author)
-                   .setIcon(R.drawable.search_24px);
-            subMenu.add(0, midByAuthorInSeries, 0,
-                        R.string.option_search_books_by_author_in_series)
-                   .setIcon(R.drawable.search_24px);
-            subMenu.add(0, midBySeries, 0,
-                        R.string.option_search_books_in_series)
-                   .setIcon(R.drawable.search_24px);
+                @IdRes
+                final int midByAuthor = View.generateViewId();
+                menuIdsByAuthor.put(engineId, midByAuthor);
+                engineMenu.add(0, midByAuthor, 0,
+                               R.string.option_search_books_by_author)
+                          .setIcon(R.drawable.search_24px);
+
+                @IdRes
+                final int midByAuthorInSeries = View.generateViewId();
+                menuIdsByAuthorAndSeries.put(engineId, midByAuthorInSeries);
+                engineMenu.add(0, midByAuthorInSeries, 0,
+                               R.string.option_search_books_by_author_in_series)
+                          .setIcon(R.drawable.search_24px);
+
+                @IdRes
+                final int midBySeries = View.generateViewId();
+                menuIdsBySeries.put(engineId, midBySeries);
+                engineMenu.add(0, midBySeries, 0,
+                               R.string.option_search_books_in_series)
+                          .setIcon(R.drawable.search_24px);
+            });
         }
     }
 
@@ -119,32 +114,54 @@ public class SiteSearchMenuHandler
                               @NonNull final Menu menu,
                               @NonNull final DataHolder rowData) {
 
-        final MenuItem subMenuItem = menu.findItem(subMenuId);
+        final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
+        // Sanity check
         if (subMenuItem == null) {
             return;
         }
 
-        boolean show = getSearchEngine(context).isShowSearchOnSiteMenu(context);
-        if (!show) {
-            subMenuItem.setVisible(false);
-            return;
+        boolean subMenuVisible = false;
+
+        // Set the visibility of each menu item.
+        // If all items are invisible, make the submenu invisible as well
+        for (final Map.Entry<EngineId, Integer> entry : submenuIds.entrySet()) {
+            final EngineId engineId = entry.getKey();
+            final Integer engineMenuId = entry.getValue();
+
+            final SearchEngine.SearchOnSite searchEngine = (SearchEngine.SearchOnSite)
+                    engineId.createSearchEngine(context);
+            engines.put(engineId, searchEngine);
+
+            final MenuItem engineMenu = menu.findItem(engineMenuId);
+            boolean visible = searchEngine.isShowSearchOnSiteMenu(context);
+            if (visible) {
+                final boolean hasAuthor = DataHolderUtils.hasAuthor(rowData);
+                final boolean hasSeries = DataHolderUtils.hasSeries(rowData);
+                visible = hasAuthor || hasSeries;
+
+                engineMenu.setVisible(visible);
+                if (visible) {
+                    final SubMenu sm = engineMenu.getSubMenu();
+                    //noinspection DataFlowIssue
+                    sm.findItem(menuIdsByAuthor.get(engineId))
+                      .setVisible(hasAuthor);
+                    //noinspection DataFlowIssue
+                    sm.findItem(menuIdsByAuthorAndSeries.get(engineId))
+                      .setVisible(hasAuthor && hasSeries);
+                    //noinspection DataFlowIssue
+                    sm.findItem(menuIdsBySeries.get(engineId))
+                      .setVisible(hasSeries);
+
+                    // at least one menu item is visible, show the menu
+                    subMenuVisible = true;
+                }
+
+            } else {
+                engineMenu.setVisible(false);
+            }
         }
 
-        final boolean hasAuthor = DataHolderUtils.hasAuthor(rowData);
-        final boolean hasSeries = DataHolderUtils.hasSeries(rowData);
-        show = hasAuthor || hasSeries;
-
-        subMenuItem.setVisible(show);
-        if (show) {
-            final SubMenu sm = subMenuItem.getSubMenu();
-            //noinspection DataFlowIssue
-            sm.findItem(midByAuthor)
-              .setVisible(hasAuthor);
-            sm.findItem(midByAuthorInSeries)
-              .setVisible(hasAuthor && hasSeries);
-            sm.findItem(midBySeries)
-              .setVisible(hasSeries);
-        }
+        subMenuItem.setVisible(subMenuVisible);
     }
 
     @Override
@@ -152,44 +169,51 @@ public class SiteSearchMenuHandler
                                       @IdRes final int menuItemId,
                                       @NonNull final DataHolder rowData) {
 
-        if (menuItemId == midByAuthor) {
-            if (DataHolderUtils.hasAuthor(rowData)) {
-                final Author author = DataHolderUtils.requireAuthor(rowData);
-                startSearchActivity(context, author, null);
+        for (final EngineId engineId : submenuIds.keySet()) {
+
+            Integer id;
+            id = menuIdsByAuthor.get(engineId);
+            if (id != null && id == menuItemId) {
+                startSearchActivity(context, engineId,
+                                    DataHolderUtils.requireAuthor(rowData),
+                                    null);
                 return true;
             }
-        } else if (menuItemId == midBySeries) {
-            if (DataHolderUtils.hasSeries(rowData)) {
-                final Series series = DataHolderUtils.requireSeries(rowData);
-                startSearchActivity(context, null, series);
+
+            id = menuIdsBySeries.get(engineId);
+            if (id != null && id == menuItemId) {
+                startSearchActivity(context, engineId,
+                                    null,
+                                    DataHolderUtils.requireSeries(rowData));
                 return true;
             }
-        } else if (menuItemId == midByAuthorInSeries) {
-            if (DataHolderUtils.hasAuthor(rowData)
-                && DataHolderUtils.hasSeries(rowData)) {
-                final Author author = DataHolderUtils.requireAuthor(rowData);
-                final Series series = DataHolderUtils.requireSeries(rowData);
-                startSearchActivity(context, author, series);
+
+            id = menuIdsByAuthorAndSeries.get(engineId);
+            if (id != null && id == menuItemId) {
+                startSearchActivity(context, engineId,
+                                    DataHolderUtils.requireAuthor(rowData),
+                                    DataHolderUtils.requireSeries(rowData));
                 return true;
             }
         }
-
         return false;
     }
 
     /**
      * Start an intent to search for an author and/or series on the website.
      *
-     * @param context Current context from which the Activity will be started
-     * @param author  to search for
-     * @param series  to search for
+     * @param context  Current context from which the Activity will be started
+     * @param engineId to use
+     * @param author   to search for
+     * @param series   to search for
      */
     private void startSearchActivity(@NonNull final Context context,
+                                     @NonNull final EngineId engineId,
                                      @Nullable final Author author,
                                      @Nullable final Series series) {
 
-        final String url = getSearchEngine(context)
-                .createSearchOnSiteUrl(context, author, series);
+        //noinspection DataFlowIssue
+        final String url = engines.get(engineId).createSearchOnSiteUrl(context, author, series);
         // Start the intent even if for some reason the fields string is empty.
         // If we don't the user will not see anything happen / we'd need to popup
         // an explanation why we cannot search.

@@ -24,9 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -44,15 +42,7 @@ public final class MenuHandlerFactory {
      */
     @NonNull
     public static List<MenuHandler> create(@NonNull final Context context) {
-        final List<MenuHandler> list = new ArrayList<>();
-
-        list.add(new ViewBookOnSiteMenuHandler());
-
-        list.addAll(EngineId.getSearchOnSite()
-                            .stream()
-                            .map(SiteSearchMenuHandler::new)
-                            .collect(Collectors.toList())
-        );
-        return list;
+        return List.of(new ViewBookOnSiteMenuHandler(),
+                       new SiteSearchMenuHandler());
     }
 }
