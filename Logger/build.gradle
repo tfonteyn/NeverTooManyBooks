@@ -20,7 +20,7 @@
 //file:noinspection LongLine
 
 plugins {
-    id 'com.android.library'
+    alias libs.plugins.android.library
 }
 
 android {
@@ -76,9 +76,8 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
+    coreLibraryDesugaring(libs.google.desugar)
 
-    implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
-    // See project build.gradle
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
+    implementation(libs.androidx.annotation)
+    implementation(libs.kotlinx.coroutines.android)
 }

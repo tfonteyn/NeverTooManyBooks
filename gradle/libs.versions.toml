@@ -1,0 +1,126 @@
+[versions]
+androidGradlePlugin = "8.7.3"
+# https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
+androidKotlinPlugin = "2.1.0"
+# https://github.com/mannodermaus/android-junit5
+mannodermausPlugin = "1.11.2.0"
+
+mannodermaus = '1.6.0'
+
+# https://developer.android.com/jetpack/androidx/versions
+
+androidxActivity = '1.9.3'
+androidxAnnotation = '1.9.1'
+androidxAppcompat = '1.7.0'
+androidxCamerax = '1.4.0'
+androidxCardview = "1.0.0"
+androidxCollection = '1.4.5'
+androidxConstraintlayoutCore = '1.1.0'
+androidxConstraintlayout = '2.2.0'
+androidxCoordinatorlayout = "1.2.0"
+androidxCoreSplashscreen = '1.0.1'
+androidxCore = '1.15.0'
+androidxCustomview = "1.2.0-alpha02"
+androidxDocumentfile = "1.1.0-alpha01"
+androidxDrawerlayout = "1.2.0"
+androidxExifinterface = '1.3.7'
+androidxFragment = '1.8.5'
+androidxInterpolator = "1.0.0"
+androidxLifecycle = '2.8.7'
+androidxPreference = "1.2.1"
+androidxRecyclerview = '1.3.2'
+androidxViewpager2 = '1.1.0'
+androidxWindow = '1.3.0'
+
+# https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md
+desugar = '2.1.3'
+
+# https://github.com/material-components/material-components-android/releases
+material = '1.12.0'
+
+# jsoup HTML parser library @ https://jsoup.org/
+jsoup = '1.18.3'
+
+# https://github.com/zxing/zxing
+zxingCore = '3.5.3'
+# CameraX based scanner code from https://github.com/tfonteyn/TinyZXingWrapper
+tinyzxingwrapper = "1.0.1"
+
+# https://github.com/ACRA/acra
+# https://www.acra.ch/docs/Setup/
+acra = '5.12.0'
+
+# https://github.com/mockito/mockito
+mockito = '5.14.2'
+
+# https://junit.org/junit5/docs/current/user-guide/#overview
+jupiter = '5.11.3'
+
+# https://developer.android.com/jetpack/androidx/releases/test
+androidxTestCore = '1.6.1'
+androidxTestRunner = '1.6.2'
+androidxTestRules = '1.6.1'
+# device tests with LiveData must add this class variable:
+#    @Rule
+#    public TestRule rule = new InstantTaskExecutorRule();
+androidxArchCoreTesting = "2.2.0"
+
+# An explicit dependency must be added to avoid gradle/studio/bugs?
+# adding (in some unknown circumstances) two different kotlin-stdlib versions
+# resulting in Duplicate class kotlin.* build problems.
+kotlinxCoroutinesCore = '1.9.0'
+
+[libraries]
+androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidxActivity" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidxAnnotation" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidxArchCoreTesting" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidxCamerax" }
+androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "androidxCamerax" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidxCamerax" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "androidxCamerax" }
+androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "androidxCardview" }
+androidx-collection = { group = "androidx.collection", name = "collection", version.ref = "androidxCollection" }
+androidx-constraintlayout-core = { group = "androidx.constraintlayout", name = "constraintlayout-core", version.ref = "androidxConstraintlayoutCore" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintlayout" }
+androidx-coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "androidxCoordinatorlayout" }
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
+androidx-customview = { group = "androidx.customview", name = "customview", version.ref = "androidxCustomview" }
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "androidxDocumentfile" }
+androidx-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "androidxDrawerlayout" }
+androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "androidxExifinterface" }
+androidx-fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragment" }
+androidx-interpolator = { group = "androidx.interpolator", name = "interpolator", version.ref = "androidxInterpolator" }
+androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidx-preference = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidxPreference" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidxRecyclerview" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "androidxViewpager2" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
+
+google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-desugar = { group = "com.android.tools", name = "desugar_jdk_libs_nio", version.ref = "desugar" }
+
+acra-core = { group = "ch.acra", name = "acra-core", version.ref = "acra" }
+acra-dialog = { group = "ch.acra", name = "acra-dialog", version.ref = "acra" }
+hardbacknutter-tinyzxingwrapper = { module = "com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper", version.ref = "tinyzxingwrapper" }
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "jupiter" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "jupiter" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesCore" }
+mannodermaus-android-test-core = { group = "de.mannodermaus.junit5", name = "android-test-core", version.ref = "mannodermaus" }
+mannodermaus-android-test-runner = { group = "de.mannodermaus.junit5", name = "android-test-runner", version.ref = "mannodermaus" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxingCore" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "androidKotlinPlugin" }
+mannodermaus-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "mannodermausPlugin" }

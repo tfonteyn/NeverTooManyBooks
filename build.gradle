@@ -19,13 +19,10 @@
  */
 
 plugins {
-    id("com.android.application") version '8.7.3' apply false
-    id("com.android.library") version '8.7.3' apply false
-    // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
-    // https://github.com/mannodermaus/android-junit5
-    // Don't forget to update ext.mannodermausVersion
-    id("de.mannodermaus.android-junit5") version "1.11.2.0" apply false
+    alias libs.plugins.android.application apply false
+    alias libs.plugins.android.library apply false
+    alias libs.plugins.android.kotlin apply false
+    alias libs.plugins.mannodermaus.junit5 apply false
 }
 
 tasks.register("clean", Delete) {
@@ -37,71 +34,9 @@ ext {
     applicationVersionCode = 91
     applicationVersionName = "6.4.1"
 
-    // see NOTES.txt
+    // see NOTES.txt in the app module
     toolChain = 17
     minSdkVersion = 26
     targetSdkVersion = 35
     compileSdkVersion = 35
-
-    // https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md
-    desugarVersion = '2.1.3'
-
-    // https://developer.android.com/jetpack/androidx/versions
-
-    androidxActivityVersion = '1.9.3'
-    androidxAnnotationVersion = '1.9.1'
-    androidxAppcompatVersion = '1.7.0'
-    androidxCameraxVersion = '1.4.0'
-    androidxCardviewVersion = "1.0.0"
-    androidxCollectionVersion = '1.4.5'
-    androidxConstraintlayoutCoreVersion = '1.1.0'
-    androidxConstraintlayoutVersion = '2.2.0'
-    androidxCoordinatorlayoutVersion = "1.2.0"
-    androidxCoreSplashscreenVersion = '1.0.1'
-    androidxCoreVersion = '1.15.0'
-    androidxCustomviewVersion = "1.2.0-alpha02"
-    androidxDocumentfileVersion = "1.1.0-alpha01"
-    androidxDrawerlayoutVersion = "1.2.0"
-    androidxExifinterfaceVersion = '1.3.7'
-    androidxFragmentVersion = '1.8.5'
-    androidxInterpolatorVersion = "1.0.0"
-    androidxLifecycleVersion = '2.8.7'
-    androidxPreferenceVersion = "1.2.1"
-    androidxRecyclerviewVersion = '1.3.2'
-    androidxViewpager2Version = '1.1.0'
-    androidxWindowVersion = '1.3.0'
-
-    // https://github.com/material-components/material-components-android/releases
-    googleMaterialVersion = '1.12.0'
-
-    // https://jsoup.org/
-    jsoupVersion = '1.18.3'
-
-    // https://github.com/tfonteyn/TinyZXingWrapper
-    tinyZxingWrapperVersion = "1.0.1"
-
-    // https://github.com/zxing/zxing
-    zxingCoreVersion = '3.5.3'
-
-    // https://github.com/ACRA/acra
-    acraVersion = '5.12.0'
-
-    // https://github.com/mockito/mockito
-    mockitoVersion = '5.14.2'
-
-    // https://junit.org/junit5/docs/current/user-guide/#overview
-    jupiterVersion = '5.11.3'
-
-    // https://developer.android.com/jetpack/androidx/releases/test
-    androidxArchCoreTestingVersion = "2.2.0"
-    androidxTestCoreVersion = '1.6.1'
-    androidxTestRunnerVersion = '1.6.2'
-    androidxTestRulesVersion = '1.6.1'
-
-    // An explicit dependency must be added to avoid gradle/studio/bugs?
-    // adding (in some unknown circumstances) two different kotlin-stdlib versions
-    // resulting in Duplicate class kotlin.* build problems.
-    kotlinxCoroutinesCoreVersion = '1.9.0'
-
-    mannodermausVersion = '1.6.0'
 }

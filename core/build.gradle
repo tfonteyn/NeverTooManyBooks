@@ -20,9 +20,9 @@
 //file:noinspection LongLine
 
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("de.mannodermaus.android-junit5")
+    alias libs.plugins.android.library
+    alias libs.plugins.android.kotlin
+    alias libs.plugins.mannodermaus.junit5
 }
 
 kotlin {
@@ -95,32 +95,31 @@ android {
 dependencies {
     implementation project(path: ":Logger")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
+    coreLibraryDesugaring(libs.google.desugar)
 
-    implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
-    implementation("androidx.constraintlayout:constraintlayout-core:${androidxConstraintlayoutCoreVersion}")
-    implementation("androidx.documentfile:documentfile:${androidxDocumentfileVersion}")
-    implementation("androidx.preference:preference-ktx:${androidxPreferenceVersion}")
-    implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")
-    implementation("androidx.window:window:${androidxWindowVersion}")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout.core)
+    implementation(libs.androidx.documentfile)
+    implementation(libs.androidx.preference)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.window)
 
-    implementation("com.google.android.material:material:${googleMaterialVersion}")
+    implementation(libs.google.material)
 
-    // See project build.gradle
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
+    implementation(libs.kotlinx.coroutines.android)
 
-    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
-    testImplementation("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.junit.jupiter)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${jupiterVersion}")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:${jupiterVersion}")
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
 
-    androidTestImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")
-    androidTestImplementation("de.mannodermaus.junit5:android-test-core:${mannodermausVersion}")
-    androidTestRuntimeOnly("de.mannodermaus.junit5:android-test-runner:${mannodermausVersion}")
+    androidTestImplementation(libs.junit.jupiter.api)
+    androidTestImplementation(libs.mannodermaus.android.test.core)
+    androidTestRuntimeOnly(libs.mannodermaus.android.test.runner)
 
-    androidTestImplementation("androidx.test:core:${androidxTestCoreVersion}")
-    androidTestImplementation("androidx.test:runner:${androidxTestRunnerVersion}")
-    androidTestImplementation("androidx.test:rules:${androidxTestRulesVersion}")
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
 }

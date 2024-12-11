@@ -19,7 +19,7 @@
  */
 
 plugins {
-    id("com.android.library")
+    alias libs.plugins.android.library
 }
 
 android {
@@ -61,15 +61,15 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
+    coreLibraryDesugaring(libs.google.desugar)
 
-    implementation("androidx.activity:activity-ktx:${androidxActivityVersion}")
-    implementation("androidx.annotation:annotation:${androidxAnnotationVersion}")
-    implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
-    implementation("androidx.core:core-ktx:${androidxCoreVersion}")
-    implementation("androidx.customview:customview:${androidxCustomviewVersion}")
-    implementation("androidx.interpolator:interpolator:${androidxInterpolatorVersion}")
-    implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.customview)
+    implementation(libs.androidx.interpolator)
+    implementation(libs.androidx.recyclerview)
 
-    implementation("com.google.android.material:material:${googleMaterialVersion}")
+    implementation(libs.google.material)
 }
