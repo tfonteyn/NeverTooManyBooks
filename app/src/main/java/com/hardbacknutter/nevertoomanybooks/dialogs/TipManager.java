@@ -32,6 +32,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -176,28 +177,6 @@ public final class TipManager {
                 () -> logError(context, tipId));
     }
 
-    /**
-     * Display the passed tip, if the user has not disabled it.
-     *
-     * @param context Current context
-     * @param tipId   the string res id for the tip
-     * @param tipKey  identifier for "from where" we want the tip to be displayed.
-     *                This allows two different places in the code use the same tip,
-     *                but one place being 'disable the tip' and another 'show'.
-     * @param postRun Optional Runnable to run after the tip was dismissed
-     *                (or not displayed at all).
-     * @param args    Optional arguments for the tip string
-     */
-    public void display(@NonNull final Context context,
-                        @NonNull final String tipKey,
-                        @StringRes final int tipId,
-                        @Nullable final Runnable postRun,
-                        @Nullable final Object... args) {
-        getTip(tipId).ifPresentOrElse(
-                tip -> tip.display(context, tipKey, args, postRun),
-                () -> logError(context, tipId));
-    }
-
     private static final class Tip {
 
         @StringRes
@@ -251,10 +230,7 @@ public final class TipManager {
                      @NonNull final String key,
                      @Nullable final Object[] args,
                      @Nullable final Runnable postRun) {
-            if (!previouslyDisplayed
-                && PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(PREF_TIP + key, true)) {
-
+            if (!previouslyDisplayed && isEnabled(context, key)) {
                 final String text = context.getString(id, args);
                 display(context, key, text, postRun);
             } else {
@@ -280,6 +256,10 @@ public final class TipManager {
             // Build the tip dialog
             final View root = LayoutInflater.from(context).inflate(layoutId, null);
 
+            final AlertDialog alertDialog = new MaterialAlertDialogBuilder(context)
+                    .setView(root)
+                    .create();
+
             // Setup the message; this is an optional View but present in the default layout.
             final TextView messageView = root.findViewById(R.id.message);
             if (messageView != null) {
@@ -288,26 +268,37 @@ public final class TipManager {
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.info_24px)
-                    .setView(root)
-                    .setTitle(R.string.tip_dialog_title)
-                    .setNeutralButton(R.string.action_disable_message, (d, w) -> {
-                        PreferenceManager.getDefaultSharedPreferences(context)
-                                         .edit().putBoolean(PREF_TIP + key, false).apply();
-                        if (postRun != null) {
-                            postRun.run();
-                        }
-                    })
-                    .setPositiveButton(R.string.ok, (d, w) -> {
-                        if (postRun != null) {
-                            postRun.run();
-                        }
-                    })
-                    .create()
-                    .show();
+            root.findViewById(R.id.btn_neutral)
+                .setOnClickListener(v -> {
+                    alertDialog.dismiss();
+                    disable(context, key);
+                    if (postRun != null) {
+                        postRun.run();
+                    }
+                });
+            root.findViewById(R.id.btn_positive)
+                .setOnClickListener(v -> {
+                    alertDialog.dismiss();
+                    if (postRun != null) {
+                        postRun.run();
+                    }
+                });
+
+            alertDialog.show();
 
             previouslyDisplayed = true;
+        }
+
+        private boolean isEnabled(@NonNull final Context context,
+                                  @NonNull final String key) {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(PREF_TIP + key, true);
+        }
+
+        private void disable(@NonNull final Context context,
+                             @NonNull final String key) {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                             .edit().putBoolean(PREF_TIP + key, false).apply();
         }
     }
 }

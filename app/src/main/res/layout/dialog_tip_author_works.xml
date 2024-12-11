@@ -19,48 +19,90 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Dialog.Content"
-    android:orientation="vertical"
     tools:viewBindingIgnore="true"
     >
 
     <TextView
-        android:id="@+id/fixed_content"
-        style="@style/Text.Header"
+        android:id="@+id/message"
+        style="@style/Text.Info"
+        android:maxLines="20"
         android:text="@string/tip_authors_works"
-        tools:ignore="SelectableText"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UseCompatTextViewDrawableXml" />
 
     <TextView
+        android:id="@+id/single_book"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_margin_top"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
         android:drawableStart="@drawable/menu_book_24px"
         android:drawablePadding="@dimen/field_margin_inline"
         android:text="@string/tip_authors_works_single_book"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/message"
         tools:ignore="UseCompatTextViewDrawableXml"
         />
 
     <TextView
+        android:id="@+id/multi_book"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/section_margin_top"
         android:drawableStart="@drawable/library_books_24px"
         android:drawablePadding="@dimen/field_margin_inline"
         android:text="@string/tip_authors_works_multiple_books"
+        app:layout_constraintStart_toStartOf="@id/single_book"
+        app:layout_constraintTop_toBottomOf="@id/single_book"
         tools:ignore="UseCompatTextViewDrawableXml"
         />
 
     <TextView
+        android:id="@+id/is_book"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/field_margin_top"
         android:drawableStart="@drawable/book_2_24px"
         android:drawablePadding="@dimen/field_margin_inline"
         android:text="@string/tip_authors_works_book"
+        app:layout_constraintStart_toStartOf="@id/multi_book"
+        app:layout_constraintTop_toBottomOf="@id/multi_book"
         tools:ignore="UseCompatTextViewDrawableXml"
         />
-</LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/button_panel_layout"
+        style="@style/ButtonPanel.Container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/is_book">
+
+        <Button
+            android:id="@+id/btn_neutral"
+            style="?attr/buttonBarNeutralButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_disable_message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <Button
+            android:id="@+id/btn_positive"
+            style="?attr/buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ok"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
