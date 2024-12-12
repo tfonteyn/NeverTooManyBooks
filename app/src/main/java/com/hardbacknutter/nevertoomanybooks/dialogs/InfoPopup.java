@@ -61,7 +61,7 @@ public final class InfoPopup {
                             @NonNull final CharSequence text) {
         final Context context = anchor.getContext();
         @SuppressLint("InflateParams")
-        final View root = LayoutInflater.from(context).inflate(R.layout.popup_info, null);
+        final View root = LayoutInflater.from(context).inflate(R.layout.popup_info, null, false);
         final TextView infoView = root.findViewById(R.id.info);
         infoView.setText(text);
 
