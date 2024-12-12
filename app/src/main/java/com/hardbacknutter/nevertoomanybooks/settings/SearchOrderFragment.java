@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditSearchsiteBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -139,10 +138,6 @@ public class SearchOrderFragment
                 listAdapter.notifyDataSetChanged();
             }
         });
-
-        if (savedInstanceState == null) {
-            TipManager.getInstance().display(getContext(), R.string.tip_configure_sites, null);
-        }
     }
 
     /**

@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
@@ -154,6 +155,12 @@ public class SearchAdminFragment
             // it's not shown when long-pressing the tab?
             tab.setContentDescription(getString(tabAdapter.getTabDescription(position)));
         }).attach();
+
+        if (savedInstanceState == null) {
+            //noinspection DataFlowIssue
+            TipManager.getInstance()
+                      .display(getContext(), R.string.tip_configure_sites, null);
+        }
     }
 
     @Override
