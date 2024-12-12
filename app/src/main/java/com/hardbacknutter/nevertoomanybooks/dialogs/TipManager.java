@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -26,6 +27,7 @@ import android.text.method.LinkMovementMethod;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -39,6 +41,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
@@ -160,21 +163,34 @@ public final class TipManager {
     }
 
     /**
-     * Display the passed tip, if the user has not disabled it.
+     * Create the required tip, if the user has not disabled it and it's not been shown
+     * before during this app run.
      *
      * @param context Current context
      * @param tipId   the string res id for the tip
-     * @param postRun Optional Runnable to run after the tip was dismissed
-     *                (or not displayed at all).
+     * @param postRun Optional Runnable to run after the tip was dismissed.
+     *                IMPORTANT: if this method return no dialog,
+     *                the postRun <strong>is executed immediately</strong>
      * @param args    Optional arguments for the tip string
      */
     public void display(@NonNull final Context context,
                         @StringRes final int tipId,
                         @Nullable final Runnable postRun,
                         @Nullable final Object... args) {
-        getTip(tipId).ifPresentOrElse(
-                tip -> tip.display(context, tip.defaultKey, args, postRun),
-                () -> logError(context, tipId));
+        final Optional<Tip> oTip = getTip(tipId);
+        if (oTip.isPresent()) {
+            final Tip tip = oTip.get();
+            if (tip.shouldBeDisplayed(context, tip.defaultKey)) {
+                tip.create(context, tip.defaultKey, args, postRun)
+                   .show();
+            } else {
+                if (postRun != null) {
+                    postRun.run();
+                }
+            }
+        } else {
+            logError(context, tipId);
+        }
     }
 
     private static final class Tip {
@@ -202,7 +218,6 @@ public final class TipManager {
             @NonNull final String defaultKey) {
             this.id = id;
             this.defaultKey = defaultKey;
-            layoutId = R.layout.dialog_tip;
         }
 
         /**
@@ -218,59 +233,72 @@ public final class TipManager {
             return this;
         }
 
+        boolean shouldBeDisplayed(@NonNull final Context context,
+                                  @NonNull final String key) {
+            return !previouslyDisplayed && isEnabled(context, key);
+        }
+
         /**
-         * Display the tip if not shown before and the user has not disabled it.
+         * Create an {@link AlertDialog} based tip.
          *
          * @param context Current context
          * @param key     Preferences key suffix specific to this tip
          * @param args    for the message
          * @param postRun Runnable to start afterwards
-         */
-        void display(@NonNull final Context context,
-                     @NonNull final String key,
-                     @Nullable final Object[] args,
-                     @Nullable final Runnable postRun) {
-            if (!previouslyDisplayed && isEnabled(context, key)) {
-                final String text = context.getString(id, args);
-                display(context, key, text, postRun);
-            } else {
-                if (postRun != null) {
-                    postRun.run();
-                }
-            }
-        }
-
-        /**
-         * Unconditionally display the tip.
          *
-         * @param context Current context
-         * @param key     Preferences key suffix specific to this tip
-         * @param text    to display
-         * @param postRun Runnable to start afterwards
+         * @return a dialog ready to be displayed
          */
-        private void display(@NonNull final Context context,
-                             @NonNull final String key,
-                             @NonNull final String text,
-                             @Nullable final Runnable postRun) {
-
-            // Build the tip dialog
-            final View root = LayoutInflater.from(context).inflate(layoutId, null);
+        @NonNull
+        AlertDialog create(@NonNull final Context context,
+                           @NonNull final String key,
+                           @Nullable final Object[] args,
+                           @Nullable final Runnable postRun) {
+            final View root = inflateLayout(context);
 
             final AlertDialog alertDialog = new MaterialAlertDialogBuilder(context)
                     .setView(root)
                     .create();
 
+            setMessage(root, () -> context.getString(id, args));
+            final Runnable dismiss = () -> {
+                alertDialog.dismiss();
+                previouslyDisplayed = true;
+            };
+            setButtons(context, root, dismiss, key, postRun);
+            return alertDialog;
+        }
+
+        private View inflateLayout(@NonNull final Context context) {
+            final LayoutInflater inflater = LayoutInflater.from(context);
+            @SuppressLint("InflateParams")
+            final View root = inflater.inflate(R.layout.dialog_tip, null, false);
+            if (layoutId != 0) {
+                final FrameLayout content = root.findViewById(R.id.tip_content);
+                content.removeAllViews();
+                content.addView(inflater.inflate(layoutId, content, false));
+            }
+            return root;
+        }
+
+        private void setMessage(@NonNull final View root,
+                                @NonNull final Supplier<String> text) {
             // Setup the message; this is an optional View but present in the default layout.
             final TextView messageView = root.findViewById(R.id.message);
             if (messageView != null) {
                 // allow links, start a browser (or whatever)
-                messageView.setText(HtmlFormatter.linkify(text));
+                messageView.setText(HtmlFormatter.linkify(text.get()));
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
+        }
 
+        private void setButtons(@NonNull final Context context,
+                                @NonNull final View root,
+                                @NonNull final Runnable dismiss,
+                                @NonNull final String key,
+                                @Nullable final Runnable postRun) {
             root.findViewById(R.id.btn_neutral)
                 .setOnClickListener(v -> {
-                    alertDialog.dismiss();
+                    dismiss.run();
                     disable(context, key);
                     if (postRun != null) {
                         postRun.run();
@@ -278,15 +306,11 @@ public final class TipManager {
                 });
             root.findViewById(R.id.btn_positive)
                 .setOnClickListener(v -> {
-                    alertDialog.dismiss();
+                    dismiss.run();
                     if (postRun != null) {
                         postRun.run();
                     }
                 });
-
-            alertDialog.show();
-
-            previouslyDisplayed = true;
         }
 
         private boolean isEnabled(@NonNull final Context context,
