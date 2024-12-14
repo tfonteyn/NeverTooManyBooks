@@ -106,8 +106,8 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
-- Portuguese(Brazil): [Suburbanno](https://github.com/Suburbanno)
-- Chinese translation (Simplified): [CloneWith](https://github.com/CloneWith)
+- Portuguese(Brazil) translation: [Suburbanno](https://github.com/Suburbanno)
+- Chinese (Simplified) translation: [CloneWith](https://github.com/CloneWith)
   and [evoke322](https://github.com/evoke322)
 - Vietnamese translation: [ngocanhtve](https://github.com/ngocanhtve).
 - Portuguese translation: [maverick74](https://github.com/maverick74).
