@@ -499,7 +499,7 @@
     <string name="size_x_large">X-Large</string>
     <!-- endregion -->
     <!-- region ========== List values used to unify terminology from internet websites. -->
-    <!--  book format - traditional 'hardcover' also known as 'hardback' -->
+    <!--  book format - traditional 'hardcover' (US) also known as 'hardback' (UK) -->
     <string name="book_format_hardcover">Hardcover</string>
     <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
     <string name="book_format_paperback">Paperback</string>

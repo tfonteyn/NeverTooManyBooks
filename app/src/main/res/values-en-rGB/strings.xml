@@ -38,4 +38,7 @@
     <string name="site_description_english_catalogue_FSF">English and more; Catalogue; Fantasy and Science Fiction</string>
     <string name="site_description_french_catalogue_eu_comics">French and more; Catalogue; European Comics</string>
 
+    <!-- a "Hardcover" is typically known as a "Hardback" in the UK.-->
+    <string name="book_format_hardcover">Hardcover</string>
+
 </resources>
