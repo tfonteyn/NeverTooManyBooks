@@ -202,7 +202,7 @@
     <string name="warning_requires_site_and_id">Selecione um site e insira um id.</string>
     <string name="warning_already_in_list">Já está na lista!</string>
     <string name="site_description_german_catalogue">Alemão; Catálogo</string>
-    <string name="tip_reset_done">As dicas foram repostas</string>
+    <string name="info_tip_reset_done">As dicas foram repostas</string>
     <string name="tip_authors_works_book">Livro.</string>
     <string name="tip_authors_works_single_book">O título está presente num único livro.</string>
     <string name="book_format_audiobook">Áudio-livro</string>
@@ -256,7 +256,7 @@
     <string name="info_download_successful">Transferência bem-sucedida</string>
     <string name="cd_btn_drag_handle">Arraste para reordenar esta lista</string>
     <string name="cd_clear_text_end_icon">Limpar texto</string>
-    <string name="tip_dialog_title">Dica</string>
+    <string name="lbl_tip">Dica</string>
     <string name="bob_empty_series">(Sem Séries)</string>
     <string name="bob_empty_publisher">(Sem Editora)</string>
     <string name="bob_empty_language">(Idioma não definido)</string>
@@ -316,7 +316,7 @@
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
     <string name="confirm_delete_style">Excluir o estilo “%1$s”?</string>
     <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de uni-las?</string>
-    <string name="tip_reset_all">Repor dicas</string>
+    <string name="option_reset_all_tips">Repor dicas</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se os livros forem apresentados para cada autor do livro, podem aparecer várias vezes na lista. A eliminação de um desses livros tem o efeito de remover todos os exemplares da lista.</string>
     <string name="tip_view_only_help">Pode deslizar para a esquerda ou para a direita para navegar para outros livros.</string>
     <string name="tip_book_list">Tocar num livro mostrará os detalhes do livro. Um toque longo num item da lista dar-lhe-á mais opções.</string>

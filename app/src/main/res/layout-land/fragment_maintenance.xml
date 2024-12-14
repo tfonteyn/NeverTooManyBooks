@@ -50,7 +50,7 @@
         <Button
             android:id="@+id/btn_reset_tips"
             style="@style/Button.Menu"
-            android:text="@string/tip_reset_all"
+            android:text="@string/option_reset_all_tips"
             app:icon="@drawable/undo_24px"
             app:layout_constraintEnd_toEndOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"

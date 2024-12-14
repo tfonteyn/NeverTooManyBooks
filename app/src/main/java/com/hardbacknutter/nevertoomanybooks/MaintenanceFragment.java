@@ -145,7 +145,7 @@ public class MaintenanceFragment
     private void onResetTips(final View v) {
         TipManager.getInstance().reset(v.getContext());
         //noinspection DataFlowIssue
-        Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getView(), R.string.info_tip_reset_done, Snackbar.LENGTH_LONG).show();
     }
 
     private void onPurgeFiles(@NonNull final View v) {

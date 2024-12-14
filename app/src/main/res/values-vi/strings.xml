@@ -742,10 +742,10 @@
     <string name="tip_booklist_style_properties">Sử dụng màn hình này để đặt các đặc điểm của một kiểu cụ thể. Bạn có thể thay đổi tên, chỉnh sửa các nhóm để thay đổi thứ bậc và điều chỉnh nhiều tùy chọn khác để tạo kiểu mà bạn thấy hữu ích.</string>
     <string name="tip_booklist_styles_editor">Sử dụng màn hình này để tùy chỉnh danh sách các kiểu cách sẽ được hiển thị trong thực đơn kiểu cách mặc định của bạn. Sử dụng hộp kiểm để chọn kiểu cách nào sẽ được hiển thị trong danh sách. Nếu không có kiểu cách nào được chọn thì tất cả các kiểu sẽ được hiển thị. Bạn có thể sắp xếp lại thứ bậc bằng cách kéo biểu tượng ở ngoài cùng bên phải của mỗi hàng lên hoặc xuống. Nhấn và giữ bất cứ nơi nào khác trong hàng sẽ cho phép bạn chỉnh sửa hoặc sao chép các chi tiết của một kiểu cụ thể. Nếu bạn sao chép một kiểu và thay đổi ý định, bạn sẽ cần phải tự xóa nó.</string>
     <string name="tip_configure_sites">Các trang web riêng lẻ có thể được định cấu hình bằng biểu tượng thiết đặt ở đầu màn hình.</string>
-    <string name="tip_dialog_title">Mẹo</string>
+    <string name="lbl_tip">Mẹo</string>
     <string name="tip_import_isbn_list">Nhập tệp văn bản có số ISBN. Tệp phải có một ISBN duy nhất trên mỗi dòng. Kết quả sẽ được xếp hàng.</string>
-    <string name="tip_reset_all">Đặt lại mẹo</string>
-    <string name="tip_reset_done">Mẹo đã được đặt lại</string>
+    <string name="option_reset_all_tips">Đặt lại mẹo</string>
+    <string name="info_tip_reset_done">Mẹo đã được đặt lại</string>
     <string name="tip_series_book_may_appear_more_than_once">Nếu sách được hiển thị trong tất cả các bộ sách có chứa cuốn sách đó thì chúng có thể xuất hiện nhiều lần trong danh sách. Xóa một trong những cuốn sách đó có tác dụng loại bỏ tất cả các bản sao khỏi danh sách.</string>
     <string name="tip_update_fields_from_internet">Các liên kết trang bên ngoài chỉ được xử lý nếu trang đó thực sự được liên hệ. Do đó, thực đơn “Xem trên…” cũng sẽ chỉ hiển thị những gì có sẵn.</string>
     <string name="tip_view_only_help">Bạn có thể vuốt sang trái hoặc phải để điều hướng tới các sách khác.</string>

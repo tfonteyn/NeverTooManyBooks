@@ -414,36 +414,44 @@
     <string name="site_description_general_shopping">General; Shop</string>
     <!-- endregion -->
     <!-- region ========== Tips which are shown in some places on how to use a screen. -->
-    <string name="tip_dialog_title">Tip</string>
-    <string name="tip_reset_all">Reset tips</string>
-    <string name="tip_reset_done">Tips have been reset</string>
+    <!-- Dialog title. -->
+    <string name="lbl_tip">Tip</string>
+    <!-- menu option to reset displaying the help-tips. -->
+    <string name="option_reset_all_tips">Reset tips</string>
+    <!-- status/info message -->
+    <string name="info_tip_reset_done">Tips have been reset</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_book_search_by_text">Adding books by ISBN is much more accurate than adding by author and title and is generally preferred. Please remember you can sometimes find the correct barcode on the inside front cover.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_booklist_styles_editor">Use this screen to customize the list of styles that will be displayed in your default styles menu. Use the check-box to select which styles will be shown in the list.  If no styles are selected, then all styles will be shown. You can re-order the hierarchy by dragging the icon at the extreme right of each row up or down. Long-pressing anywhere else in a row will allow you to edit or clone the details of a specific style. If you cloned a style, and changed your mind, you will need to delete it yourself.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_booklist_style_groups">Use this screen to modify the hierarchy of groups for a specific style. Use the check-box to select which groups will be shown in the list and re-order the hierarchy by dragging the icon at the end of each row up or down.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_booklist_style_defaults">Use this screen to set the default characteristics of all styles. These are used by all built-in styles and as the starting point for any style you define yourself.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_booklist_style_properties">Use this screen to set the characteristics of a specific style. You can change the name, edit the groupings to change the hierarchy, and adjust a variety of other preferences to build a style that you find useful.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_import_isbn_list">Import a text file with ISBN numbers. The file should have a single ISBN on each line. The results will be placed in the queue.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_authors_book_may_appear_more_than_once">If books are shown for every author of the book, they may appear multiple times in the list. Deleting one of those books has the effect of removing all copies from the list.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_series_book_may_appear_more_than_once">If books are shown in all series to which the book belongs, they may appear multiple times in the list. Deleting one of those books has the effect of removing all copies from the list.</string>
+    <!-- Help text shown in a dialog. -->
     <string name="tip_autorotate_camera_images">If you find yourself always rotating camera images in the same direction, try changing the application preferences to specify a rotation to apply automatically.</string>
-    <!-- Tip text displayed when user enters the 'read-only' book view -->
+    <!-- Help text shown in a dialog. Shown on the book details screen. -->
     <string name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
-    <!-- Tip text displayed when user enters the booklist -->
+    <!-- Help text shown in a dialog. Shown on the booklist (main) screen. -->
     <string name="tip_book_list">Tapping on a book will show you the details of the book. A long-press on an item in the list will give you more options.</string>
-    <!-- Tip text displayed when user enters the 'Update fields from internet' screen
-     The referred "View on…" is "option_view_book_at"
-     TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
-    <string name="tip_update_fields_from_internet">External site links are only processed if the site is actually contacted. As a result the menu “View on…” will likewise only show what is available.</string>
-
+    <!-- Help text shown in a dialog. Shown on the "Settings/Websites" screen. -->
     <string name="tip_configure_sites">Individual websites can be configured using the settings-icon at the top of the screen.</string>
 
-    <!-- tip title and explanations for the icons used. -->
+    <!-- Help text shown in a dialog. The dialog title and explanations for the icons used. -->
     <string name="tip_authors_works">Icons used</string>
-    <!-- shown next to the Book icon -->
+    <!-- Help text shown in a dialog. See "tip_authors_works": shown next to the Book icon -->
     <string name="tip_authors_works_book">Book.</string>
-    <!-- shown next to related icon / contentDescription for button. -->
+    <!-- Help text shown in a dialog. See "tip_authors_works": shown next to related icon / contentDescription for button. -->
     <string name="tip_authors_works_multiple_books">The title is present in multiple books.</string>
-    <!-- shown next to related icon / contentDescription for button. -->
+    <!-- Help text shown in a dialog. See "tip_authors_works": shown next to related icon / contentDescription for button. -->
     <string name="tip_authors_works_single_book">The title is present in a single book.</string>
     <!-- endregion -->
     <!-- region ========== BoB specific place holder text for empty fields. -->
@@ -1867,6 +1875,11 @@
     <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
 
     <string name="X_info_tap_on_image_to_select">Tap on the larger image to select it.</string>
+
+    <!-- Tip text displayed when user enters the 'Update fields from internet' screen
+     The referred "View on…" is "option_view_book_at"
+     TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
+    <string name="X_tip_update_fields_from_internet">External site links are only processed if the site is actually contacted. As a result the menu “View on…” will likewise only show what is available.</string>
 
     <!-- endregion -->
 
