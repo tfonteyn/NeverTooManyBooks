@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
 /**
@@ -99,8 +100,7 @@ public class StyleFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance()
-                      .display(getContext(), R.string.tip_booklist_style_properties, null);
+            TipManager.getInstance().display(getContext(), Tip.STYLE_PROPERTIES);
         }
     }
 

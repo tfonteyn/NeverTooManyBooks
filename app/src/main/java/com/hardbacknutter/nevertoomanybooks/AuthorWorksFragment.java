@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -190,7 +191,7 @@ public class AuthorWorksFragment
         vb.authorWorks.setAdapter(adapter);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(context, R.string.tip_authors_works, null);
+            TipManager.getInstance().display(context, Tip.AUTHORS_WORKS);
         }
     }
 

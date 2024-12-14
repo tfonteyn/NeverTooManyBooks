@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -632,7 +633,7 @@ public class SearchBookByIsbnFragment
             } else if (menuItemId == R.id.MENU_BARCODE_IMPORT) {
                 // Using "*/*": see remarks in
                 // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
-                TipManager.getInstance().display(requireContext(), R.string.tip_import_isbn_list,
+                TipManager.getInstance().display(requireContext(), Tip.IMPORT_ISBN_LIST,
                                                  () -> openUriLauncher.launch(ANY_URI));
                 return true;
 

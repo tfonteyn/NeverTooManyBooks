@@ -57,9 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerIte
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
@@ -176,14 +174,10 @@ public class SearchBookUpdatesFragment
 
         initAdapter();
 
-        if (savedInstanceState == null) {
-            TipManager.getInstance()
-                      .display(getContext(), R.string.tip_update_fields_from_internet, () ->
-                              EngineId.promptToRegister(getContext(), vm.getSiteList(),
-                                                        "update_from_internet",
-                                                        this::afterOnViewCreated));
-        } else {
-            afterOnViewCreated();
+        // Warn the user, but don't abort.
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+            Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -192,14 +186,6 @@ public class SearchBookUpdatesFragment
         //noinspection DataFlowIssue
         vb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), vm.getSyncFields(),
                                                      layoutManager.getSpanCount()));
-    }
-
-    private void afterOnViewCreated() {
-        // Warn the user, but don't abort.
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
-            Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
-                          Snackbar.LENGTH_LONG).show();
-        }
     }
 
     /**

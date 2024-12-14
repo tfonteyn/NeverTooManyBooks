@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleGroupsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleGroupsBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
@@ -159,8 +160,7 @@ public class StyleGroupsFragment
         itemTouchHelper.attachToRecyclerView(vb.groupList);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(context, R.string.tip_booklist_style_groups,
-                                             null);
+            TipManager.getInstance().display(context, Tip.STYLE_GROUPS);
         }
     }
 

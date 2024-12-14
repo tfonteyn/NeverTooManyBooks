@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -374,24 +375,19 @@ public class CoverHandler {
             coverLoader.accept(cIdx);
             return true;
 
-        } else if (menuItemId == R.id.SUBMENU_THUMB_ROTATE) {
-            // TODO: this code is never reached since the menu popup/launcher handles
-            //  sub-menus directly. Leaving this here as we should move this tip elsewhere.
-            // Just a submenu; skip, but display a hint if user is rotating a camera image
-            TipManager.getInstance()
-                      .display(context, R.string.tip_autorotate_camera_images, null);
-            return true;
-
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
-            startRotation(90);
+            TipManager.getInstance()
+                      .display(context, Tip.CAMERA_AUTOROTATE_IMAGES, () -> startRotation(90));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CCW) {
-            startRotation(-90);
+            TipManager.getInstance()
+                      .display(context, Tip.CAMERA_AUTOROTATE_IMAGES, () -> startRotation(-90));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_180) {
-            startRotation(180);
+            TipManager.getInstance()
+                      .display(context, Tip.CAMERA_AUTOROTATE_IMAGES, () -> startRotation(180));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_CROP) {

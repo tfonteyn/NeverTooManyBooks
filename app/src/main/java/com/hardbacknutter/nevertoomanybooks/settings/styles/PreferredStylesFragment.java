@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -241,8 +242,7 @@ public class PreferredStylesFragment
         itemTouchHelper.attachToRecyclerView(vb.list);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance()
-                      .display(getContext(), R.string.tip_booklist_styles_editor, null);
+            TipManager.getInstance().display(getContext(), Tip.STYLES_EDITOR);
         }
     }
 

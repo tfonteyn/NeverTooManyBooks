@@ -31,6 +31,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 
@@ -96,8 +97,7 @@ public class StyleDefaultsFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance()
-                      .display(getContext(), R.string.tip_booklist_style_defaults, null);
+            TipManager.getInstance().display(getContext(), Tip.STYLE_DEFAULTS);
         }
     }
 }

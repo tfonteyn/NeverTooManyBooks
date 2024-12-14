@@ -100,6 +100,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -426,19 +427,19 @@ public class BooksOnBookshelf
         handleStandardSearchIntent(getIntent());
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(this, R.string.tip_book_list, null);
-
-            if (vm.isProposeBackup()) {
-                new MaterialAlertDialogBuilder(this)
-                        .setIcon(R.drawable.warning_24px)
-                        .setTitle(R.string.app_name)
-                        .setMessage(R.string.warning_backup_request)
-                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(R.string.ok, (d, w) ->
-                                exportLauncher.launch(null))
-                        .create()
-                        .show();
-            }
+            TipManager.getInstance().display(this, Tip.BOOK_LIST, () -> {
+                if (vm.isProposeBackup()) {
+                    new MaterialAlertDialogBuilder(this)
+                            .setIcon(R.drawable.warning_24px)
+                            .setTitle(R.string.app_name)
+                            .setMessage(R.string.warning_backup_request)
+                            .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                            .setPositiveButton(R.string.ok, (d, w) ->
+                                    exportLauncher.launch(null))
+                            .create()
+                            .show();
+                }
+            });
         }
     }
 

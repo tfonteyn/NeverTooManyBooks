@@ -37,6 +37,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
 public class ShowBookPagerFragment
@@ -107,7 +108,7 @@ public class ShowBookPagerFragment
 
         if (savedInstanceState == null) {
             //noinspection DataFlowIssue
-            TipManager.getInstance().display(getContext(), R.string.tip_view_only_help, null);
+            TipManager.getInstance().display(getContext(), Tip.BOOK_DETAILS);
         }
     }
 

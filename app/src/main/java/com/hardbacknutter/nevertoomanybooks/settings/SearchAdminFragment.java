@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -158,8 +159,7 @@ public class SearchAdminFragment
 
         if (savedInstanceState == null) {
             //noinspection DataFlowIssue
-            TipManager.getInstance()
-                      .display(getContext(), R.string.tip_configure_sites, null);
+            TipManager.getInstance().display(getContext(), Tip.CONFIGURE_SITES);
         }
     }
 
