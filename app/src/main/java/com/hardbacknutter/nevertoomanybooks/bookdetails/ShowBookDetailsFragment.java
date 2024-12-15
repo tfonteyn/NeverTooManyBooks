@@ -302,11 +302,12 @@ public class ShowBookDetailsFragment
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
-                    coverHandler[cIdx] = new CoverHandler(this, cIdx, this::reloadImage,
-                                                          maxWidth, maxHeight)
+                    coverHandler[cIdx] = new CoverHandler
+                            .Builder(this, cIdx, this::reloadImage,
+                                     maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())
-                            .setProgressView(progressView)
-                            .onFragmentViewCreated(this);
+                            .setProgressIndicator(progressView)
+                            .build();
                 }
             }
         } finally {

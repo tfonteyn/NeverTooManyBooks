@@ -166,13 +166,14 @@ public class EditBookFieldsFragment
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
                     //noinspection DataFlowIssue
-                    coverHandler[cIdx] = new CoverHandler(this, cIdx, this::reloadImage,
-                                                          maxWidth, maxHeight)
+                    coverHandler[cIdx] = new CoverHandler
+                            .Builder(this, cIdx, this::reloadImage,
+                                     maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
                             .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
-                            .setProgressView(vb.coverOperationProgressBar)
-                            .onFragmentViewCreated(this);
+                            .setProgressIndicator(vb.coverOperationProgressBar)
+                            .build();
                 } else {
                     // This is silly... ViewBinding has no arrays.
                     if (cIdx == 0) {

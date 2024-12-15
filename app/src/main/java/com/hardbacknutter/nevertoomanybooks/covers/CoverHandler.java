@@ -32,7 +32,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IdRes;
@@ -95,17 +94,20 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * For BoB displaying,
  * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverListHandler}
  */
-public class CoverHandler {
+public final class CoverHandler {
 
     /** Log tag. */
     private static final String TAG = "CoverHandler";
     private static final String RK_MENU = TAG + ":rk:menu";
 
     private static final String IMAGE_MIME_TYPE = "image/*";
+    private static final String ERROR_GENERIC_FILE_PROVIDER = "GenericFileProvider";
 
     /** Index of the image we're handling. */
     @IntRange(from = 0, to = 1)
     private final int cIdx;
+    @NonNull
+    private final Fragment fragment;
     @NonNull
     private final Consumer<Integer> coverLoader;
     @NonNull
@@ -116,41 +118,31 @@ public class CoverHandler {
     @NonNull
     private final ImageViewLoader imageLoader;
     private final ExtMenuLauncher menuLauncher;
+    private final Supplier<Book> bookSupplier;
+    /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
+    @Nullable
+    private final Supplier<String> coverBrowserIsbnSupplier;
+    /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
+    @Nullable
+    private final Supplier<String> coverBrowserTitleSupplier;
+    /** Optional progress bar to display during operations. */
+    @Nullable
+    private final CircularProgressIndicator progressIndicator;
     /** The fragment root view; used for context, resources, Snackbar. */
-    private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
     private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
     private ActivityResultLauncher<CropImageContract.Input> cropPictureLauncher;
     private ActivityResultLauncher<String> getFromFileLauncher;
     private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
-    private Supplier<Book> bookSupplier;
-    /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
-    private Supplier<String> coverBrowserIsbnSupplier;
-    /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
-    private Supplier<String> coverBrowserTitleSupplier;
-    /** Optional progress bar to display during operations. */
-    @Nullable
-    private CircularProgressIndicator progressIndicator;
 
-    /**
-     * Constructor.
-     * <p>
-     * Dev. note: the width/height values come from device dp-dependent resource values.
-     * (and NOT from the style cover scaling factor)
-     *
-     * @param fragment    the hosting component
-     * @param cIdx        0..n image index
-     * @param coverLoader callback to reload the given cIdx
-     * @param maxWidth    Maximum width for a cover in pixels
-     * @param maxHeight   Maximum height for a cover in pixels
-     */
-    public CoverHandler(@NonNull final Fragment fragment,
-                        @IntRange(from = 0, to = 1) final int cIdx,
-                        @NonNull final Consumer<Integer> coverLoader,
-                        final int maxWidth,
-                        final int maxHeight) {
-        this.coverLoader = coverLoader;
-        this.cIdx = cIdx;
+    private CoverHandler(@NonNull final Builder builder) {
+        fragment = builder.fragment;
+        coverLoader = builder.coverLoader;
+        cIdx = builder.cIdx;
+        bookSupplier = Objects.requireNonNull(builder.bookSupplier);
+        coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
+        coverBrowserIsbnSupplier = builder.coverBrowserIsbnSupplier;
+        progressIndicator = builder.progressIndicator;
 
         // We could store idx in the VM, but there really is no point
         vm = new ViewModelProvider(fragment)
@@ -159,92 +151,39 @@ public class CoverHandler {
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.MaxSize.Enforce,
-                                          maxWidth, maxHeight);
-
-        final FragmentManager fm = fragment.getChildFragmentManager();
+                                          builder.maxWidth, builder.maxHeight);
 
         coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onFileSelected);
 
+        final FragmentManager fm = fragment.getChildFragmentManager();
         // concat the RK with the cIdx as we have more than CoverHandler
         menuLauncher = new ExtMenuLauncher(RK_MENU + this.cIdx, this::onMenuItemSelected);
         menuLauncher.registerForFragmentResult(fm, fragment);
     }
 
     /**
-     * Set the progress View to use.
-     *
-     * @param progressView to use
-     *
-     * @return {@code this} (for chaining)
+     * DO NOT CALL FROM CONSTRUCTOR.
      */
-    @NonNull
-    public CoverHandler setProgressView(@Nullable final CircularProgressIndicator progressView) {
-        progressIndicator = progressView;
-        return this;
-    }
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private void onFragmentViewCreated() {
 
-    /**
-     * Tell the handler where it can get the current Book from.
-     *
-     * @param supplier which can provide the current Book
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public CoverHandler setBookSupplier(@NonNull final Supplier<Book> supplier) {
-        this.bookSupplier = supplier;
-        return this;
-    }
-
-    /**
-     * Tell the handler where it can get the current ISBN from.
-     * This is normally a Supplier which reads it from a TextView on the screen.
-     *
-     * @param supplier which can provide the current ISBN
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public CoverHandler setCoverBrowserIsbnSupplier(@NonNull final Supplier<String> supplier) {
-        coverBrowserIsbnSupplier = supplier;
-        return this;
-    }
-
-    /**
-     * Tell the handler where it can get the current book-title from.
-     * This is normally a Supplier which reads it from a TextView on the screen.
-     *
-     * @param supplier which can provide the current book-title
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public CoverHandler setCoverBrowserTitleSupplier(@NonNull final Supplier<String> supplier) {
-        coverBrowserTitleSupplier = supplier;
-        return this;
-    }
-
-    @NonNull
-    public CoverHandler onFragmentViewCreated(@NonNull final Fragment fragment) {
-        fragmentView = fragment.requireView();
-
-        cameraPermissionLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
+        cameraPermissionLauncher = fragment.registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(), isGranted -> {
                     if (isGranted) {
                         takePicture(true);
                     }
                 });
 
-        takePictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
+        takePictureLauncher = fragment.registerForActivityResult(
                 new TakePictureContract(), o -> o.ifPresent(this::onTakePictureResult));
 
-        getFromFileLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
+        getFromFileLauncher = fragment.registerForActivityResult(
                 new PickVisualMediaContract(), o -> o.ifPresent(this::onPictureResult));
 
-        editPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
+        editPictureLauncher = fragment.registerForActivityResult(
                 new EditPictureContract(), o -> o.ifPresent(this::onPictureResult));
 
-        cropPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
+        cropPictureLauncher = fragment.registerForActivityResult(
                 new CropImageContract(), o -> o.ifPresent(this::onPictureResult));
 
 
@@ -262,8 +201,6 @@ public class CoverHandler {
             hideProgress();
             message.process(this::onAfterTransform);
         });
-
-        return this;
     }
 
     /**
@@ -368,7 +305,7 @@ public class CoverHandler {
                                        @IdRes final int menuItemId) {
 
         final Book book = bookSupplier.get();
-        final Context context = fragmentView.getContext();
+        final Context context = fragment.requireContext();
 
         if (menuItemId == R.id.MENU_DELETE) {
             book.removeCover(cIdx);
@@ -376,18 +313,18 @@ public class CoverHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
-            TipManager.getInstance()
-                      .display(context, Tip.CAMERA_AUTOROTATE_IMAGES, () -> startRotation(90));
+            TipManager.getInstance().display(context, Tip.CAMERA_AUTOROTATE_IMAGES,
+                                             () -> startRotation(90));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CCW) {
-            TipManager.getInstance()
-                      .display(context, Tip.CAMERA_AUTOROTATE_IMAGES, () -> startRotation(-90));
+            TipManager.getInstance().display(context, Tip.CAMERA_AUTOROTATE_IMAGES,
+                                             () -> startRotation(-90));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_180) {
-            TipManager.getInstance()
-                      .display(context, Tip.CAMERA_AUTOROTATE_IMAGES, () -> startRotation(180));
+            TipManager.getInstance().display(context, Tip.CAMERA_AUTOROTATE_IMAGES,
+                                             () -> startRotation(180));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_CROP) {
@@ -506,13 +443,16 @@ public class CoverHandler {
                 } else {
                     bookTitle = book.getTitle();
                 }
-                coverBrowserLauncher.launch(fragmentView.getContext(),
+                //noinspection DataFlowIssue
+                coverBrowserLauncher.launch(fragment.getContext(),
                                             bookTitle, isbn.asText(), cIdx);
                 return;
             }
         }
 
-        Snackbar.make(fragmentView, R.string.warning_requires_isbn, Snackbar.LENGTH_LONG).show();
+        //noinspection DataFlowIssue
+        Snackbar.make(fragment.getView(), R.string.warning_requires_isbn,
+                      Snackbar.LENGTH_LONG).show();
     }
 
     /**
@@ -550,7 +490,7 @@ public class CoverHandler {
      */
     private void editPicture(@NonNull final File srcFile)
             throws CoverStorageException {
-        final Context context = fragmentView.getContext();
+        final Context context = fragment.requireContext();
         try {
             final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
             final EditPictureContract.Input input =
@@ -560,11 +500,12 @@ public class CoverHandler {
         } catch (@NonNull final IllegalArgumentException e) {
             // This is a bug; a permission issue with the GenericFileProvider
             ErrorDialog.show(context, TAG, new CoverStorageException(
-                    "GenericFileProvider", e));
+                    ERROR_GENERIC_FILE_PROVIDER, e));
 
         } catch (@NonNull final ActivityNotFoundException e) {
-            Snackbar.make(fragmentView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG)
-                    .show();
+            //noinspection DataFlowIssue
+            Snackbar.make(fragment.getView(), R.string.error_no_image_editor,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -589,7 +530,8 @@ public class CoverHandler {
      * @param uri to load the new image from
      */
     private void onPictureResult(@NonNull final Uri uri) {
-        final Context context = fragmentView.getContext();
+        final Context context = fragment.getContext();
+        //noinspection DataFlowIssue
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             showProgress();
 
@@ -619,7 +561,7 @@ public class CoverHandler {
      *                       i.e. when called from the {@link #cameraPermissionLauncher}
      */
     private void takePicture(final boolean alreadyGranted) {
-        final Context context = fragmentView.getContext();
+        final Context context = fragment.requireContext();
         if (alreadyGranted
             || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                == PackageManager.PERMISSION_GRANTED) {
@@ -636,7 +578,7 @@ public class CoverHandler {
             } catch (@NonNull final IllegalArgumentException e) {
                 // This is a bug; a permission issue with the GenericFileProvider
                 ErrorDialog.show(context, TAG, new CoverStorageException(
-                        "GenericFileProvider", e));
+                        ERROR_GENERIC_FILE_PROVIDER, e));
 
             } catch (@NonNull final ActivityNotFoundException e) {
                 // No Camera? we should not get here as we should not have been
@@ -654,13 +596,14 @@ public class CoverHandler {
 
     private void onTakePictureResult(@NonNull final File file) {
         if (file.exists()) {
-            final Context context = fragmentView.getContext();
+            final Context context = fragment.getContext();
 
             final int surfaceRotation;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 //noinspection DataFlowIssue
                 surfaceRotation = context.getDisplay().getRotation();
             } else {
+                //noinspection DataFlowIssue
                 final WindowManager wm = (WindowManager)
                         context.getSystemService(Context.WINDOW_SERVICE);
                 surfaceRotation = wm.getDefaultDisplay().getRotation();
@@ -699,9 +642,11 @@ public class CoverHandler {
                        file);
 
         } catch (@NonNull final CoverStorageException e) {
-            ErrorDialog.show(fragmentView.getContext(), TAG, e);
+            //noinspection DataFlowIssue
+            ErrorDialog.show(fragment.getContext(), TAG, e);
         } catch (@NonNull final IOException e) {
-            ErrorDialog.show(fragmentView.getContext(), TAG, e);
+            //noinspection DataFlowIssue
+            ErrorDialog.show(fragment.getContext(), TAG, e);
         }
     }
 
@@ -727,21 +672,25 @@ public class CoverHandler {
                     case Done: {
                         bookSupplier.get().setCover(cIdx, file);
                         // must use a post to force the View to update.
-                        fragmentView.post(() -> coverLoader.accept(cIdx));
+                        //noinspection DataFlowIssue
+                        fragment.getView().post(() -> coverLoader.accept(cIdx));
                         return;
                     }
                 }
             } catch (@NonNull final StorageException e) {
-                ErrorDialog.show(fragmentView.getContext(), TAG, e);
+                //noinspection DataFlowIssue
+                ErrorDialog.show(fragment.getContext(), TAG, e);
             } catch (@NonNull final IOException e) {
-                ErrorDialog.show(fragmentView.getContext(), TAG, e);
+                //noinspection DataFlowIssue
+                ErrorDialog.show(fragment.getContext(), TAG, e);
             }
         }
 
         // transformation failed
         bookSupplier.get().removeCover(cIdx);
         // must use a post to force the View to update.
-        fragmentView.post(() -> coverLoader.accept(cIdx));
+        //noinspection DataFlowIssue
+        fragment.getView().post(() -> coverLoader.accept(cIdx));
     }
 
     private void showProgress() {
@@ -791,6 +740,116 @@ public class CoverHandler {
                 default:
                     return Done;
             }
+        }
+    }
+
+    public static class Builder {
+
+        @NonNull
+        private final Fragment fragment;
+        private final int cIdx;
+        @NonNull
+        private final Consumer<Integer> coverLoader;
+        private final int maxWidth;
+        private final int maxHeight;
+
+        private Supplier<Book> bookSupplier;
+        @Nullable
+        private CircularProgressIndicator progressIndicator;
+        @Nullable
+        private Supplier<String> coverBrowserIsbnSupplier;
+        @Nullable
+        private Supplier<String> coverBrowserTitleSupplier;
+
+        /**
+         * Constructor.
+         * <p>
+         * Dev. note: the width/height values come from device dp-dependent resource values.
+         * (and NOT from the style cover scaling factor)
+         *
+         * @param fragment    the hosting component
+         * @param cIdx        0..n image index
+         * @param coverLoader callback to reload the given cIdx
+         * @param maxWidth    Maximum width for a cover in pixels
+         * @param maxHeight   Maximum height for a cover in pixels
+         */
+        public Builder(@NonNull final Fragment fragment,
+                       @IntRange(from = 0, to = 1) final int cIdx,
+                       @NonNull final Consumer<Integer> coverLoader,
+                       final int maxWidth,
+                       final int maxHeight) {
+            this.fragment = fragment;
+            this.cIdx = cIdx;
+            this.coverLoader = coverLoader;
+            this.maxWidth = maxWidth;
+            this.maxHeight = maxHeight;
+        }
+
+        /**
+         * Tell the handler where it can get the current Book from.
+         *
+         * @param supplier which can provide the current Book
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setBookSupplier(final Supplier<Book> supplier) {
+            this.bookSupplier = supplier;
+            return this;
+        }
+
+        /**
+         * Set the progress View to use.
+         *
+         * @param view to use
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setProgressIndicator(@Nullable final CircularProgressIndicator view) {
+            this.progressIndicator = view;
+            return this;
+        }
+
+        /**
+         * Tell the handler where it can get the current ISBN from.
+         * This is normally a Supplier which reads it from a TextView on the screen.
+         *
+         * @param supplier which can provide the current ISBN
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setCoverBrowserIsbnSupplier(@Nullable final Supplier<String> supplier) {
+            this.coverBrowserIsbnSupplier = supplier;
+            return this;
+        }
+
+        /**
+         * Tell the handler where it can get the current book-title from.
+         * This is normally a Supplier which reads it from a TextView on the screen.
+         *
+         * @param supplier which can provide the current book-title
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setCoverBrowserTitleSupplier(@Nullable final Supplier<String> supplier) {
+            this.coverBrowserTitleSupplier = supplier;
+            return this;
+        }
+
+        /**
+         * Build the CoverHandler. This may only be called after the Fragment View
+         * is fully created.
+         *
+         * @return new handler
+         */
+        @NonNull
+        public CoverHandler build() {
+            final CoverHandler coverHandler = new CoverHandler(this);
+            coverHandler.onFragmentViewCreated();
+            return coverHandler;
         }
     }
 }
