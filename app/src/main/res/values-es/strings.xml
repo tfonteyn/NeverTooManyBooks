@@ -632,6 +632,8 @@
     <string name="ps_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
     <string name="info_rebuild_scheduled">Reconstrucción programada</string>
     <string name="info_select_fields_to_update">Los campos seleccionados se actualizarán con datos de internet. Los campos no marcados no se modificarán.</string>
+    <string name="lbl_citation_type">Formato de cita/compartir</string>
+    <string name="lbl_citation_type_default">Estoy leyendo…</string>
     <string name="citation_share_book_im_reading">Estoy leyendo «%1$s» %2$s por %3$s %4$s</string>
     <string name="X_info_tap_on_image_to_select">Pulse sobre la imagen ampliada para seleccionarla.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Pulse sobre una miniatura para ver una imagen más grande.</string>

@@ -636,6 +636,8 @@
     <string name="ps_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="info_rebuild_scheduled">Ricostruzione programmata</string>
     <string name="info_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
+    <string name="lbl_citation_type">Formato di citazione/condivisione</string>
+    <string name="lbl_citation_type_default">Sto leggendo…</string>
     <string name="citation_share_book_im_reading">Sto leggendo «%1$s» %2$s di %3$s %4$s</string>
     <string name="X_info_tap_on_image_to_select">Tocca l’immagine più grande per selezionarla.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Toccare una miniatura per visualizzare un’immagine più grande.</string>

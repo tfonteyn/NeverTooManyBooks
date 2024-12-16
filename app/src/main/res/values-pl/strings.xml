@@ -647,6 +647,8 @@
     <string name="ps_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="info_rebuild_scheduled">Przebudowano zaplanowano</string>
     <string name="info_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
+    <string name="lbl_citation_type">Format cytowania/udostępniania</string>
+    <string name="lbl_citation_type_default">Czytam…</string>
     <string name="citation_share_book_im_reading">Czytam „%1$s” %2$s przez %3$s %4$s</string>
     <string name="X_info_tap_on_image_to_select">Stuknij większy obraz, aby go wybrać.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Stuknij miniaturę, aby wyświetlić większy obraz.</string>
