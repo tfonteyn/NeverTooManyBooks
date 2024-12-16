@@ -492,16 +492,14 @@ public interface Style {
          *
          * @param id to lookup
          *
-         * @return type
-         *
-         * @throws IllegalArgumentException for any undefined id
+         * @return type; or {@link #List} for any invalid id.
          */
         @NonNull
         public static Layout byId(final int id) {
-            if (id == 0) {
-                return List;
+            if (id == 1) {
+                return Grid;
             }
-            return Grid;
+            return List;
         }
 
         /**
@@ -535,9 +533,7 @@ public interface Style {
          *
          * @param id to lookup
          *
-         * @return type
-         *
-         * @throws IllegalArgumentException for any undefined id
+         * @return type; or {@link #OpenBookDetails} for any invalid id.
          */
         @NonNull
         public static CoverClickAction byId(final int id) {
@@ -578,9 +574,7 @@ public interface Style {
          *
          * @param id to lookup
          *
-         * @return type
-         *
-         * @throws IllegalArgumentException for any undefined id
+         * @return type; or {@link #PopupMenu} for any invalid id.
          */
         @NonNull
         public static CoverLongClickAction byId(final int id) {

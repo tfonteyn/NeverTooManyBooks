@@ -106,16 +106,17 @@ public enum ReadStatus
      * Lookup by id.
      * <p>
      * Import/Export and database usage only.
-     * <p>
-     * Returns {@link #Unknown} for any invalid id.
      *
      * @param id to lookup
      *
-     * @return type
+     * @return type; or {@link #Unknown} for any invalid id.
      */
     @NonNull
     public static ReadStatus byId(final int id) {
-        return Arrays.stream(values()).filter(v -> v.id == id).findFirst().orElse(Unknown);
+        return Arrays.stream(values())
+                     .filter(v -> v.id == id)
+                     .findFirst()
+                     .orElse(Unknown);
     }
 
     /**

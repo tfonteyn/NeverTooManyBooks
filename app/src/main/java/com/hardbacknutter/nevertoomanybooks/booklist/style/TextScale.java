@@ -54,9 +54,7 @@ public enum TextScale {
      *
      * @param id to lookup
      *
-     * @return type
-     *
-     * @throws IllegalArgumentException for any undefined id
+     * @return type; or {@link #DEFAULT} for any invalid id.
      */
     @NonNull
     public static TextScale byId(final int id) {
@@ -65,7 +63,10 @@ public enum TextScale {
         } else if (id < VerySmall.id) {
             return VerySmall;
         } else {
-            return Arrays.stream(values()).filter(v -> v.id == id).findAny().orElse(DEFAULT);
+            return Arrays.stream(values())
+                         .filter(v -> v.id == id)
+                         .findFirst()
+                         .orElse(DEFAULT);
         }
     }
 

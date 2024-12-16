@@ -86,9 +86,7 @@ public enum CoverScale {
      *
      * @param id to lookup
      *
-     * @return type
-     *
-     * @throws IllegalArgumentException for any undefined id
+     * @return type; or {@link #DEFAULT} for any invalid id.
      */
     @NonNull
     public static CoverScale byId(final int id) {
@@ -97,7 +95,10 @@ public enum CoverScale {
         } else if (id < Hidden.id) {
             return Hidden;
         } else {
-            return Arrays.stream(values()).filter(v -> v.id == id).findAny().orElse(DEFAULT);
+            return Arrays.stream(values())
+                         .filter(v -> v.id == id)
+                         .findFirst()
+                         .orElse(DEFAULT);
         }
     }
 

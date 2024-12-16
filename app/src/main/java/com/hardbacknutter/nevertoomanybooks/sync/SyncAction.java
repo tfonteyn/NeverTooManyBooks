@@ -65,16 +65,17 @@ public enum SyncAction
      * Lookup by id.
      * <p>
      * Import/Export and database usage only.
-     * <p>
-     * Returns {@link #Skip} for any invalid id.
      *
      * @param id to lookup
      *
-     * @return type
+     * @return type; or {@link #Skip} for any invalid id.
      */
     @NonNull
     public static SyncAction byId(final int id) {
-        return Arrays.stream(values()).filter(v -> v.id == id).findFirst().orElse(Skip);
+        return Arrays.stream(values())
+                     .filter(v -> v.id == id)
+                     .findFirst()
+                     .orElse(Skip);
     }
 
     @NonNull
