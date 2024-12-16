@@ -35,6 +35,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 
 /**
  * The original/legacy twitter citation.
+ * <p>
+ * Output:
+ * <pre>
+ *      "I'm reading " + title + series + " by " + author + ratingString
+ * </pre>
  */
 class DefaultCitation
         implements Citation {

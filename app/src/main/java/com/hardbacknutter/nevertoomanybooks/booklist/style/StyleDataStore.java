@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -106,6 +107,13 @@ public class StyleDataStore
      * @see BaseStyle#setUseReadProgress(boolean)
      */
     public static final String PK_USE_READ_PROGRESS = "style.read.status.extended";
+
+    /**
+     * The format used to generate citations, i.e. as used by the "Share" option.
+     *
+     * @see BaseStyle#setCitationType(CitationType)
+     */
+    public static final String PK_CITATION_TYPE = "style.citation.type";
 
     /**
      * How to sort Author names.
@@ -411,6 +419,10 @@ public class StyleDataStore
                         Integer.parseInt(value)));
                 break;
             }
+            case PK_CITATION_TYPE: {
+                style.setCitationType(CitationType.byId(Integer.parseInt(value)));
+                break;
+            }
             default:
                 throw new IllegalArgumentException(key);
         }
@@ -439,6 +451,9 @@ public class StyleDataStore
             }
             case PK_COVER_LONG_CLICK_ACTION: {
                 return String.valueOf(style.getCoverLongClickAction().getId());
+            }
+            case PK_CITATION_TYPE: {
+                return String.valueOf(style.getCitationType().getId());
             }
             default:
                 throw new IllegalArgumentException(key);

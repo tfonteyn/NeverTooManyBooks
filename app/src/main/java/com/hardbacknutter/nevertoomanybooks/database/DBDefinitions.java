@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
@@ -455,7 +456,7 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH;
-
+    public static final Domain DOM_STYLE_CITATION_TYPE;
 
     /** {@link #TBL_BOOK_SERIES}. */
     public static final Domain DOM_BOOK_NUM_IN_SERIES;
@@ -1302,6 +1303,12 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.STYLE_COVER_SCALE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(CoverScale.DEFAULT.getId())
+                        .build();
+
+        DOM_STYLE_CITATION_TYPE =
+                new Domain.Builder(DBKey.STYLE_CITATION_TYPE, SqLiteDataType.Integer)
+                        .notNull()
+                        .withDefault(CitationType.Default.getId())
                         .build();
 
         DOM_STYLE_LIST_HEADER =

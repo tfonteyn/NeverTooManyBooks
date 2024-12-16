@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -84,6 +85,13 @@ public interface WritableStyle
      * @param scale the {@link CoverScale}.
      */
     void setCoverScale(@NonNull CoverScale scale);
+
+    /**
+     * Set the citation type.
+     *
+     * @param type the {@link CitationType}.
+     */
+    void setCitationType(@NonNull CitationType type);
 
     /**
      * Set the bitmap value with the list header fields to show.

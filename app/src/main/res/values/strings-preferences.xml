@@ -131,6 +131,15 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="lbl_style_citation_type">
+        <item>@string/lbl_citation_type_default</item>
+        <item>@string/lbl_citation_type_bibtex</item>
+    </string-array>
+    <string-array name="pv_style_citation_type">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <!-- ListPreference - fastscroller text overlay. -->
     <string-array name="pe_fastscroller_overlay">
         <item>@string/pe_fast_scroller_overlay_dynamic</item>
@@ -213,4 +222,9 @@
         <item>1</item>
         <item>4096</item>
     </string-array>
+
+    <string name="lbl_citation_type">Citation (share) type</string>
+    <string name="lbl_citation_type_default">Default</string>
+    <string name="lbl_citation_type_bibtex"
+            translatable="false">BibTex</string>
 </resources>

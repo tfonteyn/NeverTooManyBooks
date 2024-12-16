@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -162,6 +163,9 @@ public abstract class BaseStyle
 
     private boolean useReadProgress;
 
+    @NonNull
+    private CitationType citationType = CitationType.Default;
+
     /** The default number of levels to expand the list tree to. */
     private int expansionLevel = 1;
     /**
@@ -225,6 +229,7 @@ public abstract class BaseStyle
                 rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION)));
         setCoverScale(CoverScale.byId(rowData.getInt(DBKey.STYLE_COVER_SCALE)));
         setTextScale(TextScale.byId(rowData.getInt(DBKey.STYLE_TEXT_SCALE)));
+        setCitationType(CitationType.byId(rowData.getInt(DBKey.STYLE_CITATION_TYPE)));
 
         groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
 
@@ -282,6 +287,7 @@ public abstract class BaseStyle
         coverLongClickAction = from.getCoverLongClickAction();
         coverScale = from.getCoverScale();
         textScale = from.getTextScale();
+        citationType = from.getCitationType();
         groupRowUsesPreferredHeight = from.isGroupRowUsesPreferredHeight();
 
         setHeaderFieldVisibility(from.getHeaderFieldVisibilityValue());
@@ -472,6 +478,16 @@ public abstract class BaseStyle
 
     public void setCoverScale(@NonNull final CoverScale coverScale) {
         this.coverScale = coverScale;
+    }
+
+    @NonNull
+    @Override
+    public CitationType getCitationType() {
+        return citationType;
+    }
+
+    public void setCitationType(@NonNull final CitationType type) {
+        this.citationType = type;
     }
 
     @Override
@@ -667,31 +683,33 @@ public abstract class BaseStyle
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final BaseStyle style = (BaseStyle) o;
-        return id == style.id
-               && uuid.equals(style.uuid)
-               && menuPosition == style.menuPosition
-               && preferred == style.preferred
+        final BaseStyle that = (BaseStyle) o;
+        return id == that.id
+               && uuid.equals(that.uuid)
+               && menuPosition == that.menuPosition
+               && preferred == that.preferred
 
-               && LinkedMap.equals(groups, style.groups)
-               && LinkedMap.equals(bookLevelFieldsOrderBy, style.bookLevelFieldsOrderBy)
+               && LinkedMap.equals(groups, that.groups)
+               && LinkedMap.equals(bookLevelFieldsOrderBy, that.bookLevelFieldsOrderBy)
 
-               && layout == style.layout
-               && coverClickAction == style.coverClickAction
-               && coverLongClickAction == style.coverLongClickAction
-               && expansionLevel == style.expansionLevel
-               && headerFieldVisibility == style.headerFieldVisibility
-               && groupRowUsesPreferredHeight == style.groupRowUsesPreferredHeight
-               && coverScale == style.coverScale
-               && textScale == style.textScale
+               && layout == that.layout
+               && coverClickAction == that.coverClickAction
+               && coverLongClickAction == that.coverLongClickAction
+               && expansionLevel == that.expansionLevel
+               && headerFieldVisibility == that.headerFieldVisibility
+               && groupRowUsesPreferredHeight == that.groupRowUsesPreferredHeight
+               && coverScale == that.coverScale
+               && textScale == that.textScale
 
-               && showAuthorByGivenName == style.showAuthorByGivenName
-               && showReorderedTitle == style.showReorderedTitle
-               && sortAuthorByGivenName == style.sortAuthorByGivenName
+               && citationType == that.citationType
 
-               && useReadProgress == style.useReadProgress
+               && showAuthorByGivenName == that.showAuthorByGivenName
+               && showReorderedTitle == that.showReorderedTitle
+               && sortAuthorByGivenName == that.sortAuthorByGivenName
 
-               && Objects.equals(fieldVisibility, style.fieldVisibility);
+               && useReadProgress == that.useReadProgress
+
+               && Objects.equals(fieldVisibility, that.fieldVisibility);
     }
 
     @Override
@@ -708,6 +726,8 @@ public abstract class BaseStyle
                             groupRowUsesPreferredHeight,
                             coverScale,
                             textScale,
+
+                            citationType,
 
                             showAuthorByGivenName,
                             showReorderedTitle,
@@ -738,6 +758,8 @@ public abstract class BaseStyle
                + ", groupRowUsesPreferredHeight=" + groupRowUsesPreferredHeight
                + ", coverScale=" + coverScale
                + ", textScale=" + textScale
+
+               + ", citationType=" + citationType
 
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
                + ", showAuthorByGivenName=" + showAuthorByGivenName

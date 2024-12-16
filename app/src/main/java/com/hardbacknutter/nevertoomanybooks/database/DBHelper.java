@@ -109,10 +109,11 @@ public class DBHelper
      * v5.5.0: 32
      * v5.5.1: 33
      * v5.5.4: 34
+     * v6.5.0: 35
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 34;
+    public static final int DATABASE_VERSION = 35;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -830,6 +831,11 @@ public class DBHelper
             // This method must not be called while a transaction is in progress.
             db.setForeignKeyConstraintsEnabled(true);
             db.beginTransaction();
+        }
+        if (oldVersion < 35) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_STYLE_CITATION_TYPE);
         }
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM

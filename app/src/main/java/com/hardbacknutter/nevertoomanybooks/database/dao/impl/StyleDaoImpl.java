@@ -170,6 +170,7 @@ public class StyleDaoImpl
         stmt.bindBoolean(++c, style.isShowReorderedTitle());
 
         stmt.bindBoolean(++c, style.useReadProgress());
+        stmt.bindLong(++c, style.getCitationType().getId());
 
         stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
 
@@ -299,6 +300,8 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE_READ_STATUS_WITH_PROGRESS, style.useReadProgress());
 
+            cv.put(DBKey.STYLE_CITATION_TYPE, style.getCitationType().getId());
+
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
         }
@@ -420,6 +423,7 @@ public class StyleDaoImpl
                     + ',' + DBKey.STYLE_TITLE_SHOW_REORDERED
 
                     + ',' + DBKey.STYLE_READ_STATUS_WITH_PROGRESS
+                    + ',' + DBKey.STYLE_CITATION_TYPE
 
                     + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
 

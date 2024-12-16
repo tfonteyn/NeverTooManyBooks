@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -234,6 +235,14 @@ public interface Style {
      */
     @NonNull
     CoverScale getCoverScale();
+
+    /**
+     * Get the citation type.
+     *
+     * @return type
+     */
+    @NonNull
+    CitationType getCitationType();
 
     /**
      * Check if the style wants the specified header to be displayed.

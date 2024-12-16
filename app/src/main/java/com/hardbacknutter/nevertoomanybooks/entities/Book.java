@@ -1559,7 +1559,6 @@ public class Book
 
     /**
      * Creates a chooser with matched apps for sharing some text.
-     * <b>"I'm reading " + title + series + " by " + author + ratingString</b>
      *
      * @param context Current context
      * @param style   to apply
@@ -1570,7 +1569,7 @@ public class Book
     public Intent getShareIntent(@NonNull final Context context,
                                  @NonNull final Style style) {
 
-        final Citation citation = CitationFactory.create(context, style);
+        final Citation citation = CitationFactory.create(style);
         final String text = citation.cite(context, this);
 
         final Intent intent = new Intent(Intent.ACTION_SEND)

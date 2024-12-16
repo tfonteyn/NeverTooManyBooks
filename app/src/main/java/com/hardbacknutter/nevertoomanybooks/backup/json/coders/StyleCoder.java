@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
@@ -161,6 +162,9 @@ public class StyleCoder
 
         settings.put(StyleDataStore.PK_USE_READ_PROGRESS,
                      style.useReadProgress());
+
+        settings.put(StyleDataStore.PK_CITATION_TYPE,
+                     style.getCitationType().getId());
 
         settings.put(PK_DETAILS_FIELD_VISIBILITY,
                      style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
@@ -323,6 +327,10 @@ public class StyleCoder
         if (source.has(StyleDataStore.PK_USE_READ_PROGRESS)) {
             style.setUseReadProgress(
                     source.getBoolean(StyleDataStore.PK_USE_READ_PROGRESS));
+        }
+        if (source.has(StyleDataStore.PK_CITATION_TYPE)) {
+            style.setCitationType(
+                    CitationType.byId(source.getInt(StyleDataStore.PK_CITATION_TYPE)));
         }
         if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
             style.setFieldVisibility(FieldVisibility.Screen.Detail,

@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.bookdetails.share;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -31,11 +29,22 @@ public final class CitationFactory {
     private CitationFactory() {
     }
 
+    /**
+     * Create a citation formatter.
+     *
+     * @param style to use
+     *
+     * @return a new instance
+     */
     @NonNull
-    public static Citation create(@NonNull final Context context,
-                                  @NonNull final Style style) {
+    public static Citation create(@NonNull final Style style) {
 
-        //TODO: read a style setting to determine which format to use
-        return new DefaultCitation(style);
+        switch (style.getCitationType()) {
+            case BibTex:
+                return new BibTexCitation(style);
+            case Default:
+            default:
+                return new DefaultCitation(style);
+        }
     }
 }

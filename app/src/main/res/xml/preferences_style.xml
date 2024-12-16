@@ -215,6 +215,16 @@
             android:summaryOn="@string/ps_show_titles_reordered_on"
             android:title="@string/pc_formatting" />
 
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/lbl_style_citation_type"
+            android:entryValues="@array/pv_style_citation_type"
+            android:icon="@drawable/share_24px"
+            android:key="style.citation.type"
+            android:title="@string/lbl_citation_type"
+            app:useSimpleSummaryProvider="true"
+            />
+
     </PreferenceCategory>
 
     <PreferenceCategory
