@@ -186,10 +186,24 @@ public class PartialDate
      *
      * @return (partial) ISO string representation of the date.
      */
-    @SuppressLint("DefaultLocale")
     @NonNull
     public String getIsoString() {
-        final StringJoiner sj = new StringJoiner("-");
+        return getDelimString("-");
+    }
+
+    /**
+     * Using the given delimiter (instead of the iso '-' delimiter),
+     * format the date as {@code YYYY-MM-DD}, {@code YYYY-MM}, {@code YYYY} or an empty string
+     * depending on the fields set.
+     *
+     * @param delimiter to use
+     *
+     * @return (partial) string representation of the date.
+     */
+    @SuppressLint("DefaultLocale")
+    @NonNull
+    public String getDelimString(@NonNull final String delimiter) {
+        final StringJoiner sj = new StringJoiner(delimiter);
         if (yearSet) {
             sj.add(String.format("%04d", localDate.getYear()));
             if (monthSet) {
