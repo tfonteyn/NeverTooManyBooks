@@ -213,7 +213,7 @@ public final class StandardDialogs {
         // Format the list of authors nicely
         final StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
-            authors.append('<').append(context.getString(R.string.unknown_author)).append('>');
+            authors.append(context.getString(R.string.unknown_author));
 
         } else {
             // "a1, a2 and a3"
