@@ -225,7 +225,7 @@
     <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s”?</string>
     <string name="info_rebuild_scheduled">Herbouw gepland</string>
     <string name="info_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
-    <string name="lbl_citation_type">Formaat citeren/delen</string>
+    <string name="lbl_citation_type">Opmaak citatie/delen</string>
     <string name="lbl_citation_type_default">Ik lees…</string>
     <string name="citation_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
     <string name="info_story_in_multiple_books">„%1$s” is present in meerdere boeken:\n\n%2$s</string>
@@ -520,7 +520,7 @@
     <string name="pc_bob_layout">Lijstopmaak</string>
     <string name="pc_book_detail_screen">Pagina met boekdetails</string>
     <string name="pc_camera">Camera</string>
-    <string name="pc_formatting">Formatteren</string>
+    <string name="pc_formatting">Opmaak</string>
     <string name="pc_image_cache">Afbeeldingencache</string>
     <string name="pc_lists">Lijsten</string>
     <string name="pc_ui">Gebruikersinterface</string>
