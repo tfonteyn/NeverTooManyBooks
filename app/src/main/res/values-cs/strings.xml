@@ -643,7 +643,7 @@
     <string name="ps_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="info_rebuild_scheduled">Přestavba naplánována</string>
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
-    <string name="info_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
+    <string name="citation_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
     <string name="X_info_tap_on_image_to_select">Klepnutím na větší obrázek jej vyberte.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Pro zobrazení většího obrázku klikněte na náhled.</string>
     <string name="info_x_pages">%1$d stran</string>

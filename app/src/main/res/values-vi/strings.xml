@@ -250,7 +250,7 @@
     <string name="info_purge_blns_item_name">Xóa trạng thái nút cho %1$s “%2$s”?</string>
     <string name="info_rebuild_scheduled">Xây dựng lại theo lịch trình</string>
     <string name="info_select_fields_to_update">Các trường được chọn sẽ được cập nhật từ internet. Các trường không được chọn sẽ không thay đổi.</string>
-    <string name="info_share_book_im_reading">Tôi đang đọc “%1$s” %2$s của %3$s %4$s</string>
+    <string name="citation_share_book_im_reading">Tôi đang đọc “%1$s” %2$s của %3$s %4$s</string>
     <string name="info_site_list">Tìm kiếm bị giới hạn ở: %1$s</string>
     <string name="info_site_search_field_optional">Tùy chọn. Không được hỗ trợ bởi tất cả các trang web.</string>
     <string name="info_story_in_multiple_books">“%1$s” hiện diện trong nhiều sách:\n\n%2$s</string>

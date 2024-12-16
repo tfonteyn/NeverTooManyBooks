@@ -86,7 +86,7 @@ class DefaultCitation
             ratingStr = "";
         }
 
-        return context.getString(R.string.info_share_book_im_reading,
+        return context.getString(R.string.citation_share_book_im_reading,
                                  title, seriesStr, authorStr, ratingStr);
     }
 }

@@ -257,7 +257,7 @@
     <string name="info_purge_blns_item_name">要清除 %1$s “%2$s”的节点状态吗？</string>
     <string name="info_rebuild_scheduled">已计划重建</string>
     <string name="info_select_fields_to_update">将从互联网更新选中的字段。将不会更改未选中字段。</string>
-    <string name="info_share_book_im_reading">我正在阅读“%1$s” %2$s 由 %3$s %4$s</string>
+    <string name="citation_share_book_im_reading">我正在阅读“%1$s” %2$s 由 %3$s %4$s</string>
     <string name="info_site_list">搜索结果限于：%1$s</string>
     <string name="info_site_search_field_optional">可选。不是所有网站都支持。</string>
     <string name="info_story_in_multiple_books">“%1$s”存在与多本书中：\n\n%2$s</string>

@@ -251,7 +251,7 @@
 \n
 \n%2$s</string>
     <string name="info_all_books_have_covers">Todos os livros nesta prateleira têm capas</string>
-    <string name="info_share_book_im_reading">Estou a ler “%1$s” %2$s por %3$s %4$s</string>
+    <string name="citation_share_book_im_reading">Estou a ler “%1$s” %2$s por %3$s %4$s</string>
     <string name="info_tap_on_thumbnail_to_zoom">Toque em uma miniatura para exibir uma imagem maior.</string>
     <string name="info_download_successful">Transferência bem-sucedida</string>
     <string name="cd_btn_drag_handle">Arraste para reordenar esta lista</string>

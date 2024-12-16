@@ -357,13 +357,6 @@
     <string name="info_all_books_have_covers">All books on this shelf have covers</string>
     <!-- Shown in the heading of booklist. Param 1: nr of unique books; Param 2: total number (books can appear more than once) -->
     <string name="info_displaying_n_books_in_m_entries">%1$d books, in %2$d entries</string>
-    <!-- The default 'share' message.
-        Param 1: book title.
-        Param 2: series.
-        Param 3: author.
-        Param 4: rating; e.g. "4/5"
-    -->
-    <string name="info_share_book_im_reading">I’m reading “%1$s” %2$s by %3$s %4$s</string>
     <!--Shown when browsing alternative edition book covers. -->
     <string name="info_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
     <!--Label above an image. -->
@@ -1562,6 +1555,18 @@
     <!-- Option text for "pt_bob_cover_click" -->
     <string name="pe_bob_cover_click_details">Will open the book details page.</string>
 
+    <!-- ListPreference - the type of citation the "share" option will generate. -->
+    <string name="lbl_citation_type">Citation/Share format</string>
+    <!-- Option text for "lbl_citation_type" with the default/legacy twitter style text. -->
+    <string name="lbl_citation_type_default">I’m reading…</string>
+    <!-- The default 'share' message.
+         Param 1: book title.
+         Param 2: series.
+         Param 3: author.
+         Param 4: rating; e.g. "4/5"
+    -->
+    <string name="citation_share_book_im_reading">I’m reading “%1$s” %2$s by %3$s %4$s</string>
+
     <!-- ListPreference - How to open the book menu for a book in BoB grid-mode.
          Will have the option(s) listed underneath. -->
     <string name="pt_bob_cover_long_click">Open the book menu.</string>
@@ -1892,7 +1897,4 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
-
-    <string name="lbl_citation_type">Citation (share) type</string>
-    <string name="lbl_citation_type_default">Default</string>
 </resources>
