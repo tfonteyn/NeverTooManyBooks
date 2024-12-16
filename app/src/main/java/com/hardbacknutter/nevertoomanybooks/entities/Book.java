@@ -53,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.Citation;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
@@ -1567,36 +1569,9 @@ public class Book
     @NonNull
     public Intent getShareIntent(@NonNull final Context context,
                                  @NonNull final Style style) {
-        final String title = getTitle();
 
-        final Author author = getPrimaryAuthor();
-        final String authorStr = author != null
-                                 ? author.getLabel(context, Details.AutoSelect, style)
-                                 : context.getString(R.string.unknown_author);
-
-        final String seriesStr = getPrimarySeries()
-                .map(value -> context.getString(R.string.brackets,
-                                                value.getLabel(context, Details.AutoSelect, style)))
-                .orElse("");
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(LocaleListUtils.asList(context));
-
-        //remove trailing 0's
-        final float rating = getFloat(DBKey.RATING, realNumberParser);
-        String ratingStr;
-        if (rating > 0) {
-            // force rounding down and check the fraction
-            final int ratingTmp = (int) rating;
-            ratingStr = String.valueOf(rating - ratingTmp > 0 ? rating : ratingTmp);
-            ratingStr = context.getString(R.string.brackets, ratingStr + '/' + RATING_STARS);
-
-        } else {
-            ratingStr = "";
-        }
-
-        final String text = context.getString(R.string.info_share_book_im_reading,
-                                              title, seriesStr, authorStr, ratingStr);
+        final Citation citation = CitationFactory.create(context, style);
+        final String text = citation.cite(context, this);
 
         final Intent intent = new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
@@ -1604,7 +1579,7 @@ public class Book
 
         getCover(0).ifPresent(file -> {
             try {
-                final Uri uri = GenericFileProvider.createUri(context, file, title);
+                final Uri uri = GenericFileProvider.createUri(context, file, getTitle());
                 // read access to the input uri
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                       .putExtra(Intent.EXTRA_STREAM, uri);
@@ -1615,7 +1590,6 @@ public class Book
                 LoggerFactory.getLogger().e(TAG, e, file.getAbsolutePath());
             }
         });
-
 
         return Intent.createChooser(intent, context.getString(R.string.whichSendApplication));
     }
