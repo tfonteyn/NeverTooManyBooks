@@ -93,6 +93,14 @@
          "Foundation" Series, but is also present in others.
     -->
     <string name="and_others">%1$s…</string>
+    <!-- Abbreviation to indicate there are more of something.
+         This is the same as the key "and_others" -> "%1$s…" but with a textual indication
+         instead of an ellipsis character.
+         Translators: if there is no good equivalent in your language, use the same
+         string as used in "and_others"
+    -->
+    <string name="and_others_textual">%1$s et al.</string>
+
     <!-- Same as "and_others" but with the number of items added.
          HTML string, must be between a CDATA tag/brackets-->
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>

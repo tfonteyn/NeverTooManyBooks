@@ -42,6 +42,8 @@ public final class CitationFactory {
         switch (style.getCitationType()) {
             case BibTex:
                 return new BibTexCitation(style);
+            case MLA:
+                return new MLACitation();
             case Default:
             default:
                 return new DefaultCitation(style);

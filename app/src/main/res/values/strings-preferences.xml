@@ -134,10 +134,12 @@
     <string-array name="lbl_style_citation_type">
         <item>@string/lbl_citation_type_default</item>
         <item>@string/lbl_citation_type_bibtex</item>
+        <item>@string/lbl_citation_type_mla</item>
     </string-array>
     <string-array name="pv_style_citation_type">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>
 
     <!-- ListPreference - fastscroller text overlay. -->
