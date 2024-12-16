@@ -621,7 +621,7 @@
     <string name="site_description_german_catalogue">Alemán; Catálogo</string>
     <string name="info_tip_reset_done">Sugerencias reseteadas</string>
     <string name="tip_series_book_may_appear_more_than_once">Si los libros se muestran en todas las series a las que pertenece el libro, pueden aparecer varias veces en la lista. Borrar uno de esos libros tiene el efecto de eliminar todas las copias de la lista.</string>
-    <string name="tip_update_fields_from_internet">Los enlaces externos del sitio solo se procesan si se contacta realmente con el sitio. Como resultado, el menú «Ver en…» solo mostrará lo que está disponible.</string>
+    <string name="X_tip_update_fields_from_internet">Los enlaces externos del sitio solo se procesan si se contacta realmente con el sitio. Como resultado, el menú «Ver en…» solo mostrará lo que está disponible.</string>
     <string name="tip_view_only_help">Puede deslizar la pantalla a derecha o izquierda para ver otros libros.</string>
     <string name="info_cleanup_files">Los ficheros que se pueden eliminar ocupan %1$s en la tarjeta SD. Cada vez que se actualiza la versión de &APP_NAME;, al hacer una copia de seguridad o cuando falla la aplicación se crean ficheros de registro en la tarjeta SD. Pulse el botón siguiente para eliminarlos. Si ha detectado algún error, le agradeceremos que utilice primero la opción de «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d libros, en %2$d entradas</string>

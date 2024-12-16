@@ -626,7 +626,7 @@
     <string name="site_description_german_catalogue">Allemand ; Catalogue</string>
     <string name="info_tip_reset_done">Les astuces ont été réinitialisées</string>
     <string name="tip_series_book_may_appear_more_than_once">Si des livres sont affichés dans toutes les séries auxquelles ils appartiennent, ils peuvent apparaître plusieurs fois dans la liste. La suppression d’un de ces livres a pour effet de supprimer tous les exemplaires de la liste.</string>
-    <string name="tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu « Voir sur… » ne montrera également que ce qui est disponible.</string>
+    <string name="X_tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu « Voir sur… » ne montrera également que ce qui est disponible.</string>
     <string name="tip_view_only_help">Vous pouvez glisser vers la gauche ou la droite pour passer d’un livre à l’autre.</string>
     <string name="info_cleanup_files">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d’autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l’application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l’expérience de plantages ou d’autres erreurs, envisagez d’abord d’utiliser le bouton « %2$s ».</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d livres, parmi %2$d entrées</string>

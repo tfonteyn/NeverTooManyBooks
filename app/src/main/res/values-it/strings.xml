@@ -625,7 +625,7 @@
     <string name="site_description_german_catalogue">Tedesco; Catalogo</string>
     <string name="info_tip_reset_done">Suggerimenti azzerati</string>
     <string name="tip_series_book_may_appear_more_than_once">Se i libri sono mostrati in tutte le serie a cui il libro appartiene, possono comparire più volte nell’elenco. L’eliminazione di uno di questi libri ha l’effetto di rimuovere tutte le copie dall’elenco.</string>
-    <string name="tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu «Visualizza su…» mostrerà solo ciò che è disponibile.</string>
+    <string name="X_tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu «Visualizza su…» mostrerà solo ciò che è disponibile.</string>
     <string name="tip_view_only_help">Puoi scorrere verso sinistra o verso destra per visualizzare altri libri.</string>
     <string name="info_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l’applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d libri, in %2$d voci</string>

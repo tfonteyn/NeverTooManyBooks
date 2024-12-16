@@ -655,7 +655,7 @@
     <string name="site_description_german_catalogue">Duits; Catalogus</string>
     <string name="info_tip_reset_done">Aanwijzingen zijn hersteld</string>
     <string name="tip_series_book_may_appear_more_than_once">Als boeken worden getoond in alle series waartoe het boek behoort, kunnen ze meerdere keren voorkomen in de lijst. Het verwijderen van een van die boeken heeft tot gevolg dat alle exemplaren uit de lijst worden verwijderd.</string>
-    <string name="tip_update_fields_from_internet">Externe sitekoppelingen worden alleen verwerkt als er daadwerkelijk contact met de site wordt gemaakt. Als gevolg hiervan zal het menu „Bekijk op…” eveneens alleen weergeven wat beschikbaar is.</string>
+    <string name="X_tip_update_fields_from_internet">Externe sitekoppelingen worden alleen verwerkt als er daadwerkelijk contact met de site wordt gemaakt. Als gevolg hiervan zal het menu „Bekijk op…” eveneens alleen weergeven wat beschikbaar is.</string>
     <string name="tip_view_only_help">Je kan naar link en rechts vegen om naar andere boeken te gaan.</string>
     <string name="title_backup_and_export">Back-up en export</string>
     <string name="unknown">Onbekend</string>

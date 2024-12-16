@@ -747,7 +747,7 @@
     <string name="option_reset_all_tips">Đặt lại mẹo</string>
     <string name="info_tip_reset_done">Mẹo đã được đặt lại</string>
     <string name="tip_series_book_may_appear_more_than_once">Nếu sách được hiển thị trong tất cả các bộ sách có chứa cuốn sách đó thì chúng có thể xuất hiện nhiều lần trong danh sách. Xóa một trong những cuốn sách đó có tác dụng loại bỏ tất cả các bản sao khỏi danh sách.</string>
-    <string name="tip_update_fields_from_internet">Các liên kết trang bên ngoài chỉ được xử lý nếu trang đó thực sự được liên hệ. Do đó, thực đơn “Xem trên…” cũng sẽ chỉ hiển thị những gì có sẵn.</string>
+    <string name="X_tip_update_fields_from_internet">Các liên kết trang bên ngoài chỉ được xử lý nếu trang đó thực sự được liên hệ. Do đó, thực đơn “Xem trên…” cũng sẽ chỉ hiển thị những gì có sẵn.</string>
     <string name="tip_view_only_help">Bạn có thể vuốt sang trái hoặc phải để điều hướng tới các sách khác.</string>
     <string name="title_backup_and_export">Sao lưu &amp; Xuất</string>
     <string name="unknown">Không rõ</string>

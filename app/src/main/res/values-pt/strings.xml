@@ -687,7 +687,7 @@
     <string name="lbl_personal_notes">Notas pessoais</string>
     <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites atualmente selecionados suporta pesquisar por %1$s. Por favor, use o menu do site para ativar sites alternativos ou use um método de pesquisa diferente.</string>
     <string name="tip_booklist_style_groups">Utilize este ecrã para modificar a hierarquia dos grupos para um estilo específico. Utilize a caixa de verificação para selecionar os grupos que serão mostrados na lista e reordene a hierarquia arrastando o ícone no final de cada linha para cima ou para baixo.</string>
-    <string name="tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
+    <string name="X_tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
     <string name="confirm_scope_for_change">Mudou:
 \n“%1$s”
 \npara

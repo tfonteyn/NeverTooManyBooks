@@ -636,7 +636,7 @@
     <string name="site_description_german_catalogue">Niemiecki; Katalog</string>
     <string name="info_tip_reset_done">Wskazówki zostały zresetowane</string>
     <string name="tip_series_book_may_appear_more_than_once">Jeśli książki są pokazywane we wszystkich seriach, do których należy dana książka, mogą pojawić się na liście wielokrotnie. Usunięcie jednej z tych książek ma skutek usunięcia wszystkich egzemplarzy z listy.</string>
-    <string name="tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Widok na……” pokaże tylko to, co jest dostępne.</string>
+    <string name="X_tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Widok na……” pokaże tylko to, co jest dostępne.</string>
     <string name="tip_view_only_help">Możesz przesuwać palcem w lewo lub w prawo, aby przejść do innych książek.</string>
     <string name="info_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d książek, w %2$d wpisów</string>

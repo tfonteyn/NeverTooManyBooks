@@ -751,7 +751,7 @@
     <string name="option_reset_all_tips">重置提示</string>
     <string name="info_tip_reset_done">提示已重置</string>
     <string name="tip_series_book_may_appear_more_than_once">如果图书在其所属的所有系列中显示，则它们可能在列表中出现多次。删除其中一本书的效果是将所有副本从列表中删除。</string>
-    <string name="tip_update_fields_from_internet">外部站点链接只有在实际联系该站点时才会被处理。菜单“在…中查看”将同样只显示可用的内容。</string>
+    <string name="X_tip_update_fields_from_internet">外部站点链接只有在实际联系该站点时才会被处理。菜单“在…中查看”将同样只显示可用的内容。</string>
     <string name="tip_view_only_help">你可以向左或向右滑动来浏览其他图书。</string>
     <string name="title_backup_and_export">备份 &amp; 导出</string>
     <string name="unknown">未知</string>
