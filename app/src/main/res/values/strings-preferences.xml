@@ -222,9 +222,4 @@
         <item>1</item>
         <item>4096</item>
     </string-array>
-
-    <string name="lbl_citation_type">Citation (share) type</string>
-    <string name="lbl_citation_type_default">Default</string>
-    <string name="lbl_citation_type_bibtex"
-            translatable="false">BibTex</string>
 </resources>

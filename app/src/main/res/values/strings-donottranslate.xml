@@ -113,6 +113,10 @@
     <string name="site_calibre"
             translatable="false">Calibre</string>
 
+    <!-- Citation format. -->
+    <string name="lbl_citation_type_bibtex"
+            translatable="false">BibTex</string>
+
     <!-- The project which inspired us. -->
     <string name="lbl_book_catalogue"
             translatable="false">Book Catalogue</string>

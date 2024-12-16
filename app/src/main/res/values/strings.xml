@@ -1893,4 +1893,6 @@
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
+    <string name="lbl_citation_type">Citation (share) type</string>
+    <string name="lbl_citation_type_default">Default</string>
 </resources>
