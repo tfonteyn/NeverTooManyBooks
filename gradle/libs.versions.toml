@@ -12,7 +12,7 @@ mannodermaus = '1.6.0'
 androidxActivity = '1.9.3'
 androidxAnnotation = '1.9.1'
 androidxAppcompat = '1.7.0'
-androidxCamerax = '1.4.0'
+androidxCamerax = "1.4.1"
 androidxCardview = "1.0.0"
 androidxCollection = '1.4.5'
 androidxConstraintlayoutCore = '1.1.0'
@@ -54,7 +54,7 @@ acra = '5.12.0'
 mockito = '5.14.2'
 
 # https://junit.org/junit5/docs/current/user-guide/#overview
-jupiter = '5.11.3'
+jupiter = "5.11.4"
 
 # https://developer.android.com/jetpack/androidx/releases/test
 androidxTestCore = '1.6.1'
