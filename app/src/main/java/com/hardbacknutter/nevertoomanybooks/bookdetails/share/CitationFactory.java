@@ -44,6 +44,8 @@ public final class CitationFactory {
                 return new BibTexCitation(style);
             case MLA:
                 return new MLACitation();
+            case RIS:
+                return new RISCitation();
             case Default:
             default:
                 return new DefaultCitation(style);

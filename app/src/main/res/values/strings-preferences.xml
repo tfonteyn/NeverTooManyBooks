@@ -135,11 +135,13 @@
         <item>@string/lbl_citation_type_default</item>
         <item>@string/lbl_citation_type_bibtex</item>
         <item>@string/lbl_citation_type_mla</item>
+        <item>@string/lbl_citation_type_ris</item>
     </string-array>
     <string-array name="pv_style_citation_type">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
     <!-- ListPreference - fastscroller text overlay. -->

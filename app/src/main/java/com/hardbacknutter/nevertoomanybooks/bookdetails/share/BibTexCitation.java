@@ -58,19 +58,22 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * }
  * </pre>
  *
- * @see <a href="https://en.wikipedia.org/wiki/BibTeX#Field_types">Field_types</a>
+ * @see <a href="https://en.wikipedia.org/wiki/BibTeX#Database_files">Database files</a>
  */
 class BibTexCitation
         implements Citation {
 
-    private static final String YEAR = "year      = {";
     private static final String AUTHOR = "author    = {";
-    private static final String TITLE = "title     = {";
+    private static final String ISBN = "isbn      = {";
+    private static final String NUMBER = "number    = {";
     private static final String PUBLISHER = "publisher = {";
     private static final String SERIES = "series    = {";
-    private static final String NUMBER = "number    = {";
+    private static final String TITLE = "title     = {";
+    private static final String YEAR = "year      = {";
 
+    /** concat 2 authors. */
     private static final String AND = " and ";
+
     @NonNull
     private final Style style;
 
@@ -87,8 +90,13 @@ class BibTexCitation
         final StringJoiner sj = new StringJoiner(",\n");
         sj.add("@book{" + appName);
 
-        sj.add(AUTHOR + formatAuthors(book.getAuthors()) + '}');
         sj.add(TITLE + escape(book.getTitle()) + '}');
+        sj.add(AUTHOR + formatAuthors(book.getAuthors()) + '}');
+
+        final String isbn = book.getString(DBKey.BOOK_ISBN);
+        if (!isbn.isEmpty()) {
+            sj.add(ISBN + isbn + '}');
+        }
 
         final List<Publisher> publishers = book.getPublishers();
         if (publishers.isEmpty()) {
@@ -159,7 +167,6 @@ class BibTexCitation
 
     @NonNull
     private String formatPublishers(@NonNull final List<Publisher> publishers) {
-        // raw name as per BibTex specs
         return publishers.stream()
                          .map(Publisher::getName)
                          .map(this::escape)

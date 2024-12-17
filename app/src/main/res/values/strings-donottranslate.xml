@@ -118,6 +118,8 @@
             translatable="false">BibTex</string>
     <string name="lbl_citation_type_mla"
             translatable="false">MLA</string>
+    <string name="lbl_citation_type_ris"
+            translatable="false">RIS</string>
 
     <!-- The project which inspired us. -->
     <string name="lbl_book_catalogue"

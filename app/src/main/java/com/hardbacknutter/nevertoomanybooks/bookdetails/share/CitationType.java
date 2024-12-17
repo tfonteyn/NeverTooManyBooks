@@ -31,7 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public enum CitationType {
     Default(0),
     BibTex(1),
-    MLA(2);
+    MLA(2),
+    RIS(3);
 
     private final int id;
 
