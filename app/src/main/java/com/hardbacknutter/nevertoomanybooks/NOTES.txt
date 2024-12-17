@@ -18,9 +18,11 @@ https://apilevels.com/
 ====================================================================================================
 Draft notes for next version:
 
-### 6.4.1
+### 6.5.0
 
 NEW:
+- "Share" has been extended to provide several "Citation" formats.
+   Configurable on a style: original (I read...) / BibTex / MLA / RIS
 
 FIXES:
 
