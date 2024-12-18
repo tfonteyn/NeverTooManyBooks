@@ -87,8 +87,11 @@ public class Series
             Pattern.compile("([^(]+.*)\\s*\\((.*)\\)\\s*(.*)\\s*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    private static final String NUMBER_REGEXP =
-            // The possible prefixes to a number as seen in the wild.
+    /**
+     * The possible prefixes to a number as seen in the wild.
+     * These are stripped out.
+     */
+    private static final String NUMBER_PREFIX_TO_STRIP =
             "(?:"
             + ",|"
             + "#|"
@@ -99,34 +102,47 @@ public class Series
             + "tome|"
             + "part|pt.|"
             + "deel|dl.|"
-            // or no prefix
+            // or none
             + ")"
-            // whitespace between prefix and actual number
-            + "\\s*"
+            // followed by (optional) whitespace
+            + "\\s*";
+
+    /**
+     * A hierarchically formed number.
+     * It optionally starts with a '-', followed by at least 1 digit,
+     * followed by digits mixed with .-_ characters.
+     */
+    private static final String HIERARCHICAL_NUMBER =
+            "-??\\d[\\d.\\-_]*?";
+
+    /**
+     * A roman number 1..1000+.
+     */
+    private static final String ROMAN_NUMBER =
+            "(?=.)M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})";
+
+    private static final String NUMBER_REGEXP =
+            NUMBER_PREFIX_TO_STRIP
             // Capture the number group
             + "("
-
-            // numeric numerals allowing for .-_ but must start with a digit.
-            + /* */ "\\d[\\d.\\-_]*"
-            // no alphanumeric suffix
+            // 1st possibility:
+            + HIERARCHICAL_NUMBER
 
             + "|"
 
-            // numeric numerals allowing for .-_ but must start with a digit.
-            + /* */ "\\d[\\d.\\-_]*"
-            // optional alphanumeric suffix if separated by a '|'
-            + /* */ "\\|\\S*?"
+            // 2nd possibility:
+            + HIERARCHICAL_NUMBER
+            // with an optional alphanumeric suffix if separated by a '|'
+            + "\\|\\S*?"
 
             + "|"
 
-            // roman numerals prefixed by either '(' or whitespace
-            + /* */ "\\s[(]?"
-            // roman numerals
-            + "(?=.)M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})"
-            //     + /* */ "[ivxlcm.]+"
-            // must be suffixed by either ')' or EOL
-            // no alphanumeric suffix
-            + /* */ "[)]?$"
+            // 3rd possibility:
+            // prefix: a mandatory single whitespace and an optional '('
+            + "\\s[(]?"
+            + ROMAN_NUMBER
+            // suffix: an optional ')' until EOL
+            + "[)]?$"
 
             + ")";
 
@@ -143,25 +159,29 @@ public class Series
             "^\\s*"
             // Capture the title group(1)
             + "(.*?)"
-            // delimiter ',' and/or whitespace
+            // (optional) whitespace followed by (optional) delimiter ',' and (optional) whitespace
             + "\\s*,*\\s*"
             // Capture the number group(2)
-            + /* */ NUMBER_REGEXP
+            + NUMBER_REGEXP
             // whitespace to the end
             + "\\s*$",
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Remove extraneous text from Series number. Used by {@link #from}.
+     * Parse a string into a number. Used by {@link #from(String, String)}.
+     * Formats supported: see unit test for this class.
      */
-    private static final Pattern NUMBER_CLEANUP_PATTERN =
-            Pattern.compile("^\\s*" + NUMBER_REGEXP + "\\s*$",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final Pattern NUMBER_PATTERN = Pattern.compile(
+            "^\\s*" + NUMBER_REGEXP + "\\s*$",
+            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /** Remove any leading zeros from Series number. */
+    /**
+     * Checks if a number consists of digits only; i.e. it's an positive integer.
+     */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^\\d+$");
 
-    private static final Map<String, String> ROMAN_NUMERALS = Map.of(
+    /** Simple lookup for roman numerals 1..5 to arabic. */
+    private static final Map<String, String> ROMAN_TO_ARABIC = Map.of(
             "I", "1.", "II", "2.", "III", "3", "IV", "4.", "V", "5."
     );
 
@@ -243,9 +263,9 @@ public class Series
         // This makes the pattern easier to maintain.
         Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(text);
         if (matcher.find()) {
-            final String g1 = matcher.group(1);
-            if (g1 != null) {
-                return from(g1, matcher.group(2));
+            final String uTitle = matcher.group(1);
+            if (uTitle != null) {
+                return from(uTitle, matcher.group(2));
             }
         }
 
@@ -254,24 +274,20 @@ public class Series
             return new Series(text);
         }
 
-        // We now know that brackets do NOT separate the number part
+        // We know that brackets do NOT separate the number part
         matcher = TITLE_NUMBER_PATTERN.matcher(text);
         if (matcher.find()) {
 
             final String uTitle = StringCoder.unEscape(matcher.group(1));
-            String uNumber = StringCoder.unEscape(matcher.group(2));
+            final String uNumber = StringCoder.unEscape(matcher.group(2));
 
             final Series newSeries = new Series(uTitle);
-            // If it's purely numeric, remove any leading zeros.
-            if (PURE_NUMERICAL_PATTERN.matcher(uNumber).find()) {
-                uNumber = String.valueOf(Long.parseLong(uNumber));
-            }
-            newSeries.setNumber(uNumber);
+            newSeries.setNumber(normalizeNumber(uNumber));
             return newSeries;
 
         } else {
             // no number part found
-            final String uTitle = StringCoder.unEscape(text.trim());
+            final String uTitle = StringCoder.unEscape(text);
             return new Series(uTitle);
         }
     }
@@ -309,7 +325,8 @@ public class Series
 
                     // Cover a special case were the middle group is potentially
                     // a roman numeral which should be prefixed to the number.
-                    final String roman = ROMAN_NUMERALS.get(middle);
+                    // We explicitly only check for 1..5
+                    final String roman = ROMAN_TO_ARABIC.get(middle);
                     if (roman != null) {
                         series.setNumber(roman + series.getNumber());
                     } else {
@@ -345,29 +362,46 @@ public class Series
         final String uNumber = StringCoder.unEscape(number);
 
         final Series newSeries = new Series(uTitle);
+
         if (!uNumber.isEmpty()) {
-            final Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(uNumber);
+            final Matcher matcher = NUMBER_PATTERN.matcher(uNumber);
             if (matcher.find()) {
-                String cleanNumber = matcher.group(1);
-                if (cleanNumber != null && !cleanNumber.isEmpty()) {
-                    // If it's purely numeric, remove any leading zeros.
-                    if (PURE_NUMERICAL_PATTERN.matcher(cleanNumber).find()) {
-                        try {
-                            cleanNumber = String.valueOf(Long.parseLong(cleanNumber));
-                        } catch (@NonNull final NumberFormatException ignore) {
-                            // ignore
-                        }
-                    }
-                    newSeries.setNumber(cleanNumber);
-                } else {
-                    newSeries.setNumber(uNumber);
-                }
-            } else {
-                newSeries.setNumber(uNumber);
+                newSeries.setNumber(normalizeNumber(matcher.group(1)));
+                return newSeries;
             }
         }
-
+        newSeries.setNumber(uNumber);
         return newSeries;
+    }
+
+    /**
+     * Should be called after all regex parsing is done.
+     * This does any final normalization as needed.
+     *
+     * @param source to clean
+     *
+     * @return final resulting number string
+     */
+    @NonNull
+    private static String normalizeNumber(@Nullable final String source) {
+        if (source == null) {
+            return "";
+        }
+        String number = source.strip();
+        if (number.isEmpty()) {
+            return "";
+        }
+
+        // We have a number of some sorts.
+        // If it's purely numeric, remove any leading zeros.
+        if (PURE_NUMERICAL_PATTERN.matcher(number).find()) {
+            try {
+                number = String.valueOf(Long.parseLong(number));
+            } catch (@NonNull final NumberFormatException ignore) {
+                // we should never get here... flw
+            }
+        }
+        return number;
     }
 
     /**
