@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,16 +43,69 @@ class SeriesTest {
     static Stream<Arguments> read1Args() {
         return Stream.of(
                 Arguments.of("This is the series title", "This is the series title", ""),
+                Arguments.of("Series Title", "Series Title", ""),
+
+                // roman numeral embedded: "i", "l"
+                Arguments.of("bill", "bill", ""),
+                Arguments.of("bill the illegal", "bill the illegal", ""),
+                Arguments.of("illegal", "illegal", ""),
+                Arguments.of("illegal 5", "illegal", "5"),
+
+                Arguments.of("This is the series title #34", "This is the series title", "34"),
+
+                Arguments.of("This is the series title, subtitle # 34",
+                             "This is the series title, subtitle", "34"),
+                Arguments.of("This is the series title, subtitle #34  ",
+                             "This is the series title, subtitle", "34"),
+
+                Arguments.of("This is the series title, #34  ", "This is the series title", "34"),
+                Arguments.of("This is the series title,#34  ", "This is the series title", "34"),
+                Arguments.of("This is the series title#34  ", "This is the series title", "34"),
+                Arguments.of("This is the series 34  ", "This is the series", "34"),
+
+                Arguments.of("This is the series, 34", "This is the series", "34"),
+                Arguments.of("This is the series, subtitle part 34",
+                             "This is the series, subtitle", "34"),
+                Arguments.of("This is the series, subtitle, part 34",
+                             "This is the series, subtitle", "34"),
+
+                Arguments.of("The adventures of the 3L", "The adventures of the 3L", ""),
+                Arguments.of("Stephen Baxter: Non-Fiction", "Stephen Baxter: Non-Fiction", ""),
+
+                Arguments.of("Euro-5", "Euro-5", ""),
+                Arguments.of("Euro-5 6", "Euro-5", "6"),
+                Arguments.of("Euro-5-7 6", "Euro-5-7", "6"),
+                Arguments.of("Euro-5-7-test 6", "Euro-5-7-test", "6"),
+
+                Arguments.of("Blake's 7 13", "Blake's 7", "13"),
+
+                // Use a roman numeral 'C' as the start of the last part.
+                Arguments.of("Jerry Cornelius", "Jerry Cornelius", ""),
+
+                Arguments.of("Jerry Cornelius 2", "Jerry Cornelius", "2"),
+                Arguments.of("Jerry Cornelius xii", "Jerry Cornelius", "xii"),
+
+                Arguments.of("Jerry Cornelius MCVIII", "Jerry Cornelius", "MCVIII"),
+
+                Arguments.of("Series-Title", "Series-Title", ""),
+                Arguments.of("Series-Title 777", "Series-Title", "777"),
+
+                Arguments.of("Donjon morning -100", "Donjon morning", "-100")
+                , Arguments.of("Donjon evening +100", "Donjon evening", "+100")
+        );
+    }
+
+    /**
+     * The input is one string: "title (nr)".
+     */
+    @NonNull
+    static Stream<Arguments> read1ArgsWithBrackets() {
+        return Stream.of(
+
                 Arguments.of("This is the series title(34)", "This is the series title", "34"),
                 Arguments.of("This is the series title (34)", "This is the series title", "34"),
                 Arguments.of("This is the series title ( 34)", "This is the series title", "34"),
-                Arguments.of("Series Title", "Series Title", ""),
 
-                // single word with a roman numeral embedded: "i"
-                Arguments.of("bill", "bill", ""),
-                // single word starting with a roman numeral: "i"
-                Arguments.of("illegal", "illegal", ""),
-                Arguments.of("illegal 5", "illegal", "5"),
                 Arguments.of("This is the series title(iv)", "This is the series title", "iv"),
                 Arguments.of("This is the series title (iv)", "This is the series title", "iv"),
                 Arguments.of("This is the series title ( iv)", "This is the series title", "iv"),
@@ -71,6 +124,7 @@ class SeriesTest {
                 Arguments.of("This is the series title, subtitle ( vii)",
                              "This is the series title, subtitle", "vii"),
 
+                // with prefixes to-be-stripped
                 Arguments.of("This is the series title, subtitle(part 1)",
                              "This is the series title, subtitle", "1"),
                 Arguments.of("This is the series title, subtitle (deel 2)",
@@ -100,37 +154,6 @@ class SeriesTest {
                              "This is the series title, subtitle", "iii|omnibus"),
                 Arguments.of("This is the series title, subtitle ( iii|omnibus)",
                              "This is the series title, subtitle", "iii|omnibus"),
-
-                Arguments.of("This is the series title #34", "This is the series title", "34"),
-
-                Arguments.of("This is the series title, subtitle # 34",
-                             "This is the series title, subtitle", "34"),
-                Arguments.of("This is the series title, subtitle #34  ",
-                             "This is the series title, subtitle", "34"),
-
-                Arguments.of("This is the series title, #34  ", "This is the series title", "34"),
-                Arguments.of("This is the series title,#34  ", "This is the series title", "34"),
-                Arguments.of("This is the series title#34  ", "This is the series title", "34"),
-                Arguments.of("This is the series 34  ", "This is the series", "34"),
-
-                Arguments.of("This is the series, 34", "This is the series", "34"),
-                Arguments.of("This is the series, subtitle part 34",
-                             "This is the series, subtitle", "34"),
-                Arguments.of("This is the series, subtitle, part 34",
-                             "This is the series, subtitle", "34"),
-
-                Arguments.of("De avonturen van de 3L", "De avonturen van de 3L", ""),
-                Arguments.of("Stephen Baxter: Non-Fiction", "Stephen Baxter: Non-Fiction", ""),
-
-                // See {@link Series#from(String)} where we have a horrible hack in place to
-                // make this series name work.
-                Arguments.of("Blake's 7", "Blake's 7", ""),
-
-                // Use a roman numeral 'C' as the start of the last part.
-                Arguments.of("Jerry Cornelius", "Jerry Cornelius", ""),
-
-                Arguments.of("Jerry Cornelius 2", "Jerry Cornelius", "2"),
-                Arguments.of("Jerry Cornelius xii", "Jerry Cornelius", "xii"),
 
                 Arguments.of("Cornelius Chronicles, The (8|8 as includes The Alchemist's Question)",
                              "Cornelius Chronicles, The",
@@ -208,6 +231,17 @@ class SeriesTest {
     }
 
     @ParameterizedTest
+    @MethodSource("read1ArgsWithBrackets")
+    void from1StringWithBrackets(@NonNull final String input,
+                                 @NonNull final String title,
+                                 @NonNull final String nr) {
+        final Series series = Series.from(input);
+        assertNotNull(series);
+        assertEquals(title, series.getTitle());
+        assertEquals(nr, series.getNumber());
+    }
+
+    @ParameterizedTest
     @MethodSource("read2Args")
     void from2Strings(@NonNull final String input,
                       @NonNull final String inputNr,
@@ -231,7 +265,7 @@ class SeriesTest {
     }
 
     /**
-     * Some day we're going to make these titles work...
+     * FIXME: Some day we're going to make these titles work...
      */
     @Test
     void expectedToFail() {
@@ -240,5 +274,18 @@ class SeriesTest {
         assertNotNull(series);
         assertEquals("Jerry Cornelius", series.getTitle());
         assertEquals("xii|bla", series.getNumber());
+    }
+
+    /**
+     * FIXME: Some day we're going to make these titles work without the hack
+     * See {@link Series#from(String)} where we have a horrible hack in place to
+     * make this series name work.
+     */
+    @Test
+    void horribleHack() {
+        final Series series = Series.from("Blake's 7");
+        assertNotNull(series);
+        assertEquals("Blake's 7", series.getTitle());
+        assertEquals("", series.getNumber());
     }
 }
