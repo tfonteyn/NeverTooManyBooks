@@ -35,6 +35,24 @@
         tools:text="@sample/data.json/styles/name"
         />
 
+    <ImageView
+        android:id="@+id/icon_search_criteria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/search_24px"
+        app:layout_constraintEnd_toStartOf="@id/icon_filters"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/icon_filters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/filter_list_24px"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
     <TextView
         android:id="@+id/book_count"
         style="@style/BoB.Header.Small"
@@ -57,10 +75,11 @@
         android:id="@+id/filter_text"
         style="@style/BoB.Header.Small"
         android:layout_marginStart="20dp"
+        android:drawableStart="@drawable/filter_list_24px"
         app:layout_constraintBottom_toBottomOf="@id/style_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
-        tools:ignore="SelectableText"
+        tools:ignore="SelectableText,UseCompatTextViewDrawableXml"
         tools:text="the optional filter text"
         />
 
@@ -68,10 +87,11 @@
         android:id="@+id/search_text"
         style="@style/BoB.Header.Small"
         android:layout_marginStart="20dp"
+        android:drawableStart="@drawable/search_24px"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/filter_text"
-        tools:ignore="SelectableText"
+        tools:ignore="SelectableText,UseCompatTextViewDrawableXml"
         tools:text="the optional search text"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

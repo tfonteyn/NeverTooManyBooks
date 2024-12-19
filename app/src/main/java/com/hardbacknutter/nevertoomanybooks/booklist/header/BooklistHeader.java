@@ -65,6 +65,9 @@ public class BooklistHeader {
     @Nullable
     private String searchText;
 
+    private final boolean hasFilters;
+    private boolean hasSearchCriteria;
+
     public BooklistHeader(@NonNull final Context context,
                           @NonNull final Style style,
                           final int totalBooks,
@@ -88,26 +91,23 @@ public class BooklistHeader {
             }
         }
 
-        if (style.isShowHeaderField(SHOW_SEARCH_CRITERIA)) {
-            if (searchCriteria != null) {
-                final List<String> list = searchCriteria.getDisplayText();
-                if (!list.isEmpty()) {
-                    searchText = String.join(", ", list);
-                }
+        if (searchCriteria != null) {
+            final List<String> list = searchCriteria.getDisplayText();
+            hasSearchCriteria = !list.isEmpty();
+            if (hasSearchCriteria && style.isShowHeaderField(SHOW_SEARCH_CRITERIA)) {
+                searchText = String.join(", ", list);
             }
         }
 
-        if (style.isShowHeaderField(SHOW_FILTERS)) {
-            final String text = filters
-                    .stream()
-                    .filter(f -> f.isActive(context))
-                    .map(filter -> filter.getValueText(context))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.joining(", "));
-
-            if (!text.isEmpty()) {
-                filterText = context.getString(R.string.lbl_search_filtered_by_x, text);
-            }
+        final String tmpFilterText = filters
+                .stream()
+                .filter(f -> f.isActive(context))
+                .map(filter -> filter.getValueText(context))
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(", "));
+        hasFilters = !tmpFilterText.isEmpty();
+        if (hasFilters && style.isShowHeaderField(SHOW_FILTERS)) {
+            filterText = tmpFilterText;
         }
     }
 
@@ -119,6 +119,14 @@ public class BooklistHeader {
     @Nullable
     String getBookCount() {
         return bookCount;
+    }
+
+    public boolean hasFilters() {
+        return hasFilters;
+    }
+
+    public boolean hasSearchCriteria() {
+        return hasSearchCriteria;
     }
 
     @Nullable

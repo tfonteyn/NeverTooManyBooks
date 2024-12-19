@@ -100,10 +100,14 @@ public class HeaderAdapter
             header = headerContent.getFilterText();
             vb.filterText.setText(header);
             vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            vb.iconFilters.setVisibility(header == null && headerContent.hasFilters()
+                                         ? View.VISIBLE : View.GONE);
 
             header = headerContent.getSearchText();
             vb.searchText.setText(header);
             vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            vb.iconSearchCriteria.setVisibility(header == null && headerContent.hasSearchCriteria()
+                                                ? View.VISIBLE : View.GONE);
 
             header = headerContent.getBookCount();
             vb.bookCount.setText(header);
