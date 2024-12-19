@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -98,13 +98,17 @@ public final class StringCoder {
      * Decode a string by removing any escapes.
      * <strong>Does NOT recurse.</strong>
      *
-     * @param source String to decode
+     * @param text String to decode
      *
-     * @return decoded string
+     * @return decoded string; stripped from leading/trailing whitespace
      */
     @NonNull
-    public static String unEscape(@Nullable final String source) {
-        if (source == null || source.isEmpty()) {
+    public static String unEscape(@Nullable final String text) {
+        if (text == null) {
+            return "";
+        }
+        final String source = text.strip();
+        if (source.isEmpty()) {
             return "";
         }
 
@@ -144,6 +148,6 @@ public final class StringCoder {
                 }
             }
         }
-        return sb.toString().trim();
+        return sb.toString().strip();
     }
 }
