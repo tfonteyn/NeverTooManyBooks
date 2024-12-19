@@ -98,12 +98,12 @@ public class ShowBookDetailsViewModel
         if (book == null) {
             embedded = args.getBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, false);
 
-            book = Book.from(args.getLong(DBKey.FK_BOOK, 0));
-
             menuHandlers = MenuHandlerFactory.create(context);
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }
+
+        book = Book.from(args.getLong(DBKey.FK_BOOK, 0));
 
         updateUI();
     }
