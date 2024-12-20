@@ -1,3 +1,18 @@
+Draft notes for next version:
+
+### 6.5.0
+
+NEW:
+- "Share" has been extended to provide several "Citation" formats.
+   Configurable on a style: original (I read...) / BibTex / MLA / RIS
+- List header now shows filter/search indicators even when the text is hidden
+- enhances in series title/number parsing to better detect titles with embedded digits
+
+FIXES:
+
+REMOVED:
+
+====================================================================================================
 Supported Android versions:
 
 * v2.1.0 requires Android 8.0 (API 26)
@@ -15,21 +30,6 @@ https://apilevels.com/
 9.0      91.69
 8.1      92.94
 8.0      95.60
-====================================================================================================
-Draft notes for next version:
-
-### 6.5.0
-
-NEW:
-- "Share" has been extended to provide several "Citation" formats.
-   Configurable on a style: original (I read...) / BibTex / MLA / RIS
-- List header now shows filter/search indicators even when the text is hidden
-- enhances in series title/number parsing to better detect titles with embedded digits
-
-FIXES:
-
-REMOVED:
-
 ====================================================================================================
 Android 15 insets / EdgeToEdge
 
