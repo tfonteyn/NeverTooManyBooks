@@ -24,6 +24,7 @@ NEW:
 - "Share" has been extended to provide several "Citation" formats.
    Configurable on a style: original (I read...) / BibTex / MLA / RIS
 - List header now shows filter/search indicators even when the text is hidden
+- enhances in series title/number parsing to better detect titles with embedded digits
 
 FIXES:
 
