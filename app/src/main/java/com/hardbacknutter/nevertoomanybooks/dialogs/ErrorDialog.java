@@ -188,7 +188,12 @@ public final class ErrorDialog {
 
             // the exception MAY be absent
             if (e != null) {
-                final String eMessage = e.getLocalizedMessage();
+                // Try to map the exception to a localized/simple message.
+                final Optional<String> mappedMsg = ExMsg.map(context, e);
+                // If we have no mapped message, do NOT freak out (see second section below),
+                // but show the raw exception msg as a last resort.
+                final String eMessage = mappedMsg.orElseGet(e::getLocalizedMessage);
+
                 // Don't show the "more" button if the current message and the exception message
                 // are the same.
                 if (!message.equals(eMessage)) {
