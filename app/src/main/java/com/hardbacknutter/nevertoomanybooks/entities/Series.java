@@ -75,8 +75,9 @@ public class Series
 
     /**
      * Parse "some text (some more text)" into "some text" and "some more text".
+     * Look for "some text" that does not START with a bracket!
      * <p>
-     * We want a "some text" that does not START with a bracket!
+     * The result is parsed a second time as "title" and "number" strings.
      */
     private static final Pattern TEXT1_BR_TEXT2_BR_PATTERN =
             Pattern.compile("([^(]+.*)\\s*\\((.*)\\).*",
@@ -86,6 +87,24 @@ public class Series
     private static final Pattern TEXT1_BR_TEXT2_BR_TEXT3_PATTERN =
             Pattern.compile("([^(]+.*)\\s*\\((.*)\\)\\s*(.*)\\s*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /**
+     * Look for titles with embedded digits AS PART OF the title,
+     * while there is NO series number.
+     * The basic assumptions is that an embedded digit will
+     * be formed by a 'letter', followed by the '-' sign, and one or more consecutive
+     * digits and does NOT have any additional whitespace followed by a digit.
+     */
+    private static final Pattern TITLE_WITH_EMBEDDED_DIGITS =
+            Pattern.compile(
+                    // whitespace at the start
+                    "^\\s*"
+                    // Capture the title group(1)
+                    + "(.*?\\p{L}-\\d+\\s*\\D*)"
+                    // whitespace to the end
+                    + "\\s*$",
+                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
 
     /**
      * The possible prefixes to a number as seen in the wild.
@@ -109,11 +128,11 @@ public class Series
 
     /**
      * A hierarchically formed number.
-     * It optionally starts with a '-', followed by at least 1 digit,
-     * followed by digits mixed with .-_ characters.
+     * It optionally starts with a '-' or '+', followed by at least 1 digit,
+     * followed by digits mixed with .-+_ characters.
      */
     private static final String HIERARCHICAL_NUMBER =
-            "-??\\d[\\d.\\-_]*?";
+            "[-+]??\\d[\\d.\\-+_]*?";
 
     /**
      * A roman number 1..1000+.
@@ -121,6 +140,9 @@ public class Series
     private static final String ROMAN_NUMBER =
             "(?=.)M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})";
 
+    /**
+     * The main pattern for parsing a series-number string.
+     */
     private static final String NUMBER_REGEXP =
             NUMBER_PREFIX_TO_STRIP
             // Capture the number group
@@ -147,12 +169,10 @@ public class Series
             + ")";
 
     /**
-     * Parse a string into title + number. Used by {@link #from(String)}.
+     * Parse a string into title + number.
      * Formats supported: see unit test for this class.
-     * <p>
-     * FAIL: "Blake's 7" and similar Series titles will fail UNLESS there is an actual number:
-     * i.e. "Blake's 7 1" should give "Blake's 7" and number 1
-     * but "Blake's 7" will give "Blake's" and number 7
+     *
+     * @see #from(String)
      */
     private static final Pattern TITLE_NUMBER_PATTERN = Pattern.compile(
             // whitespace at the start
@@ -168,8 +188,10 @@ public class Series
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Parse a string into a number. Used by {@link #from(String, String)}.
+     * Parse a string into a number.
      * Formats supported: see unit test for this class.
+     *
+     * @see #from(String, String)
      */
     private static final Pattern NUMBER_PATTERN = Pattern.compile(
             "^\\s*" + NUMBER_REGEXP + "\\s*$",
@@ -274,10 +296,15 @@ public class Series
             return new Series(text);
         }
 
-        // We know that brackets do NOT separate the number part
+        // matches only titles without an actual number following them
+        matcher = TITLE_WITH_EMBEDDED_DIGITS.matcher(text);
+        if (matcher.find()) {
+            final String uTitle = StringCoder.unEscape(matcher.group(1));
+            return new Series(uTitle);
+        }
+
         matcher = TITLE_NUMBER_PATTERN.matcher(text);
         if (matcher.find()) {
-
             final String uTitle = StringCoder.unEscape(matcher.group(1));
             final String uNumber = StringCoder.unEscape(matcher.group(2));
 
@@ -295,13 +322,13 @@ public class Series
     /**
      * Variant of {@link Series#from(String)} allowing 3 parts.
      * <p>
+     * <strong>Note:</strong> Used by specific search-engines only. We could make this
+     * method the default {@link Series#from} but that would add overhead for most sites.
+     * <p>
      * "Some Title (I) 12"  ==> "Some Title", "1.12"
      * "Some Title (II) 13"  ==> "Some Title", "2.13"
      * "Some Title (III) 14"  ==> "Some Title", "3.14"
      * "Some Title (Special) 15"  ==> "Some Title (Special)", "15"
-     * <p>
-     * <strong>Note:</strong> we could make this method the default {@link Series#from}
-     * but that would add overhead for most sites.
      *
      * @param text string to decode
      *
