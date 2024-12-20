@@ -69,7 +69,7 @@ public class OpenLibraryPreferencesFragment
 
         pcCredentials = findPreference(PSK_CREDENTIALS);
         pcCredentials.setVisible(BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN);
-        pcCredentials.setEnabled(BuildConfig.ENABLE_STRIP_INFO_LOGIN
+        pcCredentials.setEnabled(BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN
                                  && pLoginToSearch.isChecked());
     }
 
