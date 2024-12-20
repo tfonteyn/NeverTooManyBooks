@@ -76,6 +76,7 @@
     <string name="action_show_all">Mostrar tudo</string>
     <string name="action_skip">Pular</string>
     <string name="and_others">%1$s…</string>
+    <string name="and_others_textual">%1$s e outras pessoas</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_field">(Vazio)</string>
     <string name="cancelled">Cancelado</string>

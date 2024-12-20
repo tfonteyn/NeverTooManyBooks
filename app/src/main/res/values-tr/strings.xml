@@ -90,6 +90,7 @@
     <string name="action_skip">Atla</string>
     <string name="action_synchronize">Senkronize et</string>
     <string name="and_others">%1$s…</string>
+    <string name="and_others_textual">%1$s vd.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Yazar eksik)</string>
     <string name="bob_empty_day">(Gün ayarlanmadı)</string>

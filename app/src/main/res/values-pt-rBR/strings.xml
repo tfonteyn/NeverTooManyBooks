@@ -150,6 +150,7 @@
     <string name="pe_bob_cover_long_click_popupmenu">Ao clicar longamente em uma imagem de capa.</string>
     <string name="pt_bob_cover_scale">Tamanho da capa</string>
     <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
+    <string name="and_others_textual">%1$s e outros</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="x_of_y">%1$d de %2$d</string>

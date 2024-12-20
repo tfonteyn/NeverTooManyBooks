@@ -97,6 +97,7 @@
     <string name="action_skip">Pomiń</string>
     <string name="action_synchronize">Synchronizować</string>
     <string name="and_others">%1$s…</string>
+    <string name="and_others_textual">%1$s Wsp.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Brakuje autora)</string>
     <string name="bob_empty_day">(Nie ustawiono dnia)</string>

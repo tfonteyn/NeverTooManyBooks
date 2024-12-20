@@ -104,6 +104,7 @@
     <string name="action_synchronize">Đồng bộ hóa</string>
     <string name="action_undo">Hoàn tác</string>
     <string name="and_others">%1$s…</string>
+    <string name="and_others_textual">%1$s và cộng sự.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="anonymous_author">[Vô danh]</string>
     <string name="bob_empty_author">(Đang thiếu tác giả)</string>

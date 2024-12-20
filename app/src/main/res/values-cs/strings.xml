@@ -97,6 +97,7 @@
     <string name="action_skip">Přeskočit</string>
     <string name="action_synchronize">Synchronizovat</string>
     <string name="and_others">%1$s…</string>
+    <string name="and_others_textual">%1$s a další.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Chybí autor)</string>
     <string name="bob_empty_day">(Den není nastaven)</string>

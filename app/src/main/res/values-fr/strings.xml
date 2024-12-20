@@ -95,6 +95,7 @@
     <string name="action_skip">Ignorer</string>
     <string name="action_synchronize">Synchroniser</string>
     <string name="and_others">%1$s…</string>
+    <string name="and_others_textual">%1$s et al.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(L’auteur est manquant)</string>
     <string name="bob_empty_day">(Jour non défini)</string>
