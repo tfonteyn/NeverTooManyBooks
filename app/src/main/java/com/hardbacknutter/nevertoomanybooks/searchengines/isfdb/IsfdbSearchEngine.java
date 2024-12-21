@@ -1057,6 +1057,7 @@ public class IsfdbSearchEngine
                             processExternalIdElements(li.select("ul li"), book);
                             break;
                         }
+                        case "Editor:":
                         case "Editors:": {
                             for (final Element a : li.select("a")) {
                                 addAuthor(Author.from(a.text()), Author.TYPE_EDITOR, book);
