@@ -41,6 +41,36 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_collect_series_info_from_toc" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/login_24px"
+            android:key="isfdb.login.to.search"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_login_to_search" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="psk_credentials"
+        android:title="@string/lbl_credentials">
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:icon="@drawable/person_24px"
+            android:key="isfdb.host.user"
+            android:title="@string/username"
+            app:useSimpleSummaryProvider="true"
+            />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:icon="@drawable/password_24px"
+            android:key="isfdb.host.password"
+            android:summary="@string/preference_not_set"
+            android:title="@string/password"
+            />
+
     </PreferenceCategory>
 
     <PreferenceCategory

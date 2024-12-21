@@ -31,6 +31,7 @@ import java.security.cert.CertificateException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
@@ -56,24 +57,27 @@ public final class ConnectionValidatorFactory {
             throws CertificateException {
         if (siteResId == R.string.site_calibre) {
             return new CalibreContentServer.Builder(context).build();
+        }
 
-        } else if (siteResId == R.string.site_stripinfo_be) {
-            // We MUST bootstrap it here to ensure it's active before the first http request send
-            final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
+        // We MUST bootstrap it here to ensure it's active before the first http request send
+        final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
+
+        if (siteResId == R.string.site_isfdb) {
             // The auth module login IS the validation
-            return new StripInfoAuth(cookieManager);
+            return new IsfdbAuth(cookieManager);
 
         } else if (siteResId == R.string.site_open_library) {
-            // We MUST bootstrap it here to ensure it's active before the first http request send
-            final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
             // The auth module login IS the validation
             return new OpenLibraryAuth(cookieManager);
 
-        } else {
-            // The error message is slightly misleading but will have to do.
-            // We should never get here anyway as that would be bug... flw
-            throw new IllegalArgumentException(context.getString(R.string.error_unknown_host,
-                                                                 context.getString(siteResId)));
+        } else if (siteResId == R.string.site_stripinfo_be) {
+            // The auth module login IS the validation
+            return new StripInfoAuth(cookieManager);
         }
+
+        // The error message is slightly misleading but will have to do.
+        // We should never get here anyway as that would be bug... flw
+        throw new IllegalArgumentException(context.getString(R.string.error_unknown_host,
+                                                             context.getString(siteResId)));
     }
 }

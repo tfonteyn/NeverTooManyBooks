@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -95,6 +96,7 @@ public class IsfdbSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition,
+                   SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionIsfdb> {
 
     /**
@@ -116,6 +118,8 @@ public class IsfdbSearchEngine
     /** Preferences - Type: {@code boolean}. */
     static final String PK_SERIES_FROM_TOC = EngineId.Isfdb.getPreferenceKey()
                                              + ".search.toc.series";
+    static final String PK_LOGIN_TO_SEARCH = EngineId.Isfdb.getPreferenceKey()
+                                             + ".login.to.search";
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
 
@@ -256,6 +260,8 @@ public class IsfdbSearchEngine
     private String searchForIsbn;
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
+    @Nullable
+    private SiteAuthModule siteAuthModule;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -269,6 +275,39 @@ public class IsfdbSearchEngine
         super(appContext, config, CHARSET_DECODE_PAGE);
     }
 
+    @Override
+    public boolean isLoginToSearch(@NonNull final Context context) {
+        if (BuildConfig.ENABLE_ISFDB_LOGIN) {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void setAuthModule(@NonNull final SiteAuthModule authModule) {
+        if (BuildConfig.DEBUG /* always */) {
+            authModule.getUserId().orElseThrow();
+        }
+        this.siteAuthModule = authModule;
+    }
+
+    @Override
+    public void login(@NonNull final Context context)
+            throws CredentialsException, SearchException {
+        // depending if we get here from a search or from a sync,
+        // the module MIGHT already exist so don't login twice!
+        if (siteAuthModule == null) {
+            siteAuthModule = new IsfdbAuth(cookieManager);
+            try {
+                siteAuthModule.login(context);
+            } catch (@NonNull final IOException | StorageException e) {
+                siteAuthModule = null;
+                throw new SearchException(getEngineId(), e);
+            }
+        }
+    }
     @NonNull
     @Override
     public String createViewOnSiteUrl(@NonNull final Context context,
@@ -1611,6 +1650,9 @@ public class IsfdbSearchEngine
             super.cancel();
             if (futureHttpGet != null) {
                 futureHttpGet.cancel();
+            }
+            if (siteAuthModule != null) {
+                siteAuthModule.cancel();
             }
         }
     }
