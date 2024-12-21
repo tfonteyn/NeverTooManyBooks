@@ -49,6 +49,9 @@ public class ConnectionValidatorTask
 
     /**
      * Constructor.
+     * <p>
+     * Dev. note: we use the siteResId instead of EngineId because this class
+     * needs to support non-searchengines as well, e.g Calibre.
      *
      * @param siteResId string resource for the site name
      */
@@ -92,7 +95,6 @@ public class ConnectionValidatorTask
                    CertificateException,
                    CredentialsException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
 
         server = ConnectionValidatorFactory.create(context, siteResId);
         return server.validateConnection(context);
