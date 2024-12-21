@@ -36,6 +36,7 @@ import java.net.CookiePolicy;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -418,7 +419,9 @@ public class ServiceLocator {
     public CookieManager getCookieManager() {
         synchronized (this) {
             if (cookieManager == null) {
-                cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+                // 2024-12-21: our private store.... see IsfdbAuth class why...
+                cookieManager = new CookieManager(new BiscuitStore(appContext),
+                                                  CookiePolicy.ACCEPT_ALL);
                 CookieHandler.setDefault(cookieManager);
             }
         }
