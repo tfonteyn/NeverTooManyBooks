@@ -50,7 +50,7 @@ public class Domain {
     private final boolean notNull;
     /** Blank ("", 0) values not allowed. */
     private final boolean notBlank;
-
+    private final boolean unique;
     /** Holds a 'DEFAULT' clause (if any). */
     @Nullable
     private final String defaultClause;
@@ -71,6 +71,7 @@ public class Domain {
         primaryKey = builder.primaryKey;
         sqLiteDataType = builder.sqLiteDataType;
         notNull = builder.notNull;
+        unique = builder.unique;
         defaultClause = builder.defaultClause;
         references = builder.references;
 
@@ -93,6 +94,7 @@ public class Domain {
         primaryKey = from.primaryKey;
         sqLiteDataType = from.sqLiteDataType;
         notNull = from.notNull;
+        unique = from.unique;
         defaultClause = from.defaultClause;
         references = from.references;
         collationClause = from.collationClause;
@@ -175,6 +177,14 @@ public class Domain {
         return notBlank;
     }
 
+    /**
+     * Check if entries are enforced to be unique.
+     *
+     * @return {@code true} if duplicates are NOT allowed.
+     */
+    public boolean isUnique() {
+        return unique;
+    }
 
     /**
      * Check if this domain has a default set.
@@ -234,6 +244,9 @@ public class Domain {
             if (notNull) {
                 sql.append(" NOT NULL");
             }
+            if (unique) {
+                sql.append(" UNIQUE");
+            }
             if (defaultClause != null) {
                 sql.append(" DEFAULT ").append(defaultClause);
             }
@@ -284,6 +297,7 @@ public class Domain {
 
         private boolean primaryKey;
         private boolean notNull;
+        private boolean unique;
         @Nullable
         private String defaultClause;
         @Nullable
@@ -323,6 +337,17 @@ public class Domain {
         @NonNull
         public Builder notNull() {
             notNull = true;
+            return this;
+        }
+
+        /**
+         * Enforce all entries to be unique.
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder unique() {
+            unique = true;
             return this;
         }
 

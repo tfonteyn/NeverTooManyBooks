@@ -48,6 +48,8 @@ public final class DBKey {
     public static final String FK_STYLE = "style";
     /** Foreign key. */
     public static final String FK_CALIBRE_LIBRARY = "clb_lib_id";
+    /** Foreign key. */
+    public static final String FK_IDENTIFIER = "ident_id";
 
     /*
      * ======================================================================================
@@ -90,6 +92,14 @@ public final class DBKey {
     /** External Site id. - lONG. ENHANCE: set by search engines when found; not stored yet. */
     public static final String SID_KBNL = "kbnl_book_id";
 
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Short name; i.e. a keyword. */
+    public static final String IDENT_NAME = "ident_name";
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Some description; i.e. website name. */
+    public static final String IDENT_DESC = "ident_desc";
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Url to the site. */
+    public static final String IDENT_URL = "ident_url";
+    /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
+    public static final String IDENT_SID = "ident_sid";
     /**
      * {@link DBDefinitions#TBL_BOOKS}.
      * Stripinfo.be synchronization.

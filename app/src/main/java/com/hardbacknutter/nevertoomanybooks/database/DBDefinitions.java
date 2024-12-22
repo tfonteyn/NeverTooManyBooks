@@ -77,6 +77,7 @@ public final class DBDefinitions {
      * Only add standard tables. Do not add temporary/FTS tables.
      * app tables
      * {@link #TBL_BOOKLIST_STYLES},
+     * {@link #TBL_IDENTIFIERS},
      * <p>
      * basic user data tables
      * {@link #TBL_BOOKSHELF},
@@ -97,6 +98,8 @@ public final class DBDefinitions {
      * {@link #TBL_BOOK_PUBLISHER},
      * {@link #TBL_BOOK_TOC_ENTRIES},
      * {@link #TBL_BOOK_LOANEE},
+     * <p>
+     * {@link #TBL_BOOK_IDENTIFIER}
      * <p>
      * {@link #TBL_CALIBRE_BOOKS},
      * {@link #TBL_CALIBRE_LIBRARIES},
@@ -133,6 +136,9 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOKS;
     /** Basic table definition. Track UUID's of deleted books for full sync functionality. */
     public static final TableDefinition TBL_DELETED_BOOKS;
+    /** Basic table definition. */
+    public static final TableDefinition TBL_IDENTIFIERS;
+
     /** link table. */
     public static final TableDefinition TBL_BOOK_BOOKSHELF;
     /** link table. */
@@ -145,6 +151,8 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_LOANEE;
     /** link table. */
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
+    /** link table. */
+    public static final TableDefinition TBL_BOOK_IDENTIFIER;
 
     /** Map alternative names for Authors. */
     public static final TableDefinition TBL_PSEUDONYM_AUTHOR;
@@ -186,6 +194,8 @@ public final class DBDefinitions {
     public static final Domain DOM_FK_TOC_ENTRY;
     /** Foreign key. */
     public static final Domain DOM_FK_CALIBRE_LIBRARY;
+    /** Foreign key. */
+    public static final Domain DOM_FK_IDENTIFIER;
     /**
      * Foreign key.
      * When a style is deleted, this key will be (re)set to
@@ -208,6 +218,11 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKSHELF_FILTERS}. */
     public static final Domain DOM_BOOKSHELF_FILTER_NAME;
     public static final Domain DOM_BOOKSHELF_FILTER_VALUE;
+
+    public static final Domain DOM_IDENT_NAME;
+    public static final Domain DOM_IDENT_DESC;
+    public static final Domain DOM_IDENT_URL;
+    public static final Domain DOM_IDENT_SID;
 
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
@@ -559,6 +574,8 @@ public final class DBDefinitions {
 
         TBL_TOC_ENTRIES = new TableDefinition("anthology", "an");
 
+        TBL_IDENTIFIERS = new TableDefinition("identifiers", "ids");
+
         TBL_PSEUDONYM_AUTHOR = new TableDefinition("pseudonym_author", "ap");
 
         TBL_BOOK_BOOKSHELF = new TableDefinition("book_bookshelf", "bbsh");
@@ -567,6 +584,7 @@ public final class DBDefinitions {
         TBL_BOOK_PUBLISHER = new TableDefinition("book_publisher", "bp");
         TBL_BOOK_LOANEE = new TableDefinition("loan", "l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology", "bat");
+        TBL_BOOK_IDENTIFIER = new TableDefinition("book_ident", "bid");
 
         TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib", "clb_l");
         TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib", "clb_vl");
@@ -625,6 +643,11 @@ public final class DBDefinitions {
                         .notNull()
                         .withDefault(BuiltinStyle.HARD_DEFAULT_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
+                        .build();
+        DOM_FK_IDENTIFIER =
+                new Domain.Builder(DBKey.FK_IDENTIFIER, SqLiteDataType.Integer)
+                        .notNull()
+                        .references(TBL_IDENTIFIERS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
 
         /* ======================================================================================
@@ -974,6 +997,26 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.AUTO_UPDATE, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(true)
+                        .build();
+
+        /* ======================================================================================
+         *  Book identifiers
+         * ====================================================================================== */
+        DOM_IDENT_NAME =
+                new Domain.Builder(DBKey.IDENT_NAME, SqLiteDataType.Text)
+                        .notNull()
+                        .unique()
+                        .build();
+        DOM_IDENT_DESC =
+                new Domain.Builder(DBKey.IDENT_DESC, SqLiteDataType.Text)
+                        .build();
+        DOM_IDENT_URL =
+                new Domain.Builder(DBKey.IDENT_URL, SqLiteDataType.Text)
+                        .build();
+
+        DOM_IDENT_SID =
+                new Domain.Builder(DBKey.IDENT_SID, SqLiteDataType.Text)
+                        .notNull()
                         .build();
 
         /* ======================================================================================
@@ -1400,6 +1443,14 @@ public final class DBDefinitions {
                 .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF);
         ALL_TABLES.put(TBL_BOOKSHELF_FILTERS.getName(), TBL_BOOKSHELF_FILTERS);
 
+        TBL_IDENTIFIERS
+                .addDomains(DOM_PK_ID,
+                            DOM_IDENT_NAME,
+                            DOM_IDENT_DESC,
+                            DOM_IDENT_URL)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKey.IDENT_NAME, true, DOM_IDENT_NAME);
+        ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);
 
         TBL_AUTHORS
                 .addDomains(DOM_PK_ID,
@@ -1648,6 +1699,15 @@ public final class DBDefinitions {
                 .addIndex(DBKey.FK_BOOK, true, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_LOANEE.getName(), TBL_BOOK_LOANEE);
 
+        TBL_BOOK_IDENTIFIER
+                .addDomains(DOM_FK_BOOK,
+                            DOM_FK_IDENTIFIER,
+                            DOM_IDENT_SID)
+                .setPrimaryKey(DOM_FK_BOOK, DOM_FK_IDENTIFIER)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
+                .addIndex(DBKey.FK_BOOK, false, DOM_FK_BOOK);
+        ALL_TABLES.put(TBL_BOOK_IDENTIFIER.getName(), TBL_BOOK_IDENTIFIER);
 
         TBL_CALIBRE_BOOKS
                 .addDomains(DOM_FK_BOOK,

@@ -39,8 +39,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,6 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -65,9 +69,11 @@ import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -80,10 +86,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -109,11 +117,12 @@ public class DBHelper
      * v5.5.0: 32
      * v5.5.1: 33
      * v5.5.4: 34
-     * v6.5.0: 35
+     * <p>
+     * v6.5.0: 36
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 35;
+    public static final int DATABASE_VERSION = 36;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -438,6 +447,8 @@ public class DBHelper
         StyleDaoImpl.onPostCreate(db);
         // and the all/default shelves
         BookshelfDaoImpl.onPostCreate(context, db);
+        // and the known identifiers
+        IdentifierDaoImpl.onPostCreate(db);
 
         CalibreCustomFieldDaoImpl.onPostCreate(db);
 
@@ -750,7 +761,7 @@ public class DBHelper
             // Add pen-name support
             TBL_PSEUDONYM_AUTHOR.create(db, true);
             // new search-engine added
-            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_ESID_BEDETHEQUE);
+            TBL_BOOKS.alterTableAddColumns(db, LegacyUpgrades.DOM_ESID_BEDETHEQUE);
         }
         if (oldVersion < 24) {
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TITLE_ORIGINAL_LANG);
@@ -841,9 +852,12 @@ public class DBHelper
             db.execSQL("DELETE FROM " + TBL_STRIPINFO_COLLECTION
                        + " WHERE " + DBKey.STRIP_INFO_COLL_ID + "=0");
         }
-
-        //NEWTHINGS: adding a new search engine: optional: add external id DOM
-        //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);
+        if (oldVersion < 36) {
+            TBL_IDENTIFIERS.create(db, true);
+            TBL_BOOK_IDENTIFIER.create(db, true);
+            IdentifierDaoImpl.onPostCreate(db);
+            LegacyUpgrades.migrateV35Sids(db);
+        }
 
         // We have to do this here due to some users skipping updates (see github #30)
         // The issue is that this only works ok if the TBL_BOOKLIST_STYLES contains
@@ -877,6 +891,10 @@ public class DBHelper
         private static final String FIELDS_VISIBILITY_KEYS = "fields.visibility.";
         private static final String SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
         private static final String SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
+
+        static final Domain DOM_ESID_BEDETHEQUE =
+                new Domain.Builder("bdt_book_id", SqLiteDataType.Integer)
+                        .build();
 
         private static void removeDuplicateAuthorsV23(@NonNull final SQLiteDatabase db) {
 
@@ -1059,6 +1077,71 @@ public class DBHelper
                               fieldVisibility.getBitValue())
                      .apply();
             }
+        }
+
+        @SuppressWarnings("CheckStyle")
+        private static void migrateV35Sids(@NonNull final SQLiteDatabase db) {
+            final Map<String, String> domains = Map.of(
+                    "goodreads_book_id", Identifier.SID_GOODREADS_BOOK,
+                    "isfdb_book_id", Identifier.SID_ISFDB,
+                    "lt_book_id", Identifier.SID_LIBRARY_THING,
+                    "ol_book_id", Identifier.SID_OPEN_LIBRARY,
+                    "si_book_id", Identifier.SID_STRIP_INFO,
+                    "ld_book_id", Identifier.SID_LAST_DODO_NL,
+                    "bdt_book_id", Identifier.SID_BEDETHEQUE);
+
+            final Map<String, Integer> predef = new HashMap<>();
+            final String predefSql = "SELECT " + DBKey.PK_ID + ',' + DBKey.IDENT_NAME
+                                     + " FROM " + TBL_IDENTIFIERS.getName();
+            try (Cursor cursor = db.rawQuery(predefSql, null)) {
+                while (cursor.moveToNext()) {
+                    final int id = cursor.getInt(0);
+                    final String name = cursor.getString(1);
+                    predef.put(name, id);
+                }
+            }
+
+            final String sqlSelect = "SELECT " + DBKey.PK_ID
+                                     + ',' + String.join(",", domains.keySet())
+                                     + " FROM " + TBL_BOOKS.getName()
+                                     + " WHERE "
+                                     + domains.keySet()
+                                              .stream()
+                                              .map(c -> "(" + c + " IS NOT NULL)")
+                                              .collect(Collectors.joining(" OR "));
+
+            final String sqlInsert = "INSERT INTO " + TBL_BOOK_IDENTIFIER.getName()
+                                     + '(' + DBKey.FK_BOOK
+                                     + ',' + DBKey.FK_IDENTIFIER
+                                     + ',' + DBKey.IDENT_SID
+                                     + ") VALUES(?,?,?)";
+
+            try (Cursor cursor = db.rawQuery(sqlSelect, null);
+                 SQLiteStatement insert = db.compileStatement(sqlInsert)) {
+                while (cursor.moveToNext()) {
+                    int c = 0;
+                    final long bookId = cursor.getLong(c);
+                    for (final String sidName : domains.values()) {
+                        ++c;
+                        if (!cursor.isNull(c)) {
+                            final String sid = cursor.getString(c);
+                            insert.bindLong(1, bookId);
+                            //noinspection DataFlowIssue
+                            insert.bindLong(2, predef.get(sidName));
+                            insert.bindString(3, sid);
+
+                            insert.executeInsert();
+                        }
+                    }
+                }
+            }
+
+            // null old columns, we'll delete them in a future version
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " +
+                       domains.keySet()
+                              .stream()
+                              .map(domain -> domain + "=NULL")
+                              .collect(Collectors.joining(",")));
         }
     }
 }
