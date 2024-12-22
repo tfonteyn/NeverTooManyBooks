@@ -753,22 +753,22 @@ public class CalibreContentServerReader
             while (it.hasNext()) {
                 final String key = it.next();
                 if (!remotes.isNull(key)) {
-                    final Identifier identifier = Identifier.MAP.get(key);
+                    final CalibreIdentifier calibreIdentifier = CalibreIdentifier.MAP.get(key);
                     final String idStr = remotes.optString(key);
                     if (idStr != null && !idStr.isEmpty()) {
-                        if (identifier != null) {
-                            if (identifier.isLocalLong) {
+                        if (calibreIdentifier != null) {
+                            if (calibreIdentifier.isLocalLong) {
                                 try {
-                                    book.putLong(identifier.local,
+                                    book.putLong(calibreIdentifier.local,
                                                  Long.parseLong(idStr));
                                 } catch (@NonNull final NumberFormatException ignore) {
                                     // ignore
                                 }
                             } else {
-                                book.putString(identifier.local, idStr);
+                                book.putString(calibreIdentifier.local, idStr);
                             }
 
-                        } else if (key.startsWith(Identifier.AMAZON)) {
+                        } else if (key.startsWith(CalibreIdentifier.AMAZON)) {
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // We always use the first one found.

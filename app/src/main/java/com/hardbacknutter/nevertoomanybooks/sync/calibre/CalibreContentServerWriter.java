@@ -383,14 +383,14 @@ public class CalibreContentServerWriter
 
         final JSONObject collection = new JSONObject();
 
-        for (final Identifier identifier : Identifier.MAP.values()) {
-            if (identifier.isStoredLocally) {
-                if (identifier.isLocalLong) {
-                    final long v = localBook.getLong(identifier.local);
-                    collection.put(identifier.remote, v != 0 ? String.valueOf(v) : "");
+        for (final CalibreIdentifier calibreIdentifier : CalibreIdentifier.MAP.values()) {
+            if (calibreIdentifier.isStoredLocally) {
+                if (calibreIdentifier.isLocalLong) {
+                    final long v = localBook.getLong(calibreIdentifier.local);
+                    collection.put(calibreIdentifier.remote, v != 0 ? String.valueOf(v) : "");
                 } else {
-                    final String s = localBook.getString(identifier.local);
-                    collection.put(identifier.remote, s);
+                    final String s = localBook.getString(calibreIdentifier.local);
+                    collection.put(calibreIdentifier.remote, s);
                 }
             }
         }
