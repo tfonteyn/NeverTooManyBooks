@@ -1364,6 +1364,7 @@ public final class DBDefinitions {
                             DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
                             DOM_STYLE_TITLE_SHOW_REORDERED,
                             DOM_STYLE_READ_STATUS_WITH_PROGRESS,
+                            DOM_STYLE_CITATION_TYPE,
                             DOM_STYLE_TEXT_SCALE,
                             DOM_STYLE_COVER_SCALE,
                             DOM_STYLE_LIST_HEADER,
