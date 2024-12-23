@@ -965,28 +965,33 @@ class BooklistBuilder {
         private void joinWithAuthors(@NonNull final StringBuilder sb) {
             // Join with the link table between Book and Author.
             sb.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
-            // Extend the join filtering on the primary Author unless
-            // the user wants the book to show under all its Authors
+            // If the user wants the book to show ONLY under its primary Author...
             if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Author.getGroupId())) {
+                // then extend the join filtering on the primary Author
+                sb.append(_AND_);
+
                 @Author.Type
                 final int primaryAuthorType = style.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
-                    // don't care about Author type, so just grab the first one (i.e. pos==1)
-                    sb.append(_AND_)
-                      .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
-                      .append("=1");
+                    // The user has no specific type set, so just grab the first one (i.e. pos==1)
+                    sb.append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)).append("=1");
                 } else {
-                    // grab the desired type, or if no such type, grab the first one
-                    //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
-                    sb.append(" AND (((")
+                    // grab the desired type, or if no such type, grab the first one anyway
+                    //   (
+                    //      ((type & TYPE)<>0)
+                    //   OR
+                    //      (((type &~ TYPE)=0) AND pos=1)
+                    //   )
+                    sb.append("(((")
+                      // the type is an exact match
                       .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
                       .append(" & ").append(primaryAuthorType).append(")<>0)")
                       .append(" OR (((")
+                      // grab the first one
                       .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
                       .append(" &~ ").append(primaryAuthorType).append(")=0)")
                       .append(_AND_)
-                      .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
-                      .append("=1))");
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)).append("=1))");
                 }
             }
             // Join with Authors to make the names available
