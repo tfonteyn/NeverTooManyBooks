@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +72,7 @@ public interface JsonCoder<T> {
      * @throws JSONException upon any parsing error
      */
     @NonNull
-    default JSONArray encode(@NonNull final List<T> elements)
+    default JSONArray encode(@NonNull final Collection<T> elements)
             throws JSONException {
         final List<JSONObject> result = new ArrayList<>();
         for (final T element : elements) {
@@ -87,7 +88,7 @@ public interface JsonCoder<T> {
     }
 
     @NonNull
-    default JSONArray encodeReference(@NonNull final List<T> elements)
+    default JSONArray encodeReference(@NonNull final Collection<T> elements)
             throws JSONException {
         final List<JSONObject> result = new ArrayList<>();
         for (final T element : elements) {
