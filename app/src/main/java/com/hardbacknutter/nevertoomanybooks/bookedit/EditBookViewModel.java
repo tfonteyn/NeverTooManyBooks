@@ -99,7 +99,7 @@ public class EditBookViewModel
         implements BookReadStatusViewModel {
 
     /** the list with all fields. */
-    private final List<Field<?, ? extends View>> fields = new ArrayList<>();
+    private final List<Field<?, ? extends View>> allFields = new ArrayList<>();
 
     private final Collection<FieldGroup> fieldGroups = EnumSet.noneOf(FieldGroup.class);
 
@@ -263,9 +263,9 @@ public class EditBookViewModel
 
     @NonNull
     List<Field<?, ? extends View>> getFields(@NonNull final FragmentId fragmentId) {
-        return fields.stream()
-                     .filter(field -> field.getFragmentId() == fragmentId)
-                     .collect(Collectors.toList());
+        return allFields.stream()
+                        .filter(field -> field.getFragmentId() == fragmentId)
+                        .collect(Collectors.toList());
     }
 
     /**
@@ -280,10 +280,10 @@ public class EditBookViewModel
     @NonNull
     private <T, V extends View> Optional<Field<T, V>> getField(@IdRes final int id) {
         //noinspection unchecked
-        return fields.stream()
-                     .filter(field -> field.getFieldViewId() == id)
-                     .map(field -> (Field<T, V>) field)
-                     .findFirst();
+        return allFields.stream()
+                        .filter(field -> field.getFieldViewId() == id)
+                        .map(field -> (Field<T, V>) field)
+                        .findFirst();
     }
 
     /**
@@ -300,11 +300,11 @@ public class EditBookViewModel
     @NonNull
     <T, V extends View> Field<T, V> requireField(@IdRes final int id) {
         //noinspection unchecked
-        return fields.stream()
-                     .filter(field -> field.getFieldViewId() == id)
-                     .map(field -> (Field<T, V>) field)
-                     .findFirst()
-                     .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
+        return allFields.stream()
+                        .filter(field -> field.getFieldViewId() == id)
+                        .map(field -> (Field<T, V>) field)
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
     }
 
     /**
@@ -936,38 +936,50 @@ public class EditBookViewModel
      * @param context    Current context
      * @param fragmentId the hosting fragment for this set of fields
      * @param fieldGroup to create the fields for
+     *
+     * @return the field added
      */
-    void initFields(@NonNull final Context context,
-                    @NonNull final FragmentId fragmentId,
-                    @NonNull final FieldGroup fieldGroup) {
+    @NonNull
+    List<Field<?, ? extends View>> initFields(@NonNull final Context context,
+                                              @NonNull final FragmentId fragmentId,
+                                              @NonNull final FieldGroup fieldGroup) {
 
         // init once only for each group
         if (fieldGroups.contains(fieldGroup)) {
-            return;
+            return allFields.stream()
+                            .filter(field -> field.getFragmentId() == fragmentId)
+                            .collect(Collectors.toList());
         }
         fieldGroups.add(fieldGroup);
 
+        final List<Field<?, ? extends View>> fields;
         switch (fieldGroup) {
             case Main:
-                initFieldsMain(context, fragmentId);
+                fields = initFieldsMain(context, fragmentId);
                 break;
             case Publication:
-                initFieldsPublication(context, fragmentId);
+                fields = initFieldsPublication(context, fragmentId);
                 break;
             case Notes:
-                initFieldsNotes(context, fragmentId);
+                fields = initFieldsNotes(context, fragmentId);
                 break;
             case Toc:
-                initFieldsToc(context, fragmentId);
+                fields = initFieldsToc(context, fragmentId);
                 break;
             case ExternalId:
-                initFieldsExternalId(fragmentId);
+                fields = initFieldsExternalId(fragmentId);
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + fieldGroup);
         }
+        allFields.addAll(fields);
+        return fields;
     }
 
-    private void initFieldsMain(@NonNull final Context context,
-                                @NonNull final FragmentId fragmentId) {
+    @NonNull
+    private List<Field<?, ? extends View>> initFieldsMain(@NonNull final Context context,
+                                                          @NonNull final FragmentId fragmentId) {
+        final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
         fields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
@@ -1022,10 +1034,14 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_bookshelves)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
+        return fields;
     }
 
-    private void initFieldsPublication(@NonNull final Context context,
-                                       @NonNull final FragmentId fragmentId) {
+    @NonNull
+    private List<Field<?, ? extends View>>
+    initFieldsPublication(@NonNull final Context context,
+                          @NonNull final FragmentId fragmentId) {
+        final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.FORMAT,
                                              () -> getAllFormats(context))
@@ -1109,10 +1125,13 @@ public class EditBookViewModel
         fields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.EDITION__BITMASK,
                                              Book.Edition::getAll)
                            .addRelatedViews(R.id.lbl_edition));
+        return fields;
     }
 
-    private void initFieldsNotes(@NonNull final Context context,
-                                 @NonNull final FragmentId fragmentId) {
+    @NonNull
+    private List<Field<?, ? extends View>> initFieldsNotes(@NonNull final Context context,
+                                                           @NonNull final FragmentId fragmentId) {
+        final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
         fields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.SIGNED__BOOL));
 
@@ -1164,6 +1183,7 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_read_end)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            .setValidator(this::validateReadStartAndEndFields));
+        return fields;
     }
 
     private void validateReadStartAndEndFields(@NonNull final Field<String, TextView> field) {
@@ -1195,16 +1215,23 @@ public class EditBookViewModel
         }
     }
 
-    private void initFieldsToc(@NonNull final Context context,
-                               @NonNull final FragmentId fragmentId) {
+    @NonNull
+    private List<Field<?, ? extends View>> initFieldsToc(@NonNull final Context context,
+                                                         @NonNull final FragmentId fragmentId) {
+        final List<Field<?, ? extends View>> fields = new ArrayList<>();
+
         fields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
                                                      DBKey.BOOK_CONTENT_TYPE,
                                                      context,
                                                      Book.ContentType.getAll())
                            .setTextInputLayoutId(R.id.lbl_book_type));
+        return fields;
     }
 
-    private void initFieldsExternalId(@NonNull final FragmentId fragmentId) {
+    @NonNull
+    private List<Field<?, ? extends View>>
+    initFieldsExternalId(@NonNull final FragmentId fragmentId) {
+        final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
         fields.add(new CompoundButtonField(fragmentId, R.id.btn_auto_update_allowed,
                                            DBKey.AUTO_UPDATE));
@@ -1242,8 +1269,7 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_site_last_dodo_nl)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        //NEWTHINGS: adding a new search engine: optional: add external id DOM
-        // first add it to the layout
+        return fields;
     }
 
     /**
@@ -1256,10 +1282,10 @@ public class EditBookViewModel
      */
     public boolean handlesField(@NonNull final FragmentId fragmentId,
                                 final int fieldId) {
-        return fields.stream()
-                     // This will return a single field (or none)
-                     .filter(field -> field.getFieldViewId() == fieldId)
-                     // lets see if its owned by the given fragment
-                     .anyMatch(field -> field.getFragmentId() == fragmentId);
+        return allFields.stream()
+                        // This will return a single field (or none)
+                        .filter(field -> field.getFieldViewId() == fieldId)
+                        // lets see if its owned by the given fragment
+                        .anyMatch(field -> field.getFragmentId() == fragmentId);
     }
 }
