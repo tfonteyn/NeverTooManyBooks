@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,9 @@ class KbNlBookHandler
 
     private static final Pattern ISBN_BOUNDARY_PATTERN = Pattern.compile("[;)]");
 
+    /** Example: {@code "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=852323123"}. */
+    private static final Pattern PERMALINK_PATTERN = Pattern.compile(
+            ".*?https.*?PPN=(\\d+).*", Pattern.UNICODE_CASE);
     @NonNull
     private final KbNlSearchEngine searchEngine;
 
@@ -84,6 +88,23 @@ class KbNlBookHandler
         // just add Dutch and hope for the best.
         if (!book.isEmpty() && !book.contains(DBKey.LANGUAGE)) {
             book.putString(DBKey.LANGUAGE, "nld");
+        }
+    }
+
+    @Override
+    protected void processPermalink(@NonNull final String permaLink) {
+        final Matcher matcher = PERMALINK_PATTERN.matcher(permaLink);
+        if (matcher.find()) {
+            final String ppn = matcher.group(1);
+            if (ppn != null) {
+                try {
+                    final long sid = Long.parseLong(ppn);
+                    book.putLong(DBKey.SID_KBNL, sid);
+
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
+                }
+            }
         }
     }
 

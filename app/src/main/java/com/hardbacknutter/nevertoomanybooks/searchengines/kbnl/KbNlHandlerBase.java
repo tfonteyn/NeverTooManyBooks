@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,9 +48,13 @@ abstract class KbNlHandlerBase
     private static final String PSI_DATA = "psi:labelledData";
     private static final String PSI_LINE = "psi:line";
     private static final String PSI_TEXT = "psi:text";
+    private static final String PSI_URL = "psi:url";
     /** XML tags. */
     private static final String PSI_RECORD = "psi:record";
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s{2,}");
+
+    private static final String URL_PERMALINK = "PERMALINK";
+
     /** The final output will be written to this bundle as passed in to the constructor. */
     @NonNull
     protected final Book book;
@@ -72,6 +76,8 @@ abstract class KbNlHandlerBase
     private boolean inData;
     private boolean inLine;
     private boolean inText;
+    private boolean inUrl;
+    private boolean inUrlPermalink;
     /** Are we parsing a list of records {@code true}; or a detail page {@code false}. */
     private boolean isList;
 
@@ -94,6 +100,7 @@ abstract class KbNlHandlerBase
         inData = false;
         inLine = false;
         inText = false;
+        inUrl = false;
 
         isList = false;
     }
@@ -107,40 +114,45 @@ abstract class KbNlHandlerBase
         super.startElement(uri, localName, qName, attributes);
 
         switch (qName) {
-            case PSI_SESSION_VAR:
+            case PSI_SESSION_VAR: {
                 inSessionVar = true;
                 currentSessionVar = attributes.getValue("name");
                 break;
-
-            case PSI_RECORD:
+            }
+            case PSI_RECORD: {
                 inRecord = true;
                 // a list-page record will have a ppn attribute
                 final String ppn = attributes.getValue("ppn");
                 isList = ppn != null && !ppn.isEmpty();
                 break;
-
-            case PSI_LABEL:
+            }
+            case PSI_LABEL: {
                 inLabel = true;
                 currentLabel = null;
                 break;
-
-            case PSI_DATA:
+            }
+            case PSI_DATA: {
                 inData = true;
                 currentData.clear();
                 break;
-
-            case PSI_LINE:
+            }
+            case PSI_LINE: {
                 inLine = true;
                 break;
-
-            case PSI_TEXT:
+            }
+            case PSI_TEXT: {
                 inText = true;
                 // if in list-page mode, store the first reference found.
                 if (isList && inRecord && inLine && !book.contains(BKEY_SHOW_URL)) {
                     book.putString(BKEY_SHOW_URL, attributes.getValue("href"));
                 }
                 break;
-
+            }
+            case PSI_URL: {
+                inUrl = true;
+                inUrlPermalink = URL_PERMALINK.equals(attributes.getValue("name"));
+                break;
+            }
             default:
                 break;
         }
@@ -156,7 +168,7 @@ abstract class KbNlHandlerBase
         super.endElement(uri, localName, qName);
 
         switch (qName) {
-            case PSI_SESSION_VAR:
+            case PSI_SESSION_VAR: {
                 // sanity check, should not be null at this point
                 if (currentSessionVar != null) {
                     switch (currentSessionVar) {
@@ -172,27 +184,27 @@ abstract class KbNlHandlerBase
                 }
                 inSessionVar = false;
                 break;
-
-            case PSI_RECORD:
+            }
+            case PSI_RECORD: {
                 inRecord = false;
                 break;
-
-            case PSI_LABEL:
+            }
+            case PSI_LABEL: {
                 inLabel = false;
                 break;
-
-            case PSI_DATA:
+            }
+            case PSI_DATA: {
                 if (!isList && currentLabel != null && !currentLabel.isEmpty()) {
                     processEntry(currentLabel, currentData);
                 }
                 inData = false;
                 break;
-
-            case PSI_LINE:
+            }
+            case PSI_LINE: {
                 inLine = false;
                 break;
-
-            case PSI_TEXT:
+            }
+            case PSI_TEXT: {
                 if (!isList) {
                     if (inLabel && inLine && inText) {
                         currentLabel = builder.toString().split(":")[0].strip();
@@ -208,7 +220,15 @@ abstract class KbNlHandlerBase
                 }
                 inText = false;
                 break;
-
+            }
+            case PSI_URL: {
+                if (inUrlPermalink) {
+                    processPermalink(builder.toString());
+                    inUrlPermalink = false;
+                }
+                inUrl = false;
+                break;
+            }
             default:
                 break;
         }
@@ -225,6 +245,8 @@ abstract class KbNlHandlerBase
 
         builder.append(ch, start, length);
     }
+
+    protected abstract void processPermalink(@NonNull String permaLink);
 
     protected abstract void processEntry(@NonNull String currentLabel,
                                          @NonNull List<String> currentData);
