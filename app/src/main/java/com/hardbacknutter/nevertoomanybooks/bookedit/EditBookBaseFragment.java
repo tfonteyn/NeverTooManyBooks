@@ -153,6 +153,8 @@ public abstract class EditBookBaseFragment
         // and run 'field.setVisibility' with the flags they need
         onPopulateViews(fields, book);
 
+        addDateHelpers();
+
         book.unlockStage();
 
         // Dev note: DO NOT use a 'this' reference directly
@@ -195,15 +197,21 @@ public abstract class EditBookBaseFragment
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         // Bulk load the data into the Views.
-
         // do NOT call notifyIfChanged, as this is the initial load
         //noinspection DataFlowIssue
         fields.stream()
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(getContext(), book, realNumberParser));
+    }
 
+    /**
+     * Called immediately after {@link #onPopulateViews(List, Book)}.
+     */
+    private void addDateHelpers() {
         // With all Views populated, (re-)add the date helpers
         // which rely on fields having valid views
+        // Instead of each fragment doing their own, we've centralized
+        // them all here for ease of maintenance
 
         if (vm.handlesField(getFragmentId(), R.id.date_published)) {
             addPartialDatePicker(R.string.lbl_date_published, R.id.date_published);
