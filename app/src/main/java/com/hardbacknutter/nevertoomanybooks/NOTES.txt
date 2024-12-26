@@ -9,6 +9,8 @@ NEW:
 - enhances in series title/number parsing to better detect titles with embedded digits
 
 FIXES:
+- github #84 read default bookshelf from db as the user might have renamed it,
+             or might have switched Locale (language)
 
 REMOVED:
 
