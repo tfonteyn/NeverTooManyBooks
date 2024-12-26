@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DeletedBooksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
@@ -78,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.DeletedBooksDaoImp
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FormatDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.GenreDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LanguageDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LoaneeDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LocationDaoImpl;
@@ -179,6 +181,8 @@ public class ServiceLocator {
     private FtsDao ftsDao;
     @Nullable
     private GenreDao genreDao;
+    @Nullable
+    private IdentifierDao identifierDao;
     @Nullable
     private LanguageDao languageDao;
     @Nullable
@@ -530,6 +534,7 @@ public class ServiceLocator {
                                           this::getBookshelfDao,
                                           this::getTocEntryDao,
                                           this::getLoaneeDao,
+                                          this::getIdentifierDao,
                                           this::getCalibreDao,
                                           this::getStripInfoDao,
                                           this::getFtsDao,
@@ -630,6 +635,16 @@ public class ServiceLocator {
             }
         }
         return genreDao;
+    }
+
+    @NonNull
+    public IdentifierDao getIdentifierDao() {
+        synchronized (this) {
+            if (identifierDao == null) {
+                identifierDao = new IdentifierDaoImpl(getDb());
+            }
+        }
+        return identifierDao;
     }
 
     @NonNull

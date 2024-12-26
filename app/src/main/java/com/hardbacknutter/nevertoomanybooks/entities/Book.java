@@ -345,6 +345,7 @@ public class Book
         setSeries(serviceLocator.getSeriesDao().getByBookId(bookId));
         setPublishers(serviceLocator.getPublisherDao().getByBookId(bookId));
         setToc(serviceLocator.getTocEntryDao().getByBookId(bookId));
+        setIdentifiers(serviceLocator.getIdentifierDao().getByBookId(bookId));
 
         // do NOT preload the full Calibre library object. We hardly ever need it as such.
         // see #getCalibreLibrary
@@ -380,9 +381,7 @@ public class Book
         // Do not copy any identifiers.
         // PK_ID
         // BOOK_UUID
-        // SID_LIBRARY_THING
-        // SID_ISFDB
-        // SID_GOODREADS
+        // Identifier.*
         // ...
         // Do not copy the Bookshelves list
         // ...
@@ -950,6 +949,12 @@ public class Book
      */
     public void setToc(@NonNull final Collection<TocEntry> tocEntries) {
         putParcelableCollection(BKEY_TOC_LIST, tocEntries);
+    }
+
+    public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
+        ivs.forEach(iv -> {
+            putString(iv.getIdentifier().getName(), iv.getSid());
+        });
     }
 
     /**

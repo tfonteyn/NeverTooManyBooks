@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
  * Static definitions of database objects.
@@ -220,6 +221,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOKSHELF_FILTER_VALUE;
 
     public static final Domain DOM_IDENT_NAME;
+    public static final Domain DOM_IDENT_TYPE;
     public static final Domain DOM_IDENT_DESC;
     public static final Domain DOM_IDENT_URL;
     public static final Domain DOM_IDENT_SID;
@@ -373,21 +375,6 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_AUTO_UPDATE;
 
-    /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
-    public static final Domain DOM_ESID_GOODREADS_BOOK;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_ESID_ISFDB;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_ESID_LIBRARY_THING;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_ESID_OPEN_LIBRARY;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_ESID_STRIP_INFO_BE;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_ESID_LAST_DODO_NL;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_ESID_BEDETHEQUE;
-
     /**
      * {@link #TBL_CALIBRE_LIBRARIES}.
      * The physical Calibre library ID as needed in ajax calls.
@@ -419,6 +406,13 @@ public final class DBDefinitions {
     /** {@link #TBL_CALIBRE_BOOKS}. */
     public static final Domain DOM_CALIBRE_BOOK_MAIN_FORMAT;
 
+    /**
+     * {@link #TBL_STRIPINFO_COLLECTION}.
+     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_IDENT_SID}
+     * for rows where the {@link #DOM_FK_IDENTIFIER} == "stripinfo"
+     * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENT_NAME}
+     */
+    public static final Domain DOM_STRIP_INFO_BE_BOOK_ID;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
     public static final Domain DOM_STRIP_INFO_BE_COLLECTION_ID;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
@@ -1007,6 +1001,11 @@ public final class DBDefinitions {
                         .notNull()
                         .unique()
                         .build();
+        DOM_IDENT_TYPE =
+                new Domain.Builder(DBKey.IDENT_DESC, SqLiteDataType.Text)
+                        .notNull()
+                        .withDefault("'" + Identifier.TYPE_STRING + "'")
+                        .build();
         DOM_IDENT_DESC =
                 new Domain.Builder(DBKey.IDENT_DESC, SqLiteDataType.Text)
                         .build();
@@ -1020,42 +1019,12 @@ public final class DBDefinitions {
                         .build();
 
         /* ======================================================================================
-         *  Book external website id domains
+         *  StripInfo.be synchronization domains
          * ====================================================================================== */
-        //NEWTHINGS: adding a new search engine: optional: add external id domain
-        DOM_ESID_GOODREADS_BOOK =
-                new Domain.Builder(DBKey.SID_GOODREADS_BOOK, SqLiteDataType.Integer)
-                        .build();
-
-        DOM_ESID_ISFDB =
-                new Domain.Builder(DBKey.SID_ISFDB, SqLiteDataType.Integer)
-                        .build();
-
-        DOM_ESID_LIBRARY_THING =
-                new Domain.Builder(DBKey.SID_LIBRARY_THING, SqLiteDataType.Integer)
-                        .build();
-
-        DOM_ESID_OPEN_LIBRARY =
-                new Domain.Builder(DBKey.SID_OPEN_LIBRARY, SqLiteDataType.Text)
-                        .build();
-
-        DOM_ESID_STRIP_INFO_BE =
+        DOM_STRIP_INFO_BE_BOOK_ID =
                 new Domain.Builder(DBKey.SID_STRIP_INFO, SqLiteDataType.Integer)
                         .build();
 
-        DOM_ESID_LAST_DODO_NL =
-                new Domain.Builder(DBKey.SID_LAST_DODO_NL, SqLiteDataType.Integer)
-                        .build();
-
-        DOM_ESID_BEDETHEQUE =
-                new Domain.Builder(DBKey.SID_BEDETHEQUE, SqLiteDataType.Integer)
-                        .build();
-
-        //NEWTHINGS: adding a new search engine: optional: add specific/extra domains.
-
-        /* ======================================================================================
-         *  StripInfo.be synchronization domains
-         * ====================================================================================== */
         DOM_STRIP_INFO_BE_COLLECTION_ID =
                 new Domain.Builder(DBKey.STRIP_INFO_COLL_ID, SqLiteDataType.Integer)
                         .build();
@@ -1446,6 +1415,7 @@ public final class DBDefinitions {
         TBL_IDENTIFIERS
                 .addDomains(DOM_PK_ID,
                             DOM_IDENT_NAME,
+                            DOM_IDENT_TYPE,
                             DOM_IDENT_DESC,
                             DOM_IDENT_URL)
                 .setPrimaryKey(DOM_PK_ID)
@@ -1529,18 +1499,6 @@ public final class DBDefinitions {
                             DOM_BOOK_CONDITION_DUST_COVER,
                             DOM_AUTO_UPDATE,
 
-                            // external id/data
-                            //NEWTHINGS: adding a new search engine: optional: add external id DOM
-                            DOM_ESID_GOODREADS_BOOK,
-                            DOM_ESID_ISFDB,
-                            DOM_ESID_LIBRARY_THING,
-                            DOM_ESID_OPEN_LIBRARY,
-                            DOM_ESID_STRIP_INFO_BE,
-                            DOM_ESID_LAST_DODO_NL,
-                            DOM_ESID_BEDETHEQUE,
-                            //NEWTHINGS: adding a new search engine:
-                            // optional: add engine specific DOM
-
                             // internal data
                             DOM_BOOK_UUID,
                             DOM_ADDED__UTC,
@@ -1550,16 +1508,7 @@ public final class DBDefinitions {
                 .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB)
                 .addIndex(DBKey.TITLE, false, DOM_TITLE)
                 .addIndex(DBKey.BOOK_ISBN, false, DOM_BOOK_ISBN)
-                .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID)
-                //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
-                // note that not all external id's warrant an index
-
-                .addIndex(DBKey.SID_GOODREADS_BOOK, false, DOM_ESID_GOODREADS_BOOK)
-                .addIndex(DBKey.SID_ISFDB, false, DOM_ESID_ISFDB)
-                .addIndex(DBKey.SID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
-                .addIndex(DBKey.SID_STRIP_INFO, false, DOM_ESID_STRIP_INFO_BE)
-                .addIndex(DBKey.SID_LAST_DODO_NL, false, DOM_ESID_LAST_DODO_NL)
-                .addIndex(DBKey.SID_BEDETHEQUE, false, DOM_ESID_BEDETHEQUE);
+                .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
         TBL_DELETED_BOOKS.addDomains(DOM_BOOK_UUID,
@@ -1761,7 +1710,7 @@ public final class DBDefinitions {
 
         TBL_STRIPINFO_COLLECTION
                 .addDomains(DOM_FK_BOOK,
-                            DOM_ESID_STRIP_INFO_BE,
+                            DOM_STRIP_INFO_BE_BOOK_ID,
                             DOM_STRIP_INFO_BE_COLLECTION_ID,
                             DOM_STRIP_INFO_BE_OWNED,
                             DOM_STRIP_INFO_BE_DIGITAL,
@@ -1772,7 +1721,7 @@ public final class DBDefinitions {
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 // not unique: allow multiple local books to point to the same online book
                 .addIndex(DBKey.SID_STRIP_INFO, false,
-                          DOM_ESID_STRIP_INFO_BE);
+                          DOM_STRIP_INFO_BE_BOOK_ID);
         ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(),
                        TBL_STRIPINFO_COLLECTION);
 

@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -72,9 +73,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -125,6 +125,8 @@ public class BookDaoImpl
     @NonNull
     private final Supplier<LoaneeDao> loaneeDaoDaoSupplier;
     @NonNull
+    private final Supplier<IdentifierDao> identifierDaoSupplier;
+    @NonNull
     private final Supplier<CalibreDao> calibreDaoSupplier;
     @NonNull
     private final Supplier<StripInfoDao> stripInfoDaoSupplier;
@@ -146,6 +148,7 @@ public class BookDaoImpl
      * @param bookshelfDaoSupplier  deferred supplier for the {@link BookshelfDao}
      * @param tocEntryDaoSupplier   deferred supplier for the {@link TocEntryDao}
      * @param loaneeDaoDaoSupplier  deferred supplier for the {@link LoaneeDao}
+     * @param identifierDaoSupplier deferred supplier for the {@link IdentifierDao}
      * @param calibreDaoSupplier    deferred supplier for the {@link CalibreDao}
      * @param stripInfoDaoSupplier  deferred supplier for the {@link StripInfoDao}
      * @param ftsDaoSupplier        deferred supplier for the {@link FtsDao}
@@ -160,6 +163,7 @@ public class BookDaoImpl
                        @NonNull final Supplier<BookshelfDao> bookshelfDaoSupplier,
                        @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
                        @NonNull final Supplier<LoaneeDao> loaneeDaoDaoSupplier,
+                       @NonNull final Supplier<IdentifierDao> identifierDaoSupplier,
                        @NonNull final Supplier<CalibreDao> calibreDaoSupplier,
                        @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,
                        @NonNull final Supplier<FtsDao> ftsDaoSupplier,
@@ -173,6 +177,7 @@ public class BookDaoImpl
         this.bookshelfDaoSupplier = bookshelfDaoSupplier;
         this.tocEntryDaoSupplier = tocEntryDaoSupplier;
         this.loaneeDaoDaoSupplier = loaneeDaoDaoSupplier;
+        this.identifierDaoSupplier = identifierDaoSupplier;
         this.calibreDaoSupplier = calibreDaoSupplier;
         this.stripInfoDaoSupplier = stripInfoDaoSupplier;
         this.ftsDaoSupplier = ftsDaoSupplier;
@@ -494,19 +499,19 @@ public class BookDaoImpl
 
         if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
             // Bookshelves will be inserted if new, but never updated
-            bookshelfDaoSupplier.get().insertOrUpdate(context, book.getId(),
+            bookshelfDaoSupplier.get().insertOrUpdate(context,
+                                                      book.getId(),
                                                       book.getBookshelves());
         }
 
         if (book.contains(Book.BKEY_AUTHOR_LIST)) {
-            final List<Author> list = book.getAuthors();
             // Authors will be inserted if new, but only updated if allowed
             authorDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
-                                                   list, author -> bookLocale);
+                                                   book.getAuthors(),
+                                                   author -> bookLocale);
         }
 
         if (book.contains(Book.BKEY_SERIES_LIST)) {
-            final List<Series> list = book.getSeries();
             final Function<Series, Locale> localeSupplier = item -> {
                 if (lookupLocale) {
                     return item.getLocale(context).orElse(bookLocale);
@@ -516,34 +521,42 @@ public class BookDaoImpl
             };
             // Series will be inserted if new, but only updated if allowed
             seriesDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
-                                                   list, localeSupplier);
+                                                   book.getSeries(),
+                                                   localeSupplier);
         }
 
         if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
-            final List<Publisher> list = book.getPublishers();
             // Publishers will be inserted if new, but only updated if allowed
             publisherDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
-                                                      list, publisher -> bookLocale);
+                                                      book.getPublishers(),
+                                                      publisher -> bookLocale);
         }
 
         if (book.contains(Book.BKEY_TOC_LIST)) {
             // TOC entries are two steps away; they can exist in other books
             // Hence we will both insert new entries
             // AND update existing ones as needed.
-            tocEntryDaoSupplier.get().insertOrUpdate(context, book.getId(),
-                                                     book.getToc(), tocEntry -> bookLocale);
+            tocEntryDaoSupplier.get().insertOrUpdate(context,
+                                                     book.getId(),
+                                                     book.getToc(),
+                                                     tocEntry -> bookLocale);
         }
+
+        identifierDaoSupplier.get().insertOrUpdate(book, doUpdates);
+
 
         if (book.contains(DBKey.LOANEE_NAME)) {
             loaneeDaoDaoSupplier.get().setLoanee(book);
         }
 
+        // Handle synchronization field.
         if (book.contains(DBKey.CALIBRE_BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
             calibreDaoSupplier.get().insertOrUpdate(context, book);
         }
 
-        if (book.contains(DBKey.SID_STRIP_INFO)) {
+        // Handle synchronization field.
+        if (book.contains(Identifier.SID_STRIP_INFO)) {
             stripInfoDaoSupplier.get().insertOrUpdate(book);
         }
     }
@@ -1075,11 +1088,7 @@ public class BookDaoImpl
                     // added/updated
                     DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
                     DBKey.AUTO_UPDATE
-                    //NEWTHINGS: adding a new search engine: optional: add engine specific keys
             )
-
-                               + ',' + TBL_BOOKS.dotAs(EngineId.getExternalIdDomains())
-
                                // LEFT OUTER JOIN, COALESCE nulls to ""
                                + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
                                + _AS_ + DBKey.LOANEE_NAME
@@ -1093,6 +1102,11 @@ public class BookDaoImpl
                                               DBKey.FK_CALIBRE_LIBRARY)
 
                                // LEFT OUTER JOIN, columns default to NULL
+                               + ','
+                               // Convert actual column name to the Identifier name.
+                               // See the StripInfoDaoImpl where we do the opposite.
+                               + TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_BOOK_ID)
+                               + _AS_ + Identifier.SID_STRIP_INFO
                                + ','
                                + TBL_STRIPINFO_COLLECTION
                                        .dotAs(DBKey.STRIP_INFO_COLL_ID,

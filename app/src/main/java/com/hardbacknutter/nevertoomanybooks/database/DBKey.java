@@ -57,12 +57,10 @@ public final class DBKey {
      * ======================================================================================
      */
 
-    //NEWTHINGS: adding a new search engine: optional: add external id KEY
-    // ENHANCE: instead of adding a column for each SID,
-    //  we need to add a single column with a JSON value containing all SID's
-
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Short name; i.e. a keyword. */
     public static final String IDENT_NAME = "ident_name";
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Type: a char: S or L. */
+    public static final String IDENT_TYPE = "ident_type";
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Some description; i.e. website name. */
     public static final String IDENT_DESC = "ident_desc";
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Url to the site. */
