@@ -37,6 +37,7 @@ import java.net.CookieManager;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
@@ -126,6 +128,22 @@ public class OpenLibrarySearchEngine
      * the service will return "403 Forbidden" status.
      */
     private static final int COVER_BY_ISBN_REQUEST_DELAY = 3_000;
+
+    /**
+     * Do NOT REORDER. Some keys are duplicates.
+     * e.g. "oclc_numbers" is current/preferred, "oclc" is legacy.
+     */
+    private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
+            Map.entry("amazon", Identifier.SID_ASIN),
+            Map.entry("goodreads", Identifier.SID_GOODREADS_BOOK),
+            Map.entry("google", Identifier.SID_GOOGLE),
+            Map.entry("lccn", Identifier.SID_LCCN),
+            Map.entry("librarything", Identifier.SID_LIBRARY_THING),
+            Map.entry("oclc_numbers", Identifier.SID_OCLC),
+            Map.entry("oclc", Identifier.SID_OCLC),
+            Map.entry("wikidata", Identifier.SID_WIKIDATA)
+    );
+
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
     private final CookieManager cookieManager;
@@ -543,7 +561,7 @@ public class OpenLibrarySearchEngine
         // "/books/OL22853304M"
         s = document.optString("key", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.SID_OPEN_LIBRARY, s.substring("/books/".length()));
+            book.putString(Identifier.SID_OPEN_LIBRARY, s.substring("/books/".length()));
         }
 
         s = document.optString("title", null);
@@ -587,8 +605,9 @@ public class OpenLibrarySearchEngine
             parseContributors(context, a, book);
         }
 
-        // There is also a key "pagination" which I believe to be the number of
-        // *numbered* pages - we're ignoring that one...
+        // There is also a key "pagination" which for example
+        // contains ""xxii, 781p."
+        // We're ignoring that one...
         i = document.optInt("number_of_pages");
         if (i > 0) {
             book.putString(DBKey.PAGE_COUNT, String.valueOf(i));
@@ -606,7 +625,8 @@ public class OpenLibrarySearchEngine
             parseLanguages(a, book);
         }
 
-        // Root level contains ISBN etc
+        // Identifiers can be found both at root level and in the "identifiers" key.
+        // (ISBN is only found in the root)
         parseIdentifiers(document, book);
         // "identifiers" contains foreign-site codes (e.g. amazon ASIN)
         element = document.optJSONObject("identifiers");
@@ -694,7 +714,6 @@ public class OpenLibrarySearchEngine
             fetchCoverByCoverId(context, a, fetchCovers, book);
         }
     }
-
 
     private void fetchCoverByCoverId(@NonNull final Context context,
                                      @NonNull final JSONArray coverIds,
@@ -816,6 +835,10 @@ public class OpenLibrarySearchEngine
      * ]
      *
      * "series": [
+     *     "The Dark Tower, 5"
+     * ]
+     *
+     * "series": [
      *     "NUMA Files, 1; Dirk Pitt Adventures, 1"
      *  ],
      * </pre>
@@ -857,54 +880,28 @@ public class OpenLibrarySearchEngine
 
         JSONArray a;
 
-        // see if we have a better isbn.
+        // get the 'longest' ISBN available
         a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
+            // Overwrite
             book.putString(DBKey.BOOK_ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
-                book.putString(DBKey.BOOK_ISBN, a.getString(0));
+                // Do NOT overwrite
+                if (!book.contains(DBKey.BOOK_ISBN)) {
+                    book.putString(DBKey.BOOK_ISBN, a.getString(0));
+                }
             }
         }
-        a = element.optJSONArray("amazon");
-        if (a != null && !a.isEmpty()) {
-            book.putString(DBKey.SID_ASIN, a.getString(0));
-        }
-        a = element.optJSONArray("openlibrary");
-        if (a != null && !a.isEmpty()) {
-            book.putString(DBKey.SID_OPEN_LIBRARY, a.getString(0));
-        }
-        a = element.optJSONArray("librarything");
-        if (a != null && !a.isEmpty()) {
-            book.putLong(DBKey.SID_LIBRARY_THING, a.getLong(0));
-        }
-        a = element.optJSONArray("goodreads");
-        if (a != null && !a.isEmpty()) {
-            book.putLong(DBKey.SID_GOODREADS_BOOK, a.getLong(0));
-        }
-        a = element.optJSONArray("google");
-        if (a != null && !a.isEmpty()) {
-            book.putString(DBKey.SID_GOOGLE, a.getString(0));
-        }
-        a = element.optJSONArray("lccn");
-        if (a != null && !a.isEmpty()) {
-            book.putString(DBKey.SID_LCCN, a.getString(0));
-        }
-        a = element.optJSONArray("wikidata");
-        if (a != null && !a.isEmpty()) {
-            book.putString(DBKey.SID_WIKIDATA, a.getString(0));
-        }
-
-        a = element.optJSONArray("oclc_numbers");
-        if (a != null && !a.isEmpty()) {
-            book.putString(DBKey.SID_OCLC, a.getString(0));
-        }
-        // legacy key name
-        a = element.optJSONArray("oclc");
-        if (a != null && !a.isEmpty()) {
-            book.putString(DBKey.SID_OCLC, a.getString(0));
-        }
+        IDENTIFIER_MAPPING.forEach((olKey, identifier) -> {
+            final JSONArray data = element.optJSONArray(olKey);
+            if (data != null && !data.isEmpty()) {
+                if (!book.contains(identifier)) {
+                    book.putString(identifier, data.getString(0));
+                }
+            }
+        });
     }
 
     private void parseToc(@NonNull final Context context,

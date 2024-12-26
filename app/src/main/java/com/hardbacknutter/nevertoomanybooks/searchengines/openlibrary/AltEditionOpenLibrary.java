@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 /**
@@ -116,7 +117,7 @@ public class AltEditionOpenLibrary
     /**
      * Constructor.
      *
-     * @param olid      {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_OPEN_LIBRARY}
+     * @param olid      {@link Identifier#SID_OPEN_LIBRARY}
      * @param isbn      of the book book
      * @param langIso3  language ISO3 code of the book
      * @param publisher primary publisher name
@@ -156,7 +157,7 @@ public class AltEditionOpenLibrary
     }
 
     /**
-     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_OPEN_LIBRARY}.
+     * {@link Identifier#SID_OPEN_LIBRARY}.
      *
      * @return the website id
      */

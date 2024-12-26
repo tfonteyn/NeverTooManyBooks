@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
@@ -554,7 +555,7 @@ public class DoubanSearchEngine
 
         // The content table - in the example we used, it's the chapter list.
         // TODO: check if there is a way of detecting chapter-list versus actual content-list
-        // final String sid = book.getString(DBKey.SID_DOUBAN, null);
+        // final String sid = book.getString(Identifier.SID_DOUBAN, null);
         // if (sid != null) {
         //     final Element tocElement = document.selectFirst("div#dir_" + sid + "_full");
         //     if (tocElement != null) {
@@ -629,7 +630,7 @@ public class DoubanSearchEngine
                         try {
                             final int id = Integer.parseInt(parts[4]);
                             if (id > 0) {
-                                book.putString(DBKey.SID_DOUBAN, String.valueOf(id));
+                                book.putString(Identifier.SID_DOUBAN, String.valueOf(id));
                             }
                         } catch (@NonNull final NumberFormatException ignore) {
                             // ignore

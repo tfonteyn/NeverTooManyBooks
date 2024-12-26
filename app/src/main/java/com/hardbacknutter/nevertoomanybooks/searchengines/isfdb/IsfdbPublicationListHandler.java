@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -265,7 +266,7 @@ class IsfdbPublicationListHandler
                 }
 
                 case XML_RECORD: {
-                    addIfNotPresent(DBKey.SID_ISFDB, builder.toString().strip());
+                    addIfNotPresent(Identifier.SID_ISFDB, builder.toString().strip());
                     break;
                 }
                 case XML_TITLE: {
@@ -401,19 +402,25 @@ class IsfdbPublicationListHandler
                             switch (externalIdType) {
                                 // the case labels are the codes used by the ISFDB website
                                 case "1":
-                                    addIfNotPresent(DBKey.SID_ASIN, externalId);
+                                    addIfNotPresent(Identifier.SID_ASIN, externalId);
+                                    break;
+                                case "6":
+                                    addIfNotPresent(Identifier.SID_DNB, externalId);
                                     break;
                                 case "8":
-                                    addIfNotPresent(DBKey.SID_GOODREADS_BOOK, externalId);
+                                    addIfNotPresent(Identifier.SID_GOODREADS_BOOK, externalId);
                                     break;
                                 case "10":
-                                    addIfNotPresent(DBKey.SID_LCCN, externalId);
+                                    addIfNotPresent(Identifier.SID_LCCN, externalId);
                                     break;
                                 case "12":
-                                    addIfNotPresent(DBKey.SID_OCLC, externalId);
+                                    addIfNotPresent(Identifier.SID_OCLC, externalId);
                                     break;
                                 case "13":
-                                    addIfNotPresent(DBKey.SID_OPEN_LIBRARY, externalId);
+                                    addIfNotPresent(Identifier.SID_OPEN_LIBRARY, externalId);
+                                    break;
+                                case "16":
+                                    addIfNotPresent(Identifier.SID_KBNL, externalId);
                                     break;
                                 default:
                                     break;

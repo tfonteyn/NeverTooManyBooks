@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -156,8 +157,8 @@ public class IsfdbXmlPublicationTest
                      + "Publication date from Amazon.co.uk",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(425189, book.getLong(DBKey.SID_ISFDB));
-        assertEquals(16190406, book.getLong(DBKey.SID_OCLC));
+        assertEquals(425189, book.getLong(Identifier.SID_ISFDB));
+        assertEquals(16190406, book.getLong(Identifier.SID_OCLC));
 
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
         assertEquals("TRPLNTRLBK1971", book.getString(IsfdbSearchEngine.SiteField.BOOK_TAG));

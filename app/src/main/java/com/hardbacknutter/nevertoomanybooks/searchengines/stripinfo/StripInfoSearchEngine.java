@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -832,7 +833,7 @@ public class StripInfoSearchEngine
                                             .split("_")[0];
             bookId = Long.parseLong(idString);
             if (bookId > 0) {
-                book.putLong(DBKey.SID_STRIP_INFO, bookId);
+                book.putLong(Identifier.SID_STRIP_INFO, bookId);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore

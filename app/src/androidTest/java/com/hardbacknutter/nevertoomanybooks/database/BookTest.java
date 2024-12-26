@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -347,8 +348,8 @@ public class BookTest
         book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx]);
         book.setStage(EntityStage.Stage.Dirty);
 
-        book.putLong(DBKey.SID_ISFDB, TestConstants.BOOK_ISFDB[bookIdx]);
-        book.putString(DBKey.SID_LCCN, TestConstants.BOOK_LCCN[bookIdx]);
+        book.putLong(Identifier.SID_ISFDB, TestConstants.BOOK_ISFDB[bookIdx]);
+        book.putString(Identifier.SID_LCCN, TestConstants.BOOK_LCCN[bookIdx]);
 
         book.setBookshelves(bookshelfList);
         book.setAuthors(authorList);
@@ -382,10 +383,10 @@ public class BookTest
         assertFalse(uuid.isEmpty());
         assertEquals(TestConstants.BOOK_TITLE[bookIdx], book.getTitle());
 
-        assertEquals(TestConstants.BOOK_ISFDB[bookIdx], book.getLong(DBKey.SID_ISFDB));
+        assertEquals(TestConstants.BOOK_ISFDB[bookIdx], book.getLong(Identifier.SID_ISFDB));
 
         // not saved, hence null
-        assertNull(book.getString(DBKey.SID_LCCN, null));
+        assertNull(book.getString(Identifier.SID_LCCN, null));
 
 
         final List<Bookshelf> bookshelves = book.getBookshelves();

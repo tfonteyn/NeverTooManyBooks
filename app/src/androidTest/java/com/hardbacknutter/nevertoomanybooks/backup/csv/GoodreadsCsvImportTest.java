@@ -44,9 +44,11 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
@@ -60,6 +62,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -71,18 +74,24 @@ public class GoodreadsCsvImportTest
 
     private BookDao bookDao;
     private int booksPresent;
+    private IdentifierDao identifierDao;
+    private Identifier grIdent;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        ServiceLocator.getInstance().getDb().delete(DBDefinitions.TBL_BOOKS.getName(),
-                                                    DBKey.SID_GOODREADS_BOOK + " <>''",
-                                                    null);
+        final ServiceLocator locator = ServiceLocator.getInstance();
 
-        bookDao = ServiceLocator.getInstance().getBookDao();
+        identifierDao = locator.getIdentifierDao();
+        bookDao = locator.getBookDao();
         booksPresent = bookDao.count();
+
+        grIdent = identifierDao.findByName(Identifier.SID_GOODREADS_BOOK).get();
+        locator.getDb().delete(DBDefinitions.TBL_BOOK_IDENTIFIER.getName(),
+                               DBKey.FK_IDENTIFIER + "=" + grIdent.getId(),
+                               null);
     }
 
     @SuppressWarnings("LocalCanBeFinal")
@@ -135,7 +144,11 @@ public class GoodreadsCsvImportTest
         // Roger Zelazny,"Zelazny, Roger",Ruud Löbler,"=""9027406928""","=""9789027406927""",
         // 5,3.99,Het Spectrum,Paperback,172,1973,1972,,2020/06/05,books,books (#8),read,
         // ,,,1,0
-        try (Cursor cursor = bookDao.fetchByKey(DBKey.SID_GOODREADS_BOOK, "8998451")) {
+
+        long bookId = identifierDao.getBookId(grIdent, "8998451");
+        assertNotEquals(0, bookId);
+
+        try (Cursor cursor = bookDao.fetchById(bookId)) {
             assertEquals(1, cursor.getCount());
             assertTrue(cursor.moveToNext());
             final Book book = Book.from(cursor);
@@ -179,7 +192,10 @@ public class GoodreadsCsvImportTest
         // Tor Books,Hardcover,472,2014,2006,,2024/04/24,
         // "currently-reading, books","currently-reading (#3), books (#15)",currently-reading,
         // On my todo list,,my own notes on this book,1,0
-        try (Cursor cursor = bookDao.fetchByKey(DBKey.SID_GOODREADS_BOOK, "20518872")) {
+        bookId = identifierDao.getBookId(grIdent, "20518872");
+        assertNotEquals(0, bookId);
+
+        try (Cursor cursor = bookDao.fetchById(bookId)) {
             assertEquals(1, cursor.getCount());
             assertTrue(cursor.moveToNext());
             final Book book = Book.from(cursor);

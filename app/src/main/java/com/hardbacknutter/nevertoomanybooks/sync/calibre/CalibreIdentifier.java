@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 public final class CalibreIdentifier {
 
@@ -44,58 +45,43 @@ public final class CalibreIdentifier {
     private static final String STRIPINFO = "stripinfo";
 
     static {
-        CalibreIdentifier calibreIdentifier;
+        CalibreIdentifier cId;
 
-        calibreIdentifier = new CalibreIdentifier(AMAZON, DBKey.SID_ASIN, false, false);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(BEDETHEQUE, DBKey.SID_BEDETHEQUE, true);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(GOODREADS, DBKey.SID_GOODREADS_BOOK, true);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(GOOGLE, DBKey.SID_GOOGLE, false, false);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(ISBN, DBKey.BOOK_ISBN, false);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(ISFDB, DBKey.SID_ISFDB, true);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(LASTDODO, DBKey.SID_LAST_DODO_NL, true);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(LCCN, DBKey.SID_LCCN, false, false);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(LIBRARYTHING, DBKey.SID_LIBRARY_THING, true);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(OCLC, DBKey.SID_OCLC, false, false);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(OPENLIBRARY, DBKey.SID_OPEN_LIBRARY, false);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
-        calibreIdentifier = new CalibreIdentifier(STRIPINFO, DBKey.SID_STRIP_INFO, true);
-        MAP.put(calibreIdentifier.remote, calibreIdentifier);
+        cId = new CalibreIdentifier(ISBN, DBKey.BOOK_ISBN);
+        MAP.put(cId.remote, cId);
+
+        cId = new CalibreIdentifier(AMAZON, Identifier.SID_ASIN);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(BEDETHEQUE, Identifier.SID_BEDETHEQUE);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(GOODREADS, Identifier.SID_GOODREADS_BOOK);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(GOOGLE, Identifier.SID_GOOGLE);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(ISFDB, Identifier.SID_ISFDB);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(LASTDODO, Identifier.SID_LAST_DODO_NL);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(LCCN, Identifier.SID_LCCN);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(LIBRARYTHING, Identifier.SID_LIBRARY_THING);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(OCLC, Identifier.SID_OCLC);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(OPENLIBRARY, Identifier.SID_OPEN_LIBRARY);
+        MAP.put(cId.remote, cId);
+        cId = new CalibreIdentifier(STRIPINFO, Identifier.SID_STRIP_INFO);
+        MAP.put(cId.remote, cId);
     }
 
     @NonNull
     public final String remote;
     @NonNull
     public final String local;
-    final boolean isLocalLong;
-
-    final boolean isStoredLocally;
 
     private CalibreIdentifier(@NonNull final String remote,
-                              @NonNull final String local,
-                              final boolean isLocalLong) {
+                              @NonNull final String local) {
         this.remote = remote;
         this.local = local;
-        this.isLocalLong = isLocalLong;
-        this.isStoredLocally = true;
-    }
-
-    private CalibreIdentifier(@NonNull final String remote,
-                              @NonNull final String local,
-                              final boolean isLocalLong,
-                              final boolean isStoredLocally) {
-        this.remote = remote;
-        this.local = local;
-        this.isLocalLong = isLocalLong;
-        this.isStoredLocally = isStoredLocally;
     }
 }

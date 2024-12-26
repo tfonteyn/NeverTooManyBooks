@@ -64,7 +64,7 @@ public class IsfdbTocSearchViewModel
     }
 
 
-    void searchBook(final long isfdbId) {
+    void searchBook(@NonNull final String isfdbId) {
         isfdbGetBookTask.search(isfdbId);
     }
 

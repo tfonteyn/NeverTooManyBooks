@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -200,6 +201,24 @@ public class IsfdbSearchEngine
      * @see #CGI_ADV_SEARCH_PREFIX
      */
     private static final String USE = "&USE_%1$s=%2$s&O_%1$s=contains&TERM_%1$s=%3$s";
+    private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
+            // https://openlibrary.org/books/OL7524037M
+            Map.entry("openlibrary.org", Identifier.SID_OPEN_LIBRARY),
+            // https://www.goodreads.com/book/show/211357
+            Map.entry("goodreads.com", Identifier.SID_GOODREADS_BOOK),
+            // http://www.worldcat.org/oclc/60560136
+            Map.entry("www.worldcat.org", Identifier.SID_OCLC),
+            // http://lccn.loc.gov/2008299472
+            // http://lccn.loc.gov/95-22691
+            Map.entry("lccn.loc.gov", Identifier.SID_LCCN),
+            // http://d-nb.info/986851329
+            Map.entry("d-nb.info", Identifier.SID_DNB),
+            // The data uses the picarta link which is defunct. But the PPN
+            // is valid for https://kb.nl, i.e. the oclc link
+            // https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=852323123
+            // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
+            Map.entry("/XMLPRS=Y/PPN?PPN=", Identifier.SID_KBNL)
+    );
 
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
@@ -308,6 +327,7 @@ public class IsfdbSearchEngine
             }
         }
     }
+
     @NonNull
     @Override
     public String createViewOnSiteUrl(@NonNull final Context context,
@@ -1164,14 +1184,9 @@ public class IsfdbSearchEngine
      */
     private void parseRecordId(@NonNull final Element element,
                                @NonNull final Book book) {
-        final String tmp = SearchEngineUtils.digits(element.ownText());
-        if (!tmp.isEmpty()) {
-            try {
-                final long record = Long.parseLong(tmp);
-                book.putLong(DBKey.SID_ISFDB, record);
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
+        final String recordId = SearchEngineUtils.digits(element.ownText());
+        if (!recordId.isEmpty()) {
+            book.putString(Identifier.SID_ISFDB, recordId);
         }
     }
 
@@ -1422,7 +1437,6 @@ public class IsfdbSearchEngine
                                                  HttpConstants.CONNECTION_CLOSE));
     }
 
-
     /**
      * All lines are normally.
      * <pre>
@@ -1467,23 +1481,8 @@ public class IsfdbSearchEngine
                 .map(element -> element.attr("href"))
                 .filter(Objects::nonNull)
                 .forEach(url -> {
-                    if (url.contains("openlibrary.org")) {
-                        // https://openlibrary.org/books/OL7524037M
-                        book.putString(DBKey.SID_OPEN_LIBRARY, stripString(url, '/'));
 
-                    } else if (url.contains("goodreads.com")) {
-                        // https://www.goodreads.com/book/show/211357
-                        final long id = stripNumber(url, '/');
-                        // Sanity check
-                        if (id != 0) {
-                            book.putLong(DBKey.SID_GOODREADS_BOOK, id);
-                        }
-
-                    } else if (url.contains("www.worldcat.org")) {
-                        // http://www.worldcat.org/oclc/60560136
-                        book.putString(DBKey.SID_OCLC, stripString(url, '/'));
-
-                    } else if (url.contains("amazon")) {
+                    if (url.contains("amazon")) {
                         final int start = url.lastIndexOf('/');
                         if (start != -1) {
                             int end = url.indexOf('?', start);
@@ -1491,53 +1490,43 @@ public class IsfdbSearchEngine
                                 end = url.length();
                             }
                             final String asin = url.substring(start + 1, end);
-                            book.putString(DBKey.SID_ASIN, asin);
+                            book.putString(Identifier.SID_ASIN, asin);
                         }
-//                    } else if (url.contains("audible.com")) {
-                        // https://www.audible.com/pd/B00HJZAQPI
-
-                    } else if (url.contains("lccn.loc.gov")) {
-                        // Library of Congress (USA)
-                        // http://lccn.loc.gov/2008299472
-                        // http://lccn.loc.gov/95-22691
-                        book.putString(DBKey.SID_LCCN, stripString(url, '/'));
+                    } else {
+                        IDENTIFIER_MAPPING.forEach((inUrl, identifier) -> {
+                            if (url.contains(inUrl)) {
+                                book.putString(identifier, stripString(url, '/'));
+                            }
+                        });
+                    }
 
 //                    } else if (url.contains("explore.bl.uk")) {
-                        // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
-                        // vid=BLVU1&docId=BLL01014057142
-                        // British Library
-
-                    } else if (url.contains("d-nb.info")) {
-                        // http://d-nb.info/986851329
-                        book.putString(DBKey.SID_DNB, stripString(url, '/'));
-
-//                    } else if (url.contains("picarta.pica.nl")) {
-                        // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
-                        // Nederlandse Bibliografie
-
+                    // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
+                    // vid=BLVU1&docId=BLL01014057142
+                    // British Library
+//                    } else if (url.contains("audible.com")) {
+                    // https://www.audible.com/pd/B00HJZAQPI
 //                    } else if (url.contains("tercerafundacion.net")) {
-                        // Spanish
-                        // https://tercerafundacion.net/biblioteca/ver/libro/2329
-
+                    // Spanish
+                    // https://tercerafundacion.net/biblioteca/ver/libro/2329
 //                    } else if (url.contains("sfbg.us")) {
-                        // Bulgarian
-                        // http://www.sfbg.us/book/KAME-BFN-023X
+                    // Bulgarian
+                    // http://www.sfbg.us/book/KAME-BFN-023X
 //                    } else if (url.contains("fantlab.ru")) {
-                        // Russian
-                        // https://fantlab.ru/edition169821
+                    // Russian
+                    // https://fantlab.ru/edition169821
 //                    } else if (url.contains("chitanka.info")) {
-                        // Russian
-                        // https://biblioman.chitanka.info/books/12668
+                    // Russian
+                    // https://biblioman.chitanka.info/books/12668
 //                    } else if (url.contains("libris.kb.se")) {
-                        // Swedish; a single book can have multiple libris.kb.se links!
-                        // https://libris.kb.se/bib/7626661
-                        // https://libris.kb.se/resource/bib/7626661
-                        // https://libris.kb.se/katalogisering/p60w3h3112v1wsm
-                        // https://libris.kb.se/p60w3h3112v1wsm
+                    // Swedish; a single book can have multiple libris.kb.se links!
+                    // https://libris.kb.se/bib/7626661
+                    // https://libris.kb.se/resource/bib/7626661
+                    // https://libris.kb.se/katalogisering/p60w3h3112v1wsm
+                    // https://libris.kb.se/p60w3h3112v1wsm
 //                    } else if (url.contains("noosfere.org")) {
-                        // French
-                        // https://www.noosfere.org/livres/niourf.asp?numlivre=-323033
-                    }
+                    // French
+                    // https://www.noosfere.org/livres/niourf.asp?numlivre=-323033
                 });
     }
 

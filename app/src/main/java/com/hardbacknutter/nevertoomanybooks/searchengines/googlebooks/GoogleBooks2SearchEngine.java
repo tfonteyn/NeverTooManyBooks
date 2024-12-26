@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
@@ -353,7 +354,7 @@ public class GoogleBooks2SearchEngine
 
         final String googleId = edition.optString("id", null);
         if (googleId != null && !googleId.isEmpty()) {
-            book.putString(DBKey.SID_GOOGLE, googleId);
+            book.putString(Identifier.SID_GOOGLE, googleId);
         }
 
         final JSONObject volumeInfo = edition.optJSONObject("volumeInfo");

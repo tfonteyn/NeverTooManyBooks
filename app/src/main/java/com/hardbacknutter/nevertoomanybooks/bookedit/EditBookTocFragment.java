@@ -70,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryLaunche
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -465,8 +466,8 @@ public class EditBookTocFragment
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void searchIsfdb() {
         final Book book = vm.getBook();
-        final long isfdbId = book.getLong(DBKey.SID_ISFDB);
-        if (isfdbId != 0) {
+        final String isfdbId = book.getString(Identifier.SID_ISFDB, null);
+        if (isfdbId != null) {
             Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
             isfdbTocSearchVm.searchBook(isfdbId);

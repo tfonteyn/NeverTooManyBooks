@@ -46,7 +46,8 @@ public class IsfdbGetBookTask
     private static final String TAG = "IsfdbGetBookTask";
 
     /** ISFDB book id to get. */
-    private long isfdbId;
+    @Nullable
+    private String isfdbId;
     /** ISFDB book edition to get. */
     @Nullable
     private AltEditionIsfdb edition;
@@ -68,7 +69,7 @@ public class IsfdbGetBookTask
      */
     @UiThread
     public void search(@NonNull final AltEditionIsfdb edition) {
-        isfdbId = 0;
+        isfdbId = null;
         this.edition = edition;
 
         execute();
@@ -80,7 +81,7 @@ public class IsfdbGetBookTask
      * @param isfdbId Single ISFDB book ID's
      */
     @UiThread
-    public void search(final long isfdbId) {
+    public void search(@NonNull final String isfdbId) {
         this.isfdbId = isfdbId;
         edition = null;
 
@@ -115,9 +116,8 @@ public class IsfdbGetBookTask
             CoverFileSpecArray.process(book);
             return book;
 
-        } else if (isfdbId != 0) {
-            final Book book = searchEngine.searchByExternalId(context, String.valueOf(isfdbId),
-                                                              fetchCovers);
+        } else if (isfdbId != null) {
+            final Book book = searchEngine.searchByExternalId(context, isfdbId, fetchCovers);
             CoverFileSpecArray.process(book);
             return book;
 

@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -336,7 +337,7 @@ public class DnbSearchEngine
                             }
                             case "Datensatz-ID":
                             case "Record ID": {
-                                book.putString(DBKey.SID_DNB, td.text());
+                                book.putString(Identifier.SID_DNB, td.text());
                                 break;
                             }
                             case "Originalsprache":

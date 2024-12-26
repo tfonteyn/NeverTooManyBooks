@@ -56,41 +56,10 @@ public final class DBKey {
      * External Site id's.
      * ======================================================================================
      */
-    /** External Site id. - Long. */
-    public static final String SID_GOODREADS_BOOK = "goodreads_book_id";
-    /** External Site id. - Long. */
-    public static final String SID_ISFDB = "isfdb_book_id";
-    /** External Site id. - Long. */
-    public static final String SID_LIBRARY_THING = "lt_book_id";
-    /** External Site id. - String. */
-    public static final String SID_OPEN_LIBRARY = "ol_book_id";
-    /** External Site id. - Long. */
-    public static final String SID_STRIP_INFO = "si_book_id";
-    /** External Site id. - Long. */
-    public static final String SID_LAST_DODO_NL = "ld_book_id";
-    /** External Site id. - Long. */
-    public static final String SID_BEDETHEQUE = "bdt_book_id";
 
     //NEWTHINGS: adding a new search engine: optional: add external id KEY
     // ENHANCE: instead of adding a column for each SID,
     //  we need to add a single column with a JSON value containing all SID's
-
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_ASIN = "asin";
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_GOOGLE = "google_book_id";
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_OCLC = "oclc_book_id";
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_LCCN = "lccn_book_id";
-    /** External Site id. - Long. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_DOUBAN = "douban_book_id";
-    /** External Site id. - Long. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_DNB = "dnb_book_id";
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_WIKIDATA = "wikidata_book_id";
-    /** External Site id. - lONG. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String SID_KBNL = "kbnl_book_id";
 
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Short name; i.e. a keyword. */
     public static final String IDENT_NAME = "ident_name";
@@ -98,6 +67,7 @@ public final class DBKey {
     public static final String IDENT_DESC = "ident_desc";
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Url to the site. */
     public static final String IDENT_URL = "ident_url";
+
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String IDENT_SID = "ident_sid";
     /**

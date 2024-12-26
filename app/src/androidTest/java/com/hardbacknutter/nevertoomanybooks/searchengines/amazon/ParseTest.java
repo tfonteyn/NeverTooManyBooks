@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -45,6 +46,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+//URGENT: THIS AND ALL OTHER PARSE TESTS: ADD Identifier asserts
 
 @SuppressWarnings("MissingJavadoc")
 public class ParseTest
@@ -196,7 +198,7 @@ public class ParseTest
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Deutsch", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Taschenbuch", book.getString(DBKey.FORMAT, null));
-        assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
+        assertEquals("3518366823", book.getString(Identifier.SID_ASIN, null));
         assertEquals(9d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("1974-07-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -230,7 +232,7 @@ public class ParseTest
         assertEquals("Siddhartha", book.getString(DBKey.TITLE, null));
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("German", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
+        assertEquals("3518366823", book.getString(Identifier.SID_ASIN, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals(10.10d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -268,7 +270,7 @@ public class ParseTest
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-1107480551", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("1107480558", book.getString(DBKey.SID_ASIN, null));
+        assertEquals("1107480558", book.getString(Identifier.SID_ASIN, null));
         assertEquals("Tapa blanda", book.getString(DBKey.FORMAT, null));
         assertEquals(24.21d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -306,7 +308,7 @@ public class ParseTest
         assertEquals("Tapa dura", book.getString(DBKey.FORMAT, null));
         assertEquals("Español", book.getString(DBKey.LANGUAGE, null));
         assertEquals("720 páginas", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("840827578X", book.getString(DBKey.SID_ASIN, null));
+        assertEquals("840827578X", book.getString(Identifier.SID_ASIN, null));
         assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("2023-06-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));

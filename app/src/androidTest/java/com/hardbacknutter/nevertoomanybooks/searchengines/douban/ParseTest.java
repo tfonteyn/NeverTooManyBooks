@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -202,7 +203,7 @@ public class ParseTest
         assertFalse(book.contains(DBKey.PRICE_LISTED));
         assertFalse(book.contains(DBKey.PRICE_LISTED_CURRENCY));
 
-        assertEquals("36892731", book.getString(DBKey.SID_DOUBAN, null));
+        assertEquals("36892731", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(
@@ -257,7 +258,7 @@ public class ParseTest
         assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals("36874304", book.getString(DBKey.SID_DOUBAN, null));
+        assertEquals("36874304", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(
@@ -336,7 +337,7 @@ public class ParseTest
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals("36665775", book.getString(DBKey.SID_DOUBAN, null));
+        assertEquals("36665775", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(
@@ -520,7 +521,7 @@ public class ParseTest
         assertEquals(58d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals("36897178", book.getString(DBKey.SID_DOUBAN, null));
+        assertEquals("36897178", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(

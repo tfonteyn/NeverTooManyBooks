@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -478,7 +479,7 @@ public class LastDodoSearchEngine
 
                 switch (th.text()) {
                     case "LastDodo nummer":
-                        processText(td, DBKey.SID_LAST_DODO_NL, book);
+                        processText(td, Identifier.SID_LAST_DODO_NL, book);
                         break;
 
                     case "Titel":

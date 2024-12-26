@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
@@ -103,7 +104,7 @@ class KbNlBookHandler
             if (ppn != null) {
                 try {
                     final long sid = Long.parseLong(ppn);
-                    book.putLong(DBKey.SID_KBNL, sid);
+                    book.putLong(Identifier.SID_KBNL, sid);
 
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore

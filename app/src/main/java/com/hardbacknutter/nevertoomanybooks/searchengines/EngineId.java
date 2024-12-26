@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
@@ -117,7 +118,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
  *          TODO: document steps: search the code for "NEWTHINGS: adding a new search engine"
- *          and/or search for an existing one, e.g. {@link DBKey#SID_OPEN_LIBRARY}
  *      </li>
  *
  * </ol>
@@ -392,12 +392,12 @@ public enum EngineId
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
-            Amazon // .setExternalIdDomainKey(DBKey.SID_ASIN)
-                   .createConfig()
-                   .build(SearchEngineConfig::new);
+            Amazon.setExternalIdDomainKey(Identifier.SID_ASIN)
+                  .createConfig()
+                  .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
-            Bedetheque.setExternalIdDomainKey(DBKey.SID_BEDETHEQUE)
+            Bedetheque.setExternalIdDomainKey(Identifier.SID_BEDETHEQUE)
                       .createConfig()
                       // default timeouts based on limited testing
                       .setConnectTimeoutMs(15_000)
@@ -417,25 +417,28 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
         if (Dnb.isEnabled()) {
-            Dnb.createConfig()
+            Dnb.setExternalIdDomainKey(Identifier.SID_DNB)
+               .createConfig()
                .build(SearchEngineConfig::new);
         }
         if (Douban.isEnabled()) {
-            Douban.createConfig()
+            Douban.setExternalIdDomainKey(Identifier.SID_DOUBAN)
+                  .createConfig()
                   .build(SearchEngineConfig::new);
         }
         if (Goodreads.isEnabled()) {
-            Goodreads.setExternalIdDomainKey(DBKey.SID_GOODREADS_BOOK)
+            Goodreads.setExternalIdDomainKey(Identifier.SID_GOODREADS_BOOK)
                      .createConfig()
                      .build(SearchEngineConfig::new);
         }
         if (GoogleBooks.isEnabled()) {
             GoogleBooks.setSupportsMultipleCoverSizes(true)
+                       .setExternalIdDomainKey(Identifier.SID_GOOGLE)
                        .createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (Isfdb.isEnabled()) {
-            Isfdb.setExternalIdDomainKey(DBKey.SID_ISFDB)
+            Isfdb.setExternalIdDomainKey(Identifier.SID_ISFDB)
                  .createConfig()
                  // default timeouts based on limited testing
                  .setConnectTimeoutMs(20_000)
@@ -444,28 +447,29 @@ public enum EngineId
         }
         if (KbNl.isEnabled()) {
             KbNl.setSupportsMultipleCoverSizes(true)
+                .setExternalIdDomainKey(Identifier.SID_KBNL)
                 .createConfig()
                 .build(SearchEngineConfig::new);
         }
         if (LastDodoNl.isEnabled()) {
-            LastDodoNl.setExternalIdDomainKey(DBKey.SID_LAST_DODO_NL)
+            LastDodoNl.setExternalIdDomainKey(Identifier.SID_LAST_DODO_NL)
                       .createConfig()
                       .setPrefersIsbn10(true)
                       .build(SearchEngineConfig::new);
         }
         if (LibraryThing.isEnabled()) {
-            LibraryThing.setExternalIdDomainKey(DBKey.SID_LIBRARY_THING)
+            LibraryThing.setExternalIdDomainKey(Identifier.SID_LIBRARY_THING)
                         .createConfig()
                         .build(SearchEngineConfig::new);
         }
         if (OpenLibrary.isEnabled()) {
-            OpenLibrary.setExternalIdDomainKey(DBKey.SID_OPEN_LIBRARY)
+            OpenLibrary.setExternalIdDomainKey(Identifier.SID_OPEN_LIBRARY)
                        .setSupportsMultipleCoverSizes(true)
                        .createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
-            StripInfoBe.setExternalIdDomainKey(DBKey.SID_STRIP_INFO)
+            StripInfoBe.setExternalIdDomainKey(Identifier.SID_STRIP_INFO)
                        .createConfig()
                        // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)

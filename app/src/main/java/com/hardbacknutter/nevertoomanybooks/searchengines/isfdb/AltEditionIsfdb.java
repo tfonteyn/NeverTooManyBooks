@@ -25,6 +25,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 import org.jsoup.nodes.Document;
@@ -124,7 +125,7 @@ public class AltEditionIsfdb
     }
 
     /**
-     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_ISFDB}.
+     * {@link Identifier#SID_ISFDB}.
      *
      * @return the website id
      */

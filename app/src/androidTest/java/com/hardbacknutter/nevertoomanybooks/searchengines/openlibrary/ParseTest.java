@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -113,12 +114,12 @@ public class ParseTest
 
         assertEquals("Slow reading", book.getString(DBKey.TITLE, null));
         assertEquals("9780980200447", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL22853304M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
-        assertEquals("2008054742", book.getString(DBKey.SID_LCCN, null));
-        assertEquals(8071257L, book.getLong(DBKey.SID_LIBRARY_THING));
-        assertEquals(6383507L, book.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertEquals("098020044X", book.getString(DBKey.SID_ASIN, null));
-        assertEquals("297222669", book.getString(DBKey.SID_OCLC, null));
+        assertEquals("OL22853304M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+        assertEquals("2008054742", book.getString(Identifier.SID_LCCN, null));
+        assertEquals(8071257L, book.getLong(Identifier.SID_LIBRARY_THING));
+        assertEquals(6383507L, book.getLong(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("098020044X", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("297222669", book.getString(Identifier.SID_OCLC, null));
 
         assertEquals("Includes bibliographical references and index.",
                      book.getString(DBKey.DESCRIPTION, null));
@@ -190,7 +191,7 @@ public class ParseTest
 
         assertEquals("Wundersmith", book.getString(DBKey.TITLE, null));
         assertEquals("9780734418227", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL47304760M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("OL47304760M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
         assertEquals("Source title: Wundersmith: The Calling of Morrigan Crow",
                      book.getString(DBKey.DESCRIPTION, null));
         assertEquals("473", book.getString(DBKey.PAGE_COUNT, null));
@@ -235,7 +236,7 @@ public class ParseTest
         assertEquals("Percy Jackson and the Battle of the Labyrinth",
                      book.getString(DBKey.TITLE, null));
         assertEquals("9780141346830", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL28508809M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("OL28508809M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
         assertEquals("2013", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("352", book.getString(DBKey.PAGE_COUNT, null));
 
@@ -280,7 +281,7 @@ public class ParseTest
 
         assertEquals("Autokorrektur", book.getString(DBKey.TITLE, null));
         assertEquals("9783103971422", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL36696710M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("OL36696710M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
         assertEquals("2022-02-09", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("272", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("ger", book.getString(DBKey.LANGUAGE, null));
@@ -335,14 +336,14 @@ public class ParseTest
 
         assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
         assertEquals("9780553276329", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL7824144M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("OL7824144M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
         assertEquals("1984-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("270", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Mass Market Paperback", book.getString(DBKey.FORMAT, null));
 
-        assertEquals("361081", book.getString(DBKey.SID_GOODREADS_BOOK, null));
-        assertEquals("1182484", book.getString(DBKey.SID_LIBRARY_THING, null));
+        assertEquals("361081", book.getString(Identifier.SID_GOODREADS_BOOK, null));
+        assertEquals("1182484", book.getString(Identifier.SID_LIBRARY_THING, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

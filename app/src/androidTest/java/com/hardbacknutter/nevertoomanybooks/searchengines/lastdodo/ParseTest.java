@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -142,7 +143,7 @@ public class ParseTest
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Gekleurd", book.getString(DBKey.COLOR, null));
-        assertEquals("8838967", book.getString(DBKey.SID_LAST_DODO_NL, null));
+        assertEquals("8838967", book.getString(Identifier.SID_LAST_DODO_NL, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

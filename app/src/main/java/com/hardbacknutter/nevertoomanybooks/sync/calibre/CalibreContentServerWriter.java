@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -382,18 +382,9 @@ public class CalibreContentServerWriter
             throws JSONException {
 
         final JSONObject collection = new JSONObject();
-
-        for (final CalibreIdentifier calibreIdentifier : CalibreIdentifier.MAP.values()) {
-            if (calibreIdentifier.isStoredLocally) {
-                if (calibreIdentifier.isLocalLong) {
-                    final long v = localBook.getLong(calibreIdentifier.local);
-                    collection.put(calibreIdentifier.remote, v != 0 ? String.valueOf(v) : "");
-                } else {
-                    final String s = localBook.getString(calibreIdentifier.local);
-                    collection.put(calibreIdentifier.remote, s);
-                }
-            }
-        }
+        CalibreIdentifier.MAP.values().forEach(
+                cId -> localBook.getIdentifierValue(cId.local)
+                                .ifPresent(sid -> collection.put(cId.remote, sid)));
         return collection;
     }
 

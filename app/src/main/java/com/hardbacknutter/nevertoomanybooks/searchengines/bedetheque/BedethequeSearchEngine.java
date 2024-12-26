@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -314,7 +315,7 @@ public class BedethequeSearchEngine
                     case "Identifiant :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            book.putString(DBKey.SID_BEDETHEQUE, textNode.toString().trim());
+                            book.putString(Identifier.SID_BEDETHEQUE, textNode.toString().trim());
                         }
                         break;
                     }

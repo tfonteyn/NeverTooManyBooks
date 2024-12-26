@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -506,7 +507,7 @@ public class CsvRecordReader
                 // Read Count,Owned Copies
                 switch (name) {
                     case "book id":
-                        return DBKey.SID_GOODREADS_BOOK;
+                        return Identifier.SID_GOODREADS_BOOK;
                     case "title":
                         return DBKey.TITLE;
                     case "author l-f":

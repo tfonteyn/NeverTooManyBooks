@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -139,7 +140,7 @@ public class ResultsAccumulatorTest
 
         book.setPublishers(List.of(new Publisher("Corgi")));
 
-        book.putString(DBKey.SID_ISFDB, "568139");
+        book.putString(Identifier.SID_ISFDB, "568139");
         book.putString("__ISFDB_ISBN2", "0552574473");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
@@ -176,7 +177,7 @@ public class ResultsAccumulatorTest
         ));
         book.putString(DBKey.LANGUAGE, "English");
         book.putString(DBKey.FORMAT, "Paperback");
-        book.putString(DBKey.SID_ASIN, "0552574473");
+        book.putString(Identifier.SID_ASIN, "0552574473");
         book.putString(DBKey.BOOK_ISBN, "978-0552574471");
         book.putString(DBKey.PAGE_COUNT, "336");
         book.putString(DBKey.TITLE, "The Shepherd's Crown: A Discworld Novel, Volume 41");
@@ -364,7 +365,7 @@ public class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
-        book.putString(DBKey.SID_ASIN, "0552574473");
+        book.putString(Identifier.SID_ASIN, "0552574473");
         book.putString(DBKey.BOOK_ISBN, "9780552574471");
         book.putString(DBKey.PAGE_COUNT, "332");
         book.putString(DBKey.TITLE, "The Shepherd's Crown");
@@ -389,7 +390,7 @@ public class ResultsAccumulatorTest
                 new Publisher("Corgi Childrens"),
                 new Publisher("Corgi Childrens")
         ));
-        book.putString(DBKey.SID_ISFDB, "568139");
+        book.putString(Identifier.SID_ISFDB, "568139");
         book.putString("__ISFDB_ISBN2", "0552574473");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 

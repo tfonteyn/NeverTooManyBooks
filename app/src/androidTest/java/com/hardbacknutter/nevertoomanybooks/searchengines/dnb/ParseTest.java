@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -86,7 +87,7 @@ public class ParseTest
         assertEquals("526", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("9783453321892", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
-        assertEquals(1254682597, book.getLong(DBKey.SID_DNB));
+        assertEquals(1254682597, book.getLong(Identifier.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -138,7 +139,7 @@ public class ParseTest
         assertEquals("378", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("9783426226681", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Krimis, Thriller, Spionage", book.getString(DBKey.GENRE, null));
-        assertEquals(1308358113, book.getLong(DBKey.SID_DNB));
+        assertEquals(1308358113, book.getLong(Identifier.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -183,7 +184,7 @@ public class ParseTest
         assertEquals("9783734163296", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Science Fiction, Fantasy", book.getString(DBKey.GENRE, null));
         assertEquals("Lesser evil", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
-        assertEquals(1272077195, book.getLong(DBKey.SID_DNB));
+        assertEquals(1272077195, book.getLong(Identifier.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -242,7 +243,7 @@ public class ParseTest
         assertEquals("9783641285166", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
-        assertEquals(1278243054, book.getLong(DBKey.SID_DNB));
+        assertEquals(1278243054, book.getLong(Identifier.SID_DNB));
 
         // We parsed correctly, "Werk: NN", presumably bad-data on the site?
         assertEquals("NN", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));

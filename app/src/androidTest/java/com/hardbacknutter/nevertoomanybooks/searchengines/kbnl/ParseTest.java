@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -109,7 +110,7 @@ public class ParseTest
         assertEquals("geb.", book.getString(DBKey.FORMAT, null));
         assertEquals("156", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(833191217, book.getLong(DBKey.SID_KBNL));
+        assertEquals(833191217, book.getLong(Identifier.SID_KBNL));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -147,7 +148,7 @@ public class ParseTest
         assertEquals("paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(422449148, book.getLong(DBKey.SID_KBNL));
+        assertEquals(422449148, book.getLong(Identifier.SID_KBNL));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -196,7 +197,7 @@ public class ParseTest
         assertEquals("157", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
         assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
-        assertEquals(428377971, book.getLong(DBKey.SID_KBNL));
+        assertEquals(428377971, book.getLong(Identifier.SID_KBNL));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

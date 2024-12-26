@@ -55,7 +55,7 @@ public class AltEditionDouban
     /**
      * Constructor.
      *
-     * @param id       {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_DOUBAN}
+     * @param id       {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_DOUBAN}
      * @param bookUrl  full url to the book on the Douban site
      * @param coverUrl full url to the cover on the Douban site
      */
@@ -79,7 +79,7 @@ public class AltEditionDouban
     }
 
     /**
-     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#SID_DOUBAN}.
+     * {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_DOUBAN}.
      *
      * @return the website id
      */

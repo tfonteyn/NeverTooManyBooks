@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -753,27 +754,18 @@ public class CalibreContentServerReader
             while (it.hasNext()) {
                 final String key = it.next();
                 if (!remotes.isNull(key)) {
-                    final CalibreIdentifier calibreIdentifier = CalibreIdentifier.MAP.get(key);
-                    final String idStr = remotes.optString(key);
-                    if (idStr != null && !idStr.isEmpty()) {
+                    final String sid = remotes.optString(key);
+                    if (sid != null && !sid.isEmpty()) {
+                        final CalibreIdentifier calibreIdentifier = CalibreIdentifier.MAP.get(key);
                         if (calibreIdentifier != null) {
-                            if (calibreIdentifier.isLocalLong) {
-                                try {
-                                    book.putLong(calibreIdentifier.local,
-                                                 Long.parseLong(idStr));
-                                } catch (@NonNull final NumberFormatException ignore) {
-                                    // ignore
-                                }
-                            } else {
-                                book.putString(calibreIdentifier.local, idStr);
-                            }
+                            book.putString(calibreIdentifier.local, sid);
 
                         } else if (key.startsWith(CalibreIdentifier.AMAZON)) {
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // We always use the first one found.
-                            if (!book.contains(DBKey.SID_ASIN)) {
-                                book.putString(DBKey.SID_ASIN, idStr);
+                            if (!book.contains(Identifier.SID_ASIN)) {
+                                book.putString(Identifier.SID_ASIN, sid);
                             }
                         }
                     }
