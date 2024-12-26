@@ -58,6 +58,12 @@ public class ParseTest
 
     private static final String TAG = "ParseTest";
 
+    /**
+     * The site is rather unstable.... half of the time it fails to serve covers.
+     * Ignore any failing tests for covers...
+     */
+    private static final String SITE_COVERS_BROKEN_AGAIN = "site covers broken again";
+
     private OpenLibrarySearchEngine searchEngine;
 
     @Before
@@ -116,8 +122,8 @@ public class ParseTest
         assertEquals("9780980200447", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("OL22853304M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
         assertEquals("2008054742", book.getString(Identifier.SID_LCCN, null));
-        assertEquals(8071257L, book.getLong(Identifier.SID_LIBRARY_THING));
-        assertEquals(6383507L, book.getLong(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("8071257", book.getString(Identifier.SID_LIBRARY_THING, null));
+        assertEquals("6383507", book.getString(Identifier.SID_GOODREADS_BOOK, null));
         assertEquals("098020044X", book.getString(Identifier.SID_ASIN, null));
         assertEquals("297222669", book.getString(Identifier.SID_OCLC, null));
 
@@ -125,7 +131,7 @@ public class ParseTest
                      book.getString(DBKey.DESCRIPTION, null));
         assertEquals("92", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("2009-03-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("Paperback", book.getString(DBKey.FORMAT));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -170,7 +176,7 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        assertEquals(1, covers.size());
+        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
         //   "covers": [
         //    5546156
         //  ],
@@ -192,10 +198,11 @@ public class ParseTest
         assertEquals("Wundersmith", book.getString(DBKey.TITLE, null));
         assertEquals("9780734418227", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("OL47304760M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+
         assertEquals("Source title: Wundersmith: The Calling of Morrigan Crow",
                      book.getString(DBKey.DESCRIPTION, null));
         assertEquals("473", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("paperback", book.getString(DBKey.FORMAT));
+        assertEquals("paperback", book.getString(DBKey.FORMAT, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -215,7 +222,7 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        assertEquals(1, covers.size());
+        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
         // "covers": [
         //  13769253
         //  ],
@@ -237,6 +244,7 @@ public class ParseTest
                      book.getString(DBKey.TITLE, null));
         assertEquals("9780141346830", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("OL28508809M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+
         assertEquals("2013", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("352", book.getString(DBKey.PAGE_COUNT, null));
 
@@ -255,7 +263,7 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        assertEquals(2, covers.size());
+        assertEquals(SITE_COVERS_BROKEN_AGAIN, 2, covers.size());
         //   "covers": [
         //    14615097,
         //    14615096,
@@ -282,6 +290,9 @@ public class ParseTest
         assertEquals("Autokorrektur", book.getString(DBKey.TITLE, null));
         assertEquals("9783103971422", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("OL36696710M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+        assertEquals("lzexzgEACAAJ", book.getString(Identifier.SID_GOOGLE, null));
+        assertEquals("1282184385", book.getString(Identifier.SID_OCLC, null));
+
         assertEquals("2022-02-09", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("272", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("ger", book.getString(DBKey.LANGUAGE, null));
@@ -312,7 +323,7 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        assertEquals(1, covers.size());
+        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
         //   "covers": [
         //  12585189
         //]
@@ -337,13 +348,13 @@ public class ParseTest
         assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
         assertEquals("9780553276329", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("OL7824144M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+        assertEquals("361081", book.getString(Identifier.SID_GOODREADS_BOOK, null));
+        assertEquals("1182484", book.getString(Identifier.SID_LIBRARY_THING, null));
+
         assertEquals("1984-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("270", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Mass Market Paperback", book.getString(DBKey.FORMAT, null));
-
-        assertEquals("361081", book.getString(Identifier.SID_GOODREADS_BOOK, null));
-        assertEquals("1182484", book.getString(Identifier.SID_LIBRARY_THING, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -370,7 +381,7 @@ public class ParseTest
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
-        assertEquals(1, covers.size());
+        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
         //  "covers": [
         //    368945
         //  ],

@@ -224,7 +224,7 @@ public class MoneyTest
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         final double outValue = dataManager.getDouble(DBKey.PRICE_LISTED, realNumberParser);
-        final String outCurrency = dataManager.getString(DBKey.PRICE_LISTED_CURRENCY);
+        final String outCurrency = dataManager.getString(DBKey.PRICE_LISTED_CURRENCY, null);
 
         assertEquals(VALUE, outValue);
         assertEquals("GBP", outCurrency);

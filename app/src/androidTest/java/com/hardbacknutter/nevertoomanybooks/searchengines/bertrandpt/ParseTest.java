@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -81,10 +79,11 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
-//        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("A Livraria Cinnamon Bun", book.getString(DBKey.TITLE, null));
         assertEquals("9789895812899", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2024-11", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("320", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
@@ -149,10 +148,11 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("Fundação e Terra", book.getString(DBKey.TITLE, null));
         assertEquals("9789897734939", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("416", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));

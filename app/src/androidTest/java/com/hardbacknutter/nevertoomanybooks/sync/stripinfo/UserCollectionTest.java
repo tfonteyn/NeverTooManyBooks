@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -110,7 +111,7 @@ public class UserCollectionTest
                 .count());
 
         final Book b0 = collection.get(0);
-        assertEquals(5435, b0.getLong(DBKey.SID_STRIP_INFO));
+        assertEquals("5435", b0.getString(Identifier.SID_STRIP_INFO, null));
         assertEquals(5408, b0.getLong(DBKey.STRIP_INFO_COLL_ID));
 
         assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);

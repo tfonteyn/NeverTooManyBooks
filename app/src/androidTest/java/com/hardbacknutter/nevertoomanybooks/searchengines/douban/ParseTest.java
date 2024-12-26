@@ -194,16 +194,16 @@ public class ParseTest
         //og.d(TAG, book.toString());
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
+        assertEquals("9787536692930", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("36892731", book.getString(Identifier.SID_DOUBAN, null));
+
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2021-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("300", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9787536692930", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("精装", book.getString(DBKey.FORMAT, null));
 
         assertFalse(book.contains(DBKey.PRICE_LISTED));
         assertFalse(book.contains(DBKey.PRICE_LISTED_CURRENCY));
-
-        assertEquals("36892731", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(
@@ -249,16 +249,16 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
+        assertEquals("9787536692930", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("36874304", book.getString(Identifier.SID_DOUBAN, null));
+
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2011-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("302", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9787536692930", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
 
         assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-
-        assertEquals("36874304", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(
@@ -327,17 +327,17 @@ public class ParseTest
 
         assertEquals("第七重解答", book.getString(DBKey.TITLE, null));
         assertEquals("La Septième Hypothèse", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("9787549641864", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("36665775", book.getString(Identifier.SID_DOUBAN, null));
+
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-04-30", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("288", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9787549641864", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertEquals(4f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
 
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-
-        assertEquals("36665775", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(
@@ -511,17 +511,17 @@ public class ParseTest
         assertEquals("伽利略的错误", book.getString(DBKey.TITLE, null));
         assertEquals("Galileo's Error: Foundations for a New Science of Consciousness",
                      book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("9787532190294", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("36897178", book.getString(Identifier.SID_DOUBAN, null));
+
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("226", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9787532190294", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertFalse(book.contains(DBKey.RATING));
 
         assertEquals(58d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-
-        assertEquals("36897178", book.getString(Identifier.SID_DOUBAN, null));
 
         //noinspection LongLine
         assertEquals(

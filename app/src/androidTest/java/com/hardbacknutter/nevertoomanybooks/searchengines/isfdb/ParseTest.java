@@ -99,18 +99,18 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
-        assertEquals(112781L, book.getLong(Identifier.SID_ISFDB));
-        assertEquals("1986-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("0413600106", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("9780413600103", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
+        assertEquals("112781", book.getString(Identifier.SID_ISFDB, null));
+        assertEquals("13665857", book.getString(Identifier.SID_OCLC, null));
+
+        assertEquals("1986-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("159", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("pb", book.getString(DBKey.FORMAT, null));
         assertEquals("COLLECTION", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
         assertEquals(Book.ContentType.Anthology, book.getContentType());
-
-        assertEquals("13665857", book.getString(Identifier.SID_OCLC, null));
 
         assertEquals("First published in Great Britain 1975 by Dobson Books Ltd." +
                      " This edition published 1986 by Methuen London Ltd. Month from Locus1",
@@ -173,10 +173,11 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Mort", book.getString(DBKey.TITLE, null));
-        assertEquals(431964L, book.getLong(Identifier.SID_ISFDB));
-        assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9781473200104", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("1473200105", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
+        assertEquals("431964", book.getString(Identifier.SID_ISFDB, null));
+
+        assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("257", book.getString(DBKey.PAGE_COUNT, null));
@@ -237,17 +238,17 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("The Shepherd's Crown", book.getString(DBKey.TITLE, null));
-        assertEquals(542125L, book.getLong(Identifier.SID_ISFDB));
-        assertEquals("2015-09-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9780062429995", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("006242999X", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
+        assertEquals("542125", book.getString(Identifier.SID_ISFDB, null));
+        assertEquals("2015943558", book.getString(Identifier.SID_LCCN, null));
+        assertEquals("B00W2EBY8O", book.getString(Identifier.SID_ASIN, null));
+
+        assertEquals("2015-09-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
-
-        assertEquals("2015943558", book.getString(Identifier.SID_LCCN, null));
-        assertEquals("B00W2EBY8O", book.getString(Identifier.SID_ASIN, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

@@ -87,6 +87,7 @@ public class ParseTest
 
         assertEquals("Rule 34", book.getString(DBKey.TITLE, null));
         assertEquals("9780441020348", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2011", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
@@ -100,7 +101,7 @@ public class ParseTest
                      + " harmless fantasies or illegal activities."
                      + " Three ex-con spammers have been murdered, and Liz must uncover the"
                      + " link between them before these homicides go viral.<br><br></b>",
-                     book.getString(DBKey.DESCRIPTION));
+                     book.getString(DBKey.DESCRIPTION, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

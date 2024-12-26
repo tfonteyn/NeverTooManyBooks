@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -154,14 +154,16 @@ public class GoodreadsCsvImportTest
             final Book book = Book.from(cursor);
 
             assertEquals("Jack van de Schaduwen", book.getTitle());
-            assertEquals("9789027406927", book.getString(DBKey.BOOK_ISBN));
+            assertEquals("9789027406927", book.getString(DBKey.BOOK_ISBN, null));
             // "my_rating" was set to 5; "average_rating" of 3.99 is ignored
             assertEquals(5, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
-            assertEquals("Paperback", book.getString(DBKey.FORMAT));
-            assertEquals("172", book.getString(DBKey.PAGE_COUNT));
-            assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE));
-            assertEquals("1972", book.getString(DBKey.FIRST_PUBLICATION__DATE));
-            assertEquals("2020-06-05 00:00:00", book.getString(DBKey.DATE_ADDED__UTC));
+            assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+            assertEquals("172", book.getString(DBKey.PAGE_COUNT, null));
+            assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+            assertEquals("1972", book.getString(DBKey.FIRST_PUBLICATION__DATE, null));
+            assertEquals("2020-06-05 00:00:00", book.getString(DBKey.DATE_ADDED__UTC, null));
+
+            assertEquals("8998451", book.getString(Identifier.SID_GOODREADS_BOOK, null));
 
             final List<Publisher> allPublishers = book.getPublishers();
             assertEquals(1, allPublishers.size());
@@ -201,18 +203,20 @@ public class GoodreadsCsvImportTest
             final Book book = Book.from(cursor);
 
             assertEquals("The Three-Body Problem", book.getTitle());
-            assertEquals("", book.getString(DBKey.BOOK_ISBN));
+            assertEquals("", book.getString(DBKey.BOOK_ISBN, null));
             // "my_rating" 0f 0 is ignored; "average_rating" of 4.09
             assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
-            assertEquals("Hardcover", book.getString(DBKey.FORMAT));
-            assertEquals("472", book.getString(DBKey.PAGE_COUNT));
-            assertEquals("2014", book.getString(DBKey.BOOK_PUBLICATION__DATE));
-            assertEquals("2006", book.getString(DBKey.FIRST_PUBLICATION__DATE));
-            assertEquals("2024-04-24 00:00:00", book.getString(DBKey.DATE_ADDED__UTC));
+            assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+            assertEquals("472", book.getString(DBKey.PAGE_COUNT, null));
+            assertEquals("2014", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+            assertEquals("2006", book.getString(DBKey.FIRST_PUBLICATION__DATE, null));
+            assertEquals("2024-04-24 00:00:00", book.getString(DBKey.DATE_ADDED__UTC, null));
 
-            assertEquals("", book.getString(DBKey.DESCRIPTION));
+            assertEquals("", book.getString(DBKey.DESCRIPTION, null));
             assertEquals("my own notes on this book\n\nOn my todo list",
-                         book.getString(DBKey.PERSONAL_NOTES));
+                         book.getString(DBKey.PERSONAL_NOTES, null));
+
+            assertEquals("20518872", book.getString(Identifier.SID_GOODREADS_BOOK, null));
 
             final List<Publisher> allPublishers = book.getPublishers();
             assertEquals(1, allPublishers.size());

@@ -144,9 +144,12 @@ public class IsfdbXmlPublicationTest
         assertNotNull(book);
 
         assertEquals("Triplanetary", book.getTitle());
+        assertEquals("0491001576", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("425189", book.getString(Identifier.SID_ISFDB, null));
+        assertEquals("16190406", book.getString(Identifier.SID_OCLC, null));
+
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
-        assertEquals("0491001576", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("1971-02-15", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("254", book.getString(DBKey.PAGE_COUNT, null));
         // The parser apache/ExpatParser is not very good at eliminating whitespace.
@@ -157,11 +160,9 @@ public class IsfdbXmlPublicationTest
                      + "Publication date from Amazon.co.uk",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(425189, book.getLong(Identifier.SID_ISFDB));
-        assertEquals(16190406, book.getLong(Identifier.SID_OCLC));
 
-        assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
-        assertEquals("TRPLNTRLBK1971", book.getString(IsfdbSearchEngine.SiteField.BOOK_TAG));
+        assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
+        assertEquals("TRPLNTRLBK1971", book.getString(IsfdbSearchEngine.SiteField.BOOK_TAG, null));
 
         final Money priceListed = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(priceListed);

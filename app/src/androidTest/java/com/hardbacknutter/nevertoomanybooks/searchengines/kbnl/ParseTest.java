@@ -107,10 +107,11 @@ public class ParseTest
 
         assertEquals("1983", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9022953351", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("833191217", book.getString(Identifier.SID_KBNL, null));
+
         assertEquals("geb.", book.getString(DBKey.FORMAT, null));
         assertEquals("156", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(833191217, book.getLong(Identifier.SID_KBNL));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -142,20 +143,19 @@ public class ParseTest
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_comic_1);
 
         assertEquals("De buitengewone reis", book.getString(DBKey.TITLE, null));
+        assertEquals("9789463731454", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("422449148", book.getString(Identifier.SID_KBNL, null));
 
         assertEquals("2019", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("9789463731454", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(422449148, book.getLong(Identifier.SID_KBNL));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Dark Dragon Books", allPublishers.get(0).getName());
-
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -192,12 +192,13 @@ public class ParseTest
 
     static void verify9020612476(@NonNull final Book book) {
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
-        assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9020612476", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("428377971", book.getString(Identifier.SID_KBNL, null));
+
+        assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("157", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
         assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
-        assertEquals(428377971, book.getLong(Identifier.SID_KBNL));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

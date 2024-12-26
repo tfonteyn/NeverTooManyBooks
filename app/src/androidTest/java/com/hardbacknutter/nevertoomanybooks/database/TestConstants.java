@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ final class TestConstants {
     static final String[] lang = {"eng", "ger", "eng", "nld", "eng",};
 
     // sample external id values
-    static final int[] BOOK_ISFDB = {101, 102, 103, 104, 105};
+    static final String[] BOOK_ISFDB = {"101", "102", "103", "104", "105"};
 
     private static final String PREFIX = "Test";
 

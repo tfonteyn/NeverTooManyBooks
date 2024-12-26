@@ -63,7 +63,6 @@ import org.junit.rules.TestRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({
@@ -225,7 +224,7 @@ public class BookTest
         loaneeDao.setLoanee(bookId, "TheAdversary");
 
         final Book book = Book.from(bookId);
-        assertEquals("TheAdversary", book.getString(DBKey.LOANEE_NAME));
+        assertEquals("TheAdversary", book.getString(DBKey.LOANEE_NAME, null));
 
         book.putString(DBKey.LOANEE_NAME, "TheAdversary2");
         loaneeDao.setLoanee(book);
@@ -340,7 +339,7 @@ public class BookTest
      */
     private long prepareAndInsertBook(@NonNull final Context context,
                                       @NonNull final BookDao bookDao,
-                                      final int bookIdx)
+                                      @SuppressWarnings("SameParameterValue") final int bookIdx)
             throws DaoWriteException, StorageException, IOException {
 
         final Book book = new Book();
@@ -348,7 +347,7 @@ public class BookTest
         book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx]);
         book.setStage(EntityStage.Stage.Dirty);
 
-        book.putLong(Identifier.SID_ISFDB, TestConstants.BOOK_ISFDB[bookIdx]);
+        book.putString(Identifier.SID_ISFDB, TestConstants.BOOK_ISFDB[bookIdx]);
         book.putString(Identifier.SID_LCCN, TestConstants.BOOK_LCCN[bookIdx]);
 
         book.setBookshelves(bookshelfList);
@@ -373,6 +372,7 @@ public class BookTest
     }
 
     private void assertBookMatchesInitialInsert(@NonNull final Book book,
+                                                @SuppressWarnings("SameParameterValue")
                                                 final int bookIdx)
             throws StorageException {
 
@@ -383,11 +383,8 @@ public class BookTest
         assertFalse(uuid.isEmpty());
         assertEquals(TestConstants.BOOK_TITLE[bookIdx], book.getTitle());
 
-        assertEquals(TestConstants.BOOK_ISFDB[bookIdx], book.getLong(Identifier.SID_ISFDB));
-
-        // not saved, hence null
-        assertNull(book.getString(Identifier.SID_LCCN, null));
-
+        assertEquals(TestConstants.BOOK_ISFDB[bookIdx], book.getString(Identifier.SID_ISFDB, null));
+        assertEquals(TestConstants.BOOK_LCCN[bookIdx], book.getString(Identifier.SID_LCCN, null));
 
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());

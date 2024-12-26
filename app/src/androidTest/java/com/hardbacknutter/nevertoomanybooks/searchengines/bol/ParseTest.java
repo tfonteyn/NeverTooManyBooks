@@ -86,6 +86,7 @@ public class ParseTest
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
         assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("144", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
@@ -131,6 +132,7 @@ public class ParseTest
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
         assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
@@ -194,6 +196,7 @@ public class ParseTest
 
         assertEquals("Alter Ego", book.getString(DBKey.TITLE, null));
         assertEquals("9789044652901", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2023-03-28", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("400", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
@@ -290,6 +293,7 @@ public class ParseTest
 
         assertEquals("Europa", book.getString(DBKey.TITLE, null));
         assertEquals("9789044544725", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2023-03-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("408", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
@@ -351,6 +355,7 @@ public class ParseTest
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
         assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("144", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
@@ -394,6 +399,7 @@ public class ParseTest
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
         assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
+
         assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));

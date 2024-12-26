@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -38,6 +39,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
@@ -99,5 +101,41 @@ public class BookCoderTest
         assertFalse(encode.has(DBKey.PRICE_LISTED_CURRENCY));
 
         assertEquals("a lot of money", encode.getString(DBKey.PRICE_LISTED));
+    }
+
+    @Test
+    public void putIdentifiersValid() {
+        book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, 1234);
+        book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, "ol123");
+
+        final JSONObject encode = bookCoder.encode(book);
+
+        Object sid;
+
+        // Identifiers are always String
+        sid = encode.opt(Identifier.SID_GOODREADS_BOOK);
+        assertTrue(sid instanceof String);
+        assertEquals("1234", encode.optString(Identifier.SID_GOODREADS_BOOK));
+
+        sid = encode.opt(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(sid instanceof String);
+        assertEquals("ol123", encode.optString(Identifier.SID_OPEN_LIBRARY));
+    }
+
+    @Test
+    public void putIdentifiersInvalid() {
+        book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, -1234);
+        book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, "");
+
+        final JSONObject encode = bookCoder.encode(book);
+
+        Object sid;
+
+        // Invalid values were not stored
+        sid = encode.opt(Identifier.SID_GOODREADS_BOOK);
+        assertNull(sid);
+
+        sid = encode.opt(Identifier.SID_OPEN_LIBRARY);
+        assertNull(sid);
     }
 }

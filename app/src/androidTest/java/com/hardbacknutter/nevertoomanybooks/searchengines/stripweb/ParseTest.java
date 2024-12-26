@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -90,6 +91,8 @@ public class ParseTest
 
         assertEquals("Wanted Lucky Luke", book.getString(DBKey.TITLE, null));
         assertEquals("9782884719506", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("523041", book.getString(Identifier.SID_STRIPWEB, null));
+
         assertEquals("2021-10-05", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("72", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
@@ -131,8 +134,8 @@ public class ParseTest
         assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST | Author.TYPE_COLORIST,
                      author.getType());
 
-        assertEquals("western,avontuur", book.getString(StripWebSearchEngine
-                                                                 .SiteField.KEY_WORDS));
+        assertEquals("western,avontuur",
+                     book.getString(StripWebSearchEngine.SiteField.KEY_WORDS, null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -164,6 +167,8 @@ public class ParseTest
 
         assertEquals("Valstrikken en emoties", book.getString(DBKey.TITLE, null));
         assertEquals("9789085587187", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("548714", book.getString(Identifier.SID_STRIPWEB, null));
+
         assertEquals("2024-02-13", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
@@ -244,8 +249,8 @@ public class ParseTest
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
 
-        assertEquals("detective,spionage,thriller", book.getString(StripWebSearchEngine
-                                                                             .SiteField.KEY_WORDS));
+        assertEquals("detective,spionage,thriller",
+                     book.getString(StripWebSearchEngine.SiteField.KEY_WORDS, null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -276,6 +281,8 @@ public class ParseTest
 
         assertEquals("XIII- box Delen 1-3", book.getString(DBKey.TITLE, null));
         assertEquals("3600121191341", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("522632", book.getString(Identifier.SID_STRIPWEB, null));
+
         assertEquals("2020-09-25", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("48 x 3", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("hardcover", book.getString(DBKey.FORMAT, null));
@@ -343,8 +350,8 @@ public class ParseTest
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        assertEquals("avonturen,thriller", book.getString(StripWebSearchEngine
-                                                                   .SiteField.KEY_WORDS));
+        assertEquals("avonturen,thriller",
+                     book.getString(StripWebSearchEngine.SiteField.KEY_WORDS, null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);

@@ -46,8 +46,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-//URGENT: THIS AND ALL OTHER PARSE TESTS: ADD Identifier asserts
-
 @SuppressWarnings("MissingJavadoc")
 public class ParseTest
         extends BaseDBTest {
@@ -83,6 +81,8 @@ public class ParseTest
 
         assertEquals("Bone Silence", book.getString(DBKey.TITLE, null));
         assertEquals("978-0575090675", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("0575090677", book.getString(Identifier.SID_ASIN, null));
+
         assertEquals("2020-01-30", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
@@ -120,6 +120,8 @@ public class ParseTest
         assertEquals("The Medusa Chronicles: Alastair Reynolds & Stephen Baxter",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-1473210202", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("1473210208", book.getString(Identifier.SID_ASIN, null));
+
         assertEquals("2017-01-12", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
@@ -158,8 +160,10 @@ public class ParseTest
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));
-        assertEquals("Français", book.getString(DBKey.LANGUAGE, null));
         assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2205057332", book.getString(Identifier.SID_ASIN, null));
+
+        assertEquals("Français", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Relié", book.getString(DBKey.FORMAT, null));
         assertEquals(15.00d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -196,9 +200,10 @@ public class ParseTest
         assertEquals("Siddhartha. Eine indische Dichtung",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("3518366823", book.getString(Identifier.SID_ASIN, null));
+
         assertEquals("Deutsch", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Taschenbuch", book.getString(DBKey.FORMAT, null));
-        assertEquals("3518366823", book.getString(Identifier.SID_ASIN, null));
         assertEquals(9d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("1974-07-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -231,8 +236,9 @@ public class ParseTest
 
         assertEquals("Siddhartha", book.getString(DBKey.TITLE, null));
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("German", book.getString(DBKey.LANGUAGE, null));
         assertEquals("3518366823", book.getString(Identifier.SID_ASIN, null));
+
+        assertEquals("German", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals(10.10d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -269,8 +275,9 @@ public class ParseTest
         assertEquals("Essential Grammar in Use. Fourth Edition. Book with Answers.",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-1107480551", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
         assertEquals("1107480558", book.getString(Identifier.SID_ASIN, null));
+
+        assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Tapa blanda", book.getString(DBKey.FORMAT, null));
         assertEquals(24.21d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -305,10 +312,11 @@ public class ParseTest
         assertEquals("La rebelión de los buenos: Premio de Novela Fernando Lara 2023",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-8408275787", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("840827578X", book.getString(Identifier.SID_ASIN, null));
+
         assertEquals("Tapa dura", book.getString(DBKey.FORMAT, null));
         assertEquals("Español", book.getString(DBKey.LANGUAGE, null));
         assertEquals("720 páginas", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("840827578X", book.getString(Identifier.SID_ASIN, null));
         assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("2023-06-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));

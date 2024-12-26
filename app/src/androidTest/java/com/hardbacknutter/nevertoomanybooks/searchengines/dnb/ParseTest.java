@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -82,12 +80,13 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
+        assertEquals("9783453321892", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("1254682597", book.getString(Identifier.SID_DNB, null));
+
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("526", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9783453321892", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
-        assertEquals(1254682597, book.getLong(Identifier.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -134,12 +133,13 @@ public class ParseTest
 
         assertEquals("Totholz : was vergraben ist, ist nicht vergessen",
                      book.getString(DBKey.TITLE, null));
+        assertEquals("9783426226681", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("1308358113", book.getString(Identifier.SID_DNB, null));
+
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("378", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9783426226681", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Krimis, Thriller, Spionage", book.getString(DBKey.GENRE, null));
-        assertEquals(1308358113, book.getLong(Identifier.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -178,13 +178,14 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Teurer Sieg", book.getString(DBKey.TITLE, null));
+        assertEquals("9783734163296", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("1272077195", book.getString(Identifier.SID_DNB, null));
+
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("747", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9783734163296", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Science Fiction, Fantasy", book.getString(DBKey.GENRE, null));
         assertEquals("Lesser evil", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
-        assertEquals(1272077195, book.getLong(Identifier.SID_DNB));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -234,16 +235,17 @@ public class ParseTest
         final Book book = new Book();
 
         searchEngine.parseMultiResult(context, document, new boolean[]{true, false}, book);
-        Log.d(TAG, book.toString());
+        //Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
+        assertEquals("9783641285166", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("1278243054", book.getString(Identifier.SID_DNB, null));
+
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("528", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("9783641285166", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
-        assertEquals(1278243054, book.getLong(Identifier.SID_DNB));
 
         // We parsed correctly, "Werk: NN", presumably bad-data on the site?
         assertEquals("NN", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));

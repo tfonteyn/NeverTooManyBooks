@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -80,10 +81,11 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
+        assertEquals("2840557428", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("19401", book.getString(Identifier.SID_BEDETHEQUE, null));
 
         assertEquals("2002-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
-        assertEquals("2840557428", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("46", book.getString(DBKey.PAGE_COUNT, null));
 
         final List<Publisher> allPublishers = book.getPublishers();

@@ -197,7 +197,7 @@ public class BookTest
         bdh.processExternalIds();
         dump(book);
 
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
         assertFalse(book.contains(Identifier.SID_ISFDB));
         assertFalse(book.contains(Identifier.SID_LAST_DODO_NL));
         assertFalse(book.contains(Identifier.SID_LIBRARY_THING));
@@ -209,7 +209,7 @@ public class BookTest
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
         assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
     }
 
@@ -247,7 +247,7 @@ public class BookTest
         bdh.processExternalIds();
         dump(book);
 
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
         assertNull(book.get(Identifier.SID_ISFDB, realNumberParser));
         assertNull(book.get(Identifier.SID_LAST_DODO_NL, realNumberParser));
         assertNull(book.get(Identifier.SID_LIBRARY_THING, realNumberParser));
@@ -260,7 +260,7 @@ public class BookTest
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
         assertNull(book.get(Identifier.SID_ISFDB, realNumberParser));
         assertNull(book.get(Identifier.SID_LAST_DODO_NL, realNumberParser));
         assertNull(book.get(Identifier.SID_LIBRARY_THING, realNumberParser));
