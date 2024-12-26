@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.backup.LegacySidColumn;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -195,55 +196,61 @@ public class BookCoder
         while (it.hasNext()) {
             final String key = it.next();
             switch (key) {
-                case Book.BKEY_BOOKSHELF_LIST:
+                case Book.BKEY_BOOKSHELF_LIST: {
                     // Full object
                     book.setBookshelves(bookshelfCoder.decode(data.getJSONArray(key)));
                     break;
-
-                case DBKey.FK_BOOKSHELF:
+                }
+                case DBKey.FK_BOOKSHELF: {
                     // Reference; if the reference is not found,
                     // the book will be put on the preferred (or default) Bookshelf.
                     book.setBookshelves(bookshelfCoder.decodeReference(data.getJSONArray(key)));
                     break;
-
-                case Book.BKEY_CALIBRE_LIBRARY:
+                }
+                case Book.BKEY_CALIBRE_LIBRARY: {
                     // Full object
                     book.setCalibreLibrary(calibreLibraryCoder.decode(data.getJSONObject(key)));
                     break;
-
-                case DBKey.FK_CALIBRE_LIBRARY:
+                }
+                case DBKey.FK_CALIBRE_LIBRARY: {
                     // Reference; if the reference is not found,
                     // the Calibre data is removed from the book
                     book.setCalibreLibrary(
                             calibreLibraryCoder.decodeReference(data.getJSONObject(key))
                                                .orElse(null));
                     break;
-
-
-                case Book.BKEY_AUTHOR_LIST:
+                }
+                case Book.BKEY_AUTHOR_LIST: {
                     book.setAuthors(authorCoder.decode(data.getJSONArray(key)));
                     break;
-
-                case Book.BKEY_PUBLISHER_LIST:
+                }
+                case Book.BKEY_PUBLISHER_LIST: {
                     book.setPublishers(publisherCoder.decode(data.getJSONArray(key)));
                     break;
-
-                case Book.BKEY_SERIES_LIST:
+                }
+                case Book.BKEY_SERIES_LIST: {
                     book.setSeries(seriesCoder.decode(data.getJSONArray(key)));
                     break;
-
-                case Book.BKEY_TOC_LIST:
+                }
+                case Book.BKEY_TOC_LIST: {
                     book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
                     break;
-
-
+                }
                 default: {
-                    book.put(key, data.get(key));
+                    if (LegacySidColumn.MAP.containsKey(key)) {
+                        final String identifierKey = LegacySidColumn.MAP.get(key);
+                        final String sid = data.optString(key, null);
+                        if (sid != null && !sid.isEmpty() && !"0".equals(sid)) {
+                            //noinspection DataFlowIssue
+                            book.putString(identifierKey, sid);
+                        }
+                    } else {
+                        book.put(key, data.get(key));
+                    }
                     break;
                 }
             }
         }
-
         return book;
     }
 }

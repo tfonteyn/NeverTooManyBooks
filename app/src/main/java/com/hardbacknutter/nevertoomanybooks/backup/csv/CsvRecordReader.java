@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.LegacySidColumn;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -576,7 +577,8 @@ public class CsvRecordReader
         BC(R.string.lbl_book_catalogue) {
             @NonNull
             public String mapColumnName(@NonNull final String name) {
-                return name;
+                final String mapped = LegacySidColumn.MAP.get(name);
+                return mapped == null ? name : mapped;
             }
         },
         /** Anything not explicitly recognized. */
