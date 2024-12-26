@@ -19,51 +19,56 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-class BookTest
-        extends Base {
+public class BookTest
+        extends BaseDBTest {
+
+    private static final String TAG = "BookTest";
 
     private static final String INVALID_DEFAULT = "Invalid default";
 
     private Book book;
 
-    @Override
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
-        super.setup();
-        book = new Book(BundleMock.create());
+            throws DaoWriteException, StorageException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+        book = new Book();
     }
 
     /** US english book, price in $. */
     @Test
-    void preprocessPrices01() {
-        setLocale(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+    public void preprocessPrices01() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
         book.putString(DBKey.LANGUAGE, "eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
@@ -71,21 +76,20 @@ class BookTest
         book.putMoney(DBKey.PRICE_LISTED, money);
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         // dump(book);
 
-        assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals("USD", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
     /** US english book, price set, currency not set. */
     @Test
-    void preprocessPrices02() {
-        setLocale(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+    public void preprocessPrices02() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
         book.putString(DBKey.LANGUAGE, "eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(0d), "");
@@ -96,25 +100,24 @@ class BookTest
         // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book,
                                                     true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertNull(book.get(DBKey.PRICE_LISTED_CURRENCY, realNumberParser));
 
-        assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID, realNumberParser));
+        assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
         assertNull(book.get(DBKey.PRICE_PAID_CURRENCY, realNumberParser));
     }
 
     @Test
-    void preprocessPrices03() {
-        setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+    public void preprocessPrices03() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
         book.putString(DBKey.LANGUAGE, "fra");
         // as a valid string
@@ -125,15 +128,15 @@ class BookTest
         // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book,
                                                     true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.get(DBKey.PRICE_LISTED_CURRENCY, realNumberParser));
 
         // "test" is correct as preprocessPrices should NOT change illegal values.
@@ -142,10 +145,9 @@ class BookTest
     }
 
     @Test
-    void preprocessPrices04() {
-        setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(locales.get(0), realNumberParser);
+    public void preprocessPrices04() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
+        final MoneyParser moneyParser = new MoneyParser(Locale.FRANCE, realNumberParser);
 
         book.putString(DBKey.LANGUAGE, "eng");
         final Optional<Money> money = moneyParser.parse("EUR 45");
@@ -153,19 +155,19 @@ class BookTest
         book.putMoney(DBKey.PRICE_LISTED, money.get());
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book,
                                                     true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         //dump(book);
 
-        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
     @Test
-    void preprocessExternalIdsForInsert() {
+    public void preprocessExternalIdsForInsert() {
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -188,8 +190,8 @@ class BookTest
         // Not tested: null string for a string field..
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book,
                                                     true);
         bdh.processExternalIds();
@@ -212,8 +214,8 @@ class BookTest
     }
 
     @Test
-    void preprocessExternalIdsForUpdate() {
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+    public void preprocessExternalIdsForUpdate() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -238,8 +240,8 @@ class BookTest
 
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book,
                                                     false);
         bdh.processExternalIds();
@@ -272,19 +274,19 @@ class BookTest
      * If a default was changed then one or more tests in this class will be invalid.
      */
     @Test
-    void domainDefaults() {
-        assertEquals("", DBDefinitions.DOM_BOOK_DATE_ACQUIRED.getDefault(), INVALID_DEFAULT);
-        assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_START.getDefault(), INVALID_DEFAULT);
-        assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_END.getDefault(), INVALID_DEFAULT);
+    public void domainDefaults() {
+        assertEquals(INVALID_DEFAULT, "", DBDefinitions.DOM_BOOK_DATE_ACQUIRED.getDefault());
+        assertEquals(INVALID_DEFAULT, "", DBDefinitions.DOM_BOOK_DATE_READ_START.getDefault());
+        assertEquals(INVALID_DEFAULT, "", DBDefinitions.DOM_BOOK_DATE_READ_END.getDefault());
 
-        assertEquals("0.0",
-                     DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault(), INVALID_DEFAULT);
+        assertEquals(INVALID_DEFAULT, "0.0",
+                     DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault());
     }
 
     /** Domain: text, default "". */
     @Test
-    void preprocessNullsAndBlanksForInsert() {
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+    public void preprocessNullsAndBlanksForInsert() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
@@ -294,8 +296,8 @@ class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book,
                                                     true);
         bdh.processNullsAndBlanks();
@@ -308,13 +310,13 @@ class BookTest
         // text, default "". A null is removed.
         assertFalse(book.contains(DBKey.READ_END__DATE));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID, realNumberParser));
+        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
     }
 
     @Test
-    void preprocessNullsAndBlanksForUpdate() {
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+    public void preprocessNullsAndBlanksForUpdate() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
@@ -324,8 +326,8 @@ class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
+                                                    () -> serviceLocator.getCoverStorage(),
+                                                    () -> serviceLocator.getReorderHelper(),
                                                     book,
                                                     false);
         bdh.processNullsAndBlanks();
@@ -338,16 +340,16 @@ class BookTest
         // text, default "". A null is replaced by the default
         assertEquals("", book.getString(DBKey.READ_END__DATE, null));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID, realNumberParser));
+        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
     }
 
     private void dump(@NonNull final DataManager data) {
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
         for (final String key : data.keySet()) {
             final Object value = data.get(key, realNumberParser);
-            System.out.println(key + "=" + value);
+            Log.d(TAG, key + "=" + value);
         }
     }
 }
