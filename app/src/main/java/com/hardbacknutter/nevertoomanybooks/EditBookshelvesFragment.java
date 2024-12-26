@@ -267,8 +267,6 @@ public class EditBookshelvesFragment
                     adapter.notifyDataSetChanged();
                 });
             } else {
-                //TODO: why not ? as long as we make sure there is another one left..
-                // e.g. count > 2, then you can delete '1'
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.warning_24px)

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -130,15 +130,6 @@ public class BookshelfDaoImpl
     }
 
     @NonNull
-    private Optional<Bookshelf> getDefaultBookshelf(@NonNull final Context context) {
-        final Bookshelf bookshelf = new Bookshelf(
-                context.getString(R.string.bookshelf_my_books),
-                stylesHelperSupplier.get().getDefault());
-        bookshelf.setId(Bookshelf.HARD_DEFAULT);
-        return Optional.of(bookshelf);
-    }
-
-    @NonNull
     private Optional<Bookshelf> getPreferredBookshelf(@NonNull final Context context) {
         final String name = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getString(PK_BOOKSHELF_CURRENT, null);
@@ -164,8 +155,6 @@ public class BookshelfDaoImpl
             return Optional.empty();
         } else if (id == Bookshelf.ALL_BOOKS) {
             return getAllBooksBookshelf(context);
-        } else if (id == Bookshelf.HARD_DEFAULT) {
-            return getDefaultBookshelf(context);
         } else if (id == Bookshelf.USER_DEFAULT) {
             return getPreferredBookshelf(context);
         } else {
