@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,9 +59,14 @@ public class StripInfoDaoImpl
             }
         }
 
-        // Just delete all current data and insert from scratch.
+        // Delete all existing data for this book.
         delete(book);
-        insert(book);
+
+        // is there anything to insert ?
+        // The presence of this key implies all other collection data keys WILL be there as well.
+        if (book.contains(DBKey.STRIP_INFO_COLL_ID)) {
+            insert(book);
+        }
     }
 
     @Override

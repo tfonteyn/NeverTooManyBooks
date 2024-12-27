@@ -836,6 +836,10 @@ public class DBHelper
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
                     DBDefinitions.DOM_STYLE_CITATION_TYPE);
+            // oops.. turns out each "stripinfo" book always wrote collection data
+            // even when there was none... let's clean that up.
+            db.execSQL("DELETE FROM " + TBL_STRIPINFO_COLLECTION
+                       + " WHERE " + DBKey.STRIP_INFO_COLL_ID + "=0");
         }
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
