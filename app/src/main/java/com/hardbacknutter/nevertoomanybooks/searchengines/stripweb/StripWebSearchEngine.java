@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
@@ -472,6 +473,14 @@ public class StripWebSearchEngine
 
                 final String priceStr = price.text().strip();
                 addPriceListed(context, siteLocale, priceStr, MoneyParser.EUR, book);
+            }
+
+            final Element sidElement = cartForm.selectFirst("input[id='hdnArticleNo']");
+            if (sidElement != null) {
+                final String sid = sidElement.attr("value");
+                if (!sid.isEmpty()) {
+                    book.putString(Identifier.SID_STRIPWEB, sid);
+                }
             }
         }
     }
