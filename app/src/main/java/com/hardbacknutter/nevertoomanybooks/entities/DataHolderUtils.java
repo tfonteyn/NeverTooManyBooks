@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -37,192 +38,199 @@ public final class DataHolderUtils {
     }
 
     /**
-     * Check if there is some form of {@link Author} available in the given row.
+     * Check if there is some form of {@link Author} available in the given {@link DataHolder}.
      *
-     * @param rowData to check
+     * @param dataHolder to check
      *
-     * @return {@code true} if an {@link Author} can be extracted from the row data.
+     * @return {@code true} if an {@link Author} can be extracted from the {@link DataHolder}.
      */
-    public static boolean hasAuthor(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_AUTHOR_LIST)) {
-            final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+    public static boolean hasAuthor(@NonNull final DataHolder dataHolder) {
+        if (dataHolder.contains(Book.BKEY_AUTHOR_LIST)) {
+            final List<Author> list = dataHolder.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             return !list.isEmpty();
-        } else if (rowData.contains(DBKey.FK_AUTHOR)) {
-            return rowData.getLong(DBKey.FK_AUTHOR) > 0;
+        } else if (dataHolder.contains(DBKey.FK_AUTHOR)) {
+            return dataHolder.getLong(DBKey.FK_AUTHOR) > 0;
         } else {
             return false;
         }
     }
 
     /**
-     * Check if there is some form of {@link Series} available in the given row.
+     * Check if there is some form of {@link Series} available in the given {@link DataHolder}.
      *
-     * @param rowData to check
+     * @param dataHolder to check
      *
-     * @return {@code true} if an {@link Series} can be extracted from the row data.
+     * @return {@code true} if an {@link Series} can be extracted from the {@link DataHolder}.
      */
-    public static boolean hasSeries(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_SERIES_LIST)) {
-            final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+    public static boolean hasSeries(@NonNull final DataHolder dataHolder) {
+        if (dataHolder.contains(Book.BKEY_SERIES_LIST)) {
+            final List<Series> list = dataHolder.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             return !list.isEmpty();
-        } else if (rowData.contains(DBKey.FK_SERIES)) {
-            return rowData.getLong(DBKey.FK_SERIES) > 0;
+        } else if (dataHolder.contains(DBKey.FK_SERIES)) {
+            return dataHolder.getLong(DBKey.FK_SERIES) > 0;
         } else {
             return false;
         }
     }
 
     /**
-     * Extract the Author from the given {@link DataHolder}.
+     * Extract the {@link Author} from the given {@link DataHolder}.
      *
-     * @param holder with data
+     * @param dataHolder with {@link Author} data
      *
      * @return Author
      *
-     * @throws IllegalArgumentException if there is incompatible data in the DataHolder.
+     * @throws IllegalArgumentException if there is incompatible data in the {@link DataHolder}.
      */
     @NonNull
-    public static Author requireAuthor(@NonNull final DataHolder holder) {
-        Author result = null;
+    public static Author requireAuthor(@NonNull final DataHolder dataHolder)
+            throws IllegalArgumentException {
+        Author author = null;
 
-        if (holder.contains(Book.BKEY_AUTHOR_LIST)) {
+        if (dataHolder.contains(Book.BKEY_AUTHOR_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Author> list = holder.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            final List<Author> list = dataHolder.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             if (!list.isEmpty()) {
-                result = list.get(0);
+                author = list.get(0);
             }
-        } else if (holder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
-            final long bookId = holder.getLong(DBKey.FK_BOOK);
+            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
             if (bookId > 0) {
                 final List<Author> list = ServiceLocator.getInstance().getAuthorDao()
                                                         .getByBookId(bookId);
                 if (!list.isEmpty()) {
-                    result = list.get(0);
+                    author = list.get(0);
                 }
             }
-        } else if (holder.contains(DBKey.FK_AUTHOR)) {
-            final long id = holder.getLong(DBKey.FK_AUTHOR);
+        } else if (dataHolder.contains(DBKey.FK_AUTHOR)) {
+            final long id = dataHolder.getLong(DBKey.FK_AUTHOR);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getAuthorDao().findById(id).orElse(null);
+                author = ServiceLocator.getInstance().getAuthorDao().findById(id).orElse(null);
             }
         }
 
-        if (result != null) {
-            return result;
+        if (author != null) {
+            return author;
         }
-        throw new IllegalArgumentException("DataHolder does not contain any Author");
+        throw new IllegalArgumentException("No Author found");
     }
 
     /**
-     * Extract the Series from the given {@link DataHolder}.
+     * Extract the {@link Series} from the given {@link DataHolder}.
      *
-     * @param holder with data
+     * @param dataHolder with {@link Series} data
      *
      * @return Series
      *
-     * @throws IllegalArgumentException if there is incompatible data in the DataHolder.
+     * @throws IllegalArgumentException if there is incompatible data in the {@link DataHolder}.
      */
     @NonNull
-    public static Series requireSeries(@NonNull final DataHolder holder) {
-        Series result = null;
+    public static Series requireSeries(@NonNull final DataHolder dataHolder)
+            throws IllegalArgumentException {
+        Series series = null;
 
-        if (holder.contains(Book.BKEY_SERIES_LIST)) {
+        if (dataHolder.contains(Book.BKEY_SERIES_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Series> list = holder.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            final List<Series> list = dataHolder.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             if (!list.isEmpty()) {
-                result = list.get(0);
+                series = list.get(0);
             }
-        } else if (holder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
-            final long bookId = holder.getLong(DBKey.FK_BOOK);
+            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
             if (bookId > 0) {
                 final List<Series> list = ServiceLocator.getInstance().getSeriesDao()
                                                         .getByBookId(bookId);
                 if (!list.isEmpty()) {
-                    result = list.get(0);
+                    series = list.get(0);
                 }
             }
-        } else if (holder.contains(DBKey.FK_SERIES)) {
-            final long id = holder.getLong(DBKey.FK_SERIES);
+        } else if (dataHolder.contains(DBKey.FK_SERIES)) {
+            final long id = dataHolder.getLong(DBKey.FK_SERIES);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getSeriesDao().findById(id).orElse(null);
+                series = ServiceLocator.getInstance().getSeriesDao().findById(id).orElse(null);
             }
         }
 
-        if (result != null) {
-            return result;
+        if (series != null) {
+            return series;
         }
-        throw new IllegalArgumentException("DataHolder does not contain any Series");
+        throw new IllegalArgumentException("No Series found");
     }
 
     /**
-     * Extract the Bookshelf from the given {@link DataHolder}.
+     * Extract the {@link Bookshelf} from the given {@link DataHolder}.
      *
-     * @param holder with data
+     * @param dataHolder with {@link Bookshelf} data
      *
      * @return Bookshelf
      *
-     * @throws IllegalArgumentException if there is incompatible data in the DataHolder.
+     * @throws IllegalArgumentException if there is incompatible data in the {@link DataHolder}.
      */
     @NonNull
-    public static Bookshelf requireBookshelf(@NonNull final DataHolder holder) {
-        Bookshelf result = null;
+    public static Bookshelf requireBookshelf(@NonNull final DataHolder dataHolder)
+            throws IllegalArgumentException {
+        Bookshelf bookshelf = null;
 
-        if (holder.contains(Book.BKEY_BOOKSHELF_LIST)) {
+        if (dataHolder.contains(Book.BKEY_BOOKSHELF_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Bookshelf> list = holder.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+            final List<Bookshelf> list = dataHolder.getParcelableArrayList(
+                    Book.BKEY_BOOKSHELF_LIST);
             if (!list.isEmpty()) {
-                result = list.get(0);
+                bookshelf = list.get(0);
             }
-        } else if (holder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
-            final long bookId = holder.getLong(DBKey.FK_BOOK);
+            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
             if (bookId > 0) {
                 final List<Bookshelf> list = ServiceLocator.getInstance().getBookshelfDao()
                                                            .getByBookId(bookId);
                 if (!list.isEmpty()) {
-                    result = list.get(0);
+                    bookshelf = list.get(0);
                 }
             }
-        } else if (holder.contains(DBKey.FK_BOOKSHELF)) {
-            final long id = holder.getLong(DBKey.FK_BOOKSHELF);
+        } else if (dataHolder.contains(DBKey.FK_BOOKSHELF)) {
+            final long id = dataHolder.getLong(DBKey.FK_BOOKSHELF);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getBookshelfDao().findById(id).orElse(null);
+                bookshelf = ServiceLocator.getInstance().getBookshelfDao().findById(id)
+                                          .orElse(null);
             }
         }
 
-        if (result != null) {
-            return result;
+        if (bookshelf != null) {
+            return bookshelf;
         }
-        throw new IllegalArgumentException("DataHolder does not contain any Bookshelf");
+        throw new IllegalArgumentException("No Bookshelf found");
     }
 
     /**
-     * Extract the Publisher from the given {@link DataHolder}.
+     * Extract the {@link Publisher} from the given {@link DataHolder}.
      *
-     * @param holder with data
+     * @param dataHolder with {@link Publisher} data
      *
      * @return Publisher
      *
-     * @throws IllegalArgumentException if there is incompatible data in the DataHolder.
+     * @throws IllegalArgumentException if there is incompatible data in the {@link DataHolder}.
      */
     @NonNull
-    public static Publisher requirePublisher(@NonNull final DataHolder holder) {
+    public static Publisher requirePublisher(@NonNull final DataHolder dataHolder)
+            throws IllegalArgumentException {
         Publisher result = null;
 
-        if (holder.contains(Book.BKEY_PUBLISHER_LIST)) {
+        if (dataHolder.contains(Book.BKEY_PUBLISHER_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Publisher> list = holder.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+            final List<Publisher> list = dataHolder.getParcelableArrayList(
+                    Book.BKEY_PUBLISHER_LIST);
             if (!list.isEmpty()) {
                 result = list.get(0);
             }
-        } else if (holder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
-            final long bookId = holder.getLong(DBKey.FK_BOOK);
+            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
             if (bookId > 0) {
                 final List<Publisher> list = ServiceLocator.getInstance().getPublisherDao()
@@ -231,8 +239,8 @@ public final class DataHolderUtils {
                     result = list.get(0);
                 }
             }
-        } else if (holder.contains(DBKey.FK_PUBLISHER)) {
-            final long id = holder.getLong(DBKey.FK_PUBLISHER);
+        } else if (dataHolder.contains(DBKey.FK_PUBLISHER)) {
+            final long id = dataHolder.getLong(DBKey.FK_PUBLISHER);
             if (id > 0) {
                 result = ServiceLocator.getInstance().getPublisherDao().findById(id).orElse(null);
             }
@@ -241,6 +249,43 @@ public final class DataHolderUtils {
         if (result != null) {
             return result;
         }
-        throw new IllegalArgumentException("DataHolder does not contain any Publisher");
+        throw new IllegalArgumentException("No Publisher found");
+    }
+
+    /**
+     * Extract an {@link Identifier} value (sid) from the given {@link DataHolder}.
+     *
+     * @param dataHolder    with data
+     * @param identifierKey to get
+     *
+     * @return a sid
+     */
+    @NonNull
+    public static Optional<String> getExternalId(@NonNull final DataHolder dataHolder,
+                                                 @NonNull final String identifierKey) {
+
+        // The cursor REFERENCES a book
+        // This is the common case used by the BoB
+        if (dataHolder.contains(DBKey.FK_BOOK)) {
+            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
+            if (bookId > 0) {
+                return ServiceLocator.getInstance().getIdentifierDao()
+                                     .findSid(identifierKey, bookId);
+            }
+        }
+
+        // Identifier is part of the cursor result row,
+        // which (usually) means the row IS a Book
+        // This is the case used with the book details screen
+        if (dataHolder.contains(identifierKey)) {
+            final String sid = dataHolder.getString(identifierKey, null);
+            if (sid != null && !identifierKey.isEmpty() && !"0".equals(identifierKey)) {
+                return Optional.of(sid);
+            }
+        }
+
+        // DO NOT throw here. We get here if the row IS a Book
+        // but the key does not exist for this Book.
+        return Optional.empty();
     }
 }

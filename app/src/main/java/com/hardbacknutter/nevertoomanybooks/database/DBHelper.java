@@ -448,7 +448,7 @@ public class DBHelper
         // and the all/default shelves
         BookshelfDaoImpl.onPostCreate(context, db);
         // and the known identifiers
-        IdentifierDaoImpl.onPostCreate(db);
+        IdentifierDaoImpl.onPostCreate(context, db);
 
         CalibreCustomFieldDaoImpl.onPostCreate(db);
 
@@ -855,7 +855,7 @@ public class DBHelper
         if (oldVersion < 36) {
             TBL_IDENTIFIERS.create(db, true);
             TBL_BOOK_IDENTIFIER.create(db, true);
-            IdentifierDaoImpl.onPostCreate(db);
+            IdentifierDaoImpl.onPostCreate(context, db);
             LegacyUpgrades.migrateV35Sids(db);
         }
 

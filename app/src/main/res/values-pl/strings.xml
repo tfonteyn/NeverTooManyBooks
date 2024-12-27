@@ -737,6 +737,7 @@
     <string name="pt_scan_mode">Tryb skanowania</string>
     <string name="option_sync_deleted_book_records">Synchronizacja usuniętych książek</string>
     <string name="info_site_search_field_optional">Opcjonalne. Nie jest obsługiwane przez wszystkie strony internetowe.</string>
+    <string name="site_description_catalogue">Ogólne; Katalog</string>
     <string name="site_description_dutch_catalogue">Holenderski i nie tylko; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Niderlandzki i nie tylko; Katalog; Komiksy europejskie</string>
     <string name="site_description_dutch_shopping">Niderlandzki i więcej; Zakupy</string>
@@ -829,4 +830,5 @@
     <string name="lbl_capitalize_words">Początek wyrazów</string>
     <string name="lbl_capitalize_sentence">Początek zdania</string>
     <string name="lbl_assign_location">Przypisywanie lokalizacji</string>
+    <string name="lbl_identifiers">Identyfikatory</string>
 </resources>

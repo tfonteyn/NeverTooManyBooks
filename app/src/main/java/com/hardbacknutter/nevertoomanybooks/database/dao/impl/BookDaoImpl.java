@@ -542,7 +542,7 @@ public class BookDaoImpl
                                                      tocEntry -> bookLocale);
         }
 
-        identifierDaoSupplier.get().insertOrUpdate(book, doUpdates);
+        identifierDaoSupplier.get().insertOrUpdate(book);
 
 
         if (book.contains(DBKey.LOANEE_NAME)) {

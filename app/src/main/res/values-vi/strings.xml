@@ -707,16 +707,18 @@
     <string name="pv_bob_header_nr_of_books">Số lượng sách</string>
     <string name="pv_bob_header_style_name">Tên kiểu</string>
     <string name="pv_reformat_titles_prefixes">|</string>
-    <string name="site_description_chinese_catalogue">Người Trung Quốc; Mục lục</string>
-    <string name="site_description_dutch_catalogue">Tiếng Hà Lan và hơn thế nữa; Bảng tổng kê</string>
-    <string name="site_description_dutch_catalogue_eu_comics">Tiếng Hà Lan và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>
+    <!-- Bản tổng kê == "Inventory"; Mua sắm == "Shopping" -->
+    <string name="site_description_chinese_catalogue">Người Trung Quốc; Bản tổng kê</string>
+    <string name="site_description_catalogue">Tổng quan; Bản tổng kê</string>
+    <string name="site_description_dutch_catalogue">Tiếng Hà Lan và hơn thế nữa; Bản tổng kê</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Tiếng Hà Lan và hơn thế nữa; Bản tổng kê; Truyện tranh Châu Âu</string>
     <string name="site_description_dutch_comics_shopping">Tiếng Hà Lan và hơn thế nữa; Mua sắm; Truyện tranh</string>
     <string name="site_description_dutch_shopping">Tiếng Hà Lan và hơn thế nữa; Mua sắm</string>
-    <string name="site_description_english_catalogue">Tiếng Anh và hơn thế nữa; Bảng tổng kê</string>
-    <string name="site_description_english_catalogue_FSF">Tiếng Anh và hơn thế nữa; Bảng tổng kê; Giả tưởng và khoa học viễn tưởng</string>
-    <string name="site_description_french_catalogue_eu_comics">Tiếng Pháp và hơn thế nữa; Bảng tổng kê; Truyện tranh Châu Âu</string>
+    <string name="site_description_english_catalogue">Tiếng Anh và hơn thế nữa; Bản tổng kê</string>
+    <string name="site_description_english_catalogue_FSF">Tiếng Anh và hơn thế nữa; Bản tổng kê; Giả tưởng và khoa học viễn tưởng</string>
+    <string name="site_description_french_catalogue_eu_comics">Tiếng Pháp và hơn thế nữa; Bản tổng kê; Truyện tranh Châu Âu</string>
     <string name="site_description_general_shopping">Tổng quan; Mua sắm</string>
-    <string name="site_description_german_catalogue">Tiếng Đức; Mục lục</string>
+    <string name="site_description_german_catalogue">Tiếng Đức; Bản tổng kê</string>
     <string name="site_description_portuguese_shopping">Tiếng Bồ Đào Nha và nhiều hơn nữa; Mua sắm</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="size_hidden">Ẩn</string>
@@ -805,4 +807,5 @@
     <string name="whichViewApplication">Mở bằng</string>
     <string name="x_of_y">%1$d trong số %2$d</string>
     <string name="yes">Có</string>
+    <string name="lbl_identifiers">Nhận dạng</string>
 </resources>

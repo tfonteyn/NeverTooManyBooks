@@ -41,7 +41,7 @@ public class Identifier
     public static final String SID_GOODREADS_BOOK = "goodreads";
     public static final String SID_GOOGLE = "google";
     public static final String SID_ISFDB = "isfdb";
-    public static final String SID_KBNL = "kbnl";
+    public static final String SID_KBNL = "ppn";
     public static final String SID_LAST_DODO_NL = "lastdodo";
     public static final String SID_LCCN = "lccn";
     public static final String SID_LIBRARY_THING = "librarything";
@@ -49,6 +49,7 @@ public class Identifier
     public static final String SID_OCLC = "oclc";
     public static final String SID_OPEN_LIBRARY = "openlibrary";
     public static final String SID_STRIP_INFO = "stripinfo";
+    public static final String SID_STRIPWEB = "stripweb";
     public static final String SID_URI = "uri";
     public static final String SID_WIKIDATA = "wikidata";
 

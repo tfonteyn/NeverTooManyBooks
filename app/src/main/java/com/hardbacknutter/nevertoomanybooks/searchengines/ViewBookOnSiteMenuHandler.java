@@ -35,13 +35,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Collects all sites supporting {@link SearchEngine.ViewBookByExternalId}
- * and builds/displays a menu suitable for a given book.
+ * and builds/displays a menu suitable for a given {@link Book}.
  * <p>
  * We handle all engines in a single instance as we need to hide the entire submenu
  * if there are no relevant engines (i.e. external book ids).
@@ -89,8 +90,8 @@ class ViewBookOnSiteMenuHandler
                               @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
-        // Sanity check
         if (subMenuItem == null) {
+            // Not ours to handle
             return;
         }
 
@@ -102,10 +103,10 @@ class ViewBookOnSiteMenuHandler
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
             //noinspection DataFlowIssue
-            final Domain domain = menuIds.get(menuItem.getItemId()).getExternalIdDomain();
+            final String identifierKey = menuIds.get(menuItem.getItemId()).getIdentifierKey();
             //noinspection DataFlowIssue
-            final String externalId = rowData.getString(domain.getName());
-            final boolean visible = !externalId.isEmpty() && !"0".equals(externalId);
+            final boolean visible = DataHolderUtils.getExternalId(rowData, identifierKey)
+                                                   .isPresent();
 
             menuItem.setVisible(visible);
             if (visible) {
@@ -122,21 +123,23 @@ class ViewBookOnSiteMenuHandler
                                       @NonNull final DataHolder rowData) {
 
         final EngineId engineId = menuIds.get(menuItemId);
-        // the engine will be not-null if the menuItemId was found; i.e. it's ours to handle
-        if (engineId != null) {
-            final Domain domain = engineId.getExternalIdDomain();
-            // Sanity check
-            if (domain != null) {
-                final SearchEngine.ViewBookByExternalId searchEngine =
-                        (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
-
-                final String externalId = rowData.getString(domain.getName());
-                final String url = searchEngine.createViewOnSiteUrl(context, externalId);
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                return true;
-            }
+        if (engineId == null) {
+            // Not ours to handle
+            return false;
         }
-        // Not our menuItemId
-        return false;
+
+        final String identifierKey = engineId.getIdentifierKey();
+        // Sanity check
+        if (identifierKey == null) {
+            return false;
+        }
+
+        DataHolderUtils.getExternalId(rowData, identifierKey).ifPresent(sid -> {
+            final SearchEngine.ViewBookByExternalId searchEngine =
+                    (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
+            final String url = searchEngine.createViewOnSiteUrl(context, sid);
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        });
+        return true;
     }
 }

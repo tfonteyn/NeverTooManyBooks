@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -53,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -306,44 +307,30 @@ public class BookDaoHelper {
      * <p>
      * Processes the external id keys.
      * <p>
-     * For new books, REMOVE zero values, empty strings AND null values
-     * Existing books, REPLACE zero values and empty string with a {@code null}
-     * <p>
-     * Invalid values are always removed.
+     * Removes any keys with zero values, empty strings, null values
+     * or any invalid values for the type.
      * <p>
      * Further processing should be done in {@link #processNullsAndBlanks()}.
      */
     @VisibleForTesting
     public void processExternalIds() {
-        final List<Domain> domains = EngineId.getExternalIdDomains();
+        final List<Identifier> domains = ServiceLocator.getInstance().getIdentifierDao().getAll();
 
         domains.stream()
-               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Integer)
-               .map(Domain::getName)
+               .filter(identifier -> identifier.getType() == Identifier.TYPE_LONG)
+               .map(Identifier::getName)
                .filter(book::contains)
                .forEach(key -> {
                    final Object o = book.get(key, realNumberParser);
                    try {
-                       if (isNew) {
-                           // For new books:
-                           if (o == null) {
-                               // remove null values
-                               book.remove(key);
-                           } else {
-                               final long v = book.getLong(key);
-                               if (v < 1) {
-                                   // remove zero values
-                                   book.remove(key);
-                               }
-                           }
+                       if (o == null) {
+                           book.remove(key);
                        } else {
-                           // for existing books, leave null values as-is
-                           if (o != null) {
-                               final long v = book.getLong(key);
-                               if (v < 1) {
-                                   // replace zero values with a null
-                                   book.putNull(key);
-                               }
+                           // we could add "instanceof" checks, but we might as well
+                           // just try the conversion and deal with the NumberFormatException
+                           final long v = book.getLong(key);
+                           if (v < 1) {
+                               book.remove(key);
                            }
                        }
                    } catch (@NonNull final NumberFormatException e) {
@@ -361,31 +348,17 @@ public class BookDaoHelper {
                });
 
         domains.stream()
-               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Text)
-               .map(Domain::getName)
+               .filter(identifier -> identifier.getType() == Identifier.TYPE_STRING)
+               .map(Identifier::getName)
                .filter(book::contains)
                .forEach(key -> {
                    final Object o = book.get(key, realNumberParser);
-                   if (isNew) {
-                       // for new books,
-                       if (o == null) {
-                           // remove null values
-                           book.remove(key);
-                       } else {
-                           final String v = o.toString();
-                           if (v.isEmpty() || "0".equals(v)) {
-                               // remove blank/zero values
-                               book.remove(key);
-                           }
-                       }
+                   if (o == null) {
+                       book.remove(key);
                    } else {
-                       // for existing books, leave null values as-is
-                       if (o != null) {
-                           final String v = o.toString();
-                           if (v.isEmpty() || "0".equals(v)) {
-                               // replace blank/zero values with a null
-                               book.putNull(key);
-                           }
+                       final String v = o.toString();
+                       if (v.isEmpty() || "0".equals(v)) {
+                           book.remove(key);
                        }
                    }
                });

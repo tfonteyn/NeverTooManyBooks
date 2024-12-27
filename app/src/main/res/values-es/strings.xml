@@ -722,6 +722,7 @@
     <string name="info_maintenance_clear_deleted_book_records">Esto borrará el historial de libros borrados. No se borrará ningún libro.</string>
     <string name="option_sync_deleted_book_records">Sincronizar libros borrados</string>
     <string name="info_maintenance_sync_deleted_book_records">Esto comprobará el historial de los libros eliminados de una importación anterior desde otro dispositivo y sincronizará esas eliminaciones. En otras palabras, los libros marcados como borrados en el otro dispositivo también se borrarán en este dispositivo.</string>
+    <string name="site_description_catalogue">General; Catálogo</string>
     <string name="site_description_dutch_catalogue">Holandés y más; Catálogo</string>
     <string name="site_description_dutch_catalogue_eu_comics">Neerlandés y más; Catálogo; Cómics europeos</string>
     <string name="site_description_dutch_shopping">Holandés y más; Compras</string>
@@ -809,4 +810,5 @@
     <string name="pt_capitalize_title">Título en mayúsculas</string>
     <string name="lbl_assign_location">Asignar ubicación</string>
     <string name="info_bulk_set_location">Seleccione la ubicación que desea asignar a todos los libros listados en el nodo seleccionado.</string>
+    <string name="lbl_identifiers">Identificadores</string>
 </resources>

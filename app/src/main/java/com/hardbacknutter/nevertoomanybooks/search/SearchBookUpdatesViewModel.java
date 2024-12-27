@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
@@ -384,10 +383,10 @@ public class SearchBookUpdatesViewModel
                     Arrays.stream(EngineId.values())
                           .filter(EngineId::isEnabled)
                           .forEach(engineId -> {
-                              final Domain domain = engineId.getExternalIdDomain();
-                              if (domain != null) {
+                              final String identifierKey = engineId.getIdentifierKey();
+                              if (identifierKey != null) {
                                   final String value = currentBook.getString(
-                                          domain.getName(), null);
+                                          identifierKey, null);
                                   if (value != null && !value.isEmpty() && !"0".equals(value)) {
                                       externalIds.put(engineId, value);
                                   }

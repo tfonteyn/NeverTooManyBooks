@@ -26,50 +26,123 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+/**
+ * <strong>External-id</strong> or <strong>sid</strong>:
+ * a book-id as defined by an external (to this app) source,
+ * usually a website. Hence <strong>sid</strong>: site-id.
+ * <p>
+ * <strong>{@link Identifier}</strong>: a NAME for an external/site book-id.
+ * <p>
+ * <strong>Note:</strong>'ISBN' has dedicated handling and is NOT included here.
+ */
 public interface IdentifierDao {
 
+    /**
+     * Find the {@link Identifier} for the given id.
+     *
+     * @param id of the {@link Identifier}
+     *
+     * @return {@link Identifier}
+     */
     @NonNull
     Optional<Identifier> findById(@IntRange(from = 1) long id);
 
-    @NonNull
-    Optional<Identifier> findByName(@NonNull Identifier identifier);
-
+    /**
+     * Find the {@link Identifier} for the given name.
+     *
+     * @param name of the {@link Identifier}
+     *
+     * @return {@link Identifier}
+     */
     @NonNull
     Optional<Identifier> findByName(@NonNull String name);
 
     /**
-     * Convenience method, fetch all identifiers, and return them as a List
-     * ordered by Identifier name.
-     * <p>
-     * <strong>Note:</strong> we do not include the 'ISBN'.
+     * Convenience method, fetch all {@link Identifier}s, and return them as a List
+     * ordered by {@link Identifier} name.
      *
-     * @return a list of all Identifiers in the database.
+     * @return a list of all {@link Identifier}s in the database.
      */
     @NonNull
     List<Identifier> getAll();
 
+    /**
+     * Insert a new {@link Identifier}.
+     *
+     * @param identifier to insert. Will be updated with the id
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
+     */
     @IntRange(from = 1)
     long insert(@NonNull Identifier identifier)
-            throws DaoInsertException;
+            throws DaoWriteException;
 
+    /**
+     * Update the given {@link Identifier}.
+     *
+     * @param identifier to update
+     *
+     * @throws DaoWriteException on failure
+     */
     void update(@NonNull Identifier identifier)
-            throws DaoUpdateException;
+            throws DaoWriteException;
 
+    /**
+     * Delete the given {@link Identifier}.
+     *
+     * @param identifier to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
     boolean delete(@NonNull Identifier identifier);
 
+    /**
+     * Find a {@link Identifier} by using the <strong>name</strong> field.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     *
+     * @param identifier to update
+     */
     void fixId(@NonNull Identifier identifier);
 
-    void insertOrUpdate(@NonNull Book book,
-                        boolean doUpdates)
-            throws DaoInsertException, DaoUpdateException;
+    /**
+     * Insert or update a list of {@link Identifier}'s linked to a single {@link Book}.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param book to use
+     *
+     * @throws DaoWriteException on failure
+     */
+    void insertOrUpdate(@NonNull Book book)
+            throws DaoWriteException;
 
+    /**
+     * Get a list of all {@link Identifier.Value}s for the given book id.
+     *
+     * @param bookId to get
+     *
+     * @return list
+     */
     @NonNull
     List<Identifier.Value> getByBookId(@IntRange(from = 1) long bookId);
+
+    /**
+     * Get the SID value for the given {@link Identifier} of the given book id.
+     *
+     * @param identifierName to get
+     * @param bookId         for this book id
+     *
+     * @return sid value
+     */
+    @NonNull
+    Optional<String> findSid(@NonNull String identifierName,
+                             @IntRange(from = 1) long bookId);
 
     /**
      * Find the book id for the given SID and name.

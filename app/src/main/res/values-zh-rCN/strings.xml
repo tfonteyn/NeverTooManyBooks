@@ -712,6 +712,7 @@
     <string name="pv_bob_header_nr_of_books">图书数量</string>
     <string name="pv_bob_header_style_name">样式名称</string>
     <string name="site_description_chinese_catalogue">中文；目录</string>
+    <string name="site_description_catalogue">通用；目录</string>
     <string name="site_description_dutch_catalogue">荷兰语及其他；目录</string>
     <string name="site_description_dutch_catalogue_eu_comics">荷兰语及其他；目录；欧洲漫画</string>
     <string name="site_description_dutch_comics_shopping">荷兰语及其他；商店；漫画</string>
@@ -809,4 +810,5 @@
     <string name="whichViewApplication">打开方式</string>
     <string name="x_of_y">%1$d本 • 共%2$d本</string>
     <string name="yes">确定</string>
+    <string name="lbl_identifiers">标识符</string>
 </resources>

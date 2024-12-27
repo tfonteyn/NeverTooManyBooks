@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.bookdetails.share.Citation;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -82,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
@@ -952,9 +950,7 @@ public class Book
     }
 
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
-        ivs.forEach(iv -> {
-            putString(iv.getIdentifier().getName(), iv.getSid());
-        });
+        ivs.forEach(iv -> putString(iv.getIdentifier().getName(), iv.getSid()));
     }
 
     /**
@@ -1604,25 +1600,13 @@ public class Book
      * @param bookData to copy from
      */
     public void copyExternalIdsFrom(@NonNull final Book bookData) {
-        EngineId.getExternalIdDomains()
-                .stream()
-                .filter(domain -> bookData.contains(domain.getName()))
-                .forEach(domain -> {
-                    final String key = domain.getName();
-                    if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
-                        final String id = bookData.getString(key);
-                        // Sanity check
-                        if (!id.isEmpty()) {
-                            putString(key, id);
-                        }
-                    } else {
-                        final long id = bookData.getLong(key);
-                        // Sanity check
-                        if (id != 0) {
-                            putLong(key, id);
-                        }
-                    }
-                });
+        ServiceLocator.getInstance()
+                      .getIdentifierDao()
+                      .getAll()
+                      .stream()
+                      .map(Identifier::getName)
+                      .filter(bookData::contains)
+                      .forEach(name -> putString(name, bookData.getString(name)));
     }
 
     /**

@@ -43,7 +43,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -582,9 +581,9 @@ public final class SyncReaderProcessor {
             Arrays.stream(EngineId.values())
                   .filter(EngineId::isEnabled)
                   .forEach(engineId -> {
-                      final Domain domain = engineId.getExternalIdDomain();
-                      if (domain != null) {
-                          sidMap.put(engineId.getName(context), domain.getName());
+                      final String identifierKey = engineId.getIdentifierKey();
+                      if (identifierKey != null) {
+                          sidMap.put(engineId.getName(context), identifierKey);
                       }
                   });
             sidMap.forEach((label, key) -> add(label, key, SyncAction.Overwrite));

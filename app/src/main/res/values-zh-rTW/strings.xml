@@ -705,6 +705,7 @@
     <string name="pv_bob_header_nr_of_books">圖書數量</string>
     <string name="pv_bob_header_style_name">樣式名稱</string>
     <string name="site_description_chinese_catalogue">中國人；目錄</string>
+    <string name="site_description_catalogue">一般；目錄</string>
     <string name="site_description_dutch_catalogue">荷蘭語和更多；目錄</string>
     <string name="site_description_dutch_catalogue_eu_comics">荷蘭語和更多；目錄；歐洲漫畫</string>
     <string name="site_description_dutch_comics_shopping">荷蘭語和更多；商店；漫畫</string>
@@ -807,4 +808,5 @@
     <string name="ps_show_author_name_given_first">優先顯示名字，\n如「Cixin Liu」</string>
     <string name="ps_sort_author_name_family_first">優先按姓氏排序，\n如「Liu，Cixin」</string>
     <string name="ps_sort_author_name_given_first">優先按名字排序，\n如「Cixin Liu」</string>
+    <string name="lbl_identifiers">标识符</string>
 </resources>

@@ -578,7 +578,7 @@ public final class DBDefinitions {
         TBL_BOOK_PUBLISHER = new TableDefinition("book_publisher", "bp");
         TBL_BOOK_LOANEE = new TableDefinition("loan", "l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology", "bat");
-        TBL_BOOK_IDENTIFIER = new TableDefinition("book_ident", "bid");
+        TBL_BOOK_IDENTIFIER = new TableDefinition("book_identifiers", "bid");
 
         TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib", "clb_l");
         TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib", "clb_vl");
@@ -1002,7 +1002,7 @@ public final class DBDefinitions {
                         .unique()
                         .build();
         DOM_IDENT_TYPE =
-                new Domain.Builder(DBKey.IDENT_DESC, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.IDENT_TYPE, SqLiteDataType.Text)
                         .notNull()
                         .withDefault("'" + Identifier.TYPE_STRING + "'")
                         .build();

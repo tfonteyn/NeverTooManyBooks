@@ -24,15 +24,13 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 
-import java.util.stream.Collectors;
-
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
@@ -94,13 +92,14 @@ final class Triggers {
         /*
          * When an entry in a book-x link table is deleted.
          *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         * Update the books last-update-date.
          */
         afterDeleteOn(db, TBL_BOOK_BOOKSHELF);
         // It's currently not possible to delete an Author directly.
         //  createTriggerAfterDeleteOn(db, TBL_BOOK_AUTHOR);
         afterDeleteOn(db, TBL_BOOK_SERIES);
         afterDeleteOn(db, TBL_BOOK_PUBLISHER);
+        afterDeleteOn(db, TBL_BOOK_IDENTIFIER);
         afterDeleteOn(db, TBL_BOOK_LOANEE);
 
         /*
@@ -110,7 +109,7 @@ final class Triggers {
          * The latter because a Book might not have the full list of Authors set.
          * (i.e. each toc has the right author, but the book says "many authors")
          *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         * Update the books last-update-date.
          *
          * dev note: "after_update_on" is missing a "_" at the end!
          */
@@ -141,7 +140,7 @@ final class Triggers {
         /*
          * Update a {@link Series}
          *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         * Update the books last-update-date.
          *
          * dev note: "after_update_on" is missing a "_" at the end!
          */
@@ -163,7 +162,7 @@ final class Triggers {
         /*
          * Update a {@link Publisher}
          *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         * Update the books last-update-date.
          *
          * dev note: "after_update_on" is missing a "_" at the end!
          */
@@ -185,7 +184,7 @@ final class Triggers {
         /*
          * After a Book is lend-out.
          *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         * Update the books last-update-date.
          */
         name = "after_insert_on_" + TBL_BOOK_LOANEE.getName();
         body = AFTER_INSERT_ON_ + TBL_BOOK_LOANEE.getName()
@@ -202,7 +201,7 @@ final class Triggers {
         /*
          * After a lend-out Book is returned.
          *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         * Update the books last-update-date.
          *
          * dev note: "after_update_on" HAS a "_" at the end!
          */
@@ -212,7 +211,7 @@ final class Triggers {
                + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
+               + "  WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
                + " END";
 
         db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
@@ -244,25 +243,16 @@ final class Triggers {
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
 
         /*
-         * If the ISBN of a {@link Book} is changed, reset external ID's and sync dates.
+         * If the ISBN of a {@link Book} is changed, reset external ID's.
          */
         name = "after_update_of_" + DBKey.BOOK_ISBN + "_on_" + TBL_BOOKS.getName();
         body = AFTER_UPDATE_OF_ + DBKey.BOOK_ISBN + " ON " + TBL_BOOKS.getName()
                + " FOR EACH ROW"
                + " WHEN NEW." + DBKey.BOOK_ISBN + " <> OLD." + DBKey.BOOK_ISBN
                + " BEGIN"
-               + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
-
-        body += EngineId
-                .getExternalIdDomains()
-                .stream()
-                .map(domain -> domain.getName() + "=null")
-                .collect(Collectors.joining(","));
-
-        //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-
-        body += " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.PK_ID + ";"
-                + " END";
+               + "  DELETE FROM " + TBL_BOOK_IDENTIFIER.getName()
+               + "  WHERE " + DBKey.FK_BOOK + "=NEW." + DBKey.PK_ID + ";"
+               + " END";
 
         db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
         db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
@@ -272,7 +262,7 @@ final class Triggers {
     /**
      * Create an "AFTER DELETE ON" on a TBL_BOOK_* table.
      * <p>
-     * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+     * Update the books last-update-date.
      *
      * @param db        Underlying database
      * @param linkTable the TBL_BOOK_* link table on which to set the trigger

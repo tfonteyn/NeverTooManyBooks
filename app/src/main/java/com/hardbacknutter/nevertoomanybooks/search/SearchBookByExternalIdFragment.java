@@ -43,11 +43,11 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -188,8 +188,8 @@ public class SearchBookByExternalIdFragment
 
         final int keyboardIcon;
         final int inputType;
-        //noinspection DataFlowIssue
-        if (engineId.getExternalIdDomain().getSqLiteDataType() == SqLiteDataType.Text) {
+        //noinspection OptionalGetWithoutIsPresent
+        if (engineId.getIdentifier().get().getType() == Identifier.TYPE_STRING) {
             // display an alphanumeric keyboard icon
             keyboardIcon = R.drawable.keyboard_24px;
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;

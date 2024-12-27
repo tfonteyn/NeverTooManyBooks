@@ -731,6 +731,7 @@
     <string name="pt_scan_mode">Tarama modu</string>
     <string name="option_sync_deleted_book_records">Silinen kitapları senkronize edin</string>
     <string name="info_site_search_field_optional">İsteğe bağlı. Tüm web siteleri tarafından desteklenmez.</string>
+    <string name="site_description_catalogue">Genel; Katalog</string>
     <string name="site_description_dutch_catalogue">Hollandaca ve daha fazlası; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Hollandaca ve daha fazlası; Katalog; Avrupa Çizgi Romanları</string>
     <string name="site_description_dutch_shopping">Hollandaca ve daha fazlası; Alışveriş</string>
@@ -817,4 +818,5 @@
     <string name="lbl_capitalize_words">Sözcüklerin başlangıcı</string>
     <string name="lbl_capitalize_sentence">Cümlelerin başlangıcı</string>
     <string name="lbl_assign_location">Konum atama</string>
+    <string name="lbl_identifiers">Tanımlayıcılar</string>
 </resources>

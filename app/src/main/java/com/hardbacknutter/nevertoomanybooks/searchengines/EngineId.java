@@ -45,14 +45,13 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
@@ -117,7 +116,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *      </li>
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
- *          TODO: document steps: search the code for "NEWTHINGS: adding a new search engine"
+ *          TODO: document steps for adding a SID to a new engine
  *      </li>
  *
  * </ol>
@@ -355,7 +354,7 @@ public enum EngineId
     private boolean supportsMultipleCoverSizes;
 
     @Nullable
-    private Domain externalIdDomain;
+    private String identifierKey;
 
     /**
      * Constructor.
@@ -392,12 +391,12 @@ public enum EngineId
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
-            Amazon.setExternalIdDomainKey(Identifier.SID_ASIN)
+            Amazon.setIdentifierKey(Identifier.SID_ASIN)
                   .createConfig()
                   .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
-            Bedetheque.setExternalIdDomainKey(Identifier.SID_BEDETHEQUE)
+            Bedetheque.setIdentifierKey(Identifier.SID_BEDETHEQUE)
                       .createConfig()
                       // default timeouts based on limited testing
                       .setConnectTimeoutMs(15_000)
@@ -417,28 +416,28 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
         if (Dnb.isEnabled()) {
-            Dnb.setExternalIdDomainKey(Identifier.SID_DNB)
+            Dnb.setIdentifierKey(Identifier.SID_DNB)
                .createConfig()
                .build(SearchEngineConfig::new);
         }
         if (Douban.isEnabled()) {
-            Douban.setExternalIdDomainKey(Identifier.SID_DOUBAN)
+            Douban.setIdentifierKey(Identifier.SID_DOUBAN)
                   .createConfig()
                   .build(SearchEngineConfig::new);
         }
         if (Goodreads.isEnabled()) {
-            Goodreads.setExternalIdDomainKey(Identifier.SID_GOODREADS_BOOK)
+            Goodreads.setIdentifierKey(Identifier.SID_GOODREADS_BOOK)
                      .createConfig()
                      .build(SearchEngineConfig::new);
         }
         if (GoogleBooks.isEnabled()) {
             GoogleBooks.setSupportsMultipleCoverSizes(true)
-                       .setExternalIdDomainKey(Identifier.SID_GOOGLE)
+                       .setIdentifierKey(Identifier.SID_GOOGLE)
                        .createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (Isfdb.isEnabled()) {
-            Isfdb.setExternalIdDomainKey(Identifier.SID_ISFDB)
+            Isfdb.setIdentifierKey(Identifier.SID_ISFDB)
                  .createConfig()
                  // default timeouts based on limited testing
                  .setConnectTimeoutMs(20_000)
@@ -447,29 +446,29 @@ public enum EngineId
         }
         if (KbNl.isEnabled()) {
             KbNl.setSupportsMultipleCoverSizes(true)
-                .setExternalIdDomainKey(Identifier.SID_KBNL)
+                .setIdentifierKey(Identifier.SID_KBNL)
                 .createConfig()
                 .build(SearchEngineConfig::new);
         }
         if (LastDodoNl.isEnabled()) {
-            LastDodoNl.setExternalIdDomainKey(Identifier.SID_LAST_DODO_NL)
+            LastDodoNl.setIdentifierKey(Identifier.SID_LAST_DODO_NL)
                       .createConfig()
                       .setPrefersIsbn10(true)
                       .build(SearchEngineConfig::new);
         }
         if (LibraryThing.isEnabled()) {
-            LibraryThing.setExternalIdDomainKey(Identifier.SID_LIBRARY_THING)
+            LibraryThing.setIdentifierKey(Identifier.SID_LIBRARY_THING)
                         .createConfig()
                         .build(SearchEngineConfig::new);
         }
         if (OpenLibrary.isEnabled()) {
-            OpenLibrary.setExternalIdDomainKey(Identifier.SID_OPEN_LIBRARY)
+            OpenLibrary.setIdentifierKey(Identifier.SID_OPEN_LIBRARY)
                        .setSupportsMultipleCoverSizes(true)
                        .createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
-            StripInfoBe.setExternalIdDomainKey(Identifier.SID_STRIP_INFO)
+            StripInfoBe.setIdentifierKey(Identifier.SID_STRIP_INFO)
                        .createConfig()
                        // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)
@@ -590,20 +589,6 @@ public enum EngineId
     }
 
     /**
-     * Get the list of all external-id domains.
-     *
-     * @return list
-     */
-    @NonNull
-    public static List<Domain> getExternalIdDomains() {
-        return Arrays.stream(values())
-                     .filter(EngineId::isEnabled)
-                     .map(EngineId::getExternalIdDomain)
-                     .filter(Objects::nonNull)
-                     .collect(Collectors.toList());
-    }
-
-    /**
      * Collect the website engines for which we store an id which can be used
      * to view a book on that site.
      * Sorted by name.
@@ -703,20 +688,6 @@ public enum EngineId
         }
     }
 
-    /**
-     * Set the {@link DBKey} for the column name in the Books table which stores
-     * the website specific identifier for a book.
-     *
-     * @param domainKey dbKey
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    private EngineId setExternalIdDomainKey(@NonNull final String domainKey) {
-        externalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(domainKey);
-        return this;
-    }
-
     @NonNull
     private EngineId setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
         this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
@@ -793,8 +764,30 @@ public enum EngineId
     }
 
     @Nullable
-    public Domain getExternalIdDomain() {
-        return externalIdDomain;
+    public String getIdentifierKey() {
+        return identifierKey;
+    }
+
+    /**
+     * Set the {@link Identifier} for the website specific identifier for a book.
+     *
+     * @param identifierKey key
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    private EngineId setIdentifierKey(@NonNull final String identifierKey) {
+        this.identifierKey = identifierKey;
+        return this;
+    }
+
+    @NonNull
+    public Optional<Identifier> getIdentifier() {
+        if (identifierKey != null) {
+            return ServiceLocator.getInstance().getIdentifierDao().findByName(identifierKey);
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -1013,7 +1006,7 @@ public enum EngineId
                + ", clazz=" + clazz.getName()
                + ", enabled=" + enabled
 
-               + ", externalIdDomain=" + externalIdDomain
+               + ", identifierKey=" + identifierKey
                + '}';
     }
 

@@ -108,6 +108,14 @@
             translatable="false">Douban</string>
     <string name="site_info_douban"
             translatable="false">@string/site_description_chinese_catalogue</string>
+    <string name="site_worldcat"
+            translatable="false">WorldCat</string>
+    <string name="site_info_worldcat"
+            translatable="false">@string/site_description_catalogue</string>
+    <string name="site_lccn"
+            translatable="false">Library of Congress (USA)</string>
+    <string name="site_info_lccn"
+            translatable="false">@string/site_description_english_catalogue</string>
 
     <!-- https://calibre-ebook.com -->
     <string name="site_calibre"

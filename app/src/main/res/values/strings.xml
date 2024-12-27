@@ -392,6 +392,11 @@
     <string name="info_site_search_field_optional">Optional. Not supported by all web sites.</string>
 
     <!-- website info: languages; type; specifics. -->
+    <string name="site_description_general_shopping">General; Shop</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_catalogue">General; Catalog</string>
+
+    <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue">Dutch and more; Catalog</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue_eu_comics">Dutch and more; Catalog; European Comics</string>
@@ -411,8 +416,7 @@
     <string name="site_description_french_catalogue_eu_comics">French and more; Catalog; European Comics</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_portuguese_shopping">Portuguese and more; Shopping</string>
-    <!-- website info: languages; type; specifics. -->
-    <string name="site_description_general_shopping">General; Shop</string>
+
     <!-- endregion -->
     <!-- region ========== Tips which are shown in some places on how to use a screen. -->
     <!-- Dialog title. -->
@@ -1117,6 +1121,10 @@
     <string name="lbl_dust_cover">Dust cover</string>
     <!-- a one line label, with the name of the person appended. Shown as a banner on the screen. -->
     <string name="lbl_lend_out_to_name">Lend out to %1$s</string>
+
+    <!-- Screen title for viewing/editing a list of external website ids. -->
+    <string name="lbl_identifiers">Identifiers</string>
+
     <!-- endregion -->
     <!-- region ========== All date related labels. -->
     <!-- [VERIFIED] Universal date strings -->
@@ -1905,4 +1913,11 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
+
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="lbl_numeric"
+            translatable="false">Numeric</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="lbl_text"
+            translatable="false">Text</string>
 </resources>
