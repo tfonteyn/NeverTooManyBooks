@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -58,16 +57,6 @@ public interface EntityDao<T extends Entity> {
     Optional<T> findByName(@NonNull Context context,
                            @NonNull T item,
                            @NonNull Locale locale);
-
-    /**
-     * Fetch all {@link T}s by creating a Cursor on the whole table.
-     * <p>
-     * No guarantee on how the rows are ordered.
-     *
-     * @return Cursor over all {@link T}s
-     */
-    @NonNull
-    Cursor fetchAll();
 
     /**
      * Get a simple/total count of the items.

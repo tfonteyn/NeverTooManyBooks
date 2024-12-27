@@ -148,12 +148,6 @@ public class PublisherDaoImpl
     }
 
     @Override
-    @NonNull
-    public Cursor fetchAll() {
-        return db.rawQuery(Sql.SELECT_ALL, null);
-    }
-
-    @Override
     public long count() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
             return stmt.simpleQueryForLongOrZero();
