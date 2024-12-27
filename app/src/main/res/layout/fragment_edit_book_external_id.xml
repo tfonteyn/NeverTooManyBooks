@@ -35,39 +35,83 @@
         android:layout_margin="@dimen/container_margin"
         >
 
+        <!-- REMINDER: set the last one to
+               android:imeOptions="actionDone"
+             and all others to "actionNext"
+        -->
         <!--suppress LongLine -->
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/flow_site_ids"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="lbl_site_goodreads,lbl_site_isfdb,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be,lbl_site_last_dodo_nl"
+            android:orientation="vertical"
+            app:constraint_referenced_ids="lbl_site_bedetheque,lbl_site_dnb_de,lbl_site_goodreads,lbl_site_isfdb,lbl_site_kbnl,lbl_site_last_dodo_nl,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0.5"
-            app:flow_horizontalGap="@dimen/field_margin_inline"
+            app:flow_horizontalGap="2dp"
             app:flow_horizontalStyle="packed"
-            app:flow_maxElementsWrap="4"
+            app:flow_maxElementsWrap="5"
             app:flow_verticalBias="0"
             app:flow_verticalGap="@dimen/field_margin_top"
+            app:flow_verticalStyle="packed"
             app:flow_wrapMode="aligned"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
+        <!-- NEWTHINGS: adding a new search engine:
+                optional: external id KEY add a TextInputLayout widget
+                and add the name to the Flow#constraint_referenced_ids.
+
+            Keep them alphabetic.
+        -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_bedetheque"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_bedetheque"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_bedetheque"
+                style="@style/TIE.ExternalId.Number"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="12345678"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_dnb_de"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_dnb_de"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_dnb"
+                style="@style/TIE.ExternalId.Number"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="12345678"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_goodreads"
             style="@style/TIL.Text.ExternalId"
-            android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/site_goodreads"
             >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_goodreads"
-                style="@style/TIE.Generic"
+                style="@style/TIE.ExternalId.Number"
                 android:imeOptions="actionNext"
-                android:inputType="number"
-                tools:ignore="Autofill,DuplicateSpeakableTextCheck"
-                tools:text="123456"
+                tools:ignore="Autofill"
+                tools:text="12345678"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -80,61 +124,26 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_isfdb"
-                style="@style/TIE.Generic"
+                style="@style/TIE.ExternalId.Number"
                 android:imeOptions="actionNext"
-                android:inputType="number"
                 tools:ignore="Autofill"
-                tools:text="123456"
+                tools:text="12345678"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_site_library_thing"
+            android:id="@+id/lbl_site_kbnl"
             style="@style/TIL.Text.ExternalId"
-            android:hint="@string/site_library_thing"
+            android:hint="@string/site_kb_nl"
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/site_library_thing"
-                style="@style/TIE.Generic"
-                android:imeOptions="actionNext"
-                android:inputType="number"
-                tools:ignore="Autofill"
-                tools:text="123456"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_site_open_library"
-            style="@style/TIL.Text.ExternalId"
-            android:hint="@string/site_open_library"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/site_open_library"
-                style="@style/TIE.Generic"
+                android:id="@+id/site_kbnl"
+                style="@style/TIE.ExternalId.Number"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
-                tools:text="abc123"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_site_strip_info_be"
-            style="@style/TIL.Text.ExternalId"
-            android:hint="@string/site_stripinfo_be"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/site_strip_info_be"
-                style="@style/TIE.Generic"
-                android:imeOptions="actionDone"
-                android:inputType="number"
-                tools:ignore="Autofill"
-                tools:text="123456"
+                tools:text="12345678"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -147,19 +156,61 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_last_dodo_nl"
-                style="@style/TIE.Generic"
-                android:imeOptions="actionDone"
-                android:inputType="number"
+                style="@style/TIE.ExternalId.Number"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
-                tools:text="123456"
+                tools:text="12345678"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- NEWTHINGS: adding a new search engine:
-                optional: external id KEY add a TextInputLayout widget
-                and add the name to the Flow#constraint_referenced_ids.
-        -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_library_thing"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_library_thing"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_library_thing"
+                style="@style/TIE.ExternalId.Number"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="12345678"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_open_library"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_open_library"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_open_library"
+                style="@style/TIE.ExternalId.Text"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="OL51566464M"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_strip_info_be"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_stripinfo_be"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_strip_info_be"
+                style="@style/TIE.ExternalId.Number"
+                android:imeOptions="actionDone"
+                tools:ignore="Autofill"
+                tools:text="12345678"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/barrier_ext_id"

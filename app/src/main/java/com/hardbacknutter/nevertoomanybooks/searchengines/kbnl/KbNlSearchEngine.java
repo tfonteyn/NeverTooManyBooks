@@ -39,7 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
@@ -59,7 +61,9 @@ import org.xml.sax.helpers.DefaultHandler;
 public class KbNlSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.CoverByEdition {
+                   SearchEngine.ByExternalId,
+                   SearchEngine.CoverByEdition,
+                   SearchEngine.ViewBookByExternalId {
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -100,6 +104,8 @@ public class KbNlSearchEngine
     private static final String DEFAULT_DB_VERSION = "2.37";
     /** Fallback only, we should always extract it from the url. */
     private static final String DEFAULT_SET_NUMBER = "1";
+    /** See {@link KbNlBookHandler}#PERMALINK_PATTERN. */
+    private static final String PERMALINK_URL = "/cbs/DB=%1$s/XMLPRS=Y/PPN?PPN=%2$s";
 
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
@@ -152,12 +158,64 @@ public class KbNlSearchEngine
     }
 
     @NonNull
+    @Override
+    public String createViewOnSiteUrl(@NonNull final Context context,
+                                      @NonNull final String externalId) {
+        return getHostUrl(context) + String.format(PERMALINK_URL, dbVersion, externalId);
+    }
+
+    @NonNull
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException,
                    SearchException,
                    CredentialsException {
+
+        final String url = getHostUrl(context)
+                           + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
+        final Book book = getBook(context, url);
+
+        if (isCancelled()) {
+            return book;
+        }
+
+        if (fetchCovers[0]) {
+            final AltEdition edition = new AltEditionIsbn(validIsbn);
+            searchBestCoverByEdition(context, edition, 0).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+        return book;
+    }
+
+    @NonNull
+    @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        final String url = getHostUrl(context) + String.format(PERMALINK_URL, dbVersion,
+                                                               externalId);
+        final Book book = getBook(context, url);
+        if (isCancelled()) {
+            return book;
+        }
+
+        if (fetchCovers[0]) {
+            final ISBN isbn = new ISBN(book.getString(DBKey.BOOK_ISBN), true);
+            if (isbn.isValid(true)) {
+                final AltEdition edition = new AltEditionIsbn(isbn.asText());
+                searchBestCoverByEdition(context, edition, 0).ifPresent(
+                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+            }
+        }
+        return book;
+    }
+
+    @NonNull
+    private Book getBook(@NonNull final Context context,
+                         @NonNull final String url)
+            throws SearchException, StorageException {
 
         ensureCookie(context);
 
@@ -176,8 +234,6 @@ public class KbNlSearchEngine
 
         try {
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
-            String url = getHostUrl(context) + String.format(SEARCH_URL, dbVersion, setNr,
-                                                             validIsbn);
             futureHttpGet.get(url, (con, is) -> handleResponse(is, parser, handler, book));
 
             // If it was a list page, fetch and parse the 1st book found;
@@ -185,22 +241,14 @@ public class KbNlSearchEngine
             final String show = book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
                 book.clearData();
-                url = getHostUrl(context) + String.format(BOOK_URL, dbVersion, setNr, show);
-                futureHttpGet.get(url, (con, is) -> handleResponse(is, parser, handler, book));
+                final String url2 = getHostUrl(context)
+                                    + String.format(BOOK_URL, dbVersion, setNr, show);
+                futureHttpGet.get(url2, (con, is) -> handleResponse(is, parser, handler, book));
             }
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
 
-        if (isCancelled()) {
-            return book;
-        }
-
-        if (fetchCovers[0]) {
-            final AltEdition edition = new AltEditionIsbn(validIsbn);
-            searchBestCoverByEdition(context, edition, 0).ifPresent(
-                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-        }
         return book;
     }
 

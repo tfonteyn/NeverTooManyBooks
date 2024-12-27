@@ -75,7 +75,9 @@ import org.jsoup.select.Elements;
  */
 public class BedethequeSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn {
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByExternalId,
+                   SearchEngine.ViewBookByExternalId {
 
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
     private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES = "bedetheque.resolve.formats";
@@ -125,6 +127,11 @@ public class BedethequeSearchEngine
                                           + "&RechCoteMin="
                                           + "&RechCoteMax="
                                           + "&RechEO=0";
+    /**
+     * 'x' is normally the title, which the site will ignore.
+     * The site recognizes the url by the prefix 'BD-' and the last '-' followed by the sid
+     */
+    private static final String BY_EXTERNAL_ID = "/BD-x-%s.html";
 
     private final Map<String, String> extraRequestProperties;
     @Nullable
@@ -178,6 +185,13 @@ public class BedethequeSearchEngine
 
     @NonNull
     @Override
+    public String createViewOnSiteUrl(@NonNull final Context context,
+                                      @NonNull final String externalId) {
+        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+    }
+
+    @NonNull
+    @Override
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
@@ -195,6 +209,21 @@ public class BedethequeSearchEngine
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);
         }
+        return book;
+    }
+
+    @NonNull
+    @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        final Book book = new Book();
+        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+        final Document document = loadDocument(context, url, extraRequestProperties);
+        parse(context, document, fetchCovers, book, getAuthorResolvers(context));
+
         return book;
     }
 

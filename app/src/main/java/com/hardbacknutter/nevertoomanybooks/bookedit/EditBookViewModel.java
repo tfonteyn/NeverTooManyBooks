@@ -89,7 +89,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormat
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
@@ -1236,25 +1235,51 @@ public class EditBookViewModel
 
         fields.add(new CompoundButtonField(fragmentId, R.id.btn_auto_update_allowed,
                                            DBKey.AUTO_UPDATE));
+        // We're no longer using the LongNumberFormatter as we don't
+        // need the extraction to a 'long'. Identifiers are now all 'String' values.
+        // Instead use a custom {@link Identifier#TYPE_LONG} formatter to eliminate "0" values
+        final FieldFormatter<String> sidLongFormatter =
+                (context, value) -> value != null && !"0".equals(value) ? value : "";
 
-        // These FieldFormatters can be shared between multiple fields.
-        final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
+        fields.add(new EditTextField<>(fragmentId, R.id.site_bedetheque,
+                                       Identifier.SID_BEDETHEQUE,
+                                       sidLongFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_bedetheque)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
+        fields.add(new EditTextField<>(fragmentId, R.id.site_dnb,
+                                       Identifier.SID_DNB,
+                                       sidLongFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_dnb_de)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new EditTextField<>(fragmentId, R.id.site_goodreads,
                                        Identifier.SID_GOODREADS_BOOK,
-                                       longNumberFormatter, true)
+                                       sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_goodreads)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new EditTextField<>(fragmentId, R.id.site_isfdb,
                                        Identifier.SID_ISFDB,
-                                       longNumberFormatter, true)
+                                       sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_isfdb)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
+        fields.add(new EditTextField<>(fragmentId, R.id.site_kbnl,
+                                       Identifier.SID_KBNL,
+                                       sidLongFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_kbnl)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
+        fields.add(new EditTextField<>(fragmentId, R.id.site_last_dodo_nl,
+                                       Identifier.SID_LAST_DODO_NL,
+                                       sidLongFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_last_dodo_nl)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new EditTextField<>(fragmentId, R.id.site_library_thing,
                                        Identifier.SID_LIBRARY_THING,
-                                       longNumberFormatter, true)
+                                       sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_library_thing)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
@@ -1265,15 +1290,10 @@ public class EditBookViewModel
 
         fields.add(new EditTextField<>(fragmentId, R.id.site_strip_info_be,
                                        Identifier.SID_STRIP_INFO,
-                                       longNumberFormatter, true)
+                                       sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_strip_info_be)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        fields.add(new EditTextField<>(fragmentId, R.id.site_last_dodo_nl,
-                                       Identifier.SID_LAST_DODO_NL,
-                                       longNumberFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_last_dodo_nl)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         return fields;
     }

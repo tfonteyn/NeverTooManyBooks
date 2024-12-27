@@ -31,11 +31,19 @@
         >
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/middle"
+            android:id="@+id/col0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"
+            app:layout_constraintGuide_percent="0.25"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50"
             />
 
         <TextView
@@ -51,7 +59,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_open_library,site_isfdb,site_strip_info_be,site_last_dodo_nl"
+            app:constraint_referenced_ids="site_amazon,site_dnb,site_isfdb,site_open_library,site_bedetheque,site_last_dodo_nl,site_strip_info_be,"
             tools:ignore="MissingConstraints"
             />
 
@@ -59,37 +67,30 @@
                 optional: external id KEY add a RadioButton widget
                 and add the name to the ConstraintRadioGroup#constraint_referenced_ids. -->
 
-        <!-- Warning: if we have more then 4 radio buttons visible we should split the
-             layout into 2 columns of radio buttons to avoid needing to scroll
-             on small/land screens.
-
-             For now, Amazon ASIN is disabled.
-             -->
         <RadioButton
             android:id="@+id/site_amazon"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginTop="@dimen/section_margin_top"
-            android:layout_marginEnd="@dimen/column_margin_end"
             android:text="@string/site_amazon"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/middle"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             tools:visibility="visible"
             />
 
         <RadioButton
-            android:id="@+id/site_open_library"
+            android:id="@+id/site_dnb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginEnd="@dimen/column_margin_end"
-            android:text="@string/site_open_library"
-            app:layout_constraintEnd_toStartOf="@id/middle"
+            android:text="@string/site_dnb_de"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_amazon"
+            tools:visibility="visible"
             />
 
         <RadioButton
@@ -97,23 +98,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginEnd="@dimen/column_margin_end"
             android:text="@string/site_isfdb"
-            app:layout_constraintEnd_toStartOf="@id/middle"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_open_library"
+            app:layout_constraintTop_toBottomOf="@id/site_dnb"
             />
 
         <RadioButton
-            android:id="@+id/site_strip_info_be"
+            android:id="@+id/site_open_library"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginEnd="@dimen/column_margin_end"
-            android:text="@string/site_stripinfo_be"
-            app:layout_constraintEnd_toStartOf="@id/middle"
+            android:text="@string/site_open_library"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_isfdb"
+            />
+
+        <RadioButton
+            android:id="@+id/site_bedetheque"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_bedetheque"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/lbl_site"
             />
 
         <RadioButton
@@ -121,21 +131,31 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginEnd="@dimen/column_margin_end"
             android:text="@string/site_lastdodo_nl"
-            app:layout_constraintEnd_toStartOf="@id/middle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_strip_info_be"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/site_bedetheque"
+            />
+
+        <RadioButton
+            android:id="@+id/site_strip_info_be"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_stripinfo_be"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/site_last_dodo_nl"
             />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_external_id"
             style="@style/TIL.Text.ExternalId"
-            app:endIconMode="clear_text"
             android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/lbl_site_book_id"
+            app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/middle"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             >
 
@@ -160,6 +180,11 @@
             app:layout_constraintEnd_toEndOf="@id/lbl_external_id"
             app:layout_constraintTop_toBottomOf="@id/lbl_external_id"
             />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="left" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

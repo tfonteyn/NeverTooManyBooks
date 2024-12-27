@@ -102,13 +102,7 @@ class KbNlBookHandler
         if (matcher.find()) {
             final String ppn = matcher.group(1);
             if (ppn != null) {
-                try {
-                    final long sid = Long.parseLong(ppn);
-                    book.putLong(Identifier.SID_KBNL, sid);
-
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore
-                }
+                book.putString(Identifier.SID_KBNL, ppn);
             }
         }
     }

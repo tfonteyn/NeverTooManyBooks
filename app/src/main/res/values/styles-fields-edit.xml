@@ -291,6 +291,24 @@
         <item name="android:inputType">numberDecimal</item>
     </style>
 
+    <!--
+        The normal text size, 16sp, comes from
+            "Widget.Material3.TextInputEditText.OutlinedBox.Dense"
+        which uses "?attr/textAppearanceBodyLarge"
+    -->
+    <style name="TIE.ExternalId.Text"
+           parent="Base.TIE">
+        <!-- when setting textAllCaps ALWAYS set the inputType or
+             Android will behave VERY unpredictable when editing an EditText view! -->
+        <item name="android:inputType">text</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/til_fixed_width_external_id_text_size</item>
+    </style>
+
+    <style name="TIE.ExternalId.Number"
+           parent="Base.TIE">
+        <item name="android:inputType">number</item>
+    </style>
     <!-- *************************************************************************************** -->
 
     <!-- generic auto-complete. -->

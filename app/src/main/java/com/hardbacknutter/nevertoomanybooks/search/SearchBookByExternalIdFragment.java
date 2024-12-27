@@ -63,15 +63,31 @@ public class SearchBookByExternalIdFragment
     private static final String SIS_USER_INPUT = TAG + ":externalId";
 
     /**
-     * NEWTHINGS: adding a new search engine:
-     * optional: add mapping between the RadioButton widget and the EngineId.
+     * NEWTHINGS: adding a new search engine: optional:
+     * add a RadioButton to the layout +
+     * add mapping between the RadioButton ViewId and the EngineId in the below Map.
+     * <p>
+     * ENHANCE: 2024-12-27: We deliberately use a fixed list for SIDs
+     *  we support searching on until the integration of the 'Identifier'
+     *  class is more mature
+     * <p>
+     *  Amazon is HIDDEN
+     *  not sure if we ever will enable this, users can just use ISBN.
+     * <p>
+     *  DNB is HIDDEN
+     *  ENHANCE: implement DNB external id searches once the site "stabiler link"
+     *  points to the (for now) beta website we use to find and parse
      */
     private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.of(
             R.id.site_amazon, EngineId.Amazon,
-            R.id.site_open_library, EngineId.OpenLibrary,
+            R.id.site_dnb, EngineId.Dnb,
             R.id.site_isfdb, EngineId.Isfdb,
-            R.id.site_strip_info_be, EngineId.StripInfoBe,
-            R.id.site_last_dodo_nl, EngineId.LastDodoNl
+            R.id.site_kbnl, EngineId.KbNl,
+            R.id.site_open_library, EngineId.OpenLibrary,
+            // comics
+            R.id.site_bedetheque, EngineId.Bedetheque,
+            R.id.site_last_dodo_nl, EngineId.LastDodoNl,
+            R.id.site_strip_info_be, EngineId.StripInfoBe
     );
 
     /** The currently selected radio button used by onPause/onSaveInstanceState. */
@@ -176,7 +192,7 @@ public class SearchBookByExternalIdFragment
         this.engineId = VIEW_TO_ENGINE.get(viewId);
         // Sanity check
         if (this.engineId == null) {
-            throw new IllegalStateException("Bug: engine has no viewId defined");
+            throw new IllegalStateException("Bug: View has no Engine defined");
         }
 
         //noinspection DataFlowIssue

@@ -66,7 +66,8 @@ import org.jsoup.select.Elements;
 public class DnbSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.ViewBookByExternalId {
 
     private static final String SELECT_SINGLE_RESULT = "div.l-catalog-single-content";
     private static final String SELECT_MULTI_RESULT = "div.l-catalog-results__entry";
@@ -120,6 +121,13 @@ public class DnbSearchEngine
     public DnbSearchEngine(@NonNull final Context appContext,
                            @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+    }
+
+    @NonNull
+    @Override
+    public String createViewOnSiteUrl(@NonNull final Context context,
+                                      @NonNull final String externalId) {
+        return "https://d-nb.info/" + externalId;
     }
 
     @NonNull

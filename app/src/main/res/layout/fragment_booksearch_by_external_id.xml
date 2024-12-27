@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2024 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -38,12 +38,30 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50"
+            />
+
+        <!-- seemingly pointless...  but makes it easy to copy/paste
+             between portrait and landscape layouts -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="1"
+            />
+
         <!--suppress LongLine -->
         <com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_open_library,site_isfdb,site_strip_info_be,site_last_dodo_nl"
+            app:constraint_referenced_ids="site_amazon,site_dnb,site_isfdb,site_kbnl,site_open_library,site_bedetheque,site_last_dodo_nl,site_strip_info_be,"
             tools:ignore="MissingConstraints"
             />
 
@@ -51,7 +69,6 @@
                 optional: external id KEY add a RadioButton widget
                 and add the name to the ConstraintRadioGroup#constraint_referenced_ids. -->
 
-        <!-- Amazon ASIN is disabled. -->
         <RadioButton
             android:id="@+id/site_amazon"
             android:layout_width="0dp"
@@ -59,21 +76,23 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_amazon"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             tools:visibility="visible"
             />
 
         <RadioButton
-            android:id="@+id/site_open_library"
+            android:id="@+id/site_dnb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_open_library"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/site_dnb_de"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_amazon"
+            tools:visibility="visible"
             />
 
         <RadioButton
@@ -82,20 +101,42 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_isfdb"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_open_library"
+            app:layout_constraintTop_toBottomOf="@id/site_dnb"
             />
 
         <RadioButton
-            android:id="@+id/site_strip_info_be"
+            android:id="@+id/site_kbnl"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_stripinfo_be"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/site_kb_nl"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_isfdb"
+            />
+
+        <RadioButton
+            android:id="@+id/site_open_library"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_open_library"
+            app:layout_constraintEnd_toStartOf="@id/col0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/site_kbnl"
+            />
+
+        <RadioButton
+            android:id="@+id/site_bedetheque"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_bedetheque"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/lbl_site"
             />
 
         <RadioButton
@@ -104,19 +145,43 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_lastdodo_nl"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_strip_info_be"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/site_bedetheque"
+            />
+
+        <RadioButton
+            android:id="@+id/site_strip_info_be"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_stripinfo_be"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/site_last_dodo_nl"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_bottom_section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="@dimen/section_margin_top"
+            app:constraint_referenced_ids="site_open_library,site_strip_info_be"
             />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_external_id"
             style="@style/TIL.Text.ExternalId"
-            app:endIconMode="clear_text"
-            android:hint="@string/lbl_site_book_id"
+            android:layout_width="0dp"
             android:layout_marginTop="@dimen/section_margin_top"
+            android:hint="@string/lbl_site_book_id"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_last_dodo_nl"
+            app:layout_constraintTop_toBottomOf="@id/barrier_bottom_section"
+            app:layout_constraintWidth_max="216dp"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -127,6 +192,7 @@
                 android:imeOptions="actionSearch"
                 android:inputType="number"
                 tools:ignore="Autofill"
+                tools:text="OL51566464M"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -136,8 +202,8 @@
             style="@style/Button.Action.Submit"
             android:text="@string/action_search"
             app:icon="@drawable/search_24px"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/lbl_external_id"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/lbl_external_id"
             />
 
