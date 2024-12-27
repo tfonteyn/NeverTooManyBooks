@@ -64,7 +64,8 @@ public class StripInfoDaoImpl
 
         // is there anything to insert ?
         // The presence of this key implies all other collection data keys WILL be there as well.
-        if (book.contains(DBKey.STRIP_INFO_COLL_ID)) {
+        if (book.contains(DBKey.STRIP_INFO_COLL_ID)
+            && book.getInt(DBKey.STRIP_INFO_COLL_ID) > 0) {
             insert(book);
         }
     }
