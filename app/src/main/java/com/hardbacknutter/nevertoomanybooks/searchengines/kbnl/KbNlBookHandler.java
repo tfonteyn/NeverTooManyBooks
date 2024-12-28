@@ -39,11 +39,15 @@ import org.xml.sax.SAXException;
 class KbNlBookHandler
         extends KbNlHandlerBase {
 
+    private static final Pattern TRANSLATION_PATTERN = Pattern.compile(
+            ".*?(?:Vert\\. van:|Vertaling van:)\\s*(.*)",
+            Pattern.UNICODE_CASE);
     private static final Pattern ISBN_BOUNDARY_PATTERN = Pattern.compile("[;)]");
-
     /** Example: {@code "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=852323123"}. */
     private static final Pattern PERMALINK_PATTERN = Pattern.compile(
             ".*?https.*?PPN=(\\d+).*", Pattern.UNICODE_CASE);
+    private static final Pattern PAGES_PATTERN = Pattern.compile(".*?(\\d+) pagina.*",
+                                                                 Pattern.UNICODE_CASE);
     @NonNull
     private final KbNlSearchEngine searchEngine;
 
@@ -202,20 +206,25 @@ class KbNlBookHandler
 
             case "Contains":
             case "Bevat / omvat":
+            case "Abstract":
+            case "Samenvatting": {
                 parseDescription(currentData);
                 break;
+            }
 
             case "Note":
             case "Annotatie":
-                // Note/Annotatie seems to have been replaced on newer books by
+                // It's unclear if this is just an alternative field used
+                // for the same type of information. But as usual,.. it's unstructured.
             case "Annotation edition":
             case "Annotatie editie":
-                // Omslag vermeldt: K2
-                //Opl. van 750 genummerde ex
-                //Vert. van: Cromwell Stone. - Delcourt, cop. 1993
+                parseAnnotation(currentData);
                 break;
 
-            //case "Note": in english used a second time for a different field. Unique in dutch.
+            // case "Note": in english used a second time for the field above (Annotatie, in dutch)
+            // So if we're parsing in english, we HAVE to skip this.
+            // Normally we should not be parsing in english though... flw
+            // Unique in dutch.
             case "Noot":
                 break;
 
@@ -245,6 +254,60 @@ class KbNlBookHandler
             default:
                 // ignore
                 break;
+        }
+    }
+
+    /**
+     * <pre>{@code https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=306324296
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text>Opl. van 1000 ex</psi:text>
+     *   </psi:line>
+     *   <psi:line>
+     *     <psi:text>Vert. van: </psi:text>
+     *     <psi:text mark="highlight">Cromwell</psi:text>
+     *     <psi:text> </psi:text>
+     *     <psi:text mark="highlight">Stone,</psi:text>
+     *     <psi:text> en Le retour de </psi:text>
+     *     <psi:text mark="highlight">Cromwell</psi:text>
+     *     <psi:text> </psi:text>
+     *     <psi:text mark="highlight">Stone,</psi:text>
+     *     <psi:text> en Le testament de </psi:text>
+     *     <psi:text mark="highlight">Cromwell</psi:text>
+     *     <psi:text> </psi:text>
+     *     <psi:text mark="highlight">Stone</psi:text>
+     *   </psi:line>
+     *  </psi:labelledData>
+     * }</pre>
+     *
+     * <pre>{@code sid: https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=435149695
+     *  <psi:labelledData>
+     *    <psi:line>
+     *      <psi:text>Vertaling </psi:text>
+     *      <psi:text mark="highlight">van</psi:text>
+     *      <psi:text>: The secret keeper of </psi:text>
+     *      <psi:text mark="highlight">Jaipur.</psi:text>
+     *      <psi:text> - Toronto : Mira, ©2021</psi:text>
+     *    </psi:line>
+     *  </psi:labelledData>
+     * }</pre>
+     * <p>
+     * For now, attempt to get the original title out... the above examples will work,
+     * but don't expect too much though.
+     *
+     * @param currentData content of {@code labelledData}
+     */
+    private void parseAnnotation(final List<String> currentData) {
+        final String data = currentData.stream()
+                                       .filter(s -> !s.isEmpty())
+                                       .collect(Collectors.joining(" "));
+
+        final Matcher matcher = TRANSLATION_PATTERN.matcher(data);
+        if (matcher.find()) {
+            final String origTitle = matcher.group(1);
+            if (origTitle != null && !origTitle.isEmpty()) {
+                book.putString(DBKey.TITLE_ORIGINAL_LANG, origTitle);
+            }
         }
     }
 
@@ -545,6 +608,12 @@ class KbNlBookHandler
      *
      * <psi:labelledData>
      *   <psi:line>
+     *     <psi:text>1 online resource (ePub2, 352 pagina's)</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
      *     <psi:text>156 p</psi:text>
      *   </psi:line>
      * </psi:labelledData>
@@ -554,14 +623,32 @@ class KbNlBookHandler
      */
     private void processPages(@NonNull final List<String> currentData) {
         if (!book.contains(DBKey.PAGE_COUNT)) {
+            final String data = currentData.get(0);
+
+            final Matcher matcher = PAGES_PATTERN.matcher(data);
+            if (matcher.find()) {
+                try {
+                    final String group = matcher.group(1);
+                    if (group != null && !group.isEmpty()) {
+                        final int pages = Integer.parseInt(group);
+                        book.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
+                        return;
+                    }
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
+                }
+            }
             try {
-                final String cleanedString = currentData.get(0).split(" ")[0];
+                final String cleanedString = data.split(" ")[0];
                 final int pages = Integer.parseInt(cleanedString);
                 book.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
-            } catch (@NonNull final NumberFormatException e) {
-                // use source
-                book.putString(DBKey.PAGE_COUNT, currentData.get(0));
+                return;
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
             }
+
+            // use source
+            book.putString(DBKey.PAGE_COUNT, data);
         }
     }
 
@@ -589,11 +676,20 @@ class KbNlBookHandler
     }
 
     private void parseDescription(@NonNull final List<String> currentData) {
-        final String desc = currentData
+        // Merging the lines is not perfect.
+        // The data does not contain one sentence/paragraph in each line.
+        // Sometimes just words mid-sentence... oh well.
+        String desc = currentData
                 .stream()
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.joining(" "));
         if (!desc.isBlank()) {
+            // append... the site has (at least) two fields we want to collect
+            final String previous = book.getString(DBKey.DESCRIPTION);
+            if (!previous.isEmpty()) {
+                desc = previous + (previous.endsWith("\n") ? "" : "\n")
+                       + '\n' + desc;
+            }
             book.putString(DBKey.DESCRIPTION, desc);
         }
     }
