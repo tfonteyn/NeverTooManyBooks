@@ -79,6 +79,8 @@ public class DoubanSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
                    SearchEngine.CoverByEdition,
+// TODO: disabled ViewBookByExternalId until we get clarity about github #85
+//                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.AlternativeEditions<AltEditionDouban> {
 
     /**
@@ -115,6 +117,14 @@ public class DoubanSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(10);
+    }
+
+    @NonNull
+//    @Override
+    public String createViewOnSiteUrl(@NonNull final Context context,
+                                      @NonNull final String externalId) {
+        // the 'host' is different from the default !
+        return "https://book.douban.com/subject/" + externalId;
     }
 
     @NonNull
