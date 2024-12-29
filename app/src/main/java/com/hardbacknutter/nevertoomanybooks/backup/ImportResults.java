@@ -196,6 +196,12 @@ public class ImportResults
     public List<String> createReport(@NonNull final Context context) {
         final List<String> lines = super.createReport(context);
 
+        if (bookshelves > 0) {
+            lines.add(context.getString(R.string.list_element, context.getString(
+                    R.string.name_colon_value,
+                    context.getString(R.string.lbl_bookshelves),
+                    String.valueOf(bookshelves))));
+        }
         if (styles > 0) {
             lines.add(context.getString(R.string.list_element, context.getString(
                     R.string.name_colon_value,
@@ -212,13 +218,6 @@ public class ImportResults
                     R.string.name_colon_value,
                     context.getString(R.string.lbl_certificates),
                     String.valueOf(certificates))));
-        }
-
-        if (bookshelves > 0) {
-            lines.add(context.getString(R.string.list_element, context.getString(
-                    R.string.name_colon_value,
-                    context.getString(R.string.lbl_bookshelves),
-                    String.valueOf(bookshelves))));
         }
 
         return lines;
