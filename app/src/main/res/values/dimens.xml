@@ -108,7 +108,7 @@
     <dimen name="preference_header_margin_start">52dp</dimen>
 
     <!-- layout_margin for top level layouts. -->
-    <dimen name="container_margin">4dp</dimen>
+    <dimen name="container_margin">2dp</dimen>
     <!-- layout_marginBottom for top level layouts when used above a BottomAppBar.
          The "Widget.Material3.BottomAppBar" minHeight is fixed at 80dp.
          Hence this value should be 80dp + 'container_margin' to have a consistent look.

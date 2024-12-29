@@ -34,6 +34,8 @@
     <dimen name="camera_preview_height">160dp</dimen>
     <dimen name="camera_preview_button_margin">8dp</dimen>
 
+    <dimen name="container_margin">4dp</dimen>
+
     <dimen name="section_margin_top">8dp</dimen>
     <dimen name="field_margin_top">8dp</dimen>
     <dimen name="field_margin_start">8dp</dimen>

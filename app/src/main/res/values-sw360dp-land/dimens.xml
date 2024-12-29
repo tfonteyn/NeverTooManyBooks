@@ -23,6 +23,8 @@
     <dimen name="progress_margin_top">50dp</dimen>
     <dimen name="progress_width">340dp</dimen>
 
+    <dimen name="container_margin">4dp</dimen>
+
     <!-- fixed width TIL fields -->
     <dimen name="til_fixed_width_personal_name">340dp</dimen>
     <dimen name="til_fixed_width_year">120dp</dimen>
