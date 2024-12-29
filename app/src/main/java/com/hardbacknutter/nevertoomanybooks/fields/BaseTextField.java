@@ -65,6 +65,12 @@ public abstract class BaseTextField<T, V extends TextView>
     @Nullable
     private ExtEndIconDelegate endIconDelegate;
 
+    private final View.OnClickListener endIconOnClickListener = v -> {
+        final T previous = getValue();
+        setValue(null);
+        notifyIfChanged(previous);
+    };
+
     /**
      * Constructor.
      *
@@ -96,20 +102,12 @@ public abstract class BaseTextField<T, V extends TextView>
             // On of our own end-icon delegates?
             if (endIconMode == TextInputLayout.END_ICON_CLEAR_TEXT) {
                 endIconDelegate = new ExtClearTextEndIconDelegate<>(parent.getContext(), this);
-                endIconDelegate.setOnClickConsumer(v -> {
-                    final T previous = getValue();
-                    setValue(null);
-                    notifyIfChanged(previous);
-                });
+                endIconDelegate.setEndIconOnClickListener(endIconOnClickListener);
                 endIconDelegate.setTextInputLayout(til);
 
                 // or use a default delegate?
             } else if (til.getEndIconMode() == TextInputLayout.END_ICON_CLEAR_TEXT) {
-                til.setEndIconOnClickListener(v -> {
-                    final T previous = getValue();
-                    setValue(null);
-                    notifyIfChanged(previous);
-                });
+                til.setEndIconOnClickListener(endIconOnClickListener);
             }
         }
     }
@@ -126,6 +124,12 @@ public abstract class BaseTextField<T, V extends TextView>
         }
     }
 
+    @Override
+    @Nullable
+    public T getValue() {
+        return rawValue;
+    }
+
     @CallSuper
     @Override
     public void setValue(@Nullable final T value) {
@@ -133,12 +137,6 @@ public abstract class BaseTextField<T, V extends TextView>
         if (endIconDelegate != null) {
             endIconDelegate.updateEndIcon();
         }
-    }
-
-    @Override
-    @Nullable
-    public T getValue() {
-        return rawValue;
     }
 
     @Override

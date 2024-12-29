@@ -41,7 +41,6 @@ import com.google.android.material.motion.MotionUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
@@ -152,11 +151,16 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
                 }
             };
 
+    /** The listener as set by the delegate user. */
     @Nullable
-    private Consumer<View> endIconOnClickListener;
-    private final View.OnClickListener onIconClickListener = view -> {
+    private View.OnClickListener endIconOnClickListener;
+    /**
+     * The local listener which will forward to {@link #endIconOnClickListener} if set,
+     * or handle locally if not set.
+     */
+    private final View.OnClickListener onEndIconClickListener = view -> {
         if (endIconOnClickListener != null) {
-            endIconOnClickListener.accept(view);
+            endIconOnClickListener.onClick(view);
         } else {
             //noinspection DataFlowIssue
             final Editable text = endLayout.getEditText().getText();
@@ -193,7 +197,8 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
 
     /** Called from {@link Field#setParentView(View)}. */
     @Override
-    public void setOnClickConsumer(@Nullable final Consumer<View> endIconOnClickListener) {
+    public void setEndIconOnClickListener(@Nullable final View.OnClickListener
+                                                  endIconOnClickListener) {
         this.endIconOnClickListener = endIconOnClickListener;
     }
 
@@ -211,7 +216,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         }
         endLayout.setEndIconContentDescription(R.string.cd_clear_text_end_icon);
         endLayout.setEndIconCheckable(false);
-        endLayout.setEndIconOnClickListener(onIconClickListener);
+        endLayout.setEndIconOnClickListener(onEndIconClickListener);
         endLayout.addOnEditTextAttachedListener(clearTextOnEditTextAttachedListener);
         endLayout.addOnEndIconChangedListener(endIconChangedListener);
 

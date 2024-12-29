@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,11 +29,16 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.function.Consumer;
 
 public interface ExtEndIconDelegate {
 
-    void setOnClickConsumer(@Nullable Consumer<View> endIconOnClickConsumer);
+    /**
+     * MUST be called BEFORE {@link #setTextInputLayout(TextInputLayout)}
+     * is called, or the listener will be ignored.
+     *
+     * @param endIconOnClickConsumer to use
+     */
+    void setEndIconOnClickListener(@Nullable View.OnClickListener endIconOnClickConsumer);
 
     void setTextInputLayout(@NonNull TextInputLayout parent);
 
