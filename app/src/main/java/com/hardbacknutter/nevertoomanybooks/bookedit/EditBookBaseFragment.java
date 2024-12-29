@@ -144,6 +144,7 @@ public abstract class EditBookBaseFragment
         fields.forEach(field -> {
             //noinspection DataFlowIssue
             field.setParentView(getView());
+            // disable before we call onPopulateViews below
             field.setAfterFieldChangeListener(null);
         });
 
@@ -157,6 +158,7 @@ public abstract class EditBookBaseFragment
 
         book.unlockStage();
 
+        // re-enable after the onPopulateViews call above
         // Dev note: DO NOT use a 'this' reference directly
         fields.forEach(field -> field.setAfterFieldChangeListener(afterChangedListener));
 
@@ -164,8 +166,17 @@ public abstract class EditBookBaseFragment
         //noinspection DataFlowIssue
         ViewFocusOrder.fix(getView());
 
+        updateScreenTitle(book);
+    }
+
+    /**
+     * Set the screen Toolbar title.
+     *
+     * @param book to use
+     */
+    private void updateScreenTitle(@NonNull final Book book) {
         final Toolbar toolbar = getToolbar();
-        // Set the activity title
+
         if (book.isNew()) {
             // New book
             toolbar.setTitle(R.string.lbl_add_book);
