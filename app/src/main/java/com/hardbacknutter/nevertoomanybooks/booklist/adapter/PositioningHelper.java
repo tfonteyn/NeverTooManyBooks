@@ -208,6 +208,7 @@ public class PositioningHelper {
 
         // Sanity check, should never happen... flw
         if (firstLayoutPos == RecyclerView.NO_POSITION) {
+            // URGENT: 2024-12-29: EMPTY LIST seen during a debug session... no clue why for now
             throw new IllegalStateException("Empty list");
         }
 
