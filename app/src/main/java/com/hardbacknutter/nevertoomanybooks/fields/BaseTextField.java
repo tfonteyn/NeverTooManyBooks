@@ -95,7 +95,7 @@ public abstract class BaseTextField<T, V extends TextView>
 
             // On of our own end-icon delegates?
             if (endIconMode == TextInputLayout.END_ICON_CLEAR_TEXT) {
-                endIconDelegate = new ExtClearTextEndIconDelegate<>(this);
+                endIconDelegate = new ExtClearTextEndIconDelegate<>(parent.getContext(), this);
                 endIconDelegate.setOnClickConsumer(v -> {
                     final T previous = getValue();
                     setValue(null);
@@ -144,7 +144,6 @@ public abstract class BaseTextField<T, V extends TextView>
     @Override
     void internalPutValue(@NonNull final DataManager target) {
         // We don't know the type <T> so put as Object (DataManager will auto-detect).
-        // It will be the original rawValue.
         target.put(getFieldKey(), getValue());
     }
 

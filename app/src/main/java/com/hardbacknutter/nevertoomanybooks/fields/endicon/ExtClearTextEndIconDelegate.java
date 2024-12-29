@@ -24,6 +24,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -36,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 
+import com.google.android.material.motion.MotionUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
@@ -47,14 +49,17 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
 
 /**
- * <a href="https://github.com/material-components/material-components-android/pull/2025">
- * generic input field with clear-text icon at the end.</a>
  * <p>
- * Most of the code in this class was copied from material 1.5 library
+ * The animation related code in this class was copied from material 1.12.0 library
  * {@code com.google.android.material.textfield.ClearTextEndIconDelegate}
  *
  * @param <T> type of Field value.
  * @param <V> type of View for this field
+ *
+ * @see <a href="https://github.com/material-components/material-components-android/blob/master/lib/java/com/google/android/material/textfield/ClearTextEndIconDelegate.java">
+ *         ClearTextEndIconDelegate.java</a>
+ * @see <a href="https://github.com/material-components/material-components-android/pull/2025">
+ *         generic input field with clear-text icon at the end.</a>
  */
 public class ExtClearTextEndIconDelegate<V extends TextView, T>
         implements ExtEndIconDelegate {
@@ -63,23 +68,28 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
     private static final TimeInterpolator LINEAR_OUT_SLOW_IN_INTERPOLATOR =
             new LinearOutSlowInInterpolator();
 
-    private static final int ANIMATION_FADE_DURATION = 100;
-    private static final int ANIMATION_SCALE_DURATION = 150;
+    private static final int DEFAULT_ANIMATION_FADE_DURATION = 100;
+    private static final int DEFAULT_ANIMATION_SCALE_DURATION = 150;
     private static final float ANIMATION_SCALE_FROM_VALUE = 0.8f;
+    private final int animationFadeDuration;
+    private final int animationScaleDuration;
+    @NonNull
+    private final TimeInterpolator animationFadeInterpolator;
+    @NonNull
+    private final TimeInterpolator animationScaleInterpolator;
 
     @NonNull
     private final Field<T, V> field;
 
-    private TextInputLayout textInputLayout;
+    private TextInputLayout endLayout;
 
     private AnimatorSet iconInAnim;
-
     private ValueAnimator iconOutAnim;
 
     private final TextWatcher clearTextEndIconTextWatcher = new ExtTextWatcher() {
         @Override
         public void afterTextChanged(@NonNull final Editable s) {
-            if (textInputLayout.getSuffixText() != null) {
+            if (endLayout.getSuffixText() != null) {
                 return;
             }
             animateIcon(shouldBeVisible());
@@ -119,8 +129,8 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
                                              final int previousIcon) {
                     final EditText editText = textInputLayout.getEditText();
                     if (editText != null && previousIcon == TextInputLayout.END_ICON_CLEAR_TEXT) {
-                        // Remove any listeners set on the edit text.
                         editText.post(() -> {
+                            // Remove our listener from the edit text.
                             editText.removeTextChangedListener(clearTextEndIconTextWatcher);
                             // Make sure icon view is visible.
                             animateIcon(true);
@@ -143,51 +153,67 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
             };
 
     @Nullable
-    private Consumer<View> endIconOnClickConsumer;
+    private Consumer<View> endIconOnClickListener;
+    private final View.OnClickListener onIconClickListener = view -> {
+        if (endIconOnClickListener != null) {
+            endIconOnClickListener.accept(view);
+        } else {
+            //noinspection DataFlowIssue
+            final Editable text = endLayout.getEditText().getText();
+            if (text != null) {
+                text.clear();
+            }
+        }
+        endLayout.refreshEndIconDrawableState();
+    };
 
     /**
      * Constructor.
      *
-     * @param field to handle
+     * @param context Current context
+     * @param field   to handle
      */
-    public ExtClearTextEndIconDelegate(@NonNull final Field<T, V> field) {
+    public ExtClearTextEndIconDelegate(@NonNull final Context context,
+                                       @NonNull final Field<T, V> field) {
         this.field = field;
+
+        animationFadeDuration = MotionUtils.resolveThemeDuration(
+                context, com.google.android.material.R.attr.motionDurationShort3,
+                DEFAULT_ANIMATION_FADE_DURATION);
+        animationScaleDuration = MotionUtils.resolveThemeDuration(
+                context, com.google.android.material.R.attr.motionDurationShort3,
+                DEFAULT_ANIMATION_SCALE_DURATION);
+        animationFadeInterpolator = MotionUtils.resolveThemeInterpolator(
+                context, com.google.android.material.R.attr.motionEasingLinearInterpolator,
+                LINEAR_INTERPOLATOR);
+        animationScaleInterpolator = MotionUtils.resolveThemeInterpolator(
+                context, com.google.android.material.R.attr.motionEasingEmphasizedInterpolator,
+                LINEAR_OUT_SLOW_IN_INTERPOLATOR);
     }
 
+    /** Called from {@link Field#setParentView(View)}. */
     @Override
-    public void setOnClickConsumer(@Nullable final Consumer<View> endIconOnClickConsumer) {
-        this.endIconOnClickConsumer = endIconOnClickConsumer;
+    public void setOnClickConsumer(@Nullable final Consumer<View> endIconOnClickListener) {
+        this.endIconOnClickListener = endIconOnClickListener;
     }
 
     /** Called from {@link Field#setParentView(View)}. */
     @Override
     public void setTextInputLayout(@NonNull final TextInputLayout til) {
-        textInputLayout = til;
-        endIconView = textInputLayout
+        endLayout = til;
+        endIconView = endLayout
                 .findViewById(com.google.android.material.R.id.text_input_end_icon);
         Objects.requireNonNull(endIconView, "NOT FOUND: R.id.text_input_end_icon");
 
-        textInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
-        if (textInputLayout.getEndIconDrawable() == null) {
-            textInputLayout.setEndIconDrawable(R.drawable.cancel_24px);
+        endLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
+        if (endLayout.getEndIconDrawable() == null) {
+            endLayout.setEndIconDrawable(R.drawable.cancel_24px);
         }
-        textInputLayout.setEndIconContentDescription(
-                textInputLayout.getResources().getText(R.string.cd_clear_text_end_icon));
-        textInputLayout.setEndIconCheckable(false);
-        textInputLayout.setEndIconOnClickListener(v -> {
-            if (endIconOnClickConsumer != null) {
-                endIconOnClickConsumer.accept(v);
-            } else {
-                //noinspection DataFlowIssue
-                final Editable text = textInputLayout.getEditText().getText();
-                if (text != null) {
-                    text.clear();
-                }
-            }
-            textInputLayout.refreshEndIconDrawableState();
-        });
-        textInputLayout.addOnEditTextAttachedListener(clearTextOnEditTextAttachedListener);
-        textInputLayout.addOnEndIconChangedListener(endIconChangedListener);
+        endLayout.setEndIconContentDescription(R.string.cd_clear_text_end_icon);
+        endLayout.setEndIconCheckable(false);
+        endLayout.setEndIconOnClickListener(onIconClickListener);
+        endLayout.addOnEditTextAttachedListener(clearTextOnEditTextAttachedListener);
+        endLayout.addOnEndIconChangedListener(endIconChangedListener);
 
         initAnimators();
     }
@@ -195,33 +221,13 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
     /** Called from {@link Field#setValue(Object)}. */
     @Override
     public void updateEndIcon() {
-        textInputLayout.setEndIconVisible(shouldBeVisible());
+        endLayout.setEndIconVisible(shouldBeVisible());
     }
 
-    private void initAnimators() {
-        final ValueAnimator scaleAnimator = getScaleAnimator();
-        final ValueAnimator fadeAnimator = getAlphaAnimator(0, 1);
-        iconInAnim = new AnimatorSet();
-        iconInAnim.playTogether(scaleAnimator, fadeAnimator);
-        iconInAnim.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(final Animator animation) {
-                        textInputLayout.setEndIconVisible(true);
-                    }
-                });
-        iconOutAnim = getAlphaAnimator(1, 0);
-        iconOutAnim.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(final Animator animation) {
-                        textInputLayout.setEndIconVisible(false);
-                    }
-                });
-    }
 
+    // copied from material ClearTextEndIconDelegate 1.12.0
     private void animateIcon(final boolean show) {
-        final boolean shouldSkipAnimation = textInputLayout.isEndIconVisible() == show;
+        final boolean shouldSkipAnimation = endLayout.isEndIconVisible() == show;
         if (show && !iconInAnim.isRunning()) {
             iconOutAnim.cancel();
             iconInAnim.start();
@@ -237,11 +243,35 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         }
     }
 
+    // copied from material ClearTextEndIconDelegate 1.12.0
+    private void initAnimators() {
+        final ValueAnimator scaleAnimator = getScaleAnimator();
+        final ValueAnimator fadeAnimator = getAlphaAnimator(0, 1);
+        iconInAnim = new AnimatorSet();
+        iconInAnim.playTogether(scaleAnimator, fadeAnimator);
+        iconInAnim.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(final Animator animation) {
+                        endLayout.setEndIconVisible(true);
+                    }
+                });
+        iconOutAnim = getAlphaAnimator(1, 0);
+        iconOutAnim.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(final Animator animation) {
+                        endLayout.setEndIconVisible(false);
+                    }
+                });
+    }
+
+    // copied from material ClearTextEndIconDelegate 1.12.0
     @NonNull
     private ValueAnimator getAlphaAnimator(final float... values) {
         final ValueAnimator animator = ValueAnimator.ofFloat(values);
-        animator.setInterpolator(LINEAR_INTERPOLATOR);
-        animator.setDuration(ANIMATION_FADE_DURATION);
+        animator.setInterpolator(animationFadeInterpolator);
+        animator.setDuration(animationFadeDuration);
         animator.addUpdateListener(animation -> {
             final float alpha = (float) animation.getAnimatedValue();
             endIconView.setAlpha(alpha);
@@ -250,11 +280,12 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         return animator;
     }
 
+    // copied from material ClearTextEndIconDelegate 1.12.0
     @NonNull
     private ValueAnimator getScaleAnimator() {
         final ValueAnimator animator = ValueAnimator.ofFloat(ANIMATION_SCALE_FROM_VALUE, 1);
-        animator.setInterpolator(LINEAR_OUT_SLOW_IN_INTERPOLATOR);
-        animator.setDuration(ANIMATION_SCALE_DURATION);
+        animator.setInterpolator(animationScaleInterpolator);
+        animator.setDuration(animationScaleDuration);
         animator.addUpdateListener(animation -> {
             final float scale = (float) animation.getAnimatedValue();
             endIconView.setScaleX(scale);
@@ -263,9 +294,13 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         return animator;
     }
 
+    // copied from material ClearTextEndIconDelegate 1.12.0
     private boolean shouldBeVisible() {
-        final EditText editText = textInputLayout.getEditText();
-        // removed the checks on "hasFocus()" from the original code.
-        return editText != null && editText.getText().length() > 0;
+        final EditText editText = endLayout.getEditText();
+        // removed the checks on "hasFocus()" from the original code
+        // because we WANT it to visible even if it does not have focus
+        return editText != null
+               // && (editText.hasFocus() || endIconView.hasFocus())
+               && editText.getText().length() > 0;
     }
 }
