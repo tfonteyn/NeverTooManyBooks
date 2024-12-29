@@ -63,7 +63,6 @@
             android:id="@android:id/edit"
             style="@style/TIE.Generic"
             android:imeOptions="actionDone"
-            android:inputType="text"
             tools:ignore="Autofill"
             tools:text="123456"
             />

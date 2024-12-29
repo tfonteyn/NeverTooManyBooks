@@ -212,7 +212,7 @@
 
     <style name="TIE.Generic"
            parent="Base.TIE">
-
+        <item name="android:inputType">text</item>
     </style>
 
     <style name="TIE.Bookshelf"
