@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -478,9 +478,7 @@ public class StripWebSearchEngine
             final Element sidElement = cartForm.selectFirst("input[id='hdnArticleNo']");
             if (sidElement != null) {
                 final String sid = sidElement.attr("value");
-                if (!sid.isEmpty()) {
-                    book.putString(Identifier.SID_STRIPWEB, sid);
-                }
+                book.setIdentifierValue(Identifier.SID_STRIPWEB, sid);
             }
         }
     }

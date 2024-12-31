@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -345,7 +345,7 @@ public class DnbSearchEngine
                             }
                             case "Datensatz-ID":
                             case "Record ID": {
-                                book.putString(Identifier.SID_DNB, td.text());
+                                book.setIdentifierValue(Identifier.SID_DNB, td.text());
                                 break;
                             }
                             case "Originalsprache":

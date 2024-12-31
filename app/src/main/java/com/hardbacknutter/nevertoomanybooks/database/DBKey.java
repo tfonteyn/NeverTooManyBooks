@@ -69,9 +69,13 @@ public final class DBKey {
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String IDENT_SID = "ident_sid";
     /**
-     * {@link DBDefinitions#TBL_BOOKS}.
-     * Stripinfo.be synchronization.
-     * <p>
+     * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION}.
+     * The book id (sid).
+     * Maps to {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_STRIP_INFO}
+     */
+    public static final String STRIP_INFO_BOOK_ID = "si_book_id";
+    /**
+     * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION}.
      * The "CollectieId"; a secondary id used by the website for all books flagged
      * as being in the users collection.
      */

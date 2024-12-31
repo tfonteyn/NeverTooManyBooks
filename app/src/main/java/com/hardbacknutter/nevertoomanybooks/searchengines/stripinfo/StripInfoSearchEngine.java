@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -391,7 +391,6 @@ public class StripInfoSearchEngine
                     if (titleUrlElement != null) {
                         book.putString(DBKey.TITLE, SearchEngineUtils
                                 .cleanText(titleUrlElement.text()));
-                        // extract the external (site) id from the url
                         externalId = parseExternalId(titleUrlElement, book);
 
                         final Elements tds = row.select("td");
@@ -552,8 +551,10 @@ public class StripInfoSearchEngine
                     rating -> book.putFloat(DBKey.RATING, rating));
         }
 
-        // are we logged in ? Then look for any user data.
-        if (siteAuthModule != null) {
+        // Are we logged in ? Then look for any user data.
+        // The only time the externalId might be 0 is if the site was changed
+        // and parsing (partially) failed. i.e. ... we're paranoid
+        if (siteAuthModule != null && externalId > 0) {
             parseUserdata(document, book, externalId);
         }
 
@@ -824,22 +825,22 @@ public class StripInfoSearchEngine
      */
     private long parseExternalId(@NonNull final Element titleUrlElement,
                                  @NonNull final Book book) {
-        long bookId = 0;
+        long sid = 0;
         try {
             final String titleUrl = titleUrlElement.attr("href");
             // https://www.stripinfo.be/reeks/strip/336348
             // _Hauteville_House_14_De_37ste_parallel
             final String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
                                             .split("_")[0];
-            bookId = Long.parseLong(idString);
-            if (bookId > 0) {
-                book.putLong(Identifier.SID_STRIP_INFO, bookId);
+            sid = Long.parseLong(idString);
+            if (sid > 0) {
+                book.setIdentifierValue(Identifier.SID_STRIP_INFO, sid);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
 
-        return bookId;
+        return sid;
     }
 
     /**
@@ -1048,7 +1049,7 @@ public class StripInfoSearchEngine
      */
     private void parseUserdata(@NonNull final Element document,
                                @NonNull final Book book,
-                               final long externalId) {
+                               @IntRange(from = 1) final long externalId) {
 
         jSoupHelper.getPositiveLong(document, "stripCollectie-" + externalId).ifPresent(
                 collectionId -> {
@@ -1059,8 +1060,8 @@ public class StripInfoSearchEngine
                     } catch (@NonNull final IOException | StorageException e) {
                         if (BuildConfig.DEBUG  /* always */) {
                             LoggerFactory.getLogger()
-                                         .e(TAG, e, "stripId=" + externalId
-                                                    + "|collectieId=" + collectionId);
+                                         .e(TAG, e, "externalId=" + externalId
+                                                    + "|collectionId=" + collectionId);
                         }
                     }
                 }

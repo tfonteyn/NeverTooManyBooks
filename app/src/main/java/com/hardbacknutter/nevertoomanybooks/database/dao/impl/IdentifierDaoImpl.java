@@ -187,12 +187,8 @@ public class IdentifierDaoImpl
 
         // Collect KNOWN identifiers
         final Map<Long, String> identifiers = new HashMap<>();
-        for (final Identifier identifier : getAll()) {
-            final String sid = book.getString(identifier.getName(), null);
-            if (sid != null && !sid.isEmpty() && !"0".equals(sid)) {
-                identifiers.put(identifier.getId(), sid);
-            }
-        }
+        getAll().forEach(identifier -> book.getIdentifierValue(identifier.getName()).ifPresent(
+                sid -> identifiers.put(identifier.getId(), sid)));
 
         // Just delete all current links
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {

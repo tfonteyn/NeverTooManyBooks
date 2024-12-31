@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -237,13 +237,10 @@ public class BookCoder
                     break;
                 }
                 default: {
-                    if (LegacySidColumn.MAP.containsKey(key)) {
-                        final String identifierKey = LegacySidColumn.MAP.get(key);
+                    final String identifierKey = LegacySidColumn.MAP.get(key);
+                    if (identifierKey != null) {
                         final String sid = data.optString(key, null);
-                        if (sid != null && !sid.isEmpty() && !"0".equals(sid)) {
-                            //noinspection DataFlowIssue
-                            book.putString(identifierKey, sid);
-                        }
+                        book.setIdentifierValue(identifierKey, sid);
                     } else {
                         book.put(key, data.get(key));
                     }

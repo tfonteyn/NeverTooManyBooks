@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -78,7 +79,7 @@ public class CollectionFormUploader {
 
     private static final String FF_STRIP_ID = "stripId";
     private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
-    private static final String ERROR_EXTERNAL_ID_0 = "externalId == 0";
+    private static final String ERROR_EXTERNAL_ID_0 = "externalId == null";
     private static final String ERROR_COLLECTION_ID_0 = "collectionId == 0";
 
     /** Delegate common Element handling. */
@@ -192,10 +193,7 @@ public class CollectionFormUploader {
     public void setRating(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
-        if (externalId == 0) {
-            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
-        }
+        final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
         final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
@@ -204,7 +202,7 @@ public class CollectionFormUploader {
 
         final String postBody = new Uri.Builder()
                 .appendQueryParameter(FF_SCORE, ratingToSite(book))
-                .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                .appendQueryParameter(FF_STRIP_ID, externalId)
                 .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                 .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
                 .appendQueryParameter(FORM_NAME, "collScore")
@@ -237,10 +235,7 @@ public class CollectionFormUploader {
     public void send(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
-        if (externalId == 0) {
-            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
-        }
+        final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
         long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
@@ -299,7 +294,7 @@ public class CollectionFormUploader {
         builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.PERSONAL_NOTES));
 
         final String postBody =
-                builder.appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                builder.appendQueryParameter(FF_STRIP_ID, externalId)
                        .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                        .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
                        .appendQueryParameter(FORM_NAME, "collDetail")
@@ -322,10 +317,7 @@ public class CollectionFormUploader {
     public void delete(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
-        if (externalId == 0) {
-            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
-        }
+        final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
         final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
@@ -335,7 +327,7 @@ public class CollectionFormUploader {
         // We first get the delete-form to make sure the server still has our book
         // (and to mimic the browser work flow).
         String postBody = new Uri.Builder()
-                .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                .appendQueryParameter(FF_STRIP_ID, externalId)
                 .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                 .appendQueryParameter(FORM_MODE, "delete")
                 // no "frmName" used here
@@ -347,10 +339,10 @@ public class CollectionFormUploader {
 
         final OptionalLong siteExtId = jSoupHelper.getPositiveLong(form, FF_STRIP_ID);
         final OptionalLong siteCollId = jSoupHelper.getPositiveLong(form, FF_STRIP_COLLECTIE_ID);
-        if (siteExtId.isPresent() && externalId == siteExtId.getAsLong()
+        if (siteExtId.isPresent() && externalId.equals(String.valueOf(siteExtId.getAsLong()))
             && siteCollId.isPresent() && collectionId == siteCollId.getAsLong()) {
             postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                    .appendQueryParameter(FF_STRIP_ID, externalId)
                     .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                     .appendQueryParameter(FORM_MODE, "deleteConfirmation")
                     .appendQueryParameter(FORM_NAME, "collDelete")
@@ -369,7 +361,8 @@ public class CollectionFormUploader {
      * @param book to remove from
      */
     void removeFields(@NonNull final Book book) {
-        book.remove(DBKey.SID_STRIP_INFO);
+        book.remove(Identifier.SID_STRIP_INFO);
+        book.remove(DBKey.STRIP_INFO_BOOK_ID);
         book.remove(DBKey.STRIP_INFO_AMOUNT);
         book.remove(DBKey.STRIP_INFO_COLL_ID);
         book.remove(DBKey.STRIP_INFO_OWNED);
@@ -393,15 +386,12 @@ public class CollectionFormUploader {
                                   @NonNull final String mode)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
-        if (externalId == 0) {
-            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
-        }
+        final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
         final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             final String postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                    .appendQueryParameter(FF_STRIP_ID, externalId)
                     .appendQueryParameter(FF_STRIP_COLLECTIE_ID, "")
                     .appendQueryParameter(FORM_MODE, mode)
                     .build()
@@ -415,7 +405,7 @@ public class CollectionFormUploader {
             });
         } else {
             final String postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                    .appendQueryParameter(FF_STRIP_ID, externalId)
                     .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                     .appendQueryParameter(FORM_MODE, mode)
                     .build()

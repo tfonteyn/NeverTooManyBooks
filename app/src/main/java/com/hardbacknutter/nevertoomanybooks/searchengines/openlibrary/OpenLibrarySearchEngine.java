@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -561,7 +561,7 @@ public class OpenLibrarySearchEngine
         // "/books/OL22853304M"
         s = document.optString("key", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(Identifier.SID_OPEN_LIBRARY, s.substring("/books/".length()));
+            book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, s.substring("/books/".length()));
         }
 
         s = document.optString("title", null);
@@ -898,7 +898,7 @@ public class OpenLibrarySearchEngine
             final JSONArray data = element.optJSONArray(olKey);
             if (data != null && !data.isEmpty()) {
                 if (!book.contains(identifier)) {
-                    book.putString(identifier, data.getString(0));
+                    book.setIdentifierValue(identifier, data.getString(0));
                 }
             }
         });

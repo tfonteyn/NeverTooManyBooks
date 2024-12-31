@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -466,11 +467,11 @@ public class EditBookTocFragment
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void searchIsfdb() {
         final Book book = vm.getBook();
-        final String isfdbId = book.getString(Identifier.SID_ISFDB, null);
-        if (isfdbId != null) {
+        final Optional<String> isfdbId = book.getIdentifierValue(Identifier.SID_ISFDB);
+        if (isfdbId.isPresent()) {
             Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            isfdbTocSearchVm.searchBook(isfdbId);
+            isfdbTocSearchVm.searchBook(isfdbId.get());
             return;
         }
 

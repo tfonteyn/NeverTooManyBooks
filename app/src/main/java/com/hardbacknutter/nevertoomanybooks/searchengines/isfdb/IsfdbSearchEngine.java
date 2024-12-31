@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1185,9 +1185,7 @@ public class IsfdbSearchEngine
     private void parseRecordId(@NonNull final Element element,
                                @NonNull final Book book) {
         final String recordId = SearchEngineUtils.digits(element.ownText());
-        if (!recordId.isEmpty()) {
-            book.putString(Identifier.SID_ISFDB, recordId);
-        }
+        book.setIdentifierValue(Identifier.SID_ISFDB, recordId);
     }
 
     /**
@@ -1490,12 +1488,12 @@ public class IsfdbSearchEngine
                                 end = url.length();
                             }
                             final String asin = url.substring(start + 1, end);
-                            book.putString(Identifier.SID_ASIN, asin);
+                            book.setIdentifierValue(Identifier.SID_ASIN, asin);
                         }
                     } else {
                         IDENTIFIER_MAPPING.forEach((inUrl, identifier) -> {
                             if (url.contains(inUrl)) {
-                                book.putString(identifier, stripString(url, '/'));
+                                book.setIdentifierValue(identifier, stripString(url, '/'));
                             }
                         });
                     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -128,7 +128,7 @@ public class CollectionFormParser {
      */
     @WorkerThread
     public void parse(@NonNull final Element root,
-                      @IntRange(from = 1) final long externalId,
+                      @NonNull final String externalId,
                       @IntRange(from = 1) final long collectionId,
                       @NonNull final Book book)
             throws IOException,
@@ -141,7 +141,7 @@ public class CollectionFormParser {
 
         // The other fields come from an ajax fetched side-panel
         final String postBody = new Uri.Builder()
-                .appendQueryParameter(SIDE_FF_STRIP_ID, String.valueOf(externalId))
+                .appendQueryParameter(SIDE_FF_STRIP_ID, externalId)
                 .appendQueryParameter(SIDE_FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                 .appendQueryParameter(SIDE_FF_FORM_MODE, "detail")
                 // no "frmName" used here

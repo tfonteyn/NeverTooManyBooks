@@ -385,11 +385,8 @@ public class SearchBookUpdatesViewModel
                           .forEach(engineId -> {
                               final String identifierKey = engineId.getIdentifierKey();
                               if (identifierKey != null) {
-                                  final String value = currentBook.getString(
-                                          identifierKey, null);
-                                  if (value != null && !value.isEmpty() && !"0".equals(value)) {
-                                      externalIds.put(engineId, value);
-                                  }
+                                  currentBook.getIdentifierValue(identifierKey)
+                                             .ifPresent(sid -> externalIds.put(engineId, sid));
                               }
                           });
 

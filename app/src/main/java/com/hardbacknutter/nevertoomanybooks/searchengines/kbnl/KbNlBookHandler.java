@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,9 +101,7 @@ class KbNlBookHandler
         final Matcher matcher = PERMALINK_PATTERN.matcher(permaLink);
         if (matcher.find()) {
             final String ppn = matcher.group(1);
-            if (ppn != null) {
-                book.putString(Identifier.SID_KBNL, ppn);
-            }
+            book.setIdentifierValue(Identifier.SID_KBNL, ppn);
         }
     }
 

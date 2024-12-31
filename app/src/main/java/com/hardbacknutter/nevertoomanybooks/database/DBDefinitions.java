@@ -1022,7 +1022,7 @@ public final class DBDefinitions {
          *  StripInfo.be synchronization domains
          * ====================================================================================== */
         DOM_STRIP_INFO_BE_BOOK_ID =
-                new Domain.Builder(DBKey.SID_STRIP_INFO, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STRIP_INFO_BOOK_ID, SqLiteDataType.Integer)
                         .build();
 
         DOM_STRIP_INFO_BE_COLLECTION_ID =
@@ -1720,8 +1720,7 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 // not unique: allow multiple local books to point to the same online book
-                .addIndex(DBKey.SID_STRIP_INFO, false,
-                          DOM_STRIP_INFO_BE_BOOK_ID);
+                .addIndex(DBKey.STRIP_INFO_BOOK_ID, false, DOM_STRIP_INFO_BE_BOOK_ID);
         ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(),
                        TBL_STRIPINFO_COLLECTION);
 

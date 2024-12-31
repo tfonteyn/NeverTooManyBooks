@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -278,12 +279,12 @@ public class UserCollection {
         // sanity check, each row is normally a book.
         if (idAttr.startsWith(ROW_ID_ATTR)) {
             try {
-                final long externalId = Long.parseLong(idAttr.substring(ROW_ID_ATTR_LEN));
+                final String externalId = idAttr.substring(ROW_ID_ATTR_LEN);
                 final Element mine = row.getElementById("stripCollectie-" + externalId);
                 if (mine != null) {
                     final long collectionId = Long.parseLong(mine.val());
 
-                    cData.putLong(DBKey.SID_STRIP_INFO, externalId);
+                    cData.setIdentifierValue(Identifier.SID_STRIP_INFO, externalId);
 
                     final Element coverElement =
                             row.selectFirst("figure.stripThumbInnerWrapper > img");

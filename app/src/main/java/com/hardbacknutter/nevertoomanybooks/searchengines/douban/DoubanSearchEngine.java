@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -565,9 +565,9 @@ public class DoubanSearchEngine
 
         // The content table - in the example we used, it's the chapter list.
         // TODO: check if there is a way of detecting chapter-list versus actual content-list
-        // final String sid = book.getString(Identifier.SID_DOUBAN, null);
-        // if (sid != null) {
-        //     final Element tocElement = document.selectFirst("div#dir_" + sid + "_full");
+        // final Optional<String> sid = book.getIdentifierValue(Identifier.SID_DOUBAN);
+        // if (sid.isPresent()) {
+        //     final Element tocElement = document.selectFirst("div#dir_" + sid.get() + "_full");
         //     if (tocElement != null) {
         //         final String[] content = PATTERN_BR.split(tocElement.html());
         //         ... numbered lines with chapter-titles
@@ -638,10 +638,8 @@ public class DoubanSearchEngine
                     // but store it in the book as a string as per usual with SID values
                     if (parts.length >= 5) {
                         try {
-                            final int id = Integer.parseInt(parts[4]);
-                            if (id > 0) {
-                                book.putString(Identifier.SID_DOUBAN, String.valueOf(id));
-                            }
+                            final int sid = Integer.parseInt(parts[4]);
+                            book.setIdentifierValue(Identifier.SID_DOUBAN, sid);
                         } catch (@NonNull final NumberFormatException ignore) {
                             // ignore
                         }

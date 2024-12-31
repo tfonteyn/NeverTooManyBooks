@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -949,8 +949,96 @@ public class Book
         putParcelableCollection(BKEY_TOC_LIST, tocEntries);
     }
 
+    /**
+     * Set/replace the list of {@link Identifier.Value}s.
+     *
+     * @param ivs list
+     */
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
         ivs.forEach(iv -> putString(iv.getIdentifier().getName(), iv.getSid()));
+    }
+
+
+    /**
+     * Set the value for the given {@link Identifier}.
+     * <p>
+     * Empty/null values will cause a removal of the key.
+     * Values are always stored as a {@code String}.
+     * <p>
+     * Meant as a safer replacement for {@link #getString(String)}
+     * specifically for {@link Identifier} vales.
+     * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
+     *
+     * @param identifierKey to set
+     * @param value         to set
+     */
+    public void setIdentifierValue(@NonNull final String identifierKey,
+                                   final long value) {
+        if (value <= 0) {
+            remove(identifierKey);
+        } else {
+            putString(identifierKey, String.valueOf(value));
+        }
+    }
+
+    /**
+     * Set the value for the given {@link Identifier}.
+     * <p>
+     * Empty/null values will cause a removal of the key.
+     * Values are always stored as a {@code String}.
+     * <p>
+     * Meant as a safer replacement for {@link #getString(String)}
+     * specifically for {@link Identifier} vales.
+     * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
+     *
+     * @param identifierKey to set
+     * @param value         to set
+     */
+    public void setIdentifierValue(@NonNull final String identifierKey,
+                                   @Nullable final String value) {
+        if (value == null || value.isBlank() || "0".equals(value)) {
+            remove(identifierKey);
+        } else {
+            putString(identifierKey, value);
+        }
+    }
+
+    /**
+     * Get the value for the given {@link Identifier}.
+     * <p>
+     * Meant as a safer replacement for {@link #getString(String)}
+     * specifically for {@link Identifier} vales.
+     * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
+     *
+     * @param identifierKey to get
+     *
+     * @return a valid, non-empty value
+     */
+    @NonNull
+    public Optional<String> getIdentifierValue(@NonNull final String identifierKey) {
+        final String sid = getString(identifierKey, null);
+        if (sid != null && !sid.isBlank() && !"0".equals(sid)) {
+            return Optional.of(sid);
+        }
+        // cleanup bad values
+        remove(identifierKey);
+        return Optional.empty();
+    }
+
+    /**
+     * Get the value for the given {@link Identifier}.
+     *
+     * @param identifierKey to get
+     *
+     * @return a valid, non-empty value
+     *
+     * @throws IllegalArgumentException if not found, which indicates a bug
+     */
+    @NonNull
+    public String requireIdentifierValue(@NonNull final String identifierKey) {
+        return getIdentifierValue(identifierKey)
+                .orElseThrow(() -> new IllegalArgumentException("Missing Identifier: "
+                                                                + identifierKey));
     }
 
     /**

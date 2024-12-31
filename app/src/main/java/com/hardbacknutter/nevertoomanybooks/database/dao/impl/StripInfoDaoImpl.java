@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 public class StripInfoDaoImpl
         extends BaseDaoImpl
@@ -74,16 +75,19 @@ public class StripInfoDaoImpl
     public void insert(@NonNull final Book book)
             throws DaoInsertException {
 
-        if (BuildConfig.DEBUG /* always */) {
-            if (!book.contains(DBKey.SID_STRIP_INFO)) {
-                throw new IllegalStateException("No StripInfo data");
-            }
+        final long sid;
+        try {
+            sid = Long.parseLong(book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
+        } catch (@NonNull final NumberFormatException e) {
+            throw new IllegalStateException("parsing sid failed");
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             int i = 0;
             stmt.bindLong(++i, book.getId());
-            stmt.bindLong(++i, book.getInt(DBKey.SID_STRIP_INFO));
+            // IMPORTANT: the book sid comes from the Identifier!
+            // but is written to the DBKey column name (see Sql.INSERT)
+            stmt.bindLong(++i, sid);
             stmt.bindLong(++i, book.getInt(DBKey.STRIP_INFO_COLL_ID));
             stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_OWNED));
             stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_DIGITAL));
@@ -112,7 +116,7 @@ public class StripInfoDaoImpl
         static final String INSERT =
                 INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
                 + '(' + DBKey.FK_BOOK
-                + ',' + DBKey.SID_STRIP_INFO
+                + ',' + DBKey.STRIP_INFO_BOOK_ID
                 + ',' + DBKey.STRIP_INFO_COLL_ID
                 + ',' + DBKey.STRIP_INFO_OWNED
                 + ',' + DBKey.STRIP_INFO_DIGITAL

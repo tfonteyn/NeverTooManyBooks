@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -758,14 +758,14 @@ public class CalibreContentServerReader
                     if (sid != null && !sid.isEmpty()) {
                         final CalibreIdentifier calibreIdentifier = CalibreIdentifier.MAP.get(key);
                         if (calibreIdentifier != null) {
-                            book.putString(calibreIdentifier.local, sid);
+                            book.setIdentifierValue(calibreIdentifier.local, sid);
 
                         } else if (key.startsWith(CalibreIdentifier.AMAZON)) {
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // We always use the first one found.
                             if (!book.contains(Identifier.SID_ASIN)) {
-                                book.putString(Identifier.SID_ASIN, sid);
+                                book.setIdentifierValue(Identifier.SID_ASIN, sid);
                             }
                         }
                     }
