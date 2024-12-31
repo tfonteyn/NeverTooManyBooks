@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.graphics.BitmapFactory;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
@@ -132,6 +133,7 @@ public final class CoverFileSpecArray {
      *
      * @return list
      */
+    @RestrictTo(RestrictTo.Scope.TESTS)
     @VisibleForTesting
     @NonNull
     public static List<String> getList(@NonNull final Book book,

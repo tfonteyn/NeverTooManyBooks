@@ -25,6 +25,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
@@ -126,6 +127,7 @@ public class TocEntry
      * @param firstPublicationDate year of first publication
      * @param bookCount            number of books this TocEntry appears in
      */
+    @RestrictTo(RestrictTo.Scope.TESTS)
     @VisibleForTesting
     TocEntry(final long id,
              @NonNull final Author author,
