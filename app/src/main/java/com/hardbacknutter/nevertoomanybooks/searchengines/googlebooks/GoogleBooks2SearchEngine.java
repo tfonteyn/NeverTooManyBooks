@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -84,15 +85,14 @@ import com.hardbacknutter.org.json.JSONObject;
  *         Getting started</a>
  * @see <a href="https://developers.google.com/books/docs/v1/reference/volumes#resource-representations">
  *         resource-representations</a>
+ * @see <a href="https://developers.google.com/books/docs/static-links>static-links</a>
  */
 public class GoogleBooks2SearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
+                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition {
-
-    private static final String IDENT_ISBN_10 = "ISBN_10";
-    private static final String IDENT_ISBN_13 = "ISBN_13";
 
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
     private static final String SEARCH = "/books/v1/volumes?q=";
@@ -112,6 +112,15 @@ public class GoogleBooks2SearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(5);
+    }
+
+    @NonNull
+    @Override
+    public String createViewOnSiteUrl(@NonNull final Context context,
+                                      @NonNull final String externalId) {
+        // TODO: 2024-12-30: google has a new link as beta:
+        // return "https://www.google.com/books/edition/_/" + externalId;
+        return "https://books.google.co.uk/books?id=" + externalId;
     }
 
     @NonNull
@@ -487,6 +496,13 @@ public class GoogleBooks2SearchEngine
         }
     }
 
+    /**
+     * Industry standard identifiers for this volume.
+     * Identifier type. Possible values are ISBN_10, ISBN_13, ISSN and OTHER.
+     *
+     * @param a    array with identifier elements
+     * @param book destination
+     */
     private void parseIdentifiers(@NonNull final JSONArray a,
                                   @NonNull final Book book) {
         final Map<String, String> all = new HashMap<>();
@@ -502,14 +518,12 @@ public class GoogleBooks2SearchEngine
             }
         }
 
-        // Possible values are ISBN_10, ISBN_13, ISSN and OTHER.
-        if (all.containsKey(IDENT_ISBN_13)) {
-            //noinspection DataFlowIssue
-            book.putString(DBKey.BOOK_ISBN, all.get(IDENT_ISBN_13));
-        } else if (all.containsKey(IDENT_ISBN_10)) {
-            //noinspection DataFlowIssue
-            book.putString(DBKey.BOOK_ISBN, all.get(IDENT_ISBN_10));
-        }
+        // Just grab the "best" one we can get; but ignore "OTHER"
+        //noinspection DataFlowIssue
+        Stream.of("ISBN_13", "ISBN_10", "ISSN")
+              .filter(all::containsKey)
+              .findFirst()
+              .ifPresent(key -> book.putString(DBKey.BOOK_ISBN, all.get(key)));
     }
 
     @NonNull
