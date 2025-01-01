@@ -64,6 +64,7 @@ import org.xml.sax.SAXException;
  * API v1:
  * <a href="https://developers.google.com/books/docs/v1/using?csw=1">API v1</a>
  */
+@Deprecated(forRemoval = true)
 public class GoogleBooksSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,

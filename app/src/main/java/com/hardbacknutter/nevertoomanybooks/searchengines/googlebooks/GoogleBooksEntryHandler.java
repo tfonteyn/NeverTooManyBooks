@@ -156,6 +156,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * <p>
  * 0340198273
  */
+@Deprecated(forRemoval = true)
 class GoogleBooksEntryHandler
         extends DefaultHandler {
 
