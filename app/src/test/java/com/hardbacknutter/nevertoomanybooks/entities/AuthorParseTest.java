@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2024 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * Test the regular expressions used by {@link DataHolderUtils#requireAuthor}.
  */
-class AuthorTest {
+class AuthorParseTest {
 
     @NonNull
     static Stream<Arguments> readArgs() {
@@ -56,6 +56,8 @@ class AuthorTest {
                 Arguments.of("Robert Velter (Rob-vel,Bozz)", "Velter (Rob-vel,Bozz)", "Robert"),
                 Arguments.of("Robert Velter Jr. (Rob-vel,Bozz)", "Velter Jr. (Rob-vel,Bozz)",
                              "Robert"),
+
+                Arguments.of("Kim Stanley Robinson", "Robinson", "Kim Stanley"),
 
                 /*
                  * https://en.wikipedia.org/wiki/List_of_Georgian_writers

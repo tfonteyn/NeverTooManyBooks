@@ -191,7 +191,7 @@ public class Author
      * ENHANCE: make the family-name prefix editable by the user
      */
     private static final Pattern FAMILY_NAME_PREFIX_PATTERN =
-            Pattern.compile("(le|de|van|von|van der)",
+            Pattern.compile("^(le|de|van|von|van der)$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
