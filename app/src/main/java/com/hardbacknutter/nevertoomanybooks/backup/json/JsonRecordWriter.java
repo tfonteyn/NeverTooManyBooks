@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -173,8 +173,6 @@ public class JsonRecordWriter
         final Style defaultStyle = stylesHelper.getDefault();
         final CoverStorage coverStorage = serviceLocator.getCoverStorage();
 
-        final Set<RecordType> resolvedRecordTypes = RecordType.addRelatedTypes(recordTypes);
-
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
 
@@ -182,7 +180,7 @@ public class JsonRecordWriter
             // Write styles first, and preferences next! This will facilitate & speedup
             // importing as we'll be seeking in the input archive for these.
 
-            if (resolvedRecordTypes.contains(RecordType.Styles)
+            if (recordTypes.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
 
@@ -193,7 +191,7 @@ public class JsonRecordWriter
                 results.styles = styles.size();
             }
 
-            if (resolvedRecordTypes.contains(RecordType.Preferences)
+            if (recordTypes.contains(RecordType.Preferences)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
 
@@ -204,7 +202,7 @@ public class JsonRecordWriter
                 results.preferences = 1;
             }
 
-            if (resolvedRecordTypes.contains(RecordType.Certificates)
+            if (recordTypes.contains(RecordType.Certificates)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_certificates));
@@ -226,7 +224,7 @@ public class JsonRecordWriter
                 }
             }
 
-            if (resolvedRecordTypes.contains(RecordType.Bookshelves)
+            if (recordTypes.contains(RecordType.Bookshelves)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_bookshelves));
@@ -240,7 +238,7 @@ public class JsonRecordWriter
                 results.bookshelves = bookshelves.size();
             }
 
-            if (resolvedRecordTypes.contains(RecordType.CalibreLibraries)
+            if (recordTypes.contains(RecordType.CalibreLibraries)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.site_calibre));
@@ -254,7 +252,7 @@ public class JsonRecordWriter
                 results.calibreLibraries = libraries.size();
             }
 
-            if (resolvedRecordTypes.contains(RecordType.CalibreCustomFields)
+            if (recordTypes.contains(RecordType.CalibreCustomFields)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.site_calibre));
@@ -268,7 +266,7 @@ public class JsonRecordWriter
                 results.calibreCustomFields = fields.size();
             }
 
-            if (resolvedRecordTypes.contains(RecordType.DeletedBooks)
+            if (recordTypes.contains(RecordType.DeletedBooks)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_books));
@@ -282,10 +280,10 @@ public class JsonRecordWriter
                 results.deletedBooks = list.size();
             }
 
-            if (resolvedRecordTypes.contains(RecordType.Books)
+            if (recordTypes.contains(RecordType.Books)
                 && !progressListener.isCancelled()) {
 
-                final boolean collectCoverFilenames = resolvedRecordTypes.contains(
+                final boolean collectCoverFilenames = recordTypes.contains(
                         RecordType.Cover);
 
                 final JsonCoder<Book> coder = new BookCoder(context, defaultStyle);

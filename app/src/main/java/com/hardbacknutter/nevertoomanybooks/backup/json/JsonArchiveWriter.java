@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,7 +89,7 @@ public class JsonArchiveWriter
     public JsonArchiveWriter(@NonNull final Set<RecordType> recordTypes,
                              @Nullable final LocalDateTime sinceDateTime,
                              @NonNull final File destFile) {
-        this.recordTypes = recordTypes;
+        this.recordTypes = RecordType.addRelatedTypes(recordTypes);
         this.destFile = destFile;
         this.sinceDateTime = sinceDateTime;
     }
