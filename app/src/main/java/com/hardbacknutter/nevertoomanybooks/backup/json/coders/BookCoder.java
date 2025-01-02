@@ -49,6 +49,13 @@ import com.hardbacknutter.org.json.JSONObject;
  * Supports all types from {@link DataManager#put} with the exception of {@link Serializable}.
  * <p>
  * {@link #encode} omits {@code null} values, numeric {@code 0} values and empty lists.
+ * <p>
+ * For historical reasons boolean flags are encoded as {@code 1} when {@code true}
+ * (and omitted when {@code false}).
+ * Decoding will read and store the {@code 1} in the {@link Book}.
+ * When this value is send to the database all is well because SQLite uses {@code 0/1} for
+ * booleans anyhow. When fetched with {@link Book#getBoolean(String)} the internal parser
+ * will convert to booleans.
  */
 public class BookCoder
         implements JsonCoder<Book> {
