@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,18 +19,28 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.database.Cursor;
+
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 
 public class StripInfoDaoImpl
         extends BaseDaoImpl
@@ -51,6 +61,20 @@ public class StripInfoDaoImpl
     }
 
     @Override
+    @NonNull
+    public Optional<StripInfoCollectionData> getByBookId(@IntRange(from = 1) final long bookId) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
+                                         new String[]{String.valueOf(bookId)})) {
+            final CursorRow rowData = new CursorRow(cursor);
+            if (cursor.moveToFirst()) {
+                return Optional.of(
+                        new StripInfoCollectionData(rowData.getLong(DBKey.PK_ID), rowData));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public void insertOrUpdate(@NonNull final Book book)
             throws DaoInsertException {
 
@@ -60,52 +84,49 @@ public class StripInfoDaoImpl
             }
         }
 
+        final long bookId = book.getId();
+
         // Delete all existing data for this book.
-        delete(book);
+        delete(bookId);
 
         // is there anything to insert ?
-        // The presence of this key implies all other collection data keys WILL be there as well.
-        if (book.contains(DBKey.STRIP_INFO_COLL_ID)
-            && book.getInt(DBKey.STRIP_INFO_COLL_ID) > 0) {
-            insert(book);
+        final StripInfoCollectionData data = book.getParcelable(
+                StripInfoCollectionData.BKEY);
+        if (data != null) {
+            insert(bookId, data);
         }
     }
 
     @Override
-    public void insert(@NonNull final Book book)
+    public void insert(final long bookId,
+                       @NonNull final StripInfoCollectionData data)
             throws DaoInsertException {
 
-        final long sid;
-        try {
-            sid = Long.parseLong(book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
-        } catch (@NonNull final NumberFormatException e) {
-            throw new IllegalStateException("parsing sid failed");
-        }
+        final LocalDateTime lastSync = data.getLastSync();
+        final String dateTime = lastSync != null ? SqlEncode.dateTime(lastSync) : "";
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             int i = 0;
-            stmt.bindLong(++i, book.getId());
-            // IMPORTANT: the book sid comes from the Identifier!
-            // but is written to the DBKey column name (see Sql.INSERT)
-            stmt.bindLong(++i, sid);
-            stmt.bindLong(++i, book.getInt(DBKey.STRIP_INFO_COLL_ID));
-            stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_OWNED));
-            stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_DIGITAL));
-            stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_WANTED));
-            stmt.bindLong(++i, book.getInt(DBKey.STRIP_INFO_AMOUNT));
-            stmt.bindString(++i, book.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC));
+            stmt.bindLong(++i, bookId);
+            stmt.bindLong(++i, data.getSid());
+            stmt.bindLong(++i, data.getCollectionId());
+            stmt.bindBoolean(++i, data.isOwned());
+            stmt.bindBoolean(++i, data.isDigital());
+            stmt.bindBoolean(++i, data.isWanted());
+            stmt.bindLong(++i, data.getAmount());
+            stmt.bindString(++i, dateTime);
 
             if (stmt.executeInsert() == -1) {
-                throw new DaoInsertException(ERROR_INSERT_FROM + book);
+                throw new DaoInsertException(ERROR_INSERT_FROM + data);
             }
         }
     }
 
     @Override
-    public boolean delete(@NonNull final Book book) {
+    public boolean delete(final long bookId) {
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
-            stmt.bindLong(1, book.getId());
+            stmt.bindLong(1, bookId);
             rowsAffected = stmt.executeUpdateDelete();
         }
         return rowsAffected > 0;
@@ -124,6 +145,18 @@ public class StripInfoDaoImpl
                 + ',' + DBKey.STRIP_INFO_AMOUNT
                 + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
                 + ") VALUES (?,?,?,?,?,?,?,?)";
+
+        static final String FIND_BY_BOOK_ID =
+                SELECT_ + DBKey.FK_BOOK
+                + ',' + DBKey.STRIP_INFO_BOOK_ID
+                + ',' + DBKey.STRIP_INFO_COLL_ID
+                + ',' + DBKey.STRIP_INFO_OWNED
+                + ',' + DBKey.STRIP_INFO_DIGITAL
+                + ',' + DBKey.STRIP_INFO_WANTED
+                + ',' + DBKey.STRIP_INFO_AMOUNT
+                + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
+                + _FROM_ + TBL_STRIPINFO_COLLECTION.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         static final String DELETE_BY_LOCAL_BOOK_ID =
                 DELETE_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()

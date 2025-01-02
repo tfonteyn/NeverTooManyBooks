@@ -82,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValid
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -1092,6 +1093,50 @@ public class Book
      */
     public void setEdition(@Edition.Bitmask final long bitmask) {
         putLong(DBKey.EDITION__BITMASK, bitmask & Book.Edition.BITMASK_ALL_BITS);
+    }
+
+    /**
+     * Get the {@link StripInfoCollectionData}.
+     * <p>
+     * If there is no {@link Identifier#SID_STRIP_INFO} present,
+     * this method will return an {@code Optional.empty()}.
+     *
+     * @return collection data
+     */
+    @NonNull
+    public Optional<StripInfoCollectionData> getStripInfoCollectionData() {
+        if (contains(Identifier.SID_STRIP_INFO)) {
+            final long bookId = getId();
+            StripInfoCollectionData data;
+            if (bookId == 0) {
+                // a new book, just create a new data object
+                data = new StripInfoCollectionData(0);
+                putParcelable(StripInfoCollectionData.BKEY, data);
+            } else {
+                // an existing book
+                // We MIGHT have it (probably not) ...
+                data = getParcelable(StripInfoCollectionData.BKEY);
+                if (data == null) {
+                    // but if not, go explicitly fetch/create it.
+                    data = ServiceLocator.getInstance().getStripInfoDao()
+                                         .getByBookId(bookId)
+                                         .orElse(new StripInfoCollectionData(bookId));
+                    // store for reuse
+                    putParcelable(StripInfoCollectionData.BKEY, data);
+                }
+            }
+            return Optional.of(data);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public void setStripInfoCollectionData(@Nullable final StripInfoCollectionData data) {
+        if (data == null) {
+            remove(StripInfoCollectionData.BKEY);
+        } else {
+            putParcelable(StripInfoCollectionData.BKEY, data);
+        }
     }
 
     /**

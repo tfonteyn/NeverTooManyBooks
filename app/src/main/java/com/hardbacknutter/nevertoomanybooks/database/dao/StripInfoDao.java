@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,15 +19,19 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
 
 public interface StripInfoDao {
 
     /**
-     * Update existing, or insert the StripInfo data for the given {@link Book}.
+     * Delete, update existing or insert the StripInfo data for the given {@link Book}.
      *
      * @param book to process
      *
@@ -37,22 +41,27 @@ public interface StripInfoDao {
             throws DaoWriteException;
 
     /**
-     * Store the StripInfo data for the given {@link Book}.
+     * Store the given {@link StripInfoCollectionData}.
      *
-     * @param book to process
+     * @param bookId local book id
+     * @param data   to process
      *
      * @throws DaoWriteException on failure
      */
-    void insert(@NonNull Book book)
+    void insert(long bookId,
+                @NonNull StripInfoCollectionData data)
             throws DaoWriteException;
 
     /**
-     * Delete all data related to StripInfo from the database.
-     * The StripInfo specific fields are however left in the {@link Book} object.
+     * Delete all data related to StripInfo from the database
+     * for the given book id.
      *
-     * @param book to process
+     * @param bookId local book id
      *
      * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull Book book);
+    boolean delete(long bookId);
+
+    @NonNull
+    Optional<StripInfoCollectionData> getByBookId(@IntRange(from = 1) long bookId);
 }
