@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,11 +118,11 @@ public class DBHelper
      * v5.5.1: 33
      * v5.5.4: 34
      * <p>
-     * v6.5.0: 36
+     * v6.5.0: 35
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 36;
+    public static final int DATABASE_VERSION = 35;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -847,16 +847,18 @@ public class DBHelper
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
                     DBDefinitions.DOM_STYLE_CITATION_TYPE);
-            // oops.. turns out each "stripinfo" book always wrote collection data
-            // even when there was none... let's clean that up.
-            db.execSQL("DELETE FROM " + TBL_STRIPINFO_COLLECTION
-                       + " WHERE " + DBKey.STRIP_INFO_COLL_ID + "=0");
-        }
-        if (oldVersion < 36) {
+
             TBL_IDENTIFIERS.create(db, true);
             TBL_BOOK_IDENTIFIER.create(db, true);
             IdentifierDaoImpl.onPostCreate(context, db);
             LegacyUpgrades.migrateV35Sids(db);
+
+            // StripInfo collection support was never finished nor activated in a release build.
+            // Furthermore, it turns out each book with a "stripinfo" SID always wrote
+            // collection data which obviously always was 'empty'.
+            // and we're making a fresh start... drop and recreate the table.
+            db.execSQL("DROP TABLE " + TBL_STRIPINFO_COLLECTION.getName());
+            TBL_STRIPINFO_COLLECTION.create(db, true);
         }
 
         // We have to do this here due to some users skipping updates (see github #30)

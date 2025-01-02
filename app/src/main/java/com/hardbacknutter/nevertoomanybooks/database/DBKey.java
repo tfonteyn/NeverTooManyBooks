@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,24 +68,30 @@ public final class DBKey {
 
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String IDENT_SID = "ident_sid";
+
     /**
-     * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION}.
-     * The book id (sid).
-     * Maps to {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_STRIP_INFO}
+     * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The book id (sid).
+     * This is a (redundant) copy of the same value stored in
+     * {@link DBDefinitions#TBL_BOOK_IDENTIFIER} for
+     * {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_STRIP_INFO}.
      */
     public static final String STRIP_INFO_BOOK_ID = "si_book_id";
     /**
      * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION}.
      * The "CollectieId"; a secondary id used by the website for all books flagged
-     * as being in the users collection.
+     * as being in the users collection. This is the case as soon as they set "some"
+     * private date/flags on it.
      */
     public static final String STRIP_INFO_COLL_ID = "si_coll_id";
-    /** Owned as a physical book. */
-    public static final String STRIP_INFO_OWNED = "si_coll_owned";
-    /** Owned as a digital book. */
-    public static final String STRIP_INFO_DIGITAL = "si_coll_digital";
+    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The user wants this book. */
     public static final String STRIP_INFO_WANTED = "si_coll_wanted";
+    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - Owned as a physical book. */
+    public static final String STRIP_INFO_OWNED = "si_coll_owned";
+    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - Owned as a digital book. */
+    public static final String STRIP_INFO_DIGITAL = "si_coll_digital";
+    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The amount of copies owned. */
     public static final String STRIP_INFO_AMOUNT = "si_coll_amount";
+    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - DateTimeStamp of last sync. */
     public static final String STRIP_INFO_LAST_SYNC_DATE__UTC = "si_coll_last_sync";
 
     /** {@link DBDefinitions#TBL_CALIBRE_CUSTOM_FIELDS}. */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1029,6 +1029,12 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.STRIP_INFO_COLL_ID, SqLiteDataType.Integer)
                         .build();
 
+        DOM_STRIP_INFO_BE_WANTED =
+                new Domain.Builder(DBKey.STRIP_INFO_WANTED, SqLiteDataType.Boolean)
+                        .notNull()
+                        .withDefault(false)
+                        .build();
+
         DOM_STRIP_INFO_BE_OWNED =
                 new Domain.Builder(DBKey.STRIP_INFO_OWNED, SqLiteDataType.Boolean)
                         .notNull()
@@ -1037,12 +1043,6 @@ public final class DBDefinitions {
 
         DOM_STRIP_INFO_BE_DIGITAL =
                 new Domain.Builder(DBKey.STRIP_INFO_DIGITAL, SqLiteDataType.Boolean)
-                        .notNull()
-                        .withDefault(false)
-                        .build();
-
-        DOM_STRIP_INFO_BE_WANTED =
-                new Domain.Builder(DBKey.STRIP_INFO_WANTED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
@@ -1712,18 +1712,15 @@ public final class DBDefinitions {
                 .addDomains(DOM_FK_BOOK,
                             DOM_STRIP_INFO_BE_BOOK_ID,
                             DOM_STRIP_INFO_BE_COLLECTION_ID,
+                            DOM_STRIP_INFO_BE_WANTED,
                             DOM_STRIP_INFO_BE_OWNED,
                             DOM_STRIP_INFO_BE_DIGITAL,
-                            DOM_STRIP_INFO_BE_WANTED,
                             DOM_STRIP_INFO_BE_AMOUNT,
                             DOM_STRIP_INFO_BE_LAST_SYNC__UTC)
                 .setPrimaryKey(DOM_FK_BOOK)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                // not unique: allow multiple local books to point to the same online book
-                .addIndex(DBKey.STRIP_INFO_BOOK_ID, false, DOM_STRIP_INFO_BE_BOOK_ID);
-        ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(),
-                       TBL_STRIPINFO_COLLECTION);
-
+                .addIndex(DBKey.STRIP_INFO_BOOK_ID, true, DOM_STRIP_INFO_BE_BOOK_ID);
+        ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(), TBL_STRIPINFO_COLLECTION);
     }
 
     static {
