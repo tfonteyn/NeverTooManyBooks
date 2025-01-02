@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,9 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
@@ -123,6 +125,11 @@ public class StripInfoWriter
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor);
+
+                final StripInfoCollectionData collectionData =
+                        new StripInfoCollectionData(book.getId(), new CursorRow(cursor));
+                book.setStripInfoCollectionData(collectionData);
+
                 try {
                     collectionForm.send(book);
                     results.addBook(book.getId());
@@ -132,9 +139,10 @@ public class StripInfoWriter
                     if (deleteLocalBook) {
                         bookDao.delete(book);
                     } else {
-                        // keep the book itself, but remove the stripInfo data for it
-                        stripInfoDao.delete(book);
-                        collectionForm.removeFields(book);
+                        // keep the local book, but remove the stripInfo data for it.
+                        stripInfoDao.delete(book.getId());
+                        book.remove(Identifier.SID_STRIP_INFO);
+                        book.remove(StripInfoCollectionData.BKEY);
                     }
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book

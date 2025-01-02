@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -128,20 +127,14 @@ public class CollectionFormParser {
      */
     @WorkerThread
     public void parse(@NonNull final Element root,
-                      @NonNull final String externalId,
+                      @IntRange(from = 1) final long externalId,
                       @IntRange(from = 1) final long collectionId,
                       @NonNull final Book book)
             throws IOException,
                    StorageException {
 
-        // These come from the main page
-        formParser.parseOwnedFlag(root, ROW_FF_OWNED + externalId, book);
-        formParser.parseReadFlag(root, ROW_FF_READ + externalId, book);
-        formParser.parseWishListFlag(root, ROW_FF_WISHLIST + externalId, book);
-
-        // The other fields come from an ajax fetched side-panel
         final String postBody = new Uri.Builder()
-                .appendQueryParameter(SIDE_FF_STRIP_ID, externalId)
+                .appendQueryParameter(SIDE_FF_STRIP_ID, String.valueOf(externalId))
                 .appendQueryParameter(SIDE_FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                 .appendQueryParameter(SIDE_FF_FORM_MODE, "detail")
                 // no "frmName" used here
@@ -158,17 +151,28 @@ public class CollectionFormParser {
                     }
                 }));
 
-        formParser.parseAmount(response, SIDE_FF_AMOUNT, book);
+
+        final StripInfoCollectionData collectionData =
+                book.getStripInfoCollectionData()
+                    .orElseThrow(() -> new IllegalStateException("Missing SID"));
+        collectionData.setSid(externalId);
+        collectionData.setCollectionId(collectionId);
+
+        // These come from the main page
+        formParser.parseOwnedFlag(root, ROW_FF_OWNED + externalId, book, collectionData);
+        formParser.parseWishListFlag(root, ROW_FF_WISHLIST + externalId, book, collectionData);
+        formParser.parseReadFlag(root, ROW_FF_READ + externalId, book);
+
+        // The other fields come from an ajax fetched side-panel
+        formParser.parseDigitalFlag(response, SIDE_FF_DIGITAL, book, collectionData);
+        formParser.parseAmount(response, SIDE_FF_AMOUNT, collectionData);
+
         formParser.parseDateAcquired(response, SIDE_FF_DATE_ACQUIRED, book);
-        formParser.parseDigitalFlag(response, SIDE_FF_DIGITAL, book);
         formParser.parseEdition(response, SIDE_FF_EDITION, book);
         formParser.parseLocation(response, SIDE_FF_LOCATION, book);
         formParser.parseNotes(response, SIDE_FF_PERSONAL_NOTES, book);
         formParser.parsePricePaid(response, SIDE_FF_PRICE_PAID, book);
         formParser.parseRating(response, SIDE_FF_RATING, book);
-
-        // Add as last one in case of errors thrown
-        book.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
     }
 
     public void cancel() {

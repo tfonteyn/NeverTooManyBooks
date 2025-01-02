@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,16 +111,21 @@ public class UserCollectionTest
                 .count());
 
         final Book b0 = collection.get(0);
+        assertNotNull(b0);
+
+        final StripInfoCollectionData collectionData =
+                b0.getParcelable(StripInfoCollectionData.BKEY);
+        assertNotNull(collectionData);
+
         assertEquals("5435", b0.getString(Identifier.SID_STRIP_INFO, null));
-        assertEquals(5408, b0.getLong(DBKey.STRIP_INFO_COLL_ID));
+        assertEquals(5408, collectionData.getCollectionId());
+        assertEquals(1, collectionData.getAmount());
+        assertTrue(collectionData.isOwned());
+        assertTrue(collectionData.isWanted());
 
         assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
         assertEquals("EUR", b0.getString(DBKey.PRICE_PAID_CURRENCY, null));
         assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED, null));
-
-        assertEquals(1, b0.getInt(DBKey.STRIP_INFO_AMOUNT));
-        assertTrue(b0.getBoolean(DBKey.STRIP_INFO_OWNED));
-        assertTrue(b0.getBoolean(DBKey.STRIP_INFO_WANTED));
     }
 
     @Test

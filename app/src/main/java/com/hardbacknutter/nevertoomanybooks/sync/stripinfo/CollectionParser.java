@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,17 +84,17 @@ class CollectionParser {
                        @NonNull final String nameAttr,
                        @NonNull final Book book) {
 
-        jSoupHelper.getBoolean(root, nameAttr).ifPresent(value ->
-                                                                 book.putBoolean(DBKey.READ__BOOL,
-                                                                                 true));
+        jSoupHelper.getBoolean(root, nameAttr)
+                   .ifPresent(value -> book.putBoolean(DBKey.READ__BOOL, true));
     }
 
     @AnyThread
     void parseOwnedFlag(@NonNull final Element root,
                         @NonNull final String nameAttr,
-                        @NonNull final Book book) {
+                        @NonNull final Book book,
+                        @NonNull final StripInfoCollectionData collectionData) {
         jSoupHelper.getBoolean(root, nameAttr).ifPresent(value -> {
-            book.putBoolean(DBKey.STRIP_INFO_OWNED, true);
+            collectionData.setOwned(true);
             if (ownedBooksBookshelf != null) {
                 book.add(ownedBooksBookshelf);
             }
@@ -104,9 +104,10 @@ class CollectionParser {
     @AnyThread
     void parseDigitalFlag(@NonNull final Element root,
                           @NonNull final String nameAttr,
-                          @NonNull final Book book) {
+                          @NonNull final Book book,
+                          final StripInfoCollectionData collectionData) {
         jSoupHelper.getBoolean(root, nameAttr).ifPresent(value -> {
-            book.putBoolean(DBKey.STRIP_INFO_DIGITAL, true);
+            collectionData.setDigital(true);
             if (digitalBooksBookshelf != null) {
                 book.add(digitalBooksBookshelf);
             }
@@ -116,9 +117,10 @@ class CollectionParser {
     @AnyThread
     void parseWishListFlag(@NonNull final Element root,
                            @NonNull final String nameAttr,
-                           @NonNull final Book book) {
+                           @NonNull final Book book,
+                           final StripInfoCollectionData collectionData) {
         jSoupHelper.getBoolean(root, nameAttr).ifPresent(value -> {
-            book.putBoolean(DBKey.STRIP_INFO_WANTED, true);
+            collectionData.setWanted(true);
             if (wishListBookshelf != null) {
                 book.add(wishListBookshelf);
             }
@@ -199,15 +201,14 @@ class CollectionParser {
     /**
      * The site supports have multiple copies of the same book.
      *
-     * @param root     Element to parse
-     * @param nameAttr the FORM INPUT "name" attribute
-     * @param book     to store the results in
+     * @param root           Element to parse
+     * @param nameAttr       the FORM INPUT "name" attribute
+     * @param collectionData to update
      */
     @AnyThread
     void parseAmount(@NonNull final Element root,
                      @NonNull final String nameAttr,
-                     @NonNull final Book book) {
-        jSoupHelper.getPositiveInt(root, nameAttr).ifPresent(
-                value -> book.putInt(DBKey.STRIP_INFO_AMOUNT, value));
+                     final StripInfoCollectionData collectionData) {
+        jSoupHelper.getPositiveInt(root, nameAttr).ifPresent(collectionData::setAmount);
     }
 }

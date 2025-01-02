@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,6 @@ public class CollectionFormUploader {
 
     private static final String FF_STRIP_ID = "stripId";
     private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
-    private static final String ERROR_EXTERNAL_ID_0 = "externalId == null";
     private static final String ERROR_COLLECTION_ID_0 = "collectionId == 0";
 
     /** Delegate common Element handling. */
@@ -120,44 +119,49 @@ public class CollectionFormUploader {
     }
 
     /**
-     * Set or reset the flag/checkbox 'In Bezit'.
-     * If not added to the collection (as defined by the site) before, the book
-     * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
-     * It's up to the caller to update the book in the local database.
-     *
-     * @param book to use
-     *
-     * @throws IOException              on generic/other IO failures
-     * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
-     */
-    @WorkerThread
-    public void setOwned(@NonNull final Book book)
-            throws IOException, IllegalArgumentException, StorageException {
-
-        final boolean owned = book.getBoolean(DBKey.STRIP_INFO_OWNED);
-
-        setBooleanByMode(book, owned ? "inBezit" : "notInBezit");
-    }
-
-    /**
      * Set or reset the flag/checkbox 'Gelezen'.
      * If not added to the collection (as defined by the site) before, the book
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
      * It's up to the caller to update the book in the local database.
      *
-     * @param book to use
+     * @param book           to use
+     * @param collectionData data
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
      * @throws StorageException         on storage related failures
      */
     @WorkerThread
-    public void setRead(@NonNull final Book book)
+    public void setRead(@NonNull final Book book,
+                        @NonNull final StripInfoCollectionData collectionData)
             throws IOException, IllegalArgumentException, StorageException {
 
-        setBooleanByMode(book, book.isRead() ? "gelezen" : "notGelezen");
+        setBooleanByMode(book, collectionData,
+                         book.isRead() ? "gelezen" : "notGelezen");
     }
+
+    /**
+     * Set or reset the flag/checkbox 'In Bezit'.
+     * If not added to the collection (as defined by the site) before, the book
+     * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
+     * It's up to the caller to update the book in the local database.
+     *
+     * @param book           to use
+     * @param collectionData data
+     *
+     * @throws IOException              on generic/other IO failures
+     * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException         on storage related failures
+     */
+    @WorkerThread
+    public void setOwned(@NonNull final Book book,
+                         @NonNull final StripInfoCollectionData collectionData)
+            throws IOException, IllegalArgumentException, StorageException {
+
+        setBooleanByMode(book, collectionData,
+                         collectionData.isOwned() ? "inBezit" : "notInBezit");
+    }
+
 
     /**
      * Set or reset the flag/checkbox 'In verlanglijst'.
@@ -165,39 +169,46 @@ public class CollectionFormUploader {
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
      * It's up to the caller to update the book in the local database.
      *
-     * @param book to use
+     * @param book           to use
+     * @param collectionData data
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
      * @throws StorageException         on storage related failures
      */
     @WorkerThread
-    public void setWanted(@NonNull final Book book)
+    public void setWanted(@NonNull final Book book,
+                          @NonNull final StripInfoCollectionData collectionData)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final boolean wanted = book.getBoolean(DBKey.STRIP_INFO_WANTED);
-
-        setBooleanByMode(book, wanted ? "inWishlist" : "notInWishlist");
+        setBooleanByMode(book, collectionData,
+                         collectionData.isWanted() ? "inWishlist" : "notInWishlist");
     }
 
     /**
      * Post a request to the site to set the rating of the given book.
+     * If not added to the collection (as defined by the site) before, the book
+     * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
+     * It's up to the caller to update the book in the local database.
      *
      * @param book to set
+     * @param collectionData data
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
      * @throws StorageException         on storage related failures
      */
     @WorkerThread
-    public void setRating(@NonNull final Book book)
+    public void setRating(@NonNull final Book book,
+                          @NonNull final StripInfoCollectionData collectionData)
             throws IOException, IllegalArgumentException, StorageException {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
-        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
+        final long collectionId = collectionData.getCollectionId();
         if (collectionId == 0) {
-            throw new IllegalArgumentException(ERROR_COLLECTION_ID_0);
+            //URGENT: can we send the rating form with FF_STRIP_COLLECTIE_ID="" ?
+            setOwned(book, collectionData);
         }
 
         final String postBody = new Uri.Builder()
@@ -219,6 +230,7 @@ public class CollectionFormUploader {
                                               0, 10));
     }
 
+
     /**
      * If not added to the collection (as defined by the site) before, the book
      * will be posted to the site as "Owned" and
@@ -236,12 +248,15 @@ public class CollectionFormUploader {
             throws IOException, IllegalArgumentException, StorageException {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
+        final StripInfoCollectionData collectionData =
+                book.getStripInfoCollectionData()
+                    .orElseThrow(() -> new IllegalStateException("Missing CollectionData"));
 
-        long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
+        long collectionId = collectionData.getCollectionId();
         if (collectionId == 0) {
             // Flag the book as 'owned' which will give it a collection-id.
-            setOwned(book);
-            collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
+            setOwned(book, collectionData);
+            collectionId = collectionData.getCollectionId();
             // sanity check
             if (collectionId == 0) {
                 throw new IllegalArgumentException(ERROR_COLLECTION_ID_0);
@@ -356,26 +371,11 @@ public class CollectionFormUploader {
     }
 
     /**
-     * Helper to remove all StripInfo related fields from the Book.
-     *
-     * @param book to remove from
-     */
-    void removeFields(@NonNull final Book book) {
-        book.remove(Identifier.SID_STRIP_INFO);
-        book.remove(DBKey.STRIP_INFO_BOOK_ID);
-        book.remove(DBKey.STRIP_INFO_AMOUNT);
-        book.remove(DBKey.STRIP_INFO_COLL_ID);
-        book.remove(DBKey.STRIP_INFO_OWNED);
-        book.remove(DBKey.STRIP_INFO_DIGITAL);
-        book.remove(DBKey.STRIP_INFO_WANTED);
-        book.remove(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC);
-    }
-
-    /**
      * Send a form with a single boolean flag.
      *
-     * @param book to use
-     * @param mode one of the 3 flags, in either 'on'  or 'off' format.
+     * @param book           to use
+     * @param collectionData
+     * @param mode           one of the 3 flags, in either 'on'  or 'off' format.
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
@@ -383,13 +383,15 @@ public class CollectionFormUploader {
      */
     @WorkerThread
     private void setBooleanByMode(@NonNull final Book book,
+                                  @NonNull final StripInfoCollectionData collectionData,
                                   @NonNull final String mode)
             throws IOException, IllegalArgumentException, StorageException {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
-        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
+        final long collectionId = collectionData.getCollectionId();
         if (collectionId == 0) {
+            // Not in the collection yet, send a request to add it while setting the mode
             final String postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, externalId)
                     .appendQueryParameter(FF_STRIP_COLLECTIE_ID, "")
@@ -400,10 +402,11 @@ public class CollectionFormUploader {
             final Document responseForm = doPost(postBody);
 
             jSoupHelper.getPositiveLong(responseForm, FF_STRIP_COLLECTIE_ID).ifPresent(id -> {
-                book.putLong(DBKey.STRIP_INFO_COLL_ID, id);
+                collectionData.setCollectionId(id);
                 book.setStage(EntityStage.Stage.Dirty);
             });
         } else {
+            // Already in our collection, send a request to set the mode
             final String postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, externalId)
                     .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))

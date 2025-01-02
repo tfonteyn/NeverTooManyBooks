@@ -35,7 +35,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
@@ -272,6 +271,12 @@ public class UserCollection {
         return collection;
     }
 
+    /**
+     * Parse the row.
+     *
+     * @param row   to parse
+     * @param cData a {@link Book} object to populate
+     */
     @AnyThread
     private void parseRow(@NonNull final Element row,
                           @NonNull final Book cData) {
@@ -279,12 +284,34 @@ public class UserCollection {
         // sanity check, each row is normally a book.
         if (idAttr.startsWith(ROW_ID_ATTR)) {
             try {
-                final String externalId = idAttr.substring(ROW_ID_ATTR_LEN);
-                final Element mine = row.getElementById("stripCollectie-" + externalId);
-                if (mine != null) {
-                    final long collectionId = Long.parseLong(mine.val());
+                final long externalId = Long.parseLong(idAttr.substring(ROW_ID_ATTR_LEN));
+                final Element collectionIdElement =
+                        row.getElementById("stripCollectie-" + externalId);
+                if (collectionIdElement != null) {
+                    final long collectionId = Long.parseLong(collectionIdElement.val());
 
+                    // Store the SID now so we can get collectionData created
                     cData.setIdentifierValue(Identifier.SID_STRIP_INFO, externalId);
+                    final StripInfoCollectionData collectionData =
+                            cData.getStripInfoCollectionData()
+                                 .orElseThrow(() -> new IllegalStateException("Missing SID"));
+                    collectionData.setSid(externalId);
+                    collectionData.setCollectionId(collectionId);
+
+                    rowParser.parseDateAcquired(row, "aankoopdatum-" + collectionId, cData);
+                    rowParser.parseEdition(row, "druk-" + collectionId, cData);
+                    rowParser.parseLocation(row, "locatie-" + collectionId, cData);
+                    rowParser.parseNotes(row, "opmerking-" + collectionId, cData);
+                    rowParser.parsePricePaid(row, "prijs-" + collectionId, cData);
+                    rowParser.parseRating(row, "score-" + collectionId, cData);
+                    rowParser.parseReadFlag(row, "gelezen-" + collectionId, cData);
+
+                    rowParser.parseAmount(row, "aantal-" + collectionId, collectionData);
+                    rowParser.parseDigitalFlag(row, "digitaal-" + collectionId, cData,
+                                               collectionData);
+                    rowParser.parseOwnedFlag(row, "bezit-" + collectionId, cData, collectionData);
+                    rowParser.parseWishListFlag(row, "wishlist-" + collectionId, cData,
+                                                collectionData);
 
                     final Element coverElement =
                             row.selectFirst("figure.stripThumbInnerWrapper > img");
@@ -294,22 +321,6 @@ public class UserCollection {
                             cData.putString(BKEY_FRONT_COVER_URL, src);
                         }
                     }
-
-                    rowParser.parseAmount(row, "aantal-" + collectionId, cData);
-                    rowParser.parseDateAcquired(row, "aankoopdatum-" + collectionId, cData);
-                    rowParser.parseDigitalFlag(row, "digitaal-" + collectionId, cData);
-                    rowParser.parseEdition(row, "druk-" + collectionId, cData);
-                    rowParser.parseLocation(row, "locatie-" + collectionId, cData);
-                    rowParser.parseNotes(row, "opmerking-" + collectionId, cData);
-                    rowParser.parseOwnedFlag(row, "bezit-" + collectionId, cData);
-                    rowParser.parsePricePaid(row, "prijs-" + collectionId, cData);
-                    rowParser.parseRating(row, "score-" + collectionId, cData);
-                    rowParser.parseReadFlag(row, "gelezen-" + collectionId, cData);
-                    rowParser.parseWishListFlag(row, "wishlist-" + collectionId, cData);
-
-                    // Add as last one in case of errors thrown.
-                    // The presence of this data indicates a full record was parsed successfully
-                    cData.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // Make sure we don't return partial data

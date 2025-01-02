@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -187,7 +187,7 @@ public class StripInfoReader
         map.put(context.getString(R.string.lbl_price_paid),
                 new String[]{DBKey.PRICE_PAID});
 
-        // The site specific keys
+        // The site specific keys URGENT:   how ????
         map.put(context.getString(R.string.lbl_owned),
                 new String[]{DBKey.STRIP_INFO_OWNED});
         map.put(context.getString(R.string.book_format_ebook),
