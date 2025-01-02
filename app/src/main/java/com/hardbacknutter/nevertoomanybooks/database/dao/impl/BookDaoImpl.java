@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -708,7 +708,9 @@ public class BookDaoImpl
                                       @Nullable final String[] selectionArgs,
                                       @Nullable final CharSequence orderByClause) {
 
-        final String sql = Sql.SELECT_BOOK_FROM
+        final String sql = Sql.SELECT_BOOK + _FROM_ + TBL_BOOKS.ref()
+                           + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
+                           + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
                            + (whereClause != null && whereClause.length() > 0
                               ? _WHERE_ + whereClause : "")
                            + (orderByClause != null && orderByClause.length() > 0
@@ -816,14 +818,43 @@ public class BookDaoImpl
     @Override
     @NonNull
     public TypedCursor fetchBooksForExportToStripInfo(@Nullable final LocalDateTime sinceDateTime) {
+        final String whereClause;
+        @Nullable
+        final String[] selectionArgs;
+
         if (sinceDateTime == null) {
-            return getBookCursor(null, null, TBL_BOOKS.dot(DBKey.PK_ID));
+            whereClause =
+                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLL_ID) + " IS NOT NULL";
+            selectionArgs = null;
         } else {
-            return getBookCursor(TBL_STRIPINFO_COLLECTION.dot(
-                                         DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC) + ">=?",
-                                 new String[]{SqlEncode.dateTime(sinceDateTime)},
-                                 TBL_BOOKS.dot(DBKey.PK_ID));
+            whereClause =
+                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLL_ID) + " IS NOT NULL"
+                    + _AND_
+                    + TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC) + ">=?";
+            selectionArgs = new String[]{SqlEncode.dateTime(sinceDateTime)};
         }
+
+        final String sql = Sql.SELECT_BOOK
+                           + ',' + TBL_STRIPINFO_COLLECTION
+                                   .dotAs(DBKey.STRIP_INFO_BOOK_ID,
+                                          DBKey.STRIP_INFO_COLL_ID,
+                                          DBKey.STRIP_INFO_OWNED,
+                                          DBKey.STRIP_INFO_DIGITAL,
+                                          DBKey.STRIP_INFO_WANTED,
+                                          DBKey.STRIP_INFO_AMOUNT,
+                                          DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC)
+                           + _FROM_ + TBL_BOOKS.ref()
+                           + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
+                           + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
+                           + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION)
+                           + _WHERE_ + whereClause
+                           + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.PK_ID)
+                           + _COLLATION;
+
+        final TypedCursor cursor = db.rawQueryWithTypedCursor(sql, selectionArgs, null);
+        // force the TypedCursor to retrieve the real column types.
+        cursor.setDb(db, TBL_BOOKS);
+        return cursor;
     }
 
     @Override
@@ -1055,72 +1086,48 @@ public class BookDaoImpl
         static final String SELECT_ALL_UUID =
                 SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
 
-        /** The SELECT and FROM clause for getting a book (list). */
-        static final String SELECT_BOOK_FROM;
+        /**
+         * The SELECT clause for getting a book (list).
+         * <p>
+         * Note we could use TBL_BOOKS.dot("*")
+         * We'd fetch the unneeded TITLE_OB field, but that would be ok.
+         * Nevertheless, listing the fields here gives a better understanding
+         * <p>
+         * NEWTHINGS: adding fields ? Now is a good time to update {@link Book#duplicate}
+         */
+        static final String SELECT_BOOK =
+                SELECT_ + TBL_BOOKS.dotAs(
+                        DBKey.PK_ID, DBKey.BOOK_UUID,
+                        DBKey.TITLE, DBKey.TITLE_ORIGINAL_LANG,
+                        DBKey.BOOK_ISBN, DBKey.BOOK_CONTENT_TYPE,
+                        DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
+                        DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,
+                        DBKey.FIRST_PUBLICATION__DATE,
+                        DBKey.FORMAT, DBKey.COLOR, DBKey.GENRE, DBKey.LANGUAGE, DBKey.PAGE_COUNT,
+                        // Main/public description about the content/publication
+                        DBKey.DESCRIPTION,
+                        // partially edition info, partially user-owned info.
+                        DBKey.EDITION__BITMASK,
+                        // user notes
+                        DBKey.PERSONAL_NOTES,
+                        DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION_COVER,
+                        DBKey.LOCATION, DBKey.SIGNED__BOOL, DBKey.RATING,
+                        DBKey.READ__BOOL, DBKey.READ_PROGRESS,
+                        DBKey.READ_START__DATE, DBKey.READ_END__DATE,
+                        DBKey.DATE_ACQUIRED,
+                        DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY,
+                        // added/updated
+                        DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
+                        DBKey.AUTO_UPDATE)
+                // LEFT OUTER JOIN, COALESCE nulls to ""
+                + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
+                + _AS_ + DBKey.LOANEE_NAME
 
-        static {
-            //NEWTHINGS: adding fields ? Now is a good time to update {@link Book#duplicate}
-
-            // Note we could use TBL_BOOKS.dot("*")
-            // We'd fetch the unneeded TITLE_OB field, but that would be ok.
-            // Nevertheless, listing the fields here gives a better understanding
-
-            SELECT_BOOK_FROM = SELECT_ + TBL_BOOKS.dotAs(
-                    DBKey.PK_ID, DBKey.BOOK_UUID,
-                    DBKey.TITLE, DBKey.TITLE_ORIGINAL_LANG,
-                    DBKey.BOOK_ISBN, DBKey.BOOK_CONTENT_TYPE,
-                    DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
-                    DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,
-                    DBKey.FIRST_PUBLICATION__DATE,
-                    DBKey.FORMAT, DBKey.COLOR, DBKey.GENRE, DBKey.LANGUAGE, DBKey.PAGE_COUNT,
-                    // Main/public description about the content/publication
-                    DBKey.DESCRIPTION,
-                    // partially edition info, partially user-owned info.
-                    DBKey.EDITION__BITMASK,
-                    // user notes
-                    DBKey.PERSONAL_NOTES,
-                    DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION_COVER,
-                    DBKey.LOCATION, DBKey.SIGNED__BOOL, DBKey.RATING,
-                    DBKey.READ__BOOL, DBKey.READ_PROGRESS,
-                    DBKey.READ_START__DATE, DBKey.READ_END__DATE,
-                    DBKey.DATE_ACQUIRED,
-                    DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY,
-                    // added/updated
-                    DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
-                    DBKey.AUTO_UPDATE
-            )
-                               // LEFT OUTER JOIN, COALESCE nulls to ""
-                               + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
-                               + _AS_ + DBKey.LOANEE_NAME
-
-                               // LEFT OUTER JOIN, columns default to NULL
-                               + ','
-                               + TBL_CALIBRE_BOOKS
-                                       .dotAs(DBKey.CALIBRE_BOOK_ID,
-                                              DBKey.CALIBRE_BOOK_UUID,
-                                              DBKey.CALIBRE_BOOK_MAIN_FORMAT,
-                                              DBKey.FK_CALIBRE_LIBRARY)
-
-                               // LEFT OUTER JOIN, columns default to NULL
-                               + ','
-                               // Convert actual column name to the Identifier name.
-                               // See the StripInfoDaoImpl where we do the opposite.
-                               + TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_BOOK_ID)
-                               + _AS_ + Identifier.SID_STRIP_INFO
-                               + ','
-                               + TBL_STRIPINFO_COLLECTION
-                                       .dotAs(DBKey.STRIP_INFO_COLL_ID,
-                                              DBKey.STRIP_INFO_OWNED,
-                                              DBKey.STRIP_INFO_DIGITAL,
-                                              DBKey.STRIP_INFO_WANTED,
-                                              DBKey.STRIP_INFO_AMOUNT,
-                                              DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC)
-
-                               + _FROM_ + TBL_BOOKS.ref()
-                               + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
-                               + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
-                               + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION);
-        }
+                // LEFT OUTER JOIN, columns default to NULL
+                + ',' + TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE_BOOK_ID,
+                                                DBKey.CALIBRE_BOOK_UUID,
+                                                DBKey.CALIBRE_BOOK_MAIN_FORMAT,
+                                                DBKey.FK_CALIBRE_LIBRARY);
 
         /**
          * Create an sql fragment "column IN (csv-list)".
