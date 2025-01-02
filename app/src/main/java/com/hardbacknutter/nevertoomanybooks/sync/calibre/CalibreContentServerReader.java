@@ -155,9 +155,6 @@ public class CalibreContentServerReader
     @NonNull
     private final SyncReaderProcessor syncProcessor;
 
-    /** Reused for each call to the {@link SyncReaderProcessor#process}. */
-    private final RealNumberParser realNumberParser;
-
     @NonNull
     private final DateParser dateParser;
 
@@ -205,9 +202,6 @@ public class CalibreContentServerReader
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
 
         dateParser = new ISODateParser(systemLocale);
-
-        final List<Locale> locales = LocaleListUtils.asList(context);
-        realNumberParser = new RealNumberParser(locales);
 
         eBookString = context.getString(R.string.book_format_ebook);
     }
@@ -275,8 +269,10 @@ public class CalibreContentServerReader
                           }
                       });
 
+        final List<Locale> locales = LocaleListUtils.asList(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
+                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX, realNumberParser);
 
         // add the sorted fields
         map.forEach(builder::add);
@@ -286,7 +282,7 @@ public class CalibreContentServerReader
                .addRelatedField(DBKey.CALIBRE_BOOK_ID, DBKey.CALIBRE_BOOK_UUID);
 
         // The (locally sorted) external-id fields are added at the end of the list.
-        builder.addSidFields(context);
+        builder.addIdentifierFields(context);
 
         return builder.build();
     }
@@ -537,10 +533,8 @@ public class CalibreContentServerReader
 
         final Map<String, SyncField> fieldsWanted = syncProcessor.filter(book);
 
-        // Extract the delta from the dataToMerge
-        delta = syncProcessor.process(context, book.getId(), book,
-                                      fieldsWanted, calibreBook,
-                                      realNumberParser);
+        // Extract the delta from the calibreBook collection
+        delta = syncProcessor.process(context, book.getId(), book, calibreBook, fieldsWanted);
 
         if (delta != null) {
             bookDao.update(context, delta, EnumSet.of(BookDao.BookFlag.RunInBatch,

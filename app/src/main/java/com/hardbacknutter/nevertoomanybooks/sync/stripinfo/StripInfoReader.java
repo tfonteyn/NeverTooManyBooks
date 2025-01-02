@@ -110,8 +110,6 @@ public class StripInfoReader
     @NonNull
     private final BookDao bookDao;
 
-    /** Reused for each call to the {@link SyncReaderProcessor#process}. */
-    private final RealNumberParser realNumberParser;
     private final IdentifierDao identifierDao;
 
     private ReaderResults results;
@@ -134,6 +132,9 @@ public class StripInfoReader
         final boolean doCovers = recordTypes.contains(RecordType.Cover);
         coversForNewBooks = new boolean[]{doCovers, doCovers};
 
+        // create a new instance just for our own use
+        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
+
         // Get either the custom passed-in, or the builtin default.
         this.syncProcessor = syncProcessor != null ? syncProcessor
                                                    : getDefaultSyncProcessor(context);
@@ -141,13 +142,6 @@ public class StripInfoReader
         final ServiceLocator locator = ServiceLocator.getInstance();
         bookDao = locator.getBookDao();
         identifierDao = locator.getIdentifierDao();
-
-        // create a new instance just for our own use
-        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
-
-        final Locale siteLocale = searchEngine.getLocale(context);
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        realNumberParser = new RealNumberParser(locales);
     }
 
     /**
@@ -161,11 +155,8 @@ public class StripInfoReader
      * @return a {@link SyncReaderProcessor}
      */
     @NonNull
-    private static SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
+    private SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
         final SortedMap<String, String[]> map = new TreeMap<>();
-        map.put(context.getString(R.string.site_stripinfo_be),
-                new String[]{Identifier.SID_STRIP_INFO});
-
         map.put(context.getString(R.string.lbl_cover_front),
                 new String[]{DBKey.COVER[0]});
         map.put(context.getString(R.string.lbl_cover_back),
@@ -187,21 +178,17 @@ public class StripInfoReader
         map.put(context.getString(R.string.lbl_price_paid),
                 new String[]{DBKey.PRICE_PAID});
 
-        // The site specific keys URGENT:   how ????
-        map.put(context.getString(R.string.lbl_owned),
-                new String[]{DBKey.STRIP_INFO_OWNED});
-        map.put(context.getString(R.string.book_format_ebook),
-                new String[]{DBKey.STRIP_INFO_DIGITAL});
-        map.put(context.getString(R.string.bookshelf_my_wishlist),
-                new String[]{DBKey.STRIP_INFO_WANTED});
-        map.put(context.getString(R.string.lbl_number),
-                new String[]{DBKey.STRIP_INFO_AMOUNT});
+        // The collection-data: see StripInfoSyncReaderProcessor
         map.put(context.getString(R.string.site_stripinfo_be),
-                new String[]{DBKey.STRIP_INFO_COLL_ID});
+                new String[]{StripInfoCollectionData.BKEY});
 
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
+                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX, realNumberParser);
 
         // add the sorted fields
         map.forEach(builder::add);
@@ -210,7 +197,11 @@ public class StripInfoReader
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                .addRelatedField(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
 
-        return builder.build();
+        // The single external-id field is added at the end of the list.
+        map.put(context.getString(R.string.lbl_identifiers),
+                new String[]{Identifier.SID_STRIP_INFO});
+
+        return builder.build(StripInfoSyncReaderProcessor::new);
     }
 
     @NonNull
@@ -409,8 +400,7 @@ public class StripInfoReader
         }
 
         // Extract the delta from the dataToMerge
-        return syncProcessor.process(context, book.getId(), book, fieldsWanted, dataToMerge,
-                                     realNumberParser);
+        return syncProcessor.process(context, book.getId(), book, dataToMerge, fieldsWanted);
     }
 
     private void insertBook(@NonNull final Context context,
@@ -458,6 +448,34 @@ public class StripInfoReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "processPage",
                                         "externalId=" + externalId);
+        }
+    }
+
+    private static class StripInfoSyncReaderProcessor
+            extends SyncReaderProcessor {
+
+        StripInfoSyncReaderProcessor(@NonNull final Builder builder) {
+            super(builder);
+        }
+
+        @NonNull
+        @Override
+        protected FilterResult filter(@NonNull final SyncField field,
+                                      @NonNull final Book localBook) {
+            if (StripInfoCollectionData.BKEY.equals(field.getKey())) {
+                return FilterResult.Add;
+            } else {
+                return FilterResult.ApplyDefault;
+            }
+        }
+
+        @Override
+        protected boolean process(@NonNull final Context context,
+                                  @NonNull final Book localBook,
+                                  @NonNull final Book remoteBook,
+                                  @NonNull final SyncField field) {
+            // When present, we always/effectively do a SyncAction.Overwrite
+            return StripInfoCollectionData.BKEY.equals(field.getKey());
         }
     }
 }

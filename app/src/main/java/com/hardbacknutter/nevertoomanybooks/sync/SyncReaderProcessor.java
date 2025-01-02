@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,9 +38,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -60,15 +60,18 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Handles importing data with each field controlled by a {@link SyncAction}.
  */
-public final class SyncReaderProcessor {
+public class SyncReaderProcessor {
 
     private static final String TAG = "SyncProcessor";
 
     @NonNull
     private final Map<String, SyncField> fields;
+    @NonNull
+    private final RealNumberParser realNumberParser;
 
-    private SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
-        this.fields = fields;
+    protected SyncReaderProcessor(@NonNull final Builder builder) {
+        this.fields = builder.fields;
+        this.realNumberParser = builder.realNumberParser;
     }
 
     /**
@@ -83,75 +86,89 @@ public final class SyncReaderProcessor {
      * @return the filtered SyncField unmodifiableMap
      */
     @NonNull
-    public Map<String, SyncField> filter(@NonNull final Book localBook) {
+    public final Map<String, SyncField> filter(@NonNull final Book localBook) {
 
         final Map<String, SyncField> filteredMap = new LinkedHashMap<>();
 
         for (final SyncField field : fields.values()) {
-            switch (field.getAction()) {
-                case Skip:
-                    // duh...
-                    break;
+            final FilterResult result = filter(field, localBook);
+            if (result == FilterResult.Add) {
+                filteredMap.put(field.getKey(), field);
 
-                case Append:
-                case Overwrite: {
-                    // Append + Overwrite: we always need to get the data
+            } else if (result == FilterResult.ApplyDefault) {
+                if (doDefaultFiltering(localBook, field)) {
                     filteredMap.put(field.getKey(), field);
-                    break;
-                }
-                case CopyIfBlank: {
-                    switch (field.getKey()) {
-                        // We should never have a book without authors, but be paranoid
-                        case Book.BKEY_AUTHOR_LIST:
-                        case Book.BKEY_SERIES_LIST:
-                        case Book.BKEY_PUBLISHER_LIST:
-                        case Book.BKEY_TOC_LIST:
-                        case Book.BKEY_BOOKSHELF_LIST:
-                            if (localBook.contains(field.getKey())) {
-                                final List<Parcelable> list =
-                                        localBook.getParcelableArrayList(field.getKey());
-                                if (list.isEmpty()) {
-                                    filteredMap.put(field.getKey(), field);
-                                }
-                            }
-                            break;
-
-                        default:
-                            // If it's a cover...
-                            if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
-                                final String uuid = localBook.getString(DBKey.BOOK_UUID);
-                                // check if it's missing or empty.
-                                final Optional<File> file = ServiceLocator
-                                        .getInstance().getCoverStorage()
-                                        .getPersistedFile(uuid, 0);
-                                if (file.isEmpty()) {
-                                    filteredMap.put(field.getKey(), field);
-                                }
-
-                            } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
-                                final String uuid = localBook.getString(DBKey.BOOK_UUID);
-                                // check if it's missing or empty.
-                                final Optional<File> file = ServiceLocator
-                                        .getInstance().getCoverStorage()
-                                        .getPersistedFile(uuid, 1);
-                                if (file.isEmpty()) {
-                                    filteredMap.put(field.getKey(), field);
-                                }
-
-                            } else {
-                                // If the original was blank/zero, add to list
-                                final String value = localBook.getString(field.getKey(), null);
-                                if (value == null || value.isEmpty() || "0".equals(value)) {
-                                    filteredMap.put(field.getKey(), field);
-                                }
-                            }
-                            break;
-                    }
                 }
             }
         }
 
         return Collections.unmodifiableMap(filteredMap);
+    }
+
+    /**
+     * Overridable for custom filtering.
+     *
+     * @param field     to handle
+     * @param localBook to handle
+     *
+     * @return {@link FilterResult}
+     */
+    @NonNull
+    protected FilterResult filter(@NonNull final SyncField field,
+                                  @NonNull final Book localBook) {
+        return FilterResult.ApplyDefault;
+    }
+
+    private boolean doDefaultFiltering(@NonNull final Book localBook,
+                                       @NonNull final SyncField field) {
+        switch (field.getAction()) {
+            case Append:
+            case Overwrite: {
+                // Append + Overwrite: we always need to get the data
+                return true;
+            }
+            case CopyIfBlank: {
+                switch (field.getKey()) {
+                    // We should never have a book without authors, but be paranoid
+                    case Book.BKEY_AUTHOR_LIST:
+                    case Book.BKEY_SERIES_LIST:
+                    case Book.BKEY_PUBLISHER_LIST:
+                    case Book.BKEY_TOC_LIST:
+                    case Book.BKEY_BOOKSHELF_LIST: {
+                        if (localBook.contains(field.getKey())) {
+                            final List<Parcelable> list =
+                                    localBook.getParcelableArrayList(field.getKey());
+                            return list.isEmpty();
+                        }
+                        return false;
+                    }
+                    default:
+                        // If it's a cover...
+                        if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
+                            final String uuid = localBook.getString(DBKey.BOOK_UUID);
+                            // check if it's missing or empty.
+                            return ServiceLocator.getInstance().getCoverStorage()
+                                                 .getPersistedFile(uuid, 0)
+                                                 .isEmpty();
+
+                        } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
+                            final String uuid = localBook.getString(DBKey.BOOK_UUID);
+                            // check if it's missing or empty.
+                            return ServiceLocator.getInstance().getCoverStorage()
+                                                 .getPersistedFile(uuid, 1)
+                                                 .isEmpty();
+                        } else {
+                            // If the original was blank/zero, add to list
+                            final String value = localBook.getString(field.getKey(), null);
+                            return value == null || value.isEmpty() || "0".equals(value);
+                        }
+                }
+            }
+            case Skip:
+            default:
+                // duh...
+                return false;
+        }
     }
 
     /**
@@ -161,13 +178,12 @@ public final class SyncReaderProcessor {
      * <p>
      * Exceptions related to storing cover files are ignored.
      *
-     * @param context          Current context
-     * @param bookId           to use for updating the database.
-     *                         Must be passed separately, as 'book' can be all-new data.
-     * @param localBook        the local book
-     * @param fieldsWanted     The (subset) of fields relevant to the current book.
-     * @param remoteBook       the data to merge with the local-book
-     * @param realNumberParser to use for number parsing
+     * @param context      Current context
+     * @param bookId       to use for updating the database.
+     *                     Must be passed separately, as 'book' can be all-new data.
+     * @param localBook    the local book
+     * @param remoteBook   the data to merge with the local-book
+     * @param fieldsWanted The (subset) of fields relevant to the current book.
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
      *         The book id will always be set.
@@ -177,12 +193,11 @@ public final class SyncReaderProcessor {
      *                     Less serious io issues are swallowed/ignored
      */
     @Nullable
-    public Book process(@NonNull final Context context,
-                        final long bookId,
-                        @NonNull final Book localBook,
-                        @NonNull final Map<String, SyncField> fieldsWanted,
-                        @NonNull final Book remoteBook,
-                        @NonNull final RealNumberParser realNumberParser)
+    public final Book process(@NonNull final Context context,
+                              final long bookId,
+                              @NonNull final Book localBook,
+                              @NonNull final Book remoteBook,
+                              @NonNull final Map<String, SyncField> fieldsWanted)
             throws IOException {
 
         // Filter the data to remove keys we don't care about
@@ -205,28 +220,8 @@ public final class SyncReaderProcessor {
                     .filter(field -> remoteBook.contains(field.getKey()))
                     .forEach(field -> {
                         try {
-                            // Handle thumbnail specially
-                            if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
-                                processCover(localBook, remoteBook, 0);
-                            } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
-                                processCover(localBook, remoteBook, 1);
-                            } else {
-                                switch (field.getAction()) {
-                                    case CopyIfBlank:
-                                        // remove unneeded fields from the new data
-                                        if (hasField(localBook, field.getKey(), realNumberParser)) {
-                                            remoteBook.remove(field.getKey());
-                                        }
-                                        break;
-
-                                    case Append:
-                                        processList(context, localBook, remoteBook, field.getKey());
-                                        break;
-
-                                    case Overwrite:
-                                    case Skip:
-                                        break;
-                                }
+                            if (!process(context, localBook, remoteBook, field)) {
+                                doDefaultProcessing(context, localBook, remoteBook, field);
                             }
                         } catch (@NonNull final IOException e) {
                             throw new UncheckedIOException(e);
@@ -257,6 +252,62 @@ public final class SyncReaderProcessor {
         }
 
         return null;
+    }
+
+    /**
+     * Overridable for custom processing.
+     *
+     * @param context
+     * @param localBook
+     * @param remoteBook
+     * @param field
+     *
+     * @return {@code true} when handled, {@code false} to apply default processing
+     *
+     * @throws IOException
+     */
+    protected boolean process(@NonNull final Context context,
+                              @NonNull final Book localBook,
+                              @NonNull final Book remoteBook,
+                              @NonNull final SyncField field)
+            throws IOException {
+        return false;
+    }
+
+    private void doDefaultProcessing(@NonNull final Context context,
+                                     @NonNull final Book localBook,
+                                     @NonNull final Book remoteBook,
+                                     @NonNull final SyncField field)
+            throws IOException {
+        // Handle thumbnail specially
+        if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
+            processCover(localBook, remoteBook, 0);
+        } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
+            processCover(localBook, remoteBook, 1);
+        } else {
+            switch (field.getAction()) {
+                case CopyIfBlank:
+                    // remove unneeded fields from the new data
+                    if (hasField(localBook, field.getKey(), realNumberParser)) {
+                        remoteBook.remove(field.getKey());
+                    }
+                    break;
+
+                case Append:
+                    processList(context, localBook, remoteBook, field.getKey());
+                    break;
+
+                case Overwrite:
+                    // no action needed, the data in 'remoteBook' will overwrite
+                    // our local data
+                    break;
+
+                case Skip:
+                default:
+                    // Skip is N/A as fields to skip will have removed during filtering
+                    break;
+            }
+        }
     }
 
     /**
@@ -394,12 +445,20 @@ public final class SyncReaderProcessor {
                + '}';
     }
 
+    public enum FilterResult {
+        Add,
+        Skip,
+        ApplyDefault
+    }
+
     public static class Builder {
 
         @NonNull
         private final String preferencePrefix;
         @NonNull
         private final SharedPreferences prefs;
+        @NonNull
+        private final RealNumberParser realNumberParser;
 
         private final Map<String, SyncField> fields = new LinkedHashMap<>();
         private final Map<String, String> relatedFields = new LinkedHashMap<>();
@@ -409,11 +468,14 @@ public final class SyncReaderProcessor {
          *
          * @param context          Current context
          * @param preferencePrefix for the site/fields
+         * @param realNumberParser to use for number parsing
          */
         public Builder(@NonNull final Context context,
-                       @NonNull final String preferencePrefix) {
+                       @NonNull final String preferencePrefix,
+                       @NonNull final RealNumberParser realNumberParser) {
             this.preferencePrefix = preferencePrefix;
             prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            this.realNumberParser = realNumberParser;
         }
 
         /**
@@ -576,7 +638,7 @@ public final class SyncReaderProcessor {
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder addSidFields(@NonNull final Context context) {
+        public Builder addIdentifierFields(@NonNull final Context context) {
             final SortedMap<String, String> sidMap = new TreeMap<>();
             Arrays.stream(EngineId.values())
                   .filter(EngineId::isEnabled)
@@ -598,13 +660,26 @@ public final class SyncReaderProcessor {
          */
         @NonNull
         public SyncReaderProcessor build() {
+            return build(SyncReaderProcessor::new);
+        }
+
+        /**
+         * Build the processor using a custom instance.
+         *
+         * @param supplier custom SyncReaderProcessor instance
+         *
+         * @return new instance
+         */
+        @NonNull
+        public SyncReaderProcessor build(
+                @NonNull final Function<Builder, SyncReaderProcessor> supplier) {
             relatedFields.forEach((key, relatedKey) -> {
                 final SyncField syncField = fields.get(key);
                 if (syncField != null && syncField.getAction() != SyncAction.Skip) {
                     fields.put(relatedKey, syncField.createRelatedField(relatedKey));
                 }
             });
-            return new SyncReaderProcessor(fields);
+            return supplier.apply(this);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -163,8 +163,10 @@ public class SearchBookUpdatesViewModel
 
     @NonNull
     private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(LocaleListUtils.asList(context));
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
+                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX, realNumberParser);
 
         // Cover fields will be at the top of the list.
         builder.add(context.getString(R.string.lbl_cover_front),
@@ -214,7 +216,7 @@ public class SearchBookUpdatesViewModel
                .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
 
         // The (locally sorted) external-id fields are added at the end of the list.
-        builder.addSidFields(context);
+        builder.addIdentifierFields(context);
 
         return builder;
     }
@@ -454,12 +456,9 @@ public class SearchBookUpdatesViewModel
         //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
-                final RealNumberParser realNumberParser =
-                        new RealNumberParser(LocaleListUtils.asList(context));
                 //noinspection DataFlowIssue
                 final Book delta = syncProcessor.process(context, currentBookId, currentBook,
-                                                         currentFieldsWanted, remoteBook,
-                                                         realNumberParser);
+                                                         remoteBook, currentFieldsWanted);
                 if (delta != null) {
                     try {
                         bookDao.update(context, delta);
