@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -360,7 +361,7 @@ public class CsvRecordReader
         Synchronizer.SyncLock txLock = null;
 
         final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
-        final BookCoder bookCoder = new BookCoder(context, defaultStyle);
+        final BookCoder bookCoder = new BookCoder(context, origin, defaultStyle);
 
         while (row < books.size() && !progressListener.isCancelled()) {
 
@@ -572,6 +573,12 @@ public class CsvRecordReader
                         return BookCoder.Goodreads.PREFIX + name;
                 }
             }
+
+            @Override
+            @NonNull
+            public RatingParser createRatingParser() {
+                return new RatingParser(5);
+            }
         },
         /** The original BC format, or the extended but obsolete NTMB 1.x .. 3.x format. */
         BC(R.string.lbl_book_catalogue) {
@@ -580,12 +587,24 @@ public class CsvRecordReader
                 final String mapped = LegacySidColumn.MAP.get(name);
                 return mapped == null ? name : mapped;
             }
+
+            @Override
+            @NonNull
+            public RatingParser createRatingParser() {
+                return new RatingParser(5);
+            }
         },
         /** Anything not explicitly recognized. */
         Unknown(R.string.unknown) {
             @NonNull
             public String mapColumnName(@NonNull final String name) {
                 return name;
+            }
+
+            @Override
+            @NonNull
+            public RatingParser createRatingParser() {
+                return new RatingParser(5);
             }
         };
 
@@ -646,6 +665,9 @@ public class CsvRecordReader
          */
         @NonNull
         public abstract String mapColumnName(@NonNull String name);
+
+        @NonNull
+        public abstract RatingParser createRatingParser();
 
         @Override
         public int describeContents() {
