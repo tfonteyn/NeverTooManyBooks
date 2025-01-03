@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -262,7 +262,7 @@ public final class CalibreContentServer
     }
 
     /**
-     * Get the default/stored host url.
+     * Get the default/stored host url for the Calibre Content Server instance.
      *
      * @param context Current context
      *
@@ -275,6 +275,15 @@ public final class CalibreContentServer
                                 .getString(PK_HOST_URL, "");
     }
 
+    /**
+     * Set (in preferences) the local folder where (from Calibre Content Server) downloaded
+     * books will be stored.
+     *
+     * @param context Current context
+     * @param uri     for the local folder
+     *
+     * @throws SecurityException on any issue
+     */
     @AnyThread
     static void setFolderUri(@NonNull final Context context,
                              @NonNull final Uri uri)
@@ -307,6 +316,14 @@ public final class CalibreContentServer
         }
     }
 
+    /**
+     * Get (from preferences) the local folder where (from Calibre Content Server) downloaded
+     * books are stored.
+     *
+     * @param context Current context
+     *
+     * @return uri for the local folder
+     */
     @NonNull
     @AnyThread
     static Optional<Uri> getFolderUri(@NonNull final Context context) {
@@ -450,14 +467,22 @@ public final class CalibreContentServer
         return !fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
     }
 
+    /**
+     * Check if {@link #readMetaData(Context)} has been successfully called.
+     *
+     * @return flag
+     */
     boolean isMetaDataRead() {
         return defaultLibrary != null;
     }
 
     /**
-     * endpoint('/ajax/library-info', postprocess=json)
-     * <p>
      * Return info about available libraries and their meta data from the server.
+     * <pre>
+     * {@code
+     *      endpoint('/ajax/library-info', postprocess=json)
+     * }
+     * </pre>
      * <ul>
      *     <li>number of books in the given library</li>
      *     <li>user custom fields definitions for this library</li>
@@ -469,8 +494,8 @@ public final class CalibreContentServer
      *      "default_library": "Calibre_Library"
      * }
      * </pre>
-     * <p>
-     * populates {@link #defaultLibrary} + {@link #libraries}
+     * Populates {@link #defaultLibrary}, {@link #libraries}
+     * and the {@link #calibreExtensionInstalled} flag.
      *
      * @param context Current context
      *
@@ -648,6 +673,17 @@ public final class CalibreContentServer
         library.setCustomFields(fields);
     }
 
+    /**
+     * Check if the virtual-library support extension has been installed
+     * on the Calibre Content Server.
+     * <p>
+     * Only valid if the meta-data has been read.
+     *
+     * @return flag
+     *
+     * @see #readMetaData(Context)
+     * @see #isMetaDataRead()
+     */
     @AnyThread
     boolean isExtensionInstalled() {
         return calibreExtensionInstalled;
@@ -675,9 +711,12 @@ public final class CalibreContentServer
     }
 
     /**
-     * endpoint('/ntmb/virtual-libraries-for-books/{library_id=None}', postprocess=json)
-     * <p>
-     * Return the book ids with their virtual libraries
+     * Return the book ids with their virtual libraries.
+     * <pre>
+     * {@code
+     *      endpoint('/ntmb/virtual-libraries-for-books/{library_id=None}', postprocess=json)
+     * }
+     * </pre>
      * Mandatory Query parameters; example: ?ids=271,7,200
      * <p>
      * This method uses an extension which needs to be installed on the Calibre Content Server.
@@ -699,6 +738,7 @@ public final class CalibreContentServer
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
+     * @see #isExtensionInstalled()
      */
     @WorkerThread
     @Nullable
@@ -717,10 +757,12 @@ public final class CalibreContentServer
     }
 
     /**
-     * endpoint('/ajax/category/{encoded_name}/{library_id=None}', postprocess=json)
-     * <p>
      * Return a dictionary describing the category specified by name.
-     * <p>
+     * <pre>
+     * {@code
+     *      endpoint('/ajax/category/{encoded_name}/{library_id=None}', postprocess=json)
+     * }
+     * </pre>
      * Optional: ?num=100&offset=0&sort=name&sort_order=asc
      * <p>
      * We're always using the "616c6c626f6f6b73" == "All books" category
@@ -763,10 +805,12 @@ public final class CalibreContentServer
     }
 
     /**
-     * endpoint('/ajax/search/{library_id=None}', postprocess=json)
-     * <p>
      * Return the books matching the specified search query.
-     * <p>
+     * <pre>
+     * {@code
+     *      endpoint('/ajax/search/{library_id=None}', postprocess=json)
+     * }
+     * </pre>
      * Optional: ?num=100&offset=0&sort=title&sort_order=asc&query=&vl=
      * <p>
      * http://192.168.0.202:8080/ajax/search?num=10&query=last_modified:%22%3E2021-1-10%22
@@ -816,10 +860,12 @@ public final class CalibreContentServer
     }
 
     /**
-     * endpoint('/ajax/books/{library_id=None}', postprocess=json)
-     * <p>
-     * Return the metadata for the books as a JSON dictionary.
-     * <p>
+     * Return the metadata of the books in the given library as a JSON dictionary.
+     * <pre>
+     * {@code
+     *      endpoint('/ajax/books/{library_id=None}', postprocess=json)
+     * }
+     * </pre>
      * Query parameters: ?ids=all&category_urls=true&id_is_uuid=false&device_for_template=None
      * <p>
      * If category_urls is true the returned dictionary also contains a
@@ -1113,10 +1159,12 @@ public final class CalibreContentServer
     }
 
     /**
-     * endpoint('/ajax/book/{book_id}/{library_id=None}', postprocess=json)
-     * <p>
-     * Return the metadata of the book as a JSON dictionary.
-     * <p>
+     * Return the metadata of a single book as a JSON dictionary.
+     * <pre>
+     * {@code
+     *      endpoint('/ajax/book/{book_id}/{library_id=None}', postprocess=json)
+     * }
+     * </pre>
      * Query parameters: ?category_urls=true&id_is_uuid=false&device_for_template=None
      * <p>
      * If category_urls is true the returned dictionary also contains a
@@ -1146,7 +1194,8 @@ public final class CalibreContentServer
     }
 
     /**
-     * See{@link #getBook(String, String)}.
+     * Same as {@link #getBook(String, String)} but using the {@code calibreId} instead
+     * of the {@code calibreUuid}.
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to read from
      * @param calibreId       of the book to get
@@ -1406,6 +1455,16 @@ public final class CalibreContentServer
 
     /**
      * Send updates to the server.
+     * <pre>
+     * {@code
+     *     endpoint('/cdb/set-fields/{book_id}/{library_id=None}',
+     *              types={'book_id': int},
+     *              needs_db_write=True,
+     *              postprocess=msgpack_or_json,
+     *              methods=receive_data_methods,
+     *              cache_control='no-cache')
+     * }
+     * </pre>
      *
      * @param libraryStringId the Calibre native {@code stringId} for the library to write to
      * @param calibreId       book to update
