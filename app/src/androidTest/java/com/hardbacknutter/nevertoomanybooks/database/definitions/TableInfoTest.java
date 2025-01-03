@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,6 +18,8 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
+
+import android.util.Log;
 
 import androidx.test.filters.MediumTest;
 
@@ -39,6 +41,8 @@ import static org.junit.Assert.assertNotNull;
 public class TableInfoTest
         extends BaseSetup {
 
+    private static final String TAG = "TableInfoTest";
+
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
@@ -51,6 +55,6 @@ public class TableInfoTest
         final TableInfo tableInfo = db.getTableInfo(DBDefinitions.TBL_BOOKS);
         assertNotNull(tableInfo);
 
-        System.out.println(tableInfo);
+        Log.d(TAG, tableInfo.toString());
     }
 }
