@@ -20,12 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,9 +49,9 @@ import com.hardbacknutter.org.json.JSONObject;
  * <p>
  * {@link #encode} omits {@code null} values, numeric {@code 0} values and empty lists.
  * <p>
- * For historical reasons boolean flags are encoded as {@code 1} when {@code true}
- * (and omitted when {@code false}).
- * Decoding will read and store the {@code 1} in the {@link Book}.
+ * For historical reasons some boolean flags are encoded as {@code 1} for {@code true},
+ * or {@code 0} for {@code false}.
+ * Decoding will read and store the numeric value in the {@link Book}.
  * When this value is send to the database all is well because SQLite uses {@code 0/1} for
  * booleans anyhow. When fetched with {@link Book#getBoolean(String)} the internal parser
  * will convert to booleans.
@@ -103,87 +101,83 @@ public class BookCoder
 
         final Object element = book.get(key, realNumberParser);
 
-        // Special keys first.
-
-        // The presence of FK_CALIBRE_LIBRARY (a row id) indicates there IS a calibre
-        // library for this book but there is no other/more library data on the book itself.
-        // We need to explicitly load the library and encode a reference for it.
-        if (DBKey.FK_CALIBRE_LIBRARY.equals(key)) {
-            // FK as it's a reference
-            book.getCalibreLibrary().ifPresent(library -> out
-                    .put(DBKey.FK_CALIBRE_LIBRARY, calibreLibraryCoder.encodeReference(library)));
-
-        } else if (element instanceof String) {
-            if (!((String) element).isEmpty()) {
-                out.put(key, element);
+        switch (key) {
+            case Book.BKEY_BOOKSHELF_LIST: {
+                final List<Bookshelf> list = book.getBookshelves();
+                if (!list.isEmpty()) {
+                    // FK as it's a reference
+                    out.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encodeReference(list));
+                }
+                break;
             }
-
-        } else if (element instanceof Money) {
-            // Only write the value. The currency will be handled as a plain String type key.
-            final Money money = (Money) element;
-            if (!money.isZero()) {
-                out.put(key, money.getValue());
+            case Book.BKEY_AUTHOR_LIST: {
+                final List<Author> list = book.getAuthors();
+                if (!list.isEmpty()) {
+                    out.put(key, authorCoder.encode(list));
+                }
+                break;
             }
-        } else if (element instanceof Number) {
-            if (((Number) element).doubleValue() != 0) {
-                out.put(key, element);
+            case Book.BKEY_PUBLISHER_LIST: {
+                final List<Publisher> list = book.getPublishers();
+                if (!list.isEmpty()) {
+                    out.put(key, publisherCoder.encode(list));
+                }
+                break;
             }
-        } else if (element instanceof Boolean) {
-            // always write regardless of being 'false'
-            out.put(key, element);
-
-        } else if (element instanceof ArrayList) {
-            switch (key) {
-                case Book.BKEY_AUTHOR_LIST: {
-                    final List<Author> list = book.getAuthors();
-                    if (!list.isEmpty()) {
-                        out.put(key, authorCoder.encode(list));
-                    }
-                    break;
+            case Book.BKEY_SERIES_LIST: {
+                final List<Series> list = book.getSeries();
+                if (!list.isEmpty()) {
+                    out.put(key, seriesCoder.encode(list));
                 }
-                case Book.BKEY_BOOKSHELF_LIST: {
-                    final List<Bookshelf> list = book.getBookshelves();
-                    if (!list.isEmpty()) {
-                        // FK as it's a reference
-                        out.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encodeReference(list));
-                    }
-                    break;
-                }
-                case Book.BKEY_PUBLISHER_LIST: {
-                    final List<Publisher> list = book.getPublishers();
-                    if (!list.isEmpty()) {
-                        out.put(key, publisherCoder.encode(list));
-                    }
-                    break;
-                }
-                case Book.BKEY_SERIES_LIST: {
-                    final List<Series> list = book.getSeries();
-                    if (!list.isEmpty()) {
-                        out.put(key, seriesCoder.encode(list));
-                    }
-                    break;
-                }
-                case Book.BKEY_TOC_LIST: {
-                    final List<TocEntry> list = book.getToc();
-                    if (!list.isEmpty()) {
-                        out.put(key, tocEntryCoder.encode(list));
-                    }
-                    break;
-                }
-
-                default:
-                    throw new IllegalArgumentException("key=" + key + "|: " + element);
+                break;
             }
+            case Book.BKEY_TOC_LIST: {
+                final List<TocEntry> list = book.getToc();
+                if (!list.isEmpty()) {
+                    out.put(key, tocEntryCoder.encode(list));
+                }
+                break;
+            }
+            case DBKey.FK_CALIBRE_LIBRARY: {
+                // The presence of FK_CALIBRE_LIBRARY (a row id) indicates there IS a calibre
+                // library for this book but there is no other/more library data on the book itself.
+                // We need to explicitly load the library and encode a reference for it.
+                // FK as it's a reference
+                book.getCalibreLibrary().ifPresent(library -> out
+                        .put(DBKey.FK_CALIBRE_LIBRARY,
+                             calibreLibraryCoder.encodeReference(library)));
+                break;
+            }
+            default: {
+                if (element instanceof CharSequence) {
+                    if (((CharSequence) element).length() > 0) {
+                        out.put(key, element);
+                    }
+                } else if (element instanceof Money) {
+                    // Only write the value.
+                    // The currency will be handled as a plain String type key.
+                    final Money money = (Money) element;
+                    if (!money.isZero()) {
+                        out.put(key, money.getValue());
+                    }
+                } else if (element instanceof Number) {
+                    if (((Number) element).doubleValue() != 0) {
+                        out.put(key, element);
+                    }
+                } else if (element instanceof Boolean) {
+                    out.put(key, element);
 
-        } else if (element instanceof Parcelable) {
-            // skip, 2023-02-23: the only one in use for now is the Calibre Library
-            // which is already handled above.
+                    // } else if (element instanceof ArrayList) {
+                    // } else if (element instanceof Parcelable) {
+                    // } else if (element instanceof Serializable) {
+                    //    throw new IllegalArgumentException("Serializable not implemented: "
+                    //                                       + element);
 
-        } else if (element instanceof Serializable) {
-            throw new IllegalArgumentException("Serializable not implemented for: " + element);
+                } else if (element != null) {
+                    throw new IllegalArgumentException("key=" + key + "|o=" + element);
+                }
 
-        } else if (element != null) {
-            throw new IllegalArgumentException("key=" + key + "|o=" + element);
+            }
         }
     }
 
