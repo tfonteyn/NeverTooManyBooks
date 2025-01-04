@@ -136,33 +136,39 @@ public class Book
 
     /**
      * Bundle key for {@code ParcelableArrayList<Author>}.
-     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
+     * <strong>Used in export/import, NEVER change the string</strong>
      */
     public static final String BKEY_AUTHOR_LIST = "author_list";
     /**
      * Bundle key for {@code ParcelableArrayList<Series>}.
-     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
+     * <strong>Used in export/import, NEVER change the string</strong>
      */
     public static final String BKEY_SERIES_LIST = "series_list";
     /**
      * Bundle key for {@code ParcelableArrayList<Publisher>}.
-     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
+     * <strong>Used in export/import, NEVER change the string</strong>
      */
     public static final String BKEY_PUBLISHER_LIST = "publisher_list";
     /**
      * Bundle key for {@code ParcelableArrayList<TocEntry>}.
-     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
+     * <strong>Used in export/import, NEVER change the string</strong>
      */
     public static final String BKEY_TOC_LIST = "toc_list";
     /**
      * Bundle key for {@code ParcelableArrayList<Bookshelf>}.
-     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
+     * <strong>Used in export/import, NEVER change the string</strong>
      */
     public static final String BKEY_BOOKSHELF_LIST = "bookshelf_list";
 
     /**
+     * Not (yet) used to group {@link Identifier.Value}s in a list.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_IDENTIFIER_LIST = "identifier_list";
+
+    /**
      * Bundle key for {@code CalibreLibrary (Parcelable)}.
-     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
+     * <strong>Used in export/import, NEVER change the string</strong>
      */
     public static final String BKEY_CALIBRE_LIBRARY = "calibre_library";
 

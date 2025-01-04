@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,6 +62,9 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  * <p>
  * Currently supported formats.
  * <ul>
+ *     <li>v8: drops the individual identifier fields on the Book level, and
+ *          groups them in a new array key.
+ *     </li>
  *     <li>v7: adds {@link Style#getBookLevelFieldsOrderBy()} to {@link RecordType#Styles}</li>
  *     <li>v6: adds {@link RecordType#DeletedBooks} : {@link RecordEncoding#Json}</li>
  *     <li>v5: identical to v4,
@@ -278,24 +281,17 @@ public class ZipArchiveReader
         Objects.requireNonNull(metaData, ERROR_META_DATA);
 
         final int archiveVersion = metaData.getArchiveVersion();
-        switch (archiveVersion) {
-            case 7:
-            case 6:
-            case 5:
-            case 4:
-            case 3:
-            case 2:
-            case 1:
-                // The reader is flexible enough to detect the different versions for now.
-                // Important: testing with v2 and up is exhaustive.
-                // v1 was the old BC format but reading books and covers from it SHOULD work fine.
-                // The v1 prefs and styles are simply ignored.
-                read(context, recordTypes, progressListener);
-                break;
+        // RELEASE: update version if/when applicable
+        if (0 < archiveVersion && archiveVersion <= ZipArchiveWriter.VERSION) {
+            // The reader is flexible enough to detect the different versions for now.
+            // Important: testing with v2 and up is exhaustive.
+            // v1 was the old BC format but reading books and covers from it SHOULD work fine.
+            // The v1 prefs and styles are simply ignored.
+            read(context, recordTypes, progressListener);
 
-            default:
-                throw new DataReaderException(context.getString(
-                        R.string.error_unsupported_version_v, archiveVersion));
+        } else {
+            throw new DataReaderException(context.getString(
+                    R.string.error_unsupported_version_v, archiveVersion));
         }
 
         return results;

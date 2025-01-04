@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -96,8 +96,9 @@ public class ZipArchiveWriter
      * See {@link ZipArchiveReader} class docs for the version descriptions.
      * <p>
      * RELEASE: set correct archiver version
+     * Make sure to update {@link ZipArchiveReader#read(Context, ProgressListener)}
      */
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
 
     /**
      * Arbitrary number of steps added to the progress max value.
@@ -113,9 +114,6 @@ public class ZipArchiveWriter
 
     @NonNull
     private final Set<RecordType> recordTypes;
-    @SuppressWarnings("FieldCanBeLocal")
-    @NonNull
-    private final File destFile;
     @Nullable
     private final LocalDateTime sinceDateTime;
 
@@ -138,11 +136,10 @@ public class ZipArchiveWriter
                             @NonNull final File destFile)
             throws FileNotFoundException {
         this.recordTypes = RecordType.addRelatedTypes(recordTypes);
-        this.destFile = destFile;
         this.sinceDateTime = sinceDateTime;
 
         zipOutputStream = new ZipOutputStream(new BufferedOutputStream(
-                new FileOutputStream(this.destFile),
+                new FileOutputStream(destFile),
                 RecordWriter.BUFFER_SIZE));
     }
 
@@ -459,6 +456,7 @@ public class ZipArchiveWriter
             entry.setMethod(ZipEntry.STORED);
             entry.setSize(bytes.length);
             entry.setCompressedSize(bytes.length);
+            //noinspection TypeMayBeWeakened
             final CRC32 crc32 = new CRC32();
             crc32.update(bytes);
             entry.setCrc(crc32.getValue());

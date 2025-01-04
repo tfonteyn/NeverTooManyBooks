@@ -20,10 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -67,6 +69,8 @@ public class BookCoder
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
+    private final IdentifierCoder identifierCoder = new IdentifierCoder();
+    @NonNull
     private final RealNumberParser realNumberParser;
 
     /**
@@ -87,9 +91,22 @@ public class BookCoder
     @NonNull
     public JSONObject encode(@NonNull final Book book)
             throws JSONException {
+
+        // Collect Identifier key/value pairs as we meet them
+        final List<Pair<String, String>> identifiers = new ArrayList<>();
+
         final JSONObject out = new JSONObject();
         for (final String key : book.keySet()) {
-            encode(out, book, key);
+            if (identifierCoder.contains(key)) {
+                identifiers.add(new Pair<>(key, book.getString(key)));
+            } else {
+                encode(out, book, key);
+            }
+        }
+
+        // Add the set of Identifiers
+        if (!identifiers.isEmpty()) {
+            out.put(Book.BKEY_IDENTIFIER_LIST, identifierCoder.encode(identifiers));
         }
         return out;
     }
@@ -230,12 +247,21 @@ public class BookCoder
                     book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
                     break;
                 }
+                case Book.BKEY_IDENTIFIER_LIST: {
+                    // Archive v8+
+                    // Just unpack as individual keys
+                    identifierCoder.decode(data.getJSONArray(key))
+                                   .forEach(p -> book.put(p.first, p.second));
+                    break;
+                }
                 default: {
+                    // Archive v7 and older used individual Identifier keys
                     final String identifierKey = LegacySidColumn.MAP.get(key);
                     if (identifierKey != null) {
                         final String sid = data.optString(key, null);
                         book.setIdentifierValue(identifierKey, sid);
                     } else {
+                        // All other keys
                         book.put(key, data.get(key));
                     }
                     break;
