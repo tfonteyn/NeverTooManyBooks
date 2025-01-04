@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -53,8 +52,6 @@ public class ArchiveMetaData
     private static final String INFO_APP_VERSION_NAME = "AppVersionName";
     /** Can be used for version checks. */
     private static final String INFO_APP_VERSION_CODE = "AppVersionCode";
-    /** Debug info. */
-    private static final String INFO_SDK = "SDK";
     /** Stores the database version. */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
 
@@ -107,7 +104,6 @@ public class ArchiveMetaData
         data.putString(INFO_APP_PACKAGE, info.getPackageName());
         data.putString(INFO_APP_VERSION_NAME, info.getVersionName());
         data.putLong(INFO_APP_VERSION_CODE, info.getVersionCode());
-        data.putInt(INFO_SDK, Build.VERSION.SDK_INT);
 
         // the actual data the user will care about
         data.putString(INFO_CREATED_DATE, LocalDateTime.now().format(
