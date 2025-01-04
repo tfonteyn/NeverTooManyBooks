@@ -486,6 +486,19 @@ public class Book
         return getString(DBKey.TITLE);
     }
 
+    /**
+     * Set the title.
+     *
+     * @param title to set; a {@code null} or an empty string will remove the field
+     */
+    public void setTitle(@Nullable final String title) {
+        if (title != null && !title.isEmpty()) {
+            putString(DBKey.TITLE, title);
+        } else {
+            remove(DBKey.TITLE);
+        }
+    }
+
     @NonNull
     public List<BookLight> getBookTitles(@NonNull final Context context) {
         return Collections.singletonList(new BookLight(this));
@@ -576,6 +589,29 @@ public class Book
     }
 
     /**
+     * Get the ISBN as a raw {@code String}.
+     *
+     * @return isbn; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getIsbn() {
+        return getString(DBKey.BOOK_ISBN);
+    }
+
+    /**
+     * Set the ISBN with a raw {@code String}.
+     *
+     * @param isbnStr to set; a {@code null} or an empty string will remove the field
+     */
+    public void setIsbn(@Nullable final String isbnStr) {
+        if (isbnStr != null && !isbnStr.isEmpty()) {
+            putString(DBKey.BOOK_ISBN, isbnStr);
+        } else {
+            remove(DBKey.BOOK_ISBN);
+        }
+    }
+
+    /**
      * Get the Book's Locale (based on its language).
      *
      * @param context Current context
@@ -631,7 +667,6 @@ public class Book
         }
         return Optional.empty();
     }
-
 
     @Override
     @NonNull
@@ -965,7 +1000,6 @@ public class Book
         ivs.forEach(iv -> putString(iv.getIdentifier().getName(), iv.getSid()));
     }
 
-
     /**
      * Set the value for the given {@link Identifier}.
      * <p>
@@ -977,7 +1011,7 @@ public class Book
      * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
      *
      * @param identifierKey to set
-     * @param value         to set
+     * @param value         to set; a value {@code <= 0} will remove the field
      */
     public void setIdentifierValue(@NonNull final String identifierKey,
                                    final long value) {
@@ -999,7 +1033,8 @@ public class Book
      * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
      *
      * @param identifierKey to set
-     * @param value         to set
+     * @param value         to set; a {@code null}, {@code "0"} or an empty string
+     *                      will remove the field
      */
     public void setIdentifierValue(@NonNull final String identifierKey,
                                    @Nullable final String value) {
