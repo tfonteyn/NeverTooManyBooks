@@ -813,17 +813,36 @@ public class BookDaoImpl
     @NonNull
     public TypedCursor fetchBooksForExportToCalibre(@IntRange(from = 1) final long libraryId,
                                                     @Nullable final LocalDateTime sinceDateTime) {
+        final String whereClause;
+        final String[] selectionArgs;
+
         if (sinceDateTime == null) {
-            return getBookCursor(TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY) + "=?",
-                                 new String[]{String.valueOf(libraryId)},
-                                 TBL_BOOKS.dot(DBKey.PK_ID));
+            whereClause = TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY) + "=?";
+            selectionArgs = new String[]{String.valueOf(libraryId)};
         } else {
-            return getBookCursor(TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY) + "=?"
-                                 + _AND_ + TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC) + ">=?",
-                                 new String[]{String.valueOf(libraryId),
-                                         SqlEncode.dateTime(sinceDateTime)},
-                                 TBL_BOOKS.dot(DBKey.PK_ID));
+            whereClause = TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY) + "=?"
+                          + _AND_ + TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC) + ">=?";
+            selectionArgs = new String[]{String.valueOf(libraryId),
+                    SqlEncode.dateTime(sinceDateTime)};
         }
+
+        final String sql = Sql.SELECT_BOOK
+                           + ',' + TBL_CALIBRE_BOOKS
+                                   .dotAs(DBKey.CALIBRE_BOOK_ID,
+                                          DBKey.CALIBRE_BOOK_UUID,
+                                          DBKey.CALIBRE_BOOK_MAIN_FORMAT,
+                                          DBKey.FK_CALIBRE_LIBRARY)
+
+                           + _FROM_ + TBL_BOOKS.ref()
+                           + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
+                           + _WHERE_ + whereClause
+                           + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.PK_ID)
+                           + _COLLATION;
+
+        final TypedCursor cursor = db.rawQueryWithTypedCursor(sql, selectionArgs, null);
+        // force the TypedCursor to retrieve the real column types.
+        cursor.setDb(db, TBL_BOOKS);
+        return cursor;
     }
 
     @Override
