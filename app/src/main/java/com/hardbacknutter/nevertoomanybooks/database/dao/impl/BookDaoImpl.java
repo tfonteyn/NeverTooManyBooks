@@ -708,7 +708,18 @@ public class BookDaoImpl
                                       @Nullable final String[] selectionArgs,
                                       @Nullable final CharSequence orderByClause) {
 
-        final String sql = Sql.SELECT_BOOK + _FROM_ + TBL_BOOKS.ref()
+        final String sql = Sql.SELECT_BOOK
+                           // LEFT OUTER JOIN, COALESCE nulls to ""
+                           + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
+                           + _AS_ + DBKey.LOANEE_NAME
+
+                           // LEFT OUTER JOIN, columns default to NULL
+                           + ',' + TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE_BOOK_ID,
+                                                           DBKey.CALIBRE_BOOK_UUID,
+                                                           DBKey.CALIBRE_BOOK_MAIN_FORMAT,
+                                                           DBKey.FK_CALIBRE_LIBRARY)
+
+                           + _FROM_ + TBL_BOOKS.ref()
                            + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
                            + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
                            + (whereClause != null && whereClause.length() > 0
@@ -844,8 +855,6 @@ public class BookDaoImpl
                                           DBKey.STRIP_INFO_AMOUNT,
                                           DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC)
                            + _FROM_ + TBL_BOOKS.ref()
-                           + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
-                           + TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS)
                            + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION)
                            + _WHERE_ + whereClause
                            + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.PK_ID)
@@ -1118,16 +1127,7 @@ public class BookDaoImpl
                         DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY,
                         // added/updated
                         DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
-                        DBKey.AUTO_UPDATE)
-                // LEFT OUTER JOIN, COALESCE nulls to ""
-                + ",COALESCE(" + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + ", '')"
-                + _AS_ + DBKey.LOANEE_NAME
-
-                // LEFT OUTER JOIN, columns default to NULL
-                + ',' + TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE_BOOK_ID,
-                                                DBKey.CALIBRE_BOOK_UUID,
-                                                DBKey.CALIBRE_BOOK_MAIN_FORMAT,
-                                                DBKey.FK_CALIBRE_LIBRARY);
+                        DBKey.AUTO_UPDATE);
 
         /**
          * Create an sql fragment "column IN (csv-list)".
