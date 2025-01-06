@@ -361,6 +361,9 @@ public class Book
      * i.o.w. this is <strong>NOT</strong> a copy constructor.
      * See {@link #from(Context, Book)} for the latter.
      * <p>
+     * The intended (only?) use for this method is the user choosing to
+     * duplicate an existing book and manually edit the copy.
+     * <p>
      * <strong>Dev. note:</strong> keep the list of data we duplicate
      * in sync with {@link BookDaoImpl} .SqlAllBooks#BOOK
      *
@@ -383,12 +386,11 @@ public class Book
         // This would be ok if we discard the original object (in memory only)
         // but lets play this safe.
 
-        // Do not copy any identifiers.
+        // Do not copy any identifiers:
         // PK_ID
         // BOOK_UUID
         // Identifier.*
-        // ...
-        // Do not copy the Bookshelves list
+        // sync related fields (Calibre, StripInfo,...)
         // ...
         // Do not copy these specific dates.
         // BOOK_DATE_ADDED
@@ -400,6 +402,9 @@ public class Book
         duplicate.putString(DBKey.TITLE_ORIGINAL_LANG, getString(DBKey.TITLE_ORIGINAL_LANG));
         duplicate.putString(DBKey.BOOK_ISBN, getString(DBKey.BOOK_ISBN));
 
+        if (duplicate.contains(BKEY_BOOKSHELF_LIST)) {
+            duplicate.setBookshelves(getBookshelves());
+        }
         if (duplicate.contains(BKEY_AUTHOR_LIST)) {
             duplicate.setAuthors(getAuthors());
         }
