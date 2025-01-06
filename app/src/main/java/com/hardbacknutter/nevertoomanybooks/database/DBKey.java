@@ -337,9 +337,16 @@ public final class DBKey {
 
     /** FTS Primary key. */
     public static final String FTS_BOOK_ID = "docid";
-    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
+    /**
+     * {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Authors.
+     * Example: "stephen baxter;arthur c. clarke;"
+     */
     public static final String FTS_AUTHOR_NAME = "author_name";
-    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
+    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Series. */
+    public static final String FTS_SERIES_NAMES = "series_name";
+    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Publishers. */
+    public static final String FTS_PUBLISHER_NAMES = "publisher_name";
+    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated TOC titles. */
     public static final String FTS_TOC_ENTRY_TITLE = "toc_title";
 
 

@@ -536,17 +536,15 @@ public final class DBDefinitions {
      */
     public static final TableDefinition TBL_FTS_BOOKS;
 
-    public static final String ON_DELETE_CASCADE_ON_UPDATE_CASCADE =
-            "ON DELETE CASCADE ON UPDATE CASCADE";
-
-    /**
-     * {@link #TBL_FTS_BOOKS}
-     * specific formatted list; example: "stephen baxter;arthur c. clarke;"
-     */
     static final Domain DOM_FTS_AUTHOR_NAME;
+    static final Domain DOM_FTS_SERIES_NAMES;
+    static final Domain DOM_FTS_PUBLISHER_NAMES;
     static final Domain DOM_FTS_TOC_ENTRY_TITLE;
+
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
+    private static final String ON_DELETE_CASCADE_ON_UPDATE_CASCADE =
+            "ON DELETE CASCADE ON UPDATE CASCADE";
 
     static {
         /* ======================================================================================
@@ -1789,6 +1787,14 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.FTS_AUTHOR_NAME, SqLiteDataType.Text)
                         .build();
 
+        DOM_FTS_SERIES_NAMES =
+                new Domain.Builder(DBKey.FTS_SERIES_NAMES, SqLiteDataType.Text)
+                        .build();
+
+        DOM_FTS_PUBLISHER_NAMES =
+                new Domain.Builder(DBKey.FTS_PUBLISHER_NAMES, SqLiteDataType.Text)
+                        .build();
+
         DOM_FTS_TOC_ENTRY_TITLE =
                 new Domain.Builder(DBKey.FTS_TOC_ENTRY_TITLE, SqLiteDataType.Text)
                         .build();
@@ -1805,8 +1811,8 @@ public final class DBDefinitions {
                 .setType(TableDefinition.TableType.FTS)
                 .addDomains(DOM_TITLE,
                             DOM_FTS_AUTHOR_NAME,
-                            DOM_SERIES_TITLE,
-                            DOM_PUBLISHER_NAME,
+                            DOM_FTS_SERIES_NAMES,
+                            DOM_FTS_PUBLISHER_NAMES,
 
                             DOM_BOOK_DESCRIPTION,
                             DOM_BOOK_PRIVATE_NOTES,
