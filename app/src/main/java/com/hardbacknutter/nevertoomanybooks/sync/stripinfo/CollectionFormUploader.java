@@ -334,7 +334,7 @@ public class CollectionFormUploader {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
-        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
+        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLLECTION_ID);
         if (collectionId == 0) {
             throw new IllegalArgumentException(ERROR_COLLECTION_ID_0);
         }

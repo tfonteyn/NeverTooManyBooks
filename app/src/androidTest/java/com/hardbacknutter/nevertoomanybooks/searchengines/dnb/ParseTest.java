@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ public class ParseTest
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("526", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("526", book.getString(DBKey.PAGES, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -138,7 +138,7 @@ public class ParseTest
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("378", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("378", book.getString(DBKey.PAGES, null));
         assertEquals("Krimis, Thriller, Spionage", book.getString(DBKey.GENRE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -183,7 +183,7 @@ public class ParseTest
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("747", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("747", book.getString(DBKey.PAGES, null));
         assertEquals("Science Fiction, Fantasy", book.getString(DBKey.GENRE, null));
         assertEquals("Lesser evil", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
 
@@ -243,7 +243,7 @@ public class ParseTest
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("528", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("528", book.getString(DBKey.PAGES, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
 

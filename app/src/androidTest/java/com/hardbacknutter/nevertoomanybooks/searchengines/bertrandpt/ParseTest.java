@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ public class ParseTest
         assertEquals("9789895812899", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2024-11", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("320", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("320", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Livros > Livros em Português > Literatura > Romance",
@@ -154,7 +154,7 @@ public class ParseTest
         assertEquals("9789897734939", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("416", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("416", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Livros > Livros em Português > Literatura > Ficção Científica",

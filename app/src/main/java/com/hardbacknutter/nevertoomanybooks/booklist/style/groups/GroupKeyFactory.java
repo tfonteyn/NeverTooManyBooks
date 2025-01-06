@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UniqueMap;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ADDED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_REAL_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
@@ -44,9 +43,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SERIES_NUMBER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_ADDED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
@@ -108,7 +108,7 @@ final class GroupKeyFactory {
     private static final DomainExpression BD_DATE_READ_END =
             new DomainExpression(DOM_BOOK_DATE_READ_END, Sort.Desc);
     private static final DomainExpression BD_DATE_ADDED =
-            new DomainExpression(DOM_ADDED__UTC, Sort.Desc);
+            new DomainExpression(DOM_DATE_ADDED__UTC, Sort.Desc);
     private static final DomainExpression BD_DATE_LAST_UPDATED =
             new DomainExpression(DOM_LAST_UPDATED__UTC, Sort.Desc);
     private static final DomainExpression BD_DATE_ACQUIRED =
@@ -215,7 +215,7 @@ final class GroupKeyFactory {
                                                 SqLiteDataType.Real)
                                                 .build(),
                                         "CAST("
-                                        + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
+                                        + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER)
                                         + " AS REAL)",
                                         Sort.Asc))
                         .addBaseDomain(
@@ -223,8 +223,8 @@ final class GroupKeyFactory {
                                 // This field is displayed.
                                 // Covers non-numeric data (where the above float would fail)
                                 new DomainExpression(
-                                        DOM_BOOK_NUM_IN_SERIES,
-                                        TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER),
+                                        DOM_BOOK_SERIES_NUMBER,
+                                        TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER),
                                         Sort.Asc));
             }
 

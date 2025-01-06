@@ -23,6 +23,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
  * Keys used as domain names / Bundle keys.
@@ -82,7 +83,7 @@ public final class DBKey {
      * as being in the users collection. This is the case as soon as they set "some"
      * private date/flags on it.
      */
-    public static final String STRIP_INFO_COLL_ID = "si_coll_id";
+    public static final String STRIP_INFO_COLLECTION_ID = "si_coll_id";
     /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The user wants this book. */
     public static final String STRIP_INFO_WANTED = "si_coll_wanted";
     /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - Owned as a physical book. */
@@ -120,16 +121,18 @@ public final class DBKey {
     public static final String CALIBRE_BOOK_MAIN_FORMAT = "clb_book_main_format";
 
 
-    /** {@link DBDefinitions#TBL_BOOKSHELF}. */
+    /** {@link DBDefinitions#TBL_BOOKSHELF}. The name of the bookshelf. */
     public static final String BOOKSHELF_NAME = "bookshelf_name";
+    /** {@link DBDefinitions#TBL_BOOKSHELF}. The booklist adapter position of current top row. */
     public static final String BOOKSHELF_BL_TOP_POS = "bl_top_pos";
+    /** {@link DBDefinitions#TBL_BOOKSHELF}. The booklist adapter top row offset from view top. */
     public static final String BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
-    /** Alias. */
-    public static final String BOOKSHELF_NAME_CSV = "bs_name_csv";
+    /** Alias: a list of bookshelf names as a comma separated list. */
+    public static final String BOOKSHELF_NAMES_AS_CSV = "bs_name_csv";
 
     /** {@link DBDefinitions#TBL_BOOKSHELF_FILTERS}. */
-    public static final String FILTER_DBKEY = "filter_name";
-    public static final String FILTER_VALUE = "filter_value";
+    public static final String BOOKSHELF_FILTER_NAME = "filter_name";
+    public static final String BOOKSHELF_FILTER_VALUE = "filter_value";
 
 
     /** {@link DBDefinitions#TBL_AUTHORS} */
@@ -141,12 +144,16 @@ public final class DBKey {
     /* Aliases for CASE expressions. */
 
     /**
+     * Virtual column.
+     * <p>
      * The first/family name order is determined in the SQL statement.
      * Hence, reading the data from the cursor is <strong>always</strong>
      * done using this key.
      */
     public static final String AUTHOR_FORMATTED = "author_formatted";
     /**
+     * Virtual column: "GivenName FamilyName".
+     * <p>
      * Only used for the special case.
      * {@link com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment}
      */
@@ -156,23 +163,34 @@ public final class DBKey {
     public static final String AUTHOR_TYPE__BITMASK = "author_type";
     public static final String BOOK_AUTHOR_POSITION = "author_position";
 
-    /** {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}. */
-    public static final String AUTHOR_PSEUDONYM = "pseudonym";
-    public static final String AUTHOR_REAL_AUTHOR = "real_author";
+    /**
+     * Foreign key.
+     * {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}.
+     * This is a FK to {@link DBDefinitions#TBL_AUTHORS}.
+     */
+    public static final String FK_AUTHOR_PSEUDONYM = "pseudonym";
+    /**
+     * Foreign key.
+     * {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}.
+     * This is a FK to {@link DBDefinitions#TBL_AUTHORS}.
+     * Dev. note: We SHOULD just have used "author" for the column name,
+     * i.e. we SHOULD have used FK_AUTHOR key.
+     */
+    public static final String FK_AUTHOR_REAL_AUTHOR = "real_author";
 
-    /** {@link DBDefinitions#TBL_SERIES} {@link DBDefinitions#TBL_BOOK_SERIES} */
+    /** {@link DBDefinitions#TBL_SERIES}. */
     public static final String SERIES_TITLE = "series_name";
     public static final String SERIES_IS_COMPLETE = "series_complete";
-    public static final String SERIES_BOOK_NUMBER = "series_num";
+    /** {@link DBDefinitions#TBL_BOOK_SERIES}. */
+    public static final String BOOK_SERIES_NUMBER = "series_num";
     public static final String BOOK_SERIES_POSITION = "series_position";
 
-
-    /** {@link DBDefinitions#TBL_PUBLISHERS} {@link DBDefinitions#TBL_BOOK_PUBLISHER} */
+    /** {@link DBDefinitions#TBL_PUBLISHERS}. */
     public static final String PUBLISHER_NAME = "publisher_name";
+    /** {@link DBDefinitions#TBL_BOOK_PUBLISHER}. */
     public static final String BOOK_PUBLISHER_POSITION = "publisher_position";
-    /** Alias. */
-    public static final String PUBLISHER_NAME_CSV = "pub_name_csv";
-
+    /** Alias: a list of publisher names as a comma separated list. */
+    public static final String PUBLISHER_NAMES_AS_CSV = "pub_name_csv";
 
     /** {@link DBDefinitions#TBL_TOC_ENTRIES}. */
     public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
@@ -188,6 +206,7 @@ public final class DBKey {
 
     public static final String BOOK_UUID = "book_uuid";
     /**
+     * {@link DBDefinitions#TBL_BOOKS}, {@link DBDefinitions#TBL_TOC_ENTRIES}.
      * The actual title of the book (as printed on the cover).
      * This will either be a translated title or the original title.
      */
@@ -196,6 +215,7 @@ public final class DBKey {
     public static final String TITLE_ORIGINAL_LANG = "title_original_lang";
 
     public static final String BOOK_ISBN = "isbn";
+    /** {@link DBDefinitions#TBL_BOOKS} + {@link DBDefinitions#TBL_TOC_ENTRIES} */
     public static final String FIRST_PUBLICATION__DATE = "first_publication";
     public static final String BOOK_PUBLICATION__DATE = "date_published";
     public static final String PRINT_RUN = "print_run";
@@ -207,7 +227,7 @@ public final class DBKey {
      * Example: "xxxvi+278" -> a book which has 36 roman numerals numbered pages
      * with an introduction, followed by 278 numbered content pages.
      */
-    public static final String PAGE_COUNT = "pages";
+    public static final String PAGES = "pages";
     public static final String FORMAT = "format";
     public static final String COLOR = "color";
     public static final String LANGUAGE = "language";
@@ -215,6 +235,11 @@ public final class DBKey {
     public static final String DESCRIPTION = "description";
 
     public static final String EDITION__BITMASK = "edition_bm";
+    /**
+     * The column name is incorrect for historic reasons.
+     *
+     * @see Book.ContentType
+     */
     public static final String BOOK_CONTENT_TYPE = "anthology";
 
 
@@ -289,9 +314,9 @@ public final class DBKey {
      * @see BooklistHeader
      */
     public static final String STYLE_LIST_HEADER = "list_header";
-    public static final String STYLE_DETAILS_SHOW_FIELDS = "detail_fields_vis";
-    public static final String STYLE_BOOK_LEVEL_FIELDS_VISIBILITY = "list_fields_vis";
-    public static final String STYLE_BOOK_LEVEL_FIELDS_ORDER_BY = "list_fields_sort";
+    public static final String STYLE_BOOK_DETAIL_FIELD_VISIBILITY = "detail_fields_vis";
+    public static final String STYLE_BOOK_LIST_FIELD_VISIBILITY = "list_fields_vis";
+    public static final String STYLE_BOOK_LIST_FIELD_ORDER_BY = "list_fields_sort";
 
     public static final String STYLE_GROUPS = "groups";
     public static final String STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH =
@@ -330,7 +355,6 @@ public final class DBKey {
      * .notNull().build();
      */
     public static final String BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
-
 
     /** Column alias for {@link AuthorWork.Type}. */
     public static final String AUTHOR_WORK_TYPE = "work_type";
@@ -383,7 +407,6 @@ public final class DBKey {
     public static final String SERIES_TITLE_OB = SERIES_TITLE + ORDER_BY_SUFFIX;
     public static final String PUBLISHER_NAME_OB = PUBLISHER_NAME + ORDER_BY_SUFFIX;
     public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
-
 
     /**
      * The "field is used" key for thumbnails and other places where we need

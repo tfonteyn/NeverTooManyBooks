@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -556,7 +556,7 @@ public class SeriesDaoImpl
                 INSERT_INTO_ + TBL_BOOK_SERIES.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_SERIES
-                + ',' + DBKey.SERIES_BOOK_NUMBER
+                + ',' + DBKey.BOOK_SERIES_NUMBER
                 + ',' + DBKey.BOOK_SERIES_POSITION
                 + ") VALUES(?,?,?,?)";
         /**
@@ -602,7 +602,7 @@ public class SeriesDaoImpl
                                                     DBKey.SERIES_TITLE,
                                                     DBKey.SERIES_TITLE_OB,
                                                     DBKey.SERIES_IS_COMPLETE)
-                + ',' + TBL_BOOK_SERIES.dotAs(DBKey.SERIES_BOOK_NUMBER,
+                + ',' + TBL_BOOK_SERIES.dotAs(DBKey.BOOK_SERIES_NUMBER,
                                               DBKey.BOOK_SERIES_POSITION)
 
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
@@ -631,7 +631,7 @@ public class SeriesDaoImpl
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_SERIES) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
+                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER)
                 + " LIMIT 1";
 
         static final String REPOSITION =

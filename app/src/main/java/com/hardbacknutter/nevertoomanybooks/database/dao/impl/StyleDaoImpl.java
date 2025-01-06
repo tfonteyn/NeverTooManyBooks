@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -288,9 +288,9 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT, style.isGroupRowUsesPreferredHeight());
 
             cv.put(DBKey.STYLE_LIST_HEADER, style.getHeaderFieldVisibilityValue());
-            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
+            cv.put(DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.List));
-            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
+            cv.put(DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY,
                    StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
             cv.put(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
                    style.isSortAuthorByGivenName());
@@ -302,7 +302,7 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE_CITATION_TYPE, style.getCitationType().getId());
 
-            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
+            cv.put(DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
         }
 
@@ -415,8 +415,8 @@ public class StyleDaoImpl
                     + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
 
                     + ',' + DBKey.STYLE_LIST_HEADER
-                    + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY
-                    + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY
+                    + ',' + DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY
+                    + ',' + DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY
                     + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
 
                     + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
@@ -425,7 +425,7 @@ public class StyleDaoImpl
                     + ',' + DBKey.STYLE_READ_STATUS_WITH_PROGRESS
                     + ',' + DBKey.STYLE_CITATION_TYPE
 
-                    + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
+                    + ',' + DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY
 
                     + ',' + DBKey.STYLE_EXP_LEVEL
                     + ',' + DBKey.STYLE_GROUPS

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -305,7 +305,7 @@ public class SearchBookByTextFragment
             // do NOT use {@code Book.BKEY_SERIES_LIST}, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES,
                            coordinator.getSeriesSearchText());
-            book.putString(DBKey.SERIES_BOOK_NUMBER,
+            book.putString(DBKey.BOOK_SERIES_NUMBER,
                            coordinator.getSeriesNrSearchText());
         }
 

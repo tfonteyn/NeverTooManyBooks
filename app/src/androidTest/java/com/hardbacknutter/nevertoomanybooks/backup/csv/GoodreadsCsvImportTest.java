@@ -158,7 +158,7 @@ public class GoodreadsCsvImportTest
             // "my_rating" was set to 5; "average_rating" of 3.99 is ignored
             assertEquals(5, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
             assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
-            assertEquals("172", book.getString(DBKey.PAGE_COUNT, null));
+            assertEquals("172", book.getString(DBKey.PAGES, null));
             assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
             assertEquals("1972", book.getString(DBKey.FIRST_PUBLICATION__DATE, null));
             assertEquals("2020-06-05 00:00:00", book.getString(DBKey.DATE_ADDED__UTC, null));
@@ -207,7 +207,7 @@ public class GoodreadsCsvImportTest
             // "my_rating" 0f 0 is ignored; "average_rating" of 4.09
             assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
             assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
-            assertEquals("472", book.getString(DBKey.PAGE_COUNT, null));
+            assertEquals("472", book.getString(DBKey.PAGES, null));
             assertEquals("2014", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
             assertEquals("2006", book.getString(DBKey.FIRST_PUBLICATION__DATE, null));
             assertEquals("2024-04-24 00:00:00", book.getString(DBKey.DATE_ADDED__UTC, null));

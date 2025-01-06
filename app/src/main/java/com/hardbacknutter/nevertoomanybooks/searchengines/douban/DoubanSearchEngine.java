@@ -523,7 +523,7 @@ public class DoubanSearchEngine
                     // Pages
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        book.putString(DBKey.PAGE_COUNT, n.toString().strip());
+                        book.putString(DBKey.PAGES, n.toString().strip());
                     }
                     break;
                 }

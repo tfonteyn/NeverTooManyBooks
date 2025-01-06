@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -801,10 +801,10 @@ public class AuthorDaoImpl
                 + _FROM_ + TBL_TOC_ENTRIES.getName() + ')'
 
                 + _AND_ + DBKey.PK_ID + _NOT_IN_
-                + '(' + SELECT_DISTINCT_ + DBKey.AUTHOR_PSEUDONYM
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR_PSEUDONYM
                 + _FROM_ + TBL_PSEUDONYM_AUTHOR.getName() + ')'
                 + _AND_ + DBKey.PK_ID + _NOT_IN_
-                + '(' + SELECT_DISTINCT_ + DBKey.AUTHOR_REAL_AUTHOR
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR_REAL_AUTHOR
                 + _FROM_ + TBL_PSEUDONYM_AUTHOR.getName() + ')';
 
         /** Insert the link between a {@link Book} and an {@link Author}. */
@@ -827,8 +827,8 @@ public class AuthorDaoImpl
         /** Insert the link between a pseudonym name and an {@link Author}. */
         static final String INSERT_PSEUDONYM_LINKS =
                 INSERT_INTO_ + TBL_PSEUDONYM_AUTHOR.getName()
-                + '(' + DBKey.AUTHOR_PSEUDONYM
-                + ',' + DBKey.AUTHOR_REAL_AUTHOR
+                + '(' + DBKey.FK_AUTHOR_PSEUDONYM
+                + ',' + DBKey.FK_AUTHOR_REAL_AUTHOR
                 + ") VALUES (?,?)";
 
         /**
@@ -838,7 +838,7 @@ public class AuthorDaoImpl
          */
         static final String DELETE_PSEUDONYM_LINKS =
                 DELETE_FROM_ + TBL_PSEUDONYM_AUTHOR.getName()
-                + _WHERE_ + DBKey.AUTHOR_PSEUDONYM + "=?";
+                + _WHERE_ + DBKey.FK_AUTHOR_PSEUDONYM + "=?";
 
         /** Get a count of the {@link Author}s. */
 
@@ -854,7 +854,7 @@ public class AuthorDaoImpl
         /** A list of all {@link Author}s, unordered. */
         static final String SELECT_ALL =
                 SELECT_ + TBL_AUTHORS.dot("*")
-                + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.AUTHOR_REAL_AUTHOR)
+                + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.FK_AUTHOR_REAL_AUTHOR)
                 + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR);
 
         /** Get an {@link Author} by its id. */
@@ -881,7 +881,7 @@ public class AuthorDaoImpl
                 + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
                                               DBKey.AUTHOR_TYPE__BITMASK)
 
-                + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.AUTHOR_REAL_AUTHOR)
+                + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.FK_AUTHOR_REAL_AUTHOR)
 
                 + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
                 + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR)

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1068,7 +1068,7 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_date_published)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        fields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.PAGE_COUNT)
+        fields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.PAGES)
                            .setTextInputLayoutId(R.id.lbl_pages)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 

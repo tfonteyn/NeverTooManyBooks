@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -201,7 +201,7 @@ public class BookHolder
                        .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))
                        .collect(Collectors.toSet());
 
-            if (use.contains(DBKey.PAGE_COUNT)) {
+            if (use.contains(DBKey.PAGES)) {
                 pagesFormatter = new PagesFormatter();
             }
         }
@@ -250,7 +250,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.FK_BOOKSHELF)) {
-            showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAME_CSV));
+            showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAMES_AS_CSV));
         }
 
         if (use.contains(DBKey.TITLE_ORIGINAL_LANG)) {
@@ -297,10 +297,10 @@ public class BookHolder
             }
         }
 
-        if (use.contains(DBKey.PAGE_COUNT)) {
+        if (use.contains(DBKey.PAGES)) {
             //noinspection DataFlowIssue
             showOrHide(vb.pages, pagesFormatter.format(itemView.getContext(),
-                                                       rowData.getString(DBKey.PAGE_COUNT)));
+                                                       rowData.getString(DBKey.PAGES)));
         }
 
         if (use.contains(DBKey.SIGNED__BOOL)) {
@@ -387,8 +387,8 @@ public class BookHolder
         if (rowData.contains(DBKey.SERIES_TITLE)) {
             String seriesTitle = rowData.getString(DBKey.SERIES_TITLE);
             if (!seriesTitle.isBlank()) {
-                if (rowData.contains(DBKey.SERIES_BOOK_NUMBER)) {
-                    final String number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
+                if (rowData.contains(DBKey.BOOK_SERIES_NUMBER)) {
+                    final String number = rowData.getString(DBKey.BOOK_SERIES_NUMBER);
                     if (!number.isBlank()) {
                         seriesTitle = String.format(a_bracket_b_bracket, seriesTitle, number);
                     }
@@ -413,8 +413,8 @@ public class BookHolder
      * @param rowData with the data
      */
     private void showOrHideSeriesNumber(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBKey.SERIES_BOOK_NUMBER)) {
-            final String number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
+        if (rowData.contains(DBKey.BOOK_SERIES_NUMBER)) {
+            final String number = rowData.getString(DBKey.BOOK_SERIES_NUMBER);
             if (!number.isBlank()) {
                 // Display it in one of the views, based on the size of the text.
                 if (number.length() > SHORT_SERIES_NUMBER) {

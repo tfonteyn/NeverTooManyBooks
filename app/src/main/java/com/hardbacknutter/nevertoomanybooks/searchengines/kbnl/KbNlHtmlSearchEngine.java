@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -489,16 +489,16 @@ public class KbNlHtmlSearchEngine
 
     private void processPages(@NonNull final Element td,
                               @NonNull final Book book) {
-        if (!book.contains(DBKey.PAGE_COUNT)) {
+        if (!book.contains(DBKey.PAGES)) {
             final Element span = td.selectFirst("span");
             if (span != null) {
                 final String pagesStr = span.text().split(" ")[0];
                 try {
                     final int pages = Integer.parseInt(pagesStr);
-                    book.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
+                    book.putString(DBKey.PAGES, String.valueOf(pages));
                 } catch (@NonNull final NumberFormatException e) {
                     // use source
-                    book.putString(DBKey.PAGE_COUNT, pagesStr);
+                    book.putString(DBKey.PAGES, pagesStr);
                 }
             }
         }

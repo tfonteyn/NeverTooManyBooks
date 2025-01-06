@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -251,8 +251,8 @@ public class Series
         title = rowData.getString(DBKey.SERIES_TITLE);
         complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
         // optional domain, not always used.
-        if (rowData.contains(DBKey.SERIES_BOOK_NUMBER)) {
-            number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
+        if (rowData.contains(DBKey.BOOK_SERIES_NUMBER)) {
+            number = rowData.getString(DBKey.BOOK_SERIES_NUMBER);
         } else {
             number = "";
         }

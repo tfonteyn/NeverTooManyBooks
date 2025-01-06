@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Visibility of the {@link DBKey#AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
+ * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
  * is based on <strong>global USAGE</strong>.
  */
 @SuppressWarnings("WeakerAccess")
@@ -78,7 +78,7 @@ public class EditAuthorViewModel
                                             EditParcelableLauncher.BKEY_ITEM);
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-            useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
+            useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
             useAuthorType = serviceLocator.isFieldEnabled(DBKey.AUTHOR_TYPE__BITMASK);
 
             currentEdit = new Author(author, true);

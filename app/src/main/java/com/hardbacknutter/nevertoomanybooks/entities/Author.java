@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 /**
  * Represents an Author.
  * <p>
- * Visibility of the {@link DBKey#AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
+ * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
  * is based on <strong>global USAGE</strong>.
  *
  * <p>
@@ -329,8 +329,8 @@ public class Author
             type = rowData.getInt(DBKey.AUTHOR_TYPE__BITMASK);
         }
 
-        if (rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
-            final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
+        if (rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
+            final long realAuthorId = rowData.getLong(DBKey.FK_AUTHOR_REAL_AUTHOR);
             if (realAuthorId > 0) {
                 realAuthor = ServiceLocator.getInstance().getAuthorDao()
                                            .findById(realAuthorId)
@@ -715,7 +715,7 @@ public class Author
                 label = getFormattedName(style.isShowAuthorByGivenName());
 
                 final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-                if (serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)) {
+                if (serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
                     final Author author = getRealAuthor();
                     if (author != null) {
                         label += smallerText(context.getString(

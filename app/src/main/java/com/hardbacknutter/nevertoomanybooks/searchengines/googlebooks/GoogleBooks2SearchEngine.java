@@ -428,7 +428,7 @@ public class GoogleBooks2SearchEngine
 
         i = volumeInfo.optInt("pageCount");
         if (i > 0) {
-            book.putString(DBKey.PAGE_COUNT, String.valueOf(i));
+            book.putString(DBKey.PAGES, String.valueOf(i));
         }
 
         // Google documents this as a "double" with values 0..5,

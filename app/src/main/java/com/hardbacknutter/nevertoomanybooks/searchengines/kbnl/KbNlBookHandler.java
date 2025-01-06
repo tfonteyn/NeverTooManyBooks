@@ -615,7 +615,7 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void processPages(@NonNull final List<String> currentData) {
-        if (!book.contains(DBKey.PAGE_COUNT)) {
+        if (!book.contains(DBKey.PAGES)) {
             final String data = currentData.get(0);
 
             final Matcher matcher = PAGES_PATTERN.matcher(data);
@@ -624,7 +624,7 @@ class KbNlBookHandler
                     final String group = matcher.group(1);
                     if (group != null && !group.isEmpty()) {
                         final int pages = Integer.parseInt(group);
-                        book.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
+                        book.putString(DBKey.PAGES, String.valueOf(pages));
                         return;
                     }
                 } catch (@NonNull final NumberFormatException ignore) {
@@ -634,14 +634,14 @@ class KbNlBookHandler
             try {
                 final String cleanedString = data.split(" ")[0];
                 final int pages = Integer.parseInt(cleanedString);
-                book.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
+                book.putString(DBKey.PAGES, String.valueOf(pages));
                 return;
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }
 
             // use source
-            book.putString(DBKey.PAGE_COUNT, data);
+            book.putString(DBKey.PAGES, data);
         }
     }
 

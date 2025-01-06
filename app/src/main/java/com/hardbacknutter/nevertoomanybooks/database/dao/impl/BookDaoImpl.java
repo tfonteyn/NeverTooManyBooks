@@ -661,7 +661,7 @@ public class BookDaoImpl
         // If the separate page-count field is empty and we have a total-pages value,
         // set it as well.
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoHelper#processReadProgress()} !
-        String pageCount = book.getString(DBKey.PAGE_COUNT);
+        String pageCount = book.getString(DBKey.PAGES);
         if (!progress.asPercentage() && pageCount.isEmpty()) {
             pageCount = String.valueOf(progress.getTotalPages());
         }
@@ -824,11 +824,11 @@ public class BookDaoImpl
 
         if (sinceDateTime == null) {
             whereClause =
-                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLL_ID) + " IS NOT NULL";
+                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLLECTION_ID) + " IS NOT NULL";
             selectionArgs = null;
         } else {
             whereClause =
-                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLL_ID) + " IS NOT NULL"
+                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLLECTION_ID) + " IS NOT NULL"
                     + _AND_
                     + TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC) + ">=?";
             selectionArgs = new String[]{SqlEncode.dateTime(sinceDateTime)};
@@ -837,7 +837,7 @@ public class BookDaoImpl
         final String sql = Sql.SELECT_BOOK
                            + ',' + TBL_STRIPINFO_COLLECTION
                                    .dotAs(DBKey.STRIP_INFO_BOOK_ID,
-                                          DBKey.STRIP_INFO_COLL_ID,
+                                          DBKey.STRIP_INFO_COLLECTION_ID,
                                           DBKey.STRIP_INFO_OWNED,
                                           DBKey.STRIP_INFO_DIGITAL,
                                           DBKey.STRIP_INFO_WANTED,
@@ -1017,7 +1017,7 @@ public class BookDaoImpl
                 + ',' + DBKey.READ__BOOL + "=?"
                 + ',' + DBKey.READ_END__DATE + "=?"
                 + ',' + DBKey.READ_PROGRESS + "=?"
-                + ',' + DBKey.PAGE_COUNT + "=?"
+                + ',' + DBKey.PAGES + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Update a {@link Book} {@link DBKey#DATE_LAST_UPDATED__UTC} to 'now'. */
@@ -1103,7 +1103,7 @@ public class BookDaoImpl
                         DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
                         DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,
                         DBKey.FIRST_PUBLICATION__DATE,
-                        DBKey.FORMAT, DBKey.COLOR, DBKey.GENRE, DBKey.LANGUAGE, DBKey.PAGE_COUNT,
+                        DBKey.FORMAT, DBKey.COLOR, DBKey.GENRE, DBKey.LANGUAGE, DBKey.PAGES,
                         // Main/public description about the content/publication
                         DBKey.DESCRIPTION,
                         // partially edition info, partially user-owned info.

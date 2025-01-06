@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -458,7 +458,7 @@ public class FtsDaoImpl
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_SERIES_BY_BOOK_ID =
                 SELECT_ + TBL_SERIES.dot(DBKey.SERIES_TITLE) + "||' '||"
-                + " COALESCE(" + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER) + ",'')"
+                + " COALESCE(" + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER) + ",'')"
                 + _AS_ + DBKey.SERIES_TITLE
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_BOOK) + "=?"

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ public class StripInfoBePreferencesFragment
 
         //noinspection DataFlowIssue
         findPreference("stripinfo.resolve.authors.bedetheque")
-                .setEnabled(ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR));
+                .setEnabled(ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR));
 
         initLoginPrefs();
 

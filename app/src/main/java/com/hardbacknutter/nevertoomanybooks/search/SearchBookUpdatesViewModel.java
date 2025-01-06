@@ -191,7 +191,7 @@ public class SearchBookUpdatesViewModel
         map.put(context.getString(R.string.lbl_price_listed),
                 new String[]{DBKey.PRICE_LISTED});
         map.put(context.getString(R.string.lbl_pages),
-                new String[]{DBKey.PAGE_COUNT});
+                new String[]{DBKey.PAGES});
         map.put(context.getString(R.string.lbl_format),
                 new String[]{DBKey.FORMAT});
         map.put(context.getString(R.string.lbl_color),

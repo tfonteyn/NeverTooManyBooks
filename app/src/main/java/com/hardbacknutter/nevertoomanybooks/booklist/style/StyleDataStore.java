@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -156,7 +156,7 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "language", DBKey.LANGUAGE);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "location", DBKey.LOCATION);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "rating", DBKey.RATING);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "pages", DBKey.PAGE_COUNT);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "pages", DBKey.PAGES);
 
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "signed", DBKey.SIGNED__BOOL);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "edition", DBKey.EDITION__BITMASK);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,7 +111,7 @@ public class Parse2Test
 
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("216", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("216", book.getString(DBKey.PAGES, null));
         assertEquals("Fiction", book.getString(DBKey.GENRE, null));
 
         // It's explicitly set as "isEbook=false"
@@ -171,7 +171,7 @@ public class Parse2Test
 
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2012-11-22", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("441", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("441", book.getString(DBKey.PAGES, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("Fiction", book.getString(DBKey.GENRE, null));
 

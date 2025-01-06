@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -199,7 +199,7 @@ public class ParseTest
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2021-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("300", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("300", book.getString(DBKey.PAGES, null));
         assertEquals("精装", book.getString(DBKey.FORMAT, null));
 
         assertFalse(book.contains(DBKey.PRICE_LISTED));
@@ -254,7 +254,7 @@ public class ParseTest
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2011-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("302", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("302", book.getString(DBKey.PAGES, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
 
         assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -332,7 +332,7 @@ public class ParseTest
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-04-30", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("288", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("288", book.getString(DBKey.PAGES, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertEquals(4f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
 
@@ -516,7 +516,7 @@ public class ParseTest
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("226", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("226", book.getString(DBKey.PAGES, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertFalse(book.contains(DBKey.RATING));
 

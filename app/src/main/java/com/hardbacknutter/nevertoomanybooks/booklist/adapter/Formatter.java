@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,11 +91,11 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
 
-                } else if (serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
-                           && rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
+                } else if (serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
+                           && rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
                     // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
                     // and no lookup will be needed.
-                    final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
+                    final long realAuthorId = rowData.getLong(DBKey.FK_AUTHOR_REAL_AUTHOR);
                     if (realAuthorId != 0) {
                         final Optional<Author> realAuthor = serviceLocator.getAuthorDao()
                                                                           .findById(realAuthorId);

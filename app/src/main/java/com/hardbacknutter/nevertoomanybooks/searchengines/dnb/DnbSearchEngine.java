@@ -628,7 +628,7 @@ public class DnbSearchEngine
 
         final Matcher matcher = PATTERN_PAGE_NUMBER.matcher(text);
         if (matcher.find()) {
-            book.putString(DBKey.PAGE_COUNT, matcher.group());
+            book.putString(DBKey.PAGES, matcher.group());
         }
     }
 

@@ -1035,7 +1035,7 @@ public class IsfdbSearchEngine
                             nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
                                 tmpString = nextSibling.toString().trim();
-                                book.putString(DBKey.PAGE_COUNT, tmpString);
+                                book.putString(DBKey.PAGES, tmpString);
                             }
                             break;
                         }

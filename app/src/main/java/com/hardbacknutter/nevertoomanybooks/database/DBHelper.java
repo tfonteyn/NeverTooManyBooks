@@ -566,8 +566,8 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_TEXT_SCALE,
                     DBDefinitions.DOM_STYLE_COVER_SCALE,
                     DBDefinitions.DOM_STYLE_LIST_HEADER,
-                    DBDefinitions.DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY,
-                    DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY);
+                    DBDefinitions.DOM_STYLE_BOOK_DETAIL_FIELD_VISIBILITY,
+                    DBDefinitions.DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY);
 
             final List<String> uuids = new ArrayList<>();
             try (Cursor cursor = db.rawQuery(
@@ -596,8 +596,8 @@ public class DBHelper
                     + DBKey.STYLE_TEXT_SCALE + "=?,"
                     + DBKey.STYLE_COVER_SCALE + "=?,"
                     + DBKey.STYLE_LIST_HEADER + "=?,"
-                    + DBKey.STYLE_DETAILS_SHOW_FIELDS + "=?,"
-                    + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY + "=?"
+                    + DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY + "=?,"
+                    + DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY + "=?"
 
                     + " WHERE " + DBKey.STYLE_UUID + "=?")) {
 
@@ -773,7 +773,7 @@ public class DBHelper
         if (oldVersion < 26) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
-                    DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
+                    DBDefinitions.DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY,
                     DBDefinitions.DOM_STYLE_COVER_CLICK_ACTION,
                     DBDefinitions.DOM_STYLE_LAYOUT);
         }
@@ -798,7 +798,7 @@ public class DBHelper
         }
         if (oldVersion < 29) {
             TBL_STRIPINFO_COLLECTION.alterTableAddColumns(
-                    db, DBDefinitions.DOM_STRIP_INFO_BE_DIGITAL);
+                    db, DBDefinitions.DOM_STRIP_INFO_DIGITAL);
         }
         if (oldVersion < 31) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(

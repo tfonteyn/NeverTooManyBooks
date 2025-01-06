@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public class SeriesCoder
         out.put(DBKey.SERIES_TITLE, series.getTitle());
 
         if (!series.getNumber().isEmpty()) {
-            out.put(DBKey.SERIES_BOOK_NUMBER, series.getNumber());
+            out.put(DBKey.BOOK_SERIES_NUMBER, series.getNumber());
         }
         if (series.isComplete()) {
             out.put(DBKey.SERIES_IS_COMPLETE, true);
@@ -58,8 +58,8 @@ public class SeriesCoder
         final Series series = new Series(data.getString(DBKey.SERIES_TITLE));
         series.setId(data.getLong(DBKey.PK_ID));
 
-        if (data.has(DBKey.SERIES_BOOK_NUMBER)) {
-            series.setNumber(data.getString(DBKey.SERIES_BOOK_NUMBER));
+        if (data.has(DBKey.BOOK_SERIES_NUMBER)) {
+            series.setNumber(data.getString(DBKey.BOOK_SERIES_NUMBER));
         }
         if (data.has(DBKey.SERIES_IS_COMPLETE)) {
             series.setComplete(data.getBoolean(DBKey.SERIES_IS_COMPLETE));

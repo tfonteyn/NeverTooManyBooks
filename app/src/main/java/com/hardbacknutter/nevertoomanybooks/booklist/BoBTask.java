@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -145,7 +145,7 @@ public class BoBTask
                     return List.of(
                             // primary author only
                             new DomainExpression(
-                                    DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                                    DBDefinitions.DOM_AUTHOR_FORMATTED,
                                     AuthorDaoImpl.getDisplayDomainExpression(
                                             style.isShowAuthorByGivenName()),
                                     sort)
@@ -157,7 +157,7 @@ public class BoBTask
                             // It is ALWAYS unsorted, as the list is build by SQLite internals
                             // and the order returned is arbitrary.
                             new DomainExpression(
-                                    DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
+                                    DBDefinitions.DOM_BOOKSHELF_NAMES_AS_CSV,
                                     DBDefinitions.EXP_BOOKSHELF_NAME_CSV,
                                     Sort.Unsorted)
                     );
@@ -165,6 +165,11 @@ public class BoBTask
                 case DBKey.FK_PUBLISHER: {
                     return List.of(
                             // primary publisher only
+                            // TODO: perhaps get a csv list of publisher names?
+                            //   new DomainExpression(
+                            //           DBDefinitions.DOM_PUBLISHER_NAMES_AS_CSV,
+                            //           DBDefinitions.EXP_PUBLISHER_NAME_CSV,
+                            //           Sort.Unsorted)
                             new DomainExpression(
                                     DBDefinitions.DOM_PUBLISHER_NAME,
                                     DBDefinitions.TBL_PUBLISHERS,
@@ -179,7 +184,7 @@ public class BoBTask
                                     DBDefinitions.TBL_SERIES,
                                     sort),
                             new DomainExpression(
-                                    DBDefinitions.DOM_BOOK_NUM_IN_SERIES,
+                                    DBDefinitions.DOM_BOOK_SERIES_NUMBER,
                                     DBDefinitions.TBL_BOOK_SERIES,
                                     sort)
                     );
@@ -216,7 +221,7 @@ public class BoBTask
                                     sort)
                     );
                 }
-                case DBKey.PAGE_COUNT: {
+                case DBKey.PAGES: {
                     return List.of(
                             new DomainExpression(
                                     DBDefinitions.DOM_BOOK_PAGES,

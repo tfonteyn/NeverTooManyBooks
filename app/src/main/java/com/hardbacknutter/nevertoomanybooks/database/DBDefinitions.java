@@ -52,10 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
  * <p>
  * Currently (2022-05-14) UTC datetime is used with::
  * <ul>Main database:
- *  <li>{@link #DOM_ADDED__UTC}</li>
+ *  <li>{@link #DOM_DATE_ADDED__UTC}</li>
  *  <li>{@link #DOM_LAST_UPDATED__UTC}</li>
  *  <li>{@link #DOM_CALIBRE_LIBRARY_LAST_SYNC__UTC}</li>
- *  <li>{@link #DOM_STRIP_INFO_BE_LAST_SYNC__UTC}</li>
+ *  <li>{@link #DOM_STRIP_INFO_LAST_SYNC__UTC}</li>
  * </ul>
  * <ul>Covers cache database:
  *   <li>{@link CacheDbHelper}#IMAGE_LAST_UPDATED__UTC}</li>
@@ -210,7 +210,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKSHELF}. */
     public static final Domain DOM_BOOKSHELF_NAME;
     /** Virtual: build from "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')". */
-    public static final Domain DOM_BOOKSHELF_NAME_CSV;
+    public static final Domain DOM_BOOKSHELF_NAMES_AS_CSV;
     /** Saved booklist adapter position of current top row. */
     public static final Domain DOM_BOOKSHELF_BL_TOP_POS;
     /** Saved booklist adapter top row offset from view top. */
@@ -259,7 +259,7 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_REAL_AUTHOR;
 
     /** Virtual: "FamilyName, GivenName". */
-    public static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
+    public static final Domain DOM_AUTHOR_FORMATTED;
 
     /** {@link #TBL_SERIES}. */
     public static final Domain DOM_SERIES_TITLE;
@@ -273,7 +273,7 @@ public final class DBDefinitions {
     /** {@link #TBL_PUBLISHERS}. */
     public static final Domain DOM_PUBLISHER_NAME_OB;
     /** Virtual: build from "GROUP_CONCAT(" + TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME) + ",', ')". */
-    public static final Domain DOM_PUBLISHER_NAME_CSV;
+    public static final Domain DOM_PUBLISHER_NAMES_AS_CSV;
 
 
     /**
@@ -316,7 +316,7 @@ public final class DBDefinitions {
     /**
      * {@link #TBL_BOOKS}.
      * <p>
-     * Note this is a <strong>TEXT</strong> field. See {@link DBKey#PAGE_COUNT}.
+     * Note this is a <strong>TEXT</strong> field. See {@link DBKey#PAGES}.
      */
     public static final Domain DOM_BOOK_PAGES;
     /** {@link #TBL_BOOKS}. */
@@ -343,7 +343,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_DATE_ACQUIRED;
     /** {@link #TBL_BOOKS} added to the collection. */
-    public static final Domain DOM_ADDED__UTC;
+    public static final Domain DOM_DATE_ADDED__UTC;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_LAST_UPDATED__UTC;
     /** {@link #TBL_BOOKS}. */
@@ -412,19 +412,19 @@ public final class DBDefinitions {
      * for rows where the {@link #DOM_FK_IDENTIFIER} == "stripinfo"
      * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENT_NAME}
      */
-    public static final Domain DOM_STRIP_INFO_BE_BOOK_ID;
+    public static final Domain DOM_STRIP_INFO_BOOK_ID;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
-    public static final Domain DOM_STRIP_INFO_BE_COLLECTION_ID;
+    public static final Domain DOM_STRIP_INFO_COLLECTION_ID;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
-    public static final Domain DOM_STRIP_INFO_BE_OWNED;
+    public static final Domain DOM_STRIP_INFO_OWNED;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
-    public static final Domain DOM_STRIP_INFO_BE_DIGITAL;
+    public static final Domain DOM_STRIP_INFO_DIGITAL;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
-    public static final Domain DOM_STRIP_INFO_BE_WANTED;
+    public static final Domain DOM_STRIP_INFO_WANTED;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
-    public static final Domain DOM_STRIP_INFO_BE_AMOUNT;
+    public static final Domain DOM_STRIP_INFO_AMOUNT;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
-    public static final Domain DOM_STRIP_INFO_BE_LAST_SYNC__UTC;
+    public static final Domain DOM_STRIP_INFO_LAST_SYNC__UTC;
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -456,9 +456,9 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_TEXT_SCALE;
     public static final Domain DOM_STYLE_COVER_SCALE;
     public static final Domain DOM_STYLE_LIST_HEADER;
-    public static final Domain DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY;
-    public static final Domain DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY;
-    public static final Domain DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY;
+    public static final Domain DOM_STYLE_BOOK_DETAIL_FIELD_VISIBILITY;
+    public static final Domain DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY;
+    public static final Domain DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY;
     public static final Domain DOM_STYLE_GROUPS;
     public static final Domain DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE;
@@ -468,7 +468,7 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_CITATION_TYPE;
 
     /** {@link #TBL_BOOK_SERIES}. */
-    public static final Domain DOM_BOOK_NUM_IN_SERIES;
+    public static final Domain DOM_BOOK_SERIES_NUMBER;
     /**
      * {@link #TBL_BOOK_SERIES}.
      * The Series position is the order the Series show up in a book.
@@ -490,7 +490,7 @@ public final class DBDefinitions {
 
 
     /**
-     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
+     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAMES_AS_CSV}.
      * <p>
      * The order of the returned names will be arbitrary.
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
@@ -498,7 +498,7 @@ public final class DBDefinitions {
     public static final String EXP_BOOKSHELF_NAME_CSV;
 
     /**
-     * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
+     * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAMES_AS_CSV}.
      * <p>
      * The order of the returned names will be arbitrary.
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
@@ -659,13 +659,6 @@ public final class DBDefinitions {
                         .localized()
                         .build();
 
-        DOM_TITLE_ORIGINAL_LANG =
-                new Domain.Builder(DBKey.TITLE_ORIGINAL_LANG, SqLiteDataType.Text)
-                        .notNull()
-                        .withDefaultEmptyString()
-                        .localized()
-                        .build();
-
         DOM_DATE_FIRST_PUBLICATION =
                 new Domain.Builder(DBKey.FIRST_PUBLICATION__DATE, SqLiteDataType.Date)
                         .notNull()
@@ -689,8 +682,8 @@ public final class DBDefinitions {
                         .build();
 
         // Virtual, display only, unsorted
-        DOM_BOOKSHELF_NAME_CSV =
-                new Domain.Builder(DBKey.BOOKSHELF_NAME_CSV, SqLiteDataType.Text)
+        DOM_BOOKSHELF_NAMES_AS_CSV =
+                new Domain.Builder(DBKey.BOOKSHELF_NAMES_AS_CSV, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
@@ -707,11 +700,11 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOKSHELF_FILTER_NAME =
-                new Domain.Builder(DBKey.FILTER_DBKEY, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BOOKSHELF_FILTER_NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
         DOM_BOOKSHELF_FILTER_VALUE =
-                new Domain.Builder(DBKey.FILTER_VALUE, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BOOKSHELF_FILTER_VALUE, SqLiteDataType.Text)
                         .build();
 
         /* ======================================================================================
@@ -751,19 +744,19 @@ public final class DBDefinitions {
                         .withDefault(false)
                         .build();
 
-        DOM_AUTHOR_FORMATTED_FAMILY_FIRST =
+        DOM_AUTHOR_FORMATTED =
                 new Domain.Builder(DBKey.AUTHOR_FORMATTED, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_AUTHOR_PSEUDONYM =
-                new Domain.Builder(DBKey.AUTHOR_PSEUDONYM, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.FK_AUTHOR_PSEUDONYM, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_AUTHORS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
 
         DOM_AUTHOR_REAL_AUTHOR =
-                new Domain.Builder(DBKey.AUTHOR_REAL_AUTHOR, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.FK_AUTHOR_REAL_AUTHOR, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_AUTHORS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
@@ -807,10 +800,11 @@ public final class DBDefinitions {
                         .localized()
                         .build();
 
-        DOM_PUBLISHER_NAME_CSV =
-                new Domain.Builder(DBKey.PUBLISHER_NAME_CSV, SqLiteDataType.Text)
+        DOM_PUBLISHER_NAMES_AS_CSV =
+                new Domain.Builder(DBKey.PUBLISHER_NAMES_AS_CSV, SqLiteDataType.Text)
                         .notNull()
                         .build();
+
         /* ======================================================================================
          *  Book domains
          * ====================================================================================== */
@@ -819,6 +813,13 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.BOOK_ISBN, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .build();
+
+        DOM_TITLE_ORIGINAL_LANG =
+                new Domain.Builder(DBKey.TITLE_ORIGINAL_LANG, SqLiteDataType.Text)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
                         .build();
 
         DOM_BOOK_DATE_PUBLISHED =
@@ -846,7 +847,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_PAGES =
-                new Domain.Builder(DBKey.PAGE_COUNT, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.PAGES, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -925,7 +926,7 @@ public final class DBDefinitions {
                         .withDefaultEmptyString()
                         .build();
 
-        DOM_ADDED__UTC =
+        DOM_DATE_ADDED__UTC =
                 new Domain.Builder(DBKey.DATE_ADDED__UTC, SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultCurrentTimeStamp()
@@ -1019,39 +1020,39 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  StripInfo.be synchronization domains
          * ====================================================================================== */
-        DOM_STRIP_INFO_BE_BOOK_ID =
+        DOM_STRIP_INFO_BOOK_ID =
                 new Domain.Builder(DBKey.STRIP_INFO_BOOK_ID, SqLiteDataType.Integer)
                         .build();
 
-        DOM_STRIP_INFO_BE_COLLECTION_ID =
-                new Domain.Builder(DBKey.STRIP_INFO_COLL_ID, SqLiteDataType.Integer)
+        DOM_STRIP_INFO_COLLECTION_ID =
+                new Domain.Builder(DBKey.STRIP_INFO_COLLECTION_ID, SqLiteDataType.Integer)
                         .build();
 
-        DOM_STRIP_INFO_BE_WANTED =
+        DOM_STRIP_INFO_WANTED =
                 new Domain.Builder(DBKey.STRIP_INFO_WANTED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
-        DOM_STRIP_INFO_BE_OWNED =
+        DOM_STRIP_INFO_OWNED =
                 new Domain.Builder(DBKey.STRIP_INFO_OWNED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
-        DOM_STRIP_INFO_BE_DIGITAL =
+        DOM_STRIP_INFO_DIGITAL =
                 new Domain.Builder(DBKey.STRIP_INFO_DIGITAL, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
-        DOM_STRIP_INFO_BE_AMOUNT =
+        DOM_STRIP_INFO_AMOUNT =
                 new Domain.Builder(DBKey.STRIP_INFO_AMOUNT, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
 
-        DOM_STRIP_INFO_BE_LAST_SYNC__UTC =
+        DOM_STRIP_INFO_LAST_SYNC__UTC =
                 new Domain.Builder(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC,
                                    SqLiteDataType.DateTime)
                         .notNull()
@@ -1157,8 +1158,8 @@ public final class DBDefinitions {
                         .notNull()
                         .build();
 
-        DOM_BOOK_NUM_IN_SERIES =
-                new Domain.Builder(DBKey.SERIES_BOOK_NUMBER, SqLiteDataType.Text)
+        DOM_BOOK_SERIES_NUMBER =
+                new Domain.Builder(DBKey.BOOK_SERIES_NUMBER, SqLiteDataType.Text)
                         .localized()
                         .build();
 
@@ -1327,22 +1328,22 @@ public final class DBDefinitions {
                         .withDefault(BooklistHeader.BITMASK_ALL)
                         .build();
 
-        DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY =
-                new Domain.Builder(DBKey.STYLE_DETAILS_SHOW_FIELDS, SqLiteDataType.Integer)
+        DOM_STYLE_BOOK_DETAIL_FIELD_VISIBILITY =
+                new Domain.Builder(DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(FieldVisibility.getBitValue(
                                 BookDetailsFieldVisibility.DEFAULT))
                         .build();
 
-        DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY =
-                new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY, SqLiteDataType.Integer)
+        DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY =
+                new Domain.Builder(DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(FieldVisibility.getBitValue(
                                 BookLevelFieldVisibility.DEFAULT))
                         .build();
 
-        DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY =
-                new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY, SqLiteDataType.Text)
+        DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY =
+                new Domain.Builder(DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY, SqLiteDataType.Text)
                         .build();
 
         /* ======================================================================================
@@ -1378,9 +1379,9 @@ public final class DBDefinitions {
                             DOM_STYLE_TEXT_SCALE,
                             DOM_STYLE_COVER_SCALE,
                             DOM_STYLE_LIST_HEADER,
-                            DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY,
-                            DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
-                            DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)
+                            DOM_STYLE_BOOK_DETAIL_FIELD_VISIBILITY,
+                            DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY,
+                            DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.STYLE_UUID, true, DOM_STYLE_UUID)
                 .addIndex(DBKey.STYLE_NAME, true, DOM_STYLE_NAME)
@@ -1499,7 +1500,7 @@ public final class DBDefinitions {
 
                             // internal data
                             DOM_BOOK_UUID,
-                            DOM_ADDED__UTC,
+                            DOM_DATE_ADDED__UTC,
                             DOM_LAST_UPDATED__UTC)
 
                 .setPrimaryKey(DOM_PK_ID)
@@ -1510,7 +1511,7 @@ public final class DBDefinitions {
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
         TBL_DELETED_BOOKS.addDomains(DOM_BOOK_UUID,
-                                     DOM_ADDED__UTC)
+                                     DOM_DATE_ADDED__UTC)
                          .setPrimaryKey(DOM_BOOK_UUID);
         ALL_TABLES.put(TBL_DELETED_BOOKS.getName(), TBL_DELETED_BOOKS);
 
@@ -1547,8 +1548,8 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_AUTHOR_PSEUDONYM)
                 .addReference(TBL_AUTHORS, DOM_AUTHOR_PSEUDONYM)
                 .addReference(TBL_AUTHORS, DOM_AUTHOR_REAL_AUTHOR)
-                .addIndex(DBKey.AUTHOR_PSEUDONYM, true, DOM_AUTHOR_PSEUDONYM)
-                .addIndex(DBKey.AUTHOR_REAL_AUTHOR, false, DOM_AUTHOR_REAL_AUTHOR);
+                .addIndex(DBKey.FK_AUTHOR_PSEUDONYM, true, DOM_AUTHOR_PSEUDONYM)
+                .addIndex(DBKey.FK_AUTHOR_REAL_AUTHOR, false, DOM_AUTHOR_REAL_AUTHOR);
         ALL_TABLES.put(TBL_PSEUDONYM_AUTHOR.getName(), TBL_PSEUDONYM_AUTHOR);
 
 
@@ -1587,7 +1588,7 @@ public final class DBDefinitions {
         TBL_BOOK_SERIES
                 .addDomains(DOM_FK_BOOK,
                             DOM_FK_SERIES,
-                            DOM_BOOK_NUM_IN_SERIES,
+                            DOM_BOOK_SERIES_NUMBER,
                             DOM_BOOK_SERIES_POSITION)
                 // enforce: only one series on a particular position for a book.
                 // allow: multiple copies of that series and multiple numbers.
@@ -1601,11 +1602,11 @@ public final class DBDefinitions {
                 .addIndex(DBKey.FK_SERIES, true,
                           DOM_FK_SERIES,
                           DOM_FK_BOOK,
-                          DOM_BOOK_NUM_IN_SERIES)
+                          DOM_BOOK_SERIES_NUMBER)
                 .addIndex(DBKey.FK_BOOK, true,
                           DOM_FK_BOOK,
                           DOM_FK_SERIES,
-                          DOM_BOOK_NUM_IN_SERIES);
+                          DOM_BOOK_SERIES_NUMBER);
         ALL_TABLES.put(TBL_BOOK_SERIES.getName(), TBL_BOOK_SERIES);
 
 
@@ -1708,16 +1709,16 @@ public final class DBDefinitions {
 
         TBL_STRIPINFO_COLLECTION
                 .addDomains(DOM_FK_BOOK,
-                            DOM_STRIP_INFO_BE_BOOK_ID,
-                            DOM_STRIP_INFO_BE_COLLECTION_ID,
-                            DOM_STRIP_INFO_BE_WANTED,
-                            DOM_STRIP_INFO_BE_OWNED,
-                            DOM_STRIP_INFO_BE_DIGITAL,
-                            DOM_STRIP_INFO_BE_AMOUNT,
-                            DOM_STRIP_INFO_BE_LAST_SYNC__UTC)
+                            DOM_STRIP_INFO_BOOK_ID,
+                            DOM_STRIP_INFO_COLLECTION_ID,
+                            DOM_STRIP_INFO_WANTED,
+                            DOM_STRIP_INFO_OWNED,
+                            DOM_STRIP_INFO_DIGITAL,
+                            DOM_STRIP_INFO_AMOUNT,
+                            DOM_STRIP_INFO_LAST_SYNC__UTC)
                 .setPrimaryKey(DOM_FK_BOOK)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                .addIndex(DBKey.STRIP_INFO_BOOK_ID, true, DOM_STRIP_INFO_BE_BOOK_ID);
+                .addIndex(DBKey.STRIP_INFO_BOOK_ID, true, DOM_STRIP_INFO_BOOK_ID);
         ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(), TBL_STRIPINFO_COLLECTION);
     }
 

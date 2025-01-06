@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -399,7 +399,7 @@ class GoogleBooksEntryHandler
                 final String tmpFormat = builder.toString();
                 int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
-                    book.putString(DBKey.PAGE_COUNT,
+                    book.putString(DBKey.PAGES,
                                    tmpFormat.substring(0, index).trim());
                 } else {
                     index = tmpFormat.indexOf("Dimensions");

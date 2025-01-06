@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -332,7 +332,7 @@ public class BolSearchEngine
                     }
                     case "Aantal pagina's":
                     case "Nombre de pages": {
-                        processText(value, DBKey.PAGE_COUNT, book);
+                        processText(value, DBKey.PAGES, book);
                         break;
                     }
                     case "Hoofdauteur":

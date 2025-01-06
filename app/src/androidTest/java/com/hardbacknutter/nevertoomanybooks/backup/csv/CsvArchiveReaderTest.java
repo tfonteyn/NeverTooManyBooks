@@ -241,7 +241,7 @@ public class CsvArchiveReaderTest
         assertEquals("1975-06", book.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
         assertFalse(book.isRead());
-        assertEquals("272", book.getString(DBKey.PAGE_COUNT));
+        assertEquals("272", book.getString(DBKey.PAGES));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
 
         // URGENT: price was "12,95" ... see BookDaoHelper#filterValues
@@ -291,7 +291,7 @@ public class CsvArchiveReaderTest
         assertEquals("2003-04-29", book.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
         assertFalse(book.isRead());
-        assertEquals("454", book.getString(DBKey.PAGE_COUNT));
+        assertEquals("454", book.getString(DBKey.PAGES));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
 
         // URGENT: price was "11,00" ... see BookDaoHelper#filterValues

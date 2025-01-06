@@ -532,7 +532,7 @@ public class CsvRecordReader
                     case "binding":
                         return DBKey.FORMAT;
                     case "number of pages":
-                        return DBKey.PAGE_COUNT;
+                        return DBKey.PAGES;
                     case "year published":
                         return DBKey.BOOK_PUBLICATION__DATE;
                     case "original publication year":

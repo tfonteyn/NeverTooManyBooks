@@ -610,7 +610,7 @@ public class OpenLibrarySearchEngine
         // We're ignoring that one...
         i = document.optInt("number_of_pages");
         if (i > 0) {
-            book.putString(DBKey.PAGE_COUNT, String.valueOf(i));
+            book.putString(DBKey.PAGES, String.valueOf(i));
         }
 
         // TODO: There is another field "physical_dimensions".

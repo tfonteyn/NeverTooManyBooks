@@ -138,7 +138,7 @@ public class StripInfoDaoImpl
                 INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.STRIP_INFO_BOOK_ID
-                + ',' + DBKey.STRIP_INFO_COLL_ID
+                + ',' + DBKey.STRIP_INFO_COLLECTION_ID
                 + ',' + DBKey.STRIP_INFO_OWNED
                 + ',' + DBKey.STRIP_INFO_DIGITAL
                 + ',' + DBKey.STRIP_INFO_WANTED
@@ -149,7 +149,7 @@ public class StripInfoDaoImpl
         static final String FIND_BY_BOOK_ID =
                 SELECT_ + DBKey.FK_BOOK
                 + ',' + DBKey.STRIP_INFO_BOOK_ID
-                + ',' + DBKey.STRIP_INFO_COLL_ID
+                + ',' + DBKey.STRIP_INFO_COLLECTION_ID
                 + ',' + DBKey.STRIP_INFO_OWNED
                 + ',' + DBKey.STRIP_INFO_DIGITAL
                 + ',' + DBKey.STRIP_INFO_WANTED

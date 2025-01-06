@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -329,7 +329,7 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_PAGES: {
-                    addIfNotPresent(DBKey.PAGE_COUNT, builder.toString().strip());
+                    addIfNotPresent(DBKey.PAGES, builder.toString().strip());
                     break;
                 }
                 case XML_BINDING: {

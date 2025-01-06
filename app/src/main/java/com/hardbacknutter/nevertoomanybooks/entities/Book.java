@@ -431,7 +431,7 @@ public class Book
         duplicate.putString(DBKey.COLOR, getString(DBKey.COLOR));
         duplicate.putString(DBKey.GENRE, getString(DBKey.GENRE));
         duplicate.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
-        duplicate.putString(DBKey.PAGE_COUNT, getString(DBKey.PAGE_COUNT));
+        duplicate.putString(DBKey.PAGES, getString(DBKey.PAGES));
         // common blurb
         duplicate.putString(DBKey.DESCRIPTION, getString(DBKey.DESCRIPTION));
 
@@ -860,9 +860,9 @@ public class Book
         if (seriesList.isEmpty()) {
             final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
             if (!searchText.isEmpty()) {
-                seriesList.add(Series.from(searchText, getString(DBKey.SERIES_BOOK_NUMBER)));
+                seriesList.add(Series.from(searchText, getString(DBKey.BOOK_SERIES_NUMBER)));
                 remove(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
-                remove(DBKey.SERIES_BOOK_NUMBER);
+                remove(DBKey.BOOK_SERIES_NUMBER);
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1354,7 +1354,7 @@ public class Book
         if (readingProgress.getTotalPages() <= 1) {
             // We didn't have a total-pages,
             // try to coerce the detailed TEXT value into a raw number
-            final String pageCountStr = getString(DBKey.PAGE_COUNT);
+            final String pageCountStr = getString(DBKey.PAGES);
             if (!pageCountStr.isEmpty()) {
                 try {
                     final int totalPages = Integer.parseInt(pageCountStr);
@@ -1389,7 +1389,7 @@ public class Book
         // If the separate page-count field is empty and we have a total-pages value,
         // set it as well.
         // Keep in sync with {@link BookDaoHelper#processReadProgress()} !
-        String pageCount = getString(DBKey.PAGE_COUNT);
+        String pageCount = getString(DBKey.PAGES);
         if (!progress.asPercentage() && pageCount.isEmpty()) {
             pageCount = String.valueOf(progress.getTotalPages());
         }
@@ -1423,7 +1423,7 @@ public class Book
      *
      * @param readingProgress value for {@link DBKey#READ_PROGRESS}
      * @param endDate         value for {@link DBKey#READ_END__DATE}
-     * @param pageCount       value for {@link DBKey#PAGE_COUNT}
+     * @param pageCount       value for {@link DBKey#PAGES}
      */
     public void internalSetReadingProgress(@NonNull final ReadingProgress readingProgress,
                                            @NonNull final String endDate,
@@ -1431,7 +1431,7 @@ public class Book
         putBoolean(DBKey.READ__BOOL, readingProgress.isRead());
         putString(DBKey.READ_END__DATE, endDate);
         putString(DBKey.READ_PROGRESS, readingProgress.toJson());
-        putString(DBKey.PAGE_COUNT, pageCount);
+        putString(DBKey.PAGES, pageCount);
     }
 
 

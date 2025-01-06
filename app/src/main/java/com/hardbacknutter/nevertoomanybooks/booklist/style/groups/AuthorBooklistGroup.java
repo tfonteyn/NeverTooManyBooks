@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,7 +80,7 @@ public class AuthorBooklistGroup
         super(groupKey);
         // Not sorted
         displayDomainExpression =
-                new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED,
                                      AuthorDaoImpl.getDisplayDomainExpression(showGivenNameFirst),
                                      Sort.Unsorted);
         // Sorting depends on user preference

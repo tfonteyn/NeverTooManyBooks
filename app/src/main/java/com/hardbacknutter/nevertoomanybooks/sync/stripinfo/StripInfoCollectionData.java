@@ -80,7 +80,7 @@ public class StripInfoCollectionData
         this.bookId = bookId;
 
         sid = rowData.getLong(DBKey.STRIP_INFO_BOOK_ID);
-        collectionId = rowData.getLong(DBKey.STRIP_INFO_COLL_ID);
+        collectionId = rowData.getLong(DBKey.STRIP_INFO_COLLECTION_ID);
         wanted = rowData.getBoolean(DBKey.STRIP_INFO_WANTED);
         owned = rowData.getBoolean(DBKey.STRIP_INFO_OWNED);
         digital = rowData.getBoolean(DBKey.STRIP_INFO_DIGITAL);

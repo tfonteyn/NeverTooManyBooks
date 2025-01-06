@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -129,7 +129,7 @@ public class ParseTest
 
         assertEquals("Includes bibliographical references and index.",
                      book.getString(DBKey.DESCRIPTION, null));
-        assertEquals("92", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("92", book.getString(DBKey.PAGES, null));
         assertEquals("2009-03-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
 
@@ -201,7 +201,7 @@ public class ParseTest
 
         assertEquals("Source title: Wundersmith: The Calling of Morrigan Crow",
                      book.getString(DBKey.DESCRIPTION, null));
-        assertEquals("473", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("473", book.getString(DBKey.PAGES, null));
         assertEquals("paperback", book.getString(DBKey.FORMAT, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -246,7 +246,7 @@ public class ParseTest
         assertEquals("OL28508809M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
 
         assertEquals("2013", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("352", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("352", book.getString(DBKey.PAGES, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -294,7 +294,7 @@ public class ParseTest
         assertEquals("1282184385", book.getString(Identifier.SID_OCLC, null));
 
         assertEquals("2022-02-09", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("272", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("272", book.getString(DBKey.PAGES, null));
         assertEquals("ger", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("Mit zahlreichen farbigen Illustrationen",
@@ -352,7 +352,7 @@ public class ParseTest
         assertEquals("1182484", book.getString(Identifier.SID_LIBRARY_THING, null));
 
         assertEquals("1984-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("270", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("270", book.getString(DBKey.PAGES, null));
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Mass Market Paperback", book.getString(DBKey.FORMAT, null));
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,7 +94,7 @@ public class ParseTest
         assertEquals("523041", book.getString(Identifier.SID_STRIPWEB, null));
 
         assertEquals("2021-10-05", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("72", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("72", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
 
@@ -170,7 +170,7 @@ public class ParseTest
         assertEquals("548714", book.getString(Identifier.SID_STRIPWEB, null));
 
         assertEquals("2024-02-13", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
@@ -284,7 +284,7 @@ public class ParseTest
         assertEquals("522632", book.getString(Identifier.SID_STRIPWEB, null));
 
         assertEquals("2020-09-25", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("48 x 3", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("48 x 3", book.getString(DBKey.PAGES, null));
         assertEquals("hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
         assertEquals(0, book.getLong(DBKey.RATING));

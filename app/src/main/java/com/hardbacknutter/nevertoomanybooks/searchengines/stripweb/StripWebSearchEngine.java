@@ -283,7 +283,7 @@ public class StripWebSearchEngine
                         break;
                     }
                     case "Pagina's":
-                        processText(td, DBKey.PAGE_COUNT, book);
+                        processText(td, DBKey.PAGES, book);
                         break;
                     case "Reeks":
                         processSeries(td, book);

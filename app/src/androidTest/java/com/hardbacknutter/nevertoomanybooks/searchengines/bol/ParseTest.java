@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ public class ParseTest
         assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("144", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("144", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         // Don't check, this test is a dynamic download
@@ -134,7 +134,7 @@ public class ParseTest
         assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("664", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         // Don't check, this test is a dynamic download
@@ -198,7 +198,7 @@ public class ParseTest
         assertEquals("9789044652901", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2023-03-28", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("400", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("400", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
@@ -295,7 +295,7 @@ public class ParseTest
         assertEquals("9789044544725", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2023-03-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("408", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("408", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(new Money(BigDecimal.valueOf(26.99d), Money.EURO),
@@ -357,7 +357,7 @@ public class ParseTest
         assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("144", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("144", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
@@ -401,7 +401,7 @@ public class ParseTest
         assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
 
         assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("664", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));

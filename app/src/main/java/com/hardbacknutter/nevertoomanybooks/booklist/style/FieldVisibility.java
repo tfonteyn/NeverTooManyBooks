@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,7 +101,7 @@ public class FieldVisibility {
 
             // bit 20..23
             DBKey.LOCATION,
-            DBKey.PAGE_COUNT,
+            DBKey.PAGES,
             DBKey.PRICE_LISTED,
             DBKey.PRICE_PAID,
 
@@ -120,7 +120,7 @@ public class FieldVisibility {
             // bit 32..35
             DBKey.TITLE_ORIGINAL_LANG,
             // represents "show the real author if 'this' is a pen-name"
-            DBKey.AUTHOR_REAL_AUTHOR,
+            DBKey.FK_AUTHOR_REAL_AUTHOR,
             // This is the detailed progress only.
             // The read/unread status is always displayed.
             DBKey.READ_PROGRESS

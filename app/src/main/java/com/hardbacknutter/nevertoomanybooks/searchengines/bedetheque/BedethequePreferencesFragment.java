@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ public class BedethequePreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_bedetheque, rootKey);
 
         final boolean useRealAuthor = ServiceLocator.getInstance()
-                                                    .isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
+                                                    .isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
         //noinspection DataFlowIssue
         findPreference("bedetheque.resolve.authors.bedetheque")
                 .setEnabled(useRealAuthor);

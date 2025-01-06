@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,7 +84,7 @@ public class ParseTest
         assertEquals("0575090677", book.getString(Identifier.SID_ASIN, null));
 
         assertEquals("2020-01-30", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("608", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.43d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -123,7 +123,7 @@ public class ParseTest
         assertEquals("1473210208", book.getString(Identifier.SID_ASIN, null));
 
         assertEquals("2017-01-12", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("336", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
         assertEquals(6.62d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -316,7 +316,7 @@ public class ParseTest
 
         assertEquals("Tapa dura", book.getString(DBKey.FORMAT, null));
         assertEquals("Español", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("720 páginas", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("720 páginas", book.getString(DBKey.PAGES, null));
         assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("2023-06-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));

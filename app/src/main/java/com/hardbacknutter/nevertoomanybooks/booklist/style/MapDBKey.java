@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,7 @@ public final class MapDBKey {
             Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
 
             Map.entry(DBKey.FK_AUTHOR, DBKey.AUTHOR_FORMATTED),
-            Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF_NAME_CSV),
+            Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF_NAMES_AS_CSV),
             Map.entry(DBKey.FK_PUBLISHER, DBKey.PUBLISHER_NAME),
             Map.entry(DBKey.FK_SERIES, DBKey.SERIES_TITLE)
     );
@@ -48,7 +48,7 @@ public final class MapDBKey {
             Map.entry(DBKey.COVER[0], R.string.lbl_cover_front),
             Map.entry(DBKey.COVER[1], R.string.lbl_cover_back),
 
-            Map.entry(DBKey.AUTHOR_REAL_AUTHOR, R.string.lbl_author_pseudonym),
+            Map.entry(DBKey.FK_AUTHOR_REAL_AUTHOR, R.string.lbl_author_pseudonym),
             Map.entry(DBKey.AUTHOR_TYPE__BITMASK, R.string.lbl_author_type),
             Map.entry(DBKey.BOOK_CONDITION, R.string.lbl_condition),
             Map.entry(DBKey.BOOK_CONDITION_COVER, R.string.lbl_dust_cover),
@@ -71,7 +71,7 @@ public final class MapDBKey {
             // TEST: should this be R.string.lbl_lend_out instead?
             Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lending),
             Map.entry(DBKey.LOCATION, R.string.lbl_location),
-            Map.entry(DBKey.PAGE_COUNT, R.string.lbl_pages),
+            Map.entry(DBKey.PAGES, R.string.lbl_pages),
             Map.entry(DBKey.PERSONAL_NOTES, R.string.lbl_personal_notes),
             Map.entry(DBKey.PRICE_LISTED, R.string.lbl_price_listed),
             Map.entry(DBKey.PRICE_PAID, R.string.lbl_price_paid),

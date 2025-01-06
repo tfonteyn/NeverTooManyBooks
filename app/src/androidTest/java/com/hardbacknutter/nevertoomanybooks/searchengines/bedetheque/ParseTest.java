@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,7 +86,7 @@ public class ParseTest
 
         assertEquals("2002-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
-        assertEquals("46", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("46", book.getString(DBKey.PAGES, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

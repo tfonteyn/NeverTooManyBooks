@@ -452,7 +452,7 @@ public class StripInfoSearchEngine
                                 case "Pagina's": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        book.putString(DBKey.PAGE_COUNT, text);
+                                        book.putString(DBKey.PAGES, text);
                                         i++;
                                     }
                                     break;

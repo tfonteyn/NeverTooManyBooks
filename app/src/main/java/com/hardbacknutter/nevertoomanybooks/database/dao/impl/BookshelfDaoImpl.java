@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -236,8 +236,8 @@ public class BookshelfDaoImpl
                                          new String[]{String.valueOf(bookshelfId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final String dbKey = rowData.getString(DBKey.FILTER_DBKEY);
-                final String value = rowData.getString(DBKey.FILTER_VALUE, null);
+                final String dbKey = rowData.getString(DBKey.BOOKSHELF_FILTER_NAME);
+                final String value = rowData.getString(DBKey.BOOKSHELF_FILTER_VALUE, null);
                 // setPersistedValue accepts null values, but is there any point using null?
                 if (value != null) {
                     final PFilter<?> filter = FilterFactory.createFilter(dbKey);
@@ -696,8 +696,8 @@ public class BookshelfDaoImpl
         static final String INSERT_FILTER =
                 INSERT_INTO_ + TBL_BOOKSHELF_FILTERS.getName()
                 + '(' + DBKey.FK_BOOKSHELF
-                + ',' + DBKey.FILTER_DBKEY
-                + ',' + DBKey.FILTER_VALUE
+                + ',' + DBKey.BOOKSHELF_FILTER_NAME
+                + ',' + DBKey.BOOKSHELF_FILTER_VALUE
                 + ") VALUES (?,?,?)";
 
         static final String DELETE_FILTERS_BY_BOOKSHELF_ID =
@@ -705,7 +705,7 @@ public class BookshelfDaoImpl
                 + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
 
         static final String FIND_FILTERS_BY_BOOKSHELF_ID =
-                SELECT_ + DBKey.FILTER_DBKEY + ',' + DBKey.FILTER_VALUE
+                SELECT_ + DBKey.BOOKSHELF_FILTER_NAME + ',' + DBKey.BOOKSHELF_FILTER_VALUE
                 + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
                 + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
     }

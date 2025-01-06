@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public final class AuthorResolverFactory {
                            + RESOLVE_AUTHORS
                            + EngineId.Bedetheque.getPreferenceKey();
 
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
             && PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(key, false)) {
 

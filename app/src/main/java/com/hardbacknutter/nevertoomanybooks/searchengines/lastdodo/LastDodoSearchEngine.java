@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -558,7 +558,7 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Aantal bladzijden":
-                        processText(td, DBKey.PAGE_COUNT, book);
+                        processText(td, DBKey.PAGES, book);
                         break;
 
                     case "Afmetingen":

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -325,7 +325,7 @@ public class BertrandPtSearchEngine
         if (element != null) {
             s = element.text().strip();
             if (!s.isBlank()) {
-                book.putString(DBKey.PAGE_COUNT, s);
+                book.putString(DBKey.PAGES, s);
             }
         }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,7 +86,7 @@ public abstract class BaseStyle
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.RATING, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.READ_PROGRESS, Sort.Unsorted);
 
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PAGE_COUNT, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PAGES, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_CONDITION, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.SIGNED__BOOL, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION__BITMASK, Sort.Unsorted);
@@ -235,12 +235,12 @@ public abstract class BaseStyle
 
         setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
         setBookLevelFieldsOrderBy(StyleCoder.decodeBookLevelFieldsOrderBy(
-                rowData.getString(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)));
+                rowData.getString(DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY)));
 
         fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility(
-                rowData.getLong(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY)));
+                rowData.getLong(DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY)));
         fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility(
-                rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS)));
+                rowData.getLong(DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY)));
 
         sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
 

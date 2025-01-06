@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -107,7 +107,7 @@ public class ParseTest
         assertEquals("1986-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-        assertEquals("159", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("159", book.getString(DBKey.PAGES, null));
         assertEquals("pb", book.getString(DBKey.FORMAT, null));
         assertEquals("COLLECTION", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
         assertEquals(Book.ContentType.Anthology, book.getContentType());
@@ -180,7 +180,7 @@ public class ParseTest
         assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-        assertEquals("257", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("257", book.getString(DBKey.PAGES, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -83,7 +83,7 @@ public class ParseTest
         assertEquals("7323911", book.getString(Identifier.SID_LAST_DODO_NL, null));
 
         assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Gekleurd", book.getString(DBKey.COLOR, null));
@@ -143,7 +143,7 @@ public class ParseTest
         assertEquals("8838967", book.getString(Identifier.SID_LAST_DODO_NL, null));
 
         assertEquals("2021", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Gekleurd", book.getString(DBKey.COLOR, null));

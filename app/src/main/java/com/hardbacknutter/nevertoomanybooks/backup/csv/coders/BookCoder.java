@@ -338,11 +338,11 @@ public class BookCoder {
             if (title != null && !title.isEmpty()) {
                 final Series series = new Series(title);
                 // number will be "" if it's not present
-                series.setNumber(book.getString(DBKey.SERIES_BOOK_NUMBER, null));
+                series.setNumber(book.getString(DBKey.BOOK_SERIES_NUMBER, null));
                 list.add(series);
             }
             book.remove(DBKey.SERIES_TITLE);
-            book.remove(DBKey.SERIES_BOOK_NUMBER);
+            book.remove(DBKey.BOOK_SERIES_NUMBER);
         }
 
         Series.checkForSeriesNameInTitle(book);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -151,7 +151,7 @@ public class IsfdbXmlPublicationTest
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
         assertEquals("1971-02-15", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("254", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("254", book.getString(DBKey.PAGES, null));
         // The parser apache/ExpatParser is not very good at eliminating whitespace.
         // In reality, the xml should parse into :
         //    "Data from OCLC.\nPublication date from Amazon.co.uk"

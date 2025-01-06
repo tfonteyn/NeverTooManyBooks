@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ public class LastDodoPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
 
         final boolean useRealAuthor = ServiceLocator.getInstance()
-                                                    .isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
+                                                    .isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
         //noinspection DataFlowIssue
         findPreference("lastdodo.resolve.authors.bedetheque")
                 .setEnabled(useRealAuthor);

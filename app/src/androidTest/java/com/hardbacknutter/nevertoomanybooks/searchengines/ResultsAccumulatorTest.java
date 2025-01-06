@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -128,7 +128,7 @@ public class ResultsAccumulatorTest
 
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
         book.putString(DBKey.BOOK_ISBN, "9780552574471");
-        book.putString(DBKey.PAGE_COUNT, "332");
+        book.putString(DBKey.PAGES, "332");
         book.putString(DBKey.TITLE, "The Shepherd's Crown");
         book.putString(DBKey.PRICE_LISTED, "7.99");
 
@@ -179,7 +179,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.FORMAT, "Paperback");
         book.putString(Identifier.SID_ASIN, "0552574473");
         book.putString(DBKey.BOOK_ISBN, "978-0552574471");
-        book.putString(DBKey.PAGE_COUNT, "336");
+        book.putString(DBKey.PAGES, "336");
         book.putString(DBKey.TITLE, "The Shepherd's Crown: A Discworld Novel, Volume 41");
         book.putString(DBKey.PRICE_LISTED, "7.29");
         book.setAuthors(List.of(
@@ -245,7 +245,7 @@ public class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.putString(DBKey.BOOK_ISBN, "9780552574471");
-        book.putString(DBKey.PAGE_COUNT, "335");
+        book.putString(DBKey.PAGES, "335");
         book.putString(DBKey.TITLE, "Shepherds Crown");
         book.putString(DBKey.PRICE_LISTED, "8.87");
 
@@ -367,7 +367,7 @@ public class ResultsAccumulatorTest
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
         book.putString(Identifier.SID_ASIN, "0552574473");
         book.putString(DBKey.BOOK_ISBN, "9780552574471");
-        book.putString(DBKey.PAGE_COUNT, "332");
+        book.putString(DBKey.PAGES, "332");
         book.putString(DBKey.TITLE, "The Shepherd's Crown");
         book.putDouble(DBKey.PRICE_LISTED, 7.99);
 

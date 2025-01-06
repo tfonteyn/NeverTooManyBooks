@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,7 +94,7 @@ public class ParseTest
         assertEquals("336348", book.getString(Identifier.SID_STRIP_INFO, null));
 
         assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
@@ -164,7 +164,7 @@ public class ParseTest
         assertEquals("2060", book.getString(Identifier.SID_STRIP_INFO, null));
 
         assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
@@ -310,7 +310,7 @@ public class ParseTest
         assertEquals("181604", book.getString(Identifier.SID_STRIP_INFO, null));
 
         assertEquals("2012", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
@@ -374,7 +374,7 @@ public class ParseTest
         assertEquals("316016", book.getString(Identifier.SID_STRIP_INFO, null));
 
         assertEquals("2017", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("224", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("224", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
@@ -438,7 +438,7 @@ public class ParseTest
         assertEquals("17030", book.getString(Identifier.SID_STRIP_INFO, null));
 
         assertEquals("1972", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
@@ -564,7 +564,7 @@ public class ParseTest
         assertEquals("84392", book.getString(Identifier.SID_STRIP_INFO, null));
 
         assertEquals("2009", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("172", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("172", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Frans", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
