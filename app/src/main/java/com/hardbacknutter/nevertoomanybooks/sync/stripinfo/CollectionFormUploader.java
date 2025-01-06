@@ -54,11 +54,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 /**
- * Handles the userdata FORM from the individual book side ajax panel.
+ * <strong>Used by the synchronization logic, i.e. the {@link StripInfoWriter}.</strong>
  * <p>
- * TODO: hook up the delete / setRead ... with BoB/ShowBook etc...
+ * Handles the userdata FORM from the individual book side ajax panel.
  */
-public class CollectionFormUploader {
+class CollectionFormUploader {
 
     /**
      * Send a FORM to the site. Used to either upload the full set of
@@ -119,28 +119,9 @@ public class CollectionFormUploader {
     }
 
     /**
-     * Set or reset the flag/checkbox 'Gelezen'.
-     * If not added to the collection (as defined by the site) before, the book
-     * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
-     * It's up to the caller to update the book in the local database.
-     *
-     * @param book           to use
-     * @param collectionData data
-     *
-     * @throws IOException              on generic/other IO failures
-     * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
-     */
-    @WorkerThread
-    public void setRead(@NonNull final Book book,
-                        @NonNull final StripInfoCollectionData collectionData)
-            throws IOException, IllegalArgumentException, StorageException {
-
-        setBooleanByMode(book, collectionData,
-                         book.isRead() ? "gelezen" : "notGelezen");
-    }
-
-    /**
+     * IMPLEMENTED, BUT UNLIKELY TO BE EXPOSED TO THE USER UI.
+     * Used internally.
+     * <p>
      * Set or reset the flag/checkbox 'In Bezit'.
      * If not added to the collection (as defined by the site) before, the book
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
@@ -164,6 +145,32 @@ public class CollectionFormUploader {
 
 
     /**
+     * IMPLEMENTED, BUT UNLIKELY TO BE EXPOSED TO THE USER UI.
+     * <p>
+     * Set or reset the flag/checkbox 'Gelezen'.
+     * If not added to the collection (as defined by the site) before, the book
+     * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
+     * It's up to the caller to update the book in the local database.
+     *
+     * @param book           to use
+     * @param collectionData data
+     *
+     * @throws IOException              on generic/other IO failures
+     * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException         on storage related failures
+     */
+    @WorkerThread
+    public void setRead(@NonNull final Book book,
+                        @NonNull final StripInfoCollectionData collectionData)
+            throws IOException, IllegalArgumentException, StorageException {
+
+        setBooleanByMode(book, collectionData,
+                         book.isRead() ? "gelezen" : "notGelezen");
+    }
+
+    /**
+     * IMPLEMENTED, BUT UNLIKELY TO BE EXPOSED TO THE USER UI.
+     * <p>
      * Set or reset the flag/checkbox 'In verlanglijst'.
      * If not added to the collection (as defined by the site) before, the book
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
@@ -186,12 +193,14 @@ public class CollectionFormUploader {
     }
 
     /**
+     * IMPLEMENTED, BUT UNLIKELY TO BE EXPOSED TO THE USER UI.
+     * <p>
      * Post a request to the site to set the rating of the given book.
      * If not added to the collection (as defined by the site) before, the book
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
      * It's up to the caller to update the book in the local database.
      *
-     * @param book to set
+     * @param book           to set
      * @param collectionData data
      *
      * @throws IOException              on generic/other IO failures
@@ -249,8 +258,7 @@ public class CollectionFormUploader {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
         final StripInfoCollectionData collectionData =
-                book.getStripInfoCollectionData()
-                    .orElseThrow(() -> new IllegalStateException("Missing CollectionData"));
+                book.getStripInfoCollectionData().orElseGet(StripInfoCollectionData::new);
 
         long collectionId = collectionData.getCollectionId();
         if (collectionId == 0) {
@@ -298,12 +306,11 @@ public class CollectionFormUploader {
         }
 
         // The site only supports numbers 1..x (and changes an empty string into a "1")
-        // so we either put "1" for first-edition, or "2" for a reprint.
+        // so we either put "1" for first-edition, or "2" for anything else.
         final boolean isFirst = book.isEdition(Book.Edition.FIRST);
         builder.appendQueryParameter(FF_DRUK, isFirst ? "1" : "2");
 
-        // we're only supporting 1 copy and the site does not allow 0 or an empty string.
-        builder.appendQueryParameter(FF_AANTAL, "1");
+        builder.appendQueryParameter(FF_AANTAL, String.valueOf(collectionData.getAmount()));
 
         builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKey.LOCATION));
         builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.PERSONAL_NOTES));
@@ -333,11 +340,14 @@ public class CollectionFormUploader {
             throws IOException, IllegalArgumentException, StorageException {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
-
-        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLLECTION_ID);
-        if (collectionId == 0) {
-            throw new IllegalArgumentException(ERROR_COLLECTION_ID_0);
+        final StripInfoCollectionData collectionData =
+                book.getStripInfoCollectionData().orElse(null);
+        // Sanity check
+        if (collectionData == null || collectionData.getCollectionId() == 0) {
+            return;
         }
+
+        final long collectionId = collectionData.getCollectionId();
 
         // We first get the delete-form to make sure the server still has our book
         // (and to mimic the browser work flow).
@@ -374,7 +384,7 @@ public class CollectionFormUploader {
      * Send a form with a single boolean flag.
      *
      * @param book           to use
-     * @param collectionData
+     * @param collectionData to use
      * @param mode           one of the 3 flags, in either 'on'  or 'off' format.
      *
      * @throws IOException              on generic/other IO failures

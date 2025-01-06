@@ -46,6 +46,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
+ * <strong>Used by the synchronization logic, i.e. the {@link StripInfoReader}.</strong>
+ * <p>
  * Fetches and parses the <strong>user collection list page</strong> from the site.
  * This list is available from the site top row menu bar.
  * <p>
@@ -55,7 +57,8 @@ import org.jsoup.nodes.Element;
  * The INPUT "name" attributes start with the name of the field, a "-", and the 'collection id'
  * of the book.
  * <p>
- * This class allows visiting each page, and parsing the specific collection row.
+ * This class allows visiting each page, and use a {@link CollectionParser}
+ * to parse each row(form) on the page.
  * These are NOT full-book data sets.
  * <p>
  * Use this class with a simple loop/fetch:
@@ -69,7 +72,7 @@ import org.jsoup.nodes.Element;
  *     }
  * </pre>
  */
-public class UserCollection {
+class UserCollection {
 
     private static final String TAG = "UserCollection";
 
@@ -134,7 +137,7 @@ public class UserCollection {
     @NonNull
     private final StripInfoSearchEngine searchEngine;
     @NonNull
-    private final CollectionParser rowParser;
+    private final CollectionParser formParser;
     private int maxPages = 1;
 
     /**
@@ -153,7 +156,7 @@ public class UserCollection {
         this.userId = userId;
         this.searchEngine = searchEngine;
         jsoupLoader = new JsoupLoader(this.searchEngine.createGetDocumentRequest(context));
-        rowParser = new CollectionParser(context, bookshelfMapper);
+        formParser = new CollectionParser(context, bookshelfMapper);
     }
 
     @IntRange(from = 1)
@@ -261,11 +264,11 @@ public class UserCollection {
 
         // showing 'progress' here is pointless as even older devices will be fast.
         for (final Element row : root.select("div.collectionRow")) {
-            final Book cData = new Book();
+            final Book siBook = new Book();
 
-            parseRow(row, cData);
-            if (!cData.isEmpty()) {
-                collection.add(cData);
+            parseRow(row, siBook);
+            if (!siBook.isEmpty()) {
+                collection.add(siBook);
             }
         }
         return collection;
@@ -274,12 +277,12 @@ public class UserCollection {
     /**
      * Parse the row.
      *
-     * @param row   to parse
-     * @param cData a {@link Book} object to populate
+     * @param row    to parse
+     * @param siBook a {@link Book} object to populate
      */
     @AnyThread
     private void parseRow(@NonNull final Element row,
-                          @NonNull final Book cData) {
+                          @NonNull final Book siBook) {
         final String idAttr = row.id();
         // sanity check, each row is normally a book.
         if (idAttr.startsWith(ROW_ID_ATTR)) {
@@ -290,41 +293,44 @@ public class UserCollection {
                 if (collectionIdElement != null) {
                     final long collectionId = Long.parseLong(collectionIdElement.val());
 
-                    // Store the SID now so we can get collectionData created
-                    cData.setIdentifierValue(Identifier.SID_STRIP_INFO, externalId);
-                    final StripInfoCollectionData collectionData =
-                            cData.getStripInfoCollectionData()
-                                 .orElseThrow(() -> new IllegalStateException("Missing SID"));
+                    // Store the SID now!
+                    siBook.setIdentifierValue(Identifier.SID_STRIP_INFO, externalId);
+
+                    final StripInfoCollectionData collectionData = new StripInfoCollectionData();
                     collectionData.setSid(externalId);
                     collectionData.setCollectionId(collectionId);
 
-                    rowParser.parseDateAcquired(row, "aankoopdatum-" + collectionId, cData);
-                    rowParser.parseEdition(row, "druk-" + collectionId, cData);
-                    rowParser.parseLocation(row, "locatie-" + collectionId, cData);
-                    rowParser.parseNotes(row, "opmerking-" + collectionId, cData);
-                    rowParser.parsePricePaid(row, "prijs-" + collectionId, cData);
-                    rowParser.parseRating(row, "score-" + collectionId, cData);
-                    rowParser.parseReadFlag(row, "gelezen-" + collectionId, cData);
+                    formParser.parseDateAcquired(row, "aankoopdatum-" + collectionId, siBook);
+                    formParser.parseEdition(row, "druk-" + collectionId, siBook);
+                    formParser.parseLocation(row, "locatie-" + collectionId, siBook);
+                    formParser.parseNotes(row, "opmerking-" + collectionId, siBook);
+                    formParser.parsePricePaid(row, "prijs-" + collectionId, siBook);
+                    formParser.parseRating(row, "score-" + collectionId, siBook);
+                    formParser.parseReadFlag(row, "gelezen-" + collectionId, siBook);
 
-                    rowParser.parseAmount(row, "aantal-" + collectionId, collectionData);
-                    rowParser.parseDigitalFlag(row, "digitaal-" + collectionId, cData,
-                                               collectionData);
-                    rowParser.parseOwnedFlag(row, "bezit-" + collectionId, cData, collectionData);
-                    rowParser.parseWishListFlag(row, "wishlist-" + collectionId, cData,
+                    formParser.parseAmount(row, "aantal-" + collectionId,
+                                           collectionData);
+                    formParser.parseDigitalFlag(row, "digitaal-" + collectionId, siBook,
                                                 collectionData);
+                    formParser.parseOwnedFlag(row, "bezit-" + collectionId, siBook,
+                                              collectionData);
+                    formParser.parseWishListFlag(row, "wishlist-" + collectionId, siBook,
+                                                 collectionData);
+
+                    siBook.setStripInfoCollectionData(collectionData);
 
                     final Element coverElement =
                             row.selectFirst("figure.stripThumbInnerWrapper > img");
                     if (coverElement != null) {
                         final String src = coverElement.attr("src");
                         if (!src.isEmpty()) {
-                            cData.putString(BKEY_FRONT_COVER_URL, src);
+                            siBook.putString(BKEY_FRONT_COVER_URL, src);
                         }
                     }
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // Make sure we don't return partial data
-                cData.clearData();
+                siBook.clearData();
             }
         }
     }

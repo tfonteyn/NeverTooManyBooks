@@ -45,9 +45,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
- * Handles the userdata FORM from the individual <strong>book side ajax panel</strong>.
+ * <strong>Used by the {@link StripInfoSearchEngine} </strong>
  * <p>
- * Wraps the {@link CollectionParser} handling all ajax calls before delegating the actual parsing.
+ * Handles the userdata FORM from the individual <strong>book side ajax panel</strong>.
  */
 public class CollectionFormParser {
 
@@ -151,10 +151,8 @@ public class CollectionFormParser {
                     }
                 }));
 
-
         final StripInfoCollectionData collectionData =
-                book.getStripInfoCollectionData()
-                    .orElseThrow(() -> new IllegalStateException("Missing SID"));
+                book.getStripInfoCollectionData().orElseGet(StripInfoCollectionData::new);
         collectionData.setSid(externalId);
         collectionData.setCollectionId(collectionId);
 
@@ -173,6 +171,8 @@ public class CollectionFormParser {
         formParser.parseNotes(response, SIDE_FF_PERSONAL_NOTES, book);
         formParser.parsePricePaid(response, SIDE_FF_PRICE_PAID, book);
         formParser.parseRating(response, SIDE_FF_RATING, book);
+
+        book.setStripInfoCollectionData(collectionData);
     }
 
     public void cancel() {

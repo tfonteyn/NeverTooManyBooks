@@ -127,7 +127,7 @@ public class StripInfoWriter
                 final Book book = Book.from(cursor);
 
                 final StripInfoCollectionData collectionData =
-                        new StripInfoCollectionData(book.getId(), new CursorRow(cursor));
+                        new StripInfoCollectionData(new CursorRow(cursor));
                 book.setStripInfoCollectionData(collectionData);
 
                 try {
@@ -140,7 +140,7 @@ public class StripInfoWriter
                         bookDao.delete(book);
                     } else {
                         // keep the local book, but remove the stripInfo data for it.
-                        stripInfoDao.delete(book.getId());
+                        stripInfoDao.delete(book);
                         book.remove(Identifier.SID_STRIP_INFO);
                         book.remove(StripInfoCollectionData.BKEY);
                     }

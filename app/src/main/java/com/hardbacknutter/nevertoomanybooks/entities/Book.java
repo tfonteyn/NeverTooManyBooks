@@ -1143,40 +1143,44 @@ public class Book
 
     /**
      * Get the {@link StripInfoCollectionData}.
-     * <p>
-     * If there is no {@link Identifier#SID_STRIP_INFO} present,
-     * this method will return an {@code Optional.empty()}.
      *
      * @return collection data
+     *
+     * @throws IllegalStateException if there is no {@link Identifier#SID_STRIP_INFO}
      */
     @NonNull
     public Optional<StripInfoCollectionData> getStripInfoCollectionData() {
-        if (contains(Identifier.SID_STRIP_INFO)) {
-            final long bookId = getId();
-            StripInfoCollectionData data;
-            if (bookId == 0) {
-                // a new book, just create a new data object
-                data = new StripInfoCollectionData(0);
-                putParcelable(StripInfoCollectionData.BKEY, data);
+        if (!contains(Identifier.SID_STRIP_INFO)) {
+            throw new IllegalStateException("Missing SID_STRIP_INFO");
+        }
+
+        // We MIGHT have it (probably not) ...
+        if (contains(StripInfoCollectionData.BKEY)) {
+            final StripInfoCollectionData data = getParcelable(StripInfoCollectionData.BKEY);
+            if (data == null) {
+                return Optional.empty();
             } else {
-                // an existing book
-                // We MIGHT have it (probably not) ...
-                data = getParcelable(StripInfoCollectionData.BKEY);
-                if (data == null) {
-                    // but if not, go explicitly fetch/create it.
-                    data = ServiceLocator.getInstance().getStripInfoDao()
-                                         .getByBookId(bookId)
-                                         .orElse(new StripInfoCollectionData(bookId));
-                    // store for reuse
-                    putParcelable(StripInfoCollectionData.BKEY, data);
-                }
+                return Optional.of(data);
             }
-            return Optional.of(data);
         } else {
-            return Optional.empty();
+            // but if not, go explicitly fetch/create it.
+            final Optional<StripInfoCollectionData> oData = ServiceLocator
+                    .getInstance()
+                    .getStripInfoDao()
+                    .findByLocalBookId(getId());
+            // store for reuse
+            oData.ifPresent(data -> putParcelable(StripInfoCollectionData.BKEY, data));
+            return oData;
         }
     }
 
+    /**
+     * Set or remove the StripInfo collection data.
+     *
+     * @param data to set; use {@code null} to remove.
+     *             This does NOT remove the {@link Identifier#SID_STRIP_INFO}
+     *             if there is one.
+     */
     public void setStripInfoCollectionData(@Nullable final StripInfoCollectionData data) {
         if (data == null) {
             remove(StripInfoCollectionData.BKEY);

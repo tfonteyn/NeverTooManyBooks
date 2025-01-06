@@ -1049,7 +1049,7 @@ public final class DBDefinitions {
         DOM_STRIP_INFO_AMOUNT =
                 new Domain.Builder(DBKey.STRIP_INFO_AMOUNT, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(0)
+                        .withDefault(1)
                         .build();
 
         DOM_STRIP_INFO_LAST_SYNC__UTC =

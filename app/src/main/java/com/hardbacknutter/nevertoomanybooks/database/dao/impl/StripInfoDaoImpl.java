@@ -24,7 +24,6 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -40,8 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
-
 public class StripInfoDaoImpl
         extends BaseDaoImpl
         implements StripInfoDao {
@@ -49,7 +46,6 @@ public class StripInfoDaoImpl
     private static final String TAG = "StripInfoDaoImpl";
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
-    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     /**
      * Constructor.
@@ -62,13 +58,12 @@ public class StripInfoDaoImpl
 
     @Override
     @NonNull
-    public Optional<StripInfoCollectionData> getByBookId(@IntRange(from = 1) final long bookId) {
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
+    public Optional<StripInfoCollectionData> findByLocalBookId(@IntRange(from = 1) final long bookId) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_LOCAL_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return Optional.of(
-                        new StripInfoCollectionData(rowData.getLong(DBKey.PK_ID), rowData));
+                return Optional.of(new StripInfoCollectionData(rowData));
             }
         }
         return Optional.empty();
@@ -104,7 +99,7 @@ public class StripInfoDaoImpl
             return false;
         }
 
-        final LocalDateTime lastSync = data.getLastSync();
+        final String lastSync = data.getLastSync();
         final String dateTime = lastSync != null ? SqlEncode.dateTime(lastSync) : "";
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
@@ -150,7 +145,7 @@ public class StripInfoDaoImpl
                 + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
                 + ") VALUES (?,?,?,?,?,?,?,?)";
 
-        static final String FIND_BY_BOOK_ID =
+        static final String FIND_BY_LOCAL_BOOK_ID =
                 SELECT_ + DBKey.FK_BOOK
                 + ',' + DBKey.STRIP_INFO_BOOK_ID
                 + ',' + DBKey.STRIP_INFO_COLLECTION_ID
@@ -159,7 +154,7 @@ public class StripInfoDaoImpl
                 + ',' + DBKey.STRIP_INFO_WANTED
                 + ',' + DBKey.STRIP_INFO_AMOUNT
                 + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
-                + _FROM_ + TBL_STRIPINFO_COLLECTION.getName()
+                + _FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
                 + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         static final String DELETE_BY_LOCAL_BOOK_ID =

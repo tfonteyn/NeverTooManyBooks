@@ -27,11 +27,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -61,50 +56,51 @@ public class StripInfoCollectionData
      * as being in the users collection.
      */
     private long collectionId;
-    /** Our/local book-id. */
-    private long bookId;
     private boolean wanted;
     private boolean owned;
     private boolean digital;
     /** The amount of copies of this book we have. */
-    private int amount;
+    private int amount = 1;
     @Nullable
-    private LocalDateTime lastSync;
+    private String lastSync;
 
-    public StripInfoCollectionData(@IntRange(from = 0) final long bookId) {
-        this.bookId = bookId;
+    public StripInfoCollectionData() {
     }
 
-    public StripInfoCollectionData(@IntRange(from = 0) final long bookId,
-                                   @NonNull final DataHolder rowData) {
-        this.bookId = bookId;
+    public StripInfoCollectionData(final long sid,
+                                   final long collectionId,
+                                   final boolean wanted,
+                                   final boolean owned,
+                                   final boolean digital,
+                                   final int amount,
+                                   @Nullable final String lastSyn) {
+        this.sid = sid;
+        this.collectionId = collectionId;
+        this.wanted = wanted;
+        this.owned = owned;
+        this.digital = digital;
+        this.amount = Math.max(amount, 1);
+        this.lastSync = lastSyn;
+    }
 
+    public StripInfoCollectionData(@NonNull final DataHolder rowData) {
         sid = rowData.getLong(DBKey.STRIP_INFO_BOOK_ID);
         collectionId = rowData.getLong(DBKey.STRIP_INFO_COLLECTION_ID);
         wanted = rowData.getBoolean(DBKey.STRIP_INFO_WANTED);
         owned = rowData.getBoolean(DBKey.STRIP_INFO_OWNED);
         digital = rowData.getBoolean(DBKey.STRIP_INFO_DIGITAL);
         amount = rowData.getInt(DBKey.STRIP_INFO_AMOUNT);
-        final String lastSynStr = rowData.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC, null);
-        if (lastSynStr != null) {
-            lastSync = new ISODateParser(ServiceLocator.getInstance().getSystemLocaleList().get(0))
-                    .parse(lastSynStr).orElseThrow();
-        }
+        lastSync = rowData.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC, null);
     }
 
     public StripInfoCollectionData(@NonNull final Parcel in) {
         sid = in.readLong();
         collectionId = in.readLong();
-        bookId = in.readLong();
         wanted = in.readByte() != 0;
         owned = in.readByte() != 0;
         digital = in.readByte() != 0;
         amount = in.readInt();
-        final String lastSynStr = in.readString();
-        if (lastSynStr != null) {
-            lastSync = new ISODateParser(ServiceLocator.getInstance().getSystemLocaleList().get(0))
-                    .parse(lastSynStr).orElseThrow();
-        }
+        lastSync = in.readString();
     }
 
     @Override
@@ -112,27 +108,16 @@ public class StripInfoCollectionData
                               final int flags) {
         dest.writeLong(sid);
         dest.writeLong(collectionId);
-        dest.writeLong(bookId);
         dest.writeByte((byte) (wanted ? 1 : 0));
         dest.writeByte((byte) (owned ? 1 : 0));
         dest.writeByte((byte) (digital ? 1 : 0));
         dest.writeInt(amount);
-        dest.writeString(lastSync != null
-                         ? lastSync.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                         : null);
+        dest.writeString(lastSync);
     }
 
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    public long getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(final long bookId) {
-        this.bookId = bookId;
     }
 
     public long getSid() {
@@ -180,17 +165,18 @@ public class StripInfoCollectionData
         return amount;
     }
 
-    public void setAmount(final int amount) {
-        this.amount = amount;
+    public void setAmount(@IntRange(from = 1) final int amount) {
+        // sanity check, this object existence implies we have at least 1 copy of the book
+        this.amount = Math.max(amount, 1);
     }
 
 
     @Nullable
-    public LocalDateTime getLastSync() {
+    public String getLastSync() {
         return lastSync;
     }
 
-    public void setLastSync(@Nullable final LocalDateTime lastSync) {
+    public void setLastSync(@Nullable final String lastSync) {
         this.lastSync = lastSync;
     }
 
@@ -200,7 +186,6 @@ public class StripInfoCollectionData
         return "StripInfoCollectionData{"
                + "sid=" + sid
                + ", collectionId=" + collectionId
-               + ", bookId=" + bookId
                + ", wanted=" + wanted
                + ", owned=" + owned
                + ", digital=" + digital
