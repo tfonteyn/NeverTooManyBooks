@@ -63,7 +63,9 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  * Currently supported formats.
  * <ul>
  *     <li>v8: drops the individual identifier fields on the Book level, and
- *          groups them in a new array key.
+ *             groups them in a new array key.
+ *             Adds {@link com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData}
+ *             for books.
  *     </li>
  *     <li>v7: adds {@link Style#getBookLevelFieldsOrderBy()} to {@link RecordType#Styles}</li>
  *     <li>v6: adds {@link RecordType#DeletedBooks} : {@link RecordEncoding#Json}</li>

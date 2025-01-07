@@ -39,10 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -66,6 +68,7 @@ public class BookCoder
     private final JsonCoder<Bookshelf> bookshelfCoder;
     @NonNull
     private final JsonCoder<CalibreLibrary> calibreLibraryCoder;
+    private final JsonCoder<StripInfoCollectionData> stripInfoDataCoder = new StripInfoDataCoder();
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
@@ -125,76 +128,82 @@ public class BookCoder
                     // FK as it's a reference
                     out.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encodeReference(list));
                 }
-                break;
+                return;
             }
             case Book.BKEY_AUTHOR_LIST: {
                 final List<Author> list = book.getAuthors();
                 if (!list.isEmpty()) {
                     out.put(key, authorCoder.encode(list));
                 }
-                break;
+                return;
             }
             case Book.BKEY_PUBLISHER_LIST: {
                 final List<Publisher> list = book.getPublishers();
                 if (!list.isEmpty()) {
                     out.put(key, publisherCoder.encode(list));
                 }
-                break;
+                return;
             }
             case Book.BKEY_SERIES_LIST: {
                 final List<Series> list = book.getSeries();
                 if (!list.isEmpty()) {
                     out.put(key, seriesCoder.encode(list));
                 }
-                break;
+                return;
             }
             case Book.BKEY_TOC_LIST: {
                 final List<TocEntry> list = book.getToc();
                 if (!list.isEmpty()) {
                     out.put(key, tocEntryCoder.encode(list));
                 }
-                break;
+                return;
             }
             case DBKey.FK_CALIBRE_LIBRARY: {
-                // The presence of FK_CALIBRE_LIBRARY (a row id) indicates there IS a calibre
-                // library for this book but there is no other/more library data on the book itself.
+                // The presence of FK_CALIBRE_LIBRARY indicates there IS a calibre library
+                // for this book but there is no actual library data on the book itself.
                 // We need to explicitly load the library and encode a reference for it.
                 // FK as it's a reference
                 book.getCalibreLibrary().ifPresent(library -> out
                         .put(DBKey.FK_CALIBRE_LIBRARY,
                              calibreLibraryCoder.encodeReference(library)));
-                break;
+                return;
             }
-            default: {
-                if (element instanceof CharSequence) {
-                    if (((CharSequence) element).length() > 0) {
-                        out.put(key, element);
-                    }
-                } else if (element instanceof Money) {
-                    // Only write the value.
-                    // The currency will be handled as a plain String type key.
-                    final Money money = (Money) element;
-                    if (!money.isZero()) {
-                        out.put(key, money.getValue());
-                    }
-                } else if (element instanceof Number) {
-                    if (((Number) element).doubleValue() != 0) {
-                        out.put(key, element);
-                    }
-                } else if (element instanceof Boolean) {
-                    out.put(key, element);
+        }
 
-                    // } else if (element instanceof ArrayList) {
-                    // } else if (element instanceof Parcelable) {
-                    // } else if (element instanceof Serializable) {
-                    //    throw new IllegalArgumentException("Serializable not implemented: "
-                    //                                       + element);
+        if (book.getIdentifierValue(Identifier.SID_STRIP_INFO).isPresent()) {
+            book.getStripInfoCollectionData().ifPresent(
+                    scd ->
+                            out.put(StripInfoCollectionData.BKEY,
+                                    stripInfoDataCoder.encode(scd)));
+            return;
+        }
 
-                } else if (element != null) {
-                    throw new IllegalArgumentException("key=" + key + "|o=" + element);
-                }
-
+        if (element instanceof CharSequence) {
+            if (((CharSequence) element).length() > 0) {
+                out.put(key, element);
             }
+        } else if (element instanceof Money) {
+            // Only write the value.
+            // The currency will be handled as a plain String type key.
+            final Money money = (Money) element;
+            if (!money.isZero()) {
+                out.put(key, money.getValue());
+            }
+        } else if (element instanceof Number) {
+            if (((Number) element).doubleValue() != 0) {
+                out.put(key, element);
+            }
+        } else if (element instanceof Boolean) {
+            out.put(key, element);
+
+            // } else if (element instanceof ArrayList) {
+            // } else if (element instanceof Parcelable) {
+            // } else if (element instanceof Serializable) {
+            //    throw new IllegalArgumentException("Serializable not implemented: "
+            //                                       + element);
+
+        } else if (element != null) {
+            throw new IllegalArgumentException("key=" + key + "|o=" + element);
         }
     }
 
@@ -208,23 +217,25 @@ public class BookCoder
             final String key = it.next();
             switch (key) {
                 case Book.BKEY_BOOKSHELF_LIST: {
-                    // Full object
+                    // Full object as written by archive version 2..3
                     book.setBookshelves(bookshelfCoder.decode(data.getJSONArray(key)));
                     break;
                 }
                 case DBKey.FK_BOOKSHELF: {
-                    // Reference; if the reference is not found,
+                    // Reference as written by archive version 4+
+                    // If the reference is not found,
                     // the book will be put on the preferred (or default) Bookshelf.
                     book.setBookshelves(bookshelfCoder.decodeReference(data.getJSONArray(key)));
                     break;
                 }
                 case Book.BKEY_CALIBRE_LIBRARY: {
-                    // Full object
+                    // Full object as written by archive version 2..3
                     book.setCalibreLibrary(calibreLibraryCoder.decode(data.getJSONObject(key)));
                     break;
                 }
                 case DBKey.FK_CALIBRE_LIBRARY: {
-                    // Reference; if the reference is not found,
+                    // Reference as written by archive version 4+
+                    // If the reference is not found,
                     // the Calibre data is removed from the book
                     book.setCalibreLibrary(
                             calibreLibraryCoder.decodeReference(data.getJSONObject(key))
@@ -252,6 +263,11 @@ public class BookCoder
                     // Just unpack as individual keys
                     identifierCoder.decode(data.getJSONArray(key))
                                    .forEach(p -> book.put(p.first, p.second));
+                    break;
+                }
+                case StripInfoCollectionData.BKEY: {
+                    book.setStripInfoCollectionData(
+                            stripInfoDataCoder.decode(data.getJSONObject(key)));
                     break;
                 }
                 default: {
