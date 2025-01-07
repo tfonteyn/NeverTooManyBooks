@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,8 +105,6 @@ public final class FormatMapper
         MAPPINGS.put("livre numérique", R.string.book_format_ebook);
         // simplified chinese - Douban
         MAPPINGS.put("电子图书", R.string.book_format_ebook);
-        MAPPINGS.put("电子书", R.string.book_format_ebook);
-
 
         // ################## Audio-books ##################
         MAPPINGS.put("audiobook", R.string.book_format_audiobook);
