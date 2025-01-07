@@ -51,7 +51,7 @@ tinyzxingwrapper = "1.0.1"
 acra = '5.12.0'
 
 # https://github.com/mockito/mockito
-mockito = '5.14.2'
+mockito = "5.15.2"
 
 # https://junit.org/junit5/docs/current/user-guide/#overview
 jupiter = "5.11.4"
