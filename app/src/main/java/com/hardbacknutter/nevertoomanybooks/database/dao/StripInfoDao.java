@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
@@ -43,25 +44,33 @@ public interface StripInfoDao {
     /**
      * Store the given {@link StripInfoCollectionData}.
      *
-     * @param bookId local book id
-     * @param data   to process
+     * @param book to process
      *
-     * @throws DaoWriteException on failure
+     * @return {@code true} if an insert was done.
+     *         {@code false} if no insert was <strong>attempted</strong>
+     *
+     * @throws DaoInsertException on failure to insert
      */
-    void insert(long bookId,
-                @NonNull StripInfoCollectionData data)
-            throws DaoWriteException;
+    boolean insert(@NonNull Book book)
+            throws DaoInsertException;
 
     /**
-     * Delete all data related to StripInfo from the database
-     * for the given book id.
+     * Delete all data related to StripInfo from the database.
+     * The StripInfo specific fields are however left in the {@link Book} object.
      *
-     * @param bookId local book id
+     * @param book to process
      *
      * @return {@code true} if a row was deleted
      */
-    boolean delete(long bookId);
+    boolean delete(@NonNull Book book);
 
+    /**
+     * Get the StripInfo data for the given local book id.
+     *
+     * @param bookId the local book id
+     *
+     * @return data
+     */
     @NonNull
-    Optional<StripInfoCollectionData> getByBookId(@IntRange(from = 1) long bookId);
+    Optional<StripInfoCollectionData> findByLocalBookId(@IntRange(from = 1) long bookId);
 }

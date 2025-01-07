@@ -84,30 +84,32 @@ public class StripInfoDaoImpl
             }
         }
 
-        final long bookId = book.getId();
-
-        // Delete all existing data for this book.
-        delete(bookId);
-
-        // is there anything to insert ?
-        final StripInfoCollectionData data = book.getParcelable(
-                StripInfoCollectionData.BKEY);
-        if (data != null) {
-            insert(bookId, data);
-        }
+        // Just delete all current data and insert from scratch.
+        delete(book);
+        insert(book);
     }
 
     @Override
-    public void insert(final long bookId,
-                       @NonNull final StripInfoCollectionData data)
+    public boolean insert(@NonNull final Book book)
             throws DaoInsertException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        final StripInfoCollectionData data = book.getParcelable(StripInfoCollectionData.BKEY);
+        if (data == null) {
+            return false;
+        }
 
         final LocalDateTime lastSync = data.getLastSync();
         final String dateTime = lastSync != null ? SqlEncode.dateTime(lastSync) : "";
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             int i = 0;
-            stmt.bindLong(++i, bookId);
+            stmt.bindLong(++i, book.getId());
             stmt.bindLong(++i, data.getSid());
             stmt.bindLong(++i, data.getCollectionId());
             stmt.bindBoolean(++i, data.isOwned());
@@ -120,13 +122,15 @@ public class StripInfoDaoImpl
                 throw new DaoInsertException(ERROR_INSERT_FROM + data);
             }
         }
+
+        return true;
     }
 
     @Override
-    public boolean delete(final long bookId) {
+    public boolean delete(@NonNull final Book book) {
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_LOCAL_BOOK_ID)) {
-            stmt.bindLong(1, bookId);
+            stmt.bindLong(1, book.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
         return rowsAffected > 0;

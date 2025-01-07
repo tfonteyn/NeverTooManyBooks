@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,16 +21,20 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
 public interface CalibreDao {
 
     /**
-     * Update existing, or insert the Calibre data for the given {@link Book}.
+     * Delete, update existing or insert the Calibre data for the given {@link Book}.
      *
      * @param context Current context
      * @param book    to process
@@ -69,4 +73,14 @@ public interface CalibreDao {
      * @return {@code true} if a row was deleted
      */
     boolean delete(@NonNull Book book);
+
+    /**
+     * Get the Calibre data for the given local book id.
+     *
+     * @param bookId the local book id
+     *
+     * @return data
+     */
+    @NonNull
+    Optional<CalibreBookData> findByLocalBookId(@IntRange(from = 1) long bookId);
 }

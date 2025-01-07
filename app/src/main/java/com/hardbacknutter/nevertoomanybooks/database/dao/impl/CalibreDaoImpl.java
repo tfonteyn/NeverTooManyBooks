@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,9 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
+import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -32,11 +35,13 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -47,7 +52,6 @@ public class CalibreDaoImpl
     private static final String TAG = "CalibreDaoImpl";
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
-    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     @NonNull
     private final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier;
@@ -62,6 +66,19 @@ public class CalibreDaoImpl
                           @NonNull final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier) {
         super(db, TAG);
         this.calibreLibraryDaoSupplier = calibreLibraryDaoSupplier;
+    }
+
+    @Override
+    @NonNull
+    public Optional<CalibreBookData> findByLocalBookId(@IntRange(from = 1) final long bookId) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_LOCAL_BOOK_ID,
+                                         new String[]{String.valueOf(bookId)})) {
+            final CursorRow rowData = new CursorRow(cursor);
+            if (cursor.moveToFirst()) {
+                return Optional.of(new CalibreBookData(rowData));
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -139,6 +156,7 @@ public class CalibreDaoImpl
             stmt.bindString(3, book.getString(DBKey.CALIBRE_BOOK_UUID));
             stmt.bindString(4, book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT));
             stmt.bindLong(5, library.getId());
+
             if (stmt.executeInsert() == -1) {
                 throw new DaoInsertException(ERROR_INSERT_FROM + book);
             }
@@ -167,6 +185,14 @@ public class CalibreDaoImpl
                 + ',' + DBKey.CALIBRE_BOOK_MAIN_FORMAT
                 + ',' + DBKey.FK_CALIBRE_LIBRARY
                 + ") VALUES (?,?,?,?,?)";
+
+        static final String FIND_BY_LOCAL_BOOK_ID =
+                SELECT_ + DBKey.CALIBRE_BOOK_ID
+                + ',' + DBKey.CALIBRE_BOOK_UUID
+                + ',' + DBKey.CALIBRE_BOOK_MAIN_FORMAT
+                + ',' + DBKey.FK_CALIBRE_LIBRARY
+                + _FROM_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
+                + _WHERE_ + DBKey.FK_BOOK + "=?";
 
         static final String DELETE_BY_LOCAL_BOOK_ID =
                 DELETE_FROM_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
