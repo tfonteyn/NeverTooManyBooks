@@ -111,7 +111,7 @@
     <string name="book_format_other">Andere</string>
     <string name="book_format_digest">Heft</string>
     <string name="book_format_dimensions">Abmessungen</string>
-    <string name="book_format_ebook">Onlinebuch</string>
+    <string name="book_format_ebook">E-Buch</string>
     <string name="book_format_hardcover">Gebundene Ausgabe</string>
     <string name="book_format_paperback">Taschenbuch</string>
     <string name="book_format_paperback_large">Paperback</string>
