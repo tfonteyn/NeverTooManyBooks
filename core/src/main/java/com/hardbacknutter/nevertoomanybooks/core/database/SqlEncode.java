@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -109,6 +109,18 @@ public final class SqlEncode {
         // We should just create a formatter which uses a ' '...
         final String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         return T.matcher(date).replaceFirst(" ");
+    }
+
+    /**
+     * Encode a LocalDateTime. Used to transform Java-ISO to SQL-ISO datetime format.
+     *
+     * @param dateTime to encode
+     *
+     * @return sqlite date time as a string
+     */
+    @NonNull
+    public static String dateTime(@NonNull final CharSequence dateTime) {
+        return T.matcher(dateTime).replaceFirst(" ");
     }
 
     /**
