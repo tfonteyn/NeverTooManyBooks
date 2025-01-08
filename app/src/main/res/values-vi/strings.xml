@@ -469,6 +469,7 @@
     <string name="lbl_websites">Trang web</string>
     <string name="lbl_year">Năm</string>
     <string name="list_and">và</string>
+    <string name="list_semicolon">"; "</string>
     <string name="list_element">• %s</string>
     <string name="loose">Lỏng lẻo</string>
     <string name="menu_update_books">Cập nhật sách</string>

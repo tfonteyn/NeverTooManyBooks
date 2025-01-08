@@ -89,6 +89,7 @@
         <item quantity="other">%1$d bøkur</item>
     </plurals>
     <string name="ellipsize">%1$s…</string>
+    <string name="list_semicolon">"; "</string>
     <string name="list_element">• %s</string>
     <string name="x_of_y">%1$d av %2$d</string>
     <string name="and_others">%1$s…</string>

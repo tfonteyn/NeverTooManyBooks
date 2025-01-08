@@ -82,6 +82,12 @@
          https://en.wikipedia.org/wiki/Ellipsis -->
     <string name="ellipsize">%1$s…</string>
 
+    <!-- A delimiter used in lists where, in English, a semicolon is used.
+         Other languages may use a different symbol and may have or not have space(s)
+         https://en.wikipedia.org/wiki/Semicolon
+     -->
+    <string name="list_semicolon">"; "</string>
+
     <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern. -->
     <string name="list_element">• %s</string>
     <!-- "name #nr" where the # is a potential language dependent symbol for 'number'.-->
