@@ -229,4 +229,6 @@
     <string name="lbl_capitalize_full">Tudo em caixa alta</string>
     <string name="info_bulk_set_location">Selecione o local que deseja atribuir a todos os livros listados no nó selecionado.</string>
     <string name="lbl_citation_type">Formato de citação/compartilhamento</string>
+    <string name="site_description_various_languages">Vários idiomas</string>
+
 </resources>

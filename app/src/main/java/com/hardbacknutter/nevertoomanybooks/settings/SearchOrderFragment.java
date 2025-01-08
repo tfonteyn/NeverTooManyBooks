@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -181,7 +181,7 @@ public class SearchOrderFragment
                                                           String.join(", ", capabilities)));
                 vb.capabilities.setVisibility(View.VISIBLE);
 
-                vb.info.setText(site.getEngineId().getInfoResId());
+                vb.info.setText(site.getEngineId().getInfo(context));
                 vb.info.setVisibility(View.VISIBLE);
             } else {
                 vb.capabilities.setVisibility(View.GONE);

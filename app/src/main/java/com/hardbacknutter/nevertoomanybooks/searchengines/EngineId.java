@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -134,7 +134,8 @@ public enum EngineId
     /** All genres. */
     Amazon("amazon",
            R.string.site_amazon,
-           R.string.site_info_amazon,
+           List.of(R.string.site_description_various_languages,
+                   R.string.site_description_shop),
            // amazon.com, amazon.ca : blocked by captcha
            "https://www.amazon.co.uk",
            // The Locale will be dynamically set depending on the country site
@@ -145,7 +146,9 @@ public enum EngineId
     /** French language (and to some extend other languages) comics. */
     Bedetheque("bedetheque",
                R.string.site_bedetheque,
-               R.string.site_info_bedetheque,
+               List.of(R.string.site_description_french,
+                       R.string.site_description_catalog,
+                       R.string.site_description_eu_comics),
                "https://www.bedetheque.com",
                Locale.FRANCE,
                BedethequeSearchEngine.class,
@@ -159,7 +162,8 @@ public enum EngineId
      */
     BertrandPt("bertrandpt",
                R.string.site_bertrand_pt,
-               R.string.site_info_bertrand_pt,
+               List.of(R.string.site_description_portuguese_and_more,
+                       R.string.site_description_shop),
                "https://www.bertrand.pt",
                new Locale("pt", "PT"),
                BertrandPtSearchEngine.class,
@@ -171,7 +175,8 @@ public enum EngineId
      */
     Bol("bol",
         R.string.site_bol_com,
-        R.string.site_info_bol_com,
+        List.of(R.string.site_description_dutch_and_more,
+                R.string.site_description_shop),
         "https://www.bol.com",
         new Locale("nl", "NL"),
         BolSearchEngine.class,
@@ -184,7 +189,8 @@ public enum EngineId
      */
     BookFinder("bookfinder",
                R.string.site_bookfinder,
-               R.string.site_info_bookfinder,
+               List.of(R.string.site_description_various_languages,
+                       R.string.site_description_shop),
                "https://www.bookfinder.com",
                Locale.US,
                BookFinderSearchEngine.class,
@@ -193,7 +199,8 @@ public enum EngineId
     /** German language books & comics. */
     Dnb("dnb",
         R.string.site_dnb_de,
-        R.string.site_info_dnb_de,
+        List.of(R.string.site_description_german,
+                R.string.site_description_catalog),
         "https://katalog.dnb.de",
         new Locale("de", "DE"),
         DnbSearchEngine.class,
@@ -202,7 +209,8 @@ public enum EngineId
     /** Chinese language books & comics. */
     Douban("douban",
            R.string.site_douban,
-           R.string.site_info_douban,
+           List.of(R.string.site_description_chinese,
+                   R.string.site_description_catalog),
            "https://search.douban.com",
            Locale.CHINA,
            DoubanSearchEngine.class,
@@ -214,7 +222,8 @@ public enum EngineId
      */
     Goodreads("goodreads",
               R.string.site_goodreads,
-              R.string.site_info_goodreads,
+              List.of(R.string.site_description_english_and_more,
+                      R.string.site_description_catalog),
               "https://www.goodreads.com",
               Locale.US,
               GoodreadsSearchEngine.class,
@@ -223,7 +232,8 @@ public enum EngineId
     /** All genres. */
     GoogleBooks("googlebooks",
                 R.string.site_google_books,
-                R.string.site_info_google_books,
+                List.of(R.string.site_description_english_and_more,
+                        R.string.site_description_catalog),
                 "https://www.googleapis.com",
                 Locale.US,
                 GoogleBooks2SearchEngine.class,
@@ -232,7 +242,9 @@ public enum EngineId
     /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
     Isfdb("isfdb",
           R.string.site_isfdb,
-          R.string.site_info_isfdb,
+          List.of(R.string.site_description_english_and_more,
+                  R.string.site_description_catalog,
+                  R.string.site_description_fsf),
           "https://www.isfdb.org",
           Locale.US,
           IsfdbSearchEngine.class,
@@ -241,7 +253,8 @@ public enum EngineId
     /** Dutch language books & comics. */
     KbNl("kbnl",
          R.string.site_kb_nl,
-         R.string.site_info_kb_nl,
+         List.of(R.string.site_description_dutch_and_more,
+                 R.string.site_description_catalog),
          "https://webggc.oclc.org",
          new Locale("nl", "NL"),
          KbNlSearchEngine.class,
@@ -250,7 +263,9 @@ public enum EngineId
     /** Dutch language (and to some extend other languages) comics. */
     LastDodoNl("lastdodo",
                R.string.site_lastdodo_nl,
-               R.string.site_info_lastdodo_nl,
+               List.of(R.string.site_description_dutch_and_more,
+                       R.string.site_description_catalog,
+                       R.string.site_description_eu_comics),
                "https://www.lastdodo.nl",
                new Locale("nl", "NL"),
                LastDodoSearchEngine.class,
@@ -262,7 +277,8 @@ public enum EngineId
      */
     LibraryThing("librarything",
                  R.string.site_library_thing,
-                 R.string.site_info_library_thing,
+                 List.of(R.string.site_description_english_and_more,
+                         R.string.site_description_catalog),
                  "https://www.librarything.com",
                  Locale.US,
                  LibraryThingSearchEngine.class,
@@ -271,7 +287,8 @@ public enum EngineId
     /** All genres. */
     OpenLibrary("openlibrary",
                 R.string.site_open_library,
-                R.string.site_info_open_library,
+                List.of(R.string.site_description_english_and_more,
+                        R.string.site_description_catalog),
                 "https://openlibrary.org",
                 Locale.US,
                 OpenLibrarySearchEngine.class,
@@ -280,7 +297,9 @@ public enum EngineId
     /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe("stripinfo",
                 R.string.site_stripinfo_be,
-                R.string.site_info_stripinfo_be,
+                List.of(R.string.site_description_dutch_and_more,
+                        R.string.site_description_catalog,
+                        R.string.site_description_eu_comics),
                 "https://www.stripinfo.be",
                 new Locale("nl", "BE"),
                 StripInfoSearchEngine.class,
@@ -294,7 +313,9 @@ public enum EngineId
      */
     StripWebBe("stripweb",
                R.string.site_stripweb_be,
-               R.string.site_info_stripweb_be,
+               List.of(R.string.site_description_dutch_and_more,
+                       R.string.site_description_shop,
+                       R.string.site_description_eu_comics),
                "https://www.stripweb.be",
                new Locale("nl", "BE"),
                StripWebSearchEngine.class,
@@ -327,8 +348,8 @@ public enum EngineId
     private final int labelResId;
 
     @SuppressWarnings("FieldNotUsedInToString")
-    @StringRes
-    private final int infoResId;
+    @NonNull
+    private final List<Integer> infoResIdList;
 
     /** Default url. */
     @NonNull
@@ -361,7 +382,7 @@ public enum EngineId
      *
      * @param key           The preference key / generic string identifier for this engine.
      * @param labelResId    The user displayable name for this engine.
-     * @param infoResId     A short information text about this site
+     * @param infoResIdList A list of informational string resources about this site
      * @param defaultUrl    for the site
      * @param defaultLocale for the site
      * @param clazz         implementation class for this engine.
@@ -369,14 +390,14 @@ public enum EngineId
      */
     EngineId(@NonNull final String key,
              @StringRes final int labelResId,
-             @StringRes final int infoResId,
+             @NonNull final List<Integer> infoResIdList,
              @NonNull final String defaultUrl,
              @NonNull final Locale defaultLocale,
              @NonNull final Class<? extends SearchEngine> clazz,
              final boolean enabled) {
         this.key = key;
         this.labelResId = labelResId;
-        this.infoResId = infoResId;
+        this.infoResIdList = infoResIdList;
         this.defaultUrl = defaultUrl;
         this.defaultLocale = defaultLocale;
         this.clazz = clazz;
@@ -738,13 +759,18 @@ public enum EngineId
     }
 
     /**
-     * Get the resource id for a piece of information text describing the website.
+     * Get an informational text describing the website.
      *
-     * @return resource id
+     * @param context Current context
+     *
+     * @return info
      */
-    @StringRes
-    public int getInfoResId() {
-        return infoResId;
+    @NonNull
+    public String getInfo(@NonNull final Context context) {
+        return infoResIdList.stream()
+                            .map(context::getString)
+                            .collect(Collectors.joining(
+                                    context.getString(R.string.list_semicolon)));
     }
 
     /**
