@@ -754,7 +754,7 @@ public class CalibreContentServerReader
                         if (calibreIdentifier != null) {
                             book.setIdentifierValue(calibreIdentifier.local, sid);
 
-                        } else if (key.startsWith(CalibreIdentifier.AMAZON)) {
+                        } else if (key.startsWith("amazon")) {
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // We always use the first one found.
