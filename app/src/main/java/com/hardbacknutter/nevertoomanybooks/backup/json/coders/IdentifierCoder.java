@@ -47,7 +47,7 @@ public class IdentifierCoder
                              .getAll()
                              .stream()
                              .collect(Collectors.toMap(
-                                     Identifier::getName,
+                                     Identifier::getKey,
                                      Function.identity())).keySet();
     }
 
@@ -60,7 +60,7 @@ public class IdentifierCoder
     public JSONObject encode(@NonNull final Pair<String, String> element)
             throws JSONException {
         final JSONObject out = new JSONObject();
-        out.put(DBKey.IDENT_NAME, element.first);
+        out.put(DBKey.IDENT_KEY, element.first);
         out.put(DBKey.IDENT_SID, element.second);
         return out;
     }
@@ -69,7 +69,7 @@ public class IdentifierCoder
     @NonNull
     public Pair<String, String> decode(@NonNull final JSONObject data)
             throws JSONException {
-        return new Pair<>(data.getString(DBKey.IDENT_NAME),
+        return new Pair<>(data.getString(DBKey.IDENT_KEY),
                           data.getString(DBKey.IDENT_SID));
     }
 }

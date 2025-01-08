@@ -220,10 +220,9 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOKSHELF_FILTER_NAME;
     public static final Domain DOM_BOOKSHELF_FILTER_VALUE;
 
-    public static final Domain DOM_IDENT_NAME;
+    public static final Domain DOM_IDENT_KEY;
     public static final Domain DOM_IDENT_TYPE;
-    public static final Domain DOM_IDENT_DESC;
-    public static final Domain DOM_IDENT_URL;
+    public static final Domain DOM_IDENT_NAME;
     public static final Domain DOM_IDENT_SID;
 
     /** {@link #TBL_AUTHORS}. */
@@ -410,7 +409,7 @@ public final class DBDefinitions {
      * {@link #TBL_STRIPINFO_COLLECTION}.
      * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_IDENT_SID}
      * for rows where the {@link #DOM_FK_IDENTIFIER} == "stripinfo"
-     * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENT_NAME}
+     * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENT_KEY}
      */
     public static final Domain DOM_STRIP_INFO_BOOK_ID;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
@@ -995,8 +994,8 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Book identifiers
          * ====================================================================================== */
-        DOM_IDENT_NAME =
-                new Domain.Builder(DBKey.IDENT_NAME, SqLiteDataType.Text)
+        DOM_IDENT_KEY =
+                new Domain.Builder(DBKey.IDENT_KEY, SqLiteDataType.Text)
                         .notNull()
                         .unique()
                         .build();
@@ -1005,11 +1004,9 @@ public final class DBDefinitions {
                         .notNull()
                         .withDefault("'" + Identifier.TYPE_STRING + "'")
                         .build();
-        DOM_IDENT_DESC =
-                new Domain.Builder(DBKey.IDENT_DESC, SqLiteDataType.Text)
-                        .build();
-        DOM_IDENT_URL =
-                new Domain.Builder(DBKey.IDENT_URL, SqLiteDataType.Text)
+        DOM_IDENT_NAME =
+                new Domain.Builder(DBKey.IDENT_NAME, SqLiteDataType.Text)
+                        .notNull()
                         .build();
 
         DOM_IDENT_SID =
@@ -1413,12 +1410,11 @@ public final class DBDefinitions {
 
         TBL_IDENTIFIERS
                 .addDomains(DOM_PK_ID,
-                            DOM_IDENT_NAME,
+                            DOM_IDENT_KEY,
                             DOM_IDENT_TYPE,
-                            DOM_IDENT_DESC,
-                            DOM_IDENT_URL)
+                            DOM_IDENT_NAME)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.IDENT_NAME, true, DOM_IDENT_NAME);
+                .addIndex(DBKey.IDENT_KEY, true, DOM_IDENT_KEY);
         ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);
 
         TBL_AUTHORS

@@ -58,17 +58,15 @@ public final class DBKey {
      * ======================================================================================
      */
 
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Short name; i.e. a keyword. */
-    public static final String IDENT_NAME = "ident_name";
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. The keyword. */
+    public static final String IDENT_KEY = "key";
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Type: a char: S or L. */
-    public static final String IDENT_TYPE = "ident_type";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Some description; i.e. website name. */
-    public static final String IDENT_DESC = "ident_desc";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Url to the site. */
-    public static final String IDENT_URL = "ident_url";
+    public static final String IDENT_TYPE = "type";
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. A short name; i.e. website name. Not localized. */
+    public static final String IDENT_NAME = "name";
 
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
-    public static final String IDENT_SID = "ident_sid";
+    public static final String IDENT_SID = "sid";
 
     /**
      * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The book id (sid).

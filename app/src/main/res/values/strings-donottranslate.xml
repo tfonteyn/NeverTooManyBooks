@@ -56,6 +56,11 @@
             translatable="false">Bertrand.pt</string>
     <string name="site_info_bertrand_pt"
             translatable="false">@string/site_description_portuguese_shopping</string>
+    <!-- Bibliothèque nationale de France -->
+    <string name="site_bnf"
+            translatable="false">BnF.fr</string>
+    <string name="site_info_bnf_com"
+            translatable="false">@string/site_description_french_catalogue</string>
     <string name="site_bol_com"
             translatable="false">bol.com</string>
     <string name="site_info_bol_com"
@@ -64,6 +69,19 @@
             translatable="false">BookFinder</string>
     <string name="site_info_bookfinder"
             translatable="false">@string/site_description_general_shopping</string>
+    <string name="site_british_library"
+            translatable="false">The British Library</string>
+    <string name="site_info_british_library"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <!-- Deutschen Nationalbibliothek -->
+    <string name="site_dnb_de"
+            translatable="false">DNB.DE</string>
+    <string name="site_info_dnb_de"
+            translatable="false">@string/site_description_german_catalogue</string>
+    <string name="site_douban"
+            translatable="false">Douban</string>
+    <string name="site_info_douban"
+            translatable="false">@string/site_description_chinese_catalogue</string>
     <string name="site_goodreads"
             translatable="false">Goodreads</string>
     <string name="site_info_goodreads"
@@ -84,6 +102,10 @@
             translatable="false">LastDodo</string>
     <string name="site_info_lastdodo_nl"
             translatable="false">@string/site_description_dutch_catalogue_eu_comics</string>
+    <string name="site_lccn"
+            translatable="false">Library of Congress (USA)</string>
+    <string name="site_info_lccn"
+            translatable="false">@string/site_description_english_catalogue</string>
     <string name="site_library_thing"
             translatable="false">LibraryThing</string>
     <string name="site_info_library_thing"
@@ -100,22 +122,10 @@
             translatable="false">StripWeb</string>
     <string name="site_info_stripweb_be"
             translatable="false">@string/site_description_dutch_comics_shopping</string>
-    <string name="site_dnb_de"
-            translatable="false">DNB.DE</string>
-    <string name="site_info_dnb_de"
-            translatable="false">@string/site_description_german_catalogue</string>
-    <string name="site_douban"
-            translatable="false">Douban</string>
-    <string name="site_info_douban"
-            translatable="false">@string/site_description_chinese_catalogue</string>
     <string name="site_worldcat"
             translatable="false">WorldCat</string>
     <string name="site_info_worldcat"
             translatable="false">@string/site_description_catalogue</string>
-    <string name="site_lccn"
-            translatable="false">Library of Congress (USA)</string>
-    <string name="site_info_lccn"
-            translatable="false">@string/site_description_english_catalogue</string>
 
     <!-- https://calibre-ebook.com -->
     <string name="site_calibre"

@@ -350,7 +350,7 @@ public class Book
         setSeries(serviceLocator.getSeriesDao().getByBookId(bookId));
         setPublishers(serviceLocator.getPublisherDao().getByBookId(bookId));
         setToc(serviceLocator.getTocEntryDao().getByBookId(bookId));
-        setIdentifiers(serviceLocator.getIdentifierDao().getByBookId(bookId));
+        setIdentifiers(serviceLocator.getIdentifierDao().findByBookId(bookId));
 
         // do NOT preload the full Calibre library object. We hardly ever need it as such.
         // see #getCalibreLibrary
@@ -1002,7 +1002,7 @@ public class Book
      * @param ivs list
      */
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
-        ivs.forEach(iv -> putString(iv.getIdentifier().getName(), iv.getSid()));
+        ivs.forEach(iv -> putString(iv.getIdentifier().getKey(), iv.getSid()));
     }
 
     /**
@@ -1787,7 +1787,7 @@ public class Book
                       .getIdentifierDao()
                       .getAll()
                       .stream()
-                      .map(Identifier::getName)
+                      .map(Identifier::getKey)
                       .filter(bookData::contains)
                       .forEach(name -> putString(name, bookData.getString(name)));
     }

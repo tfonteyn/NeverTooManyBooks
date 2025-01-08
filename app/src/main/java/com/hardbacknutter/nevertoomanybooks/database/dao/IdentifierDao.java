@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public interface IdentifierDao {
      * @return {@link Identifier}
      */
     @NonNull
-    Optional<Identifier> findByName(@NonNull String name);
+    Optional<Identifier> findByKey(@NonNull String name);
 
     /**
      * Convenience method, fetch all {@link Identifier}s, and return them as a List
@@ -130,7 +130,7 @@ public interface IdentifierDao {
      * @return list
      */
     @NonNull
-    List<Identifier.Value> getByBookId(@IntRange(from = 1) long bookId);
+    List<Identifier.Value> findByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Get the SID value for the given {@link Identifier} of the given book id.

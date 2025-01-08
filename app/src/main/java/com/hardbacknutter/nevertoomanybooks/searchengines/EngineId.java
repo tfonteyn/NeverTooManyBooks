@@ -784,7 +784,7 @@ public enum EngineId
     @NonNull
     public Optional<Identifier> getIdentifier() {
         if (identifierKey != null) {
-            return ServiceLocator.getInstance().getIdentifierDao().findByName(identifierKey);
+            return ServiceLocator.getInstance().getIdentifierDao().findByKey(identifierKey);
         } else {
             return Optional.empty();
         }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -27,15 +28,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 
+import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
+/**
+ * External website id's (site-id, sid).
+ * <ul>
+ * <li>key: a unique keyword; never to be changed; used as bundle keys and import/export</li>
+ * <li>name: a non-localized short name to show to the user.</li>
+ * <li>sid: the actual value</li>
+ * </ul>
+ */
 public class Identifier
         implements Parcelable {
 
     public static final String SID_ASIN = "asin";
     public static final String SID_BEDETHEQUE = "bedetheque";
+    public static final String SID_BNF = "bnf";
+    public static final String SID_BRITISH_LIBRARY = "bl";
     public static final String SID_DNB = "dnb";
     public static final String SID_DOUBAN = "douban";
     public static final String SID_GOODREADS_BOOK = "goodreads";
@@ -72,32 +85,27 @@ public class Identifier
     private static final String TAG = "Identifier";
     private long id;
     @NonNull
+    private String key;
+    @NonNull
     private String name;
-    @Nullable
-    private String description;
-    @Nullable
-    private String url;
 
     private char type;
 
     /**
      * Constructor.
      *
-     * @param name        a key(word) for this Identifier. e.g. "oclc"
-     *                    The size is not enforced, but should be 15 characters max,
-     *                    preferably less.
-     * @param type        {@link #TYPE_STRING} or {@link #TYPE_LONG}
-     * @param description optional
-     * @param url         optional - NOT USED/DEFINED YET
+     * @param key  a key(word) for this Identifier. e.g. "oclc"
+     *             The size is not enforced, but should be 15 characters max,
+     *             preferably less.
+     * @param type {@link #TYPE_STRING} or {@link #TYPE_LONG}
+     * @param name the NOT-LOCALIZED short name
      */
-    public Identifier(@Size(max = 15) @NonNull final String name,
+    public Identifier(@Size(max = 15) @NonNull final String key,
                       final char type,
-                      @Nullable final String description,
-                      @Nullable final String url) {
-        this.name = name;
+                      @NonNull final String name) {
+        this.key = key;
         this.type = type;
-        this.description = description;
-        this.url = url;
+        this.name = name;
     }
 
     /**
@@ -109,29 +117,80 @@ public class Identifier
     public Identifier(final long id,
                       @NonNull final DataHolder rowData) {
         this.id = id;
-        name = rowData.getString(DBKey.IDENT_NAME);
+        key = rowData.getString(DBKey.IDENT_KEY);
         type = rowData.getString(DBKey.IDENT_TYPE).charAt(0);
-        description = rowData.getString(DBKey.IDENT_DESC, null);
-        url = rowData.getString(DBKey.IDENT_URL, null);
+        name = rowData.getString(DBKey.IDENT_NAME);
     }
 
     protected Identifier(@NonNull final Parcel in) {
         id = in.readLong();
         //noinspection DataFlowIssue
-        name = in.readString();
+        key = in.readString();
         type = (char) in.readInt();
-        description = in.readString();
-        url = in.readString();
+        //noinspection DataFlowIssue
+        name = in.readString();
+    }
+
+    /**
+     * Used only at <strong>installation/upgrade</strong> time to create the initial set
+     * in the database.
+     *
+     * @param context Current context
+     *
+     * @return list
+     */
+    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
+    @NonNull
+    public static List<Identifier> createInitialList(@NonNull final Context context) {
+        return List.of(
+                new Identifier(SID_ASIN, TYPE_STRING,
+                               context.getString(R.string.site_amazon)),
+                new Identifier(SID_BEDETHEQUE, TYPE_LONG,
+                               context.getString(R.string.site_bedetheque)),
+                new Identifier(SID_BNF, TYPE_STRING,
+                               context.getString(R.string.site_bnf)),
+                new Identifier(SID_BRITISH_LIBRARY, TYPE_LONG,
+                               context.getString(R.string.site_british_library)),
+                new Identifier(SID_DNB, TYPE_LONG,
+                               context.getString(R.string.site_dnb_de)),
+                new Identifier(SID_DOUBAN, TYPE_LONG,
+                               context.getString(R.string.site_douban)),
+                new Identifier(SID_GOODREADS_BOOK, TYPE_LONG,
+                               context.getString(R.string.site_goodreads)),
+                new Identifier(SID_GOOGLE, TYPE_STRING,
+                               context.getString(R.string.site_google_books)),
+                new Identifier(SID_ISFDB, TYPE_LONG,
+                               context.getString(R.string.site_isfdb)),
+                new Identifier(SID_KBNL, TYPE_LONG,
+                               context.getString(R.string.site_kb_nl)),
+                new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
+                               context.getString(R.string.site_lastdodo_nl)),
+                new Identifier(SID_LCCN, TYPE_STRING,
+                               context.getString(R.string.site_lccn)),
+                new Identifier(SID_LIBRARY_THING, TYPE_LONG,
+                               context.getString(R.string.site_library_thing)),
+                new Identifier(SID_MOBI_ASIN, TYPE_STRING,
+                               context.getString(R.string.site_amazon)),
+                new Identifier(SID_OCLC, TYPE_STRING,
+                               context.getString(R.string.site_worldcat)),
+                new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
+                               context.getString(R.string.site_open_library)),
+                new Identifier(SID_STRIP_INFO, TYPE_LONG,
+                               context.getString(R.string.site_stripinfo_be)),
+                new Identifier(SID_STRIPWEB, TYPE_LONG,
+                               context.getString(R.string.site_stripweb_be)),
+                new Identifier(SID_URI, TYPE_STRING,
+                               "URI/URL")
+        );
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeLong(id);
-        dest.writeString(name);
+        dest.writeString(key);
         dest.writeInt(type);
-        dest.writeString(description);
-        dest.writeString(url);
+        dest.writeString(name);
     }
 
     @Override
@@ -161,6 +220,15 @@ public class Identifier
     }
 
     @NonNull
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(@NonNull final String key) {
+        this.key = key;
+    }
+
+    @NonNull
     public String getName() {
         return name;
     }
@@ -169,39 +237,20 @@ public class Identifier
         this.name = name;
     }
 
-    @Nullable
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(@Nullable final String description) {
-        this.description = description;
-    }
-
-    @Nullable
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(@Nullable final String url) {
-        this.url = url;
-    }
-
     @Override
     @NonNull
     public String toString() {
         return "Identifier{"
                + "id=" + id
-               + ", name='" + name + '\''
+               + ", key='" + key + '\''
                + ", type='" + type + '\''
-               + ", description='" + description + '\''
-               + ", url='" + url + '\''
+               + ", name='" + name + '\''
                + '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, description, url);
+        return Objects.hash(id, key, type, name);
     }
 
     @Override
@@ -217,10 +266,9 @@ public class Identifier
         if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
-        return Objects.equals(name, that.name)
+        return Objects.equals(key, that.key)
                && type == that.type
-               && Objects.equals(description, that.description)
-               && Objects.equals(url, that.url);
+               && Objects.equals(name, that.name);
     }
 
     public static class Value

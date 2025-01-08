@@ -391,6 +391,7 @@
          Not all sites will support all search-fields. -->
     <string name="info_site_search_field_optional">Optional. Not supported by all web sites.</string>
 
+    <!-- TODO: construct website info strings dynamically.-->
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_general_shopping">General; Shop</string>
     <!-- website info: languages; type; specifics. -->
@@ -412,6 +413,8 @@
     <string name="site_description_chinese_catalogue">Chinese; Catalog</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_english_catalogue_FSF">English and more; Catalog; Fantasy and Science Fiction</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_french_catalogue">French; Catalog</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_french_catalogue_eu_comics">French and more; Catalog; European Comics</string>
     <!-- website info: languages; type; specifics. -->

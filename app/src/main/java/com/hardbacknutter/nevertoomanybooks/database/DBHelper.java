@@ -1093,7 +1093,7 @@ public class DBHelper
                     "bdt_book_id", Identifier.SID_BEDETHEQUE);
 
             final Map<String, Integer> predef = new HashMap<>();
-            final String predefSql = "SELECT " + DBKey.PK_ID + ',' + DBKey.IDENT_NAME
+            final String predefSql = "SELECT " + DBKey.PK_ID + ',' + DBKey.IDENT_KEY
                                      + " FROM " + TBL_IDENTIFIERS.getName();
             try (Cursor cursor = db.rawQuery(predefSql, null)) {
                 while (cursor.moveToNext()) {

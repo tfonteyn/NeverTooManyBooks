@@ -318,7 +318,7 @@ public class BookDaoHelper {
 
         domains.stream()
                .filter(identifier -> identifier.getType() == Identifier.TYPE_LONG)
-               .map(Identifier::getName)
+               .map(Identifier::getKey)
                .filter(book::contains)
                .forEach(key -> {
                    final Object o = book.get(key, realNumberParser);
@@ -349,7 +349,7 @@ public class BookDaoHelper {
 
         domains.stream()
                .filter(identifier -> identifier.getType() == Identifier.TYPE_STRING)
-               .map(Identifier::getName)
+               .map(Identifier::getKey)
                .filter(book::contains)
                .forEach(key -> {
                    final Object o = book.get(key, realNumberParser);

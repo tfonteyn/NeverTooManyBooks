@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
@@ -78,44 +77,8 @@ public class IdentifierDaoImpl
      */
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {
-        final List<Identifier> identifierList = List.of(
-                new Identifier(Identifier.SID_ASIN, Identifier.TYPE_STRING,
-                               context.getString(R.string.site_amazon), null),
-                new Identifier(Identifier.SID_BEDETHEQUE, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_bedetheque), null),
-                new Identifier(Identifier.SID_DNB, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_dnb_de), null),
-                new Identifier(Identifier.SID_DOUBAN, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_douban), null),
-                new Identifier(Identifier.SID_GOODREADS_BOOK, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_goodreads), null),
-                new Identifier(Identifier.SID_GOOGLE, Identifier.TYPE_STRING,
-                               context.getString(R.string.site_google_books), null),
-                new Identifier(Identifier.SID_ISFDB, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_isfdb), null),
-                new Identifier(Identifier.SID_KBNL, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_kb_nl), null),
-                new Identifier(Identifier.SID_LAST_DODO_NL, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_lastdodo_nl), null),
-                new Identifier(Identifier.SID_LCCN, Identifier.TYPE_STRING,
-                               context.getString(R.string.site_lccn), null),
-                new Identifier(Identifier.SID_LIBRARY_THING, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_library_thing), null),
-                new Identifier(Identifier.SID_MOBI_ASIN, Identifier.TYPE_STRING,
-                               context.getString(R.string.site_amazon), null),
-                new Identifier(Identifier.SID_OCLC, Identifier.TYPE_STRING,
-                               context.getString(R.string.site_worldcat), null),
-                new Identifier(Identifier.SID_OPEN_LIBRARY, Identifier.TYPE_STRING,
-                               context.getString(R.string.site_open_library), null),
-                new Identifier(Identifier.SID_STRIP_INFO, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_stripinfo_be), null),
-                new Identifier(Identifier.SID_STRIPWEB, Identifier.TYPE_LONG,
-                               context.getString(R.string.site_stripweb_be), null),
-                new Identifier(Identifier.SID_URI, Identifier.TYPE_STRING,
-                               "URI/URL", null)
-        );
-        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(
-                db.compileStatement(Sql.INSERT))) {
+        final List<Identifier> identifierList = Identifier.createInitialList(context);
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
                 doInsert(identifier, stmt);
             }
@@ -128,10 +91,9 @@ public class IdentifierDaoImpl
 
     private static long doInsert(@NonNull final Identifier identifier,
                                  @NonNull final ExtSQLiteStatement stmt) {
-        stmt.bindString(1, identifier.getName().toLowerCase(Locale.ENGLISH));
+        stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindString(2, String.valueOf(identifier.getType()));
-        stmt.bindString(3, identifier.getDescription());
-        stmt.bindString(4, identifier.getUrl());
+        stmt.bindString(3, identifier.getName());
         return stmt.executeInsert();
     }
 
@@ -149,8 +111,8 @@ public class IdentifierDaoImpl
 
     @Override
     @NonNull
-    public Optional<Identifier> findByName(@NonNull final String name) {
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name})) {
+    public Optional<Identifier> findByKey(@NonNull final String key) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_KEY, new String[]{key})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Identifier(rowData.getLong(DBKey.PK_ID), rowData));
@@ -164,7 +126,7 @@ public class IdentifierDaoImpl
     @NonNull
     public List<Identifier> getAll() {
         final List<Identifier> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL_ORDERED_BY_NAME, null)) {
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL_ORDERED_BY_KEY, null)) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Identifier(rowData.getLong(DBKey.PK_ID), rowData));
@@ -187,7 +149,7 @@ public class IdentifierDaoImpl
 
         // Collect KNOWN identifiers
         final Map<Long, String> identifiers = new HashMap<>();
-        getAll().forEach(identifier -> book.getIdentifierValue(identifier.getName()).ifPresent(
+        getAll().forEach(identifier -> book.getIdentifierValue(identifier.getKey()).ifPresent(
                 sid -> identifiers.put(identifier.getId(), sid)));
 
         // Just delete all current links
@@ -215,7 +177,7 @@ public class IdentifierDaoImpl
 
     @Override
     public void fixId(@NonNull final Identifier identifier) {
-        final long found = findByName(identifier.getName())
+        final long found = findByKey(identifier.getKey())
                 .map(Identifier::getId).orElse(0L);
         identifier.setId(found);
     }
@@ -244,12 +206,11 @@ public class IdentifierDaoImpl
             throws DaoUpdateException {
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            stmt.bindString(1, identifier.getName().toLowerCase(Locale.ENGLISH));
+            stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
             stmt.bindString(2, String.valueOf(identifier.getType()));
-            stmt.bindString(3, identifier.getDescription());
-            stmt.bindString(4, identifier.getUrl());
+            stmt.bindString(3, identifier.getName());
 
-            stmt.bindLong(5, identifier.getId());
+            stmt.bindLong(4, identifier.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
 
@@ -276,7 +237,7 @@ public class IdentifierDaoImpl
 
     @NonNull
     @Override
-    public List<Identifier.Value> getByBookId(@IntRange(from = 1) final long bookId) {
+    public List<Identifier.Value> findByBookId(@IntRange(from = 1) final long bookId) {
         final List<Identifier.Value> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
@@ -292,12 +253,13 @@ public class IdentifierDaoImpl
 
     @Override
     @NonNull
-    public Optional<String> findSid(@NonNull final String identifierName,
+    public Optional<String> findSid(@NonNull final String identifierKey,
                                     final long bookId) {
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_SID_BY_BOOK_ID_AND_NAME)) {
+        try (SynchronizedStatement stmt = db.compileStatement(
+                Sql.FIND_SID_BY_BOOK_ID_AND_IDENTIFIER_KEY)) {
             stmt.bindLong(1, bookId);
-            stmt.bindString(2, identifierName);
+            stmt.bindString(2, identifierKey);
 
             final String sid = stmt.simpleQueryForStringOrNull();
             // null check sure.. the rest is paranoia
@@ -313,7 +275,7 @@ public class IdentifierDaoImpl
     public long getBookId(@NonNull final Identifier identifier,
                           @NonNull final String sid) {
         try (SynchronizedStatement stmt = db.compileStatement(
-                Sql.FIND_BOOK_BY_SID_AND_IDENTIFIER_ID)) {
+                Sql.FIND_BOOK_ID_BY_IDENTIFIER_ID_AND_SID)) {
             stmt.bindLong(1, identifier.getId());
             stmt.bindString(2, sid);
             return stmt.simpleQueryForLongOrZero();
@@ -325,7 +287,7 @@ public class IdentifierDaoImpl
     public long getBookId(@NonNull final String identifierName,
                           @NonNull final String sid) {
         try (SynchronizedStatement stmt = db.compileStatement(
-                Sql.FIND_BOOK_BY_SID_AND_IDENTIFIER_NAME)) {
+                Sql.FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID)) {
             stmt.bindString(1, identifierName);
             stmt.bindString(2, sid);
             return stmt.simpleQueryForLongOrZero();
@@ -336,19 +298,17 @@ public class IdentifierDaoImpl
         /** Insert an {@link Identifier}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_IDENTIFIERS.getName()
-                + '(' + DBKey.IDENT_NAME
+                + '(' + DBKey.IDENT_KEY
                 + ',' + DBKey.IDENT_TYPE
-                + ',' + DBKey.IDENT_DESC
-                + ',' + DBKey.IDENT_URL
-                + ") VALUES(?,?,?,?)";
+                + ',' + DBKey.IDENT_NAME
+                + ") VALUES(?,?,?)";
 
         /** Update an {@link Identifier}. */
         static final String UPDATE =
                 UPDATE_ + TBL_IDENTIFIERS.getName()
-                + _SET_ + DBKey.IDENT_NAME + "=?"
+                + _SET_ + DBKey.IDENT_KEY + "=?"
                 + ',' + DBKey.IDENT_TYPE + "=?"
-                + ',' + DBKey.IDENT_DESC + "=?"
-                + ',' + DBKey.IDENT_URL + "=?"
+                + ',' + DBKey.IDENT_NAME + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Identifier}. */
@@ -357,49 +317,44 @@ public class IdentifierDaoImpl
 
         static final String SELECT_ALL =
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID,
-                                                DBKey.IDENT_NAME,
+                                                DBKey.IDENT_KEY,
                                                 DBKey.IDENT_TYPE,
-                                                DBKey.IDENT_DESC,
-                                                DBKey.IDENT_URL)
-                + _FROM_ + TBL_IDENTIFIERS.ref();
+                                                DBKey.IDENT_NAME);
 
-        static final String SELECT_ALL_ORDERED_BY_NAME =
-                SELECT_ALL + _ORDER_BY_ + DBKey.IDENT_NAME;
+        static final String SELECT_ALL_ORDERED_BY_KEY =
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                + _ORDER_BY_ + DBKey.IDENT_KEY;
 
         static final String FIND_BY_ID =
-                SELECT_ALL
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.PK_ID) + "=?";
 
-        static final String FIND_BY_NAME =
-                SELECT_ALL
-                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_NAME) + "=?";
+        static final String FIND_BY_KEY =
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_KEY) + "=?";
 
-        static final String FIND_BOOK_BY_SID_AND_IDENTIFIER_ID =
+        static final String FIND_BOOK_ID_BY_IDENTIFIER_ID_AND_SID =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_ + TBL_BOOK_IDENTIFIER.getName()
                 + _WHERE_ + DBKey.FK_IDENTIFIER + "=?" + _AND_ + DBKey.IDENT_SID + "=?";
 
-        static final String FIND_BOOK_BY_SID_AND_IDENTIFIER_NAME =
+        static final String FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
-                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_NAME) + "=?"
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_KEY) + "=?"
                 + _AND_ + TBL_BOOK_IDENTIFIER.dot(DBKey.IDENT_SID) + "=?";
 
         static final String FIND_BY_BOOK_ID =
-                SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID,
-                                                DBKey.IDENT_NAME,
-                                                DBKey.IDENT_TYPE,
-                                                DBKey.IDENT_DESC,
-                                                DBKey.IDENT_URL)
+                SELECT_ALL
                 + ',' + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENT_SID)
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
                 + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?";
 
-        static final String FIND_SID_BY_BOOK_ID_AND_NAME =
+        static final String FIND_SID_BY_BOOK_ID_AND_IDENTIFIER_KEY =
                 SELECT_ + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENT_SID)
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
                 + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?"
-                + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_NAME) + "=?";
+                + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_KEY) + "=?";
 
         /** Insert the link between a {@link Book} and a {@link Identifier}. */
         static final String INSERT_BOOK_LINK =

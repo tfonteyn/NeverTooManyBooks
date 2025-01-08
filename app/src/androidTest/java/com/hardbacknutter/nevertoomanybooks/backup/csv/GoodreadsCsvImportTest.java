@@ -88,7 +88,7 @@ public class GoodreadsCsvImportTest
         bookDao = locator.getBookDao();
         booksPresent = bookDao.count();
 
-        grIdent = identifierDao.findByName(Identifier.SID_GOODREADS_BOOK).get();
+        grIdent = identifierDao.findByKey(Identifier.SID_GOODREADS_BOOK).get();
         locator.getDb().delete(DBDefinitions.TBL_BOOK_IDENTIFIER.getName(),
                                DBKey.FK_IDENTIFIER + "=" + grIdent.getId(),
                                null);

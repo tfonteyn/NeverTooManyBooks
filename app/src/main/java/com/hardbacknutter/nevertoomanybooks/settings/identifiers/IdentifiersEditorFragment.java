@@ -108,9 +108,9 @@ public class IdentifiersEditorFragment
         }
 
         void onBind(@NonNull final Identifier identifier) {
-            vb.name.setText(identifier.getName());
+            vb.key.setText(identifier.getKey());
             vb.type.setText(typeMap.get(identifier.getType()));
-            vb.description.setText(identifier.getDescription());
+            vb.name.setText(identifier.getName());
         }
     }
 
