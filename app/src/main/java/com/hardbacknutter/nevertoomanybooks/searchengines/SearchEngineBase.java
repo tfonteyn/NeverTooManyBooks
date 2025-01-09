@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
+import androidx.annotation.EmptySuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -175,19 +176,17 @@ public abstract class SearchEngineBase
         }
     }
 
-    @NonNull
-    protected RealNumberParser getRealNumberParser(@NonNull final Context context,
-                                                   @NonNull final Locale locale) {
-        final List<Locale> locales = LocaleListUtils.asList(context, locale);
-        return new RealNumberParser(locales);
-    }
-
-    @NonNull
-    protected MoneyParser getMoneyParser(@NonNull final Context context,
-                                         @NonNull final Locale locale) {
-        return new MoneyParser(locale, getRealNumberParser(context, locale));
-    }
-
+    /**
+     * Create a new {@link FullDateParser}.
+     * This method is meant to be overridden if SearchEngines need to apply
+     * special rules.
+     *
+     * @param context Current context
+     * @param locale  the site locale
+     *
+     * @return new instance
+     */
+    @EmptySuper
     @NonNull
     protected DateParser getDateParser(@NonNull final Context context,
                                        @NonNull final Locale locale) {
@@ -541,7 +540,6 @@ public abstract class SearchEngineBase
         getDateParser(context, locale)
                 .parse(dateStr)
                 .ifPresent(book::setPublicationDate);
-
     }
 
     /**
@@ -560,7 +558,10 @@ public abstract class SearchEngineBase
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
 
-        final MoneyParser parser = getMoneyParser(context, locale);
+        final List<Locale> locales = LocaleListUtils.asList(context, locale);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final MoneyParser parser = new MoneyParser(locale, realNumberParser);
+
         // TODO: maybe move this logic to the MoneyParser class ?
         // First ignore the given currency string (if any) and try parsing
         final Optional<Money> oMoney = parser.parse(priceStr);

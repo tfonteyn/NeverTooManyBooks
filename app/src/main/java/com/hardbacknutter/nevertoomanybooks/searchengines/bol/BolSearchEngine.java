@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -304,7 +305,8 @@ public class BolSearchEngine
             return;
         }
 
-        final RealNumberParser realNumberParser = getRealNumberParser(context, getLocale(context));
+        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         for (final Element specRow : specs.select("div.specs__row")) {
             final Element label = specRow.selectFirst("dt.specs__title");
