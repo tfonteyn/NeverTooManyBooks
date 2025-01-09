@@ -146,12 +146,8 @@ public final class CalibreContentServer
     static final String PK_HOST_URL = PREF_KEY + '.' + Prefs.PK_HOST_URL;
     static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
     static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
-    /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
-    static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
-    /** Response root tag: Number of items returned in 'this' call. */
-    static final String RESPONSE_TAG_NUM = "num";
 
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
@@ -189,10 +185,42 @@ public final class CalibreContentServer
     private static final int CONNECT_TIMEOUT_IN_MS = 5_000;
     private static final int READ_TIMEOUT_IN_MS = 3_000;
 
-    private static final String ULR_AJAX_LIBRARY_INFO = "/ajax/library-info";
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "CL";
-    private static final String NULL_DEFAULT_LIBRARY = "defaultLibrary";
+
+    /** Error/bug msg if the default library is null. */
+    private static final String ERROR_NULL_DEFAULT_LIBRARY = "defaultLibrary";
+
+    /**
+     * The standard request to get information about the libraries available
+     * on the server.
+     * <p>
+     * We're also calling this for connection validation.
+     */
+    private static final String ULR_AJAX_LIBRARY_INFO = "/ajax/library-info";
+
+    /**
+     * Present in the response from {@link #ULR_AJAX_LIBRARY_INFO}.
+     * Contains the {@link #RESPONSE_TAG_DEFAULT_LIBRARY} and a list of key=value
+     * pairs with the libraries.
+     */
+    private static final String RESPONSE_TAG_LIBRARY_MAP = "library_map";
+
+    /**
+     * Present in {@link #RESPONSE_TAG_LIBRARY_MAP} containing the name of
+     * the default library.
+     */
+    private static final String RESPONSE_TAG_DEFAULT_LIBRARY = "default_library";
+
+    /**
+     * Potentially present in the response from {@link #ULR_AJAX_LIBRARY_INFO}
+     * when our calibre ajax extension is installed on the server.
+     * This JSONObject will contain extra information:
+     * - library uuid.
+     * - virtual libraries.
+     */
+    private static final String RESPONSE_TAG_LIBRARY_DETAILS = "library_details";
+
     @NonNull
     private final Uri serverUri;
     @Nullable
@@ -525,10 +553,10 @@ public final class CalibreContentServer
         final JSONObject source = new JSONObject(
                 fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
 
-        final JSONObject libraryMap = source.getJSONObject("library_map");
-        final String defaultLibraryId = source.getString("default_library");
+        final JSONObject libraryMap = source.getJSONObject(RESPONSE_TAG_LIBRARY_MAP);
+        final String defaultLibraryId = source.getString(RESPONSE_TAG_DEFAULT_LIBRARY);
         // only present if our extension is installed
-        final JSONObject libraryDetails = source.optJSONObject("library_details");
+        final JSONObject libraryDetails = source.optJSONObject(RESPONSE_TAG_LIBRARY_DETAILS);
         calibreExtensionInstalled = libraryDetails != null;
 
         final SynchronizedDb db = serviceLocator.getDb();
@@ -620,7 +648,7 @@ public final class CalibreContentServer
             }
         }
         // Sanity check
-        Objects.requireNonNull(defaultLibrary, NULL_DEFAULT_LIBRARY);
+        Objects.requireNonNull(defaultLibrary, ERROR_NULL_DEFAULT_LIBRARY);
     }
 
     private void processVirtualLibraries(@NonNull final CalibreLibraryDao dao,
@@ -707,7 +735,7 @@ public final class CalibreContentServer
      */
     @NonNull
     CalibreLibrary getDefaultLibrary() {
-        return Objects.requireNonNull(defaultLibrary, NULL_DEFAULT_LIBRARY);
+        return Objects.requireNonNull(defaultLibrary, ERROR_NULL_DEFAULT_LIBRARY);
     }
 
     /**

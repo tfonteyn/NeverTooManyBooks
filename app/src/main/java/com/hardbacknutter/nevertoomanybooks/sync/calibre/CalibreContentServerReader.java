@@ -121,11 +121,15 @@ public class CalibreContentServerReader
 
     /** The number of books we fetch per request. Tested with CCS running on a RaspberryPi 1b+. */
     private static final int NUM = 10;
-    /** error text for {@link #VALUE_IS_NULL}. */
-    private static final String ERROR_NULL_STRING = "'null' string";
+    /** Response root tag: Number of items returned in 'this' call. */
+    private static final String RESPONSE_TAG_NUM = "num";
 
+    /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
+    private static final String VALUE_IS_NONE = "None";
     /** A text "null" as value. Should be considered an error. */
     private static final String VALUE_IS_NULL = "null";
+    /** error text for {@link #VALUE_IS_NULL}. */
+    private static final String ERROR_NULL_STRING = "'null' string";
 
     @NonNull
     private final Updates updateOption;
@@ -394,7 +398,7 @@ public class CalibreContentServerReader
                     progressListener.setMaxPos(root.getInt(
                             CalibreContentServer.RESPONSE_TAG_TOTAL_NUM));
 
-                    num = root.getInt(CalibreContentServer.RESPONSE_TAG_NUM);
+                    num = root.getInt(RESPONSE_TAG_NUM);
                     // the list of books (id only) returned by the server
                     final JSONArray bookIds = root.optJSONArray(
                             CalibreContentServer.RESPONSE_TAG_BOOK_IDS);
@@ -792,7 +796,7 @@ public class CalibreContentServerReader
                             case CalibreCustomField.TYPE_TEXT: {
                                 final String value = data.getString(CalibreCustomField.VALUE);
                                 // don't overwrite the local value with a remote 'not-set' value
-                                if (!CalibreContentServer.VALUE_IS_NONE.equals(value)) {
+                                if (!VALUE_IS_NONE.equals(value)) {
                                     book.putString(cf.getDbKey(), value);
                                 }
                                 break;
