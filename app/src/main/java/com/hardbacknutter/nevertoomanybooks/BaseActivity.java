@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,39 +26,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 
 /**
- * Base class for all Activity's (except the startup and ACRA activity)
- * providing the recreation mechanism.
- * FIXME: reimplement recreation using the same mechanism as the
- *  {@link com.hardbacknutter.nevertoomanybooks.utils.theme.ThemeColorController}
+ * Base class for all Activity's (except the startup and ACRA activity).
+ * <p>
+ * Provides EdgeToEdge basics and localized-context for the ui-language setting.
  */
 public abstract class BaseActivity
         extends AppCompatActivity {
-
-    /** Handles Activity recreation. */
-    private RecreateViewModel recreateVm;
-
-    /**
-     * Called when we return from editing the Settings.
-     * Override as needed.
-     *
-     * @param result from the {@link SettingsContract}.
-     */
-    @CallSuper
-    public void onSettingsChanged(@NonNull final SettingsContract.Output result) {
-        if (result.isRecreateActivity()) {
-            recreateVm.setRecreationRequired();
-        }
-    }
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
@@ -72,14 +51,11 @@ public abstract class BaseActivity
         // There are some serious insets listener issues on API 28/29,
         // at least in the emulator, I don't have a physical device on those versions.
         // ViewPager2 also documents a serious bug when using API < 30.
-        // So we are explicitly only support edge-to-edge starting from API-30
+        // Therefore we're only supporting edge-to-edge starting from API-30
         // being drawn under the bottom 3-btn-nav-bar, i.e. the insets not being passed in.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             EdgeToEdge.enable(this);
         }
-
-        recreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
-        recreateVm.onCreate();
 
         super.onCreate(savedInstanceState);
     }
@@ -104,23 +80,9 @@ public abstract class BaseActivity
     }
 
     private void handleEdgeToEdge() {
-        // EdgeToEdge
-        // See note in onCreate
+        // EdgeToEdge. See note in onCreate
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getWindow().setNavigationBarContrastEnforced(false);
         }
-    }
-
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        if (recreateVm.isRecreationRequired()) {
-            recreate();
-        }
-    }
-
-    boolean isRecreating() {
-        return recreateVm.isRecreating();
     }
 }

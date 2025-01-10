@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyn
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
@@ -254,7 +255,7 @@ public class BooksOnBookshelf
     /** Do an import. */
     private final ActivityResultLauncher<Void> importLauncher =
             registerForActivityResult(new ImportContract(), o -> o.ifPresent(
-                    data -> vm.onImportFinished(this, data)));
+                    this::onImportFinished));
 
     /** Manage the list of (preferred) styles. */
     private final ActivityResultLauncher<String> editStylesLauncher =
@@ -560,11 +561,11 @@ public class BooksOnBookshelf
 
     /**
      * Create the optional synchronization launchers and delegates.
+     * <p>
+     * Reminder: this method <strong>cannot be called from onResume</strong>.
+     * registerForActivityResult can only be called from onCreate
      */
     private void createSyncDelegates() {
-
-        // Reminder: this method cannot be called from onResume... registerForActivityResult
-        // can only be called from onCreate
 
         if (SyncServer.CalibreCS.isEnabled(this)) {
             if (calibreSyncLauncher == null) {
@@ -857,12 +858,21 @@ public class BooksOnBookshelf
         return false;
     }
 
-    @Override
-    public void onSettingsChanged(@NonNull final SettingsContract.Output result) {
-        super.onSettingsChanged(result);
+    private void onSettingsChanged(@NonNull final SettingsContract.Output result) {
+        if (result.isRecreateActivity()) {
+            ActivityRestarter.recreate();
+        }
 
         if (result.isForceRebuildBooklist()) {
             vm.setForceRebuildInOnResume();
+        }
+    }
+
+    private void onImportFinished(@NonNull final ImportResults result) {
+        vm.onImportFinished(this, result);
+
+        if (result.preferences > 0) {
+            ActivityRestarter.recreate();
         }
     }
 
@@ -872,14 +882,6 @@ public class BooksOnBookshelf
         super.onResume();
 
         if (isFinishing() || isDestroyed()) {
-            // don't build the list needlessly
-            return;
-        }
-
-        if (isRecreating()) {
-            // If this turn round in onResume() we're recreating, then force a rebuild
-            // for when we get back here in onResume() after the recreation.
-            vm.setForceRebuildInOnResume();
             // don't build the list needlessly
             return;
         }

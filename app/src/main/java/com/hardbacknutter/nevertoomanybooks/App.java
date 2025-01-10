@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -137,6 +137,7 @@ public class App
             SearchEngineConfig.createRegistry(getApplicationContext(), languages);
         }
 
+        ActivityRestarter.init(this);
         // setup support for custom themes, dynamic colors and day/night modes.
         ThemeColorController.init(this);
         NightMode.init(this);
