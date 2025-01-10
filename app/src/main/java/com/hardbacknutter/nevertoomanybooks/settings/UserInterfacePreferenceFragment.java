@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,7 +115,7 @@ public class UserInterfacePreferenceFragment
         // For simplicity, we just disable the setting when it's not 12+
         // If we (ever) add additional themes, then we'll need to ONLY enable/disable the DC option.
         final Preference pUiThemeColor = findPreference(ThemeColorController.PK_UI_THEME_COLOR);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             //noinspection DataFlowIssue
             pUiThemeColor.setEnabled(false);
             pUiThemeColor.setSummary(getString(R.string.warning_requires_android_x, ANDROID_12));
