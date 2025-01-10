@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.utils.theme;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -75,9 +74,8 @@ public final class ThemeColorController {
     /** {@link #PK_UI_THEME_COLOR} value - the Dynamic-Colors theme available on Android 12+ */
     private static final int PK_UI_THEME_COLOR_DYNAMIC = 1;
 
-    private static final ActivityCallbacks activityCallbacks = new ActivityCallbacks();
-    @SuppressWarnings("RedundantFieldInitialization")
-    private static boolean initialized = false;
+    @SuppressWarnings("StaticVariableMayNotBeInitialized")
+    private static ActivityCallbacks INSTANCE;
 
     private ThemeColorController() {
     }
@@ -90,31 +88,23 @@ public final class ThemeColorController {
      * @param app the app
      */
     public static void init(@NonNull final Application app) {
-        if (!initialized) {
-            initialized = true;
-            app.registerActivityLifecycleCallbacks(activityCallbacks);
+        synchronized (ThemeColorController.class) {
+            if (INSTANCE == null) {
+                INSTANCE = new ActivityCallbacks();
+                app.registerActivityLifecycleCallbacks(INSTANCE);
+            }
         }
-    }
-
-    /**
-     * Get the indexed color preference.
-     *
-     * @param context Current context
-     *
-     * @return one of the {@link #PK_UI_THEME_COLOR_BLUE_GREY} etc values.
-     */
-    public static int getSetting(@NonNull final Context context) {
-        return IntListPref.getInt(context, PK_UI_THEME_COLOR, 0);
     }
 
     /**
      * To be called when the user changes the preference.
      */
     public static void recreate() {
-        activityCallbacks.recreate();
+        //noinspection StaticVariableUsedBeforeInitialization
+        INSTANCE.recreate();
     }
 
-    private static class ActivityCallbacks
+    private static final class ActivityCallbacks
             implements Application.ActivityLifecycleCallbacks {
 
         private final Set<WeakReference<Activity>> activities = new HashSet<>();
@@ -135,14 +125,15 @@ public final class ThemeColorController {
                       .filter(ref -> ref.get() == null)
                       .forEach(activities::remove);
 
-            switch (getSetting(activity)) {
+            final int setting = IntListPref.getInt(activity, PK_UI_THEME_COLOR, 0);
+            switch (setting) {
                 case PK_UI_THEME_COLOR_DYNAMIC:
                     DynamicColors.applyToActivityIfAvailable(activity);
                     break;
 
-//                case Prefs.PK_UI_COLOR_THEME_ANOTHER_ONE:
-//                    activity.getTheme().applyStyle(R.style.ThemeOverlay_Another_Theme, true);
-//                    break;
+                // case Prefs.PK_UI_COLOR_THEME_ANOTHER_ONE:
+                //     activity.getTheme().applyStyle(R.style.ThemeOverlay_Another_Theme, true);
+                //     break;
 
                 case PK_UI_THEME_COLOR_BLUE_GREY:
                 default:
