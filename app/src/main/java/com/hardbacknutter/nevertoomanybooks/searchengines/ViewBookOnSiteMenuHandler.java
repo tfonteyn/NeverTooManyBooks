@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -52,6 +53,30 @@ class ViewBookOnSiteMenuHandler
 
     private final Map<Integer, EngineId> menuIds = new HashMap<>();
 
+    @NonNull
+    private static Optional<String> getExternalId(@NonNull final DataHolder rowData,
+                                                  final String identifierKey) {
+        final Optional<String> oid = DataHolderUtils.getExternalId(rowData, identifierKey);
+        if (oid.isPresent()) {
+            // found it
+            return oid;
+        }
+
+        //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
+        // When looking for the Amazon ASIN, fallback on an Isbn code if possible
+//        if (Identifier.SID_ASIN.equals(identifierKey)
+//            && rowData.contains(DBKey.BOOK_ISBN)) {
+//            final String isbnStr = rowData.getString(DBKey.BOOK_ISBN);
+//            final ISBN isbn = new ISBN(isbnStr, true);
+//            if (isbn.isValid(true)) {
+//                final String asin = isbn.isIsbn10Compat() ? isbn.asText(ISBN.Type.Isbn10)
+//                                                          : isbn.asText();
+//                return Optional.of(asin);
+//            }
+//        }
+        return oid;
+    }
+
     @Override
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
@@ -65,6 +90,8 @@ class ViewBookOnSiteMenuHandler
 
             final SubMenu subMenu = menuItem.getSubMenu();
 
+            // The menu will have options for ALL engines!
+            // Visibility is set in onPrepareMenu.
             EngineId.getViewOnSite().forEach(engineId -> {
                 // generate a random id, and map it to the engine
                 final int menuItemId = View.generateViewId();
@@ -105,8 +132,7 @@ class ViewBookOnSiteMenuHandler
             //noinspection DataFlowIssue
             final String identifierKey = menuIds.get(menuItem.getItemId()).getIdentifierKey();
             //noinspection DataFlowIssue
-            final boolean visible = DataHolderUtils.getExternalId(rowData, identifierKey)
-                                                   .isPresent();
+            final boolean visible = getExternalId(rowData, identifierKey).isPresent();
 
             menuItem.setVisible(visible);
             if (visible) {
@@ -134,7 +160,7 @@ class ViewBookOnSiteMenuHandler
             return false;
         }
 
-        DataHolderUtils.getExternalId(rowData, identifierKey).ifPresent(sid -> {
+        getExternalId(rowData, identifierKey).ifPresent(sid -> {
             final SearchEngine.ViewBookByExternalId searchEngine =
                     (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
             final String url = searchEngine.createViewOnSiteUrl(context, sid);
