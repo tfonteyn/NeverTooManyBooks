@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,11 +27,18 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 /**
  * ASIN stands for Amazon Standard Identification Number.
+ * <p>
+ * It's a base 36 number (the letters of the alphabet plus the 10 digits).
+ * <p>
  * Every product on Amazon has its own ASIN, a unique code used to identify it.
- * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
- * is created when the item is uploaded to their catalogue.
+ * For books, the ASIN is the same as the ISBN-10 number, and NOT simply 978 stripped
+ * off as the inventor tells in her article below.
+ * <p>
+ * For all other products a new ASIN is created when the item is uploaded to their catalogue.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Amazon_Standard_Identification_Number">ASIN</a>
+ * @see <a href="https://inventlikeanowner.com/blog/the-story-behind-asins-amazon-standard-identification-numbers/">
+ *         the-story-behind-asins</a>
  */
 public final class ASIN {
 

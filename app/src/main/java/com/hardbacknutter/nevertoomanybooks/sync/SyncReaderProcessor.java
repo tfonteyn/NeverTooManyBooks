@@ -401,12 +401,12 @@ public class SyncReaderProcessor {
                              @NonNull final Book localeBook,
                              @NonNull final Book remoteBook,
                              @NonNull final String key) {
+        // Add the localBook data to the remoteBook list!
+        // and not the other way around! We want to collect a delta!
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
                 final List<Author> list = remoteBook.getAuthors();
                 if (!list.isEmpty()) {
-                    // add the book data to the remoteBook list!
-                    // (and not the other way around! We want to collect a delta)
                     list.addAll(localeBook.getAuthors());
                 }
                 break;

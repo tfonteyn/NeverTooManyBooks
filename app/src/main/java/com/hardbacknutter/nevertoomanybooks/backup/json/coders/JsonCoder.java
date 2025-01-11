@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,9 +32,12 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * Note that {@link #decode(JSONObject)} returns the object because we EXPECT the object,
+ * Note: {@link #decode(JSONObject)} returns the object because we EXPECT the object,
  * while {@link #decodeReference(JSONObject)} returns an Optional because the actual object
  * might legitimate not exist.
+ * <p>
+ * Note: we could turn JSONObject into a class parameter, and use {@code String}
+ * for some implementations. But 1) simplicity, everything is a JSONObject + 2) extensibility
  *
  * @param <T> the type of Object we're encoding/decoding
  */
@@ -63,7 +66,8 @@ public interface JsonCoder<T> {
             throws JSONException;
 
     /**
-     * Encode a list of elements. Actual work is done in {@link #encode(Object)}.
+     * Encode a list of elements.
+     * Actual work is done in {@link #encode(T)}.
      *
      * @param elements to encode
      *
@@ -87,6 +91,16 @@ public interface JsonCoder<T> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Encode a list of elements as references.
+     * Actual work is done in {@link #encodeReference(T)}.
+     *
+     * @param elements to encode
+     *
+     * @return encoded data
+     *
+     * @throws JSONException upon any parsing error
+     */
     @NonNull
     default JSONArray encodeReference(@NonNull final Collection<T> elements)
             throws JSONException {
@@ -115,7 +129,8 @@ public interface JsonCoder<T> {
             throws JSONException;
 
     /**
-     * Decode a list of elements. Actual work is done in {@link #decode(JSONObject)}.
+     * Decode a list of elements.
+     * Actual work is done in {@link #decode(JSONObject)}.
      *
      * @param elements to decode
      *
@@ -139,12 +154,22 @@ public interface JsonCoder<T> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Decode a list of references.
+     * Actual work is done in {@link #decodeReference(JSONObject)}.
+     *
+     * @param references to decode
+     *
+     * @return decoded data
+     *
+     * @throws JSONException upon any parsing error
+     */
     @NonNull
-    default List<T> decodeReference(@NonNull final JSONArray elements)
+    default List<T> decodeReference(@NonNull final JSONArray references)
             throws JSONException {
         final List<T> list = new ArrayList<>();
-        for (int i = 0; i < elements.length(); i++) {
-            decodeReference((JSONObject) elements.get(i)).ifPresent(list::add);
+        for (int i = 0; i < references.length(); i++) {
+            decodeReference((JSONObject) references.get(i)).ifPresent(list::add);
         }
         return list;
     }

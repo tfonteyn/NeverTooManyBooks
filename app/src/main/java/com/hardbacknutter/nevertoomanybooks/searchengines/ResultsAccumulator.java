@@ -148,6 +148,7 @@ class ResultsAccumulator {
                     processLanguage(context, key, result, book, locale);
 
                 } else if (DBKey.RATING.equals(key)) {
+                    //URGENT/ENHANCE: don't take first rating, but calc the average
                     processDouble(key, result, book, realNumberParser);
 
                 } else {

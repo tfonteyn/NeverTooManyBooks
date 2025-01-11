@@ -380,7 +380,9 @@ public class SearchBookUpdatesViewModel
                         }
                     }
 
-                    // Collect external ID's we can use
+                    // Collect external ID's we (already have) from the book we can use to search
+                    // In other words, the Identifiers for the EngineId !
+                    // We'll use the Identifier value to ask the engine to fetch the book.
                     final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
                     Arrays.stream(EngineId.values())
                           .filter(EngineId::isEnabled)

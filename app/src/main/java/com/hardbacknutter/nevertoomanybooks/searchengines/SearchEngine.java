@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -235,6 +235,10 @@ public interface SearchEngine
          * Create a url to open a book on the website with the external id.
          * <p>
          * {@link SearchEngine.Login} will NOT be called upon.
+         * <p>
+         * TODO: ViewBookByExternalId functionality should be moved to the EngineId class
+         *  This will eliminate having to create a SearchEngine instance just to open
+         *  a browser link. See {@link ViewBookOnSiteMenuHandler#onMenuItemSelected}.
          *
          * @param context    Current context
          * @param externalId to open
