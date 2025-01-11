@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1054,6 +1054,10 @@ public class ISBN {
                             altIsbn = isbn.asText(Type.Isbn10);
                             layout.setStartIconVisible(true);
                             layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
+                            return;
+                        } else if (isbn.isValid(isbnValidityCheck == Validity.Strict)) {
+                            layout.setStartIconVisible(true);
+                            layout.setStartIconOnClickListener(null);
                             return;
                         }
                         break;
