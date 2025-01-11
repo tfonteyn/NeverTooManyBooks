@@ -20,8 +20,7 @@
   --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!--suppress LongLine -->
-<resources>
+<!--suppress LongLine --><resources>
     <plurals name="n_stars">
         <item quantity="other">%1$s星</item>
     </plurals>
@@ -31,14 +30,12 @@
     <plurals name="displaying_n_books">
         <item quantity="other">%1$d本书</item>
     </plurals>
-
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_on">将冠词移到标题末尾，仅适用于使用冠词的语言。\n英语示例：“Lord of The Rings, The”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_off">按原标题显示，仅适用于使用冠词的语言。\n英语示例：“The Lord of The Rings”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
-
     <string name="X_action_clear_credentials">清除凭据</string>
     <string name="X_action_customize">自定义…</string>
     <string name="X_action_execute">执行</string>
@@ -478,7 +475,7 @@
     <string name="lbl_year">年</string>
     <string name="list_and">与</string>
     <string name="ellipsize">%1$s……</string>
-    <string name="list_semicolon">；</string>
+    <string name="list_semicolon">"； "</string>
     <string name="list_element">• %s</string>
     <string name="loose">宽松</string>
     <string name="menu_update_books">更新图书</string>
