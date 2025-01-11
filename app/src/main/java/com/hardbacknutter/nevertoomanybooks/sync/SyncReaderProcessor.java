@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -120,6 +119,14 @@ public class SyncReaderProcessor {
         return FilterResult.ApplyDefault;
     }
 
+    /**
+     * Apply the default filtering specific to the given field.
+     *
+     * @param localBook to filter
+     * @param field     to process
+     *
+     * @return {@code true} if the field needs to be added, otherwise skip it.
+     */
     private boolean doDefaultFiltering(@NonNull final Book localBook,
                                        @NonNull final SyncField field) {
         switch (field.getAction()) {
@@ -258,14 +265,15 @@ public class SyncReaderProcessor {
     /**
      * Overridable for custom processing.
      *
-     * @param context
-     * @param localBook
-     * @param remoteBook
-     * @param field
+     * @param context    Current context
+     * @param localBook  the local book
+     * @param remoteBook the data to merge with the local-book
+     * @param field      to process
      *
      * @return {@code true} when handled, {@code false} to apply default processing
      *
-     * @throws IOException
+     * @throws IOException on <strong>very serious</strong> io issues.
+     *                     Less serious io issues are swallowed/ignored
      */
     protected boolean process(@NonNull final Context context,
                               @NonNull final Book localBook,
@@ -446,9 +454,25 @@ public class SyncReaderProcessor {
                + '}';
     }
 
+    /**
+     * The return value from {@link #filter(SyncField, Book)}.
+     * This will determine how {@link #filter(Book)} will process the given {@link SyncField}.
+     */
     public enum FilterResult {
+        /**
+         * Add the {@link SyncField} as-is.
+         * {@link #filter(SyncField, Book)} has decided!
+         */
         Add,
+        /**
+         * Skip it, do not add it.
+         * {@link #filter(SyncField, Book)} has decided!
+         */
         Skip,
+        /**
+         * {@link #filter(SyncField, Book)} does not care, the field needs
+         * be handled with the default rules.
+         */
         ApplyDefault
     }
 
@@ -502,6 +526,11 @@ public class SyncReaderProcessor {
             writePreferences();
         }
 
+        /**
+         * Get the full list of {@link SyncField}s.
+         *
+         * @return all fields
+         */
         @NonNull
         public Collection<SyncField> getSyncFields() {
             return fields.values();
@@ -632,29 +661,24 @@ public class SyncReaderProcessor {
 
         /**
          * Add the supported external-id fields.
-         * The label is the search engine name, the value is the external id field name
+         * The label is the Identifier name, the value is the key/field name.
+         * <p>
+         * No chaining returned as a reminder these should come last.
          *
          * @param context Current context
-         *
-         * @return {@code this} (for chaining)
          */
-        @NonNull
-        public Builder addIdentifierFields(@NonNull final Context context) {
+        public void addIdentifierFields(@NonNull final Context context) {
+            // Collect and sort at the same time
             final SortedMap<String, String> sidMap = new TreeMap<>();
-            Arrays.stream(EngineId.values())
-                  .filter(EngineId::isEnabled)
-                  .forEach(engineId -> {
-                      final String identifierKey = engineId.getIdentifierKey();
-                      if (identifierKey != null) {
-                          sidMap.put(engineId.getName(context), identifierKey);
-                      }
-                  });
+            // All known/supported identifiers, this is NOT limited to our SearchEngines!
+            ServiceLocator.getInstance().getIdentifierDao().getAll().forEach(
+                    identifier -> sidMap.put(identifier.getName(), identifier.getKey()));
+
+            // create and add as SyncFields
             sidMap.forEach((label, key) ->
                                    add(context.getString(R.string.lbl_identifier_suffix, label),
-                                       key,
-                                       SyncAction.Overwrite));
+                                       key, SyncAction.Overwrite));
 
-            return this;
         }
 
         /**
