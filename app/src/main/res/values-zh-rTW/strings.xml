@@ -475,7 +475,7 @@
     <string name="lbl_year">年</string>
     <string name="list_and">與</string>
     <string name="ellipsize">%1$s……</string>
-    <string name="list_semicolon">；</string>
+    <string name="list_semicolon">"； "</string>
     <string name="list_element">• %s</string>
     <string name="loose">寬鬆</string>
     <string name="menu_update_books">更新圖書</string>
