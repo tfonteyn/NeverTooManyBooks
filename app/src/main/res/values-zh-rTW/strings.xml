@@ -470,6 +470,7 @@
     <string name="lbl_virtual_libraries">此圖書館中的虛擬書架</string>
     <string name="lbl_website_address">網址（網址）</string>
     <string name="lbl_websites">網站</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>識別碼</small>]]></string>
     <string name="lbl_year">年</string>
     <string name="list_and">與</string>
     <string name="ellipsize">%1$s……</string>
@@ -810,5 +811,6 @@
     <string name="ps_show_author_name_given_first">優先顯示名字，\n如「Cixin Liu」</string>
     <string name="ps_sort_author_name_family_first">優先按姓氏排序，\n如「Liu，Cixin」</string>
     <string name="ps_sort_author_name_given_first">優先按名字排序，\n如「Cixin Liu」</string>
-    <string name="lbl_identifiers">标识符</string>
+    <string name="lbl_identifier">識別碼</string>
+    <string name="lbl_identifiers">識別碼</string>
 </resources>

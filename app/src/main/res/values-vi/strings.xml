@@ -467,6 +467,7 @@
     <string name="lbl_virtual_libraries">Thư viện ảo trong thư viện này</string>
     <string name="lbl_website_address">Địa chỉ trang web (URL)</string>
     <string name="lbl_websites">Trang web</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Năm</string>
     <string name="list_and">và</string>
     <string name="list_semicolon">"; "</string>
@@ -809,5 +810,6 @@
     <string name="whichViewApplication">Mở bằng</string>
     <string name="x_of_y">%1$d trong số %2$d</string>
     <string name="yes">Có</string>
-    <string name="lbl_identifiers">Nhận dạng</string>
+    <string name="lbl_identifier">Mã định danh</string>
+    <string name="lbl_identifiers">Mã định danh</string>
 </resources>

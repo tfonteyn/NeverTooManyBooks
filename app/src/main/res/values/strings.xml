@@ -108,7 +108,8 @@
     <string name="and_others_textual">%1$s et al.</string>
 
     <!-- Same as "and_others" but with the number of items added.
-         HTML string, must be between a CDATA tag/brackets-->
+         HTML string, must be between a CDATA tag/brackets;
+         Support for RTL languages -->
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
 
@@ -1121,8 +1122,16 @@
     <!-- a one line label, with the name of the person appended. Shown as a banner on the screen. -->
     <string name="lbl_lend_out_to_name">Lend out to %1$s</string>
 
-    <!-- Screen title for viewing/editing a list of external website ids. -->
+    <!-- Label for an external website id field. -->
+    <string name="lbl_identifier">Identifier</string>
+    <!-- Plural of "lbl_identifier" -->
     <string name="lbl_identifiers">Identifiers</string>
+    <!-- Small suffix for a site to indicate the field is an identifier.
+         HTML string, must be between a CDATA tag/brackets;
+         Example:  "Goodreads ID"  (with ID in a smaller font)
+         The "ID" string should be very short, maximum 3 or 4 characters.
+         -->
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
 
     <!-- endregion -->
     <!-- region ========== All date related labels. -->

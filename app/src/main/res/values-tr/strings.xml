@@ -434,6 +434,7 @@
     <string name="lbl_website_address">Site adresi (URL)</string>
     <string name="lbl_websites">Web siteleri</string>
     <string name="bookshelf_my_wishlist">İstek Listesi</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Yıl</string>
     <string name="list_and">ve</string>
     <string name="ellipsize">%1$s…</string>
@@ -820,5 +821,6 @@
     <string name="lbl_capitalize_words">Sözcüklerin başlangıcı</string>
     <string name="lbl_capitalize_sentence">Cümlelerin başlangıcı</string>
     <string name="lbl_assign_location">Konum atama</string>
+    <string name="lbl_identifier">Tanımlayıcı</string>
     <string name="lbl_identifiers">Tanımlayıcılar</string>
 </resources>

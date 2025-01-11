@@ -444,6 +444,7 @@
     <string name="lbl_website_address">Адрес сайта (URL)</string>
     <string name="lbl_websites">Веб-сайты</string>
     <string name="bookshelf_my_wishlist">Список желаний</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">г.</string>
     <string name="list_and">и</string>
     <string name="ellipsize">%1$s…</string>
@@ -830,5 +831,6 @@
     <string name="lbl_capitalize_words">Начало слов</string>
     <string name="lbl_capitalize_sentence">Начало предложений</string>
     <string name="lbl_assign_location">Назначить местоположение</string>
+    <string name="lbl_identifier">Идентификатор</string>
     <string name="lbl_identifiers">Идентификаторы</string>
 </resources>

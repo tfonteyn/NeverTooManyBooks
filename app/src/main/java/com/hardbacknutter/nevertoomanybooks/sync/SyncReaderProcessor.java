@@ -42,6 +42,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -648,7 +649,10 @@ public class SyncReaderProcessor {
                           sidMap.put(engineId.getName(context), identifierKey);
                       }
                   });
-            sidMap.forEach((label, key) -> add(label, key, SyncAction.Overwrite));
+            sidMap.forEach((label, key) ->
+                                   add(context.getString(R.string.lbl_identifier_suffix, label),
+                                       key,
+                                       SyncAction.Overwrite));
 
             return this;
         }

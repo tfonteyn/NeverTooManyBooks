@@ -410,6 +410,7 @@
     <string name="lbl_virtual_libraries">Virtuele bibliotheken in deze bibliotheek</string>
     <string name="lbl_website_address">Web-adres (URL)</string>
     <string name="lbl_websites">Websites</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Jaar</string>
     <string name="list_and">en</string>
     <string name="ellipsize">%1$s…</string>
@@ -809,5 +810,6 @@
     <string name="lbl_capitalize_words">Begin van woorden</string>
     <string name="lbl_capitalize_sentence">Begin van zinnen</string>
     <string name="lbl_assign_location">Locatie toewijzen</string>
+    <string name="lbl_identifier">Identificatiecode</string>
     <string name="lbl_identifiers">Identificatoren</string>
 </resources>

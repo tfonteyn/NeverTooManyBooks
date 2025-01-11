@@ -447,6 +447,7 @@
     <string name="lbl_website_address">Adres witryny (URL)</string>
     <string name="lbl_websites">Strony internetowe</string>
     <string name="bookshelf_my_wishlist">Lista życzeń</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Rok</string>
     <string name="list_and">i</string>
     <string name="ellipsize">%1$s…</string>
@@ -832,5 +833,6 @@
     <string name="lbl_capitalize_words">Początek wyrazów</string>
     <string name="lbl_capitalize_sentence">Początek zdania</string>
     <string name="lbl_assign_location">Przypisywanie lokalizacji</string>
+    <string name="lbl_identifier">Identyfikator</string>
     <string name="lbl_identifiers">Identyfikatory</string>
 </resources>

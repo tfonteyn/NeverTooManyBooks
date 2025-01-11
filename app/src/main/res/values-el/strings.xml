@@ -429,6 +429,7 @@
     <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>
     <string name="lbl_websites">Ιστοσελίδες</string>
     <string name="bookshelf_my_wishlist">Επιθυμητά</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Έτος</string>
     <string name="list_and">και</string>
     <string name="ellipsize">%1$s…</string>
@@ -810,5 +811,6 @@
     <string name="lbl_capitalize_words">Αρχή λέξεων</string>
     <string name="lbl_capitalize_sentence">Αρχή προτάσεων</string>
     <string name="lbl_assign_location">Ανάθεση τοποθεσίας</string>
+    <string name="lbl_identifier">Αναγνωριστικό</string>
     <string name="lbl_identifiers">Αναγνωριστικά</string>
 </resources>

@@ -120,4 +120,7 @@
     <string name="error_unexpected">Ein óvæntaður villa uppstóð.</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_group_1st_char_author_family_name">1. stavur í eftirnavn rithøvundsins</string>
+    <string name="lbl_identifier">Eyðkenni</string>
+    <string name="lbl_identifiers">Eyðkenni</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
 </resources>

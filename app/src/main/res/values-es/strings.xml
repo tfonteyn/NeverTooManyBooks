@@ -431,6 +431,7 @@
     <string name="lbl_website_address">Dirección del sitio (URL)</string>
     <string name="lbl_websites">Sitios web</string>
     <string name="bookshelf_my_wishlist">Lista de deseos</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Año</string>
     <string name="list_and">y</string>
     <string name="ellipsize">%1$s…</string>
@@ -812,5 +813,6 @@
     <string name="pt_capitalize_title">Título en mayúsculas</string>
     <string name="lbl_assign_location">Asignar ubicación</string>
     <string name="info_bulk_set_location">Seleccione la ubicación que desea asignar a todos los libros listados en el nodo seleccionado.</string>
+    <string name="lbl_identifier">Identificador</string>
     <string name="lbl_identifiers">Identificadores</string>
 </resources>

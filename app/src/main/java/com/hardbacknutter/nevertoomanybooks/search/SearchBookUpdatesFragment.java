@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -313,7 +314,7 @@ public class SearchBookUpdatesFragment
             } else {
                 vb.field.setVisibility(View.VISIBLE);
                 vb.cbxUsage.setVisibility(View.VISIBLE);
-                vb.field.setText(syncField.getFieldLabel());
+                vb.field.setText(Html.fromHtml(syncField.getFieldLabel(), 0));
                 vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
                 vb.cbxUsage.setText(syncField.getActionLabel(vb.cbxUsage.getContext()));
             }

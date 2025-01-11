@@ -473,6 +473,7 @@
     <string name="lbl_virtual_libraries">此图书馆中的虚拟书架</string>
     <string name="lbl_website_address">网站地址（URL）</string>
     <string name="lbl_websites">网站</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>标识符</small>]]></string>
     <string name="lbl_year">年</string>
     <string name="list_and">与</string>
     <string name="ellipsize">%1$s……</string>
@@ -812,5 +813,6 @@
     <string name="whichViewApplication">打开方式</string>
     <string name="x_of_y">%1$d本 • 共%2$d本</string>
     <string name="yes">确定</string>
+    <string name="lbl_identifier">标识符</string>
     <string name="lbl_identifiers">标识符</string>
 </resources>

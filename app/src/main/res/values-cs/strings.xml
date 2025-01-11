@@ -443,6 +443,7 @@
     <string name="lbl_website_address">Adresa webu (URL)</string>
     <string name="lbl_websites">Webové stránky</string>
     <string name="bookshelf_my_wishlist">Seznam přání</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Rokem</string>
     <string name="list_and">a</string>
     <string name="ellipsize">%1$s…</string>
@@ -829,5 +830,6 @@
     <string name="lbl_capitalize_words">Začátek slov</string>
     <string name="lbl_capitalize_sentence">Začátek vět</string>
     <string name="lbl_assign_location">Přiřazení umístění</string>
+    <string name="lbl_identifier">Identifikátor</string>
     <string name="lbl_identifiers">Identifikátory</string>
 </resources>

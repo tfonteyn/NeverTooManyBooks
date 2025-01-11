@@ -121,6 +121,7 @@
     <string name="lbl_system_default">(Padrão do sistema)</string>
     <string name="lbl_tab_publication">Publicação</string>
     <string name="lbl_unread">Não lido</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Ano</string>
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>
@@ -839,5 +840,6 @@
     <string name="lbl_capitalize_words">Início das palavras</string>
     <string name="lbl_capitalize_sentence">Início de frases</string>
     <string name="lbl_assign_location">Atribuir localização</string>
+    <string name="lbl_identifier">Identificador</string>
     <string name="lbl_identifiers">Identificadores</string>
 </resources>
