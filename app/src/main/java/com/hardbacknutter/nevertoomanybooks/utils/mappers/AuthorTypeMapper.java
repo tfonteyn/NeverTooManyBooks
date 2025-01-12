@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,6 +47,7 @@ public class AuthorTypeMapper {
     static {
         // English
         MAPPINGS.put("author", Author.TYPE_WRITER);
+        MAPPINGS.put("writer", Author.TYPE_WRITER);
         MAPPINGS.put("adapter", Author.TYPE_WRITER);
 
         MAPPINGS.put("original script writer", Author.TYPE_ORIGINAL_SCRIPT_WRITER);
