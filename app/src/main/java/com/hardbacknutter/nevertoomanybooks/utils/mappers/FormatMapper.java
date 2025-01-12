@@ -123,6 +123,10 @@ public final class FormatMapper
         MAPPINGS.put("unknown", R.string.unknown);
         // english - GoogleBooks
         MAPPINGS.put("dimensions", R.string.book_format_dimensions);
+        // goodreads... this is a weird one. Normally specific to children/baby books
+        // it seems, but seen used on goodreads for hardcover comics.
+        // Hoping we don't have users who collect the former...
+        MAPPINGS.put("board book", R.string.book_format_hardcover);
     }
 
     /**
