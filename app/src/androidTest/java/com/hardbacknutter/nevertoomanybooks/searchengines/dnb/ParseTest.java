@@ -39,8 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import junit.framework.TestCase;
-
 import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,9 +88,9 @@ public class ParseTest
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
-        TestCase.assertEquals(1, allPublishers.size());
+        assertEquals(1, allPublishers.size());
 
-        TestCase.assertEquals("Wilhelm Heyne Verlag", allPublishers.get(0).getName());
+        assertEquals("Wilhelm Heyne Verlag", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -143,9 +141,9 @@ public class ParseTest
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
-        TestCase.assertEquals(1, allPublishers.size());
+        assertEquals(1, allPublishers.size());
 
-        TestCase.assertEquals("Knaur", allPublishers.get(0).getName());
+        assertEquals("Knaur", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -189,9 +187,9 @@ public class ParseTest
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
-        TestCase.assertEquals(1, allPublishers.size());
+        assertEquals(1, allPublishers.size());
 
-        TestCase.assertEquals("Blanvalet", allPublishers.get(0).getName());
+        assertEquals("Blanvalet", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -252,9 +250,9 @@ public class ParseTest
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
-        TestCase.assertEquals(1, allPublishers.size());
+        assertEquals(1, allPublishers.size());
 
-        TestCase.assertEquals("Heyne Verlag", allPublishers.get(0).getName());
+        assertEquals("Heyne Verlag", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
