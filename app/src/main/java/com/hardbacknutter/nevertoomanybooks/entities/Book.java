@@ -573,6 +573,20 @@ public class Book
     /**
      * Set or remove the first-publication-date for this work.
      *
+     * @param date to set; {@code null} to remove
+     */
+    public void setFirstPublicationDate(@Nullable final LocalDateTime date) {
+        if (date != null) {
+            putString(DBKey.FIRST_PUBLICATION__DATE,
+                      date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        } else {
+            remove(DBKey.FIRST_PUBLICATION__DATE);
+        }
+    }
+
+    /**
+     * Set or remove the first-publication-date for this work.
+     *
      * @param date to set; a {@code null} or a 'not-present' date will remove the field
      */
     public void setFirstPublicationDate(@Nullable final PartialDate date) {
