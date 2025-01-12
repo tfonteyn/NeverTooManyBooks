@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -93,8 +93,19 @@ public class RatingParser {
         return Optional.empty();
     }
 
+    /**
+     * Normalize the given value.
+     *
+     * @param rating to process
+     *
+     * @return a value within the range 0..5
+     */
     @NonNull
     public Optional<Float> normalize(final float rating) {
+        if (Float.isNaN(rating)) {
+            return Optional.empty();
+        }
+
         float result;
         if (divBy2) {
             // 0.0 to 10.0 becomes an int 0..10
