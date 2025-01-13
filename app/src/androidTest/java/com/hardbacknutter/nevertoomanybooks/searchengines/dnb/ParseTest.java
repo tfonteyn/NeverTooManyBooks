@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -34,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -84,7 +86,11 @@ public class ParseTest
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("526", book.getString(DBKey.PAGES, null));
-        assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(1, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Science Fiction"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -137,7 +143,13 @@ public class ParseTest
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("378", book.getString(DBKey.PAGES, null));
-        assertEquals("Krimis, Thriller, Spionage", book.getString(DBKey.GENRE, null));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(3, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Krimis"));
+        assertTrue(tags.contains("Thriller"));
+        assertTrue(tags.contains("Spionage"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -182,8 +194,13 @@ public class ParseTest
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("747", book.getString(DBKey.PAGES, null));
-        assertEquals("Science Fiction, Fantasy", book.getString(DBKey.GENRE, null));
         assertEquals("Lesser evil", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(2, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Science Fiction"));
+        assertTrue(tags.contains("Fantasy"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -243,10 +260,14 @@ public class ParseTest
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("528", book.getString(DBKey.PAGES, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
-        assertEquals("Science Fiction", book.getString(DBKey.GENRE, null));
 
         // We parsed correctly, "Werk: NN", presumably bad-data on the site?
         assertEquals("NN", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(1, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Science Fiction"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

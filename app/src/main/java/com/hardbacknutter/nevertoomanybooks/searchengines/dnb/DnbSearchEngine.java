@@ -29,12 +29,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -46,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -322,9 +326,13 @@ public class DnbSearchEngine
                                 // there is also:
                                 // Themen­gebiet / Topic
                                 // Thema / Subject
-                                if (!book.contains(DBKey.GENRE)) {
-                                    book.putString(DBKey.GENRE, td.text());
-                                }
+                                final String[] split = td.text().split(",");
+                                final List<Tag> tags = Arrays.stream(split)
+                                                             .map(String::strip)
+                                                             .map(Tag::new)
+                                                             .collect(Collectors.toList());
+                                book.setTags(tags);
+
                                 break;
                             }
                             case "Werk":
