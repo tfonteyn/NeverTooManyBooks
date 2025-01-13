@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -33,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -88,8 +90,6 @@ public class ParseTest
         assertEquals("320", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("Livros > Livros em Português > Literatura > Romance",
-                     book.getString(DBKey.GENRE, null));
 
         assertEquals("Da mesma autora de <i>O Café Pumpkin Spice</i>,"
                      + " chega um romance delicioso e picante.<br><br>\n"
@@ -108,9 +108,17 @@ public class ParseTest
                 , book.getString(DBKey.DESCRIPTION, null));
 
         // test is a dynamic download, can fail / needs updating
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser));
+//        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser));
 //        assertEquals(new Money(BigDecimal.valueOf(15.60d), Money.EURO),
 //                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(4, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Livros"));
+        assertTrue(tags.contains("Livros em Português"));
+        assertTrue(tags.contains("Literatura"));
+        assertTrue(tags.contains("Romance"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -157,8 +165,6 @@ public class ParseTest
         assertEquals("416", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("Livros > Livros em Português > Literatura > Ficção Científica",
-                     book.getString(DBKey.GENRE, null));
 
         final String desc = book.getString(DBKey.DESCRIPTION, null);
         assertEquals("Golan Trevize escolheu o futuro — Gaia, um superorganismo"
@@ -180,6 +186,14 @@ public class ParseTest
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
 //        assertEquals(new Money(BigDecimal.valueOf(17.91d), Money.EURO),
 //                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(4, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Livros"));
+        assertTrue(tags.contains("Livros em Português"));
+        assertTrue(tags.contains("Literatura"));
+        assertTrue(tags.contains("Ficção Científica"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

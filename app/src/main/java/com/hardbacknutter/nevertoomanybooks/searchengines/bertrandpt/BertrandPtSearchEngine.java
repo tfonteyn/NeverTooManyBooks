@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -53,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -340,14 +342,14 @@ public class BertrandPtSearchEngine
             }
         }
 
-        // There can be multiple "div.info", i.e. a list of genres. We only take the first one.
+        // Classificação  Temática
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-themes > div.info");
         if (element != null) {
-            s = element.text().strip();
-            if (!s.isBlank()) {
-                book.putString(DBKey.GENRE, s);
-            }
+            final Elements as = element.select("a");
+            final List<Tag> tags = as.stream().map(Element::text).map(Tag::new)
+                                     .collect(Collectors.toList());
+            book.setTags(tags);
         }
 
         final Element priceElement = document.selectFirst(
