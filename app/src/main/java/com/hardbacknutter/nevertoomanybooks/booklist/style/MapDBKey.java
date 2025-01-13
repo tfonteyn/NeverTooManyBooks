@@ -64,6 +64,7 @@ public final class MapDBKey {
             Map.entry(DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf),
             Map.entry(DBKey.FK_PUBLISHER, R.string.lbl_publisher),
             Map.entry(DBKey.FK_SERIES, R.string.lbl_series),
+            Map.entry(DBKey.FK_TAG, R.string.lbl_tags),
             Map.entry(DBKey.FK_TOC_ENTRY, R.string.lbl_table_of_content),
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
             Map.entry(DBKey.GENRE, R.string.lbl_genre),
