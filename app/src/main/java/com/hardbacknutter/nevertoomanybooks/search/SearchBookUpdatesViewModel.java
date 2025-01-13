@@ -26,6 +26,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -219,6 +220,15 @@ public class SearchBookUpdatesViewModel
         builder.addIdentifierFields(context);
 
         return builder;
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public SyncReaderProcessor.Builder getSyncProcessorBuilder() {
+        if (syncProcessor != null) {
+            throw new IllegalStateException("syncProcessor exists");
+        }
+        return Objects.requireNonNull(syncProcessorBuilder);
     }
 
     @NonNull
