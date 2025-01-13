@@ -68,6 +68,7 @@ public class Identifier
 
     public static final char TYPE_LONG = 'L';
     public static final char TYPE_STRING = 'S';
+
     /** {@link Parcelable}. */
     public static final Creator<Identifier> CREATOR = new Creator<>() {
         @Override
@@ -82,7 +83,7 @@ public class Identifier
             return new Identifier[size];
         }
     };
-    private static final String TAG = "Identifier";
+
     private long id;
     @NonNull
     private String key;
@@ -111,7 +112,7 @@ public class Identifier
     /**
      * Constructor.
      *
-     * @param id      ID of the Author in the database.
+     * @param id      ID of the Identifier in the database.
      * @param rowData with data
      */
     public Identifier(final long id,
@@ -301,7 +302,9 @@ public class Identifier
         }
 
         protected Value(@NonNull final Parcel in) {
+            //noinspection DataFlowIssue
             identifier = in.readParcelable(getClass().getClassLoader());
+            //noinspection DataFlowIssue
             sid = in.readString();
         }
 

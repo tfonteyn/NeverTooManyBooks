@@ -350,7 +350,7 @@ public class Book
         setSeries(serviceLocator.getSeriesDao().getByBookId(bookId));
         setPublishers(serviceLocator.getPublisherDao().getByBookId(bookId));
         setToc(serviceLocator.getTocEntryDao().getByBookId(bookId));
-        setIdentifiers(serviceLocator.getIdentifierDao().findByBookId(bookId));
+        setIdentifiers(serviceLocator.getIdentifierDao().getByBookId(bookId));
 
         // do NOT preload the full Calibre library object. We hardly ever need it as such.
         // see #getCalibreLibrary
@@ -1027,7 +1027,7 @@ public class Book
      * <p>
      * Meant as a safer replacement for {@link #getString(String)}
      * specifically for {@link Identifier} vales.
-     * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
+     * Do <strong>NOT</strong> use for normal testing as we need to detect bad values in tests.
      *
      * @param identifierKey to set
      * @param value         to set; a value {@code <= 0} will remove the field
@@ -1049,7 +1049,7 @@ public class Book
      * <p>
      * Meant as a safer replacement for {@link #getString(String)}
      * specifically for {@link Identifier} vales.
-     * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
+     * Do <strong>NOT</strong> use for normal testing as we need to detect bad values in tests.
      *
      * @param identifierKey to set
      * @param value         to set; a {@code null}, {@code "0"} or an empty string
@@ -1069,7 +1069,7 @@ public class Book
      * <p>
      * Meant as a safer replacement for {@link #getString(String)}
      * specifically for {@link Identifier} vales.
-     * Do <strong>NOT</strong> for normal testing as we need to detect bad values in tests.
+     * Do <strong>NOT</strong> use for normal testing as we need to detect bad values in tests.
      *
      * @param identifierKey to get
      *
@@ -1081,8 +1081,9 @@ public class Book
         if (sid != null && !sid.isBlank() && !"0".equals(sid)) {
             return Optional.of(sid);
         }
-        // cleanup bad values
+        // cleanup empty values
         remove(identifierKey);
+
         return Optional.empty();
     }
 
@@ -1220,13 +1221,13 @@ public class Book
             }
         } else {
             // but if not, go explicitly fetch it.
-            final Optional<CalibreLibrary> library = ServiceLocator
-                    .getInstance().getCalibreLibraryDao()
+            final Optional<CalibreLibrary> oLibrary = ServiceLocator
+                    .getInstance()
+                    .getCalibreLibraryDao()
                     .findById(getLong(DBKey.FK_CALIBRE_LIBRARY));
             // store for reuse
-            library.ifPresent(
-                    calibreLibrary -> putParcelable(BKEY_CALIBRE_LIBRARY, calibreLibrary));
-            return library;
+            oLibrary.ifPresent(library -> putParcelable(BKEY_CALIBRE_LIBRARY, library));
+            return oLibrary;
         }
     }
 

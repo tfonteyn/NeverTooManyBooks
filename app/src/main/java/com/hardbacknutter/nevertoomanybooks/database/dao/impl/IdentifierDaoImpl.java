@@ -237,7 +237,7 @@ public class IdentifierDaoImpl
 
     @NonNull
     @Override
-    public List<Identifier.Value> findByBookId(@IntRange(from = 1) final long bookId) {
+    public List<Identifier.Value> getByBookId(@IntRange(from = 1) final long bookId) {
         final List<Identifier.Value> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {

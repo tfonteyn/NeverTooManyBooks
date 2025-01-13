@@ -130,7 +130,7 @@ public interface IdentifierDao {
      * @return list
      */
     @NonNull
-    List<Identifier.Value> findByBookId(@IntRange(from = 1) long bookId);
+    List<Identifier.Value> getByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Get the SID value for the given {@link Identifier} of the given book id.
