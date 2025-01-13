@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -37,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -113,6 +115,12 @@ public class ParseTest
         assertEquals(BigDecimal.valueOf(9.99d), listPrice.getValue());
         assertEquals(Money.EURO, listPrice.getCurrency());
 
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(2, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("western"));
+        assertTrue(tags.contains("avontuur"));
+
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
@@ -133,9 +141,6 @@ public class ParseTest
         assertEquals("Matthieu", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST | Author.TYPE_COLORIST,
                      author.getType());
-
-        assertEquals("western,avontuur",
-                     book.getString(StripWebSearchEngine.SiteField.KEY_WORDS, null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -204,6 +209,13 @@ public class ParseTest
         assertEquals(BigDecimal.valueOf(9.99d), listPrice.getValue());
         assertEquals(Money.EURO, listPrice.getCurrency());
 
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(3, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("detective"));
+        assertTrue(tags.contains("spionage"));
+        assertTrue(tags.contains("thriller"));
+
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
@@ -248,9 +260,6 @@ public class ParseTest
         assertEquals("Mikaël", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
-
-        assertEquals("detective,spionage,thriller",
-                     book.getString(StripWebSearchEngine.SiteField.KEY_WORDS, null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -301,6 +310,12 @@ public class ParseTest
         assertEquals(BigDecimal.valueOf(44.99d), listPrice.getValue());
         assertEquals(Money.EURO, listPrice.getCurrency());
 
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(2, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("avonturen"));
+        assertTrue(tags.contains("thriller"));
+
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
@@ -349,9 +364,6 @@ public class ParseTest
         assertEquals("Yann", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
-
-        assertEquals("avonturen,thriller",
-                     book.getString(StripWebSearchEngine.SiteField.KEY_WORDS, null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);

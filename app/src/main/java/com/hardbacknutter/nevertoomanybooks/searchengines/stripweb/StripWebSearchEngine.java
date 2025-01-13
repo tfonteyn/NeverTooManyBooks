@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -297,9 +298,6 @@ public class StripWebSearchEngine
                     case "Cover":
                         processText(td, DBKey.FORMAT, book);
                         break;
-                    case "Genre":
-                        processText(td, DBKey.GENRE, book);
-                        break;
                     case "Verschijningsdatum": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
@@ -327,14 +325,26 @@ public class StripWebSearchEngine
                         processText(td, SiteField.SIZE, book);
                         break;
 
+                    case "Genre": {
+                        final String text = SearchEngineUtils.cleanText(td.text());
+                        if (!text.isEmpty()) {
+                            final List<Tag> tags = book.getTags();
+                            tags.add(new Tag(text));
+                            book.setTags(tags);
+                        }
+                        break;
+                    }
                     case "Trefwoorden": {
                         // comma separated words but with extra whitespace we must remove
                         final String[] split = SearchEngineUtils.cleanText(td.text())
                                                                 .split(",");
-                        final String text = Arrays.stream(split)
-                                                  .map(String::strip)
-                                                  .collect(Collectors.joining(","));
-                        book.putString(SiteField.KEY_WORDS, text);
+
+                        final List<Tag> tags = book.getTags();
+                        tags.addAll(Arrays.stream(split)
+                                                     .map(String::strip)
+                                                     .map(Tag::new)
+                                          .collect(Collectors.toList()));
+                        book.setTags(tags);
                         break;
                     }
                     default:
@@ -700,7 +710,6 @@ public class StripWebSearchEngine
 
     public static final class SiteField {
 
-        static final String KEY_WORDS = "__key_words";
         static final String SIZE = "__size";
 
         private SiteField() {
