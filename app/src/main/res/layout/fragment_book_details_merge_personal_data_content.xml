@@ -48,8 +48,6 @@
     <TextView
         android:id="@+id/bookshelves"
         style="@style/Field.Generic"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
         app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
@@ -108,6 +106,7 @@
     <TextView
         android:id="@+id/date_acquired"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/spacer"
         tools:ignore="SelectableText"
@@ -125,6 +124,7 @@
     <TextView
         android:id="@+id/price_paid"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/date_acquired"
         tools:ignore="SelectableText"
@@ -142,6 +142,7 @@
     <TextView
         android:id="@+id/condition"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/price_paid"
         tools:ignore="SelectableText"
@@ -159,6 +160,7 @@
     <TextView
         android:id="@+id/condition_cover"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/condition"
         tools:ignore="SelectableText"
@@ -176,6 +178,7 @@
     <TextView
         android:id="@+id/read_start"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/condition_cover"
         tools:ignore="SelectableText"
@@ -193,6 +196,7 @@
     <TextView
         android:id="@+id/read_end"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/read_start"
         tools:ignore="SelectableText"
@@ -210,6 +214,7 @@
     <TextView
         android:id="@+id/location"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/read_end"
         tools:ignore="SelectableText"
@@ -227,6 +232,7 @@
     <TextView
         android:id="@+id/date_added"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/location"
         tools:ignore="SelectableText"
@@ -244,6 +250,7 @@
     <TextView
         android:id="@+id/date_last_updated"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/date_added"
         tools:ignore="SelectableText"
