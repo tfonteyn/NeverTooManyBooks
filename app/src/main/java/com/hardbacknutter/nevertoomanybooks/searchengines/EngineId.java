@@ -216,10 +216,7 @@ public enum EngineId
            DoubanSearchEngine.class,
            true),
 
-    /**
-     * Goodreads has completely disabled their API's and we do NOT search on their site.
-     * Only used for {@link SearchEngine.ViewBookByExternalId}.
-     */
+    /** All genres. */
     Goodreads("goodreads",
               R.string.site_goodreads,
               List.of(R.string.site_description_english_and_more,
@@ -543,6 +540,7 @@ public enum EngineId
 
                 // All sites unless added above
                 type.addSite(Amazon, true);
+                type.addSite(Goodreads, true);
                 type.addSite(GoogleBooks, true);
                 type.addSite(Isfdb, true);
                 type.addSite(BookFinder, true);

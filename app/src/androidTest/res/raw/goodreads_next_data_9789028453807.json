@@ -1,0 +1,1770 @@
+{
+  "props": {
+    "pageProps": {
+      "params": {
+        "book_id": "215846772-de-chocoladewinkel-van-verloren-liefdes"
+      },
+      "jwtToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImZSNXpfWTVjYXZQMllsaXU3eks0YUNJVEJPcVBWdGtxTE9XVURfV3dGOTQifQ.eyJpc3MiOiJodHRwczovL3d3dy5nb29kcmVhZHMuY29tIiwic3ViIjoia2NhOi8vcHJvZmlsZTpnb29kcmVhZHMvQTJUU0tLM1c2SzJGUjEiLCJhdWQiOiI2M2RjMjRlN2M2MTFlNmYxNzkyZjgxMzA1OGYyMTU2MGJkOGM2OTM4ZDU0YS5nb29kcmVhZHMuY29tIiwidXNlcl9pZCI6ODUzODY0NDIsInJvbGUiOiJ1c2VyIiwibm9uY2UiOm51bGwsImV4cCI6MTczNjY3ODg5OCwiaWF0IjoxNzM2Njc4NTk4fQ.Yt71e5JvW8GiC-Tsigm7YXQN3uHdIU69uSFUYMK5htCuIP_td5RQJGPa10sd5DlbOd_emMvUoWDpQUiwmaGPFuiTAkPLwhOtB95JV8Wp9ijxf7OpfYqd1_N9Pu4cH0hWgFm7dp5oY1SnEHCmZK06Gn0rrkzlr_TIaHVVKFj8wPrADZXF3sam68OIDYGqYVy0Nzb0uJay7BrhE03eT4GWzzFCx_s4lVDb-z76N8O8KxpWLOZYZx5ChBbHO0i44qv2wO-L_7t8KTOsoIxKjLna1ufHNTbKGD_3rKx_SApEXVyBdSLwehebWNXb4Vf0b32npHM91bpQsY61kgCjFAgpNw",
+      "dataSource": null,
+      "apolloState": {
+        "ROOT_QUERY": {
+          "__typename": "Query",
+          "getAdsTargeting({\"getAdsTargetingInput\":{\"contextual\":{}}})": {
+            "__typename": "AdsTargeting",
+            "behavioral": {
+              "__typename": "BehavioralTargeting",
+              "adGroupNames": [],
+              "age": "null",
+              "authors": [
+                "115105",
+                "13778",
+                "3619",
+                "27944",
+                "10089",
+                "218173"
+              ],
+              "blockedAuthors": [],
+              "gender": "null",
+              "genres": [
+                "117",
+                "1",
+                "144",
+                "411",
+                "64",
+                "103",
+                "1049",
+                "24",
+                "97",
+                "107",
+                "921",
+                "1221",
+                "1110",
+                "3043",
+                "6537",
+                "106",
+                "1276",
+                "68",
+                "160",
+                "926",
+                "2046",
+                "2286",
+                "2614",
+                "2784",
+                "2996",
+                "3045",
+                "3145",
+                "11766"
+              ],
+              "userTargetingSettings": {
+                "__typename": "UserTargetingSettings",
+                "allowBehavioralTargeting": true
+              }
+            },
+            "contextual": null
+          },
+          "getSiteHeaderBanner": {
+            "__typename": "SiteHeaderBanner",
+            "altText": "Join the 2025 Goodreads Reading Challenge",
+            "clickthroughUrl": "https://www.goodreads.com/readingchallenges?ref=rc_jan_25_ss",
+            "desktop1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122011i/485.jpg",
+            "desktop2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122016i/486.jpg",
+            "mobile1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122022i/487.jpg",
+            "mobile2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122027i/488.jpg",
+            "siteStripColor": "#23606E"
+          },
+          "getBookByLegacyId({\"legacyId\":\"215846772\"})": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ"
+          },
+          "getPageBanner({\"getPageBannerInput\":{\"id\":\"kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ\",\"pageName\":\"book_show\"}})": {
+            "__typename": "PageBanner",
+            "type": null,
+            "message": null
+          },
+          "getReviews": {
+            "__typename": "BookReviewsConnection",
+            "totalCount": 22,
+            "edges": [
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.i-XE2X3Zomv6e3DyjXoe8g"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.5IFaK-cHCt3hzX7RLxkHog"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ePQyUHV_OAg7zbxoizJjcA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.N4k5ZIw2wHSU4pP7IKpJQg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.-3hgmOcO7h2LcpatUTvz7w"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wd-moo7mVS3wFNeW38XoUA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.nA5aWzlhgSqegp_0s6sYyQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.XJDPV848eH9CgRNN_PyDfg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.mWVRpTEhysM7H5305o7_bg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.9_zGu0GviHYqubj-xAEsrg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v2.2024110410.d8078d95-b4de-472d-a51b-6cea6221b189"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.yzCHHO_XS2uEKIY02DmQpQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.LQWvdKaJMl9ehewP2CTHbg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.0Xjrrj1uk_0nHB4jRmh_vA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wY0wjUNXPCtyHQLJF8kEiw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.589TmqxyToGX-lL7R5ilWg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.h9CMU9WLulkDP3zTghRG5w"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Ftz1lVEzqndV9FuKbprT0Q"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.rgZue8WXxfFawxukQaikzw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.uOkXO5mIZoRfawm7T81cIA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.KlAfQk6v8OC1DHNQS_wYGQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.0_RMRX_verktBbO9s-Iodg"
+                }
+              }
+            ],
+            "pageInfo": {
+              "__typename": "PageInfo",
+              "prevPageToken": "NjQ2LDE3MzI0NjI5ODY2ODE",
+              "nextPageToken": ""
+            }
+          }
+        },
+        "Contributor:kca://author/amzn1.gr.author.v3.MPg03NdB-lXIr-gM": {
+          "id": "kca://author/amzn1.gr.author.v3.MPg03NdB-lXIr-gM",
+          "__typename": "Contributor",
+          "legacyId": 50820550,
+          "name": "Kim Ye-eun",
+          "description": "",
+          "isGrAuthor": false,
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 1
+          },
+          "profileImageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/nophoto/user/u_700x933.png",
+          "webUrl": "https://www.goodreads.com/author/show/50820550.Kim_Ye_eun",
+          "user": null,
+          "viewerIsFollowing": null,
+          "followers": {
+            "__typename": "ContributorFollowersConnection",
+            "totalCount": 0
+          }
+        },
+        "Contributor:kca://author/amzn1.gr.author.v3.RK-p3hZpglwVTxOS": {
+          "id": "kca://author/amzn1.gr.author.v3.RK-p3hZpglwVTxOS",
+          "__typename": "Contributor",
+          "name": "Nuanxed",
+          "webUrl": "https://www.goodreads.com/author/show/40652983.Nuanxed",
+          "isGrAuthor": false
+        },
+        "Book:kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ": {
+          "id": "kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ",
+          "__typename": "Book",
+          "legacyId": 215846772,
+          "webUrl": "https://www.goodreads.com/book/show/215846772-de-chocoladewinkel-van-verloren-liefdes",
+          "title": "De chocoladewinkel van verloren liefdes",
+          "titleComplete": "De chocoladewinkel van verloren liefdes (Dutch Edition)",
+          "description": "Johoo heeft een kleine chocoladewinkel in een steegje in Seoel. Haar klanten komen niet alleen voor overheerlijke chocolade, maar ook voor het speciale liefdesadvies waar Johoo om bekendstaat. Ze luistert geduldig naar alle verhalen, en heeft voor iedereen precies het soort chocola dat diegene nodig heeft. Van een zevenjarige jongen die verliefd is op een meisje uit zijn klas, tot een oude man die door zijn eigen vrouw niet meer herkend wordt. Maar zou er ook een recept te vinden zijn voor de verloren liefde van Johoo zelf?",
+          "description({\"stripped\":true})": "Johoo heeft een kleine chocoladewinkel in een steegje in Seoel. Haar klanten komen niet alleen voor overheerlijke chocolade, maar ook voor het speciale liefdesadvies waar Johoo om bekendstaat. Ze luistert geduldig naar alle verhalen, en heeft voor iedereen precies het soort chocola dat diegene nodig heeft. Van een zevenjarige jongen die verliefd is op een meisje uit zijn klas, tot een oude man die door zijn eigen vrouw niet meer herkend wordt. Maar zou er ook een recept te vinden zijn voor de verloren liefde van Johoo zelf?",
+          "primaryContributorEdge": {
+            "__typename": "BookContributorEdge",
+            "node": {
+              "__ref": "Contributor:kca://author/amzn1.gr.author.v3.MPg03NdB-lXIr-gM"
+            },
+            "role": "Author"
+          },
+          "secondaryContributorEdges": [
+            {
+              "__typename": "BookContributorEdge",
+              "node": {
+                "__ref": "Contributor:kca://author/amzn1.gr.author.v3.RK-p3hZpglwVTxOS"
+              },
+              "role": "translator"
+            }
+          ],
+          "imageUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1719916614i/215846772.jpg",
+          "bookSeries": [],
+          "bookGenres": [],
+          "details": {
+            "__typename": "BookDetails",
+            "asin": "B0D79GXMVR",
+            "format": "Kindle Edition",
+            "numPages": null,
+            "publicationTime": 1729494000000,
+            "publisher": "Wereldbibliotheek",
+            "isbn": "9028453806",
+            "isbn13": "9789028453807",
+            "language": {
+              "__typename": "Language",
+              "name": "Dutch; Flemish"
+            }
+          },
+          "work": {
+            "__ref": "Work:kca://work/amzn1.gr.work.v3.d1m8NTMmF1efbKQS"
+          },
+          "reviewEditUrl": "https://www.goodreads.com/review/edit/215846772",
+          "featureFlags": {
+            "__typename": "FeatureFlags",
+            "hideAds": false,
+            "noIndex": false,
+            "noReviews": false,
+            "noNewRatings": false,
+            "noNewTextReviews": false
+          },
+          "viewerShelving": {
+            "__ref": "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ"
+          },
+          "links({})": {
+            "__typename": "BookLinks",
+            "primaryAffiliateLink": {
+              "__typename": "BookLink",
+              "name": "Amazon UK",
+              "url": "http://www.amazon.co.uk/gp/product/B0D79GXMVR/ref=x_gr_bb_amazon?ie=UTF8\u0026tag=x_gr_bb_amazon-21\u0026linkCode=as2\u0026camp=1634\u0026creative=6738",
+              "ref": "x_gr_bb_amazon"
+            },
+            "secondaryAffiliateLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "AbeBooks",
+                "url": "http://affiliates.abebooks.com/c/64613/77416/2029?u=http%3A%2F%2Fwww.abebooks.co.uk%2Fservlet%2FSearchResults%3Fisbn%3D9028453806%26sts%3Dt",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Audible",
+                "url": "https://www.amazon.co.uk/s?k=De+chocoladewinkel+van+verloren+liefdes\u0026i=audible\u0026ref=x_gr_w_bb_audible-20\u0026tag=x_gr_w_bb_audible_uk-21",
+                "ref": "x_gr_bb_amazon"
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Kobo",
+                "url": "https://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=308967.1\u0026type=10\u0026tmpid=13778\u0026u1=x_gr_w_bb\u0026RD_PARM1=https%3A%2F%2Fwww.kobo.com%2Fgb%2Fen%2Fsearch%3FQuery%3DDe+chocoladewinkel+van+verloren+liefdes",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Alibris",
+                "url": "http://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=189673.1\u0026type=10\u0026tmpid=939\u0026\u0026u1=x_gr_w_bb\u0026RD_PARM1=http%3A%2F%2Fwww.alibris.co.uk%2Fbooksearch%3Fkeyword%3D9028453806",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "iBooks",
+                "url": "https://geo.itunes.apple.com/gb/book/isbn9789028453807?at=11lvdC\u0026mt=11\u0026ls=1",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Indigo.ca",
+                "url": "http://www.kqzyfj.com/d3106vpyvpxCFFFKMHLCEDHGKMGHCEHDHMHLLIFDDD?url=https%3A%2F%2Fwww.chapters.indigo.ca%2Fen-ca%2Fhome%2Fsearch%2F%3Fkeywords%3D9028453806",
+                "ref": null
+              }
+            ],
+            "libraryLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "WorldCat",
+                "url": "http://www.worldcat.org/isbn/9028453806?loc=",
+                "ref": null
+              }
+            ],
+            "overflowPageUrl": "https://www.goodreads.com/book/215846772-de-chocoladewinkel-van-verloren-liefdes/get_a_copy",
+            "seriesLink": null
+          }
+        },
+        "Work:kca://work/amzn1.gr.work.v3.d1m8NTMmF1efbKQS": {
+          "id": "kca://work/amzn1.gr.work.v3.d1m8NTMmF1efbKQS",
+          "__typename": "Work",
+          "legacyId": 222259054,
+          "bestBook": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ"
+          },
+          "choiceAwards": [],
+          "details": {
+            "__typename": "WorkDetails",
+            "webUrl": "https://www.goodreads.com/work/222259054-de-chocoladewinkel-van-verloren-liefdes-dutch-edition",
+            "shelvesUrl": "https://www.goodreads.com/work/shelves/222259054-de-chocoladewinkel-van-verloren-liefdes-dutch-edition",
+            "publicationTime": 1666940400000,
+            "originalTitle": "",
+            "awardsWon": [],
+            "places": [],
+            "characters": []
+          },
+          "stats": {
+            "__typename": "BookOrWorkStats",
+            "averageRating": 3.06,
+            "ratingsCount": 93,
+            "ratingsCountDist": [
+              1,
+              21,
+              49,
+              15,
+              7
+            ],
+            "textReviewsCount": 22,
+            "textReviewsLanguageCounts": [
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 3,
+                "isoLanguageCode": "en"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 16,
+                "isoLanguageCode": "nl"
+              }
+            ]
+          },
+          "quotes({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuotesConnection",
+            "webUrl": "https://www.goodreads.com/work/quotes/222259054",
+            "totalCount": 0
+          },
+          "questions({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuestionsConnection",
+            "totalCount": 0,
+            "webUrl": "https://www.goodreads.com/book/215846772/questions"
+          },
+          "topics({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceTopicsConnection",
+            "webUrl": "https://www.goodreads.com/topic/list_book/215846772",
+            "totalCount": 0
+          },
+          "viewerShelvings": [],
+          "viewerShelvingsUrl": "/review/user_works/222259054",
+          "featuredKNH": {
+            "__typename": "FeaturedKNHCollectionConnection",
+            "totalCount": 0,
+            "edges": []
+          },
+          "giveaways": null,
+          "editions": {
+            "__typename": "BooksConnection",
+            "webUrl": "https://www.goodreads.com/work/editions/222259054"
+          }
+        },
+        "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ": {
+          "id": "kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ",
+          "__typename": "Shelving",
+          "book": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v3.VCIzm5ahpbW7CmvQ"
+          },
+          "shelf": {
+            "__typename": "Shelf",
+            "name": null,
+            "webUrl": null
+          },
+          "taggings": [],
+          "review": null,
+          "webUrl": null
+        },
+        "User:32009692": {
+          "id": 32009692,
+          "__typename": "User",
+          "legacyId": 32009692,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1657657761i/32009692._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 979,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Marloes",
+          "webUrl": "https://www.goodreads.com/user/show/32009692-marloes",
+          "contributor": null,
+          "followersCount": 115
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.i-XE2X3Zomv6e3DyjXoe8g": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.i-XE2X3Zomv6e3DyjXoe8g",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:32009692"
+          },
+          "recommendFor": null,
+          "updatedAt": 1734785966957,
+          "createdAt": 1732462986681,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1734112206420,
+          "text": "In een nauw steegje in Seoul vind je een oase van rust midden in de drukke stad: de kleine en knusse chocoladewinkel van Juho. De bezoekers komen er niet alleen voor de heerlijke chocolade met bijzondere smaken, maar ook om hun verhalen over stille, onbeantwoorde liefde op te biechten. Juho luistert aandachtig naar alle verhalen, ze weet precies wat haar klanten nodig hebben en geeft iedereen een speciaal chocolaatje, als bemoedigend schouderklopje.\u003cbr /\u003e\u003cbr /\u003eJuho is een kalm en zachtaardig personage dat helemaal op haar plek is in haar winkel. Ze beteugelt haar nieuwsgierigheid en laat haar klanten rustig uitpraten, ze stelt oprechte vragen en wint hun vertrouwen, waardoor ze hun diepste gevoelens durven te uiten. Je vertelt immers makkelijk dingen aan iemand die je nog nooit gezien hebt en niet verwacht terug te zien, maar ze biedt geen pasklare oplossingen en ze is geen coach, ze moeten handelen door te luisteren naar hun hart en Juho heeft hen op haar eigen wijze lief door één van haar chocolaatjes aan te bieden. Chocolade als troost, als symbool voor de eigenschappen van de verliefdheid of als manier om iemand aan het denken te zetten.\u003cbr /\u003e\u003cbr /\u003eDe klanten komen en gaan en de meeste interacties zijn kort en vluchtig, waardoor de verhalen weinig diepgang hebben, maar dit is wel een gevarieerd boekje omdat je leest over jong en oud, over allerlei vormen van liefde en over verschillende kijken op liefde. Juho’s eigen verhaal over onbeantwoorde liefde loopt als rode draad door het geheel heen en enkele klanten keren terug, waardoor je weet hoe hun liefdesverhaal afloopt, maar meestal moet je erop vertrouwen dat ze na hun bezoekje aan de winkel de beslissing nemen die wordt ingegeven door hun hart. Hierdoor bouw je niet echt een sterke band op met de personages, maar al deze inkijkjes in hun levens en de weetjes over de chocolade schotelen je wel een soort proeverijtje van bonbons voor, als hartverwarmende en zoete snack.\u003cbr /\u003e\u003cbr /\u003eNet als de andere boeken binnen het genre healing fiction gaat ook dit verhaal vooral over de kracht van oprechte aandacht, over er zijn voor een ander en over kleine gebaren die verandering in gang kunnen zetten. Laat je meevoeren door de kabbelende en sfeervolle verhalen, houd wat chocolade bij de hand en kom tot rust!",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/32009692?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "owned",
+                  "webUrl": "https://www.goodreads.com/review/list/32009692?shelf=owned"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/6953440910"
+          },
+          "likeCount": 11,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:91617138": {
+          "id": 91617138,
+          "__typename": "User",
+          "legacyId": 91617138,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1736453141i/91617138._UY200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1477,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Silvie Leest",
+          "webUrl": "https://www.goodreads.com/user/show/91617138-silvie-leest",
+          "contributor": null,
+          "followersCount": 61
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.5IFaK-cHCt3hzX7RLxkHog": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.5IFaK-cHCt3hzX7RLxkHog",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:91617138"
+          },
+          "recommendFor": null,
+          "updatedAt": 1731336067458,
+          "createdAt": 1730312112596,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1731336067319,
+          "text": "Johoo heeft een kleine chocoladewinkel in een steegje in Seoel. Haar klanten komen niet alleen voor overheerlijke chocolade, maar ook voor het speciale liefdesadvies waar Johoo om bekendstaat. Ze luistert geduldig naar alle verhalen, en heeft voor iedereen precies het soort chocola dat diegene nodig heeft. \u003cbr /\u003e\u003cbr /\u003eVan een zevenjarige jongen die verliefd is op een meisje uit zijn klas, tot een oude man die door zijn eigen vrouw niet meer herkend wordt. Maar zou er ook een recept te vinden zijn voor de verloren liefde van Johoo zelf?\u003cbr /\u003e\u003cbr /\u003e'Healing fiction' is een nieuw en populair genre en is een trend die afkomstig is uit Korea en Japan. Ik heb hier al eerder een boek over gelezen en ik vond dat verhaal best aandoenlijk, dus hier werd ik natuurlijk ook weer nieuwsgierig naar.\u003cbr /\u003e\u003cbr /\u003eDeze keer lees je over een vrouw, Johoo, die een chocoladewinkel heeft. Er komen verschillende mensen haar winkel bezoeken en met een aantal raakt ze in gesprek. Deze keer draait het over de liefde en lees je over de problemen waar mensen zoal tegenaan lopen.\u003cbr /\u003e\u003cbr /\u003eSoms herkende ik wel wat dingen, zoals mensen die een onbereikbare liefde hadden, of die slecht behandeld werden in hun relatie. Het bevat eigenlijk wel alle soorten voorkomende dingen die je tijdens een verliefdheid kunt tegenkomen en Johoo geeft hier haar klanten advies over. \u003cbr /\u003e\u003cbr /\u003eEn dan speelt chocolade natuurlijk ook nog een grote rol. Verschillende chocoladegerechtjes komen voorbij, dus het is sowieso een aanrader als je hier van houdt.\u003cbr /\u003e\u003cbr /\u003eHet verhaal zelf leest lekker weg, maar ik vond het andere boek in dit genre toch net even iets beter. Deze keer bevat het namelijk meer korte en snelle verhaaltjes, dus er zit niet heel veel diepgang in. \u003cbr /\u003e\u003cbr /\u003eBeoordeling: 3,0/3,5 ⭐️",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/91617138?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/6965480784"
+          },
+          "likeCount": 3,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:173840731": {
+          "id": 173840731,
+          "__typename": "User",
+          "legacyId": 173840731,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1704568876i/173840731._UY200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 60,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Jennifer Schoenmakers",
+          "webUrl": "https://www.goodreads.com/user/show/173840731-jennifer-schoenmakers",
+          "contributor": null,
+          "followersCount": 1
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ePQyUHV_OAg7zbxoizJjcA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.ePQyUHV_OAg7zbxoizJjcA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:173840731"
+          },
+          "recommendFor": null,
+          "updatedAt": 1730032696951,
+          "createdAt": 1729705910677,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1729705937927,
+          "text": "Heel mooi geschreven 4.5⭐️\u003cbr /\u003e\u003cbr /\u003eEn ben de eerste revieuw whohoo",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/173840731?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/6945517746"
+          },
+          "likeCount": 2,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:183809872": {
+          "id": 183809872,
+          "__typename": "User",
+          "legacyId": 183809872,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1732211140i/183809872._UY200_CR1,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 15,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Miranda De Vries",
+          "webUrl": "https://www.goodreads.com/user/show/183809872-miranda-de-vries",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.N4k5ZIw2wHSU4pP7IKpJQg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.N4k5ZIw2wHSU4pP7IKpJQg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:183809872"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735163063205,
+          "createdAt": 1735055440112,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1735055486995,
+          "text": "Ik had er eerlijk gezegd meer van verwacht. Leest wel lekker weg en het idee is goed. In het begin vind ik het erg saai, uiteindelijk leuk verhaal. Ik miste wel het gevoel van liefde.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/183809872?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7109000139"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:174309163": {
+          "id": 174309163,
+          "__typename": "User",
+          "legacyId": 174309163,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1705234833i/174309163._UX200_CR0,50,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 2,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Amber",
+          "webUrl": "https://www.goodreads.com/user/show/174309163-amber",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.-3hgmOcO7h2LcpatUTvz7w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.-3hgmOcO7h2LcpatUTvz7w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:174309163"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735660794939,
+          "createdAt": 1735496428946,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1735496633094,
+          "text": "Cosy en hartverwarmend boek met een mooie boodschap (extra heerlijk voor liefhebbers van chocolade en liefde)☺️",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/174309163?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7114209728"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:177969018": {
+          "id": 177969018,
+          "__typename": "User",
+          "legacyId": 177969018,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1714937229i/177969018._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 37,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "traceyxon",
+          "webUrl": "https://www.goodreads.com/user/show/177969018-traceyxon",
+          "contributor": null,
+          "followersCount": 2
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wd-moo7mVS3wFNeW38XoUA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.wd-moo7mVS3wFNeW38XoUA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:177969018"
+          },
+          "recommendFor": null,
+          "updatedAt": 1736446387103,
+          "createdAt": 1736312235931,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1736312889680,
+          "text": "\"첫사랑은 둘 중 하나예요. 내 옆에 있느냐, 내 마음한 구석에 아련한 추억으로 남아 있느냐.\" -#5 (가나슈 초콜릿)\u003cbr /\u003e\u003cbr /\u003e2.5점.\u003cbr /\u003e쉽고 재밌게 읽힌다.\u003cbr /\u003e다양한 연애사가 나와 짧은 썰 여러개 읽는 느낌이랄까.\u003cbr /\u003e연말이나 1,2월에 쉬는날 이불 속에서 가볍게 읽기 좋은 책인 것 같다.\u003cbr /\u003e\u003cbr /\u003e짝사랑이나 첫사랑에 고민이 있다면 읽어보는 거 추천.",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/177969018?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7189120491"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:159017909": {
+          "id": 159017909,
+          "__typename": "User",
+          "legacyId": 159017909,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1730143286i/159017909._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 359,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Mara Miniaci",
+          "webUrl": "https://www.goodreads.com/user/show/159017909-mara-miniaci",
+          "contributor": null,
+          "followersCount": 6
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.nA5aWzlhgSqegp_0s6sYyQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.nA5aWzlhgSqegp_0s6sYyQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:159017909"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735771006840,
+          "createdAt": 1734727172259,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1735771006663,
+          "text": "Mijn allereerste healing fiction \u0026amp; ik ben helemaal van mijn sokken geblazen! 🤯\u003cbr /\u003e\u003cbr /\u003eOngelofelijk hoe de schrijver de link heeft weten te maken tussen de verschillende soorten chocolade \u0026amp; de mensen die hun verhaal kwijt kunnen bij eigenaresse Joohoo. Vooral het “psychologische” aspect is heel interessant \u0026amp; deed me meteen nadenken over wat het motief van Joohoo is, aangezien ze min of meer “gratis” luistert naar mensen \u0026amp; schijnbaar zonder negatieve bijbedoelingen.\u003cbr /\u003e\u003cbr /\u003eDe verschillende, korte verhalen lijken in het begin niet veel met elkaar te maken te maken te hebben, maar naar het einde toe wordt het duidelijk dat ze toch samenhangen. Het feit dat ze redelijk kort zijn \u0026amp; elkaar vlot opvolgen is heel aangenaam om te lezen. Ingenieus in elkaar gestoken, me dunkt!\u003cbr /\u003e\u003cbr /\u003eIk krijg hierdoor helemaal zin om naar Seoul te verhuizen, ik ben helemaal fan! 🥹🤍🍫",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/159017909?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "asian-literature",
+                  "webUrl": "https://www.goodreads.com/review/list/159017909?shelf=asian-literature"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/7066891145"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.2GzCbbMf-yXpVDW_QubFcw": {
+          "id": "kca://author/amzn1.gr.author.v1.2GzCbbMf-yXpVDW_QubFcw",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 5
+          }
+        },
+        "User:22834228": {
+          "id": 22834228,
+          "__typename": "User",
+          "legacyId": 22834228,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1565298107i/22834228._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 232,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Angela Stegeman",
+          "webUrl": "https://www.goodreads.com/user/show/22834228-angela-stegeman",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.2GzCbbMf-yXpVDW_QubFcw"
+          },
+          "followersCount": 10
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.XJDPV848eH9CgRNN_PyDfg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.XJDPV848eH9CgRNN_PyDfg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:22834228"
+          },
+          "recommendFor": null,
+          "updatedAt": 1736433793487,
+          "createdAt": 1736416666175,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1736433793346,
+          "text": "De charmante chocoladewinkel van verloren liefdes, van Johoo, bevindt zich in een steegje in Seoel. Bezoekers komen niet alleen af op de verrukkelijke chocoladecreaties, maar ook op het unieke liefdesadvies waarvoor Johoo geroemd wordt. Met geduld en een luisterend oor neemt ze de tijd om de verhalen van haar klanten aan te horen. Voor iedereen heeft ze precies de juiste soort chocolade, die past bij hun specifieke situatie.\u003cbr /\u003e\u003cbr /\u003eOf het nu gaat om een zevenjarige jongen die zijn eerste verliefdheid ervaart of een oude man die niet meer herkend wordt door zijn echtgenote, Johoo heeft altijd de perfecte chocolade remedie. Maar wie weet, is er ook een recept dat haar eigen verloren liefde kan herstellen?\u003cbr /\u003e\u003cbr /\u003e⭐️⭐️⭐️⭐️⭐️\u003cbr /\u003e\u003cbr /\u003eDe chocoladewinkel van verloren liefdes\u003cbr /\u003e“De chocoladewinkel van verloren liefdes” is een ontroerende roman geschreven door de Koreaanse auteur Kim Ye-eun. Het boek combineert de zoetheid van chocolade met de bitterheid van verloren liefdes en neemt de lezer mee op een emotionele reis vol herinneringen en genezing.\u003cbr /\u003e\u003cbr /\u003eDit verhaal is niet alleen een ode aan de kunst van het maken van chocolade, maar ook aan de kracht van menselijke emoties en relaties. Ja ja, dat klinkt nogal zoet, maar dat is ook precies wat dit boek is. Zoet. Ontroerend. Een page-turner!\u003cbr /\u003e\u003cbr /\u003eHet lot leidt je\u003cbr /\u003eJohoo runt een knusse chocoladewinkel verscholen in een achterafstraatje van de stad, een plek die je alleen vindt als het lot je ernaartoe brengt. De winkel is ontstaan uit het verdriet van een onbeantwoorde liefde, en nu biedt Johoo’s luisterend oor, maar vooral haar chocolade, troost aan anderen die met vergelijkbare hartenpijn worstelen.\u003cbr /\u003e\u003cbr /\u003eJohoo is een lieve, rustige en zachtmoedige vrouw die de kunst van het goed luisteren verstaat. Ook verstaat ze de kunst van met zo weinig mogelijk woorden zo veel mogelijk zeggen. Ze is in staat om het vertrouwen van haar klanten te winnen, waardoor ze haar hun diepste geheim vertellen. Naderhand geeft zij ze altijd passende chocolade.\u003cbr /\u003e\u003cbr /\u003eSchrijfstijl\u003cbr /\u003eKim Ye-eun’s schrijfstijl is zowel poëtisch als meeslepend. Ze beschrijft de zintuiglijke ervaringen van het maken en proeven van chocolade op een manier die de lezer bijna de geur en smaak kan laten ervaren. Haar beschrijvingen zijn rijk aan detail en maken het verhaal tastbaar en levendig.\u003cbr /\u003e\u003cbr /\u003eDaarnaast weet ze de emoties van haar personages op een diepmenselijke manier over te brengen, waardoor lezers zich makkelijk kunnen inleven in hun pijn en vreugde. De schrijfstijl draagt bij aan de magie van het verhaal en zorgt ervoor dat de lezer geboeid blijft tot de laatste pagina.\u003cbr /\u003e\u003cbr /\u003eMaarrrr… en dat wil ik toch even zeggen: als je op zoek bent naar diepgaande verhalen die tot in detail worden uitgelegd, dan zit je verkeerd bij dit boek. Het is absoluut geen hoogstaand literatuur, het is feelgood. Wel lekkere feelgood!\u003cbr /\u003e\u003cbr /\u003eHealing fiction\u003cbr /\u003eDeze korte page-turner valt onder de categorie Healing fiction. Ik had er nog niet eerder van gehoord, maar het is een relatief nieuw literair genre dat is ontstaan in Korea. Sinds kort is het ook populair in andere delen van de wereld, zoals Europa. Het genre richt zich op het kalmeren van de emoties van de lezer en biedt een troostende ervaring1.\u003cbr /\u003e\u003cbr /\u003eConclusie\u003cbr /\u003e“De chocoladewinkel van verloren liefdes” is een prachtig en hartverwarmend boek dat lezers zal aanspreken die houden van verhalen over liefde, verlies en herstel. Kim Ye-eun weet op meesterlijke wijze de kracht van chocolade te verweven met de emoties van haar personages, waardoor een onvergetelijke leeservaring ontstaat.\u003cbr /\u003e\u003cbr /\u003eDit boek is niet alleen een aanrader voor liefhebbers van romans, maar ook voor iedereen die op zoek is naar een verhaal dat zowel troost als inspiratie biedt. ⭐️⭐️⭐️⭐️⭐️\u003cbr /\u003e\u003cbr /\u003eWil je meer reviews lezen? Bezoek dan eens mijn website \u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"http://www.angela-aagenborg.nl\"\u003ewww.angela-aagenborg.nl\u003c/a\u003e. Volgen op IG kan ook @the_world_according_to_ang. Hier volgen kan natuurlijk ook. ;-)",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/22834228?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2025",
+                  "webUrl": "https://www.goodreads.com/review/list/22834228?shelf=2025"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "5-stars",
+                  "webUrl": "https://www.goodreads.com/review/list/22834228?shelf=5-stars"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "must-read",
+                  "webUrl": "https://www.goodreads.com/review/list/22834228?shelf=must-read"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "top-boeken-feelgood",
+                  "webUrl": "https://www.goodreads.com/review/list/22834228?shelf=top-boeken-feelgood"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/7193328288"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:13384752": {
+          "id": 13384752,
+          "__typename": "User",
+          "legacyId": 13384752,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1712400950i/13384752._UX200_CR0,32,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 903,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Iris Windmeijer",
+          "webUrl": "https://www.goodreads.com/user/show/13384752-iris-windmeijer",
+          "contributor": null,
+          "followersCount": 76
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.mWVRpTEhysM7H5305o7_bg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.mWVRpTEhysM7H5305o7_bg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:13384752"
+          },
+          "recommendFor": null,
+          "updatedAt": 1731840240676,
+          "createdAt": 1731840000423,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1731840240521,
+          "text": "Juho heeft een kleine chocoladewinkel in een steegje in Seoel. Haar klanten komen niet alleen voor de chocolade, maar ook voor het speciale liefdesadvies. Juho luistert naar verhalen en geeft haar klanten precies de chocola die ze nodig hebben. Maar naast chocola, krijgen ze vooral oprechte aandacht.\u003cbr /\u003e\u003cbr /\u003e\u003cem\u003eDe chocoladewinkel van verloren liefdes\u003c/em\u003e valt in het relatief nieuwe genre van healing fiction. Eerder las ik uit dit genre ook \u003cem\u003eDe buurtwinkel van tweede kansen\u003c/em\u003e. Het verhaal over Juho en haar chocoladewinkel is een kalm boek, het voelt als een kabbelend beekje. De hoofdstukken zijn kort en de schrijfstijl vlot, maar desondanks vloog ik niet door het boek heen. Het is een boek wat je beetje bij beetje leest, alsof je een doos bonbons langzaam per stukje leeg eet.\u003cbr /\u003e\u003cbr /\u003eDoor dit kalme tempo, komt de tekst ook goed binnen. In ieder hoofdstuk in \u003cem\u003eDe chocoladewinkel van verloren liefdes\u003c/em\u003e komt er een klant langs: soms een nieuwe, soms een terugkerende klant. Aan het begin van het hoofdstuk staat al welke chocolade ze mee zullen krijgen. Ieder verhaal van iedere klant is uniek, maar de universele deler is dat ze allemaal een stille of onbeantwoorde liefde hebben.\u003cbr /\u003e\u003cbr /\u003eNiet alleen leer je over de klanten, je leert ook Juho beter kennen. Zoals haar eerste, onbeantwoorde liefde. Door de terugkerende klanten en verhalen die in elkaar geweven worden, werd ik erg nieuwsgierig naar het liefdesverhaal van Juho zelf!\u003cbr /\u003e\u003cbr /\u003eHet boek zit vol wijsheden over liefde. Iedereen heeft hier een andere blik op, waardoor je ook genoeg stof tot nadenken krijgt met dit boek. \u003cem\u003eDe chocoladewinkel van verloren liefdes\u003c/em\u003e is een hartverwarmend slow love boek vol wijsheden waar je even over na moet denken. Tip: pak een chocolaatje en laat het verhaal en de chocolade rustig op je inwerken!\u003cbr /\u003e\u003cbr /\u003eDeze recensie verscheen eerst op \u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"https://www.readalicious.nl/recensies/de-chocoladewinkel-van-verloren-liefdes-kim-ye-eun/\"\u003ehttps://www.readalicious.nl/recensies...\u003c/a\u003e\u003cbr /\u003eDit boek heb ik ontvangen van de uitgeverij in ruil voor een review. Dit had geen invloed op mijn mening over het boek.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/13384752?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "dutch",
+                  "webUrl": "https://www.goodreads.com/review/list/13384752?shelf=dutch"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "read-in-2024",
+                  "webUrl": "https://www.goodreads.com/review/list/13384752?shelf=read-in-2024"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/6981900683"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:34106972": {
+          "id": 34106972,
+          "__typename": "User",
+          "legacyId": 34106972,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1633332985i/34106972._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 360,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Inigo's Library",
+          "webUrl": "https://www.goodreads.com/user/show/34106972-inigo-s-library",
+          "contributor": null,
+          "followersCount": 5
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.9_zGu0GviHYqubj-xAEsrg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.9_zGu0GviHYqubj-xAEsrg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:34106972"
+          },
+          "recommendFor": null,
+          "updatedAt": 1731875721376,
+          "createdAt": 1731445009815,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1731875721195,
+          "text": "*Review copy*\u003cbr /\u003eJohoo has a small chocolate shop in an alley in Seoul. Besides chocolate, she is also adept at love advice. She listens patiently and has exactly the right kind of chocolate that the person needs. Will she also be happy in love?\u003cbr /\u003eAnother title from the healing fiction department of publisher Wereldbibliotheek. Obviously, I couldn't say no to a book about chocolate. Especially since I have read a previous healing fiction title. Yet, funny enough, I was left unsatisfied. Although the characters are nice and their love stories are understandable, I didn't connect with them enough. This was more so the case with the main character Johoo, but she also lacks depth. In my opinion, this is precisely what healing fiction requires; by digging a little deeper, you get more healing power from it. A big plus: it reads quickly. A touching story with a beautiful cover and nice concept, but unfortunately I'm not completely convinced.\u003cbr /\u003eMy rating: 3 out of 5 stars\u003cbr /\u003e---\u003cbr /\u003e*Recensie-exemplaar*\u003cbr /\u003eJohoo heeft een kleine chocoladewinkel in een steegje in Seoel. Naast de chocolade is ze ook bedreven in liefdesadvies. Ze luistert geduldig en heeft exact de juiste soort chocolade dat diegene nodig heeft. Zal ze zelf ook gelukkig worden in de liefde?\u003cbr /\u003eNog een titel bij de healing fiction-afdeling van uitgeverij Wereldbibliotheek. Uiteraard kon ik geen nee zeggen tegen een boek over chocolade. Zeker aangezien ik een eerdere healing fiction titel heb gelezen. Toch bleef ik grappig genoeg wat op mijn honger zitten. Hoewel de personages fijn zijn en hun liefdesperikelen begrijpelijk, kreeg ik niet genoeg connectie met hen. Bij het hoofdpersonage Johoo was dit al meer, maar ook bij haar ontbreekt het aan diepgang. Naar mijn mening is dit net noodzakelijk bij healing fiction; door wat dieper te graven, haal je er meer geneeskracht uit. Een groot pluspunt: het leest snel. Een aandoenlijk verhaal met een prachtige cover en leuk concept, maar helaas ben ik niet volledig overtuigd.\u003cbr /\u003eMijn rating: 3 op 5 sterren",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/34106972?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "healing-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/34106972?shelf=healing-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "literature",
+                  "webUrl": "https://www.goodreads.com/review/list/34106972?shelf=literature"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/6999493831"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:138724649": {
+          "id": 138724649,
+          "__typename": "User",
+          "legacyId": 138724649,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1685433910i/138724649._UX200_CR0,19,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 587,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Annelies leest",
+          "webUrl": "https://www.goodreads.com/user/show/138724649-annelies-leest",
+          "contributor": null,
+          "followersCount": 18
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v2.2024110410.d8078d95-b4de-472d-a51b-6cea6221b189": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v2.2024110410.d8078d95-b4de-472d-a51b-6cea6221b189",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:138724649"
+          },
+          "recommendFor": null,
+          "updatedAt": 1730717368917,
+          "createdAt": 1730717346645,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1730717368758,
+          "text": "Joohoo heeft in een klein steegje in Seoel een kleine chocoladewinkel. Naast het verkopen van de heerlijkste chocolade geeft ze haar klanten ook liefdesadvies.\u003cbr /\u003e\u003cbr /\u003eMet eerlijk advies en de gepaste chocolade geneest ze haar 'patiënten' van stille -en onbeantwoorde liefdes.\u003cbr /\u003e\u003cbr /\u003eIk was niet alleen héél benieuwd naar dit nieuwe genre 'healing fiction', maar ook de cover van De chocoladewinkel van verloren liefdes had mij al héél snel voor zich gewonnen.\u003cbr /\u003e\u003cbr /\u003eHet verhaal voelt aan als allemaal kleine afzonderlijke verhaaltjes die verbonden zijn met elkaar door het hoofdverhaal van Joohoo, de winkeleigenaresse. Het leest vlot weg en straalt warmte en liefde uit.\u003cbr /\u003e\u003cbr /\u003eToch wist het verhaal zelf me niet echt te boeien. Het was op één of andere manier te oppervlakkig, niet diepgaand genoeg om mij erin te verliezen.\u003cbr /\u003e\u003cbr /\u003eMisschien ligt het genre me minder of was het gewoonweg het verhaal dat me niet helemaal wist te overtuigen. Ik kan er niet precies de vinger op leggen wat er nu ontbrak.\u003cbr /\u003e\u003cbr /\u003eHoe verder ik las, kon ik wel een zekere waardering opbrengen voor het verhaal, maar een topper is het voor mij alleszins niet.\u003cbr /\u003e\u003cbr /\u003e2,5*",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/138724649?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/6978190872"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:33419976": {
+          "id": 33419976,
+          "__typename": "User",
+          "legacyId": 33419976,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1408215094i/33419976._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 126,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Niesten Tanja",
+          "webUrl": "https://www.goodreads.com/user/show/33419976-niesten-tanja",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.yzCHHO_XS2uEKIY02DmQpQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.yzCHHO_XS2uEKIY02DmQpQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:33419976"
+          },
+          "recommendFor": null,
+          "updatedAt": 1732117854319,
+          "createdAt": 1732117640142,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1732117854150,
+          "text": "Dit boek smaakt even bitter als pure chocolade zou ik zeggen. De stijl in de ik vorm is vaak heel verwarrend, hoogdravend en met vlagen onsamenhangend. Alles geeft een zeer vreemde indruk. Ik kan zeker niet zeggen dat je een vrolijk gevoel krijgt bij het lezen van dit boek. Ik hou van chocolade, maar niet van een boek dat geen steek houdt. Bovendien zijn de namen verwarrend en lijken ze allemaal op elkaar. Ook de verhalen zijn vaak heel gelijklopen en lijken dan ook vooral bladvulling. Zeker geen healing en nog veel minder feelgood in de pure zin van het woord.",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/33419976?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/6971451970"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:183082828": {
+          "id": 183082828,
+          "__typename": "User",
+          "legacyId": 183082828,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1731938659i/183082828._UY200_CR20,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 16,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Lisa W",
+          "webUrl": "https://www.goodreads.com/user/show/183082828-lisa-w",
+          "contributor": null,
+          "followersCount": 1
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.LQWvdKaJMl9ehewP2CTHbg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.LQWvdKaJMl9ehewP2CTHbg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:183082828"
+          },
+          "recommendFor": null,
+          "updatedAt": 1732215890327,
+          "createdAt": 1732215434093,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1732215890193,
+          "text": "Korte verhaaltjes over verschillende liefdes van jong en oud met ook een rode draad van het verhaal van de eigenaresse. Erg heteronorm. Vermakelijk als luisterboek op de achtergrond terwijl je iets anders aan het doen bent, maar anders zou ik er denk ik niet doorheen komen. De chocolade(weetjes) gematcht met de verhalen vond ik wél leuk! ",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/183082828?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7022633016"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:175817799": {
+          "id": 175817799,
+          "__typename": "User",
+          "legacyId": 175817799,
+          "imageUrlSquare": "",
+          "isAuthor": false,
+          "textReviewsCount": 51,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Rebecca Schmitz",
+          "webUrl": "https://www.goodreads.com/user/show/175817799-rebecca-schmitz",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.0Xjrrj1uk_0nHB4jRmh_vA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.0Xjrrj1uk_0nHB4jRmh_vA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:175817799"
+          },
+          "recommendFor": null,
+          "updatedAt": 1734343770206,
+          "createdAt": 1734343690696,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1734343770061,
+          "text": "3.5/5 ✨ Echt een heel cozy, leuk, lief boek. Het zijn allemaal korte verhalen, maar toch komen ze op 't einde allemaal bij elkaar. Doordat het boek zo kort is, is er niet mega veel diepgang, maar dat maakt dat het ook makkelijk wegleest en fijn is voor tussendoor ✌️",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/175817799?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7076873380"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:10117548": {
+          "id": 10117548,
+          "__typename": "User",
+          "legacyId": 10117548,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1723140837i/10117548._UY200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 183,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Jessica",
+          "webUrl": "https://www.goodreads.com/user/show/10117548-jessica",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wY0wjUNXPCtyHQLJF8kEiw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.wY0wjUNXPCtyHQLJF8kEiw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:10117548"
+          },
+          "recommendFor": null,
+          "updatedAt": 1730923943424,
+          "createdAt": 1730923922954,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1730923943262,
+          "text": "Snel tussendoortje maar ook niet meer dan dat.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/10117548?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2024",
+                  "webUrl": "https://www.goodreads.com/review/list/10117548?shelf=2024"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "luisterboek",
+                  "webUrl": "https://www.goodreads.com/review/list/10117548?shelf=luisterboek"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/6983293312"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:182934878": {
+          "id": 182934878,
+          "__typename": "User",
+          "legacyId": 182934878,
+          "imageUrlSquare": "",
+          "isAuthor": false,
+          "textReviewsCount": 9,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Greet Straetemans",
+          "webUrl": "https://www.goodreads.com/user/show/182934878-greet-straetemans",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.589TmqxyToGX-lL7R5ilWg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.589TmqxyToGX-lL7R5ilWg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:182934878"
+          },
+          "recommendFor": null,
+          "updatedAt": 1731185876555,
+          "createdAt": 1731185818341,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1731185876388,
+          "text": "Niet mijn ding, naar mijn gevoel teveel geklaag",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/182934878?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/6937745519"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:181553770": {
+          "id": 181553770,
+          "__typename": "User",
+          "legacyId": 181553770,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1725195160i/181553770._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 7,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Jessi van Nunen-Vorstenbosch",
+          "webUrl": "https://www.goodreads.com/user/show/181553770-jessi-van-nunen-vorstenbosch",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.h9CMU9WLulkDP3zTghRG5w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.h9CMU9WLulkDP3zTghRG5w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:181553770"
+          },
+          "recommendFor": null,
+          "updatedAt": 1733068054902,
+          "createdAt": 1733068037652,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1733068054760,
+          "text": "Een heerlijk lief boekje 🥹",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/181553770?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7028088972"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:81561835": {
+          "id": 81561835,
+          "__typename": "User",
+          "legacyId": 81561835,
+          "imageUrlSquare": "",
+          "isAuthor": false,
+          "textReviewsCount": 4,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Y",
+          "webUrl": "https://www.goodreads.com/user/show/81561835-y",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Ftz1lVEzqndV9FuKbprT0Q": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.Ftz1lVEzqndV9FuKbprT0Q",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:81561835"
+          },
+          "recommendFor": null,
+          "updatedAt": 1733956260314,
+          "createdAt": 1733956177824,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1733956260150,
+          "text": "De individuele verhalen zijn leuk en het verhaallijn dat er doorheen loopt ook, maar het komt niet echt binnen bij mij. De schrijfstijl past niet bij mij",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/81561835?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7025120377"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:40511334": {
+          "id": 40511334,
+          "__typename": "User",
+          "legacyId": 40511334,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1623046776i/40511334._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 250,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Loesje",
+          "webUrl": "https://www.goodreads.com/user/show/40511334-loesje",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.rgZue8WXxfFawxukQaikzw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.rgZue8WXxfFawxukQaikzw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:40511334"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735339232196,
+          "createdAt": 1735339168171,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1735339232040,
+          "text": "Love, chocolate and someone who listens to your story. A sweet concept 🥰",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/40511334?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/7095920736"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:99148628": {
+          "id": 99148628,
+          "__typename": "User",
+          "legacyId": 99148628,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1635952640i/99148628._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 23,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Vayngan",
+          "webUrl": "https://www.goodreads.com/user/show/99148628-vayngan",
+          "contributor": null,
+          "followersCount": 3
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.uOkXO5mIZoRfawm7T81cIA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.uOkXO5mIZoRfawm7T81cIA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:99148628"
+          },
+          "recommendFor": null,
+          "updatedAt": 1732375175973,
+          "createdAt": 1675290813058,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1703574787764,
+          "text": "3.5⭐️",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/99148628?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/5277979656"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:162295704": {
+          "id": 162295704,
+          "__typename": "User",
+          "legacyId": 162295704,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1675540502i/162295704._UX200_CR0,27,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 38,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Lucy",
+          "webUrl": "https://www.goodreads.com/user/show/162295704-lucy",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.KlAfQk6v8OC1DHNQS_wYGQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.KlAfQk6v8OC1DHNQS_wYGQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:162295704"
+          },
+          "recommendFor": null,
+          "updatedAt": 1732375175456,
+          "createdAt": 1694788523657,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1694788529757,
+          "text": "🩷🩷🩷🩷🩷🩷🩷🩷",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/162295704?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/5843506823"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:76539801": {
+          "id": 76539801,
+          "__typename": "User",
+          "legacyId": 76539801,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1522309762i/76539801._UY200_CR8,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1011,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Indy",
+          "webUrl": "https://www.goodreads.com/user/show/76539801-indy",
+          "contributor": null,
+          "followersCount": 38
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.0_RMRX_verktBbO9s-Iodg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.0_RMRX_verktBbO9s-Iodg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:76539801"
+          },
+          "recommendFor": null,
+          "updatedAt": 1732375175965,
+          "createdAt": 1710484676278,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1710484707398,
+          "text": "A great idea of combining chocolate shop with relationship consultation.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/76539801?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/6329411690"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        }
+      },
+      "authContextParams": {
+        "signedIn": true,
+        "customerId": "A2TSKK3W6K2FR1",
+        "legacyCustomerId": 85386442,
+        "role": "user"
+      },
+      "userAgentContextParams": {
+        "isWebView": null
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
+    },
+    "__N_SSP": true
+  },
+  "page": "/book/show/[book_id]",
+  "query": {
+    "book_id": "215846772-de-chocoladewinkel-van-verloren-liefdes"
+  },
+  "buildId": "08wwXy1OZ3fVOX0Zzn6n7",
+  "runtimeConfig": {
+    "env": "Production"
+  },
+  "isFallback": false,
+  "gssp": true,
+  "customServer": true,
+  "locales": [
+    "en",
+    "ab",
+    "aa",
+    "af",
+    "ak",
+    "sq",
+    "am",
+    "ar",
+    "an",
+    "hy",
+    "as",
+    "av",
+    "ae",
+    "ay",
+    "az",
+    "bm",
+    "ba",
+    "eu",
+    "be",
+    "bn",
+    "bh",
+    "bi",
+    "bs",
+    "br",
+    "bg",
+    "my",
+    "ca",
+    "ch",
+    "ce",
+    "ceb",
+    "ny",
+    "zh",
+    "zh-TW",
+    "cv",
+    "kw",
+    "co",
+    "cr",
+    "hr",
+    "cs",
+    "da",
+    "dv",
+    "nl",
+    "eo",
+    "et",
+    "ee",
+    "fo",
+    "fj",
+    "fi",
+    "fr",
+    "ff",
+    "gl",
+    "ka",
+    "de",
+    "el",
+    "gn",
+    "gu",
+    "ht",
+    "ha",
+    "he",
+    "hz",
+    "hi",
+    "ho",
+    "hu",
+    "ia",
+    "id",
+    "ie",
+    "ilo",
+    "ga",
+    "ig",
+    "ik",
+    "io",
+    "is",
+    "it",
+    "iu",
+    "ja",
+    "jv",
+    "kl",
+    "kn",
+    "kr",
+    "ks",
+    "kk",
+    "km",
+    "ki",
+    "rw",
+    "ky",
+    "kv",
+    "kg",
+    "ko",
+    "ku",
+    "kj",
+    "la",
+    "lb",
+    "lg",
+    "li",
+    "ln",
+    "lo",
+    "lt",
+    "lu",
+    "lv",
+    "gv",
+    "mk",
+    "mg",
+    "ms",
+    "ml",
+    "mt",
+    "mi",
+    "mr",
+    "mh",
+    "mn",
+    "na",
+    "nv",
+    "nb",
+    "nd",
+    "ne",
+    "new",
+    "ng",
+    "nn",
+    "no",
+    "ii",
+    "nr",
+    "oc",
+    "oj",
+    "cu",
+    "om",
+    "or",
+    "os",
+    "pa",
+    "pi",
+    "fa",
+    "pl",
+    "ps",
+    "pt",
+    "qu",
+    "rm",
+    "rn",
+    "ro",
+    "ru",
+    "sa",
+    "sc",
+    "sd",
+    "se",
+    "sm",
+    "sg",
+    "sr",
+    "gd",
+    "sn",
+    "si",
+    "sk",
+    "sl",
+    "so",
+    "st",
+    "es",
+    "su",
+    "sw",
+    "ss",
+    "sv",
+    "ta",
+    "te",
+    "tg",
+    "th",
+    "ti",
+    "bo",
+    "tk",
+    "tl",
+    "tn",
+    "to",
+    "tr",
+    "ts",
+    "tt",
+    "tw",
+    "ty",
+    "ug",
+    "uk",
+    "ur",
+    "uz",
+    "ve",
+    "vi",
+    "vo",
+    "wa",
+    "cy",
+    "wo",
+    "fy",
+    "xh",
+    "yi",
+    "yo",
+    "za"
+  ]
+}

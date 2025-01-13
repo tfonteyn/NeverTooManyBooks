@@ -1,0 +1,535 @@
+/*
+ * @Copyright 2018-2025 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
+
+import androidx.annotation.NonNull;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.org.json.JSONObject;
+
+import org.jsoup.nodes.Document;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+@SuppressWarnings({"MissingJavadoc", "UnnecessaryUnicodeEscape"})
+public class ParseTest
+        extends BaseDBTest {
+
+    private static final String TAG = "ParseTest";
+    private static final String UTF_8 = "UTF-8";
+
+    private GoodreadsSearchEngine searchEngine;
+    private RealNumberParser realNumberParser;
+
+    @Before
+    public void setup()
+            throws DaoWriteException, StorageException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
+        realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
+    }
+
+    @NonNull
+    private Book getBook(final int resId,
+                         @NonNull final boolean[] fetchCovers)
+            throws IOException, StorageException {
+        final Book book = new Book();
+
+        // getContext(): we want the "androidTest" context which is where our test resources live
+        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
+                                                     .getResources().openRawResource(resId)) {
+            assertNotNull(is);
+            final String response = searchEngine.readResponseStream(is);
+            searchEngine.parse(context, new JSONObject(response), book, fetchCovers);
+        }
+
+        return book;
+    }
+
+    @Test
+    public void parseNextDataJson9789604419197()
+            throws IOException, StorageException {
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.goodreads_next_data_9789604419197,
+                                  new boolean[]{true, false});
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        assertEquals("Ο νόμος ποτέ δε κοιμάται...", book.getTitle());
+        assertEquals("9789604419197", book.getIsbn());
+        assertEquals("Greek, Modern (1453-)", book.getString(DBKey.LANGUAGE));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT));
+        assertEquals("48", book.getString(DBKey.PAGES, null));
+        assertEquals("L'Agent 212, Tome 01 : 24 heures sur 24",
+                     book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("2007-12-01", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals(new PartialDate(1981, 1, 1), book.getFirstPublicationDate());
+        assertEquals(4
+                , book.getFloat(DBKey.RATING, realNumberParser), 0);
+
+        assertEquals("9604419196", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("33838921", book.getString(Identifier.SID_GOODREADS_BOOK, null));
+
+        assertEquals("Indonesian edition of <i>BD Pirate :"
+                     + " Agent 212, tome 1 : 24 heures sur 24</i>",
+                     book.getString(DBKey.DESCRIPTION));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(6, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Comics"));
+        assertTrue(tags.contains("Komik"));
+        assertTrue(tags.contains("Bande Dessinée"));
+        assertTrue(tags.contains("Indonesian Literature"));
+        assertTrue(tags.contains("Humor"));
+        assertTrue(tags.contains("Comedy"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Modern Times", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(3, authors.size());
+        Author author;
+        author = authors.get(0);
+        assertEquals("Cauvin", author.getFamilyName());
+        assertEquals("Raoul", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        author = authors.get(1);
+        assertEquals("Kox", author.getFamilyName());
+        assertEquals("Daniel", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        author = authors.get(2);
+        assertEquals("Γαλάτουλα", author.getFamilyName());
+        assertEquals("Τατιάνα", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(1, series.size());
+        assertEquals("L'Agent 212", series.get(0).getTitle());
+        assertEquals("1", series.get(0).getNumber());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Goodreads.getPreferenceKey()
+                                          + "_9789604419197_0_.jpg"));
+    }
+
+    @Test
+    public void parseNextDataJson9789028453807()
+            throws IOException, StorageException {
+
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.goodreads_next_data_9789028453807,
+                                  new boolean[]{true, false});
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        assertEquals("De chocoladewinkel van verloren liefdes", book.getTitle());
+        assertEquals("9789028453807", book.getIsbn());
+        assertEquals("Dutch; Flemish", book.getString(DBKey.LANGUAGE));
+        assertEquals("Kindle Edition", book.getString(DBKey.FORMAT));
+        assertNull(book.getString(DBKey.PAGES, null));
+        assertNull(book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("2024-10-21", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals(new PartialDate(2022, 10, 28), book.getFirstPublicationDate());
+        assertEquals(3, book.getFloat(DBKey.RATING, realNumberParser), 0);
+
+        assertEquals("B0D79GXMVR", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("215846772", book.getString(Identifier.SID_GOODREADS_BOOK, null));
+
+        assertEquals(
+                "Johoo heeft een kleine chocoladewinkel in een steegje in Seoel."
+                + " Haar klanten komen niet alleen voor overheerlijke chocolade, maar ook"
+                + " voor het speciale liefdesadvies waar Johoo om bekendstaat. Ze luistert"
+                + " geduldig naar alle verhalen, en heeft voor iedereen precies het soort"
+                + " chocola dat diegene nodig heeft. Van een zevenjarige jongen die verliefd"
+                + " is op een meisje uit zijn klas, tot een oude man die door zijn eigen vrouw"
+                + " niet meer herkend wordt. Maar zou er ook een recept te vinden zijn voor de"
+                + " verloren liefde van Johoo zelf?",
+                book.getString(DBKey.DESCRIPTION));
+
+        final List<Tag> tags = book.getTags();
+        assertEquals(0, tags.size());
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Wereldbibliotheek", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+        Author author;
+        author = authors.get(0);
+        assertEquals("Ye-eun", author.getFamilyName());
+        assertEquals("Kim", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        author = authors.get(1);
+        assertEquals("Nuanxed", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(0, series.size());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Goodreads.getPreferenceKey()
+                                          + "_9789028453807_0_.jpg"));
+    }
+
+    @Test
+    public void parseNextDataJson9780062683250()
+            throws IOException, StorageException {
+
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.goodreads_next_data_9780062683250,
+                                  new boolean[]{true, false});
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        assertEquals("The Left-Handed Booksellers of London", book.getTitle());
+        assertEquals("9780062683250", book.getIsbn());
+        assertEquals("English", book.getString(DBKey.LANGUAGE));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT));
+        assertEquals("416", book.getString(DBKey.PAGES));
+        assertEquals("2020-09-22", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals(new PartialDate(2020, 9, 22), book.getFirstPublicationDate());
+        assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
+
+        assertEquals("006268325X", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("49867186", book.getString(Identifier.SID_GOODREADS_BOOK, null));
+
+        assertEquals("<strong>A girl’s quest to find her father leads her to an extended"
+                     + " family of magical fighting booksellers who police the mythical Old World"
+                     + " of England when it intrudes on the modern world."
+                     + " From the bestselling master of teen fantasy, Garth Nix.</strong>"
+                     + "<br /><br />In a slightly alternate London in 1983, Susan Arkshaw"
+                     + " is looking for her father, a man she has never met."
+                     + " Crime boss Frank Thringley might be able to help"
+                     + " her, but Susan doesn’t get time to ask Frank any questions before he is"
+                     + " turned to dust by the prick of a silver hatpin in the hands of the"
+                     + " outrageously attractive Merlin.<br /><br />Merlin is a young left-handed"
+                     + " bookseller (one of the fighting ones), who with the right-handed"
+                     + " booksellers (the intellectual ones), are an extended family of magical"
+                     + " beings who police the mythic and legendary Old World when it intrudes on"
+                     + " the modern world, in addition to running several bookshops.<br /><br />"
+                     + "Susan’s search for her father begins with her mother’s possibly"
+                     + " misremembered or misspelt surnames, a reading room ticket, and a silver"
+                     + " cigarette case engraved with something that might be a coat of arms."
+                     + "<br /><br />Merlin has a quest of his own, to find the Old World entity"
+                     + " who used ordinary criminals to kill his mother. As he and his sister,"
+                     + " the right-handed bookseller Vivien, tread in the path of a botched or"
+                     + " covered-up police investigation from years past, they find this quest"
+                     + " strangely overlaps with Susan’s. Who or what was her father?"
+                     + " Susan, Merlin, and Vivien must find out, as the Old World erupts"
+                     + " dangerously into the New.",
+                     book.getString(DBKey.DESCRIPTION));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(10, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Fantasy"));
+        assertTrue(tags.contains("Young Adult"));
+        assertTrue(tags.contains("Fiction"));
+        assertTrue(tags.contains("Urban Fantasy"));
+        assertTrue(tags.contains("Historical Fiction"));
+        assertTrue(tags.contains("Audiobook"));
+        assertTrue(tags.contains("Books About Books"));
+        assertTrue(tags.contains("Magic"));
+        assertTrue(tags.contains("Historical"));
+        assertTrue(tags.contains("Young Adult Fantasy"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Katherine Tegen Books", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+        assertEquals("Nix", authors.get(0).getFamilyName());
+        assertEquals("Garth", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(1, series.size());
+
+        assertEquals("Left-Handed Booksellers of London", series.get(0).getTitle());
+        assertEquals("1", series.get(0).getNumber());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Goodreads.getPreferenceKey()
+                                          + "_9780062683250_0_.jpg"));
+    }
+
+    @Test
+    public void parseNextDataJson9780553803723()
+            throws IOException, StorageException {
+
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.goodreads_next_data_9780553803723,
+                                  new boolean[]{true, false});
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        assertEquals("Foundation and Empire", book.getTitle());
+        assertNull(book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("9780553803723", book.getIsbn());
+        assertEquals("English", book.getString(DBKey.LANGUAGE));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT));
+        assertEquals("256", book.getString(DBKey.PAGES));
+        assertEquals("2004-06-01", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals(new PartialDate(1952, 1, 1), book.getFirstPublicationDate());
+        assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
+
+        assertEquals("0553803727", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("29581", book.getString(Identifier.SID_GOODREADS_BOOK, null));
+
+        assertEquals("Foundation and Empire tells the incredible story of a new breed"
+                     + " of man who create a new force for galactic government. Thus, the"
+                     + " Foundation hurtles into conflict with the decadent, decrepit First"
+                     + " Empire. In this struggle for power amid the chaos of the stars, man"
+                     + " stands at the threshold of a new, enlightened life which could easily"
+                     + " be put aside for the old forces of barbarism. The Foundation novels"
+                     + " of Isaac Asimov constitute what is very likely the most famed epic in"
+                     + " all of science-fiction",
+                     book.getString(DBKey.DESCRIPTION));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(10, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Science Fiction"));
+        assertTrue(tags.contains("Fiction"));
+        assertTrue(tags.contains("Science Fiction Fantasy"));
+        assertTrue(tags.contains("Space Opera"));
+        assertTrue(tags.contains("Audiobook"));
+        assertTrue(tags.contains("Fantasy"));
+        assertTrue(tags.contains("Classics"));
+        assertTrue(tags.contains("Novels"));
+        assertTrue(tags.contains("Space"));
+        assertTrue(tags.contains("Speculative Fiction"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Spectra", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+        assertEquals("Asimov", authors.get(0).getFamilyName());
+        assertEquals("Isaac", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+
+        final List<Series> seriesList = book.getSeries();
+        assertNotNull(seriesList);
+        assertEquals(3, seriesList.size());
+
+        Series series;
+        series = seriesList.get(0);
+        assertEquals("Foundation (Publication Order)", series.getTitle());
+        assertEquals("2", series.getNumber());
+        series = seriesList.get(1);
+        assertEquals("Foundation (Chronological Order)", series.getTitle());
+        assertEquals("4", series.getNumber());
+        series = seriesList.get(2);
+        assertEquals("Greater Foundation Universe", series.getTitle());
+        assertEquals("12", series.getNumber());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Goodreads.getPreferenceKey()
+                                          + "_9780553803723_0_.jpg"));
+    }
+
+    /**
+     * There are several/literal {@code null} values in the json source.
+     * Make sure by testing for correctly missing fields.
+     */
+    @Test
+    public void withNulls()
+            throws IOException, StorageException {
+
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.goodreads_with_nulls,
+                                  new boolean[]{true, false});
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+
+        assertEquals("The Aenied", book.getTitle());
+        assertEquals("Aeneis", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertNull(book.getString(DBKey.BOOK_ISBN, null));
+        assertNull(book.getString(DBKey.LANGUAGE, null));
+        assertNull(book.getString(DBKey.FORMAT, null));
+        assertNull(book.getString(DBKey.PAGES, null));
+        assertNull(book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        // yes, that's the date on goodreads
+        assertEquals(new PartialDate(-19, 1, 1), book.getFirstPublicationDate());
+        assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
+
+        assertNull(book.getString(Identifier.SID_ASIN, null));
+        assertEquals("37557163", book.getString(Identifier.SID_GOODREADS_BOOK, null));
+
+        assertEquals("The Aeneid is an epic poem, written by Virgil between 29 and"
+                     + " 19 BC, that tells the legendary story of Aeneas, a Trojan who travelled"
+                     + " to Italy, where he became the ancestor of the Romans. It comprises"
+                     + " 9,896 lines in dactylic hexameter. The first six of the poem's twelve"
+                     + " books tell the story of Aeneas's wanderings from Troy to Italy, and"
+                     + " the poem's second half tells of the Trojans' ultimately victorious war"
+                     + " upon the Latins, under whose name Aeneas and his Trojan followers are"
+                     + " destined to be subsumed. The hero Aeneas was already known to Greco-Roman"
+                     + " legend and myth, having been a character in the Iliad. Virgil took the"
+                     + " disconnected tales of Aeneas's wanderings, his vague association with"
+                     + " the foundation of Rome and a personage of no fixed characteristics other"
+                     + " than a scrupulous pietas, and fashioned this into a compelling founding"
+                     + " myth or national epic that at once tied Rome to the legends of Troy,"
+                     + " explained the Punic Wars, glorified traditional Roman virtues, and"
+                     + " legitimized the Julio-Claudian dynasty as descendants of the founders,"
+                     + " heroes, and gods of Rome and Troy. The Aeneid is widely regarded as"
+                     + " Virgil's masterpiece and one of the greatest works of Latin literature."
+                     + " (less)",
+                     book.getString(DBKey.DESCRIPTION));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(10, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Literature"));
+        assertTrue(tags.contains("Classics"));
+        assertTrue(tags.contains("School"));
+        assertTrue(tags.contains("Epic"));
+        assertTrue(tags.contains("Ancient"));
+        assertTrue(tags.contains("Mythology"));
+        assertTrue(tags.contains("Classic Literature"));
+        assertTrue(tags.contains("Poetry"));
+        assertTrue(tags.contains("Fantasy"));
+        assertTrue(tags.contains("Fiction"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(0, allPublishers.size());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+        assertEquals("Virgil", authors.get(0).getFamilyName());
+        assertEquals("", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+
+        final List<Series> seriesList = book.getSeries();
+        assertNotNull(seriesList);
+        assertEquals(0, seriesList.size());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
+    }
+
+    @Test
+    public void parseHtml9780062683250()
+            throws IOException, SearchException, CredentialsException, StorageException {
+
+        final String locationHeader = "https://www.goodreads.com/book/show/49867186-the-left-handed-booksellers-of-london?ac=1&from_search=true&qid=ubH6XArsmP&rank=2";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.goodreads_9780062683250;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+
+        assertFalse(book.isEmpty());
+
+        assertEquals("The Left-Handed Booksellers of London", book.getTitle());
+        // full assert is already tested in parseNextDataJson9780062683250()
+    }
+
+    @Test
+    public void parseMultiResultFoundationAndEmpire()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader = "https://www.goodreads.com/search?q=foundation+and+empire&qid=rMtPCIQx9m";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.goodreads_multi_result_foundation_and_empire;
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, false}, book);
+
+        assertFalse(book.isEmpty());
+
+        // live download, results may be different
+        assertEquals("Foundation and Empire", book.getTitle());
+        assertEquals("9780553803723", book.getIsbn());
+        assertEquals("Spectra", book.getPrimaryPublisher().get().getName());
+        // full assert is already tested in parseNextDataJson9780553803723()
+    }
+
+
+}

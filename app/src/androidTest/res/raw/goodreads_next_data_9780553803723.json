@@ -1,0 +1,2855 @@
+{
+  "props": {
+    "pageProps": {
+      "params": {
+        "book_id": "29581.Foundation_and_Empire"
+      },
+      "jwtToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImZSNXpfWTVjYXZQMllsaXU3eks0YUNJVEJPcVBWdGtxTE9XVURfV3dGOTQifQ.eyJpc3MiOiJodHRwczovL3d3dy5nb29kcmVhZHMuY29tIiwic3ViIjoia2NhOi8vcHJvZmlsZTpnb29kcmVhZHMvQTJUU0tLM1c2SzJGUjEiLCJhdWQiOiI2M2RjMjRlN2M2MTFlNmYxNzkyZjgxMzA1OGYyMTU2MGJkOGM2OTM4ZDU0YS5nb29kcmVhZHMuY29tIiwidXNlcl9pZCI6ODUzODY0NDIsInJvbGUiOiJ1c2VyIiwibm9uY2UiOm51bGwsImV4cCI6MTczNjc3OTYxNywiaWF0IjoxNzM2Nzc5MzE3fQ.ImS9dATbZeje1S7nJEnYyj_sP3BQDNlhzEexUaN4g4lufZ654yds_ouGdhvqUXXhqj_hp4xi5Yxs3YNXkD3bnEVRc0FKKOoC6Rhdk9-90F6a4E1AMgoePRLLeDCXwOg6f4j4sp8UCTqCSmkhpZ5_i3qesDom839m1otmKoTESetSlidcVLeXI7UFqIukl7J5krPtSpOwSXTVnWJGxTKNiC4ubWQlRpQ5Ul5F2qJ5LQuolrAE3p_BN3FcZJenTE3xYaOIIGL77ku5L_6XwP9xZjCqtlBkO6CPZIbe-tWkVc0D4UDffGYyyc8_Jiyzlyh9_nNbW-SMpcibvSegHDeNog",
+      "dataSource": null,
+      "apolloState": {
+        "ROOT_QUERY": {
+          "__typename": "Query",
+          "getAdsTargeting({\"getAdsTargetingInput\":{\"contextual\":{}}})": {
+            "__typename": "AdsTargeting",
+            "behavioral": {
+              "__typename": "BehavioralTargeting",
+              "adGroupNames": [],
+              "age": "null",
+              "authors": [
+                "115105",
+                "13778",
+                "3619",
+                "27944",
+                "10089",
+                "218173"
+              ],
+              "blockedAuthors": [],
+              "gender": "null",
+              "genres": [
+                "117",
+                "1",
+                "144",
+                "411",
+                "64",
+                "103",
+                "1049",
+                "24",
+                "97",
+                "107",
+                "921",
+                "1221",
+                "1110",
+                "3043",
+                "6537",
+                "106",
+                "1276",
+                "68",
+                "160",
+                "926",
+                "2046",
+                "2286",
+                "2614",
+                "2784",
+                "2996",
+                "3045",
+                "3145",
+                "11766"
+              ],
+              "userTargetingSettings": {
+                "__typename": "UserTargetingSettings",
+                "allowBehavioralTargeting": true
+              }
+            },
+            "contextual": null
+          },
+          "getSiteHeaderBanner": {
+            "__typename": "SiteHeaderBanner",
+            "altText": "Join the 2025 Goodreads Reading Challenge",
+            "clickthroughUrl": "https://www.goodreads.com/readingchallenges?ref=rc_jan_25_ss",
+            "desktop1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122011i/485.jpg",
+            "desktop2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122016i/486.jpg",
+            "mobile1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122022i/487.jpg",
+            "mobile2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122027i/488.jpg",
+            "siteStripColor": "#23606E"
+          },
+          "getBookByLegacyId({\"legacyId\":\"29581\"})": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ"
+          },
+          "getPageBanner({\"getPageBannerInput\":{\"id\":\"kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ\",\"pageName\":\"book_show\"}})": {
+            "__typename": "PageBanner",
+            "type": null,
+            "message": null
+          },
+          "getReviews": {
+            "__typename": "BookReviewsConnection",
+            "totalCount": 5686,
+            "edges": [
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.92frdAULY54L-yCTEm1NXg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.HIlaxotPacrg53mVCpStQQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.iUxJ04vSHQZGB8g9Itld0w"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.WWFxDgarBkw6MVQnFqbaCA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.D9cXc0ZLj_C9kTYsFzoT0A"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ZtM-OW9uToN9EV34gzDuHQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.KWn5x5wH5KDjKgaOW7YIDw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.PPrSSFOdBgGeJkTVcpLNbw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Ixwo-KdQ4rW79--X8E1oCw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.YCxWRn_wcX23RBoiD8K_5A"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.LySlBxT-ug7ub1z-cBbgww"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.jnmsRRGLbpOCIN6R4PUV3g"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.yPpE1RnJk9J1AwgaLYkLDg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UpeT9jK_KOTBaBGJIZEAbQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.FmtLtHip-KAZYhAJ1cmmWg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.HJVpiKp-nkPjmCjWFdTw1g"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.GvQVLY3tYLJ1mjwUjb3dzg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.6M0XHyp5so0-BV-6vxZYMQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.OvBtKjhHorPl1exyRyl40w"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.nnbooBGc_5_D4rTK9KgMRQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.047hHiVKTcsY_IMBmP4nQw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.XHCpe45-JlTsmwmyi75wqg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wyDJ5i3eg4gUVD7qKzA8bg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1._VIGWwx4ubklxHfgDt1ZYA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UMBHnXxohlKgd0ZC5c7Wuw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ZcRdmWn2Px33oJw4zkhWsQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.7yKam39e6W5moPOUnwTyNw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.XNwsKhyl9JisEx-F_CnNRQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.vBS_RLvvBO57Zeo0UCx2yg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.v4ioQLYHebf5K1gVK5ILHQ"
+                }
+              }
+            ],
+            "pageInfo": {
+              "__typename": "PageInfo",
+              "prevPageToken": "MzM2MjIsMTI1ODEzOTU3NzAwMA",
+              "nextPageToken": "MjQ0OSwxNjU0ODczNjY4MjU0"
+            }
+          }
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.QEcO7ieGOPF9jOG0RPslUg": {
+          "id": "kca://author/amzn1.gr.author.v1.QEcO7ieGOPF9jOG0RPslUg",
+          "__typename": "Contributor",
+          "legacyId": 16667,
+          "name": "Isaac Asimov",
+          "description": "Works of prolific Russian-American writer \u003cb\u003eIsaac Asimov\u003c/b\u003e include popular explanations of scientific principles, \u003ci\u003e\n  \u003ca href=\"https://www.goodreads.com/book/show/46654.The_Foundation_Trilogy\" title=\"The Foundation Trilogy\" rel=\"nofollow noopener\"\u003eThe Foundation Trilogy\u003c/a\u003e\n\u003c/i\u003e (1951-1953), and other volumes of fiction.\u003cbr /\u003e\u003cbr /\u003eIsaac Asimov, a professor of biochemistry, wrote as a highly successful author, best known for his books.\u003cbr /\u003e\u003cbr /\u003eAsimov, professor, generally considered of all time, edited more than five hundred books and ninety thousand letters and postcards. He published in nine of the ten major categories of the \u003ca href=\"https://www.goodreads.com/author/show/42741.Dewey\" title=\"Dewey\" rel=\"nofollow noopener\"\u003eDewey\u003c/a\u003e decimal classification but lacked only an entry in the category of philosophy (100). \u003cbr /\u003e\u003cbr /\u003ePeople widely considered Asimov, a master of the genre alongside \u003ca href=\"https://www.goodreads.com/author/show/40491486.Robert_Anson_Heinlein\" title=\"Robert Anson Heinlein\" rel=\"nofollow noopener\"\u003eRobert Anson Heinlein\u003c/a\u003e and \u003ca href=\"https://www.goodreads.com/author/show/7779.Arthur_Charles_Clarke\" title=\"Arthur Charles Clarke\" rel=\"nofollow noopener\"\u003eArthur Charles Clarke\u003c/a\u003e as the \"big three\" during his lifetime. He later tied \u003ci\u003e\n  \u003ca href=\"https://www.goodreads.com/book/show/41822.Galactic_Empire\" title=\"Galactic Empire\" rel=\"nofollow noopener\"\u003eGalactic Empire\u003c/a\u003e\n\u003c/i\u003e and the \u003ci\u003e\u003ca href=\"https://www.goodreads.com/book/show/41804.Robot\" title=\"Robot\" rel=\"nofollow noopener\"\u003eRobot\u003c/a\u003e into the same universe as his most famous series to create a unified \"future history\" for his stories much like those that Heinlein pioneered and \u003ca href=\"https://www.goodreads.com/author/show/11390.Cordwainer_Smith\" title=\"Cordwainer Smith\" rel=\"nofollow noopener\"\u003eCordwainer Smith\u003c/a\u003e and \u003ca href=\"https://www.goodreads.com/author/show/32278.Poul_Anderson\" title=\"Poul Anderson\" rel=\"nofollow noopener\"\u003ePoul Anderson\u003c/a\u003e previously produced. He penned \"\u003ca href=\"https://www.goodreads.com/book/show/58080352.Nightfall\" title=\"Nightfall\" rel=\"nofollow noopener\"\u003eNightfall\u003c/a\u003e,\" voted in 1964 as the best short story of all time; many persons still honor this title. He also produced well mysteries, fantasy, and a great quantity of nonfiction. Asimov used \u003ca href=\"https://www.goodreads.com/author/show/34335.Paul_French\" title=\"Paul French\" rel=\"nofollow noopener\"\u003ePaul French\u003c/a\u003e, the pen name, for the \u003ci\u003e\u003ca href=\"https://www.goodreads.com/book/show/212010.Lucky_Starr\" title=\"Lucky Starr\" rel=\"nofollow noopener\"\u003eLucky Starr\u003c/a\u003e\u003c/i\u003e, series of juvenile novels.\u003cbr /\u003e\u003cbr /\u003eMost books of Asimov in a historical way go as far back to a time with possible question or concept at its simplest stage. He often provides and mentions well nationalities, birth, and death dates for persons and etymologies and pronunciation guides for technical terms. \u003ci\u003e\u003ca href=\"https://www.goodreads.com/book/show/13126099.Guide_to_Science\" title=\"Guide to Science\" rel=\"nofollow noopener\"\u003eGuide to Science\u003c/a\u003e\u003c/i\u003e, the tripartite set \u003ci\u003e\u003ca href=\"https://www.goodreads.com/book/show/17794660.Understanding_Physics\" title=\"Understanding Physics\" rel=\"nofollow noopener\"\u003eUnderstanding Physics\u003c/a\u003e\u003c/i\u003e, and \u003ci\u003e\u003ca href=\"https://www.goodreads.com/book/show/99246.Chronology_of_Science_and_Discovery\" title=\"Chronology of Science and Discovery\" rel=\"nofollow noopener\"\u003eChronology of Science and Discovery\u003c/a\u003e\u003c/i\u003e exemplify these books. \u003cbr /\u003e\u003cbr /\u003eAsimov, a long-time member, reluctantly served as vice president of Mensa international and described some members of that organization as \"brain-proud and aggressive about their IQs.\" He took more pleasure as president of the humanist association. The asteroid 5020 Asimov, the magazine \u003ci\u003eAsimov's Science Fiction\u003c/i\u003e, an elementary school in Brooklyn in New York, and two different awards honor his name. \u003cbr /\u003e\u003cbr /\u003e\u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"http://en.wikipedia.org/wiki/Isaac_Asimov\"\u003ehttp://en.wikipedia.org/wiki/Isaac_As...\u003c/a\u003e\u003cbr /\u003e\u003c/i\u003e",
+          "isGrAuthor": false,
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 4505
+          },
+          "profileImageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1341965730i/16667._UX200_CR0,24,200,200_.jpg",
+          "webUrl": "https://www.goodreads.com/author/show/16667.Isaac_Asimov",
+          "user": null,
+          "viewerIsFollowing": null,
+          "followers": {
+            "__typename": "ContributorFollowersConnection",
+            "totalCount": 26175
+          }
+        },
+        "Series:kca://series/amzn1.gr.series.v1.Qgt1MpOwhq74o0ssZQITIQ": {
+          "id": "kca://series/amzn1.gr.series.v1.Qgt1MpOwhq74o0ssZQITIQ",
+          "__typename": "Series",
+          "title": "Foundation (Publication Order)",
+          "webUrl": "https://www.goodreads.com/series/59386-foundation-publication-order"
+        },
+        "Series:kca://series/amzn1.gr.series.v1.R4FDj1RBoPxqknBZtQwTZQ": {
+          "id": "kca://series/amzn1.gr.series.v1.R4FDj1RBoPxqknBZtQwTZQ",
+          "__typename": "Series",
+          "title": "Foundation (Chronological Order)",
+          "webUrl": "https://www.goodreads.com/series/43939-foundation-chronological-order"
+        },
+        "Series:kca://series/amzn1.gr.series.v1.lKPYBvzaDcbVtz-xPBeIKQ": {
+          "id": "kca://series/amzn1.gr.series.v1.lKPYBvzaDcbVtz-xPBeIKQ",
+          "__typename": "Series",
+          "title": "Greater Foundation Universe",
+          "webUrl": "https://www.goodreads.com/series/49421-greater-foundation-universe"
+        },
+        "Book:kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ": {
+          "id": "kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ",
+          "__typename": "Book",
+          "legacyId": 29581,
+          "webUrl": "https://www.goodreads.com/book/show/29581.Foundation_and_Empire",
+          "title": "Foundation and Empire",
+          "titleComplete": "Foundation and Empire (Foundation, #2)",
+          "description": "Foundation and Empire tells the incredible story of a new breed of man who create a new force for galactic government. Thus, the Foundation hurtles into conflict with the decadent, decrepit First Empire. In this struggle for power amid the chaos of the stars, man stands at the threshold of a new, enlightened life which could easily be put aside for the old forces of barbarism. The Foundation novels of Isaac Asimov constitute what is very likely the most famed epic in all of science-fiction",
+          "description({\"stripped\":true})": "Foundation and Empire tells the incredible story of a new breed of man who create a new force for galactic government. Thus, the Foundation hurtles into conflict with the decadent, decrepit First Empire. In this struggle for power amid the chaos of the stars, man stands at the threshold of a new, enlightened life which could easily be put aside for the old forces of barbarism. The Foundation novels of Isaac Asimov constitute what is very likely the most famed epic in all of science-fiction",
+          "primaryContributorEdge": {
+            "__typename": "BookContributorEdge",
+            "node": {
+              "__ref": "Contributor:kca://author/amzn1.gr.author.v1.QEcO7ieGOPF9jOG0RPslUg"
+            },
+            "role": "Author"
+          },
+          "secondaryContributorEdges": [],
+          "imageUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1391454612i/29581.jpg",
+          "bookSeries": [
+            {
+              "__typename": "BookSeries",
+              "userPosition": "2",
+              "series": {
+                "__ref": "Series:kca://series/amzn1.gr.series.v1.Qgt1MpOwhq74o0ssZQITIQ"
+              }
+            },
+            {
+              "__typename": "BookSeries",
+              "userPosition": "4",
+              "series": {
+                "__ref": "Series:kca://series/amzn1.gr.series.v1.R4FDj1RBoPxqknBZtQwTZQ"
+              }
+            },
+            {
+              "__typename": "BookSeries",
+              "userPosition": "12",
+              "series": {
+                "__ref": "Series:kca://series/amzn1.gr.series.v1.lKPYBvzaDcbVtz-xPBeIKQ"
+              }
+            }
+          ],
+          "bookGenres": [
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Science Fiction",
+                "webUrl": "https://www.goodreads.com/genres/science-fiction"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Fiction",
+                "webUrl": "https://www.goodreads.com/genres/fiction"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Science Fiction Fantasy",
+                "webUrl": "https://www.goodreads.com/genres/science-fiction-fantasy"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Space Opera",
+                "webUrl": "https://www.goodreads.com/genres/space-opera"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Audiobook",
+                "webUrl": "https://www.goodreads.com/genres/audiobook"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Fantasy",
+                "webUrl": "https://www.goodreads.com/genres/fantasy"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Classics",
+                "webUrl": "https://www.goodreads.com/genres/classics"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Novels",
+                "webUrl": "https://www.goodreads.com/genres/novels"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Space",
+                "webUrl": "https://www.goodreads.com/genres/space"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Speculative Fiction",
+                "webUrl": "https://www.goodreads.com/genres/speculative-fiction"
+              }
+            }
+          ],
+          "details": {
+            "__typename": "BookDetails",
+            "asin": "0553803727",
+            "format": "Hardcover",
+            "numPages": 256,
+            "publicationTime": 1086073200000,
+            "publisher": "Spectra",
+            "isbn": "0553803727",
+            "isbn13": "9780553803723",
+            "language": {
+              "__typename": "Language",
+              "name": "English"
+            }
+          },
+          "work": {
+            "__ref": "Work:kca://work/amzn1.gr.work.v1.gHIhKh7V-fqlrxk1p1RFig"
+          },
+          "reviewEditUrl": "https://www.goodreads.com/review/edit/29581",
+          "featureFlags": {
+            "__typename": "FeatureFlags",
+            "hideAds": false,
+            "noIndex": false,
+            "noReviews": false,
+            "noNewRatings": false,
+            "noNewTextReviews": false
+          },
+          "viewerShelving": {
+            "__ref": "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ"
+          },
+          "links({})": {
+            "__typename": "BookLinks",
+            "primaryAffiliateLink": {
+              "__typename": "BookLink",
+              "name": "Amazon UK",
+              "url": "http://www.amazon.co.uk/gp/product/0553803727/ref=x_gr_bb_amazon?ie=UTF8\u0026tag=x_gr_bb_amazon-21\u0026linkCode=as2\u0026camp=1634\u0026creative=6738",
+              "ref": "x_gr_bb_amazon"
+            },
+            "secondaryAffiliateLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "AbeBooks",
+                "url": "http://affiliates.abebooks.com/c/64613/77416/2029?u=http%3A%2F%2Fwww.abebooks.co.uk%2Fservlet%2FSearchResults%3Fisbn%3D0553803727%26sts%3Dt",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Audible",
+                "url": "https://www.amazon.co.uk/s?k=Foundation+and+Empire\u0026i=audible\u0026ref=x_gr_w_bb_audible-20\u0026tag=x_gr_w_bb_audible_uk-21",
+                "ref": "x_gr_bb_amazon"
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Kobo",
+                "url": "https://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=308967.1\u0026type=10\u0026tmpid=13778\u0026u1=x_gr_w_bb\u0026RD_PARM1=https%3A%2F%2Fwww.kobo.com%2Fgb%2Fen%2Fsearch%3FQuery%3DFoundation+and+Empire",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Alibris",
+                "url": "http://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=189673.1\u0026type=10\u0026tmpid=939\u0026\u0026u1=x_gr_w_bb\u0026RD_PARM1=http%3A%2F%2Fwww.alibris.co.uk%2Fbooksearch%3Fkeyword%3D0553803727",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "iBooks",
+                "url": "https://geo.itunes.apple.com/gb/book/isbn9780553803723?at=11lvdC\u0026mt=11\u0026ls=1",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Indigo.ca",
+                "url": "http://www.kqzyfj.com/d3106vpyvpxCFFFKMHLCEDHGKMGHCEHDHMHLLIFDDD?url=https%3A%2F%2Fwww.chapters.indigo.ca%2Fen-ca%2Fhome%2Fsearch%2F%3Fkeywords%3D0553803727",
+                "ref": null
+              }
+            ],
+            "libraryLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "WorldCat",
+                "url": "http://www.worldcat.org/isbn/0553803727?loc=",
+                "ref": null
+              }
+            ],
+            "overflowPageUrl": "https://www.goodreads.com/book/29581.Foundation_and_Empire/get_a_copy",
+            "seriesLink": null
+          }
+        },
+        "Work:kca://work/amzn1.gr.work.v1.gHIhKh7V-fqlrxk1p1RFig": {
+          "id": "kca://work/amzn1.gr.work.v1.gHIhKh7V-fqlrxk1p1RFig",
+          "__typename": "Work",
+          "legacyId": 1703483,
+          "bestBook": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ"
+          },
+          "choiceAwards": [],
+          "details": {
+            "__typename": "WorkDetails",
+            "webUrl": "https://www.goodreads.com/work/1703483-foundation-and-empire",
+            "shelvesUrl": "https://www.goodreads.com/work/shelves/1703483-foundation-and-empire",
+            "publicationTime": -568051200000,
+            "originalTitle": "Foundation and Empire",
+            "awardsWon": [
+              {
+                "__typename": "Award",
+                "name": "Retro Hugo Award",
+                "webUrl": "https://www.goodreads.com/award/show/34304-retro-hugo-award",
+                "awardedAt": 820483200000,
+                "category": "Best Novel for \"The Mule\"",
+                "designation": "WINNER"
+              }
+            ],
+            "places": [],
+            "characters": [
+              {
+                "__typename": "Character",
+                "name": "Hari Seldon",
+                "webUrl": "https://www.goodreads.com/characters/1580-hari-seldon"
+              },
+              {
+                "__typename": "Character",
+                "name": "Mule",
+                "webUrl": "https://www.goodreads.com/characters/1581-mule"
+              },
+              {
+                "__typename": "Character",
+                "name": "Bel Riose",
+                "webUrl": "https://www.goodreads.com/characters/988038-bel-riose"
+              },
+              {
+                "__typename": "Character",
+                "name": "Toran Darell",
+                "webUrl": "https://www.goodreads.com/characters/988039-toran-darell"
+              },
+              {
+                "__typename": "Character",
+                "name": "Bayta Darell",
+                "webUrl": "https://www.goodreads.com/characters/988040-bayta-darell"
+              }
+            ]
+          },
+          "stats": {
+            "__typename": "BookOrWorkStats",
+            "averageRating": 4.22,
+            "ratingsCount": 214350,
+            "ratingsCountDist": [
+              1149,
+              5111,
+              32617,
+              81211,
+              94262
+            ],
+            "textReviewsCount": 5693,
+            "textReviewsLanguageCounts": [
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 4490,
+                "isoLanguageCode": "en"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 380,
+                "isoLanguageCode": "es"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 16,
+                "isoLanguageCode": "sk"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 123,
+                "isoLanguageCode": "pt"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 5,
+                "isoLanguageCode": "sv"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 42,
+                "isoLanguageCode": "uk"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 53,
+                "isoLanguageCode": "it"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 45,
+                "isoLanguageCode": "fr"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 7,
+                "isoLanguageCode": "nl"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 9,
+                "isoLanguageCode": "el"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 67,
+                "isoLanguageCode": "tr"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 4,
+                "isoLanguageCode": "no"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 10,
+                "isoLanguageCode": "ro"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 17,
+                "isoLanguageCode": "cs"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 22,
+                "isoLanguageCode": "fa"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 12,
+                "isoLanguageCode": "ru"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 13,
+                "isoLanguageCode": "ca"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 5,
+                "isoLanguageCode": "et"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 5,
+                "isoLanguageCode": "ka"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 8,
+                "isoLanguageCode": "bg"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 5,
+                "isoLanguageCode": "fi"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 3,
+                "isoLanguageCode": "zh-TW"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "az"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 10,
+                "isoLanguageCode": "de"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 5,
+                "isoLanguageCode": "bn"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "mn"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 2,
+                "isoLanguageCode": "ar"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 2,
+                "isoLanguageCode": "hu"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 7,
+                "isoLanguageCode": "zh"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 2,
+                "isoLanguageCode": "sr"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 16,
+                "isoLanguageCode": "pl"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 5,
+                "isoLanguageCode": "th"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 2,
+                "isoLanguageCode": "is"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "hr"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 13,
+                "isoLanguageCode": "lt"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 12,
+                "isoLanguageCode": "lv"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "ilo"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "da"
+              }
+            ]
+          },
+          "quotes({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuotesConnection",
+            "webUrl": "https://www.goodreads.com/work/quotes/1703483",
+            "totalCount": 145
+          },
+          "questions({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuestionsConnection",
+            "totalCount": 4,
+            "webUrl": "https://www.goodreads.com/book/29581/questions"
+          },
+          "topics({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceTopicsConnection",
+            "webUrl": "https://www.goodreads.com/topic/list_book/29581",
+            "totalCount": 10
+          },
+          "viewerShelvings": [],
+          "viewerShelvingsUrl": "/review/user_works/1703483",
+          "featuredKNH": {
+            "__typename": "FeaturedKNHCollectionConnection",
+            "totalCount": 0,
+            "edges": []
+          },
+          "giveaways": null,
+          "editions": {
+            "__typename": "BooksConnection",
+            "webUrl": "https://www.goodreads.com/work/editions/1703483"
+          }
+        },
+        "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ": {
+          "id": "kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ",
+          "__typename": "Shelving",
+          "book": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.5KqKyoaCAnSzeYaXhE1XCQ"
+          },
+          "shelf": {
+            "__typename": "Shelf",
+            "name": null,
+            "webUrl": null
+          },
+          "taggings": [],
+          "review": null,
+          "webUrl": null
+        },
+        "User:45836": {
+          "id": 45836,
+          "__typename": "User",
+          "legacyId": 45836,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1421786395i/45836._UX200_CR0,24,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 626,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Andrew",
+          "webUrl": "https://www.goodreads.com/user/show/45836-andrew",
+          "contributor": null,
+          "followersCount": 145
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.92frdAULY54L-yCTEm1NXg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.92frdAULY54L-yCTEm1NXg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:45836"
+          },
+          "recommendFor": null,
+          "updatedAt": 1736689989490,
+          "createdAt": 1258139577000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1608771023913,
+          "text": "Less episodic than the first (\u003ca href=\"https://goodreads.com/book/show/29579.Foundation__Foundation___1_\" title=\"Foundation (Foundation, #1) by Isaac Asimov\" rel=\"noopener\"\u003eFoundation\u003c/a\u003e), which was a plus. But it makes all the more apparent Asimov's complete inability to create memorable or sympathetic characters. This means that each of the two halves read like over-long short stories. Part I is a suspense-thriller, solved by a ridiculous and anti-climactic \u003ci\u003edeus ex machina\u003c/i\u003e, while Part II telegraphs its twist-ending so far in advance that the last few chapters are simply redundant. \u003cbr /\u003e\u003cbr /\u003eThere's no arguing the brilliance of Asimov's ideas -- on science, politics, economics, war, etc. -- all of which come into play in these stories. But his writing itself borders on horrendous. Dialogue is unrealistic and the lovers' language in Part II was particularly stilted and corny, although this could have just been a product of being written in the 50s. Transitions are nonexistent, making some of the scene-jumps confusing at best. A simple empty line would have helped a lot to show the change of scenery (perhaps a problem only of the old edition that I read). Last, the aforementioned characters are poorly developed. \u003cbr /\u003e\u003cbr /\u003eIt's one thing for Asimov to utilize his normal style of enigma/suspense followed by solution/resolution. This style works well for short stories even if they get monotonous after a while. But when stretched over 100 pages and combined with characters you don't care about, it makes for not much more than a mildly challenging brain teaser: interesting to be sure, but ultimately rather unfulfilling.\u003cbr /\u003e\u003cbr /\u003eAll this would normally combine for two-star status, but I grant it a third in deference to Asimov's genius and the sheer scope of the enterprise he created with this series. He was clearly an idea man, worrying much less or not at all about the literary aspect of his works. I can respect that, even if it doesn't make for a very satisfying novel.\u003cbr /\u003e\u003cbr /\u003eCross-posted at \u003ca href=\"http://notbadmoviereviews.wordpress.com/books/foundation-2/\" rel=\"nofollow noopener\"\u003eNot Bad Movie and Book Reviews.\u003c/a\u003e\u003cbr /\u003e\u003cbr /\u003e\u003ca href=\"http://www.twitter.com/pointblaek\" rel=\"nofollow noopener\"\u003e@pointblaek\u003c/a\u003e",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/45836?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "scifi-fantasy-horror",
+                  "webUrl": "https://www.goodreads.com/review/list/45836?shelf=scifi-fantasy-horror"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/77661460"
+          },
+          "likeCount": 334,
+          "viewerHasLiked": false,
+          "commentCount": 33
+        },
+        "User:110612670": {
+          "id": 110612670,
+          "__typename": "User",
+          "legacyId": 110612670,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1647512701i/110612670._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 508,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "zuza_zaksiazkowane",
+          "webUrl": "https://www.goodreads.com/user/show/110612670-zuza-zaksiazkowane",
+          "contributor": null,
+          "followersCount": 42342
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.HIlaxotPacrg53mVCpStQQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.HIlaxotPacrg53mVCpStQQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:110612670"
+          },
+          "recommendFor": null,
+          "updatedAt": 1736699716347,
+          "createdAt": 1678652671574,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1678652756143,
+          "text": "What-",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/110612670?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "in-my-home-library",
+                  "webUrl": "https://www.goodreads.com/review/list/110612670?shelf=in-my-home-library"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/110612670?shelf=science-fiction"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/5396210265"
+          },
+          "likeCount": 295,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:5253785": {
+          "id": 5253785,
+          "__typename": "User",
+          "legacyId": 5253785,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1495541962i/5253785._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1960,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Lyn",
+          "webUrl": "https://www.goodreads.com/user/show/5253785-lyn",
+          "contributor": null,
+          "followersCount": 17182
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.iUxJ04vSHQZGB8g9Itld0w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.iUxJ04vSHQZGB8g9Itld0w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:5253785"
+          },
+          "recommendFor": null,
+          "updatedAt": 1736373555320,
+          "createdAt": 1312017036000,
+          "spoilerStatus": true,
+          "lastRevisionAt": 1709960729546,
+          "text": "Isaac Asimov was 31 when he first published the SF classic \u003ca href=\"https://goodreads.com/book/show/29579.Foundation__Foundation___1_\" title=\"Foundation (Foundation, #1) by Isaac Asimov\" rel=\"noopener\"\u003eFoundation\u003c/a\u003e in 1951. The next year he came out with the sequel, Foundation and Empire.\u003cbr\u003e\u003cbr\u003eUnlike many series these days, or even a traditional series or trilogy (which this would be for 30 years) the first part, introducing readers to Hari Seldon and psychohistory and to the beginning of Seldon’s millennia plan, was more of a prequel to the larger scope and more interesting plot brought out in Foundation and Empire.\u003cbr\u003e\u003cbr\u003eThe leaders of the Foundation operate under a foregone conclusion that their society will be a success, that theirs is a destiny proven with mathematical certainty by the great Seldon himself. Periodically in the Foundation history, a simulacrum of Seldon will appear to explain away a crisis in his plan. Up to the point of the story, Seldon had been prophetically correct in his predictions, reassuring his followers of the inevitability of his plan, and of Foundation.\u003cbr\u003e\u003cbr\u003eBut there are shadows and penumbra of uncertainty and the apprehensions are proven true when great Seldon appears and starts talking about an alternate history, one that was not going on. The Foundation was experiencing a crisis different than the one foretold by Seldon.\u003cbr\u003e\u003cbr\u003eThe mule.\u003cbr\u003e\u003cbr\u003ePsychohistory deals with predicting statistical trends in human progress, a combined science of mathematics, sociology, psychology and cultural study that Seldon and his apostles have used Seldon’s principles to exact a plan for cultural galactic evolution with exacting precision. What Seldon cannot, could not, predict was the actions of an individual. It is the unexpected ascendancy of a mutant with strange abilities that turns the Foundation plan into uncharted territory.\u003cbr\u003e\u003cbr\u003eDecades before Darth Vader and his Emperor, Asimov’s The Mule describes a conquering villain with complexities and humanistic intricacies that would create an SF/F template that would be mimicked by writers and speculative fiction writers for generations. Over sixty years later and Asimov’s character is still a study in deterministic power.\u003cbr\u003e\u003cbr\u003eOne influence that jumped out to me was Trantor as a model for George Lucas’ Coruscant. The center of galactic power is a planet / city with a single purpose. Asimov’s impact on Herbert’s Dune series is also suggested.\u003cbr\u003e\u003cbr\u003e*** 2023 reread - \u003cbr\u003e\u003cbr\u003eImagine a very young Isaac Asimov, blasting away on his Fender Stratocaster, reeling off Hendrix like riffs that melted our faces with Foundation. Now the mutton chopped rock star bends to his amp and turns the knob to eleven.\u003cbr\u003e\u003cbr\u003eJust as Godfather II is the rare sequel that is better than the original, so too is Asimov’s brilliant Foundation and Empire an incredible step up from the lofty heights of his earlier creation.\u003cbr\u003e\u003cbr\u003eWhile the book is about the Foundation and The Mule’s strange entangling influence on the galaxy, the real hero is Asimov who writes this one with an inspiration that is mesmerizing.\u003cbr\u003e\u003cbr\u003eAnd way back in the 50s, Asimov has given us an early glimpse into an information war, where emotional manipulation is the allegory for propaganda and where a society’s strength and resistance is sapped by insidious means.\u003cbr\u003e\u003cbr\u003eA masterpiece of classic science fiction. \u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1552498895i/27199533.jpg\" width=\"249\" height=\"400\" alt=\"description\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/5253785?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/192073598"
+          },
+          "likeCount": 204,
+          "viewerHasLiked": false,
+          "commentCount": 16
+        },
+        "User:614778": {
+          "id": 614778,
+          "__typename": "User",
+          "legacyId": 614778,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1194930432p8/614778._SX200_SY200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 9563,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Ahmad Sharabiani",
+          "webUrl": "https://www.goodreads.com/user/show/614778-ahmad-sharabiani",
+          "contributor": null,
+          "followersCount": 583
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.WWFxDgarBkw6MVQnFqbaCA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.WWFxDgarBkw6MVQnFqbaCA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:614778"
+          },
+          "recommendFor": null,
+          "updatedAt": 1689003562675,
+          "createdAt": 1246517159000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1644892773567,
+          "text": "\u003cb\u003e(Book 527 from 1001 books) - Foundation and Empire (Foundation, #2), Isaac Asimov\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eFoundation and Empire is a science fiction novel by Russian American writer Isaac Asimov originally published by Gnome Press in 1952. It is the second book in the Foundation Series, and the fourth in the in-universe chronology. \u003cbr /\u003e\u003cbr /\u003eIt takes place in two halves, originally published as separate novellas. The second part, \"The Mule\", won a Retro Hugo Award in 1996.\u003cbr /\u003e\u003cbr /\u003eامپراطوری کهشکشانها کتاب دوم- ایزاک آسیموف - شقایق؛ تاریخ نخستین خوانش: ماه مارس سال1990میلادی\u003cbr /\u003e\u003cbr /\u003eعنوان: جنگ امپراطوری کهکشانها کتاب دوم - از سری بنیاد؛ نوشته: آیزاک آسیموف؛ مترجم: حسن اصغری؛ تهران، شقایق، سال1371؛ در396ص؛ موضوع داستانهای نویسندگان روس تبار ایالات متحده آمریکا - سده20م\u003cbr /\u003e\u003cbr /\u003eسری «بنیاد»، عنوان سری هفت جلدی، از روانشاد «آیزاک آسیموف» است؛ که نامدارترین سری علمی-تخیلی خوانده شده‌ اند؛ داستان این سری به ترتیب زمان انتشار پیش نمی‌رود، بلکه «آسیموف»، نخست کتاب سوم با عنوان «بنیاد»، سپس کتاب چهارم با عنوان «بنیاد و امپراطوری»، و پس از آن کتاب پنجم، با عنوان «بنیاد دوم» را بنگاشتند، و سپس با درنگی دراز مدت، و در پاسخ به درخواست خوانشگران، کتاب ششم با عنوان «لبه بنیاد»، و کتاب هفتم با عنوان «بنیاد و زمین» را، به آنها افزودند؛ پس از آن با درنگی نسبتا طولانی، کتاب نخست مجموعه با عنوان «سرآغاز بنیاد»، و در پایان نیز اندکی پیش از درگذشتشان از این سرای، کتاب دوم را با عنوان «پیشبرد بنیاد» را، آفریدند؛ «آسیموف» داستان‌های بلند و کوتاه بسیاری بنگاشته‌ اند، و می‌توان با اطمینان گفت، مهم‌ترین آثار ایشان کتاب‌ها و داستان‌هایی هستند، که با عنوان «سری بنیاد» شناخته می‌شوند؛ کتاب‌های اصلی سری بنیاد هفت جلد هستند، که به ترتیب خط داستانی عبارتند از: کتاب نخست سرآغاز بنیاد کهکشانی؛ کتاب دوم پیشبرد بنیاد کهکشانی؛ کتاب سوم بنیاد (ظهور امپراطوری کهکشان‌ها در ترجمهٔ فارسی)؛ کتاب چهارم بنیاد و امپراطوری (جنگ امپراطوری کهکشان‌ها در ترجمهٔ فارسی)؛ کتاب پنجم بنیاد دوم (سقوط امپراطوری کهکشان‌ها در ترجمهٔ فارسی)؛ کتاب ششم لبه بنیاد؛ کتاب هفتم بنیاد و زمین؛ \u003cbr /\u003e\u003cbr /\u003eتاریخ بهنگام رسانی 25/02/1400هجری خورشیدی؛ 25/11/1400هجری خورشیدی؛ ا. شربیانی",
+          "rating": 4,
+          "shelving": null,
+          "likeCount": null,
+          "viewerHasLiked": null,
+          "commentCount": null
+        },
+        "User:78485297": {
+          "id": 78485297,
+          "__typename": "User",
+          "legacyId": 78485297,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1731569636i/78485297._UY200_CR41,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 805,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Mario the lone bookwolf",
+          "webUrl": "https://www.goodreads.com/user/show/78485297-mario-the-lone-bookwolf",
+          "contributor": null,
+          "followersCount": 5174
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.D9cXc0ZLj_C9kTYsFzoT0A": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.D9cXc0ZLj_C9kTYsFzoT0A",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:78485297"
+          },
+          "recommendFor": null,
+          "updatedAt": 1724687027905,
+          "createdAt": 1520431217042,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1668932563013,
+          "text": "The expanding, good empire comes to crush corruption before decadence kicks in again\u003cbr /\u003e \u003cbr /\u003eIt´s a bit as if the dark force in Star Wars had a good motivation\u003cbr /\u003eOf course, imperialism normally isn´t a good thing, but what if not just the intentions are good, but the practical implementation too? History has made most humans so cynic regarding one, big, uniting force that it´s close to unimaginable that it could really be meant as an attempt to make the universe a paradise. And the Foundation isn´t violent and without in-your-face wars, they are hidden diplomats, manipulating everything from national to geo to star politics to slowly transform degenerated empires. That concept expanded to \u003cbr /\u003e \u003cbr /\u003eMany other utopic sci-fi series\u003cbr /\u003eFor instance, Peter F Hamilton, Alastair Reynolds before the fall of the empire, David Brin, etc. who modified the idea of paradises, expanded to thousands of planets, multi k years in the future, and other realities. Of course, there always has to be an antagonistic force that is an equivalent of humankind's darkest ages, but that doesn´t mean that a post scarcity bio nano fueled Clarketech heaven on earth, other planets, space habitats, spaceships, etc. isn´t possible. This \u003cbr /\u003e \u003cbr /\u003eExtreme optimism combined with philosophical satire \u003cbr /\u003eIs an Asimov trademark. Especially in contrast to the far not as good and grim Heinlein and Dick, who had both lost hope in humankind and had serious personal issues and problems, Asimov was a prodigy who burned for ethics, humanitarian ideals, and morality. His whole work is a tour de force of mind blowing, clever riddles, some clear, some well hidden, and especially when rereading and knowing the bigger context to come, one can just wtf in awe like heck. I don´t know\u003cbr /\u003e \u003cbr /\u003eAny other sci-fi writer who handled it all together\u003cbr /\u003eThe big, space opera picture, the mentioned wit, and philosophy, thereby generated criticism and deep humor. I´m just realizing that optimism and building utopias are generally rare things in sci fi, maybe because it´s probably also much more difficult to write. Much of Asimovs´ work comes with long passages of just brain twisting complexity without any real action or plot dynamic, just dialogues, introspections, and complex, interwoven plots one has to focus on to follow and get the whole picture. Much of this may simply also be too much work for readers who just want to enjoy an entertaining book and maybe Asimov reduced the possible, maximum capacity of readers by just being too ingenious and overachieving. He would have loved that irony and kind of manifested the chaos factor too in. \u003cbr /\u003e \u003cbr /\u003eThe Mule \u003cbr /\u003ePsychohistory is perfect, has no flaws, it´s the ideal combination of everything good science can do, a victory of research, knowledge, and especially interdisciplinary work. That´s what one thinks after the first part of the book, The General. The problem comes with a new factor nobody saw coming, something believed impossible or so unlikely nobody had it on the map except for esoteric, paraphysical, alternative weirdos. But guess what, they were right, because one individual with special forces can change the course of psychohistory.\u003cbr /\u003e\u003cbr /\u003eTropes show how literature is conceptualized and created and which mixture of elements makes works and genres unique: \u003cbr /\u003e\u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"https://tvtropes.org/pmwiki/pmwiki.php/Literature/FoundationSeries\"\u003ehttps://tvtropes.org/pmwiki/pmwiki.ph...\u003c/a\u003e\u003cbr /\u003e\u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"https://tvtropes.org/pmwiki/pmwiki.php/Literature/FoundationAndEmpire\"\u003ehttps://tvtropes.org/pmwiki/pmwiki.ph...\u003c/a\u003e",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/78485297?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "asimov-isaac",
+                  "webUrl": "https://www.goodreads.com/review/list/78485297?shelf=asimov-isaac"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/2319607743"
+          },
+          "likeCount": 170,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:53478239": {
+          "id": 53478239,
+          "__typename": "User",
+          "legacyId": 53478239,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1523134271i/53478239._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 131,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Luca Ambrosino",
+          "webUrl": "https://www.goodreads.com/user/show/53478239-luca-ambrosino",
+          "contributor": null,
+          "followersCount": 13616
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ZtM-OW9uToN9EV34gzDuHQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.ZtM-OW9uToN9EV34gzDuHQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:53478239"
+          },
+          "recommendFor": null,
+          "updatedAt": 1722700734414,
+          "createdAt": 1519753227000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1631185983685,
+          "text": "English (\u003ca href=\"https://goodreads.com/book/show/29581.Foundation_and_Empire__Foundation__2_\" title=\"Foundation and Empire (Foundation #2) by Isaac Asimov\" rel=\"noopener\"\u003eFoundation and Empire\u003c/a\u003e) / Italiano\u003cbr\u003e\u003cbr\u003e\u003cblockquote\u003e«Galactic Empire was collapsing»\u003c/blockquote\u003eLess fragmented than the previous one, the second novel of the Foundation series is divided only into two time bands, respectively 150 and 230 years after the birth of the Foundation. With a new \"Seldon Crisis\" at hand, a formidable enemy, the Mule, equipped with almost supernatural powers, moves against the Foundation.\u003cp\u003eI enjoyed the \u003ca href=\"https://goodreads.com/author/show/16667.Isaac_Asimov\" title=\"Isaac Asimov\" rel=\"noopener\"\u003eIsaac Asimov\u003c/a\u003e technique to divide the novel into different temporal phases to better describe the fallen of the Empire and the rise of the Foundation. It's a suggestive experience of science fiction. It really seems to read the \"Encyclopedia Galactica\" that several times appears in the pages of the Foundation series. Exciting surprise ending, that remembers me the first Asimov novels of the Robot series.\u003c/p\u003e\u003cp\u003eVote: 7,5\u003c/p\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1519721658i/25129663._SX540_.jpg\" width=\"420\" height=\"315\" alt=\"description\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003e\u003cblockquote\u003e«L'Impero Galattico stava crollando»\u003c/blockquote\u003eMeno frammentario del precedente, il secondo romanzo del Ciclo delle Fondazioni risulta suddiviso in soli due blocchi temporali, rispettivamente 150 e 230 anni dopo la nascita della Fondazione. Una nuova \"Crisi di Seldon\" si avvicina, apparentemente scatenata da un nuovo temibile nemico, il Mulo, un'essere dotato di poteri quasi soprannaturali.\u003cp\u003eDevo dire che la tecnica di \u003ca href=\"https://goodreads.com/author/show/16667.Isaac_Asimov\" title=\"Isaac Asimov\" rel=\"noopener\"\u003eIsaac Asimov\u003c/a\u003e di descrivere per fasi o blocchi temporali le vicende che hanno portato alla caduta dell'Impero e alla nascita e sviluppo della Fondazione a me piace. E' un tipo di fantascienza molto suggestiva. Sembra davvero di scorrere quell'Enciclopedia Galattica che più volte ricorre nelle pagine della serie. Molto bello il finale a sorpresa, amarcord dei primi romanzi asimoviani del Ciclo dei Robot.\u003c/p\u003e\u003cp\u003eVoto: 7,5\u003c/p\u003e\u003cp\u003e\u003c/p\u003e",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/53478239?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/2310486693"
+          },
+          "likeCount": 160,
+          "viewerHasLiked": false,
+          "commentCount": 3
+        },
+        "User:60866073": {
+          "id": 60866073,
+          "__typename": "User",
+          "legacyId": 60866073,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1532961539i/60866073._UY200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 3892,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Baba",
+          "webUrl": "https://www.goodreads.com/user/show/60866073-baba",
+          "contributor": null,
+          "followersCount": 1344
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.KWn5x5wH5KDjKgaOW7YIDw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.KWn5x5wH5KDjKgaOW7YIDw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:60866073"
+          },
+          "recommendFor": null,
+          "updatedAt": 1732034115582,
+          "createdAt": 1618451116121,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1636716475942,
+          "text": "\u003cb\u003eRobot/Empire/Foundation. Book #10\u003c/b\u003e: Chronologically the fourth book in the Foundation series, but the second published Foundation novel released in 1952. This book, composed of two novellas, sees Asimov take space adventure and socio-political thriller story telling to the max, as the growing strength of the Foundation sees it become a target of the still military strong Galactic Empire in the shape of a glory seeking general; and then the holy grail that threatens psycho-history itself in 'The Mule' leading an unpredictable galaxy wide movement that sees the Foundation as one of its prime targets!\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1618451153i/31180809._SX540_.jpg\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003eAs a much younger man I found the \u003ca href=\"https://goodreads.com/book/show/46654.The_Foundation_Trilogy__Foundation___1_3_\" title=\"The Foundation Trilogy (Foundation, #1-3) by Isaac Asimov\" rel=\"noopener\"\u003eThe Foundation Trilogy\u003c/a\u003e near genius, but now rereading it with more reading experience and knowledge, I can see the that the appeal was finding my first very well told space adventure that ticks all the boxes; so I still find it a great story, but not an exceptional story. One huge plus point though, I am absolutely dying to know what happens next. Bring on the \u003ca href=\"https://goodreads.com/book/show/39077690.Second_Foundation\" title=\"Second Foundation by Isaac Asimov\" rel=\"noopener\"\u003eSecond Foundation\u003c/a\u003e! 8 out of 12.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/60866073?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi-beam-me-up",
+                  "webUrl": "https://www.goodreads.com/review/list/60866073?shelf=sci-fi-beam-me-up"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3944600247"
+          },
+          "likeCount": 121,
+          "viewerHasLiked": false,
+          "commentCount": 8
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.B3vuJw4p6YAZ0wfExk-PeA": {
+          "id": "kca://author/amzn1.gr.author.v1.B3vuJw4p6YAZ0wfExk-PeA",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 39
+          }
+        },
+        "User:1713956": {
+          "id": 1713956,
+          "__typename": "User",
+          "legacyId": 1713956,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1442491692i/1713956.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 3221,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Manny",
+          "webUrl": "https://www.goodreads.com/user/show/1713956-manny",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.B3vuJw4p6YAZ0wfExk-PeA"
+          },
+          "followersCount": 15478
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.PPrSSFOdBgGeJkTVcpLNbw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.PPrSSFOdBgGeJkTVcpLNbw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:1713956"
+          },
+          "recommendFor": null,
+          "updatedAt": 1715677581261,
+          "createdAt": 1228166975000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1692240220238,
+          "text": "Isaac Asimov based \u003ci\u003eFoundation and Empire\u003c/i\u003e on \u003ci\u003eDecline and Fall of the Roman Empire\u003c/i\u003e; if you're in any doubt, consider the following lines from his well-known poem \"The Foundation of SF Success\":\u003cblockquote\u003eSo success is not a mystery, just brush up on your history, and borrow day by day.\u003cbr /\u003eTake an Empire that was Roman and you'll find it is at home in all the starry Milky Way.\u003cbr /\u003eWith a drive that's hyperspatial, through the parsecs you will race, you'll find that plotting is a breeze,\u003cbr /\u003eWith a tiny bit of cribbin' from the works of Edward Gibbon and that Greek, Thucydides.\u003c/blockquote\u003eI hope you're convinced. But it does raise an interesting question: if the Trantorian Empire is the Roman Empire, what is the real-world counterpart of the Foundation? Who kept the flame of classical civilization alive through the Dark Ages, so that it could burst forth again during the Renaissance? I'm curious to see what other answers people might have, but it seems to me that the most obvious candidate is the Arabs, which presumably implies that Hari Seldon corresponds to the Prophet Mohammad (pbuh). \u003cbr /\u003e\u003cbr /\u003eBut what was the Seldon Plan? A united Islamic Europe? And who is the Mule? I must admit that I still haven't completely figured this out.\u003cbr /\u003e_________________\u003cbr /\u003e\u003cbr /\u003eI asked ChatGPT to explain, in the form of an Italian poem, why this book is better in Italian translation. If it were human, you'd say the response was quite creative, but of course it's only a soulless machine:\u003cblockquote\u003e\"Fondazione e impero\", splendido racconto,\u003cbr /\u003eIn lingua italiana risplende ancor più,\u003cbr /\u003eNel cuore di Asimov un segreto sconto,\u003cbr /\u003ePare Roma imperiale il palcoscenico suo.\u003cbr /\u003e\u003cbr /\u003eAsimov per le stelle ha spaziato,\u003cbr /\u003eMa è l'antica Roma il suo rifugio,\u003cbr /\u003eDi Cesar e Senato si è ispirato,\u003cbr /\u003eNel disegno d'un futuro rifugio.\u003cbr /\u003e\u003cbr /\u003e\"Il Mulo\", un nuovo Cesare si erge,\u003cbr /\u003eLa Fondazione, il Senato, cerca di piegare,\u003cbr /\u003eMa come Roma non si arrende né perde,\u003cbr /\u003eLa Fondazione trova modi di risorgere.\u003cbr /\u003e\u003cbr /\u003eOgni parola, come un mosaico in tessera,\u003cbr /\u003eIn italiano, lingua d'amore e di guerra,\u003cbr /\u003eRivive con più forza, più sincera,\u003cbr /\u003eQuando narra di stelle o della nostra terra.\u003cbr /\u003e\u003cbr /\u003eDove potrebbe esser meglio narrata,\u003cbr /\u003eL'opera di un autore a Roma innamorato?\u003cbr /\u003eChe nella lingua che ha celebrata,\u003cbr /\u003eL'Impero antico, mai dimenticato. \u003cbr /\u003e\u003cbr /\u003eCosì \"Fondazione e impero\", capolavoro di Asimov,\u003cbr /\u003eIn italiano risuona con accento nuovo,\u003cbr /\u003eE chi lo legge ne riscopre il tesoro,\u003cbr /\u003eNella lingua che cullò l'Impero di Jove.\u003c/blockquote\u003e",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/1713956?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/1713956?shelf=science-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "islam-and-arabic",
+                  "webUrl": "https://www.goodreads.com/review/list/1713956?shelf=islam-and-arabic"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "history-and-biography",
+                  "webUrl": "https://www.goodreads.com/review/list/1713956?shelf=history-and-biography"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "chat-gpt",
+                  "webUrl": "https://www.goodreads.com/review/list/1713956?shelf=chat-gpt"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/39047775"
+          },
+          "likeCount": 100,
+          "viewerHasLiked": false,
+          "commentCount": 34
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.AHEnyjFTx2DoYrWWllqBLw": {
+          "id": "kca://author/amzn1.gr.author.v1.AHEnyjFTx2DoYrWWllqBLw",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 5
+          }
+        },
+        "User:4213258": {
+          "id": 4213258,
+          "__typename": "User",
+          "legacyId": 4213258,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1508811508i/4213258._UY200_CR91,0,200,200_.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 5364,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Bradley",
+          "webUrl": "https://www.goodreads.com/user/show/4213258-bradley",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.AHEnyjFTx2DoYrWWllqBLw"
+          },
+          "followersCount": 4617
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Ixwo-KdQ4rW79--X8E1oCw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.Ixwo-KdQ4rW79--X8E1oCw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:4213258"
+          },
+          "recommendFor": null,
+          "updatedAt": 1715678002093,
+          "createdAt": 1364306752000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1636758552623,
+          "text": "Re-read 11/12/21:\u003cbr /\u003e\u003cbr /\u003eIt never ceases to amaze me how interesting this tale is. Hi-tech galactic empire meets the History of the Fall of the Roman Empire meets a mutant.\u003cbr /\u003e\u003cbr /\u003eYeeeeesssssssss.\u003cbr /\u003e\u003cbr /\u003eWhere's Professor X!?\u003cbr /\u003e\u003cbr /\u003eBut the best part is just how brainy it is. Classic for the win.\u003cbr /\u003e\u003cbr /\u003e\u003cbr /\u003eOriginal Review:\u003cbr /\u003e\u003cbr /\u003eSplit into two stories instead of many like the first book, this one feels a lot more streamlined and the Foundation has met two of its greatest foes. \u003cbr /\u003e\u003cbr /\u003eOne of which was expected, and one that wasn't.\u003cbr /\u003e\u003cbr /\u003eThe path back to stable galactic civilization is a tortuous one. The foundation always knew that it would one day have to face the Empire, and it did, and that story was very interesting.\u003cbr /\u003e\u003cbr /\u003eBut the Mule? \u003cbr /\u003e\u003cbr /\u003eWell, he's just fascinating. And iconic. And perhaps a bit overdone ever since then, because, let's face it, we love mutants with mighty mental powers, don't we? Grasp the date. 1951. This isn't a comic book, either. Yes, sure, there's the Lensman and others, but what we've got here is the grand social tide set against the powers of a single individual. The very thing that Hari Seldon's math couldn't account for. And now, ashes.\u003cbr /\u003e\u003cbr /\u003eWhat an awesome reversal! One that's both chilling and affirming at the same time, playing to our prejudices that we as individuals matter, while also showing the grand destruction that comes with it.\u003cbr /\u003e\u003cbr /\u003eI'm revising the novel upwards. It was great fun and still a part of the grand trilogy. I don't know why I thought it was anything less than fantastic. :)",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/4213258?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/4213258?shelf=sci-fi"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "space-opera",
+                  "webUrl": "https://www.goodreads.com/review/list/4213258?shelf=space-opera"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "top-ten-w-cheats",
+                  "webUrl": "https://www.goodreads.com/review/list/4213258?shelf=top-ten-w-cheats"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2016-shelf",
+                  "webUrl": "https://www.goodreads.com/review/list/4213258?shelf=2016-shelf"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2021-shelf",
+                  "webUrl": "https://www.goodreads.com/review/list/4213258?shelf=2021-shelf"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/571333824"
+          },
+          "likeCount": 85,
+          "viewerHasLiked": false,
+          "commentCount": 4
+        },
+        "User:27788046": {
+          "id": 27788046,
+          "__typename": "User",
+          "legacyId": 27788046,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1694286584i/27788046._UY200_CR4,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1122,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Sean Barrs ",
+          "webUrl": "https://www.goodreads.com/user/show/27788046-sean-barrs",
+          "contributor": null,
+          "followersCount": 47162
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.YCxWRn_wcX23RBoiD8K_5A": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.YCxWRn_wcX23RBoiD8K_5A",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:27788046"
+          },
+          "recommendFor": null,
+          "updatedAt": 1707589700829,
+          "createdAt": 1588670563401,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1588768519802,
+          "text": "It has been several years since I read \u003ca href=\"https://www.goodreads.com/book/show/29579.Foundation?from_search=true\u0026amp;from_srp=true\u0026amp;qid=F8scTafm9T\u0026amp;rank=1\" rel=\"nofollow noopener\"\u003eFoundation\u003c/a\u003e, though one thing that lingers in my mind about the first instalment of the series in the scope and ambition behind the work. It is extraordinary and the brilliance continues here.\u003cbr /\u003e\u003cbr /\u003eFirstly, though, it is worth mentioning that these books do not work like normal novels do. They are a little bit different. They are almost like self-contained histories in a much larger story and that story is the formation of a new empire: the foundation. So, with each new instalment centuries have passed, and new heroes and villains have emerged. As such, the writing is a little bit detached from the events it narrates because it is trying to tell a much larger story. And that story is so ridiculously huge. I have not read anything quite like it before or since.\u003cbr /\u003e\u003cbr /\u003eThis one is divided into two sections. The first depicts an initial conflict between the collapsing empire and the rising foundation. The outcome of which has already been predicted and accounted for by Harry Seldon, the mad genius who allowed the foundation to form because he recognised how stale the old empire had grown. Nobody alive today in it can even build or repair star ships, the symbol of their military might. Something new is needed because the empire has lost its way. And the foundation believe that their victory is a foregone conclusion because of the predictions of Seldon.\u003cbr /\u003e\u003cbr /\u003eHe predicted them with exact precision through the lost science of pychohistory, a statistic form of mathematics that allows the individual to predict the future (and dictate it) based upon trends in human progress. Seldon is long dead, but his ideas still linger. In the second part of this book, there is a character who clearly created an archetype for many villains within fiction. Long before Darth Vader and his complex relationship with Palpatine, Asimov depicts an all-conquering villain with a complex and shadowy personality. \u003cbr /\u003e\u003cbr /\u003eI do not hesitate to say, that without these books so many other works of science-fiction would not have been written. The influence this has had on the genre at large is huge. It feels like Asimov created and imagined the scope that other writers could then play with. Star Trek, Star Wars and even Dune lie in the wake of Asimov’s Foundation. And I do not feel like enough people are talking about this or even recognise it. \u003cbr /\u003e\u003cbr /\u003e\u003cb\u003e\n  \u003cu\u003eAs such, you really do need to read this if you consider yourself a science fiction fan. \u003c/u\u003e\n\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003e_________________________________\u003cbr /\u003e\u003cbr /\u003eYou can connect with me on social media via \u003ca href=\"https://linktr.ee/sean.ultra_vegan1\" rel=\"nofollow noopener\"\u003eMy Linktree\u003c/a\u003e.\u003cbr /\u003e__________________________________",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/27788046?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "4-star-reads",
+                  "webUrl": "https://www.goodreads.com/review/list/27788046?shelf=4-star-reads"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/27788046?shelf=sci-fi"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3319287396"
+          },
+          "likeCount": 77,
+          "viewerHasLiked": false,
+          "commentCount": 6
+        },
+        "User:131922": {
+          "id": 131922,
+          "__typename": "User",
+          "legacyId": 131922,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1572672245i/131922._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1810,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "mark monday",
+          "webUrl": "https://www.goodreads.com/user/show/131922-mark-monday",
+          "contributor": null,
+          "followersCount": 5869
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.LySlBxT-ug7ub1z-cBbgww": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.LySlBxT-ug7ub1z-cBbgww",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:131922"
+          },
+          "recommendFor": null,
+          "updatedAt": 1675536606624,
+          "createdAt": 1500660871000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1502434680804,
+          "text": "\u003ci\u003efrom the Earth Journal of Scientific Analyst SLJLK92349UO, \u003cbr /\u003eEarth Invasion Exploratory Unit\u003c/i\u003e\u003cbr /\u003e\u003cbr /\u003eHumans will fail and fail again; this much I have learned from my time spent stationed on this muddy ball of earth, the third from its star. Humans will fail and try again, win and then fail, fail and then win, fail and then keep failing. Such is the human kind! Always doing the same things. Humans are much concerned with the concepts of \"winning\" and \"failing\", as they are with such things as \"civilization\" and \"barbarism\"... their finite grasp of what life should look like means that they will always grapple with the same challenges, again and again. Oh humanity! Find a random dozen humans and study them, my robot brothers and sisters, and you will know the personality templates for all humans - the same personality templates recurring throughout their short history and their doubtlessly short future. I have learned to sympathize with while not actually admiring their predictability.\u003cbr /\u003e\u003cbr /\u003eIt is an amusing thing to consider, this predictability and these repetitions. Back on Robot Planet, predictability and repetition are hallmarks of robot children, prior to gaining full consciousness. Perhaps humans will never reach our exalted state. Indeed they are like children themselves.\u003cbr /\u003e\u003cbr /\u003eHari Seldon, prophet of the future from the Foundation novels, feels similarly. This comes as no surprise; as my robot brothers and sisters all know, \"Isaac Asimov\" was the nom de plume of my predecessor, Scientific Analyst SLJLK92349UN. May his name be forever celebrated! \"Asimov\" positions Seldon as a quirky but still coldly logical voice of reason from the past, carefully charting the future fall and rise again of humanity through \u003ci\u003epsychohistory\u003c/i\u003e - that discipline that combines history, sociology, and mathematical statistics to predict the future behavior of large groups of people. In the preceding novel, Seldon's theories were proven to be factual, again and again. The repetition made the book an imperfect experience, but still one that this Scientific Analyst quite enjoyed. Despite the frequent human error of considering the Foundation novels to be \"hard science fiction\", the first and second novels are anything but hard, and revel in the so-called soft sciences instead. They have a warm and witty human touch (or at least a careful simulation) that makes these stories pleasant and charming to read, despite the repetitive nature of the first book and the first half of the second book.\u003cbr /\u003e\u003cbr /\u003eIn short, the first half of Foundation and Empire - the novella \"The General\" - replicates the themes and narrative arcs of the prior book's stories. Foundation is led by humans who misunderstand their purpose; elsewhere, forces rise to challenge Foundation; in the end, psychohistory accurately predicts the inevitable failure of those forces. Fresh new voices wrest control of the Foundation from their corrupt superiors, and all's well that ends well. It was an enjoyable adventure despite bringing nothing new to the storyline.\u003cbr /\u003e\u003cbr /\u003eHowever, the second half of the book is a thrilling leap forward. \"The Mule\" is the strongest novella this Scientific Analyst has read by this author. Its strengths lie in its critique of all that was established beforehand: Seldon's predictions, the idea of Foundation being humanity's last hope, the concept of psychohistory itself... all come under severe review. Psychohistory complacently imagines it can predict every large movement of the human kind; \"The Mule\" posits that such predictions are limited by the basic fact that they are entirely concerned with the \u003ci\u003e human\u003c/i\u003e kind. What if a factor external to the basic homo sapien model was introduced? One that may have very human yearnings yet also has abilities that no one can predict. Such a factor could lead humanity places that neither Hari Seldon nor - dare I say - the Great Minds of Robot Planet could ever predict. And such is the story and character of The Mule. A fast-paced space opera that dashes through various exotic locales, with characters transforming from friend to enemy and back to friend, entirely unpredictable; The Mule himself an insidious threat to humanity, but one who eventually shows his all-too-human and fallible motivations and goals. The Mule upends psychohistory, almost. Perhaps the fabled Second Foundation will prove a more worthy foe!\u003cbr /\u003e\u003cbr /\u003eBrothers and sisters, we should evaluate \"The Mule\" as a coded message from its author to our masters on Robot Planet. Although the time of our invasion draws near, this Scientific Analyst suggests that we should consider external factors - ones that exist outside of basic human predictability - that may prove to be a challenge to our upcoming enterprise. Perhaps there are other, less obstreperous planets where we could harvest our necessary fuel sources and capture our meat-based servants...",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/131922?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "scifi-classic",
+                  "webUrl": "https://www.goodreads.com/review/list/131922?shelf=scifi-classic"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "earth-journal",
+                  "webUrl": "https://www.goodreads.com/review/list/131922?shelf=earth-journal"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "rain-man-reviews",
+                  "webUrl": "https://www.goodreads.com/review/list/131922?shelf=rain-man-reviews"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/2067524111"
+          },
+          "likeCount": 68,
+          "viewerHasLiked": false,
+          "commentCount": 17
+        },
+        "User:21994677": {
+          "id": 21994677,
+          "__typename": "User",
+          "legacyId": 21994677,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1665458723i/21994677._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 335,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Victor",
+          "webUrl": "https://www.goodreads.com/user/show/21994677-victor",
+          "contributor": null,
+          "followersCount": 5504
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.jnmsRRGLbpOCIN6R4PUV3g": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.jnmsRRGLbpOCIN6R4PUV3g",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:21994677"
+          },
+          "recommendFor": null,
+          "updatedAt": 1635548464440,
+          "createdAt": 1595707503574,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1595707503574,
+          "text": "* 4.5",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/21994677?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "read-in-2020",
+                  "webUrl": "https://www.goodreads.com/review/list/21994677?shelf=read-in-2020"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/2643087323"
+          },
+          "likeCount": 53,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:50996666": {
+          "id": 50996666,
+          "__typename": "User",
+          "legacyId": 50996666,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1578579054i/50996666._UY200_CR50,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 119,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Miltos S.",
+          "webUrl": "https://www.goodreads.com/user/show/50996666-miltos-s",
+          "contributor": null,
+          "followersCount": 58
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.yPpE1RnJk9J1AwgaLYkLDg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.yPpE1RnJk9J1AwgaLYkLDg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:50996666"
+          },
+          "recommendFor": null,
+          "updatedAt": 1705078101859,
+          "createdAt": 1554975229037,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1554975658698,
+          "text": "Τολμώ να πω ότι το δεύτερο βιβλίο της σειράς μου άρεσε ακόμη περισσότερο.\u003cbr /\u003eΣίγουρα δεν έχει το αρχικό ξάφνιασμα του πρώτου, καθώς πλέον μου ήταν περισσότερο οικείοι οι όροι και ο τρόπος με τα οποία ο Ασίμοφ δομεί αυτό το πραγματικό έπος, το βρήκα όμως περισσότερο δεμένο και συμπαγές. Σίγουρα έπαιξε ρόλο ότι στο Foundation and Empire εκτυλίσσονται ουσιαστικά δύο ιστορίες, σε αντίθεση με τις τέσσερις του αρχικού Foundation.\u003cbr /\u003eΚαι βέβαια η ιστορία του \"The Mule\" είναι μακράν από τις καλύτερες που έχουν παρουσιαστεί ποτέ στην λογοτεχνία του είδους.\u003cbr /\u003eΑν είστε φίλος της επιστημονικής φαντασίας και όχι μόνο, δείτε το οπωσδήποτε.\u003cbr /\u003eΑνυπομονώ για το τρίτο μέρος.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/50996666?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "επιστημονική-φαντασία",
+                  "webUrl": "https://www.goodreads.com/review/list/50996666?shelf=%CE%B5%CF%80%CE%B9%CF%83%CF%84%CE%B7%CE%BC%CE%BF%CE%BD%CE%B9%CE%BA%CE%AE-%CF%86%CE%B1%CE%BD%CF%84%CE%B1%CF%83%CE%AF%CE%B1"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ξενόγλωσο",
+                  "webUrl": "https://www.goodreads.com/review/list/50996666?shelf=%CE%BE%CE%B5%CE%BD%CF%8C%CE%B3%CE%BB%CF%89%CF%83%CE%BF"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/2659109222"
+          },
+          "likeCount": 49,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:5366728": {
+          "id": 5366728,
+          "__typename": "User",
+          "legacyId": 5366728,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1652886271i/5366728._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 143,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Matt (Fully supports developing sentient AGI)",
+          "webUrl": "https://www.goodreads.com/user/show/5366728-matt-fully-supports-developing-sentient-agi",
+          "contributor": null,
+          "followersCount": 39
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UpeT9jK_KOTBaBGJIZEAbQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.UpeT9jK_KOTBaBGJIZEAbQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:5366728"
+          },
+          "recommendFor": null,
+          "updatedAt": 1733968990351,
+          "createdAt": 1685147618856,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1685147634215,
+          "text": "Our intrepid Foundation continues to grow using a nimble network of independent traders to establish power and influence. The Foundation's success does not go unnoticed by the declining Empire. A decorated, ambitious imperial general campaigns to make his career by capturing the Foundation as a prize. And, a new threat arises unforeseen even by Hari Seldon and his uncannily accurate psychohistorical analysis - A human with powerful mental abilities who menaces not only the Foundation, but the entire galaxy.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/5366728?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/5572194861"
+          },
+          "likeCount": 46,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:10179929": {
+          "id": 10179929,
+          "__typename": "User",
+          "legacyId": 10179929,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1667494882i/10179929._UY200_CR48,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 246,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Sanjay",
+          "webUrl": "https://www.goodreads.com/user/show/10179929-sanjay",
+          "contributor": null,
+          "followersCount": 491
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.FmtLtHip-KAZYhAJ1cmmWg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.FmtLtHip-KAZYhAJ1cmmWg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:10179929"
+          },
+          "recommendFor": null,
+          "updatedAt": 1642559113317,
+          "createdAt": 1430500840000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1441382121000,
+          "text": "Differs considerably from its prequel while maintaining the same thrill throughout.",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/10179929?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/1269026816"
+          },
+          "likeCount": 43,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:26681101": {
+          "id": 26681101,
+          "__typename": "User",
+          "legacyId": 26681101,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1421952301i/26681101._UX200_CR0,42,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 485,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Markus",
+          "webUrl": "https://www.goodreads.com/user/show/26681101-markus",
+          "contributor": null,
+          "followersCount": 1895
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.HJVpiKp-nkPjmCjWFdTw1g": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.HJVpiKp-nkPjmCjWFdTw1g",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:26681101"
+          },
+          "recommendFor": null,
+          "updatedAt": 1729513718019,
+          "createdAt": 1486602632434,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1486664381869,
+          "text": "\u003ci\u003eFoundation and Empire\u003c/i\u003e is sadly not as interesting as the first book in the series. It was hard to get through at times, mostly because of a total lack of suspense, depth and real characters (which is usually also the case in the first book, but that one easily gets extra points because of the brilliance of the ideas).\u003cbr /\u003e\u003cbr /\u003eStill, there are many plainly visible influences to be found, and it's good enough that I definitely want to read more of these books.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/26681101?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2017",
+                  "webUrl": "https://www.goodreads.com/review/list/26681101?shelf=2017"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/26681101?shelf=science-fiction"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/1905209036"
+          },
+          "likeCount": 43,
+          "viewerHasLiked": false,
+          "commentCount": 5
+        },
+        "User:112699911": {
+          "id": 112699911,
+          "__typename": "User",
+          "legacyId": 112699911,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1615893423i/112699911._UX200_CR0,3,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 103,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Orhan Pelinkovic",
+          "webUrl": "https://www.goodreads.com/user/show/112699911-orhan-pelinkovic",
+          "contributor": null,
+          "followersCount": 268
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.GvQVLY3tYLJ1mjwUjb3dzg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.GvQVLY3tYLJ1mjwUjb3dzg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:112699911"
+          },
+          "recommendFor": null,
+          "updatedAt": 1685710650359,
+          "createdAt": 1612349140627,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1612350116132,
+          "text": "Reading \u003ci\u003eFoundation and Empire\u003c/i\u003e, the second book in the \u003ci\u003eFoundation Trilogy\u003c/i\u003e, reminded me of a quote by Friedrich Nietzsche: \u003ci\u003e“In every real man, a child is hidden that wants to play.”\u003c/i\u003e That said, reading a SF book once in a while, can be great play.\u003cbr /\u003e\u003cbr /\u003eThis story continued where the previous book \u003ci\u003eFoundation\u003c/i\u003e left off. Hari Seldon, used psychohistory to project that the 12,000 year old Galactic Empire will collapse in 300 years and the dark ages will reign for the next 30,000 years. But as the Emperor allowed, Seldon, to establish two Foundations colonies at the extreme ends of the spiral galaxy, Seldon, and his scientists have in return promised to, with their work, reduce the barbarian ages to a mere one thousand years. \u003cbr /\u003e\u003cbr /\u003eIt's seems that, Hari Seldon's, predictions are coming true. But with the appearance of \u003ci\u003eThe Mule\u003c/i\u003e, who is presented by Isaac Asimov (1920-1992) as a rebel conqueror and threat to Seldon's plan, is a new breed of a human being, with greater metal and emotional powers than that of man. With the appearance of \u003ci\u003eThe Mule\u003c/i\u003e things are not looking promising for the Foundation. Did Seldon's deterministic calculations fail to predict the probability of a spontaneous mutation that resulted in a creation of a human with greater intelligence that the homo sapiens, a new dominant race? Also, what ever happened to the other, Second Foundation, at the opposite far end of the Galaxy?\u003cbr /\u003e\u003cbr /\u003eI have to say that I enjoyed this book slightly more than previous one, perhaps the story grew on me. I liked the many allegorical settings, such as the Galactic Empire's administration positioned on a dead planet Tranton housed with billions of isolated lonely people in a vast closed structure - sounds very familiar. Also, the symbol of hope and order, the Foundation, is the cradle of science, research and development of the galaxy.\u003cbr /\u003e\u003cbr /\u003eSince the plots time frame lasts over a century, new generation of characters are introduced, but faintly, while the old ones have passed. There is a constant change of characters, and once you begin to learn about or like your characters, they are exchanged by their successors. Which makes it difficult to keep up with all the names. All in all, the storyline and narrative were good enough to make me want to read the following book.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/112699911?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/112699911?shelf=science-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "russian",
+                  "webUrl": "https://www.goodreads.com/review/list/112699911?shelf=russian"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "novel",
+                  "webUrl": "https://www.goodreads.com/review/list/112699911?shelf=novel"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3459424527"
+          },
+          "likeCount": 43,
+          "viewerHasLiked": false,
+          "commentCount": 10
+        },
+        "User:3675162": {
+          "id": 3675162,
+          "__typename": "User",
+          "legacyId": 3675162,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1661962313i/3675162._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 666,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "J.L.   Sutton",
+          "webUrl": "https://www.goodreads.com/user/show/3675162-j-l-sutton",
+          "contributor": null,
+          "followersCount": 1150
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.6M0XHyp5so0-BV-6vxZYMQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.6M0XHyp5so0-BV-6vxZYMQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:3675162"
+          },
+          "recommendFor": null,
+          "updatedAt": 1721500129759,
+          "createdAt": 1380121164000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1640295851696,
+          "text": "\u003cb\u003e\"He has no name other than that of the Mule, a name reportedly applied by himself to himself, and signifying, by popular explanation, his immense physical strength, and stubbornness of purpose.”\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1640294799i/32357510._SX540_.jpg\" alt=\"David S. Goyer's Series Adaptation of Isaac Asimov's FOUNDATION Ordered By Apple — GeekTyrant\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003eA big part of what I enjoyed about Isaac Asimov's \u003ci\u003eFoundation and Empire\u003c/i\u003e had to do with the Mule, and how this mutant tested Hari Seldon's psychohistorical predictions. The story is big, about the survival of vast galactic empires and civilization itself. I'm not sure I've read a space opera since reading this series without thinking in some way about \u003ci\u003eFoundation\u003c/i\u003e. If that isn't enough, \u003ci\u003eFoundation and Empire\u003c/i\u003e is a compelling and engaging read that is lots of fun! \u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1640275441i/32356530._SY540_.jpg\" alt=\"Magnifico by sallymarsh on DeviantArt | Deviantart, Isaac asimov, Anime\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003e“Pyscho-history dealt not with man, but with man-masses. It was the science of mobs; mobs in their billions. It could forecast reactions to stimuli with something of the accuracy that a lesser science could bring to the forecast of a rebound of a billiard ball. The reaction of one man could be forecast by no known mathematics; the reaction of a billion is something else again.”\u003c/b\u003e",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/3675162?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/727666335"
+          },
+          "likeCount": 42,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:5312173": {
+          "id": 5312173,
+          "__typename": "User",
+          "legacyId": 5312173,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1408893128i/5312173._UX200_CR0,26,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 914,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Simona B",
+          "webUrl": "https://www.goodreads.com/user/show/5312173-simona-b",
+          "contributor": null,
+          "followersCount": 3116
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.OvBtKjhHorPl1exyRyl40w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.OvBtKjhHorPl1exyRyl40w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:5312173"
+          },
+          "recommendFor": null,
+          "updatedAt": 1620476476969,
+          "createdAt": 1316028291000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1481040177369,
+          "text": "I read it half in Italian (my physical copy) and half in English (my digital copy) and I've come to the conclusion that the Italian translation sucks. Hard.\u003cbr /\u003e\u003cbr /\u003e\u003cb\u003e\"It was strange that the Glory of the Galaxy should be a rotting corpse.\"\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eI have gone over and over what to say in this review, but I realized that at the end of the day I had already said everything in \u003ca href=\"https://www.goodreads.com/review/show/208352009?book_show_action=false\" rel=\"nofollow noopener\"\u003emy review of \u003ci\u003eFoundation\u003c/i\u003e\u003c/a\u003e, the first installment in the series. The two books are of course different (for one thing, I found this one less episodic, which neither particularly pleased or displeased me), but what I think of this series didn't change. It has its strengths and its weaknesses, and I am ejoying it in that peculiar and unique way Asimov and only Asimov is able to make me enjoy a book. \u003cbr /\u003e\u003cbr /\u003e(The exam went great by the way. Thank you all for your support. I'm sure Asimov helped too.)",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/5312173?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/5312173?shelf=science-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "in-italian",
+                  "webUrl": "https://www.goodreads.com/review/list/5312173?shelf=in-italian"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "1900-1949",
+                  "webUrl": "https://www.goodreads.com/review/list/5312173?shelf=1900-1949"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/208352030"
+          },
+          "likeCount": 38,
+          "viewerHasLiked": false,
+          "commentCount": 14
+        },
+        "User:8759700": {
+          "id": 8759700,
+          "__typename": "User",
+          "legacyId": 8759700,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1736538562i/8759700._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 527,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Denisse",
+          "webUrl": "https://www.goodreads.com/user/show/8759700-denisse",
+          "contributor": null,
+          "followersCount": 301
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.nnbooBGc_5_D4rTK9KgMRQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.nnbooBGc_5_D4rTK9KgMRQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:8759700"
+          },
+          "recommendFor": "Science Fiction hardcore fans. Foundation hardcore fans",
+          "updatedAt": 1642623117207,
+          "createdAt": 1441744779000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1442276818000,
+          "text": "Foundation and Empire is an excellent continuation. \u003cb\u003eFor those who wanted more reliable characters, you will find them here. For those who enjoyed the hard psychology behind the first book, you will find that here too \u003ci\u003ebut briefly\u003c/i\u003e\u003c/b\u003e. I still like Foundation more, but this second installment goes into a more classical sci-fi direction without losing its philosophical serious plot. Still a very intelligent book, with an incredible pace and perfect exposition. \u003cb\u003eAn essential read if you liked the first book, which you should read if you’re into hard science fiction. \u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003e\u003cbr /\u003e \u003cbr /\u003e\u003cb\u003eEsta secuela no espera a nadie.\u003c/b\u003e Si tienes la trilogía entera en un mismo tomo, como yo, no pierdas tiempo y lee la continuación ya \u003cs\u003ea menos que no te gustara Fundación\u003c/s\u003e porque no tiene mucho \u003ci\u003ewarm up\u003c/i\u003e. Si, tiene un prólogo que te ayudaría a recordar cosas, pero es esencial que tengas fresco todo lo que paso en el primer libro ya que te ayudara a entender la primera parte de la secuela. \u003cbr /\u003e\u003cbr /\u003e\u003cb\u003eLa primera parte, sigue prácticamente las mismas pautas que el libro anterior\u003c/b\u003e, solo que el “enemigo” ahora es el mismo Imperio, por lo tanto el problema es, digamos, más grande. La resolución, los personajes, todo te recuerda a Fundación, lo cual no es algo malo, ya que en esa primera parte nos exponen el problema más común dentro de una \u003ci\u003e“lucha por poder”\u003c/i\u003e que no puedes dejar de lado, y se expone de maravilla.\u003cbr /\u003e\u003cbr /\u003e\u003cb\u003eLo más importante es que te ayuda a entender la Fundación no como comunidad si no como razón de ser. Lo fundamental de su existencia y lo inevitable de su progreso.\u003c/b\u003e Y esto es muy necesario ya que la segunda parte hace mucho énfasis en lo único que no tiene en cuenta el \u003cb\u003ePLAN SELDON\u003c/b\u003e, o sea, la individualidad. Y de eso trata más el libro. Como un plan que toma en cuenta los movimientos de toda una sociedad se ve en peligro por las motivaciones de una sola persona. Ademas es en esta parte donde el libro se separa casi por completo de su forma de contar las cosas y toma un giro sci-fi mas clásico y común, aunque sin perder el toque del autor. \u003cbr /\u003e\u003cbr /\u003eEs muy interesante de leer, y aunque sigue sin hacer énfasis en los personajes ya que el autor sigue apostándole a una trama de exposición social, si les da más protagónico a algunos. Además vemos participación femenina, algo que no tuvimos en Fundación. Bayta me agrado mucho, algo excéntrica pero centrada en sus ideales. Pero recalco, \u003cb\u003eesta no es una historia centrada en los personajes y su evolución, es muy importante tener eso en cuenta. \u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003e\u003cb\u003eMuy recomendado si te gusto el primer libro. Una continuación digna y con una meta especifica.\u003c/b\u003e Segura de sí misma y de la historia que plantea, con un ritmo increíblemente rápido para la sustancia tan seria que contiene y muy inteligente. No perderé tiempo, me voy a por el tercer libro ya de ya.",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/8759700?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/1386805301"
+          },
+          "likeCount": 37,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:6237864": {
+          "id": 6237864,
+          "__typename": "User",
+          "legacyId": 6237864,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1723178344i/6237864._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1296,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Nandakishore Mridula",
+          "webUrl": "https://www.goodreads.com/user/show/6237864-nandakishore-mridula",
+          "contributor": null,
+          "followersCount": 2526
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.047hHiVKTcsY_IMBmP4nQw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.047hHiVKTcsY_IMBmP4nQw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:6237864"
+          },
+          "recommendFor": null,
+          "updatedAt": 1663333708021,
+          "createdAt": 1316615420000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1491375215469,
+          "text": "The saga continues, with the Foundation coming up against the unexpected. We are sharply reminded that psychohistory is a probabilistic science and can fail against the unpredictable.\u003cbr\u003e\u003cbr\u003e\u003cu\u003eEdit to add:\u003c/u\u003e\u003cbr\u003e\u003cbr\u003eI was thinking of the mutant, Mule, who upset the carefully planned Foundation applecart.\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1456295817i/18214884._SX540_.jpg\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003eYes, there's very little one can do against unexpected mutants! ;)\u003cbr\u003e\u003cbr\u003e\u003cu\u003e9/11/2016\u003c/u\u003e\u003cbr\u003e\u003cbr\u003eAnother one of my reviews which has proved prophetic today. I am getting so good at this so as to frighten myself.",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/6237864?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/6237864?shelf=science-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "isaac-asimov",
+                  "webUrl": "https://www.goodreads.com/review/list/6237864?shelf=isaac-asimov"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/212605442"
+          },
+          "likeCount": 37,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:11030012": {
+          "id": 11030012,
+          "__typename": "User",
+          "legacyId": 11030012,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1562419355i/11030012._UY200_CR2,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 489,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "jade",
+          "webUrl": "https://www.goodreads.com/user/show/11030012-jade",
+          "contributor": null,
+          "followersCount": 370
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.XHCpe45-JlTsmwmyi75wqg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.XHCpe45-JlTsmwmyi75wqg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:11030012"
+          },
+          "recommendFor": "fans of sociopolitical sci-fi, dialogue, and cigarettes",
+          "updatedAt": 1714844462256,
+          "createdAt": 1611424993965,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1611425113921,
+          "text": "\u003cblockquote\u003e\n  \u003cb\u003e\n    \u003ci\u003e“society is much more easily soothed than one’s own consciousness.”\u003c/i\u003e\n  \u003c/b\u003e\n\u003c/blockquote\u003e\u003cbr\u003e\u003ci\u003efoundation \u0026amp; empire\u003c/i\u003e appears to be \u003cb\u003ea somewhat worthy successor\u003c/b\u003e of its predecessor -- at least as far as the second half of the book is concerned.\u003cbr\u003e\u003cbr\u003ea mixed bag of a reading experience for me, but still an interesting one!\u003cbr\u003e\u003cbr\u003ethe previous book consisted of five mini-stories detailing several crises and changes to the foundation’s government and policy; \u003ci\u003efoundation and empire\u003c/i\u003e consists only of two parts with separate plots and characters. both showcase a more formidable enemy than the foundation’s had so far, and as such they provide a much more dangerous adversary.\u003cbr\u003e\u003cbr\u003ethis also further explores the fact that even though hari sheldon’s psychohistory predicts societal trends and mass behaviors across the centuries pretty accurately, \u003cb\u003eit does not account for the actions of exceptional individuals.\u003c/b\u003e\u003cbr\u003e\u003cbr\u003ethat brings us to the two exceptional individuals blocking the foundation’s path. \u003cbr\u003e\u003cbr\u003ein part one, we have the still-decaying galactic empire, represented by \u003cb\u003ean ambitious young general\u003c/b\u003e who is determined to conquer the newly-risen power that calls itself foundation. in part two there’s \u003cb\u003ethe mule\u003c/b\u003e, a mutant warlord with inexplicable powers who wants to establish a second empire seven-hundred years before hari sheldon’s predictions. \u003cbr\u003e\u003cbr\u003eand he’ll glady annex the foundation to achieve it.\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1611424800i/30746163._SX540_.jpg\" height=\"250\" alt=\"description\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003ci\u003e© \u003ca href=\"https://www.michaelwhelan.com/galleries/mule/\" rel=\"nofollow noopener\"\u003eMichael Whelan\u003c/a\u003e\u003c/i\u003e\u003cbr\u003e\u003cbr\u003ei’ll be honest: reading this one was \u003cb\u003ea bit of a challenge.\u003c/b\u003e\u003cbr\u003e\u003cbr\u003eit seems that the short stories and chapters of the first book were more in favor of asimov’s writing style than i initially thought. because if you give him over a hundred pages for a story… well, the underwritten characters start getting grating, the mysteries in the plot get slow and yawn-inducing, and slightly unsatisfying plot resolutions become \u003ci\u003emore\u003c/i\u003e unsatisfying.\u003cbr\u003e\u003cbr\u003eespecially the first part was \u003cb\u003eunbelievably boring\u003c/b\u003e to me. i really liked the premise -- of course a centuries-old empire would not fall instantly, and it makes sense that even after a couple of hundred years they would still be one of the stronger players in the galactic game of chess. the idea of them coming after the foundation was pretty neat.\u003cbr\u003e\u003cbr\u003ebut \u003cb\u003egeneral bel riose\u003c/b\u003e was just another cardboard commander, the emperor a middling old fool, and the two others trying to stop the plot are incredibly prone to annoying monologues and farfetched ideas. also, it ends on such an anti-climactic note that it gave me even more of \u003ci\u003ewhy-did-i-read-this-again?\u003c/i\u003e feeling.\u003cbr\u003e\u003cbr\u003ethe second part of the book, luckily, kind of \u003cb\u003eredeemed\u003c/b\u003e the experience for me. (and apparently, i was not alone in this, because part two won the hugo award on its own.)\u003cbr\u003e\u003cbr\u003ebecause lo and behold, it gives us two things i thought asimov was allergic to: we get a lot more descriptions of planets, civilizations, and architecture AND we have a woman as a main character! bravo!\u003cbr\u003e\u003cbr\u003e\u003cb\u003ebayta\u003c/b\u003e is a foundation historian who’s part of an underground resistance and believes the foundation is heading for another sheldon crisis because it’s following in the footsteps of the galactic empire. together with her husband \u003cb\u003etoran\u003c/b\u003e, she starts seeking information on an outside threat that has risen beyond the stars: the mysterious warlord who calls himself ‘the mule’.\u003cbr\u003e\u003cbr\u003etheir quest brings them to multiple planets across the galaxy, assisted by psychologist \u003cb\u003eebling mis\u003c/b\u003e and the mule’s former \u003cb\u003ecourt jester\u003c/b\u003e. while the mule advances, conquering planet after planet, they soon start to realize they need to find the second foundation -- hopefully they will have the means to defeat the mule.\u003cbr\u003e\u003cbr\u003epart two brought me genuine distress as well as \u003cb\u003einvestment in the storyline.\u003c/b\u003e the mule is a mysterious but interesting villain; you keep wondering what his endgame is, as well as whether he’d actually be capable of raising a better second empire than sheldon ever predicted.\u003cbr\u003e\u003cbr\u003eone of the more poignant scenes is this: every time a crisis approaches, a holographic video of hari sheldon appears in what the foundation has come to call the \u003cb\u003etime vault.\u003c/b\u003e sheldon will talk briefly about the crisis he’s predicted, and vaguely allude to how the foundation should proceed now. but this time around… \u003cinput type=\"checkbox\" class=\"spoiler__control\" aria-label=\"The following text has been marked spoiler. Toggle checkbox to reveal or hide.\" onchange=\"this.labels[0].setAttribute('aria-hidden', !this.checked);\" id=\"a235eba8-02e2-413c-84b7-cee41df84db5\" /\u003e\u003clabel aria-hidden=\"true\" class=\"spoiler\" for=\"a235eba8-02e2-413c-84b7-cee41df84db5\"\u003ehe’s wrong!\u003cbr\u003e\u003cbr\u003ehe predicts a trader revolt, which the traders have put off because of the appearance of the mule, and suddenly the whole foundation is on its hind legs. because what do you do when the smartest dead guy in the galaxy makes a mistake, and your civilization might not survive as a result?\u003c/label\u003e\u003cbr\u003e\u003cbr\u003ethe big reveal at the end and the final few chapters are rather easy to see coming even if you only paid a marginal amount of attention, but i found it interesting to note here that the mule appears to be \u003cb\u003ea pretty convincing blueprint\u003c/b\u003e for a certain type of villain. and that is rather cool, considering how long ago this was published -- and before the whole superhero comic book rush, too.\u003cbr\u003e\u003cbr\u003eoverall, it still has \u003cb\u003ethe same little annoyances\u003c/b\u003e that the first book had, though there is a definite increase in immersive descriptions. but all powerful leaders are still obsessed with having a smoke, and rigid gender roles are still firmly in place.\u003cbr\u003e\u003cbr\u003ein my most radical of opinions: skip part one, and read part two. because that’s the cooler story even if the characters still remain somewhat flat.\u003cbr\u003e\u003cbr\u003e\u003ca href=\"https://www.goodreads.com/review/show/3776268115\" rel=\"nofollow noopener\"\u003e\n  \u003ci\u003eread my review of the first book here.\u003c/i\u003e\n\u003c/a\u003e\u003cbr\u003e\u003cbr\u003e✎ \u003ci\u003e3.0 stars.\u003c/i\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/11030012?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/11030012?shelf=science-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "space-opera",
+                  "webUrl": "https://www.goodreads.com/review/list/11030012?shelf=space-opera"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "quest-for-classiques",
+                  "webUrl": "https://www.goodreads.com/review/list/11030012?shelf=quest-for-classiques"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3787053658"
+          },
+          "likeCount": 36,
+          "viewerHasLiked": false,
+          "commentCount": 6
+        },
+        "User:13703358": {
+          "id": 13703358,
+          "__typename": "User",
+          "legacyId": 13703358,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1670500664i/13703358._UX200_CR0,17,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 670,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Ms. Smartarse",
+          "webUrl": "https://www.goodreads.com/user/show/13703358-ms-smartarse",
+          "contributor": null,
+          "followersCount": 335
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wyDJ5i3eg4gUVD7qKzA8bg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.wyDJ5i3eg4gUVD7qKzA8bg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:13703358"
+          },
+          "recommendFor": null,
+          "updatedAt": 1702509613970,
+          "createdAt": 1350467033000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1700559384630,
+          "text": "200 years after its birth, the Foundation has turned into the 2nd most powerful state in the Galaxy, after the Empire. This has of course not gone unnoticed by the latter; well... by one young, but very patriotic, military general of the Empire. Long story short, general Bel Riose makes enough of a fuss, that the Empire grants him enough ships to launch a full scale attack on the Foundation. \u003cbr\u003e\u003cbr\u003eAnd for a while, his efforts yield a number of resounding victories, even though the Foundation is not exactly standing idly by...\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1700302475i/34937304.png\" alt=\"Empire's space ship\" width=\"300\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003eI greatly enjoyed the first half of the story wherein the Foundation is finally forced to engage in actual warfare with the enemy. And not just a few battles for show, but outright annihilation, which (had I not read the series before), would've seriously made me fear for its survival. Plus, the enemy's protagonist presented quite a charismatic picture, with his stubborn determination to figure out the Foundation's secret(s).If only \u003ca href=\"https://www.goodreads.com/author/show/16667.Isaac_Asimov\" rel=\"nofollow noopener\"\u003eAsimov\u003c/a\u003e had had a better grip on character development. Or at least known \u003cem\u003esomeone\u003c/em\u003e to point out general Bel Riose's peculiar mood-swings: from self-assured military commander to cackling cartoon villain and back again. \u003cbr\u003e\u003cbr\u003eIn contrast, Lathan Devers made for a rather poor hero. I can see why the \u003ca href=\"https://www.imdb.com/title/tt0804484/?ref_=nv_sr_srsg_0_tt_7_nm_1_q_foundation\" rel=\"nofollow noopener\"\u003eTV series\u003c/a\u003e would substitute him for Hober Mallow, although I don't approve of the whole \"prophetic writing\" route. One of psychohistory's iron-clad rules, is that it emphatically \u003cem\u003ecannot\u003c/em\u003e operate on individuals, and needs an entire planet's worth of people for any sort of accuracy. A fact that the book's second half explores in great detail.\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1700302475i/34937303.png\" alt=\"disintegrating flag\" width=\"300\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003e... and speaking of this second half: how did it turn out \u003cem\u003esssssooooo\u003c/em\u003e boringly, when it tackled the first ever divergence from the plan?! \u003cbr\u003e\u003cbr\u003eIt started out intriguingly enough, with a mysterious man (known only as the Mule) managing to conquer an entire sector of the Galaxy in no time at all. This put the Foundation's underground resistance on edge, so they sent a couple of newlyweds to do a bit of spying on the matter. And this is where things were meant to turn all exciting and action-packed, with the couple taking center stage as they attempt to flee the mysterious Mule, running across half the Galaxy. \u003cbr\u003e\u003cbr\u003eUnfortunately I ended up \u003cem\u003ereally\u003c/em\u003e disliking all the protagonists (including poor stressed out Magnifico), so the whole experience became a rather dull one for me. Save for the ending of course, which was once again unquestionably \u003cem\u003ebadass\u003c/em\u003e.\u003cbr\u003e\u003cbr\u003e\u003cstrong\u003eScore: 3.7 / 5 stars\u003c/strong\u003e\u003cbr\u003e\u003cbr\u003eI had initially decided on a 3 star rating, mainly due to the whole Galaxy-wide chase turned into a reading chore. Still, that would greatly diminish the masterfully done first part, not to mention the entire brilliant plot idea of the Mule-arc. \u003cbr\u003e\u003cbr\u003e\u003cem\u003eSpeaking\u003c/em\u003e of which: someone please tell me that the \u003ca href=\"https://www.imdb.com/title/tt0804484/?ref_=nv_sr_srsg_0_tt_7_nm_1_q_foundation\" rel=\"nofollow noopener\"\u003eTV series'\u003c/a\u003e depiction of the Mule in Terminator-style is a \u003cem\u003egiant\u003c/em\u003e misdirection... \u003cstrong\u003e*cries in fangirl*\u003c/strong\u003e\u003cbr\u003e\u003cbr\u003e==================\u003cbr\u003eReview of book 1 (chronological order): \u003ca href=\"https://www.goodreads.com/review/show/435879206\" rel=\"nofollow noopener\"\u003ePrelude to the Foundation\u003c/a\u003e\u003cbr\u003eReview of book 3 (chronological order): \u003ca href=\"https://www.goodreads.com/review/show/435879163\" rel=\"nofollow noopener\"\u003eFoundation\u003c/a\u003e\u003cbr\u003eReview of book 5 (chronological order): \u003ca href=\"https://www.goodreads.com/review/show/435879175\" rel=\"nofollow noopener\"\u003eSecond Foundation\u003c/a\u003e",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/13703358?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/13703358?shelf=sci-fi"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "classics",
+                  "webUrl": "https://www.goodreads.com/review/list/13703358?shelf=classics"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "oldies-but-goldies",
+                  "webUrl": "https://www.goodreads.com/review/list/13703358?shelf=oldies-but-goldies"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "action-adventure",
+                  "webUrl": "https://www.goodreads.com/review/list/13703358?shelf=action-adventure"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "quotable",
+                  "webUrl": "https://www.goodreads.com/review/list/13703358?shelf=quotable"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "perfect-ending",
+                  "webUrl": "https://www.goodreads.com/review/list/13703358?shelf=perfect-ending"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/435879178"
+          },
+          "likeCount": 40,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:22809267": {
+          "id": 22809267,
+          "__typename": "User",
+          "legacyId": 22809267,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1733837223i/22809267._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 633,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Adrian",
+          "webUrl": "https://www.goodreads.com/user/show/22809267-adrian",
+          "contributor": null,
+          "followersCount": 250
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1._VIGWwx4ubklxHfgDt1ZYA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1._VIGWwx4ubklxHfgDt1ZYA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:22809267"
+          },
+          "recommendFor": null,
+          "updatedAt": 1648692062446,
+          "createdAt": 1456076107000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1497904220210,
+          "text": "2016\u003cbr /\u003eWell I first read this back in the mid 70s and have re-read it (non Gr) many times since. In my view the trilogy is comparable (if not better than) LOTR which I often say is my favourite all time book. What a quandary.\u003cbr /\u003e\u003cbr /\u003e2017\u003cbr /\u003eAs their \"series\" read, I am reading the Foundation series ( the 7 volume version) with SF Aficionados. I have now re-read the first 2 of the original trilogy and thoroughly enjoyed. Ok so I only read them last year but each time I (re)read them I am truly astonished by the wide ranging scope of Asimov's vision. Wonderful series of books that can be read as a trilogy, as 7 (septology?) or if one wishes to include the Asimov Robot and Empire novels its a lot more (other (Asimov estate authorised) authors have also increased the Foundation series even further).",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/22809267?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sf-golden-age",
+                  "webUrl": "https://www.goodreads.com/review/list/22809267?shelf=sf-golden-age"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/22809267?shelf=sci-fi"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "zz-owned-books",
+                  "webUrl": "https://www.goodreads.com/review/list/22809267?shelf=zz-owned-books"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "read-again",
+                  "webUrl": "https://www.goodreads.com/review/list/22809267?shelf=read-again"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sf-robots-n-empire",
+                  "webUrl": "https://www.goodreads.com/review/list/22809267?shelf=sf-robots-n-empire"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/1555872430"
+          },
+          "likeCount": 33,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:102468787": {
+          "id": 102468787,
+          "__typename": "User",
+          "legacyId": 102468787,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1579307611i/102468787._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 452,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Ian",
+          "webUrl": "https://www.goodreads.com/user/show/102468787-ian",
+          "contributor": null,
+          "followersCount": 132
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UMBHnXxohlKgd0ZC5c7Wuw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.UMBHnXxohlKgd0ZC5c7Wuw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:102468787"
+          },
+          "recommendFor": null,
+          "updatedAt": 1711464799437,
+          "createdAt": 1567982421784,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1665804861625,
+          "text": "Second book in the original Foundation trilogy. Some inevitable dating, in a book 70 years old but on the whole it's stood up relatively well. Introduces the character of the Mule, the genetic mutant able to manipulate emotions and the thereby threaten Hari Seldon's secret plan to restore civilization to the galaxy. The series is a classic of space opera and fondly re-read from my early years.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/102468787?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/102468787?shelf=sci-fi"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/2970050660"
+          },
+          "likeCount": 34,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:44737540": {
+          "id": 44737540,
+          "__typename": "User",
+          "legacyId": 44737540,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1662065192i/44737540._UY200_CR4,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 424,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Pat the Book Goblin ",
+          "webUrl": "https://www.goodreads.com/user/show/44737540-pat-the-book-goblin",
+          "contributor": null,
+          "followersCount": 145
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ZcRdmWn2Px33oJw4zkhWsQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.ZcRdmWn2Px33oJw4zkhWsQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:44737540"
+          },
+          "recommendFor": null,
+          "updatedAt": 1643067894331,
+          "createdAt": 1527312161153,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1527313441094,
+          "text": "Wow! Such a great book! I couldn't put it down! This book tied in the loose ends of Foundation, and Foundation and Empire really brought it all together with a huge bang at the end! I can’t wait to read Second Foundation to see what happens!!\u003cbr /\u003e\u003cbr /\u003eFoundation and Empire is set around a century after the first book. At this point, the Empire has completely collapsed and the galaxy is divided into barbarian tribes vying for power. The Foundation is the most technologically advanced group but it doesn’t seek to conquer, only to hold on to its closest territories until Seldon’s predictions come to fruition. However, Hari Seldon never predicted—a mutant, called the Mule! \u003cbr /\u003e\u003cbr /\u003eThroughout the book I was routing for the Foundation and my heart dropped when something horrible happened. (I’m trying so hard to keep this spoiler free)\u003cbr /\u003eThe end was such a twist. I never saw it coming. I'm really good at predicting endings to movies and books and this one got me. I predicted the death of Viscerion from Game of Thrones but I never saw the ending of this book! \u003cbr /\u003e\u003cbr /\u003eFoundation and Empire brought me back to the story. Foundation was a bit taxing since it seemed like an entire piece of dialogue but the story was intriguing. This book had many descriptions and the action was fast paced and everything I love about Sci-fi. Asimov really blew this one out of the water. Please let the third book be just as good or better than this one!! \u003cbr /\u003e\u003cbr /\u003eNow, onto Second Foundation!!",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/44737540?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/44737540?shelf=sci-fi"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "classics",
+                  "webUrl": "https://www.goodreads.com/review/list/44737540?shelf=classics"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/2301195903"
+          },
+          "likeCount": 30,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:1188122": {
+          "id": 1188122,
+          "__typename": "User",
+          "legacyId": 1188122,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1580776593i/1188122._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 2044,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Kara Babcock",
+          "webUrl": "https://www.goodreads.com/user/show/1188122-kara-babcock",
+          "contributor": null,
+          "followersCount": 1512
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.7yKam39e6W5moPOUnwTyNw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.7yKam39e6W5moPOUnwTyNw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:1188122"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735750593831,
+          "createdAt": 1533861527665,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1533861589175,
+          "text": "Whoaaaaa, it has been \u003cstrong\u003efive years\u003c/strong\u003e since \u003ca href=\"https://www.goodreads.com/review/show/550531058\" rel=\"nofollow noopener\"\u003eI reread \u003cem\u003eFoundation\u003c/em\u003e\u003c/a\u003e! I didn’t realize how long it had been. I’ve had \u003cem\u003eFoundation and Empire\u003c/em\u003e, and most of the other books, sitting in a pile in my old bedroom for a long time. For some reason, I had it in my head that \u003cem\u003eSecond Foundation\u003c/em\u003e, the one book I was missing, was the second book in the series (I wonder why); I was waiting and waiting to find a battered, old copy of it at my used bookstore and never did. Eventually I broke down and bought it new, only to discover I could have kept going with the series anyway….\u003cbr\u003e\u003cbr\u003eI was 23 when I reread the first book, and now I’m nearly 29! I feel like an entirely different person from 23-year-old Ben, let alone whatever delicate age I was when I first read this book. My key takeaway from this reread? \u003cstrong\u003eIsaac Asimov is actually a crap writer.\u003c/strong\u003e Strap in for a fun ride (or, if you are an Asimov diehard fan, maybe just … close this tab), because I am going to pick this thing apart.\u003cbr\u003e\u003cbr\u003eWhereas the original book was a collection of short stories that, together, formed a larger plot, \u003cem\u003eFoundation and Empire\u003c/em\u003e collects two novellas, “The General” and “The Mule”. Set some time after the first book, these stories tell, respectively, of the Galactic Empire’s last strike against the nascent Foundation, and of the rise of an eponymous mutant whose very existence throws off Hari Seldon’s precious psychohistorical predictions for the Foundation’s ascendance and safeguarding of the galaxy.\u003cbr\u003e\u003cbr\u003eI see in my review of the first book I observed that it was mostly dialogue, and maybe that’s why it escaped the criticism I’m going to level here. Asimov’s prose is just \u003cem\u003ebad\u003c/em\u003e. Like, someone did not restrain his access to the adverb vault. This is particularly egregious in the way he tags dialog. He has a great aversion to \u003cem\u003esaid\u003c/em\u003e, and when he must resort to it, he never fails to pair it with an adverb. Here’s a representative sample from a \u003cem\u003esingle\u003c/em\u003e page:\u003cbr\u003e\u003cbr\u003e- Cleon II said peevishly\u003cbr\u003e- Brodrig said patiently\u003cbr\u003e- The Emperor sneered nastily\u003cbr\u003e- said Brodrig smoothly\u003cbr\u003e- Cleon II frowned heavily\u003cbr\u003e- The Emperor laughed shortly\u003cbr\u003e\u003cbr\u003eAfter a while, this started to grate on me. But it’s still possible to overlook it, right? I mean, writing style isn’t everything, as long as there is a good \u003cem\u003estory\u003c/em\u003e….\u003cbr\u003e\u003cbr\u003e\u003cem\u003eFoundation and Empire\u003c/em\u003e isn’t all that impressive, story-wise. In “The General” we’re treated to an ambitious but frustrated eponymous antagonist: he yearns for the days of conquest, and going after the mysterious Foundation seems like the best way to reprise those. The story suffers for lack of a strong protagonist, though; the two characters who come close spend most of their time bickering about whether or not the Foundation will get through this without doing much to actually effect any change themselves. In “The Mule” there is more action and decidedly more setbacks; it is definitely a more interesting story. Yet it suffers from issues of pacing and characterization, with decidedly over the top bureaucrats.\u003cbr\u003e\u003cbr\u003eThis is by no means an original observation, either, but there is a conspicuous lack of women in this book. The first female character, Bayta, appears halfway through the book (at the beginning of “The Mule”), and Asimov describes her this way:\u003cbr\u003e\u003cbr\u003e\u003cblockquote\u003eShe wasn’t beautiful on the grand scale to others—he admitted that—even if everybody did look twice. Her hair was dark and glossy, though straight, her mouth a bit wide—but her meticulous, close-textured eyebrows separated a white, unlined forehead from the warmest mahogany eyes ever filled with smiles.\u003c/blockquote\u003e\u003cbr\u003e\u003cbr\u003eSo she’s hot, but not \u003cem\u003etoo\u003c/em\u003e hot compared to other hot women, but still pretty hot—got it?\u003cbr\u003e\u003cbr\u003eAnyway. I would be more charitable here if there were a really compelling story happening beneath these layers of sexism and purple prose. Asimov obviously has some intriguing, big-picture ideas here. But I’ve been reading Ursula K. Le Guin’s novella collection \u003cem\u003eThe Found and the Lost\u003c/em\u003e concurrently with this (and other) books. And Le Guin does this kind of so-called “soft SF” so much better. Her Hainish works deal with galactic societies over long timescales, yet she digs deeply into individuals’ stories. There is definitely a place for the shallower, flash-and-talk storytelling that Asimov is doing here, and I know it captured a lot of hearts and imaginations when it first came out. But as far as its place in the classic canon goes? \u003cem\u003eFoundation\u003c/em\u003e as a series or an idea might deserve it, but \u003cem\u003eFoundation and Empire\u003c/em\u003e is not particularly memorable or laudable, in my opinion.\u003cbr\u003e\u003cbr\u003e\u003ca href=\"http://creativecommons.org/licenses/by-nc/4.0/\" rel=\"nofollow noopener\"\u003e\n  \u003cimg alt=\"Creative Commons BY-NC License\" width=\"88\" height=\"31\" src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1388723110i/7909581.png\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\n\u003c/a\u003e",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/1188122?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2018-read",
+                  "webUrl": "https://www.goodreads.com/review/list/1188122?shelf=2018-read"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "own",
+                  "webUrl": "https://www.goodreads.com/review/list/1188122?shelf=own"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/1188122?shelf=science-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "space-opera",
+                  "webUrl": "https://www.goodreads.com/review/list/1188122?shelf=space-opera"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/749730708"
+          },
+          "likeCount": 29,
+          "viewerHasLiked": false,
+          "commentCount": 3
+        },
+        "User:5060228": {
+          "id": 5060228,
+          "__typename": "User",
+          "legacyId": 5060228,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1341774628i/5060228._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 149,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Michelle",
+          "webUrl": "https://www.goodreads.com/user/show/5060228-michelle",
+          "contributor": null,
+          "followersCount": 20
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.XNwsKhyl9JisEx-F_CnNRQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.XNwsKhyl9JisEx-F_CnNRQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:5060228"
+          },
+          "recommendFor": null,
+          "updatedAt": 1674443045564,
+          "createdAt": 1304132933000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1329233875000,
+          "text": "I am baffled as to why I liked this book and the previous one in the series, at least I am baffled as to how to explain it. This is about as conceptual as it gets. There is no protagonist, or maybe the protagonist is the human race, which might sound kind of original and exciting, but it really isn't. The characters themselves don't really get that much characterization, they are pawns in a game with no players and they're only \"on stage\" for a brief episode and then the epic sweep of time swats them into oblivion. But, the idea of \"psychohistory\" being able to predict the future of huge numbers of people even though psychology fails to predict any single person's fate is catchy, and the book is full of that kind of conceptual messing around. This is number two in the series and nothing new to be added that I didn't say about number one previously.\u003cbr /\u003e\u003cbr /\u003eSo, I can't think of a single person I know to whom I would confidently say \"oh yeah, you're going to looove this series\" but yet it is supposedly a sci-fi classic and looooved by a whole bunch of people. I just don't know any of them, except the person who recommended it to me, and she already read it, so.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/5060228?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/5060228?shelf=sci-fi"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/164519251"
+          },
+          "likeCount": 29,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:56173179": {
+          "id": 56173179,
+          "__typename": "User",
+          "legacyId": 56173179,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1578249636i/56173179._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 523,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Ivana Books Are Magic",
+          "webUrl": "https://www.goodreads.com/user/show/56173179-ivana-books-are-magic",
+          "contributor": null,
+          "followersCount": 274
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.vBS_RLvvBO57Zeo0UCx2yg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.vBS_RLvvBO57Zeo0UCx2yg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:56173179"
+          },
+          "recommendFor": null,
+          "updatedAt": 1666646432746,
+          "createdAt": 1635457494569,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1635457508974,
+          "text": "Foundation and Empire felt like two novels in one. I mean I loved both parts of the novel so I have no complaints, but these two parts really did feel like two separate novels. Both parts of the novel are set in the same Universe but the characters are different in the first and the second part of the book. Moreover, there is a time gap between them- that is about a century long. The first part of the novel is about the conflict between Foundation and Empire and the second one about the war between Foundation/Traders and the mysterious Mule character. I believe parts of this novel were even published as different stories under different titles in various science-fiction magazines. Well, I'm happy to have read them in one book. The more Foundation stories, the merrier. (Someday I will reread all the Foundation books in perfect order, but since I didn't start with the first one, I don't see the point in insisting on any particular order to reading them. )\u003cbr /\u003e\u003cbr /\u003ePART ONE- GENERAL \u003cbr /\u003eThe first half of the book opens with a strong character- General Bel Riose of the Galactic Empire. There are many amiable qualities about him that make you root for him, even if you know that psycho-history dictates that Foundation will overcome the Empire. Technically speaking, Bel Riose is on the side of the bad guys, isn't he? However, he is quite likable, extremely capable and has a bit role to play. Bel Riose is intelligent, considering and brave. He is completely devoted to the Empire and never acts in his own self-interest. His men seem to adore him and one hardly wonders at that. Bel Riose holds Barr (a patrician from a captured world) a prisoner, holding his family hostage. The two often have interesting discussions. Bel Riose presents tempting arguments about the Empire, stressing how without it there was anarchy. As the novel enfolds, Bel Riose starts to explore Foundation more and more. Bel Riouse visits it and cannot grasp how its people can be so assured of themselves and their victory. Bel Riose senses danger and plans an attack while the Empire is so strong in resources. He is aware that with time, the Empire might grown weaker because nobody knows how to build proper spaceships anymore. Barr, still his prisoner, maintains that psycho-history proves that Foundation will win over the Empire. Bel Riose argues that it is completely senseless that such at tiny enemy should defeat the Galactic Empire, but he is wise enough to prepare for it. He captures a Trader Devers (a Foundation man) whom he treats as well as his other prisoner the patrician Barr but remains suspicious of them both. Finally, the general decides to launch an attack on Foundation. Is the Foundation ready for it? Will they hold? Will Bel Riose convenience the Emperor himself to support his attack on Foundation with all its might? The story only really starts there. I won't reveal what happens with Devers and Berr but I will say they are wonderfully crafted characters. The characters of the Emperor and his first counsel are wonderfully developed as well. Even some minor characters are quite vividly painted. The pacing is perfect, the construction of the plot is excellent and the story itself interesting and imaginative. Nothing to complain of here! Some great social-political observations, debates and analysis. Plus, I enjoyed how psycho-history always came up victorious. I love the whole Foundation concept. So far, I really loved all the Foundation novels I have read...and that brings me to the second part of this novel.\u003cbr /\u003e\u003cbr /\u003ePART TWO- THE MULE\u003cbr /\u003eI liked the second part of the novel (perhaps even more than the first one) because there was an element of mystery there. It reminded me of Asimov's detective Robot novels. The story itself was so packed with action and information that I had to reread many a passage again. It really is quite clever. Sometimes I would miss a piece of information and I had to reread some parts again to be able to follow the story. There is an emotional touch to this part of the novel and there's a strong female lead that takes matters into her own hands. The ending is simply brilliant! Highly recommended!\u003cbr /\u003e\u003cbr /\u003eTo conclude, I loved both parts of this novel. What I loved the most about the first one was the mature discussion of social and political matters (still relevant today). What I loved the most about the second one was how the mystery element blended perfectly with the story itself. I immensely enjoyed this novel!\u003cbr /\u003e",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/56173179?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/4311096541"
+          },
+          "likeCount": 26,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:63462060": {
+          "id": 63462060,
+          "__typename": "User",
+          "legacyId": 63462060,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1678519991i/63462060._UY200_CR76,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 373,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Marcos GM",
+          "webUrl": "https://www.goodreads.com/user/show/63462060-marcos-gm",
+          "contributor": null,
+          "followersCount": 233
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.v4ioQLYHebf5K1gVK5ILHQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.v4ioQLYHebf5K1gVK5ILHQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:63462060"
+          },
+          "recommendFor": null,
+          "updatedAt": 1718372032964,
+          "createdAt": 1654873668254,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1716573551048,
+          "text": "\u003cb\u003e\n  \u003ci\u003eEl plan de Seldon ayuda a quienes se ayudan a sí mismos.\u003c/i\u003e\n\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eEsta segunda entrega de la saga Fundación continua la historia iniciada con Fundación, es decir, el plan de Hari Seldon para evitar un colapso general en la galaxia durante 30.000 años. Aquí nos enfrentamos a un problema que dicho plan prevee y se puede resolver, y a otro que el propio plan no puede preveer, y quizá desbarate todo lo hecho. \u003cbr /\u003e\u003cbr /\u003e\u003cb\u003e\n  \u003ci\u003eUn traidor incompetente no es un peligro. Son los hombres capaces los que hay que vigilar.\u003c/i\u003e\n\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eLa primera situación a la que se enfrenta la Fundación es, de manera inevitable, un choque con los disminuidos pero aun fuertes restos del Imperio. El general Bel Riose (basado en el general romano Belisario) cree poder hacer frente a la Fundación, y sin dudarlo se lanza a un ataque coordinado y estratégico con el que quiere cercar a las fuerzas de la Fundación. La resolución de este conflicto marca el cierre de la primera mitad.\u003cbr /\u003e\u003cbr /\u003e\u003cb\u003e\n  \u003ci\u003eYo soy el Mulo.\u003c/i\u003e\n\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eEn la segunda parte de la novela sucede un hecho para el cual el Plan Seldon no está preparado. Este plan en su concepto trabaja con masas de gente, cuanto mayor es la cantidad más certero es el resultado. Pero por ello mismo, un solo individuo no puede ser predicho. Si dicho individuo es además un mutante con el poder de manejar las emociones humanas y ponerlas bajo su control, tanto el Plan como el futuro de la galaxia son puestos en jaque.\u003cbr /\u003e\u003cbr /\u003eEn general es una novela que me ha gustado, y que no tiene uno de los fallos de la primera parte, y es que aquí no damos saltos grandes de tiempo, con lo que puedes seguir a ciertos personajes más tiempo. Toran y Bayta, Ebling Mis o el propio Mulo tienen un desarrollo, y aunque no es tanto como me gustaría, al menos puedes entenderles. Visitaremos nuevos planetas y alguno conocido (muy llamativo el destino de Trántor). También agradezco que se centre menos en la energía atómica, que me resultaba desfasado en la primera parte.\u003cbr /\u003e\u003cbr /\u003eEs una buena secuela, y da un enfoque distinto a la forma de escritura, por lo que no parece un refrito de la primera parte, que siempre es de agradecer. Como punto negativo, para mí en este caso, es que al ser una relectura me sabía el giro, y aún así se aprecian ciertas cosas, pero toda la segunda mitad del libro está estructurada en saber quien puede ser el Mulo. \u003cbr /\u003e\u003cbr /\u003eSiendo un libro \"puente\" queda con mucho por cerrar, pero al menos deja con muchas ganas de saber como acabará todo.\u003cbr /\u003e\u003cbr /\u003e\u003cbr /\u003e\u003cbr /\u003e-------------\u003cbr /\u003e\u003cbr /\u003e\u003cbr /\u003e\u003cb\u003e\n  \u003ci\u003eSeldon's plan helps those who help themselves.\u003c/i\u003e\n\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eThis second installment of the Foundation saga continues the story started with Foundation, that is, Hari Seldon's plan to prevent a general collapse in the galaxy for 30,000 years. Here we are faced with a problem that the plan foresees and can be solved, and another that the plan itself cannot foresee, and perhaps it will derail everything that has been done.\u003cbr /\u003e\u003cbr /\u003e\u003cb\u003e\n  \u003ci\u003eAn incompetent traitor is not a danger. Capable men are the ones to watch out for.\u003c/i\u003e\n\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eThe first situation the Foundation faces is, inevitably, a clash with the diminished but still strong remnants of the Empire. General Bel Riose (based on the Roman general Belisarius) believes he can stand against the Foundation, and without hesitation launches a coordinated and strategic attack with which he wants to encircle the Foundation forces. The resolution of this conflict marks the end of the first half.\u003cbr /\u003e\u003cbr /\u003e\u003cb\u003e\n  \u003ci\u003eI am the Mule.\u003c/i\u003e\n\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003eIn the second part of the novel an event occurs for which the Seldon Plan is not prepared. This plan in its concept works with masses of people, the greater the number, the more accurate the result. But for that very reason, a single individual cannot be predicted. If said individual is also a mutant with the power to manipulate human emotions and bring them under his control, both the Plan and the future of the galaxy are put in check.\u003cbr /\u003e\u003cbr /\u003eIn general, it is a novel that I liked, and that does not have one of the flaws of the first part, and that is that here we do not make big jumps in time, so you can follow certain characters for a longer time. Toran and Bayta, Ebling Mis or the Mule himself have a development, and although it is not as much as I would like, at least you can understand them. We will visit new planets and some known ones (the fate of Trantor is very striking). I also appreciate that it focuses less on atomic energy, which was out of date for me in the first part.\u003cbr /\u003e\u003cbr /\u003eIt's a good sequel, and it takes a different approach to writing, so it doesn't seem like a rehash of the first part, which is always appreciated. As a negative point, for me in this case, it is that being a rereading I knew the twist, and still certain things are appreciated, but the entire second half of the book is structured in knowing who the Mule can be.\u003cbr /\u003e\u003cbr /\u003eBeing a \"bridge\" book, there is much to close, but at least it leaves you wanting to know how it will all end.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/63462060?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/3064377581"
+          },
+          "likeCount": 29,
+          "viewerHasLiked": false,
+          "commentCount": 4
+        }
+      },
+      "authContextParams": {
+        "signedIn": true,
+        "customerId": "A2TSKK3W6K2FR1",
+        "legacyCustomerId": 85386442,
+        "role": "user"
+      },
+      "userAgentContextParams": {
+        "isWebView": null
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
+    },
+    "__N_SSP": true
+  },
+  "page": "/book/show/[book_id]",
+  "query": {
+    "from_search": "true",
+    "from_srp": "true",
+    "qid": "rMtPCIQx9m",
+    "rank": "1",
+    "book_id": "29581.Foundation_and_Empire"
+  },
+  "buildId": "08wwXy1OZ3fVOX0Zzn6n7",
+  "runtimeConfig": {
+    "env": "Production"
+  },
+  "isFallback": false,
+  "gssp": true,
+  "customServer": true,
+  "locales": [
+    "en",
+    "ab",
+    "aa",
+    "af",
+    "ak",
+    "sq",
+    "am",
+    "ar",
+    "an",
+    "hy",
+    "as",
+    "av",
+    "ae",
+    "ay",
+    "az",
+    "bm",
+    "ba",
+    "eu",
+    "be",
+    "bn",
+    "bh",
+    "bi",
+    "bs",
+    "br",
+    "bg",
+    "my",
+    "ca",
+    "ch",
+    "ce",
+    "ceb",
+    "ny",
+    "zh",
+    "zh-TW",
+    "cv",
+    "kw",
+    "co",
+    "cr",
+    "hr",
+    "cs",
+    "da",
+    "dv",
+    "nl",
+    "eo",
+    "et",
+    "ee",
+    "fo",
+    "fj",
+    "fi",
+    "fr",
+    "ff",
+    "gl",
+    "ka",
+    "de",
+    "el",
+    "gn",
+    "gu",
+    "ht",
+    "ha",
+    "he",
+    "hz",
+    "hi",
+    "ho",
+    "hu",
+    "ia",
+    "id",
+    "ie",
+    "ilo",
+    "ga",
+    "ig",
+    "ik",
+    "io",
+    "is",
+    "it",
+    "iu",
+    "ja",
+    "jv",
+    "kl",
+    "kn",
+    "kr",
+    "ks",
+    "kk",
+    "km",
+    "ki",
+    "rw",
+    "ky",
+    "kv",
+    "kg",
+    "ko",
+    "ku",
+    "kj",
+    "la",
+    "lb",
+    "lg",
+    "li",
+    "ln",
+    "lo",
+    "lt",
+    "lu",
+    "lv",
+    "gv",
+    "mk",
+    "mg",
+    "ms",
+    "ml",
+    "mt",
+    "mi",
+    "mr",
+    "mh",
+    "mn",
+    "na",
+    "nv",
+    "nb",
+    "nd",
+    "ne",
+    "new",
+    "ng",
+    "nn",
+    "no",
+    "ii",
+    "nr",
+    "oc",
+    "oj",
+    "cu",
+    "om",
+    "or",
+    "os",
+    "pa",
+    "pi",
+    "fa",
+    "pl",
+    "ps",
+    "pt",
+    "qu",
+    "rm",
+    "rn",
+    "ro",
+    "ru",
+    "sa",
+    "sc",
+    "sd",
+    "se",
+    "sm",
+    "sg",
+    "sr",
+    "gd",
+    "sn",
+    "si",
+    "sk",
+    "sl",
+    "so",
+    "st",
+    "es",
+    "su",
+    "sw",
+    "ss",
+    "sv",
+    "ta",
+    "te",
+    "tg",
+    "th",
+    "ti",
+    "bo",
+    "tk",
+    "tl",
+    "tn",
+    "to",
+    "tr",
+    "ts",
+    "tt",
+    "tw",
+    "ty",
+    "ug",
+    "uk",
+    "ur",
+    "uz",
+    "ve",
+    "vi",
+    "vo",
+    "wa",
+    "cy",
+    "wo",
+    "fy",
+    "xh",
+    "yi",
+    "yo",
+    "za"
+  ]
+}

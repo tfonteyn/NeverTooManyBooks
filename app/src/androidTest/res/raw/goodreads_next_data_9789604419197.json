@@ -1,0 +1,2457 @@
+{
+  "props": {
+    "pageProps": {
+      "params": {
+        "book_id": "33838921"
+      },
+      "jwtToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImZSNXpfWTVjYXZQMllsaXU3eks0YUNJVEJPcVBWdGtxTE9XVURfV3dGOTQifQ.eyJpc3MiOiJodHRwczovL3d3dy5nb29kcmVhZHMuY29tIiwic3ViIjoia2NhOi8vcHJvZmlsZTpnb29kcmVhZHMvQTJUU0tLM1c2SzJGUjEiLCJhdWQiOiI2M2RjMjRlN2M2MTFlNmYxNzkyZjgxMzA1OGYyMTU2MGJkOGM2OTM4ZDU0YS5nb29kcmVhZHMuY29tIiwidXNlcl9pZCI6ODUzODY0NDIsInJvbGUiOiJ1c2VyIiwibm9uY2UiOm51bGwsImV4cCI6MTczNjcwMjg0MSwiaWF0IjoxNzM2NzAyNTQxfQ.d4Hmc23FZOADIEsXT4PpNOUP9QiiyLx8cd-FZkM2S_JOFRkW4-bRv7ajq4szceEIWZKMwQGPyaXU_x3Aj-KqWR1yPKlCXy1nbgdIJqFWDjCcvHl9Yuy7Dos16XPKRstcLRQHb6F8Dr3aH2kICSX96arLVesgeCd21WDjmL3BDsp9vD0vm620XieV4XTKWBQir9X8KxdSMryUME2Rql2oLvC6CmVggz-q4CIVpf7yKaOFwmImrFl74Vl86pbzq5a1hgyHJ5VaX4_64qPiDY947zTUvJeIGyLpjn4fy74IePfq8hxGW8jUbX3hJSs4Z3_R3msLOtkVfPja6euFQ3znWQ",
+      "dataSource": null,
+      "apolloState": {
+        "ROOT_QUERY": {
+          "__typename": "Query",
+          "getAdsTargeting({\"getAdsTargetingInput\":{\"contextual\":{}}})": {
+            "__typename": "AdsTargeting",
+            "behavioral": {
+              "__typename": "BehavioralTargeting",
+              "adGroupNames": [],
+              "age": "null",
+              "authors": [
+                "115105",
+                "13778",
+                "3619",
+                "27944",
+                "10089",
+                "218173"
+              ],
+              "blockedAuthors": [],
+              "gender": "null",
+              "genres": [
+                "117",
+                "1",
+                "144",
+                "411",
+                "64",
+                "103",
+                "1049",
+                "24",
+                "97",
+                "107",
+                "921",
+                "1221",
+                "1110",
+                "3043",
+                "6537",
+                "106",
+                "1276",
+                "68",
+                "160",
+                "926",
+                "2046",
+                "2286",
+                "2614",
+                "2784",
+                "2996",
+                "3045",
+                "3145",
+                "11766"
+              ],
+              "userTargetingSettings": {
+                "__typename": "UserTargetingSettings",
+                "allowBehavioralTargeting": true
+              }
+            },
+            "contextual": null
+          },
+          "getSiteHeaderBanner": {
+            "__typename": "SiteHeaderBanner",
+            "altText": "Join the 2025 Goodreads Reading Challenge",
+            "clickthroughUrl": "https://www.goodreads.com/readingchallenges?ref=rc_jan_25_ss",
+            "desktop1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122011i/485.jpg",
+            "desktop2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122016i/486.jpg",
+            "mobile1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122022i/487.jpg",
+            "mobile2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122027i/488.jpg",
+            "siteStripColor": "#23606E"
+          },
+          "getBookByLegacyId({\"legacyId\":\"33838921\"})": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg"
+          },
+          "getPageBanner({\"getPageBannerInput\":{\"id\":\"kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg\",\"pageName\":\"book_show\"}})": {
+            "__typename": "PageBanner",
+            "type": null,
+            "message": null
+          },
+          "getBook({\"id\":\"kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA\"})": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA"
+          },
+          "getReviews": {
+            "__typename": "BookReviewsConnection",
+            "totalCount": 27,
+            "edges": [
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.KE6XeAobUpRZisoBZxAs5w"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.eVUWig1XEcUB37TbvMN3ZQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.k_3lYBFh8XIsar2d0TWcrQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.-qQoRw92pieneGVCcsKzCQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.577vo_wT-0nCo0B6eJeCpA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.PXyE9vVrnM7KieyyfZwjTw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.etcHKp-EFx8EqaqeK2_4-g"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.spC4Fe3fQqMKtBRxQqEAGA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.AJLHNN9Zjbvaa-oxAfkn7A"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.EPsnfDELWOWhR6rftXLYFA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.pANCppKXfaeY96Kbz6OM2g"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.78toSw1pwXhSvGeZhHrfRQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Qwv8yrTUh3ctyUKXAS66SA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.fsM3fV5CQrZ4PG660-Q7Zg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.03d9rhObHaMmHU7Et_BQtg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.L1NooW12OILJ_C5QvJWb5g"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.5ZgYWW2Rj_r3PyakBoIejg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.QiKyv-LqlYOVard4XVr-ig"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.6Nb4l8uytcmx0wr808e1qA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.quauOu6CWKpWPoKKwPsV6Q"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.sL-xjmbzIJe_TerAoKs49w"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.cTC44f9wwrq1-RpNqsnRSQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.sItbGLGqE-fb4SqxZPxGKA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.SuKYR7SqIs4cDVD8lbVXbw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wdwaa8hlAxwa2AOZMsMdyQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.RWsGizCi2SAftp2DV1YMew"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UbYoUx1hrbxlHdfqSxyp4w"
+                }
+              }
+            ],
+            "pageInfo": {
+              "__typename": "PageInfo",
+              "prevPageToken": "MTA1LDE0NTUzNjk4ODgwMDA",
+              "nextPageToken": ""
+            }
+          }
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.1RbENY4AqKI8T3nrC5UFig": {
+          "id": "kca://author/amzn1.gr.author.v1.1RbENY4AqKI8T3nrC5UFig",
+          "__typename": "Contributor",
+          "legacyId": 115105,
+          "name": "Raoul Cauvin",
+          "description": "",
+          "isGrAuthor": false,
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 656
+          },
+          "profileImageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1338388096i/115105.jpg",
+          "webUrl": "https://www.goodreads.com/author/show/115105.Raoul_Cauvin",
+          "user": null,
+          "viewerIsFollowing": null,
+          "followers": {
+            "__typename": "ContributorFollowersConnection",
+            "totalCount": 38
+          }
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.Mj5pSFWLQ2kx79AWBbwKjQ": {
+          "id": "kca://author/amzn1.gr.author.v1.Mj5pSFWLQ2kx79AWBbwKjQ",
+          "__typename": "Contributor",
+          "name": "Daniel Kox",
+          "webUrl": "https://www.goodreads.com/author/show/120410.Daniel_Kox",
+          "isGrAuthor": false
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.-Lt8L_FBzM2FB4B9JIPXag": {
+          "id": "kca://author/amzn1.gr.author.v1.-Lt8L_FBzM2FB4B9JIPXag",
+          "__typename": "Contributor",
+          "name": "Τατιάνα Γαλάτουλα",
+          "webUrl": "https://www.goodreads.com/author/show/7048501._",
+          "isGrAuthor": false
+        },
+        "Series:kca://series/amzn1.gr.series.v1.CQ98quBr8EY8uN-t_hpbbA": {
+          "id": "kca://series/amzn1.gr.series.v1.CQ98quBr8EY8uN-t_hpbbA",
+          "__typename": "Series",
+          "title": "L'Agent 212",
+          "webUrl": "https://www.goodreads.com/series/51385-l-agent-212"
+        },
+        "Book:kca://book/amzn1.gr.book.v1.VCwYHq2ZDUVNeUnO4YyjEA": {
+          "id": "kca://book/amzn1.gr.book.v1.VCwYHq2ZDUVNeUnO4YyjEA",
+          "__typename": "Book",
+          "legacyId": 3183862,
+          "webUrl": "https://www.goodreads.com/book/show/3183862-siang-dan-malam"
+        },
+        "Book:kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA": {
+          "id": "kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA",
+          "__typename": "Book",
+          "legacyId": 6593880,
+          "reviewEditUrl": "https://www.goodreads.com/review/edit/6593880"
+        },
+        "User:85386442": {
+          "id": 85386442,
+          "__typename": "User",
+          "legacyId": 85386442,
+          "followersCount": 0,
+          "imageUrlSquare": "",
+          "isAuthor": false,
+          "textReviewsCount": 0,
+          "name": "Tomatski",
+          "webUrl": "https://www.goodreads.com/user/show/85386442-tomatski"
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.8vF2LZ9vKU3Rk-IKcmMbWQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.8vF2LZ9vKU3Rk-IKcmMbWQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:85386442"
+          },
+          "viewerHasLiked": false,
+          "likeCount": 0,
+          "comments": {
+            "__typename": "ResourceCommentsConnection",
+            "totalCount": 0
+          },
+          "updatedAt": 1713821439333,
+          "text": null,
+          "rating": 5
+        },
+        "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA": {
+          "id": "kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA",
+          "__typename": "Shelving",
+          "book": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA"
+          },
+          "shelf": {
+            "__typename": "Shelf",
+            "name": "to-read",
+            "webUrl": "https://www.goodreads.com/review/list/85386442?shelf=to-read"
+          },
+          "taggings": [
+            {
+              "__typename": "Tagging",
+              "tag": {
+                "__typename": "Tag",
+                "name": "si",
+                "webUrl": "https://www.goodreads.com/review/list/85386442?shelf=si"
+              }
+            }
+          ],
+          "review": {
+            "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.8vF2LZ9vKU3Rk-IKcmMbWQ"
+          },
+          "webUrl": "https://www.goodreads.com/review/show/3903049305"
+        },
+        "Work:kca://work/amzn1.gr.work.v1.eWovcrNo1skEXEaFAISXhw": {
+          "id": "kca://work/amzn1.gr.work.v1.eWovcrNo1skEXEaFAISXhw",
+          "__typename": "Work",
+          "legacyId": 3216722,
+          "bestBook": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.VCwYHq2ZDUVNeUnO4YyjEA"
+          },
+          "choiceAwards": [],
+          "details": {
+            "__typename": "WorkDetails",
+            "webUrl": "https://www.goodreads.com/work/3216722-l-agent-212-tome-01-24-heures-sur-24",
+            "shelvesUrl": "https://www.goodreads.com/work/shelves/3216722-l-agent-212-tome-01-24-heures-sur-24",
+            "publicationTime": 347184000000,
+            "originalTitle": "L'Agent 212, Tome 01 : 24 heures sur 24",
+            "awardsWon": [],
+            "places": [],
+            "characters": []
+          },
+          "stats": {
+            "__typename": "BookOrWorkStats",
+            "averageRating": 3.9,
+            "ratingsCount": 315,
+            "ratingsCountDist": [
+              10,
+              12,
+              81,
+              108,
+              104
+            ],
+            "textReviewsCount": 27,
+            "textReviewsLanguageCounts": [
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 2,
+                "isoLanguageCode": "en"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 17,
+                "isoLanguageCode": "id"
+              }
+            ]
+          },
+          "quotes({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuotesConnection",
+            "webUrl": "https://www.goodreads.com/work/quotes/3216722",
+            "totalCount": 0
+          },
+          "questions({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuestionsConnection",
+            "totalCount": 0,
+            "webUrl": "https://www.goodreads.com/book/3183862/questions"
+          },
+          "topics({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceTopicsConnection",
+            "webUrl": "https://www.goodreads.com/topic/list_book/3183862",
+            "totalCount": 0
+          },
+          "viewerShelvings": [
+            {
+              "__ref": "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.-2t6CCUhYBdtGqH8ZgPluA"
+            }
+          ],
+          "viewerShelvingsUrl": "/review/user_works/3216722",
+          "featuredKNH": {
+            "__typename": "FeaturedKNHCollectionConnection",
+            "totalCount": 0,
+            "edges": []
+          },
+          "giveaways": null,
+          "editions": {
+            "__typename": "BooksConnection",
+            "webUrl": "https://www.goodreads.com/work/editions/3216722"
+          }
+        },
+        "Book:kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg": {
+          "id": "kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg",
+          "__typename": "Book",
+          "title": "Ο νόμος ποτέ δε κοιμάται...",
+          "titleComplete": "Ο νόμος ποτέ δε κοιμάται...",
+          "legacyId": 33838921,
+          "webUrl": "https://www.goodreads.com/book/show/33838921",
+          "description": "Indonesian edition of \u003ci\u003eBD Pirate : Agent 212, tome 1 : 24 heures sur 24\u003c/i\u003e",
+          "description({\"stripped\":true})": "Indonesian edition of BD Pirate : Agent 212, tome 1 : 24 heures sur 24",
+          "primaryContributorEdge": {
+            "__typename": "BookContributorEdge",
+            "node": {
+              "__ref": "Contributor:kca://author/amzn1.gr.author.v1.1RbENY4AqKI8T3nrC5UFig"
+            },
+            "role": "Writer"
+          },
+          "secondaryContributorEdges": [
+            {
+              "__typename": "BookContributorEdge",
+              "node": {
+                "__ref": "Contributor:kca://author/amzn1.gr.author.v1.Mj5pSFWLQ2kx79AWBbwKjQ"
+              },
+              "role": "Illustrator"
+            },
+            {
+              "__typename": "BookContributorEdge",
+              "node": {
+                "__ref": "Contributor:kca://author/amzn1.gr.author.v1.-Lt8L_FBzM2FB4B9JIPXag"
+              },
+              "role": "Translator"
+            }
+          ],
+          "imageUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1484161768i/33838921.jpg",
+          "bookSeries": [
+            {
+              "__typename": "BookSeries",
+              "userPosition": "1",
+              "series": {
+                "__ref": "Series:kca://series/amzn1.gr.series.v1.CQ98quBr8EY8uN-t_hpbbA"
+              }
+            }
+          ],
+          "bookGenres": [
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Comics",
+                "webUrl": "https://www.goodreads.com/genres/comics"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Komik",
+                "webUrl": "https://www.goodreads.com/genres/komik"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Bande Dessinée",
+                "webUrl": "https://www.goodreads.com/genres/bande-dessin%C3%A9e"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Indonesian Literature",
+                "webUrl": "https://www.goodreads.com/genres/indonesian-literature"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Humor",
+                "webUrl": "https://www.goodreads.com/genres/humor"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Comedy",
+                "webUrl": "https://www.goodreads.com/genres/comedy"
+              }
+            }
+          ],
+          "details": {
+            "__typename": "BookDetails",
+            "asin": "9604419196",
+            "format": "Paperback",
+            "numPages": 48,
+            "publicationTime": 1196496000000,
+            "publisher": "Modern Times",
+            "isbn": "9604419196",
+            "isbn13": "9789604419197",
+            "language": {
+              "__typename": "Language",
+              "name": "Greek, Modern (1453-)"
+            }
+          },
+          "work": {
+            "__ref": "Work:kca://work/amzn1.gr.work.v1.eWovcrNo1skEXEaFAISXhw"
+          },
+          "reviewEditUrl": "https://www.goodreads.com/review/edit/33838921",
+          "featureFlags": {
+            "__typename": "FeatureFlags",
+            "hideAds": false,
+            "noIndex": false,
+            "noReviews": false,
+            "noNewRatings": false,
+            "noNewTextReviews": false
+          },
+          "viewerShelving": {
+            "__ref": "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg"
+          },
+          "links({})": {
+            "__typename": "BookLinks",
+            "primaryAffiliateLink": {
+              "__typename": "BookLink",
+              "name": "Amazon UK",
+              "url": "http://www.amazon.co.uk/gp/product/9604419196/ref=x_gr_bb_amazon?ie=UTF8\u0026tag=x_gr_bb_amazon-21\u0026linkCode=as2\u0026camp=1634\u0026creative=6738",
+              "ref": "x_gr_bb_amazon"
+            },
+            "secondaryAffiliateLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "AbeBooks",
+                "url": "http://affiliates.abebooks.com/c/64613/77416/2029?u=http%3A%2F%2Fwww.abebooks.co.uk%2Fservlet%2FSearchResults%3Fisbn%3D9604419196%26sts%3Dt",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Audible",
+                "url": "https://www.amazon.co.uk/s?k=%CE%9F+%CE%BD%CF%8C%CE%BC%CE%BF%CF%82+%CF%80%CE%BF%CF%84%CE%AD+%CE%B4%CE%B5+%CE%BA%CE%BF%CE%B9%CE%BC%CE%AC%CF%84%CE%B1%CE%B9...\u0026i=audible\u0026ref=x_gr_w_bb_audible-20\u0026tag=x_gr_w_bb_audible_uk-21",
+                "ref": "x_gr_bb_amazon"
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Kobo",
+                "url": "https://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=308967.1\u0026type=10\u0026tmpid=13778\u0026u1=x_gr_w_bb\u0026RD_PARM1=https%3A%2F%2Fwww.kobo.com%2Fgb%2Fen%2Fsearch%3FQuery%3D%CE%9F+%CE%BD%CF%8C%CE%BC%CE%BF%CF%82+%CF%80%CE%BF%CF%84%CE%AD+%CE%B4%CE%B5+%CE%BA%CE%BF%CE%B9%CE%BC%CE%AC%CF%84%CE%B1%CE%B9...",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Alibris",
+                "url": "http://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=189673.1\u0026type=10\u0026tmpid=939\u0026\u0026u1=x_gr_w_bb\u0026RD_PARM1=http%3A%2F%2Fwww.alibris.co.uk%2Fbooksearch%3Fkeyword%3D9604419196",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "iBooks",
+                "url": "https://geo.itunes.apple.com/gb/book/isbn9789604419197?at=11lvdC\u0026mt=11\u0026ls=1",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Indigo.ca",
+                "url": "http://www.kqzyfj.com/d3106vpyvpxCFFFKMHLCEDHGKMGHCEHDHMHLLIFDDD?url=https%3A%2F%2Fwww.chapters.indigo.ca%2Fen-ca%2Fhome%2Fsearch%2F%3Fkeywords%3D9604419196",
+                "ref": null
+              }
+            ],
+            "libraryLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "WorldCat",
+                "url": "http://www.worldcat.org/isbn/9604419196?loc=",
+                "ref": null
+              }
+            ],
+            "overflowPageUrl": "https://www.goodreads.com/book/33838921/get_a_copy",
+            "seriesLink": null
+          }
+        },
+        "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg": {
+          "id": "kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg",
+          "__typename": "Shelving",
+          "book": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v1.jYYSxNVyLz3wXWtSGYKjvg"
+          },
+          "shelf": {
+            "__typename": "Shelf",
+            "name": null,
+            "webUrl": null
+          },
+          "taggings": [],
+          "review": null,
+          "webUrl": null
+        },
+        "User:3148407": {
+          "id": 3148407,
+          "__typename": "User",
+          "legacyId": 3148407,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1424353457i/3148407._UX200_CR0,25,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 769,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Darnia",
+          "webUrl": "https://www.goodreads.com/user/show/3148407-darnia",
+          "contributor": null,
+          "followersCount": 112
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.KE6XeAobUpRZisoBZxAs5w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.KE6XeAobUpRZisoBZxAs5w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:3148407"
+          },
+          "recommendFor": null,
+          "updatedAt": 1472843320637,
+          "createdAt": 1455369888000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1455370187000,
+          "text": "*Baca vol 1-27 plus dua buku edisi tematik*\u003cbr /\u003eEmang bacaan yg pas saat otak udah kram. Kesablengan Pak Polisi Arthur Defouille beserta rekan-rekannya bikin ngakak gak tanggung-tanggung di mana aja, bahkan pak Komisaris sekalipun kalo tengilnya kumat (macam pas belio dateng ke pesta kostum pake tutu) juga segeran abis.\u003cbr /\u003e\u003cbr /\u003eThx to iJak yg menyediakan edisi lengkap untuk serial ini. Meski jadi lama khataminnya gegara hanya boleh pinjem 3 buku per hari, bacanya jadi disayang-sayang. Ditunggu serial macam ini yg lain yaa :)",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/3148407?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2016",
+                  "webUrl": "https://www.goodreads.com/review/list/3148407?shelf=2016"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "borrowed",
+                  "webUrl": "https://www.goodreads.com/review/list/3148407?shelf=borrowed"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "comic-and-graphic-novel",
+                  "webUrl": "https://www.goodreads.com/review/list/3148407?shelf=comic-and-graphic-novel"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ebooks",
+                  "webUrl": "https://www.goodreads.com/review/list/3148407?shelf=ebooks"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ijak-ipusnas-bookmate",
+                  "webUrl": "https://www.goodreads.com/review/list/3148407?shelf=ijak-ipusnas-bookmate"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "series",
+                  "webUrl": "https://www.goodreads.com/review/list/3148407?shelf=series"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/1546959331"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:26538700": {
+          "id": 26538700,
+          "__typename": "User",
+          "legacyId": 26538700,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1470285762i/26538700._UY200_CR49,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 69,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Lia Agustin",
+          "webUrl": "https://www.goodreads.com/user/show/26538700-lia-agustin",
+          "contributor": null,
+          "followersCount": 14
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.eVUWig1XEcUB37TbvMN3ZQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.eVUWig1XEcUB37TbvMN3ZQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:26538700"
+          },
+          "recommendFor": null,
+          "updatedAt": 1477155366741,
+          "createdAt": 1468567194000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1469172022000,
+          "text": "Si polisinya gemesin!! Mayan kocak, apalagi pas beliau sering banget ketemu kakek-kakek yang kepingin banget bunuh diri. Mungkin saking kepenginnya udah mendarah daging. Cara yang dipake mulai dari lompat dari atap sampe pura-pura jadi kelinci biar ditembak sama pemburu (INI CARA FAVE GW). Dan alhasil sang Agen Polisi 212 selalu menggagalkannya, dan ikut-ikutan babak belur juga HAHAHA. \u003cbr /\u003e\u003cbr /\u003eJadi mau lanjut baca series yang berikut-berikutnya x) untung di Ijak lengkap. Top deh!",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/26538700?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ebook",
+                  "webUrl": "https://www.goodreads.com/review/list/26538700?shelf=ebook"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "comic",
+                  "webUrl": "https://www.goodreads.com/review/list/26538700?shelf=comic"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "i-borrowed",
+                  "webUrl": "https://www.goodreads.com/review/list/26538700?shelf=i-borrowed"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ijak-ijog-ipusnas",
+                  "webUrl": "https://www.goodreads.com/review/list/26538700?shelf=ijak-ijog-ipusnas"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/1698754287"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:370161": {
+          "id": 370161,
+          "__typename": "User",
+          "legacyId": 370161,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1440494890i/370161._UX200_CR0,46,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 167,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Kerlip Bintang",
+          "webUrl": "https://www.goodreads.com/user/show/370161-kerlip-bintang",
+          "contributor": null,
+          "followersCount": 39
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.k_3lYBFh8XIsar2d0TWcrQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.k_3lYBFh8XIsar2d0TWcrQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:370161"
+          },
+          "recommendFor": null,
+          "updatedAt": 1472006462506,
+          "createdAt": 1269341356000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1269341490000,
+          "text": "eta polisi teh meni bolohoooo pisan.\u003cbr /\u003edugi ka lulunggu baca jadi cenghar da hoyong ngabarakataks seurii..\u003cbr /\u003egusti.. nepi ka kieu.. =))",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/370161?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "cilik",
+                  "webUrl": "https://www.goodreads.com/review/list/370161?shelf=cilik"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "komik",
+                  "webUrl": "https://www.goodreads.com/review/list/370161?shelf=komik"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "kocak-abiz",
+                  "webUrl": "https://www.goodreads.com/review/list/370161?shelf=kocak-abiz"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "agen-polisi-212",
+                  "webUrl": "https://www.goodreads.com/review/list/370161?shelf=agen-polisi-212"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/95339625"
+          },
+          "likeCount": 1,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:14725815": {
+          "id": 14725815,
+          "__typename": "User",
+          "legacyId": 14725815,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1735806256i/14725815._UX200_CR0,92,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 272,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Neneng Lestari",
+          "webUrl": "https://www.goodreads.com/user/show/14725815-neneng-lestari",
+          "contributor": null,
+          "followersCount": 1
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.-qQoRw92pieneGVCcsKzCQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.-qQoRw92pieneGVCcsKzCQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:14725815"
+          },
+          "recommendFor": null,
+          "updatedAt": 1486338144824,
+          "createdAt": 1486338024140,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1486338144184,
+          "text": "Ada yang lucu dari komik ini. Disini ada kakek-kakek yang obsesi sekali ingin bunuh diri. Kebalikan dari Athur yang terobsesi untuk menyelamatkan kakek-kakek tersebut. Banyak kejadian lucu tentang mereka berdua dalam novel ini, dan kadang-kadang endingnya nggak ketebak sama sekali. Dan itulah yang bikin aku terus pengen baca dan baca komik ini. Paling suka itu ketika Athur udah bela-belain nyelamatin kakek itu, eh malah Athut ketiban sial. Dan ia berjanji akan menembak kakek tersebut. \u003cbr /\u003e\u003cbr /\u003eTau apa jawaban kakek itu? Baca sendiri. Dijamin seru!! Cerita lain juga nggak kalah seru. Hampir sebagian sih menceritakan kemalangan Athur. Paling suka dengan orang asing yang dia temui di jalan. Eh nggak taunya haha.\u003cbr /\u003e\u003cbr /\u003eIntinya sih komik ini enak buat dijadikan teman baca di waktu senggang, halaman tipis, gambar bewarna dan ceritanya kreatif. Nggak melulu itu-itu aja ceritanya.\u003cbr /\u003e\u003cbr /\u003eFull Review: \u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"http://ntarienovrizal.blogspot.com/2017/01/review-komik-agen-polisi-212-24-jam.html\"\u003ehttp://ntarienovrizal.blogspot.com/20...\u003c/a\u003e",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/14725815?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/1889808050"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:23721325": {
+          "id": 23721325,
+          "__typename": "User",
+          "legacyId": 23721325,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1378485387i/23721325.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 274,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Renov Rainbow",
+          "webUrl": "https://www.goodreads.com/user/show/23721325-renov-rainbow",
+          "contributor": null,
+          "followersCount": 2
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.577vo_wT-0nCo0B6eJeCpA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.577vo_wT-0nCo0B6eJeCpA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:23721325"
+          },
+          "recommendFor": null,
+          "updatedAt": 1622565321662,
+          "createdAt": 1622565220219,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1622565321662,
+          "text": "Edisi pertama yang lucu banget dan berhasil memikat pembaca untuk baca edisi Agen Polisi 212 yang lain.\u003cbr /\u003e\u003cbr /\u003eDibandingkan edisi yang lainnya, komik Agen Polisi 212 Siang dan Malam menampilkan cerita dengan si Kakek Suicidal Man lebih banyak. Termasuk cerita yang buat saya paling lucu yaitu So-Sial? dan Balon Udara.\u003cbr /\u003e\u003cbr /\u003eReview lengkapnya bisa baca disini: \u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"https://www.renovreviewnovel.my.id/2021/06/agen-polisi-212-siang-dan-malam.html\"\u003ehttps://www.renovreviewnovel.my.id/20...\u003c/a\u003e\u003cbr /\u003e\u003cbr /\u003e56-2021",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/23721325?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "comics-graphicnovel-illustratedbook",
+                  "webUrl": "https://www.goodreads.com/review/list/23721325?shelf=comics-graphicnovel-illustratedbook"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "in-der-zeit-von-corona",
+                  "webUrl": "https://www.goodreads.com/review/list/23721325?shelf=in-der-zeit-von-corona"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "finish-in-2021",
+                  "webUrl": "https://www.goodreads.com/review/list/23721325?shelf=finish-in-2021"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3220139463"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:13884563": {
+          "id": 13884563,
+          "__typename": "User",
+          "legacyId": 13884563,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1629160573i/13884563._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 860,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "raafi",
+          "webUrl": "https://www.goodreads.com/user/show/13884563-raafi",
+          "contributor": null,
+          "followersCount": 443
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.PXyE9vVrnM7KieyyfZwjTw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.PXyE9vVrnM7KieyyfZwjTw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:13884563"
+          },
+          "recommendFor": null,
+          "updatedAt": 1480923395640,
+          "createdAt": 1480923159885,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1480923395640,
+          "text": "Baca di \u003ca href=\"https://www.getscoop.com/id/buku/seri-agen-polisi-212-no-1-24-jam-sehari\" rel=\"nofollow noopener\"\u003eSCOOP\u003c/a\u003e.\u003cbr /\u003e\u003cbr /\u003eSebenarnya baca untuk jadi bahan tulis. Tapi karena tipis dan lucu dan penuh gambar dan gambarnya juga berwarna, akhirnya baca sampai selesai.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/13884563?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "terjemahan",
+                  "webUrl": "https://www.goodreads.com/review/list/13884563?shelf=terjemahan"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "digital-ebook",
+                  "webUrl": "https://www.goodreads.com/review/list/13884563?shelf=digital-ebook"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/1830216394"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:4712004": {
+          "id": 4712004,
+          "__typename": "User",
+          "legacyId": 4712004,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1308823669i/4712004._UX200_CR0,6,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 515,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Kristiana",
+          "webUrl": "https://www.goodreads.com/user/show/4712004-kristiana",
+          "contributor": null,
+          "followersCount": 22
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.etcHKp-EFx8EqaqeK2_4-g": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.etcHKp-EFx8EqaqeK2_4-g",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:4712004"
+          },
+          "recommendFor": null,
+          "updatedAt": 1576657068869,
+          "createdAt": 1576656981128,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1576657068637,
+          "text": "Dalam rangka ngejar RC, haha.. Mari kita baca komik, wkwk",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/4712004?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2019",
+                  "webUrl": "https://www.goodreads.com/review/list/4712004?shelf=2019"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3089829969"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:2586990": {
+          "id": 2586990,
+          "__typename": "User",
+          "legacyId": 2586990,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1421429137i/2586990._CR0,24,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1736,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Tetty Marlinda",
+          "webUrl": "https://www.goodreads.com/user/show/2586990-tetty-marlinda",
+          "contributor": null,
+          "followersCount": 46
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.spC4Fe3fQqMKtBRxQqEAGA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.spC4Fe3fQqMKtBRxQqEAGA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:2586990"
+          },
+          "recommendFor": null,
+          "updatedAt": 1615880375592,
+          "createdAt": 1615880356043,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1615880375377,
+          "text": "#54 - 2021\u003cbr /\u003eGenre: Euro Comic",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/2586990?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "euro-comic",
+                  "webUrl": "https://www.goodreads.com/review/list/2586990?shelf=euro-comic"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "e-book",
+                  "webUrl": "https://www.goodreads.com/review/list/2586990?shelf=e-book"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2021",
+                  "webUrl": "https://www.goodreads.com/review/list/2586990?shelf=2021"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/1799557747"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:353227": {
+          "id": 353227,
+          "__typename": "User",
+          "legacyId": 353227,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1736494621i/353227._UX200_CR0,26,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 484,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Aleetha",
+          "webUrl": "https://www.goodreads.com/user/show/353227-aleetha",
+          "contributor": null,
+          "followersCount": 29
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.AJLHNN9Zjbvaa-oxAfkn7A": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.AJLHNN9Zjbvaa-oxAfkn7A",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:353227"
+          },
+          "recommendFor": null,
+          "updatedAt": 1609464334556,
+          "createdAt": 1609370177986,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1609370305310,
+          "text": "Found many words to describe this policeman. ",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/353227?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "read-in-2020",
+                  "webUrl": "https://www.goodreads.com/review/list/353227?shelf=read-in-2020"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ipusnas",
+                  "webUrl": "https://www.goodreads.com/review/list/353227?shelf=ipusnas"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ebook",
+                  "webUrl": "https://www.goodreads.com/review/list/353227?shelf=ebook"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3728562699"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:961370": {
+          "id": 961370,
+          "__typename": "User",
+          "legacyId": 961370,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1240830448i/961370.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 220,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Miss Kodok",
+          "webUrl": "https://www.goodreads.com/user/show/961370-miss-kodok",
+          "contributor": null,
+          "followersCount": 18
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.EPsnfDELWOWhR6rftXLYFA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.EPsnfDELWOWhR6rftXLYFA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:961370"
+          },
+          "recommendFor": null,
+          "updatedAt": 1491980507784,
+          "createdAt": 1327025084000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1327042119000,
+          "text": "Lucuuuuu !!!\u003cbr\u003e\u003cbr\u003eBacaan yang benar-benar menghibur.\u003cbr\u003eArthur adalah seorang agen polisi dengan kode 212 (jadi ingat tokoh lokal Wiro Sableng dengan senjatanya Kapak 212) dan saya pikir kedua tokoh ini memiliki satu kesamaan, yaitu: sableng !!\u003cbr\u003e\u003cbr\u003eTugas seorang agen polisi memang tidaklah mudah. Mereka harus tetap siaga selama 24 jam untuk menjalankan tugas. Tugasnya tentu bermacam-macam, dari menangani keributan di malam hari yang sangat mengganggu, orang gila yang lari dari Rumah Sakit Jiwa, kesalahan dalam berkomunikasi, pencuri sepeda, bayi yang terpisah dari ibunya, menilang pengendara yang suka seenaknya sampai menangani seseorang yang begitu sangat ingin melakukan bunuh diri dengan berbagai macam cara.\u003cbr\u003e\u003cbr\u003eCerita dalam buku-1 yang paling saya sukai adalah cerita dengan judul \"Balon\". Dimana dikisahkan sanga agen menangani kasus usaha bunuh diri di atas balon udara.\u003cbr\u003e\u003cbr\u003eBuku ini benar-benar membuat saya tampak seperti orang yang kurang waras karena tertawa-tawa sendiri.\u003cbr\u003e\u003cbr\u003eSukaaaaa bangeeeetss !! \u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1380327881i/691562.gif\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/961370?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "buku-beli",
+                  "webUrl": "https://www.goodreads.com/review/list/961370?shelf=buku-beli"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "mykids-shelf",
+                  "webUrl": "https://www.goodreads.com/review/list/961370?shelf=mykids-shelf"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/264716293"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:165573": {
+          "id": 165573,
+          "__typename": "User",
+          "legacyId": 165573,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1244790500i/165573._UX200_CR0,46,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 184,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Sam",
+          "webUrl": "https://www.goodreads.com/user/show/165573-sam",
+          "contributor": null,
+          "followersCount": 17
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.pANCppKXfaeY96Kbz6OM2g": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.pANCppKXfaeY96Kbz6OM2g",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:165573"
+          },
+          "recommendFor": null,
+          "updatedAt": 1473359766247,
+          "createdAt": 1278478251000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1278480840000,
+          "text": "kalian dateng ramean...!! thx to Pra :)\u003cbr /\u003e\u003cbr /\u003epolisi bertugas 24 jam sehari, dari mulai mengatur lalu lintas, menjaga bayi yang tertinggal di muka toko, hingga keheningan di malam hari agar orang bisa istirahat dengan tenang.. dan yg juga tak kalah penting, mengawasi orang-orang gila yg begitu eager to commit suicide -- benar-benar tidak boleh dibiarkan!!\u003cbr /\u003e\u003cbr /\u003e\"Nah, nw i know wat u guys made of.. something flammable,\"",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/165573?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "comic-and-graphic",
+                  "webUrl": "https://www.goodreads.com/review/list/165573?shelf=comic-and-graphic"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/110371724"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:2256285": {
+          "id": 2256285,
+          "__typename": "User",
+          "legacyId": 2256285,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1280567888i/2256285._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 146,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Hannah",
+          "webUrl": "https://www.goodreads.com/user/show/2256285-hannah",
+          "contributor": null,
+          "followersCount": 6
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.78toSw1pwXhSvGeZhHrfRQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.78toSw1pwXhSvGeZhHrfRQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:2256285"
+          },
+          "recommendFor": null,
+          "updatedAt": 1471026201337,
+          "createdAt": 1314253866000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1453304931000,
+          "text": "I've been rereading all the Agent 212 comics, and I just love them. They're my favourite gag strips of all time. There's a bit of disturbing conservatism in it, of course, but it's easy to overlook: just look at his face! The facial expression are what makes this great; I laughed out loud so many times, it's ridiculous. I want a big print of the shocked/amused/scared/angry face of Agent 212 to hang on the wall at work, it would make the working life 10 times better.",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/2256285?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "frankrijk",
+                  "webUrl": "https://www.goodreads.com/review/list/2256285?shelf=frankrijk"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "strips",
+                  "webUrl": "https://www.goodreads.com/review/list/2256285?shelf=strips"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "jaren1980",
+                  "webUrl": "https://www.goodreads.com/review/list/2256285?shelf=jaren1980"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/201980660"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:2952124": {
+          "id": 2952124,
+          "__typename": "User",
+          "legacyId": 2952124,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1363942944i/2952124._UY200_CR59,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 139,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "me.lita",
+          "webUrl": "https://www.goodreads.com/user/show/2952124-me-lita",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Qwv8yrTUh3ctyUKXAS66SA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.Qwv8yrTUh3ctyUKXAS66SA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:2952124"
+          },
+          "recommendFor": null,
+          "updatedAt": 1469164003369,
+          "createdAt": 1320653872000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1320734053000,
+          "text": "pertama kali liat komik ini ada di zona diskon-nya gramed-BIP,, langsung deh dicomot.. kirain harganya di diskon eh ternyata nggak.. \u003cbr /\u003e\u003cbr /\u003ehmm.. pas mulai baca komiknya... haduhhh.. aseli bikin ngakak.. apalagi cerita2 tentang agen 212 vs kakek yg mau bunuh diri.. *langsung deh jatuh hati sama si agen polisi 212.. sebanding lah harga sama kualitas bukunya.. eh tapi kalo di diskon kayaknya lebih maknyus dehhh... :)",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/2952124?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "bikin-ngakak",
+                  "webUrl": "https://www.goodreads.com/review/list/2952124?shelf=bikin-ngakak"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "kartun",
+                  "webUrl": "https://www.goodreads.com/review/list/2952124?shelf=kartun"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "punya",
+                  "webUrl": "https://www.goodreads.com/review/list/2952124?shelf=punya"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/232272824"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:1604173": {
+          "id": 1604173,
+          "__typename": "User",
+          "legacyId": 1604173,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1352385610i/1604173._UX200_CR0,16,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 13362,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Indah Threez Lestari",
+          "webUrl": "https://www.goodreads.com/user/show/1604173-indah-threez-lestari",
+          "contributor": null,
+          "followersCount": 262
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.fsM3fV5CQrZ4PG660-Q7Zg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.fsM3fV5CQrZ4PG660-Q7Zg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:1604173"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490485106901,
+          "createdAt": 1267728601000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1446949240000,
+          "text": "#Program BUBU\u003cbr /\u003e\u003cbr /\u003ePertama kali dibeli dan dibaca pada tanggal 3 Maret 2010.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/1604173?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "indonesian",
+                  "webUrl": "https://www.goodreads.com/review/list/1604173?shelf=indonesian"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "eurocomic",
+                  "webUrl": "https://www.goodreads.com/review/list/1604173?shelf=eurocomic"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "beli-ulang-baca-ulang",
+                  "webUrl": "https://www.goodreads.com/review/list/1604173?shelf=beli-ulang-baca-ulang"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "punya",
+                  "webUrl": "https://www.goodreads.com/review/list/1604173?shelf=punya"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/92480661"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:2041408": {
+          "id": 2041408,
+          "__typename": "User",
+          "legacyId": 2041408,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1348628825i/2041408._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 40,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "sastrapertala",
+          "webUrl": "https://www.goodreads.com/user/show/2041408-sastrapertala",
+          "contributor": null,
+          "followersCount": 12
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.03d9rhObHaMmHU7Et_BQtg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.03d9rhObHaMmHU7Et_BQtg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:2041408"
+          },
+          "recommendFor": null,
+          "updatedAt": 1473626595375,
+          "createdAt": 1274074493000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1274074558000,
+          "text": "hhahahahaha... kocakkk gila! kmrn beli di ambas mahal juga, @30.000.. duhh.. ad yg punya nggak nomer yg laen? pengin pinjemmm :P",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/2041408?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/103094303"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 8
+        },
+        "User:1433723": {
+          "id": 1433723,
+          "__typename": "User",
+          "legacyId": 1433723,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1590027664i/1433723._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 21,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Firda",
+          "webUrl": "https://www.goodreads.com/user/show/1433723-firda",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.L1NooW12OILJ_C5QvJWb5g": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.L1NooW12OILJ_C5QvJWb5g",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:1433723"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490392460954,
+          "createdAt": 1278756625000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1278756874000,
+          "text": "Lucu.. Masih ada 8 lagi serial y must have..gramed dah keluarin smua blm ya",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/1433723?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/110924318"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:3988686": {
+          "id": 3988686,
+          "__typename": "User",
+          "legacyId": 3988686,
+          "imageUrlSquare": "",
+          "isAuthor": false,
+          "textReviewsCount": 1,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Puteri Saraswati",
+          "webUrl": "https://www.goodreads.com/user/show/3988686-puteri-saraswati",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.5ZgYWW2Rj_r3PyakBoIejg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.5ZgYWW2Rj_r3PyakBoIejg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:3988686"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490315053965,
+          "createdAt": 1278763050000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1278763111000,
+          "text": "Lucu.. bisa ngilangin stress ato malah tambah bikin stress yach ?",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/3988686?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/110928179"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.Ek6PdME2KhtWHGNunL10Ig": {
+          "id": "kca://author/amzn1.gr.author.v1.Ek6PdME2KhtWHGNunL10Ig",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 80
+          }
+        },
+        "User:425310": {
+          "id": 425310,
+          "__typename": "User",
+          "legacyId": 425310,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1512438439i/425310._UX200_CR0,77,200,200_.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 88,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Dina Begum",
+          "webUrl": "https://www.goodreads.com/user/show/425310-dina-begum",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.Ek6PdME2KhtWHGNunL10Ig"
+          },
+          "followersCount": 55
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.QiKyv-LqlYOVard4XVr-ig": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.QiKyv-LqlYOVard4XVr-ig",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:425310"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490659532285,
+          "createdAt": 1295571382000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1295571433000,
+          "text": "Lucu banget, ngakak dari awal sampai akhir.",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/425310?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/142339416"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:1454002": {
+          "id": 1454002,
+          "__typename": "User",
+          "legacyId": 1454002,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1401382181i/1454002._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1981,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "cindy",
+          "webUrl": "https://www.goodreads.com/user/show/1454002-cindy",
+          "contributor": null,
+          "followersCount": 149
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.6Nb4l8uytcmx0wr808e1qA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.6Nb4l8uytcmx0wr808e1qA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:1454002"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490341050300,
+          "createdAt": 1314102062000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1453550857000,
+          "text": "Hihihiii......\u003cbr /\u003ePolisinya, sama orang yg mo bunuh diri, sama sablengnya :D ",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/1454002?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "indonesian",
+                  "webUrl": "https://www.goodreads.com/review/list/1454002?shelf=indonesian"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "gn-polisi-212",
+                  "webUrl": "https://www.goodreads.com/review/list/1454002?shelf=gn-polisi-212"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/201347023"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:824683": {
+          "id": 824683,
+          "__typename": "User",
+          "legacyId": 824683,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1421154249i/824683._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 231,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Iyut",
+          "webUrl": "https://www.goodreads.com/user/show/824683-iyut",
+          "contributor": null,
+          "followersCount": 26
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.quauOu6CWKpWPoKKwPsV6Q": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.quauOu6CWKpWPoKKwPsV6Q",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:824683"
+          },
+          "recommendFor": null,
+          "updatedAt": 1466694380201,
+          "createdAt": 1351853008000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1351853414000,
+          "text": "lucuu X))\u003cbr /\u003esalah satu kutipan dari komik ini: \"Kalau mau ganteng memang harus menderita dulu\"\u003cbr /\u003eTuuuh! *tunjukin ke #nomention*",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/824683?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "indonesian",
+                  "webUrl": "https://www.goodreads.com/review/list/824683?shelf=indonesian"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "comic",
+                  "webUrl": "https://www.goodreads.com/review/list/824683?shelf=comic"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "not-mine",
+                  "webUrl": "https://www.goodreads.com/review/list/824683?shelf=not-mine"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/446754418"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:8941350": {
+          "id": 8941350,
+          "__typename": "User",
+          "legacyId": 8941350,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1558592642i/8941350._UY200_CR77,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 9,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Iis Mayleni",
+          "webUrl": "https://www.goodreads.com/user/show/8941350-iis-mayleni",
+          "contributor": null,
+          "followersCount": 2
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.sL-xjmbzIJe_TerAoKs49w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.sL-xjmbzIJe_TerAoKs49w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:8941350"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490570460084,
+          "createdAt": 1377143123000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1377143152000,
+          "text": "funny",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/8941350?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/700920542"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:4110853": {
+          "id": 4110853,
+          "__typename": "User",
+          "legacyId": 4110853,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1727330927i/4110853._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 3351,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Lelyana's Reviews",
+          "webUrl": "https://www.goodreads.com/user/show/4110853-lelyana-s-reviews",
+          "contributor": null,
+          "followersCount": 389
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.cTC44f9wwrq1-RpNqsnRSQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.cTC44f9wwrq1-RpNqsnRSQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:4110853"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490399583315,
+          "createdAt": 1389453135000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1389453174000,
+          "text": "\u003cbr /\u003eSoooo funny!!!!",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/4110853?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "comics",
+                  "webUrl": "https://www.goodreads.com/review/list/4110853?shelf=comics"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/820101724"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:42871847": {
+          "id": 42871847,
+          "__typename": "User",
+          "legacyId": 42871847,
+          "imageUrlSquare": "",
+          "isAuthor": false,
+          "textReviewsCount": 1,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Sonya",
+          "webUrl": "https://www.goodreads.com/user/show/42871847-sonya",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.sItbGLGqE-fb4SqxZPxGKA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.sItbGLGqE-fb4SqxZPxGKA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:42871847"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490471595103,
+          "createdAt": 1431042508000,
+          "spoilerStatus": true,
+          "lastRevisionAt": 1431042596000,
+          "text": "its good book",
+          "rating": 0,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/42871847?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/1274513080"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:818730": {
+          "id": 818730,
+          "__typename": "User",
+          "legacyId": 818730,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1453439154i/818730._UY200_CR77,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 155,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Beby",
+          "webUrl": "https://www.goodreads.com/user/show/818730-beby",
+          "contributor": null,
+          "followersCount": 37
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.SuKYR7SqIs4cDVD8lbVXbw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.SuKYR7SqIs4cDVD8lbVXbw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:818730"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490564767132,
+          "createdAt": 1475163309420,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1475163382995,
+          "text": "Komik ini paling cocok dibaca kalo lg mumet. Ngakak trs dibikinnya ",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/818730?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/1771183999"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:44101860": {
+          "id": 44101860,
+          "__typename": "User",
+          "legacyId": 44101860,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1700625108i/44101860._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 808,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Utha",
+          "webUrl": "https://www.goodreads.com/user/show/44101860-utha",
+          "contributor": null,
+          "followersCount": 374
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.wdwaa8hlAxwa2AOZMsMdyQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.wdwaa8hlAxwa2AOZMsMdyQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:44101860"
+          },
+          "recommendFor": null,
+          "updatedAt": 1490505166149,
+          "createdAt": 1481253965205,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1481408738345,
+          "text": "Sekadar nggak klik sama humornya.\u003cbr /\u003eAtau mungkin karena \u003ci\u003emood\u003c/i\u003e gue jelek pas baca... Nanti dibaca ulang deh.",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/44101860?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/1834109100"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:879218": {
+          "id": 879218,
+          "__typename": "User",
+          "legacyId": 879218,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1684131467i/879218._UY200_CR50,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1536,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Nike Andaru",
+          "webUrl": "https://www.goodreads.com/user/show/879218-nike-andaru",
+          "contributor": null,
+          "followersCount": 103
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.RWsGizCi2SAftp2DV1YMew": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.RWsGizCi2SAftp2DV1YMew",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:879218"
+          },
+          "recommendFor": null,
+          "updatedAt": 1473535174333,
+          "createdAt": 1303222848000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1303229086000,
+          "text": "Beli yang nomer 1.\u003cbr /\u003eIni yg 1 pengen banget bunuh diri tapi Arthur selalu bisa diandalkan :D",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/879218?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "komik-novel-grafis",
+                  "webUrl": "https://www.goodreads.com/review/list/879218?shelf=komik-novel-grafis"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/162075082"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:12030639": {
+          "id": 12030639,
+          "__typename": "User",
+          "legacyId": 12030639,
+          "imageUrlSquare": "",
+          "isAuthor": false,
+          "textReviewsCount": 1,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Bianca",
+          "webUrl": "https://www.goodreads.com/user/show/12030639-bianca",
+          "contributor": null,
+          "followersCount": 0
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UbYoUx1hrbxlHdfqSxyp4w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.UbYoUx1hrbxlHdfqSxyp4w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:12030639"
+          },
+          "recommendFor": null,
+          "updatedAt": 1473505153911,
+          "createdAt": 1345429377000,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1345429417000,
+          "text": "Its funny\u003cbr /\u003e",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/12030639?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/395809133"
+          },
+          "likeCount": 0,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        }
+      },
+      "authContextParams": {
+        "signedIn": true,
+        "customerId": "A2TSKK3W6K2FR1",
+        "legacyCustomerId": 85386442,
+        "role": "user"
+      },
+      "userAgentContextParams": {
+        "isWebView": null
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
+    },
+    "__N_SSP": true
+  },
+  "page": "/book/show/[book_id]",
+  "query": {
+    "book_id": "33838921"
+  },
+  "buildId": "08wwXy1OZ3fVOX0Zzn6n7",
+  "runtimeConfig": {
+    "env": "Production"
+  },
+  "isFallback": false,
+  "gssp": true,
+  "customServer": true,
+  "locales": [
+    "en",
+    "ab",
+    "aa",
+    "af",
+    "ak",
+    "sq",
+    "am",
+    "ar",
+    "an",
+    "hy",
+    "as",
+    "av",
+    "ae",
+    "ay",
+    "az",
+    "bm",
+    "ba",
+    "eu",
+    "be",
+    "bn",
+    "bh",
+    "bi",
+    "bs",
+    "br",
+    "bg",
+    "my",
+    "ca",
+    "ch",
+    "ce",
+    "ceb",
+    "ny",
+    "zh",
+    "zh-TW",
+    "cv",
+    "kw",
+    "co",
+    "cr",
+    "hr",
+    "cs",
+    "da",
+    "dv",
+    "nl",
+    "eo",
+    "et",
+    "ee",
+    "fo",
+    "fj",
+    "fi",
+    "fr",
+    "ff",
+    "gl",
+    "ka",
+    "de",
+    "el",
+    "gn",
+    "gu",
+    "ht",
+    "ha",
+    "he",
+    "hz",
+    "hi",
+    "ho",
+    "hu",
+    "ia",
+    "id",
+    "ie",
+    "ilo",
+    "ga",
+    "ig",
+    "ik",
+    "io",
+    "is",
+    "it",
+    "iu",
+    "ja",
+    "jv",
+    "kl",
+    "kn",
+    "kr",
+    "ks",
+    "kk",
+    "km",
+    "ki",
+    "rw",
+    "ky",
+    "kv",
+    "kg",
+    "ko",
+    "ku",
+    "kj",
+    "la",
+    "lb",
+    "lg",
+    "li",
+    "ln",
+    "lo",
+    "lt",
+    "lu",
+    "lv",
+    "gv",
+    "mk",
+    "mg",
+    "ms",
+    "ml",
+    "mt",
+    "mi",
+    "mr",
+    "mh",
+    "mn",
+    "na",
+    "nv",
+    "nb",
+    "nd",
+    "ne",
+    "new",
+    "ng",
+    "nn",
+    "no",
+    "ii",
+    "nr",
+    "oc",
+    "oj",
+    "cu",
+    "om",
+    "or",
+    "os",
+    "pa",
+    "pi",
+    "fa",
+    "pl",
+    "ps",
+    "pt",
+    "qu",
+    "rm",
+    "rn",
+    "ro",
+    "ru",
+    "sa",
+    "sc",
+    "sd",
+    "se",
+    "sm",
+    "sg",
+    "sr",
+    "gd",
+    "sn",
+    "si",
+    "sk",
+    "sl",
+    "so",
+    "st",
+    "es",
+    "su",
+    "sw",
+    "ss",
+    "sv",
+    "ta",
+    "te",
+    "tg",
+    "th",
+    "ti",
+    "bo",
+    "tk",
+    "tl",
+    "tn",
+    "to",
+    "tr",
+    "ts",
+    "tt",
+    "tw",
+    "ty",
+    "ug",
+    "uk",
+    "ur",
+    "uz",
+    "ve",
+    "vi",
+    "vo",
+    "wa",
+    "cy",
+    "wo",
+    "fy",
+    "xh",
+    "yi",
+    "yo",
+    "za"
+  ]
+}

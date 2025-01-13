@@ -1,0 +1,2768 @@
+{
+  "props": {
+    "pageProps": {
+      "params": {
+        "book_id": "49867186-the-left-handed-booksellers-of-london"
+      },
+      "jwtToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImZSNXpfWTVjYXZQMllsaXU3eks0YUNJVEJPcVBWdGtxTE9XVURfV3dGOTQifQ.eyJpc3MiOiJodHRwczovL3d3dy5nb29kcmVhZHMuY29tIiwic3ViIjoia2NhOi8vcHJvZmlsZTpnb29kcmVhZHMvQTJUU0tLM1c2SzJGUjEiLCJhdWQiOiI2M2RjMjRlN2M2MTFlNmYxNzkyZjgxMzA1OGYyMTU2MGJkOGM2OTM4ZDU0YS5nb29kcmVhZHMuY29tIiwidXNlcl9pZCI6ODUzODY0NDIsInJvbGUiOiJ1c2VyIiwibm9uY2UiOm51bGwsImV4cCI6MTczNjYzMjcyOCwiaWF0IjoxNzM2NjMyNDI4fQ.XkSS1w09Jk2ALhEpyWAtvCrDhO9Wcd81iV-E_M_z6wF_jEjH1kmtq96EC2clovYN0MtRY3-Oq31cSllYfqOZdoQJduvGlbYi-Kh5J8yDxsb7UBDpFeSdrJSWUadC1dQTy-BEgUNDJsMvHMBLErVpJXTD2wl_KLhSW7QdEuMp-5fzLKGsBUZKZyAy7SIfOLdnuHTOyMJVF9t3VsZfyoJmmawBxA0QLNDsDza6GOIBGdHm_2cZOc8cWN0LpP52uZwBQ3AM6z5FBR9BZfnWqP5nZODl55mocE58sy5jG2lriFgvZFHNl-uN1By_sPsrUCUCqnnN7jMRxdDGp-NOjnSaew",
+      "dataSource": null,
+      "apolloState": {
+        "ROOT_QUERY": {
+          "__typename": "Query",
+          "getAdsTargeting({\"getAdsTargetingInput\":{\"contextual\":{}}})": {
+            "__typename": "AdsTargeting",
+            "behavioral": {
+              "__typename": "BehavioralTargeting",
+              "adGroupNames": [],
+              "age": "null",
+              "authors": [
+                "115105",
+                "13778",
+                "3619",
+                "27944",
+                "10089",
+                "218173"
+              ],
+              "blockedAuthors": [],
+              "gender": "null",
+              "genres": [
+                "117",
+                "1",
+                "144",
+                "411",
+                "64",
+                "103",
+                "1049",
+                "24",
+                "97",
+                "107",
+                "921",
+                "1221",
+                "1110",
+                "3043",
+                "6537",
+                "106",
+                "1276",
+                "68",
+                "160",
+                "926",
+                "2046",
+                "2286",
+                "2614",
+                "2784",
+                "2996",
+                "3045",
+                "3145",
+                "11766"
+              ],
+              "userTargetingSettings": {
+                "__typename": "UserTargetingSettings",
+                "allowBehavioralTargeting": true
+              }
+            },
+            "contextual": null
+          },
+          "getSiteHeaderBanner": {
+            "__typename": "SiteHeaderBanner",
+            "altText": "Join the 2025 Goodreads Reading Challenge",
+            "clickthroughUrl": "https://www.goodreads.com/readingchallenges?ref=rc_jan_25_ss",
+            "desktop1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122011i/485.jpg",
+            "desktop2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122016i/486.jpg",
+            "mobile1xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122022i/487.jpg",
+            "mobile2xPhoto": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/siteheaderbannerimages/1734122027i/488.jpg",
+            "siteStripColor": "#23606E"
+          },
+          "getBookByLegacyId({\"legacyId\":\"49867186\"})": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F"
+          },
+          "getPageBanner({\"getPageBannerInput\":{\"id\":\"kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F\",\"pageName\":\"book_show\"}})": {
+            "__typename": "PageBanner",
+            "type": null,
+            "message": null
+          },
+          "getReviews": {
+            "__typename": "BookReviewsConnection",
+            "totalCount": 3520,
+            "edges": [
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Q76k35doU5xrgXogsQYdNg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.3-vah4vNbVTLbaupyzLvLQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.FGaj35WqpKsslN3mtLOvaA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.DAwgBUMRF7jXbcqU5KTb5A"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.WzvWx5JkzOvqgTWZ2moBLQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.5Kzc8WsXqm9OdEhUu04jPA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.62RMpnR1rFSRqWAY3wHQDg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UbOOKz4Awm9gOKFESZssaw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.K-PkK0jmEImz3bkbirTqKg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.C5GtRpYwtkfRY7yNFgytnw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.lJuICF_np91G2vPMtQihew"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.g65L4neF-fI5shUEgU2tDA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Hb-FZYgFaAvErBwEgD4FKg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.EVqsQ41D1ueQEcapOJvHRw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ysxQrUPEdEr09MGwVlvyqw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.2BQYu1b-UrAvkseVb3Fggg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.l7Y1lKq1a5V9i85oWnz8hg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.bQZyVKPkFzxOjuw2HzDsbQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.N8FGkp606QdSxXr9bFvolQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.-ZCh9kky8bjR3P2G7jUJtA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.WQyirZljF3d-rnSE0OkyuQ"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.C3sjLK8BIZbSmvSmfJ9DeA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.nHEjuidyseaF3zmJw_l3Mg"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.fMKy3IKNNI1CnJwGRshM1w"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1._LAWR5VIEYEop6DH2F-bxw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.0baKb-NnNZUBN2rHnoaiDw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.3YEO5tA_dn0cC2E91-XhgA"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.dKVdk1dKOqiNQW_OYHXEYw"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.SCIluIL8enKhGHr4CUUV4g"
+                }
+              },
+              {
+                "__typename": "BookReviewsEdge",
+                "node": {
+                  "__ref": "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ptN8oLQUct3lX6ugn-3LQQ"
+                }
+              }
+            ],
+            "pageInfo": {
+              "__typename": "PageInfo",
+              "prevPageToken": "MjQ4MjEsMTU5OTEyODM0MDM4Mw",
+              "nextPageToken": "MTYxMywxNTkzOTcyMzE3MTk2"
+            }
+          }
+        },
+        "User:6163070": {
+          "id": 6163070,
+          "__typename": "User",
+          "legacyId": 6163070,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "followersCount": 14618
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.Z9DCtvPd410kkKtYykfu7Q": {
+          "id": "kca://author/amzn1.gr.author.v1.Z9DCtvPd410kkKtYykfu7Q",
+          "__typename": "Contributor",
+          "legacyId": 8347,
+          "name": "Garth Nix",
+          "description": "Garth Nix was born in 1963 in Melbourne, Australia, to the sound of the Salvation Army band outside playing 'Hail the Conquering Hero Comes' or possibly 'Roll Out the Barrel'. Garth left Melbourne at an early age for Canberra (the federal capital) and stayed there till he was nineteen, when he left to drive around the UK in a beat-up Austin with a boot full of books and a Silver-Reed typewriter.\u003cbr /\u003e\u003cbr /\u003eDespite a wheel literally falling off the Austin, Garth survived to return to Australia and study at the University of Canberra. After finishing his degree in 1986 he worked in a bookshop, then as a book publicist, a publisher's sales representative, and editor. Along the way he was also a part-time soldier in the Australian Army Reserve, serving in an Assault Pioneer platoon for four years. Garth left publishing to work as a public relations and marketing consultant from 1994-1997, till he became a full-time writer in 1998. He did that for a year before joining Curtis Brown Australia as a part-time literary agent in 1999. In January 2002 Garth went back to dedicated writer again, despite his belief that full-time writing explains the strange behaviour of many authors.\u003cbr /\u003e\u003cbr /\u003eHe now lives in Sydney with his wife, two sons and lots of books. \u003cbr /\u003e",
+          "isGrAuthor": true,
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 213
+          },
+          "profileImageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/nophoto/user/u_700x933.png",
+          "webUrl": "https://www.goodreads.com/author/show/8347.Garth_Nix",
+          "user": {
+            "__ref": "User:6163070"
+          },
+          "viewerIsFollowing": null,
+          "followers": {
+            "__typename": "ContributorFollowersConnection",
+            "totalCount": 14618
+          }
+        },
+        "Series:kca://series/amzn1.gr.series.v3.wco4CFsdKEwK2-Zv": {
+          "id": "kca://series/amzn1.gr.series.v3.wco4CFsdKEwK2-Zv",
+          "__typename": "Series",
+          "title": "Left-Handed Booksellers of London",
+          "webUrl": "https://www.goodreads.com/series/333313-left-handed-booksellers-of-london"
+        },
+        "Book:kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F": {
+          "id": "kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F",
+          "__typename": "Book",
+          "legacyId": 49867186,
+          "webUrl": "https://www.goodreads.com/book/show/49867186-the-left-handed-booksellers-of-london",
+          "title": "The Left-Handed Booksellers of London",
+          "titleComplete": "The Left-Handed Booksellers of London (Left-Handed Booksellers of London, #1)",
+          "description": "\u003cstrong\u003eA girl’s quest to find her father leads her to an extended family of magical fighting booksellers who police the mythical Old World of England when it intrudes on the modern world. From the bestselling master of teen fantasy, Garth Nix.\u003c/strong\u003e\u003cbr /\u003e\u003cbr /\u003eIn a slightly alternate London in 1983, Susan Arkshaw is looking for her father, a man she has never met. Crime boss Frank Thringley might be able to help her, but Susan doesn’t get time to ask Frank any questions before he is turned to dust by the prick of a silver hatpin in the hands of the outrageously attractive Merlin.\u003cbr /\u003e\u003cbr /\u003eMerlin is a young left-handed bookseller (one of the fighting ones), who with the right-handed booksellers (the intellectual ones), are an extended family of magical beings who police the mythic and legendary Old World when it intrudes on the modern world, in addition to running several bookshops.\u003cbr /\u003e\u003cbr /\u003eSusan’s search for her father begins with her mother’s possibly misremembered or misspelt surnames, a reading room ticket, and a silver cigarette case engraved with something that might be a coat of arms.\u003cbr /\u003e\u003cbr /\u003eMerlin has a quest of his own, to find the Old World entity who used ordinary criminals to kill his mother. As he and his sister, the right-handed bookseller Vivien, tread in the path of a botched or covered-up police investigation from years past, they find this quest strangely overlaps with Susan’s. Who or what was her father? Susan, Merlin, and Vivien must find out, as the Old World erupts dangerously into the New.",
+          "description({\"stripped\":true})": "A girl’s quest to find her father leads her to an extended family of magical fighting booksellers who police the mythical Old World of England when it intrudes on the modern world. From the bestselling master of teen fantasy, Garth Nix.\r\n\r\nIn a slightly alternate London in 1983, Susan Arkshaw is looking for her father, a man she has never met. Crime boss Frank Thringley might be able to help her, but Susan doesn’t get time to ask Frank any questions before he is turned to dust by the prick of a silver hatpin in the hands of the outrageously attractive Merlin.\r\n\r\nMerlin is a young left-handed bookseller (one of the fighting ones), who with the right-handed booksellers (the intellectual ones), are an extended family of magical beings who police the mythic and legendary Old World when it intrudes on the modern world, in addition to running several bookshops.\r\n\r\nSusan’s search for her father begins with her mother’s possibly misremembered or misspelt surnames, a reading room ticket, and a silver cigarette case engraved with something that might be a coat of arms.\r\n\r\nMerlin has a quest of his own, to find the Old World entity who used ordinary criminals to kill his mother. As he and his sister, the right-handed bookseller Vivien, tread in the path of a botched or covered-up police investigation from years past, they find this quest strangely overlaps with Susan’s. Who or what was her father? Susan, Merlin, and Vivien must find out, as the Old World erupts dangerously into the New.",
+          "primaryContributorEdge": {
+            "__typename": "BookContributorEdge",
+            "node": {
+              "__ref": "Contributor:kca://author/amzn1.gr.author.v1.Z9DCtvPd410kkKtYykfu7Q"
+            },
+            "role": "Author"
+          },
+          "secondaryContributorEdges": [],
+          "imageUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1581368800i/49867186.jpg",
+          "bookSeries": [
+            {
+              "__typename": "BookSeries",
+              "userPosition": "1",
+              "series": {
+                "__ref": "Series:kca://series/amzn1.gr.series.v3.wco4CFsdKEwK2-Zv"
+              }
+            }
+          ],
+          "bookGenres": [
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Fantasy",
+                "webUrl": "https://www.goodreads.com/genres/fantasy"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Young Adult",
+                "webUrl": "https://www.goodreads.com/genres/young-adult"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Fiction",
+                "webUrl": "https://www.goodreads.com/genres/fiction"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Urban Fantasy",
+                "webUrl": "https://www.goodreads.com/genres/urban-fantasy"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Historical Fiction",
+                "webUrl": "https://www.goodreads.com/genres/historical-fiction"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Audiobook",
+                "webUrl": "https://www.goodreads.com/genres/audiobook"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Books About Books",
+                "webUrl": "https://www.goodreads.com/genres/books-about-books"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Magic",
+                "webUrl": "https://www.goodreads.com/genres/magic"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Historical",
+                "webUrl": "https://www.goodreads.com/genres/historical"
+              }
+            },
+            {
+              "__typename": "BookGenre",
+              "genre": {
+                "__typename": "Genre",
+                "name": "Young Adult Fantasy",
+                "webUrl": "https://www.goodreads.com/genres/young-adult-fantasy"
+              }
+            }
+          ],
+          "details": {
+            "__typename": "BookDetails",
+            "asin": "006268325X",
+            "format": "Hardcover",
+            "numPages": 416,
+            "publicationTime": 1600758000000,
+            "publisher": "Katherine Tegen Books",
+            "isbn": "006268325X",
+            "isbn13": "9780062683250",
+            "language": {
+              "__typename": "Language",
+              "name": "English"
+            }
+          },
+          "work": {
+            "__ref": "Work:kca://work/amzn1.gr.work.v1.aRRun23BAJZVobMVb-67Xw"
+          },
+          "reviewEditUrl": "https://www.goodreads.com/review/edit/49867186",
+          "featureFlags": {
+            "__typename": "FeatureFlags",
+            "hideAds": false,
+            "noIndex": false,
+            "noReviews": false,
+            "noNewRatings": false,
+            "noNewTextReviews": false
+          },
+          "viewerShelving": {
+            "__ref": "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F"
+          },
+          "links({})": {
+            "__typename": "BookLinks",
+            "primaryAffiliateLink": {
+              "__typename": "BookLink",
+              "name": "Amazon UK",
+              "url": "http://www.amazon.co.uk/gp/product/006268325X/ref=x_gr_bb_amazon?ie=UTF8\u0026tag=x_gr_bb_amazon-21\u0026linkCode=as2\u0026camp=1634\u0026creative=6738",
+              "ref": "x_gr_bb_amazon"
+            },
+            "secondaryAffiliateLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "AbeBooks",
+                "url": "http://affiliates.abebooks.com/c/64613/77416/2029?u=http%3A%2F%2Fwww.abebooks.co.uk%2Fservlet%2FSearchResults%3Fisbn%3D006268325X%26sts%3Dt",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Audible",
+                "url": "https://www.amazon.co.uk/s?k=The+Left-Handed+Booksellers+of+London\u0026i=audible\u0026ref=x_gr_w_bb_audible-20\u0026tag=x_gr_w_bb_audible_uk-21",
+                "ref": "x_gr_bb_amazon"
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Kobo",
+                "url": "https://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=308967.1\u0026type=10\u0026tmpid=13778\u0026u1=x_gr_w_bb\u0026RD_PARM1=https%3A%2F%2Fwww.kobo.com%2Fgb%2Fen%2Fsearch%3FQuery%3DThe+Left-Handed+Booksellers+of+London",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Alibris",
+                "url": "http://click.linksynergy.com/fs-bin/click?id=GwEz7vxblVU\u0026subid=\u0026offerid=189673.1\u0026type=10\u0026tmpid=939\u0026\u0026u1=x_gr_w_bb\u0026RD_PARM1=http%3A%2F%2Fwww.alibris.co.uk%2Fbooksearch%3Fkeyword%3D006268325X",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "iBooks",
+                "url": "https://geo.itunes.apple.com/gb/book/isbn9780062683250?at=11lvdC\u0026mt=11\u0026ls=1",
+                "ref": null
+              },
+              {
+                "__typename": "BookLink",
+                "name": "Indigo.ca",
+                "url": "http://www.kqzyfj.com/d3106vpyvpxCFFFKMHLCEDHGKMGHCEHDHMHLLIFDDD?url=https%3A%2F%2Fwww.chapters.indigo.ca%2Fen-ca%2Fhome%2Fsearch%2F%3Fkeywords%3D006268325X",
+                "ref": null
+              }
+            ],
+            "libraryLinks": [
+              {
+                "__typename": "BookLink",
+                "name": "WorldCat",
+                "url": "http://www.worldcat.org/isbn/006268325X?loc=",
+                "ref": null
+              }
+            ],
+            "overflowPageUrl": "https://www.goodreads.com/book/49867186-the-left-handed-booksellers-of-london/get_a_copy",
+            "seriesLink": null
+          }
+        },
+        "Work:kca://work/amzn1.gr.work.v1.aRRun23BAJZVobMVb-67Xw": {
+          "id": "kca://work/amzn1.gr.work.v1.aRRun23BAJZVobMVb-67Xw",
+          "__typename": "Work",
+          "legacyId": 67924695,
+          "bestBook": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F"
+          },
+          "choiceAwards": [],
+          "details": {
+            "__typename": "WorkDetails",
+            "webUrl": "https://www.goodreads.com/work/67924695-the-left-handed-booksellers-of-london",
+            "shelvesUrl": "https://www.goodreads.com/work/shelves/67924695-the-left-handed-booksellers-of-london",
+            "publicationTime": 1600758000000,
+            "originalTitle": "The Left-Handed Booksellers of London",
+            "awardsWon": [
+              {
+                "__typename": "Award",
+                "name": "Locus Award",
+                "webUrl": "https://www.goodreads.com/award/show/46-locus-award",
+                "awardedAt": 1609488000000,
+                "category": "Best Fantasy Novel",
+                "designation": "NOMINEE"
+              },
+              {
+                "__typename": "Award",
+                "name": "Geffen Award",
+                "webUrl": "https://www.goodreads.com/award/show/106-geffen-award",
+                "awardedAt": 1672560000000,
+                "category": "Best Translated YA Book",
+                "designation": "WINNER"
+              },
+              {
+                "__typename": "Award",
+                "name": "Mythopoeic Fantasy Award",
+                "webUrl": "https://www.goodreads.com/award/show/159-mythopoeic-fantasy-award",
+                "awardedAt": 1609488000000,
+                "category": "Adult Literature",
+                "designation": "NOMINEE"
+              },
+              {
+                "__typename": "Award",
+                "name": "Ditmar Award",
+                "webUrl": "https://www.goodreads.com/award/show/1701-ditmar-award",
+                "awardedAt": 1609488000000,
+                "category": "Best Novel",
+                "designation": "WINNER"
+              },
+              {
+                "__typename": "Award",
+                "name": "Aurealis Award",
+                "webUrl": "https://www.goodreads.com/award/show/4499-aurealis-award",
+                "awardedAt": 1577865600000,
+                "category": "Best Fantasy Novel",
+                "designation": "WINNER"
+              },
+              {
+                "__typename": "Award",
+                "name": "Australian Book Industry Award (ABIA)",
+                "webUrl": "https://www.goodreads.com/award/show/10795-australian-book-industry-award-abia",
+                "awardedAt": 1609488000000,
+                "category": "Book of the Year for Older Children",
+                "designation": "WINNER"
+              }
+            ],
+            "places": [
+              {
+                "__typename": "Places",
+                "name": "London, England",
+                "countryName": null,
+                "webUrl": "https://www.goodreads.com/places/850-london-england",
+                "year": null
+              }
+            ],
+            "characters": [
+              {
+                "__typename": "Character",
+                "name": "Susan Arkshaw",
+                "webUrl": "https://www.goodreads.com/characters/1044413-susan-arkshaw"
+              },
+              {
+                "__typename": "Character",
+                "name": "Merlin Upbright",
+                "webUrl": "https://www.goodreads.com/characters/1044414-merlin-upbright"
+              },
+              {
+                "__typename": "Character",
+                "name": "Vivien Upbright",
+                "webUrl": "https://www.goodreads.com/characters/1044415-vivien-upbright"
+              }
+            ]
+          },
+          "stats": {
+            "__typename": "BookOrWorkStats",
+            "averageRating": 3.86,
+            "ratingsCount": 23580,
+            "ratingsCountDist": [
+              324,
+              1258,
+              5818,
+              10227,
+              5953
+            ],
+            "textReviewsCount": 3530,
+            "textReviewsLanguageCounts": [
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 3201,
+                "isoLanguageCode": "en"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 51,
+                "isoLanguageCode": "fr"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 99,
+                "isoLanguageCode": "de"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 3,
+                "isoLanguageCode": "et"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 44,
+                "isoLanguageCode": "es"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "sk"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 5,
+                "isoLanguageCode": "he"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "fi"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 7,
+                "isoLanguageCode": "ro"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "pt"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "nl"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 2,
+                "isoLanguageCode": "lv"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 1,
+                "isoLanguageCode": "it"
+              },
+              {
+                "__typename": "TextReviewLanguageCount",
+                "count": 3,
+                "isoLanguageCode": "ru"
+              }
+            ]
+          },
+          "quotes({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuotesConnection",
+            "webUrl": "https://www.goodreads.com/work/quotes/67924695",
+            "totalCount": 25
+          },
+          "questions({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceQuestionsConnection",
+            "totalCount": 10,
+            "webUrl": "https://www.goodreads.com/book/49867186/questions"
+          },
+          "topics({\"pagination\":{\"limit\":1}})": {
+            "__typename": "ResourceTopicsConnection",
+            "webUrl": "https://www.goodreads.com/topic/list_book/49867186",
+            "totalCount": 11
+          },
+          "viewerShelvings": [],
+          "viewerShelvingsUrl": "/review/user_works/67924695",
+          "featuredKNH": {
+            "__typename": "FeaturedKNHCollectionConnection",
+            "totalCount": 0,
+            "edges": []
+          },
+          "giveaways": null,
+          "editions": {
+            "__typename": "BooksConnection",
+            "webUrl": "https://www.goodreads.com/work/editions/67924695"
+          }
+        },
+        "Shelving:kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F": {
+          "id": "kca://profile:goodreads/A2TSKK3W6K2FR1|kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F",
+          "__typename": "Shelving",
+          "book": {
+            "__ref": "Book:kca://book/amzn1.gr.book.v3.Hnjoxwypm88ZXB2F"
+          },
+          "shelf": {
+            "__typename": "Shelf",
+            "name": null,
+            "webUrl": null
+          },
+          "taggings": [],
+          "review": null,
+          "webUrl": null
+        },
+        "User:38610813": {
+          "id": 38610813,
+          "__typename": "User",
+          "legacyId": 38610813,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1634078538i/38610813._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 3080,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Paromjit",
+          "webUrl": "https://www.goodreads.com/user/show/38610813-paromjit",
+          "contributor": null,
+          "followersCount": 25780
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Q76k35doU5xrgXogsQYdNg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.Q76k35doU5xrgXogsQYdNg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:38610813"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735155323378,
+          "createdAt": 1599128340383,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1600459606667,
+          "text": "Garth Nix's period action packed fantasy set in London in 1983 is a light, fun and entertaining novel featuring Susan Arkshaw, recently turned 18 years old, moving to London to become a art student. Until the course begins, she is intent on searching for her father, about whom she knows little, with her mother, Jassmine, giving her barely any information as to his identity. Life becomes considerably more challenging and dangerous when she witnesses left handed bookseller, Merlin St Jacques, using his silver hatpin to turn crime boss and sipper Frank Thringley into dust. Merlin helps Susan escape the black fog and the warden, Raud Alyas, but why is Susan a target? \u003cbr /\u003e\u003cbr /\u003eIn an alternate London where the old world begins to emerge in the present, Susan finds herself questioned by Inspector Mira Greene, the Special Branch Booksellers liaison officer, and ends up living in a safe house run by Mrs London. Merlin is a fashionista, outrageously good looking, experimenting with gender fluidity, finding himself drawn to Susan. He is also determined to look into the murder of his mother and protect Susan from the range of powerful forces lined up against her. They find themselves being shot at, facing criminals, abduction attempts by goblins, a wolf, Cauldron borns and more. Helping Merlin and Susan is his sister, the right handed bookseller, Vivian, and others, including even handed booksellers, with their differing strengths and gifts.\u003cbr /\u003e\u003cbr /\u003eI have to admit that for some time I thought that this was not really a book for me, that I was not the intended audience and that it was meant for younger readers. However, I found myself eventually becoming completing immersed in the fantastical storytelling. The characters became more engaging, and I began to root for Merlin, Vivian and Susan as they face betrayal and more than one enemy intent on killing Susan. This turned out to be a wonderful fantasy read, I loved the alternate world that Nix creates and builds on, the battles that ensue, and the many booksellers with their varying gifts coming to the fore. Many thanks to Orion for an ARC.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/38610813?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/38610813?shelf=fantasy"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "mystery",
+                  "webUrl": "https://www.goodreads.com/review/list/38610813?shelf=mystery"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "netgalley",
+                  "webUrl": "https://www.goodreads.com/review/list/38610813?shelf=netgalley"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ya",
+                  "webUrl": "https://www.goodreads.com/review/list/38610813?shelf=ya"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3529666147"
+          },
+          "likeCount": 245,
+          "viewerHasLiked": false,
+          "commentCount": 18
+        },
+        "User:3672777": {
+          "id": 3672777,
+          "__typename": "User",
+          "legacyId": 3672777,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1619377733i/3672777._UX200_CR0,12,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 906,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Nataliya",
+          "webUrl": "https://www.goodreads.com/user/show/3672777-nataliya",
+          "contributor": null,
+          "followersCount": 14954
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.3-vah4vNbVTLbaupyzLvLQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.3-vah4vNbVTLbaupyzLvLQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:3672777"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735155340201,
+          "createdAt": 1614134479461,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1627006226369,
+          "text": "Sometimes all you need is a fun, warm and lighthearted story just to give you a few happy reading hours. And no, I probably won’t remember much about this book a few weeks from now — but as far as YA-type reads go, for me this was one of the better ones.\u003cbr\u003e\u003cblockquote\u003eYou’re gotta admit, the title - \u003ci\u003eThe Left-Handed Booksellers of London\u003c/i\u003e - is brilliant. For me, there was that title callback to Le Guin’s \u003ca href=\"https://goodreads.com/book/show/18423.The_Left_Hand_of_Darkness__Hainish_Cycle___4_\" title=\"The Left Hand of Darkness (Hainish Cycle, #4) by Ursula K. Le Guin\" rel=\"noopener\"\u003eThe Left Hand of Darkness\u003c/a\u003e. It got that wonderful quirky book-y allure — I mean, we all know that book readers are awesome, and so are the librarians and the booksellers (and no, I’m not sucking up to you, Amazon, despite your book selling humble beginnings). And London is a shorthand for coolness of the British variety. \u003c/blockquote\u003e\u003cbr\u003eThe titular booksellers (both left- and right-handed), in all honesty, could have been plumbers or hedge fund managers or astronomers or greengrocers. There’s no real point to the extended clan of magicians engaging in book trade — \u003cb\u003eexcept for our cultural knowledge that booksellers are odd and awesome and probably a bit out of this world\u003c/b\u003e* — because, as Stephen King once said, \u003ci\u003e“Books are uniquely portable magic”. \u003c/i\u003eSo booksellers they are, and they deal with the “Old World” of legendary creatures and “Ancient Sovereigns” and Sippers (who are definitely not vampires) and Cauldron-Born (who are certainly not zombies) in this modern world of 1983. \u003cblockquote\u003e * \u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1614134128i/30915911._SX540_.jpg\" width=\"400\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\n\u003c/blockquote\u003e\u003cbr\u003eAnd into this world comes in one \u003cb\u003eSusan Arkshaw, a very practical and grounded 18-year-old daughter of a slightly loopy mother and an absent certainly supernatural father\u003c/b\u003e (although the latter bit remains behind the scenes for a little while), and ends up tangled in events that are trying to get her killed. Good thing that in her corner she got two young wizardy booksellers - a dashing, brilliant and a bit infuriating \u003cb\u003eMerlin St. Jacques\u003c/b\u003e (the titular left-handed bookseller, magical brawn) and his sister \u003cb\u003eVivien\u003c/b\u003e (the right-handed one) who has a bit more levelheadedness and common sense and magical brain. \u003cbr\u003e\u003cbr\u003eHijinks ensue, and Susan remains quite unflappable in the face of those — which is weird until you realize that she’s got some ancestral magic that lends her some serious magical street cred. (Plus, she’s channeling her inner punk just a tad). \u003cbr\u003e\u003cblockquote\u003e\n\u003ci\u003e “For a mortal you are remarkably unperturbed by my presence,” said the woman. “Or that of the Fenris. Most mortals I have met are greatly frightened, and run screaming, or collapse and gibber.”\u003c/i\u003e\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1614134128i/30915912._SX540_.jpg\" width=\"400\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003eA different practical yet magical Susan (Terry Pratchett’s creation) whom “our” Susan sometimes brought to mind.\u003c/blockquote\u003e\u003cbr\u003eIt certainly reads young, but without those conventional Young Adult staples that I sadly encounter so often when picking up a younger audience fantasy read. There are no tortured pasts or (reformed) bad boy love interests or mean girls despising the heroine who’s not like the other girls. Nah, the main characters trio is fun, the romantic attraction is an afterthought, and the plot, although silly, did not make want to run for the woods. And - thank the Old Ones - there’s none of that first-person present tense nonsense. \u003cb\u003eBasically, it’s a young audience story that doesn’t make an adult reader groan in exasperation.\u003c/b\u003e\u003cbr\u003e\u003cbr\u003eMerlin the left-handed bookseller deserves his own paragraph here. He’s the breakout star of this book — brilliant and infuriating at the same time. \u003cb\u003eHe’s a bit like Howl from Diana Wynn Jones’ \u003ca href=\"https://goodreads.com/book/show/6294.Howl_s_Moving_Castle__Howl_s_Moving_Castle___1_\" title=\"Howl’s Moving Castle (Howl’s Moving Castle, #1) by Diana Wynne Jones\" rel=\"noopener\"\u003eHowl's Moving Castle\u003c/a\u003e \u003c/b\u003e— a bit vain, clothes-obsessed, high maintenance eccentric fashionista who’s at first hard to take seriously, but who underneath the annoyingly glitzy vanity hides tons of heart and confident competence and irresistible charisma.\u003cbr\u003e\u003cbr\u003eI do wish there was a bit more actual book selling. You know that’s the *actual* cool part, right, Garth Nix? Swords and goblins and helicopters and guns and mythical giant wolves are fine, but it’s the dusty book covers and trashy paperbacks and maze-like book aisles is what one wants from a book about booksellers. \u003cb\u003eAt least add a weapon-grade bookmark to your fighting arsenal or something\u003c/b\u003e. All that potential just feels a bit untapped in favor of narrow focus on Susan and her “outsider” perspective.\u003cbr\u003e\u003cblockquote\u003e \u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1614134128i/30915913._SX540_.jpg\" width=\"400\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\n\u003c/blockquote\u003e\u003cbr\u003eThat said, there were enough tropes to still make it a bit formulaic, although not in an irritating way. Just enough familiarity for a comforting read, that’s all. But a bit if familiarity is not always bad — here it helped me stay engaged despite a rougher start. You see, this book does take a little while to find its stride, lagging a bit in pacing, taking about a hundred or so pages to really get going, but once it does it barely stumbles, even as things get frenetically chaotic.\u003cbr\u003e\u003cbr\u003eIt’s lighthearted and fun and playful — and entertainingly satisfying. Will it change your life or make you ponder big deep questions? Nope. Will I forget it after a few weeks? Probably. \u003cb\u003eBut was it pleasantly entertaining and perfectly fine for a few nights after a long day of work, like a nice cup of cocoa? Ab-so-lute-ly.\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e3.5 stars, rounding up because it made me feel all warm and fuzzy.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/3672777?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2021-reads",
+                  "webUrl": "https://www.goodreads.com/review/list/3672777?shelf=2021-reads"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3705940201"
+          },
+          "likeCount": 244,
+          "viewerHasLiked": false,
+          "commentCount": 51
+        },
+        "User:8734459": {
+          "id": 8734459,
+          "__typename": "User",
+          "legacyId": 8734459,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1648407601i/8734459._UX200_CR0,28,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1880,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Tadiana ✩Night Owl☽",
+          "webUrl": "https://www.goodreads.com/user/show/8734459-tadiana-night-owl",
+          "contributor": null,
+          "followersCount": 23112
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.FGaj35WqpKsslN3mtLOvaA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.FGaj35WqpKsslN3mtLOvaA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:8734459"
+          },
+          "recommendFor": null,
+          "updatedAt": 1735155338882,
+          "createdAt": 1597304355338,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1602136286867,
+          "text": "3.5 stars. A very different type of fantasy (more of a British urban fantasy) from Garth Nix than the last one of his that I read, \u003ca href=\"https://goodreads.com/book/show/41951611.Angel_Mage\" title=\"Angel Mage by Garth Nix\" rel=\"noopener\"\u003eAngel Mage\u003c/a\u003e. Review first posted on \u003ca href=\"http://www.fantasyliterature.com/reviews/the-left-handed-booksellers-of-london/\" rel=\"nofollow noopener\"\u003eFantasyLiterature.com\u003c/a\u003e: \u003cbr\u003e\u003cbr\u003e1983-era London, with a half-twist toward the fantastic, mingles with ancient British mythology in Garth Nix’s new urban fantasy, \u003ci\u003eThe Left-Handed Booksellers of London\u003c/i\u003e. Art student Susan Arkshaw, a punkish eighteen-year-old from rural western England, takes leave of her loving, vague mother and heads to London to try to find the father she’s never met. She starts with an old family acquaintance, “Uncle” Frank Thringley, but Frank turn out to be, in rapid succession, (a) a crime boss, (b) disincorporated by the prick of a magical hatpin, and (c) a Sipper — which is a milder type of bloodsucker than a vampire.\u003cbr\u003e\u003cbr\u003eThe wielder of the silver hatpin is attractive nineteen-year-old Merlin St. Jaques, who sweeps Susan out of Frank’s house, just ahead of a horse-sized louse and an eerie black fog hiding more dangers. Merlin is one of London’s organization of booksellers who engage with the magical world, policing its interaction with what normal humans think of as reality. As one of the left-handed booksellers, he actively fights against dangerous magical incursions into our world; the right-handed booksellers are charged with the more intellectual types of protection, including researching the magical world and casting spells to counter threats.\u003cbr\u003e\u003cbr\u003eThose supernatural threats appear to be targeting Susan. Merlin takes an interest in Susan, both because she needs protection while she continues her search for her father and because his ongoing investigation into his mother’s death six years ago may have some connection to Susan’s mystery. And also because, well, she’s caught his eye, though Susan doesn’t quite trust this overly-charming young man and is determined to keep him at arm’s length. As Merlin and his sister Vivien (one of the right-handed type of booksellers) seek to protect Susan and introduce her to their world, the dangers of the magical Old World explode.\u003cbr\u003e\u003cbr\u003eNix was inspired to write \u003ci\u003eThe Left-Handed Booksellers of London\u003c/i\u003e (as he related in his acknowledgements at the end) by a fortuitous comment from a left-handed bookseller in Leith. He pulls on his memories from his first trip to the United Kingdom in 1983 (among other things, he hiked \u003ca href=\"https://en.wikipedia.org/wiki/Old_Man_of_Coniston\" rel=\"nofollow noopener\"\u003ethe Old Man of Coniston\u003c/a\u003e, a famous mountain in the Lake District) and his past experience working as a bookseller. It was both amusing and engaging as I realized just how many actual British landmarks he has woven into the plot of this novel. And also uniquely British foods — Branston pickle sandwiches were a revelation, and I don’t think I’ll soon recover from checking out pictures of stargazy pie.\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1602084674i/30204933.jpg\" width=\"250\" height=\"200\" alt=\"description\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e.\u003cbr\u003e\u003cbr\u003eYum?\u003cbr\u003e\u003cbr\u003eSusan is an appealing main character but somewhat of a stock character. Though somewhat bewildered by the magical events that suddenly beset her, she’s unfazed. Susan clearly has a destiny and moves unswervingly toward it. She’s not nearly as vivid as Merlin, who’s brilliant and frustrating, whiny and brave, wrapped up into one charming and exasperating package. He’s also somewhat gender-fluid (apparently booksellers have the ability to shift sexes if they choose) and enjoys wearing the occasional dress, though after establishing this early on, Nix doesn’t follow through on this point and pretty much completely drops it, leaving me muttering about Chekhov’s gun.\u003cbr\u003e\u003cbr\u003eAs Susan settles into her new life in London and is shown the secret life of booksellers by Merlin and Vivien, Nix delves for a time into the bookstore settings, which will be a natural attraction for readers who love books. Humorously, the Old Bookshop sells new books and the New Bookshop sells older ones, along with other collectibles and rare objects. These magic-infused shops are described in great detail and, while the world-building is reasonably interesting, the pacing does start to lag. But at the half-way point, there’s a dramatic turn in the plot, and the rest of the book kept me turning pages late into the night.\u003cbr\u003e\u003cbr\u003e\u003ci\u003eThe Left-Handed Booksellers of London\u003c/i\u003e is an engaging fantasy adventure that immerses the reader in British mythology and society, with a slice of bookstore culture on the side.\u003cbr\u003e\u003cbr\u003eThanks to the publisher and NetGalley for the ARC!",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/8734459?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "england",
+                  "webUrl": "https://www.goodreads.com/review/list/8734459?shelf=england"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/8734459?shelf=fantasy"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3493634040"
+          },
+          "likeCount": 130,
+          "viewerHasLiked": false,
+          "commentCount": 17
+        },
+        "User:8655084": {
+          "id": 8655084,
+          "__typename": "User",
+          "legacyId": 8655084,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1735638455i/8655084._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 3750,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Phrynne",
+          "webUrl": "https://www.goodreads.com/user/show/8655084-phrynne",
+          "contributor": null,
+          "followersCount": 2524
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.DAwgBUMRF7jXbcqU5KTb5A": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.DAwgBUMRF7jXbcqU5KTb5A",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:8655084"
+          },
+          "recommendFor": null,
+          "updatedAt": 1734013848935,
+          "createdAt": 1609791629644,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1663486007154,
+          "text": "I read this on the strength of the title alone and I am very glad I did. It was funny, it was clever, and it was totally entertaining. \u003cbr /\u003e\u003cbr /\u003eThe setting is a slightly alternate London in the 1980's. Margaret Thatcher is Prime Minister but she is Britain's second woman PM. The first was Clementina Attlee. Nix has a lot of fun with gender throughout the book which will bring a smile to anyone old enough to have watched the TV shows of the day (for example Denise Waterman in The Sweeney). \u003cbr /\u003e\u003cbr /\u003eI thought Nix handled his world building well. The main character, Susan, knows nothing about the magic system, so we find out about it at same time she does. Other things are left unexplained for us to make sense of as events occur. I much prefer this to info dumping which can be boring and intrude on the story.\u003cbr /\u003e\u003cbr /\u003eThe characters are excellent especially Merlin who is completely delightful, and Vivian who has some remarkable talents. There is a little bit of romance too but very little - just enough to enjoy without getting in the way of a thoroughly good adventure.\u003cbr /\u003e\u003cbr /\u003eWhile I have been writing this review I have talked myself up from four to five stars! I really did enjoy it that much. I guess it is a YA book but all the references to the 1980's years must be aimed at those of us remember them. I do and I loved it all.",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/8655084?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/3744020535"
+          },
+          "likeCount": 127,
+          "viewerHasLiked": false,
+          "commentCount": 24
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.NhZlhrKKFCc-kFmJlIMNPA": {
+          "id": "kca://author/amzn1.gr.author.v1.NhZlhrKKFCc-kFmJlIMNPA",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 15
+          }
+        },
+        "User:45755563": {
+          "id": 45755563,
+          "__typename": "User",
+          "legacyId": 45755563,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1510754832i/45755563._UX200_CR0,50,200,200_.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 11,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Katherine Arden",
+          "webUrl": "https://www.goodreads.com/user/show/45755563-katherine-arden",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.NhZlhrKKFCc-kFmJlIMNPA"
+          },
+          "followersCount": 17173
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.WzvWx5JkzOvqgTWZ2moBLQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.WzvWx5JkzOvqgTWZ2moBLQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:45755563"
+          },
+          "recommendFor": null,
+          "updatedAt": 1721614938922,
+          "createdAt": 1611762432607,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1611762713450,
+          "text": "I was a gigantic fan of Sabriel/Lirael/Abhorsen growing up, and so naturally I jumped on this fast, exciting read when it popped up somewhere in my timeline.\u003cbr /\u003e\u003cbr /\u003eHas strong vibes of Gaiman's Neverwhere, in my view, with a mythical London existing in and around and behind the real one. Except in this version, magical booksellers keep the borders between the real world and the (fascinating, dangerous) mythical one. I read this book in one sitting. ",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/45755563?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/45755563?shelf=fantasy"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ya",
+                  "webUrl": "https://www.goodreads.com/review/list/45755563?shelf=ya"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3800167472"
+          },
+          "likeCount": 113,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:3978225": {
+          "id": 3978225,
+          "__typename": "User",
+          "legacyId": 3978225,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1307934801i/3978225.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1695,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "carol. ",
+          "webUrl": "https://www.goodreads.com/user/show/3978225-carol",
+          "contributor": null,
+          "followersCount": 9355
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.5Kzc8WsXqm9OdEhUu04jPA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.5Kzc8WsXqm9OdEhUu04jPA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:3978225"
+          },
+          "recommendFor": null,
+          "updatedAt": 1733923577827,
+          "createdAt": 1626972392436,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1626972429936,
+          "text": "I’ve bounced off Sabriel by Garth Nix enough times that I was hesitant to give his latest a try, but Nataliya’s fine review caught my imagination, along with–of course–the titular booksellers. It’s still recognizably the Nix from Sabriel, but somehow modernized. Not that modernized, as it is set in 1983. Like Daryl Gregory’s latest, The Album of Dr. Moreau, it is a time frame that resonates with me–Your tolerance for Boy George and the A to Z road atlas may vary. At any rate, though I flagged once or twice, I found it both entertaining and comforting.\u003cbr /\u003e\u003cbr /\u003eBefore Susan begins her first semester at a prestigious art school, she heads to London early to earn some extra money and search for information about her father. Although her mother could certainly provide details, she’s inexplicably vague (there’s a hand-wavy “drugs in the 60s” line, which is a surprising line to find). This brief interaction sets the tone of the entire book: it follows fantasy convention in the general absence of supervising adults (adults can be present, but from a distance), bills (rent? meals?), and legal implications while setting it in a modern age with guns, helicopters and listening devices. \u003cbr /\u003e\u003cbr /\u003eAt any rate, despite being visited by strange water-mud-creatures in her dreams, when she finally encounters real magic watching Merlin skirmishing with Uncle Frank, she’s surprised by it. It’s a classic framing device for a reason, as it allows the reader to learn about the world along with Susan. Unfortunately, the magician–excuse me, Wizard–Merlin is generally vague on the big picture and tends to focus on the details. And, honestly, both Merlin and Nix take a major shortcut with their descriptions. If I read about hands once, I read about them thirty times. It was enough to make me wish I had an e-book, just so I could do a phrase scan. \u003cb\u003e“He’s telling the truth, said Vivian. “We can nearly always tell. A right-handed thing, you know. ‘Verum ponderet dextrum.’ The right hand weighs the truth.“\u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003ePerhaps because I’m even-handed, it manages to charm. The tropes have been somewhat ‘modernized,’ with Merlin a bit gender-bendy, Susan embracing her DocMartens and coveralls, and and the “family” of booksellers containing a mix of socioeconomic and racial backgrounds, blood relations notwithstanding. (Which is really the minimum of expectations I have these days, so yay, that). It’s a very honest book: everyone is sincere, even the villains, and grey areas are absent. I’m not complaining, mind you, but it does add to the ‘cozy’ feeling of the story.\u003cbr /\u003e\u003cbr /\u003eNonetheless, something about Nix and I just don’t quite gel. I think because he manages to be very specific when I’d rather he’d be vague, and vague when I’d wish he’d be specific. Here’s Merlin offering an explanation:\u003cb\u003e “As a matter of fact, Norman did have a look for me. But by then it was five years, and he’s really on good for a month or two back. But there are… entities… who can help unravel the past or look toward the future, give clues to help work out what went on. So I went to one of them.”\u003c/b\u003e Helpful? No. Germane? Not really. I suppose it shows a facet of Merlin’s character, but since most of his conversations go along those lines, it doesn’t, not really. Ultimately, though Nix takes word count to give these hand-wavy explanations, do they really matter? Furthermore–and I’ll be super-blunt here–Nix mostly writes within the world of tropes, without bringing anything truly special to the table. Much of it feels mass market (spoilery stuff) with only a few scenes standing out.\u003cbr /\u003e\u003cbr /\u003eWhat is notable is writing competence. It is action oriented, often scant on description, but with enough structural complexity to feel like I needed to pay attention. Occasionally Nix manages to capture a more ethereal or fairy-tale like quality with certain scenes. My favorites were the ones with the Grandmother(s), the wolf, and the undine, where the writing started to remind me of Charles deLint.\u003cbr /\u003e\u003cb\u003e\u003cbr /\u003e“The Grandmother raised the flower and sniffed it again, her piercing dark eyes momentarily hooded, a smile passing across her thin-boned face like a glimpse of some small, colorful bird darting between dark and brooding trees.“\u003cbr /\u003e\u003c/b\u003e\u003cbr /\u003eA decent read, certainly, but not one I’ll be urging on everyone. Reminds me of DeLint, some of Wynne-Jones and maybe even that ethereal library series.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/3978225?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "female-lead",
+                  "webUrl": "https://www.goodreads.com/review/list/3978225?shelf=female-lead"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "young-adult",
+                  "webUrl": "https://www.goodreads.com/review/list/3978225?shelf=young-adult"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "urban-fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/3978225?shelf=urban-fantasy"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/4125335695"
+          },
+          "likeCount": 115,
+          "viewerHasLiked": false,
+          "commentCount": 10
+        },
+        "User:45618": {
+          "id": 45618,
+          "__typename": "User",
+          "legacyId": 45618,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1596291582i/45618._UX200_CR0,69,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 4008,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "karen",
+          "webUrl": "https://www.goodreads.com/user/show/45618-karen",
+          "contributor": null,
+          "followersCount": 171698
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.62RMpnR1rFSRqWAY3wHQDg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.62RMpnR1rFSRqWAY3wHQDg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:45618"
+          },
+          "recommendFor": null,
+          "updatedAt": 1691985247705,
+          "createdAt": 1593004878440,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1608992063662,
+          "text": "\u003cb\u003efulfilling my 2020 goal to read (at least) one book each month that was given to me as a present that i haven't yet gotten around to reading because i am an ungrateful dick. \u003c/b\u003e\u003cbr /\u003e\u003cbr /\u003e********************************************\u003cbr /\u003ereview to come!\u003cbr /\u003e\u003cbr /\u003e********************************************\u003cbr /\u003e\u003cbr /\u003ethis BARELY counts, since it is a present from THIS YEAR'S gr secret santa, but i'm getting a head start on not being a dick in 2021, yeah?\u003cbr /\u003e\u003cbr /\u003ethank you, \u003ca href=\"https://www.goodreads.com/user/show/42546295-samantha-brown\" rel=\"nofollow noopener\"\u003esamantha\u003c/a\u003e!!\u003cbr /\u003e\u003cbr /\u003e********************************************\u003cbr /\u003eleft-handed bookseller here. am i fighty? c'mere and find out.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/45618?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "why-yes-i-ya",
+                  "webUrl": "https://www.goodreads.com/review/list/45618?shelf=why-yes-i-ya"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "thanks-for-prezzies",
+                  "webUrl": "https://www.goodreads.com/review/list/45618?shelf=thanks-for-prezzies"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "review-pending",
+                  "webUrl": "https://www.goodreads.com/review/list/45618?shelf=review-pending"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3408528648"
+          },
+          "likeCount": 88,
+          "viewerHasLiked": false,
+          "commentCount": 9
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.P-J-UsiA6s0y6CRWSjW52Q": {
+          "id": "kca://author/amzn1.gr.author.v1.P-J-UsiA6s0y6CRWSjW52Q",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 59
+          }
+        },
+        "User:68979336": {
+          "id": 68979336,
+          "__typename": "User",
+          "legacyId": 68979336,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1713406296i/68979336._UX200_CR0,50,200,200_.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 121,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Rebecca Roanhorse",
+          "webUrl": "https://www.goodreads.com/user/show/68979336-rebecca-roanhorse",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.P-J-UsiA6s0y6CRWSjW52Q"
+          },
+          "followersCount": 9737
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.UbOOKz4Awm9gOKFESZssaw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.UbOOKz4Awm9gOKFESZssaw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:68979336"
+          },
+          "recommendFor": null,
+          "updatedAt": 1726864894804,
+          "createdAt": 1598629621315,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1598630336564,
+          "text": "This was a lot of fun. It doesn't have a lot of depth, but it's a delightful romp through British legend and folklore and I enjoyed it as a light but occasionally surprisingly violent and suspenseful adventure story. The premise was great, and that title, yeah. I was sold. It's plot forward, not a lot of characterization or world building beyond the series of dangers the characters face, often in a row like a gauntlet. It would have been nice to have a little more cause and effect in the first half, but the last half really kicks in and it's a non-stop adventure ride to the end. I wasn't sure if this was adult or YA, but it reads like YA, so I'll go for that. And I know it's set in the 80s, but I kept forgetting until a few little historical or pop culture bits were mentioned, so YMMV on why that matters at all. All said, I can already see this one making for a fun movie that I'd definitely watch. If you're looking for something light and escapist with that delightful British vibe, this is a good pick. ",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/68979336?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/3503184884"
+          },
+          "likeCount": 81,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:7986781": {
+          "id": 7986781,
+          "__typename": "User",
+          "legacyId": 7986781,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1631061013i/7986781._UX200_CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1397,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Heidi",
+          "webUrl": "https://www.goodreads.com/user/show/7986781-heidi",
+          "contributor": null,
+          "followersCount": 1539
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.K-PkK0jmEImz3bkbirTqKg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.K-PkK0jmEImz3bkbirTqKg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:7986781"
+          },
+          "recommendFor": null,
+          "updatedAt": 1714466970608,
+          "createdAt": 1642441032991,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1642441738623,
+          "text": "Susan, the heroine of \u003ci\u003eThe Left-Handed Booksellers of London\u003c/i\u003e, has never met her father. But she wants to. \u003cbr /\u003e\u003cbr /\u003e\u003ci\u003e\"I think I'll go up to London early. Get acclimatized. There's bound to be pub work I can get. And I... I'll try to find my dad.\"\u003c/i\u003e pg 8, ebook\u003cbr /\u003e\u003cbr /\u003eHer search takes her to London where, after a night of violence and supernatural scares, she discovers a whole other world existing alongside the every day one.\u003cbr /\u003e\u003cbr /\u003eThis is a world of magic and legend, and mysterious, ultra-cool booksellers.\u003cbr /\u003e\u003cbr /\u003e\u003ci\u003e\"Susan hesitated and looked back. The monstrous bug was still writhing, but something else was happening now. A dark fog was flowing up the stairs.\"\u003c/i\u003e\u003cbr /\u003e\u003cbr /\u003eEnter a teen named Merlin and his sister, Vivien. \u003cbr /\u003e\u003cbr /\u003e\u003ci\u003e\"Children's writers,\" said Merlin. \"Dangerous bunch. They cause us a lot of trouble. ... They don't do it on purpose... But quite often they discover the key to raise some ancient myth, or release something that should have stayed imprisoned, and they share that knowledge via their writing. Stories aren't always stories, you know.\"\u003c/i\u003e pg 59, book\u003cbr /\u003e\u003cbr /\u003eThe characters and their sparkling dialogue are the high points in this fantasy tale for young adults.\u003cbr /\u003e\u003cbr /\u003eI was also fond of the heroes being a bunch of booksellers. The only change that would have raised that, in my opinion, was if author Garth Nix had made them librarians. But that's just me. :)\u003cbr /\u003e\u003cbr /\u003eThe world Nix has imagined, though intriguing, never moves beyond the entirely predictable. I suppose I wasn't the intended audience for the story, but I believe a great book entertains all ages.\u003cbr /\u003e\u003cbr /\u003e\u003ci\u003e\"I never knew anything about the Old World or any of this stuff before I met Merlin.\"\u003c/i\u003e pg 67, ebook.\u003cbr /\u003e\u003cbr /\u003eAlthough, now that the world is created, I could see this being the first entry in a fun, light-hearted series. We shall see.\u003cbr /\u003e\u003cbr /\u003eOnly recommended for young adults who are looking for fantasy reads. Adults readers may find themselves longing for more complexity.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/7986781?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/7986781?shelf=fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fantasy-and-sci-fi",
+                  "webUrl": "https://www.goodreads.com/review/list/7986781?shelf=fantasy-and-sci-fi"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "young-adult",
+                  "webUrl": "https://www.goodreads.com/review/list/7986781?shelf=young-adult"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/4470126861"
+          },
+          "likeCount": 42,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:25388909": {
+          "id": 25388909,
+          "__typename": "User",
+          "legacyId": 25388909,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1623937279i/25388909._UY200_CR30,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 9383,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Chad",
+          "webUrl": "https://www.goodreads.com/user/show/25388909-chad",
+          "contributor": null,
+          "followersCount": 1013
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.C5GtRpYwtkfRY7yNFgytnw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.C5GtRpYwtkfRY7yNFgytnw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:25388909"
+          },
+          "recommendFor": null,
+          "updatedAt": 1719323835214,
+          "createdAt": 1645763887819,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1645795784632,
+          "text": "This book uses one of my favorite Urban Fantasy tropes, where a normal person gets sucked into a secret world hidden within our own. The basic premise reminds me of Neil Gaiman's \u003ca href=\"https://goodreads.com/book/show/14497.Neverwhere__London_Below___1_\" title=\"Neverwhere (London Below, #1) by Neil Gaiman\" rel=\"noopener\"\u003eNeverwhere\u003c/a\u003e, which is a great book to be compared to. \u003cbr /\u003e\u003cbr /\u003eIt's 1983. Susan turns 18 and heads to London for college. When she visits her \"uncle\", he turns to dust and mystical creatures come after her and the assassin, Merlin. Susan is searching for who her father is and I'm sure you can see where this is headed... I really liked the idea of the Booksellers as a group secretly protecting England, and how there is a Left-Handed and Right-Handed path for its members. This book is a standalone book but could easily have a sequel set in the same world. This was my first Garth Nix novel, but it won't be my last.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/25388909?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2022",
+                  "webUrl": "https://www.goodreads.com/review/list/25388909?shelf=2022"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/4554324829"
+          },
+          "likeCount": 39,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:26644659": {
+          "id": 26644659,
+          "__typename": "User",
+          "legacyId": 26644659,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1528043737i/26644659._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 395,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Susan Atherly",
+          "webUrl": "https://www.goodreads.com/user/show/26644659-susan-atherly",
+          "contributor": null,
+          "followersCount": 60
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.lJuICF_np91G2vPMtQihew": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.lJuICF_np91G2vPMtQihew",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:26644659"
+          },
+          "recommendFor": null,
+          "updatedAt": 1726138519445,
+          "createdAt": 1681952017271,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1681952024835,
+          "text": "So cozy. So delightful. So satisfying.\u003cbr /\u003e\u003cbr /\u003eIn the summer of 1980, a young girl fresh out of school traveled to London. Her name was Susan.\u003cbr /\u003e\u003cbr /\u003eIn the summer of 1980 and about to graduate from school, I traveled to London. My name is Susan \u003cbr /\u003e\u003cbr /\u003eCoincidence, I'm sure. \u003cbr /\u003e\u003cbr /\u003eI was very fond of the protagonists. The antagonistic was appropriately despicable. It was exactly what I wanted from a cozy fantasy involving booksellers in London.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/26644659?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "audiobook",
+                  "webUrl": "https://www.goodreads.com/review/list/26644659?shelf=audiobook"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "x_2023",
+                  "webUrl": "https://www.goodreads.com/review/list/26644659?shelf=x_2023"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3456200427"
+          },
+          "likeCount": 37,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:6374214": {
+          "id": 6374214,
+          "__typename": "User",
+          "legacyId": 6374214,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1725741105i/6374214._UX200_CR0,77,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 99,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Sara",
+          "webUrl": "https://www.goodreads.com/user/show/6374214-sara",
+          "contributor": null,
+          "followersCount": 8
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.g65L4neF-fI5shUEgU2tDA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.g65L4neF-fI5shUEgU2tDA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:6374214"
+          },
+          "recommendFor": null,
+          "updatedAt": 1727178027120,
+          "createdAt": 1601952317494,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1709229817040,
+          "text": "DNF at 30%. It feels like such a slog that I'm not interested in pushing through. Based on the premise I should have loved this book, but it's a lot like The Starless Sea—really wonderful idea but terrible execution. It's weird and not in an enjoyable or humorous way. \u003cbr /\u003e\u003cbr /\u003eThe writing style is simply not enjoyable. Other reviewers have brought up the excessive amount of ellipses that result in stilted and unnatural dialogue and interrupt the flow of reading. Added to this is the unbelievable fact that the reader is told everything and shown nothing. I find this very surprising coming from a seasoned writer. Every character is described in excess with boring and unnecessary details. Their entire wardrobe is listed in full each scene, along with an accent that I'm supposed to just read the dialogue in, as no mannerisms to show this are included in what they say. I don't care a whit about Susan, who has completely unrealistic reactions to what happens. Merlin should be the best character ever but is just a charicature as opposed to a real character. \u003cbr /\u003e\u003cbr /\u003eI should love the setting—what's not to love about London? But instead of being charmed by fun and quirky Britishisms, I was bored to tears with \"they turned down this road and then stopped at this road and ended up on this road.\" Throwing in London street names does nothing to build the character of the city. Neither does a paragraph on British politics of the 1980s that reads like a social studies text book. The only other indication of the time period (other than it being specifically mentioned) is the lack of cell phones. \u003cbr /\u003e\u003cbr /\u003eThere are also entire paragraphs of nothing but lists of other books or artists. It just felt like name dropping. \u003cbr /\u003e\u003cbr /\u003eYou would think that with all of these unnecessary details that at least we would have a clue as to what is going on, but sadly this is not the case. Unlike Susan, I don't care enough to stick around for someone to finally explain what the hell is going on.",
+          "rating": 1,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/6374214?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/3257268341"
+          },
+          "likeCount": 36,
+          "viewerHasLiked": false,
+          "commentCount": 5
+        },
+        "User:36874183": {
+          "id": 36874183,
+          "__typename": "User",
+          "legacyId": 36874183,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1651881396i/36874183._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1595,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Dana",
+          "webUrl": "https://www.goodreads.com/user/show/36874183-dana",
+          "contributor": null,
+          "followersCount": 87
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.Hb-FZYgFaAvErBwEgD4FKg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.Hb-FZYgFaAvErBwEgD4FKg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:36874183"
+          },
+          "recommendFor": null,
+          "updatedAt": 1716287004737,
+          "createdAt": 1604172651385,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1604172667420,
+          "text": "\"If you see another scarecrow, don't look directly at it.\"\u003cbr /\u003e------------------------------------\u003cbr /\u003eBoy, did this story have all manner of mythical beasties who were chasing after our main character Susan for reasons unknown. I really wanted to like this quirky book. It has heroic booksellers who are the only ones who live in the modern world (1983) but can see and fight the paranormal beings of old. The main character was a bit of a dud for me, she just sort of went along with everything as it happened. There wasn't much shock as she watched death after death and several times she tried to deny any power bestowed upon her. Merlin, our heroic bookseller, was pretty interesting but that still didn't save it for me. \u003cbr /\u003e\u003cbr /\u003eI'm not sure what it was that didn't do it for me. Maybe that it was more of a reporting of facts and events more than a demonstrative story?  Maybe it was too much action with not enough down time? Maybe it was that clothes and food seemed to get better descriptions than the mythical beasties? The truth was by the end I just didn't care who Susan's father was or why Merlin's mom was killed.\u003cbr /\u003e\u003cbr /\u003eIt did tie up all the loose ends and I appreciate a gender-fluid character but it was just lacking in some of the literary magic I needed to be drawn into the adventure. This one only gets 2.5 stars from me.",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/36874183?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/3427526696"
+          },
+          "likeCount": 36,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:5460316": {
+          "id": 5460316,
+          "__typename": "User",
+          "legacyId": 5460316,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1487216044i/5460316._CR0,33,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1382,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Fiona Knight",
+          "webUrl": "https://www.goodreads.com/user/show/5460316-fiona-knight",
+          "contributor": null,
+          "followersCount": 282
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.EVqsQ41D1ueQEcapOJvHRw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.EVqsQ41D1ueQEcapOJvHRw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:5460316"
+          },
+          "recommendFor": null,
+          "updatedAt": 1685840523765,
+          "createdAt": 1609490618019,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1679957262244,
+          "text": "3.5 stars, rated up for an overall enjoyable read. Edit on reread - I'm glad I rated this up, I enjoyed it much more the second time around. I think where I ran into trouble is that for the most part, it's a series of events. It doesn't necessarily feel like the characters have much agency or effect on anything that's happening - they just defend against a series of issues. But on reread, at a slower pace, it's definitely an enjoyable book - just likely not everyone's storytelling cup of tea.\u003cbr /\u003e\u003cbr /\u003eThe Left-Handed Booksellers of London gets right into the action almost from the start - we're given an introductory prologue, but then we're up and running even from the first sentence of the first chapter, into a world of booksellers and the secrets they guard. Dropped unaware into that world is Susan, future art student and newly arrived in London, and it's up to Merlin, bookseller and generally rakish individual, to make sure she doesn't fall victim to one if it's many, many dangers.\u003cbr /\u003e\u003cbr /\u003eOverall I did definitely enjoy this book - secret worlds of mythology and booksellers using their bookshops to maintain a vast, secret, network is just as interesting as it sounds. The nature of the booksellers and their abilities is original and appealing, though some of the earlier ideas touched on (shapeshifting and immortality, mostly) don't come into play later on as they perhaps could have.\u003cbr /\u003e\u003cbr /\u003eSusan, though she's an agreeable enough character, never quite comes into her own - like I mentioned, that first chapter is very quick off the mark, and it doesn't feel like the ensuing action ever quite gives us a chance to get to know her entirely. Less so for Merlin, though a lot of his character is quirk - he does get a chance to show a little more substance towards the end, which helped. \u003cbr /\u003e\u003cbr /\u003eI'm all mixed up about this book, because on the one hand I did actually enjoy it; it's just that I felt I could have loved it, if there weren't some missing pieces. Maybe it just needed a little more in general - a slower approach, more time with the characters, a little more space to get to know them and the world. But if it does get a sequel, I'd definitely be interested to read it - I think there's a lot of good potential in this world and these characters.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/5460316?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "books-about-books",
+                  "webUrl": "https://www.goodreads.com/review/list/5460316?shelf=books-about-books"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "happy-place",
+                  "webUrl": "https://www.goodreads.com/review/list/5460316?shelf=happy-place"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "mythology",
+                  "webUrl": "https://www.goodreads.com/review/list/5460316?shelf=mythology"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3553153322"
+          },
+          "likeCount": 35,
+          "viewerHasLiked": false,
+          "commentCount": 9
+        },
+        "User:32532051": {
+          "id": 32532051,
+          "__typename": "User",
+          "legacyId": 32532051,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1675555086i/32532051._UX200_CR0,1,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 4969,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Montzalee Wittmann",
+          "webUrl": "https://www.goodreads.com/user/show/32532051-montzalee-wittmann",
+          "contributor": null,
+          "followersCount": 2297
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ysxQrUPEdEr09MGwVlvyqw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.ysxQrUPEdEr09MGwVlvyqw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:32532051"
+          },
+          "recommendFor": null,
+          "updatedAt": 1679234912350,
+          "createdAt": 1626725417667,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1626801361994,
+          "text": "The Left-Handed Booksellers of London\u003cbr /\u003eby Garth Nix\u003cbr /\u003eWhat a fun fantasy! Booksellers deal with the things the rest of the world doesn't know about. They have some magic, some more than others, and lots of knowledge on dealing with other realms and creatures. \u003cbr /\u003eIt starts with an eighteen year old gal who leaves home to find her father. Her mom doesn't seem to remember much, seems scatter brained, but loves her daughter. All the girl has is post cards from an uncle. She tracks down that uncle and that's where she meets Merlin. He is a Bookseller. He saves her life from a vampire, her \"uncle\". \u003cbr /\u003eShe now is into their world. Merlin's sister, Vivian, decide to help her and the book is a wild ride! It's non-stop fun, creatures, silliness, and action! Merlin has a flair for strange outfits to wear! Hilarious! \u003cbr /\u003eIt's a teen, young adult novel but I thoroughly enjoyed it! Very imaginative! I would love to read a book 2 of this!",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/32532051?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "science-fiction-fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/32532051?shelf=science-fiction-fantasy"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/4115109345"
+          },
+          "likeCount": 34,
+          "viewerHasLiked": false,
+          "commentCount": 4
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.K1L8-RUu7-dpC919rvPhIA": {
+          "id": "kca://author/amzn1.gr.author.v1.K1L8-RUu7-dpC919rvPhIA",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 70
+          }
+        },
+        "User:1629797": {
+          "id": 1629797,
+          "__typename": "User",
+          "legacyId": 1629797,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1624246335i/1629797._UX200_CR0,22,200,200_.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 587,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Maria V. Snyder",
+          "webUrl": "https://www.goodreads.com/user/show/1629797-maria-v-snyder",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.K1L8-RUu7-dpC919rvPhIA"
+          },
+          "followersCount": 17298
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.2BQYu1b-UrAvkseVb3Fggg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.2BQYu1b-UrAvkseVb3Fggg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:1629797"
+          },
+          "recommendFor": null,
+          "updatedAt": 1706530772714,
+          "createdAt": 1624677598198,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1625275738219,
+          "text": "The title of this book captured my interest right away. And on the top of the cover is printed: \"Authorized to Kill...And Sell Books\" Booksellers as bad-ass fighters?? I'm in! However, a few things made this a three star review. It's omniscient POV, which I'm not a fan. It creates too much distance between the characters and the reader - give me first person POV and I'm happy so this is definitely a preference thing.\u003cbr /\u003e\u003cbr /\u003eThe world was interesting - set in an alternate 1983 in London - the booksellers, both left and right handed are the ones that protect humans from the old world creatures. I did get bogged down in too much of the world building and there are so many Aunts and Uncles related to the main character, Merlin who is the Left-handed bookseller. I couldn't help thinking of him as Merlin the magician from the King Arthur legends and that didn't help as in this book he's supposed to be young and good looking (my mental picture is an old man with a long white beard :/ ). Either way lots of names and not a ton of explanation of what the booksellers do exactly.\u003cbr /\u003e\u003cbr /\u003eThe last quarter of the book was the best part as everything is revealed and there's lot of action. I hadn't read anything by Garth Nix, and was excited to read this, but perhaps I'm just not the target audience for this book.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/1629797?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/4062063266"
+          },
+          "likeCount": 31,
+          "viewerHasLiked": false,
+          "commentCount": 7
+        },
+        "User:50950278": {
+          "id": 50950278,
+          "__typename": "User",
+          "legacyId": 50950278,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1523874313i/50950278._UX200_CR0,1,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 204,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Iulia",
+          "webUrl": "https://www.goodreads.com/user/show/50950278-iulia",
+          "contributor": null,
+          "followersCount": 104
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.l7Y1lKq1a5V9i85oWnz8hg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.l7Y1lKq1a5V9i85oWnz8hg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:50950278"
+          },
+          "recommendFor": null,
+          "updatedAt": 1697102249770,
+          "createdAt": 1602880522714,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1602881250906,
+          "text": "I really, really liked this book! I feel like the blurb is great at explaining what it's about and illustrates the general vibe quite well, so if it sounds interesting to you, I'd say go for it, 'cause it delivers! For me, this book had just the right amount of whimsy, magic, and humor. Any setting other than \u003ci\u003e current times \u003c/i\u003e will do as far as I'm concerned, but I found 80's London to be especially vibrant and fascinating. I also loved the characters, especially the right-handed Vivien, and I really do hope this will turn into a series. because I haven't nearly had enough of this unique world and its quirky inhabitants. ",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/50950278?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "read-2020",
+                  "webUrl": "https://www.goodreads.com/review/list/50950278?shelf=read-2020"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3597069239"
+          },
+          "likeCount": 30,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:71353336": {
+          "id": 71353336,
+          "__typename": "User",
+          "legacyId": 71353336,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1643467857i/71353336._UX200_CR0,3,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 175,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Coco",
+          "webUrl": "https://www.goodreads.com/user/show/71353336-coco",
+          "contributor": null,
+          "followersCount": 31
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.bQZyVKPkFzxOjuw2HzDsbQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.bQZyVKPkFzxOjuw2HzDsbQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:71353336"
+          },
+          "recommendFor": null,
+          "updatedAt": 1654991676502,
+          "createdAt": 1650901036903,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1652380388430,
+          "text": "3'75✨\u003cbr /\u003e\u003cbr /\u003eEl año pasado leí \"Magia Angelical\" y fue sin duda de mis mejores lecturas del 2021. Quería volver a leer al autor por ello y dado que la sinopsis también me llamaba la atención, todo perfecto.\u003cbr /\u003e\u003cbr /\u003eY, aunque tiene una historia enganchante con una trama intrigante, personajes bien construidos y una atmósfera muy envolvente... no ha llegado a las expectativas que tenía por el otro libro :(.\u003cbr /\u003e\u003cbr /\u003eEstá ambientado en el año 1983 en un Londres algo alternativo y se mezcla la magia con la realidad: fantasía urbana. Como me pasó con \"Magia Angelical\", creo que el mundo que ha creado da para más de una historia: ofrece una sensación amplia, como si temporalmente ya hubiera estado y estará en un futuro.\u003cbr /\u003e\u003cbr /\u003eAdemás de conservar la paz entre lo mágico y lo no mágico, los libreros, como bien dice su profesión, se dedican a los libros. Me he anotado un montón de títulos y cuando buscaba qué estaba leyendo qué personaje me gustaba ver que el libro tenía relación con su personalidad también.\u003cbr /\u003e\u003cbr /\u003e¿Quién es el padre de Susan y qué relación tiene con todo lo que está ocurriendo? Es el misterio que está presente durante toda la novela. No creo que se pueda adivinar, no se dan las suficientes pistas para ello. Por consiguiente, mis calibraciones eran erróneas.\u003cbr /\u003e\u003cbr /\u003eMe han gustado mucho los personajes y el mensaje en sí que es Merlín para todo lector: gracias por normalizar que la ropa no tiene género. Aunque Susan era una buena protagonista, mi favorito fue la hermana de Merlín, empaticé mucho con ella.\u003cbr /\u003e\u003cbr /\u003eEl romance no lo terminé de ver :(. Precipitado, no soy de las de amor a los pocos días de conocerse :(.\u003cbr /\u003e\u003cbr /\u003eY como ya he hablado antes del final (que no me lo esperaba y que da para más, aunque es autoconclusivo), me despido con la siguiente pregunta:\u003cbr /\u003e\u003cbr /\u003e🙊 ¿Te ha llamado la atención? ¿Serías un librero zurdo (luchador) o diestro (intelectual)?",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/71353336?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/4671388621"
+          },
+          "likeCount": 29,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "Contributor:kca://author/amzn1.gr.author.v1.-QWhHVS66jcE4xg4-l6L0Q": {
+          "id": "kca://author/amzn1.gr.author.v1.-QWhHVS66jcE4xg4-l6L0Q",
+          "__typename": "Contributor",
+          "works": {
+            "__typename": "ContributorWorksConnection",
+            "totalCount": 26
+          }
+        },
+        "User:202724": {
+          "id": 202724,
+          "__typename": "User",
+          "legacyId": 202724,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1668889057i/202724._UX200_CR0,50,200,200_.jpg",
+          "isAuthor": true,
+          "textReviewsCount": 3212,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Jessica",
+          "webUrl": "https://www.goodreads.com/user/show/202724-jessica",
+          "contributor": {
+            "__ref": "Contributor:kca://author/amzn1.gr.author.v1.-QWhHVS66jcE4xg4-l6L0Q"
+          },
+          "followersCount": 5849
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.N8FGkp606QdSxXr9bFvolQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.N8FGkp606QdSxXr9bFvolQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:202724"
+          },
+          "recommendFor": null,
+          "updatedAt": 1713425028694,
+          "createdAt": 1610490155075,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1610490476398,
+          "text": "Booksellers are magical, didn't you know? They are not just there to defend the world against ignorance by supplying us with books, but they're also ready and willing to defend us against goblins, vampires, and other eldritch creatures! Or so Garth Nix says, and I am inclined to believe him. \u003cbr /\u003e\u003cbr /\u003eAnd here, in this shocking expose, we see Susan Arkshaw, a young woman who has come to London to try and find the father she has never met. Unfortunately, there are other forces out to find Susan, and so to the rescue come the mysterious and sexy Merlin, his badass sister Vivian, and the rest of their strange, wonderful clan of warrior booksellers!",
+          "rating": 5,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/202724?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "library",
+                  "webUrl": "https://www.goodreads.com/review/list/202724?shelf=library"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "audiobooks",
+                  "webUrl": "https://www.goodreads.com/review/list/202724?shelf=audiobooks"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "booksaboutbooks",
+                  "webUrl": "https://www.goodreads.com/review/list/202724?shelf=booksaboutbooks"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "historical-fiction",
+                  "webUrl": "https://www.goodreads.com/review/list/202724?shelf=historical-fiction"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/202724?shelf=fantasy"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3422335231"
+          },
+          "likeCount": 28,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:33043447": {
+          "id": 33043447,
+          "__typename": "User",
+          "legacyId": 33043447,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1405310387i/33043447.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 207,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Kasey Connors-Beron",
+          "webUrl": "https://www.goodreads.com/user/show/33043447-kasey-connors-beron",
+          "contributor": null,
+          "followersCount": 4
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.-ZCh9kky8bjR3P2G7jUJtA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.-ZCh9kky8bjR3P2G7jUJtA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:33043447"
+          },
+          "recommendFor": null,
+          "updatedAt": 1731413186842,
+          "createdAt": 1596059328188,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1596060165545,
+          "text": "I received a physical ARC of THE LEFT-HANDED BOOKSELLERS OF LONDON through a giveaway hosted by BookCon. \u003cbr /\u003e\u003cbr /\u003eThis was a rough one for me to get through, which I am really upset to say because the concept is great. I pictured it being like The Librarians, which I LOVED! But it was nothing like it at all. \u003cbr /\u003e\u003cbr /\u003eIt was truly remarkable that an entire book could be written in a tell, not show way and still get published. It was very much like “this happened, then that happened, and oh yeah that too”, which kept me disengaged from the entire book. \u003cbr /\u003e\u003cbr /\u003eOn top of that the main character, Susan, is treated like a 5-year-old who needs to be led around by the hand without being told anything. This is also how the reader is treated. It was almost like a concept of a world without the world actually existing. There were numerous times where something would happen and Susan would be confused (because falling into a magic world IS confusing) and those around her just push her questions aside with an “I’ll tell you later”. \u003cbr /\u003e\u003cbr /\u003eBy a third of the way through, I still didn’t understand anything about the world. Honestly, I’ve finished reading and I still feel lost. \u003cbr /\u003e\u003cbr /\u003eI gave this book 2 stars rather than 1 because I was able to finish it. But barely. I skimmed the last 40 pages even though there was a bunch of action. I just wasn’t invested in what happened. \u003cbr /\u003e\u003cbr /\u003eThis story could have been wonderful, but it fell flat in every way possible. I do not recommend reading this one and I’m tempted to not read anymore of Garth Nix’s books because I’m terrified that’s what they will all be like. ",
+          "rating": 2,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/33043447?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/3463779851"
+          },
+          "likeCount": 27,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:7494844": {
+          "id": 7494844,
+          "__typename": "User",
+          "legacyId": 7494844,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1645808644i/7494844._UX200_CR0,6,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1815,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "laurel [the suspected bibliophile]",
+          "webUrl": "https://www.goodreads.com/user/show/7494844-laurel-the-suspected-bibliophile",
+          "contributor": null,
+          "followersCount": 655
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.WQyirZljF3d-rnSE0OkyuQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.WQyirZljF3d-rnSE0OkyuQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:7494844"
+          },
+          "recommendFor": null,
+          "updatedAt": 1695237934452,
+          "createdAt": 1600429418213,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1603205336653,
+          "text": "It's a 1983 that's kinda different from actual 1983, but not by much? Either way, Susan Arkshaw is off to London to find her father, who she has never met. After her first lead goes way south, she stumbles into Merlin, a left-handed bookseller who topples her head-first into the world of magic, monsters and nefarious plots to gain power. Somehow, Susan as at the center of it all. She just has to find her father first.\u003cbr /\u003e\u003cbr /\u003eAfter reading the absolutely abysmally plotted and paced \u003ci\u003eAngel Mage\u003c/i\u003e, I was walking into this one with some trepidation. I \u003ci\u003elove\u003c/i\u003e classic Garth Nix, in that I love Sabriel and the original Abhorsen trilogy, but I haven't been able to find as much joy in any of his other works.\u003cbr /\u003e\u003cbr /\u003eMost seem to tread along the same lines: Great Mysterious Evil is about to arise, a teen (or group of teens) race to stop it. There is a chase scene (or several, or the entire book is a chase/journey) where the intrepid youngsters almost get caught or escape just in the nick of time. Much adrenaline is expended. The Great Evil is revealed right at the end, and defeated just in time. Generally someone almost dies and is brought back. There might be a love relationships revealed at the very end.\u003cbr /\u003e\u003cbr /\u003eI'm not gonna lie, there were some spoilers there, but if you've read a Garth Nix book recently, then you have...got this plot.\u003cbr /\u003e\u003cbr /\u003eAnywho, this \u003ci\u003ewas\u003c/i\u003e very similar to many of his other works, but I loved the call-outs to books, and the love of books and the magic system of this one.\u003cbr /\u003e\u003cbr /\u003eThere are left-handed booksellers who are all brawn and speed and rawr, and the right-handed ones, who are the brains and magic and thinkers. The two sides of the family (a very extended family) wear gloves on whatever hand is their dominant one, and they reminded me so much of the Clayr librarians that I kinda squeed and just kept on squeeing, because I LOVE \u003ci\u003eLirael\u003c/i\u003e.\u003cbr /\u003e\u003cbr /\u003eAnywho, the magic was pretty cool, as it dealt with a lot of earth magic and gods and whatnot of English mythology, was was interesting. And the magic itself was super cool. And I liked Merlin's genderfluidity. I was less intrigued by the whole cauldron premise, mainly because cauldrons have been done to death (thank you SJM for murdering this plot point).\u003cbr /\u003e\u003cbr /\u003eFair warning: the beginning (especially that horrific prologue) was...incredibly rough. I almost DNF'd before getting to chapter one, because I just did not give a fuck and the writing was clunky and painful.\u003cbr /\u003e\u003cbr /\u003eBut it got better, and I ended up clicking right along to the ending.\u003cbr /\u003e\u003cbr /\u003eIt's not \u003ci\u003eSabriel\u003c/i\u003e levels of awesome, but it was an enjoyable read with an interesting magic system (although the loophole ending is foreshadowed from a mile away).\u003cbr /\u003e\u003cbr /\u003e\u003ci\u003eI received this ARC from Edelweiss for an honest review\u003c/i\u003e",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/7494844?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2020-read",
+                  "webUrl": "https://www.goodreads.com/review/list/7494844?shelf=2020-read"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "arcs",
+                  "webUrl": "https://www.goodreads.com/review/list/7494844?shelf=arcs"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "alternate-history",
+                  "webUrl": "https://www.goodreads.com/review/list/7494844?shelf=alternate-history"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/7494844?shelf=fantasy"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "urban-fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/7494844?shelf=urban-fantasy"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ya-books",
+                  "webUrl": "https://www.goodreads.com/review/list/7494844?shelf=ya-books"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3546783750"
+          },
+          "likeCount": 26,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:36817401": {
+          "id": 36817401,
+          "__typename": "User",
+          "legacyId": 36817401,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1415677371i/36817401.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 3484,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Carrie",
+          "webUrl": "https://www.goodreads.com/user/show/36817401-carrie",
+          "contributor": null,
+          "followersCount": 1648
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.C3sjLK8BIZbSmvSmfJ9DeA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.C3sjLK8BIZbSmvSmfJ9DeA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:36817401"
+          },
+          "recommendFor": null,
+          "updatedAt": 1645763690750,
+          "createdAt": 1613311957703,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1639712801846,
+          "text": "The Left-Handed Booksellers of London by Garth Nix is a young adult historical fantasy standalone novel. The story in this one is set in 1983 making it historical but is a alternate version of history in the city of London.\u003cbr /\u003e\u003cbr /\u003eSusan Arkshaw has been working to track down just who her father is not having ever known the man. Susan has made it to London and found a man, Frank Thringley, she thinks may know something when that man is struck down into a cloud of dust before her very eyes. This is when Susan is pulled into a whole world of magic she never knew existed.\u003cbr /\u003e\u003cbr /\u003eBeing someone who normally loves to find an action packed adventure while reading I was surprised to find I didn’t end up enjoying this one more as it was one long adventure story. However, the book seemed to get off to a very slow start, one in which it felt as if dropped right into the middle of something. I think that for me if this one had a smoother start I would have been pulled in quicker but instead once the story flowed at a better rate I was just kind of so-so on the characters and adventure making this one just an ok read.\u003cbr /\u003e\u003cbr /\u003eI received an advance copy from the publisher via NetGalley.\u003cbr /\u003e\u003cbr /\u003eFor more reviews please visit \u003ca target=\"_blank\" rel=\"noopener nofollow\" href=\"https://carriesbookreviews.com/\"\u003ehttps://carriesbookreviews.com/\u003c/a\u003e",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/36817401?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "netgalley",
+                  "webUrl": "https://www.goodreads.com/review/list/36817401?shelf=netgalley"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3434675676"
+          },
+          "likeCount": 25,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:14002983": {
+          "id": 14002983,
+          "__typename": "User",
+          "legacyId": 14002983,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1641295530i/14002983._UY200_CR33,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 799,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Charlotte May",
+          "webUrl": "https://www.goodreads.com/user/show/14002983-charlotte-may",
+          "contributor": null,
+          "followersCount": 1267
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.nHEjuidyseaF3zmJw_l3Mg": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.nHEjuidyseaF3zmJw_l3Mg",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:14002983"
+          },
+          "recommendFor": null,
+          "updatedAt": 1640877452774,
+          "createdAt": 1640430720748,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1640430720748,
+          "text": "Book Christmas present #2",
+          "rating": 0,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "own-tbr",
+              "webUrl": "https://www.goodreads.com/review/list/14002983?shelf=own-tbr"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/3529880964"
+          },
+          "likeCount": 26,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:27036454": {
+          "id": 27036454,
+          "__typename": "User",
+          "legacyId": 27036454,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1596076376i/27036454._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 389,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "✨ Helena ✨",
+          "webUrl": "https://www.goodreads.com/user/show/27036454-helena",
+          "contributor": null,
+          "followersCount": 1099
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.fMKy3IKNNI1CnJwGRshM1w": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.fMKy3IKNNI1CnJwGRshM1w",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:27036454"
+          },
+          "recommendFor": null,
+          "updatedAt": 1680310577404,
+          "createdAt": 1598539696242,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1603647955686,
+          "text": "\u003ci\u003eI received this complimentary ARC from the publisher, in exchange for an honest review.\u003c/i\u003e",
+          "rating": 0,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "to-read",
+              "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=to-read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "young-adult",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=young-adult"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "annual-tbr",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=annual-tbr"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "hardback",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=hardback"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "arcs",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=arcs"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "magical-libraries",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=magical-libraries"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "book-box",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=book-box"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "signed",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=signed"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "ebook",
+                  "webUrl": "https://www.goodreads.com/review/list/27036454?shelf=ebook"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3185191104"
+          },
+          "likeCount": 22,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:33245157": {
+          "id": 33245157,
+          "__typename": "User",
+          "legacyId": 33245157,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1532870149i/33245157._UX200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 445,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Avada Kaddavra",
+          "webUrl": "https://www.goodreads.com/user/show/33245157-avada-kaddavra",
+          "contributor": null,
+          "followersCount": 72
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1._LAWR5VIEYEop6DH2F-bxw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1._LAWR5VIEYEop6DH2F-bxw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:33245157"
+          },
+          "recommendFor": null,
+          "updatedAt": 1678289064264,
+          "createdAt": 1648749715115,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1648750129259,
+          "text": "Meine Begeisterung für das Buch ist gegen Ende etwas abgeflacht, aber ansonsten hat es mir gut gefallen.\u003cbr /\u003eDie Story ist rasant und der Schreibstil enthält eine gute Portion trockenen Humor, genau wie ich es mag😉\u003cbr /\u003eLeider sind die Charaktere sehr blass geblieben, und zwar alle. Merlin wurde mir etwas zu exzentrisch dargestellt und Susan hat vieles einfach akzeptiert anstatt Fragen zu stellen. Zugegeben, ihr wurde auch ständig gesagt \"erklären wir dir später\" wenn sie gefragt hat😅\u003cbr /\u003eDer Showdown konnte mich irgendwie nicht so ganz überzeugen, zum Beispiel blieb für mich die Frage offen, warum die \"bösen\" Personen so gehandelt haben. Ich meine, was war der Nutzen?? Und was haben die Linkshänder eigentlich sonst den ganzen Tag gemacht, sie sagten ja es sei recht ruhig gewesen bevor Susan aufgetaucht ist🤔🤔\u003cbr /\u003eTrotzdem hat mir das Buch viel Spaß gemacht😁😁",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/33245157?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/4629280287"
+          },
+          "likeCount": 21,
+          "viewerHasLiked": false,
+          "commentCount": 2
+        },
+        "User:30279227": {
+          "id": 30279227,
+          "__typename": "User",
+          "legacyId": 30279227,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1543800303i/30279227._UY200_CR21,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 777,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "TS Chan",
+          "webUrl": "https://www.goodreads.com/user/show/30279227-ts-chan",
+          "contributor": null,
+          "followersCount": 934
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.0baKb-NnNZUBN2rHnoaiDw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.0baKb-NnNZUBN2rHnoaiDw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:30279227"
+          },
+          "recommendFor": null,
+          "updatedAt": 1666928690056,
+          "createdAt": 1608452560245,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1608550113250,
+          "text": "\u003ci\u003eARC received from the publisher, Gollancz, in exchange for an honest review.\u003c/i\u003e \u003cbr /\u003e\u003cbr /\u003e\u003cstrong\u003e\u003ci\u003eThe Left-Handed Booksellers of London\u003c/i\u003e was an enjoyable urban fantasy romp in an alternate 1980s-London which left me wanting more from this clever and fascinating world of magical secret service booksellers.\u003c/strong\u003e\u003cbr /\u003e\u003cbr /\u003eI had mixed experiences with Garth Nix's books so far. While I enjoyed \u003ci\u003eSabriel\u003c/i\u003e and the following two books in the \u003ci\u003eOld Kingdom\u003c/i\u003e series, I had a much less encouraging response to his last book, \u003ci\u003eAngel Mage\u003c/i\u003e, which felt more like an attempt towards adult fantasy than his usual. Nonetheless, the title of this book was too tempting not to give him another try as I'm a real sucker for books about books and/or bookshops.  Fortunately, I had a much better time reading this and wondered perhaps that Nix is just more suited to young adult writing.\u003cbr /\u003e\u003cbr /\u003eI'm not typically a YA reader and choose these books very selectively, instead preferring middle grade fiction which I found to be more endearing and to contain less aggravating tropes. What I do like about a well-written YA is that it's usually fun, fast-paced and easy to read as there will always be times for books that fit these criteria.  This book was a great choice for me after finishing some heavy emotional reads. It definitely fit what I was looking for with the added fun factor of two of my favourite things - books and bookshops.\u003cbr /\u003e\u003cbr /\u003eIt was 1983 in an alternate London where a select bunch of booksellers operating two bookshops in the city - one on Charing Cross Road and one in Mayfair - were also magical secret agents that protect the New World against the mythical beings of the Old World.  This gave me vibes of The Kingsman in an urban fantasy setting, and instead of a tailor shop we have bookshops.  The left-handed booksellers are the physical fighters while the right-handed ones are more intellectual and wields magic.  While I found the worldbuilding to be quite clever especially in part of the booksellers, the plot was fairly standard and predictable albeit adequately engaging to keep me entertained. Come to think of it, Nix always have had great worldbuilding ideas as evident in the \u003ci\u003eOld Kingdom series\u003c/i\u003e (I'm still impressed with the originality and depth of its magic system), and even in Angel Mage although the latter wasn't executed half as well in my opinion. \u003cbr /\u003e\u003cbr /\u003eThe story is somewhat a coming-of-age story for 18 years old Susan who went to London in search for her mysterious father whom she has never known. The story took off with lots of fantastical action right from the first chapter when she met Merlin St. Jacques, an attractive left-handed bookseller who killed her 'uncle' whom she was visiting to obtain information in her attempts to locate her father. Admittedly, Merlin's good looks seemed tropish especially when Susan found herself attracted to him. Nonetheless, I didn't find it particularly irksome in this case because I found Merlin to be quite a charming character without being a Gary Stu. I think I also fell in love with him a bit after he unintentionally killed an innocent and was so haunted by it that he needed to read a book to counterbalance that act of violence. Even though he also became interested in Susan, it was refreshingly not because of her looks or awesome abilities, but rather by her personality and ability to roll with the weird magical situations she was suddenly facing.\u003cbr /\u003e\u003cbr /\u003eI loved that this book was inspired by Nix's own visits to the United Kingdom, the first time coincidentally being in 1983, and his gratitude to booksellers which came across in his Acknowledgement. Of course, there were numerous references to books and several scenes in the literally magical bookshops, which obviously made me enjoy this title much more than if these were absent. What made it even more magical was the allusion to an urban fantasy London, which in my opinion is the book capital of the world. While the pacing slows down a bit during the bookshop scenes, I was too enchanted by these scenes to be bothered by it.\u003cbr /\u003e\u003cbr /\u003eAll in all, I was delighted by how much I enjoyed reading \u003ci\u003eThe Left-Handed Booksellers of London\u003c/i\u003e. If Nix continues writing in this world, I'll pick it up the next one in a heartbeat.\u003cbr /\u003e\u003cbr /\u003e\u003cstrong\u003eYou can purchase the book from \u003cu\u003e\u003ca href=\"https://www.bookdepository.com/Left-Handed-Booksellers-London-Garth-Nix/9781473227767\" rel=\"nofollow noopener\"\u003eBook Depository (Free Shipping)\u003c/a\u003e\u003c/u\u003e | \u003cu\u003e\u003ca href=\"https://bookshop.org/books/the-left-handed-booksellers-of-london/9780062683250\" rel=\"nofollow noopener\"\u003eBookshop.Org (Support Independent Bookstores\u003c/a\u003e | \u003cu\u003e\u003ca href=\"https://www.amazon.com/Left-Handed-Booksellers-London-Garth-Nix-ebook/dp/B0831Q267M\" rel=\"nofollow noopener\"\u003eAmazon US\u003c/a\u003e\u003c/u\u003e | \u003cu\u003e\u003ca href=\"https://www.amazon.co.uk/Left-Handed-Booksellers-London-Garth-Nix-ebook/dp/B083R1RF51\" rel=\"nofollow noopener\"\u003eAmazon UK\u003c/a\u003e\u003c/u\u003e\u003c/u\u003e\u003c/strong\u003e\u003cbr /\u003e\u003cbr /\u003e\u003ci\u003eYou can find \u003ca href=\"https://wp.me/pa0WBY-2Pj\" rel=\"nofollow noopener\"\u003ethis\u003c/a\u003e and my other reviews at \u003ca href=\"http://novelnotions.net/category/book-reviews/tss-reviews/\" rel=\"nofollow noopener\"\u003eNovel Notions.\u003c/a\u003e\u003c/i\u003e",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/30279227?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "arc-review-copy",
+                  "webUrl": "https://www.goodreads.com/review/list/30279227?shelf=arc-review-copy"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3552580825"
+          },
+          "likeCount": 23,
+          "viewerHasLiked": false,
+          "commentCount": 4
+        },
+        "User:54489623": {
+          "id": 54489623,
+          "__typename": "User",
+          "legacyId": 54489623,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1459976325i/54489623.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1312,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "The Captain",
+          "webUrl": "https://www.goodreads.com/user/show/54489623-the-captain",
+          "contributor": null,
+          "followersCount": 493
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.3YEO5tA_dn0cC2E91-XhgA": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.3YEO5tA_dn0cC2E91-XhgA",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:54489623"
+          },
+          "recommendFor": null,
+          "updatedAt": 1677074730458,
+          "createdAt": 1601599159520,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1601599219639,
+          "text": "Ahoy there me mateys!  It be no secret that I adore Garth Nix.  He was the first author featured in me \u003ca href=\"https://thecaptainsquartersblog.wordpress.com/2016/04/01/broadside-no-1-garth-nix/\" rel=\"nofollow noopener\"\u003eBroadside No. 1\u003c/a\u003e and I have re-read the Old Kingdom series many times over the years.  So I was super happy to finally read his newest standalone book.\u003cbr /\u003e\u003cbr /\u003eI have to admit that this be different in what I was expecting.  It does not have Nix's usual complex world building or characterization.  The beginning was a bit rough in the sense that the main character, Susan, has no idea what is going on and no one will tell her anything.  So the first half of the book is Susan being dragged everywhere and things happening to her and no real explanation of anything.  In fact the booksellers and other world really never do get dealt with satisfactorily.  Also the book is set in 1983 but it could have been set at any time other than a few specific items.\u003cbr /\u003e\u003cbr /\u003eThat said, the second half picked up in terms of action and I liked it a lot more.  Susan finally takes a more active role.  There are delightful forays into British folklore and myth.  I enjoyed the playful word usage.  I enjoyed Merlin being gender fluid and having a wonderful relationship with his sister.  The ending was fun.  I have no regrets about reading this one but I am not sure I would ever read it again.  Arrrrr!\u003cbr /\u003e\u003cbr /\u003eSide note: The story of how and why Nix chose to write this book were cute.",
+          "rating": 3,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/54489623?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "fantasy",
+                  "webUrl": "https://www.goodreads.com/review/list/54489623?shelf=fantasy"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3217422328"
+          },
+          "likeCount": 18,
+          "viewerHasLiked": false,
+          "commentCount": 1
+        },
+        "User:5630113": {
+          "id": 5630113,
+          "__typename": "User",
+          "legacyId": 5630113,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1572483937i/5630113._UX200_CR0,34,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1241,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Audrey",
+          "webUrl": "https://www.goodreads.com/user/show/5630113-audrey",
+          "contributor": null,
+          "followersCount": 206
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.dKVdk1dKOqiNQW_OYHXEYw": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.dKVdk1dKOqiNQW_OYHXEYw",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:5630113"
+          },
+          "recommendFor": null,
+          "updatedAt": 1691370250800,
+          "createdAt": 1614979117333,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1615870447914,
+          "text": "A stand-alone from Garth Nix, who has never disappointed me, this stars Merlin ... \u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://images.gr-assets.com/hostedimages/1615869521ra/31019017.gif\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003e... and Susan. \u003cbr\u003e\u003cbr\u003eSet in 1983 technically makes this historical fiction, but as that thought makes me cry, I will call it a recent contemporary.\u003cbr\u003e\u003cbr\u003eSusan, a new adult, decides it’s time to find out who her father is. This attracts the attention of mythical creatures and the booksellers who monitor them. \u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://images.gr-assets.com/hostedimages/1584711887ra/29137260.gif\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003eThe story gradually grows grander and bigger until it’s nonstop action—confronting monsters, figuring out who’s a traitor, and all that good stuff—like an avalanche. \u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://images.gr-assets.com/hostedimages/1569973194ra/28230015.gif\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003eI thought I had reached the big climactic battle, but it turned out there was another hour and another big battle to come.\u003cbr\u003e\u003cbr\u003eThere are a lot of books mentioned, but I was super excited to see Black Hearts in Battersea mentioned, which is so underrated. One of the mythical creatures mentioned is the Cauldron-born. I was familiar with these because of the Chronicles of Prydain, so it was interesting to see them in another context.\u003cbr\u003e\u003cbr\u003e\u003cimg src=\"https://images.gr-assets.com/hostedimages/1615870430ra/31019037.gif\" class=\"gr-hostedUserImg\" loading=\"lazy\"\u003e\u003cbr\u003e\u003cbr\u003eOne of the better urban fantasies I’ve found.\u003cbr\u003e\u003cbr\u003eLanguage: Occasional strong language\u003cbr\u003eSexual Content: none\u003cbr\u003eViolence: hand-to-hand combat, monster violence\u003cbr\u003eHarm to Animals: \u003cinput type=\"checkbox\" class=\"spoiler__control\" aria-label=\"The following text has been marked spoiler. Toggle checkbox to reveal or hide.\" onchange=\"this.labels[0].setAttribute('aria-hidden', !this.checked);\" id=\"036a14fd-e351-40fb-b372-2a020992c376\" /\u003e\u003clabel aria-hidden=\"true\" class=\"spoiler\" for=\"036a14fd-e351-40fb-b372-2a020992c376\"\u003eA wolf is injured but recovers.\u003c/label\u003e\u003cbr\u003eHarm to Children: \u003cinput type=\"checkbox\" class=\"spoiler__control\" aria-label=\"The following text has been marked spoiler. Toggle checkbox to reveal or hide.\" onchange=\"this.labels[0].setAttribute('aria-hidden', !this.checked);\" id=\"ad4de3b3-612c-47f0-b147-01ff1ce269ca\" /\u003e\u003clabel aria-hidden=\"true\" class=\"spoiler\" for=\"ad4de3b3-612c-47f0-b147-01ff1ce269ca\"\u003eNone\u003c/label\u003e\u003cbr\u003eOther (Triggers): \u003cinput type=\"checkbox\" class=\"spoiler__control\" aria-label=\"The following text has been marked spoiler. Toggle checkbox to reveal or hide.\" onchange=\"this.labels[0].setAttribute('aria-hidden', !this.checked);\" id=\"0a9b3e2d-5a40-455e-9c6f-0661a94fd8d6\" /\u003e\u003clabel aria-hidden=\"true\" class=\"spoiler\" for=\"0a9b3e2d-5a40-455e-9c6f-0661a94fd8d6\"\u003eNone\u003c/label\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e\u003c/[\"br\"]\u003e",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/5630113?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "uf-paranormal-horror",
+                  "webUrl": "https://www.goodreads.com/review/list/5630113?shelf=uf-paranormal-horror"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2021-books",
+                  "webUrl": "https://www.goodreads.com/review/list/5630113?shelf=2021-books"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3838323800"
+          },
+          "likeCount": 17,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:75536567": {
+          "id": 75536567,
+          "__typename": "User",
+          "legacyId": 75536567,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1654934523i/75536567._UY200_CR0,0,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1479,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Muffinsandbooks",
+          "webUrl": "https://www.goodreads.com/user/show/75536567-muffinsandbooks",
+          "contributor": null,
+          "followersCount": 1122
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.SCIluIL8enKhGHr4CUUV4g": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.SCIluIL8enKhGHr4CUUV4g",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:75536567"
+          },
+          "recommendFor": null,
+          "updatedAt": 1660740846422,
+          "createdAt": 1653892022761,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1653892179249,
+          "text": "Un roman hyyyyyper original que j’ai adoré ! On est plongés très rapidement dans l’ambiance et l’univers, c’est bien pensé et très bien mené, le concept est, comme je le disais, très original et c’est addictif. Il y a de l’action et des rebondissements, on ne voit pas défiler les pages, emportés par la découverte de ce monde surnaturel, de ses codes et de ses mystères. \u003cbr /\u003eJ’ai aussi beaucoup les personnages et leurs interactions. Breeef, une très chouette lecture, avec de très fortes vibes à la Supernatural ! ",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/75536567?shelf=read"
+            },
+            "taggings": [],
+            "webUrl": "https://www.goodreads.com/review/show/4744943807"
+          },
+          "likeCount": 17,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        },
+        "User:9059923": {
+          "id": 9059923,
+          "__typename": "User",
+          "legacyId": 9059923,
+          "imageUrlSquare": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1672937236i/9059923._UX200_CR0,10,200,200_.jpg",
+          "isAuthor": false,
+          "textReviewsCount": 1322,
+          "viewerRelationshipStatus": {
+            "__typename": "ViewerRelationshipStatus",
+            "isBlockedByViewer": false,
+            "isFollowing": false,
+            "isFriend": false
+          },
+          "name": "Sarah-Hope",
+          "webUrl": "https://www.goodreads.com/user/show/9059923-sarah-hope",
+          "contributor": null,
+          "followersCount": 172
+        },
+        "Review:kca://review:goodreads/amzn1.gr.review:goodreads.v1.ptN8oLQUct3lX6ugn-3LQQ": {
+          "id": "kca://review:goodreads/amzn1.gr.review:goodreads.v1.ptN8oLQUct3lX6ugn-3LQQ",
+          "__typename": "Review",
+          "creator": {
+            "__ref": "User:9059923"
+          },
+          "recommendFor": null,
+          "updatedAt": 1628254825445,
+          "createdAt": 1593972317196,
+          "spoilerStatus": false,
+          "lastRevisionAt": 1593972935568,
+          "text": "Garth Nix's The Left-Handed Booksellers of London is one of those young adult novels that easily makes the crossing to adult reading. Set in a version of 1983 London, where the worlds of the ordinary and the magical, the present and ages past, overlap. The Left-Handed Booksellers of London follows the journey of Susan Arkshaw, 18 and about to begin art school, on a hunt for a father she's never known, as she's flung into the dangers of that magical world in the space of a few hours.\u003cbr /\u003e\u003cbr /\u003eWhat makes this novel a good adult read, as well as a good YA one?\u003cbr /\u003e• A complex ethical substrate that leaves the reader with relatively few fully bad or fully good characters (though there are some) and that poses open-ended questions.\u003cbr /\u003e• A playfulness with gender that is both affirming and thought-provoking.\u003cbr /\u003e• Characters who know how they want to live their lives and work to build those lives with integrity and imagination.\u003cbr /\u003eAll that said, this is not a \"heavy\" read. It's one of those books you'll find yourself staying up late to finish—and not regretting that choice the next morning.\u003cbr /\u003e\u003cbr /\u003eThis novel works as a stand-alone, but I'm hoping Nix has some ideas for sequels percolating. I would gladly spend more time in Susan Arkshaw's London.\u003cbr /\u003e\u003cbr /\u003eI received a free review copy of this title from the publisher via NetGalley. The opinions are my own.",
+          "rating": 4,
+          "shelving": {
+            "__typename": "Shelving",
+            "shelf": {
+              "__typename": "Shelf",
+              "name": "read",
+              "webUrl": "https://www.goodreads.com/review/list/9059923?shelf=read"
+            },
+            "taggings": [
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "2020",
+                  "webUrl": "https://www.goodreads.com/review/list/9059923?shelf=2020"
+                }
+              },
+              {
+                "__typename": "Tagging",
+                "tag": {
+                  "__typename": "Tag",
+                  "name": "netgalley",
+                  "webUrl": "https://www.goodreads.com/review/list/9059923?shelf=netgalley"
+                }
+              }
+            ],
+            "webUrl": "https://www.goodreads.com/review/show/3424061090"
+          },
+          "likeCount": 16,
+          "viewerHasLiked": false,
+          "commentCount": 0
+        }
+      },
+      "authContextParams": {
+        "signedIn": true,
+        "customerId": "A2TSKK3W6K2FR1",
+        "legacyCustomerId": 85386442,
+        "role": "user"
+      },
+      "userAgentContextParams": {
+        "isWebView": null
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
+    },
+    "__N_SSP": true
+  },
+  "page": "/book/show/[book_id]",
+  "query": {
+    "book_id": "49867186-the-left-handed-booksellers-of-london"
+  },
+  "buildId": "08wwXy1OZ3fVOX0Zzn6n7",
+  "runtimeConfig": {
+    "env": "Production"
+  },
+  "isFallback": false,
+  "gssp": true,
+  "customServer": true,
+  "locales": [
+    "en",
+    "ab",
+    "aa",
+    "af",
+    "ak",
+    "sq",
+    "am",
+    "ar",
+    "an",
+    "hy",
+    "as",
+    "av",
+    "ae",
+    "ay",
+    "az",
+    "bm",
+    "ba",
+    "eu",
+    "be",
+    "bn",
+    "bh",
+    "bi",
+    "bs",
+    "br",
+    "bg",
+    "my",
+    "ca",
+    "ch",
+    "ce",
+    "ceb",
+    "ny",
+    "zh",
+    "zh-TW",
+    "cv",
+    "kw",
+    "co",
+    "cr",
+    "hr",
+    "cs",
+    "da",
+    "dv",
+    "nl",
+    "eo",
+    "et",
+    "ee",
+    "fo",
+    "fj",
+    "fi",
+    "fr",
+    "ff",
+    "gl",
+    "ka",
+    "de",
+    "el",
+    "gn",
+    "gu",
+    "ht",
+    "ha",
+    "he",
+    "hz",
+    "hi",
+    "ho",
+    "hu",
+    "ia",
+    "id",
+    "ie",
+    "ilo",
+    "ga",
+    "ig",
+    "ik",
+    "io",
+    "is",
+    "it",
+    "iu",
+    "ja",
+    "jv",
+    "kl",
+    "kn",
+    "kr",
+    "ks",
+    "kk",
+    "km",
+    "ki",
+    "rw",
+    "ky",
+    "kv",
+    "kg",
+    "ko",
+    "ku",
+    "kj",
+    "la",
+    "lb",
+    "lg",
+    "li",
+    "ln",
+    "lo",
+    "lt",
+    "lu",
+    "lv",
+    "gv",
+    "mk",
+    "mg",
+    "ms",
+    "ml",
+    "mt",
+    "mi",
+    "mr",
+    "mh",
+    "mn",
+    "na",
+    "nv",
+    "nb",
+    "nd",
+    "ne",
+    "new",
+    "ng",
+    "nn",
+    "no",
+    "ii",
+    "nr",
+    "oc",
+    "oj",
+    "cu",
+    "om",
+    "or",
+    "os",
+    "pa",
+    "pi",
+    "fa",
+    "pl",
+    "ps",
+    "pt",
+    "qu",
+    "rm",
+    "rn",
+    "ro",
+    "ru",
+    "sa",
+    "sc",
+    "sd",
+    "se",
+    "sm",
+    "sg",
+    "sr",
+    "gd",
+    "sn",
+    "si",
+    "sk",
+    "sl",
+    "so",
+    "st",
+    "es",
+    "su",
+    "sw",
+    "ss",
+    "sv",
+    "ta",
+    "te",
+    "tg",
+    "th",
+    "ti",
+    "bo",
+    "tk",
+    "tl",
+    "tn",
+    "to",
+    "tr",
+    "ts",
+    "tt",
+    "tw",
+    "ty",
+    "ug",
+    "uk",
+    "ur",
+    "uz",
+    "ve",
+    "vi",
+    "vo",
+    "wa",
+    "cy",
+    "wo",
+    "fy",
+    "xh",
+    "yi",
+    "yo",
+    "za"
+  ]
+}
