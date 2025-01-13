@@ -342,6 +342,11 @@ public class ShowBookDetailsViewModel
                                        normalDetailListFormatter)
                            .addRelatedViews(R.id.lbl_bookshelves));
 
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.tags, Book.BKEY_TAG_LIST,
+                                       DBKey.FK_TAG,
+                                       normalDetailListFormatter)
+                           .addRelatedViews(R.id.lbl_tags));
+
         fields.add(new TextViewField<>(FragmentId.Main, R.id.date_acquired,
                                        DBKey.DATE_ACQUIRED,
                                        dateFormatter)

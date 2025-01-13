@@ -56,11 +56,29 @@
         />
 
     <TextView
+        android:id="@+id/lbl_tags"
+        style="@style/Label"
+        android:text="@string/lbl_tags"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bookshelves"
+        />
+
+    <TextView
+        android:id="@+id/tags"
+        style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_tags"
+        app:layout_constraintTop_toBottomOf="@id/lbl_tags"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/genre/name"
+        />
+
+    <TextView
         android:id="@+id/lbl_notes"
         style="@style/Label"
         android:text="@string/lbl_personal_notes"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bookshelves"
+        app:layout_constraintTop_toBottomOf="@id/tags"
         />
 
     <TextView
