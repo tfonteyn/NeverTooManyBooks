@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BedethequeCacheDaoImpl;
@@ -88,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.PublisherDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -199,6 +201,8 @@ public class ServiceLocator {
     private StripInfoDao stripInfoDao;
     @Nullable
     private StyleDao styleDao;
+    @Nullable
+    private TagDao tagDao;
     @Nullable
     private TocEntryDao tocEntryDao;
 
@@ -535,6 +539,7 @@ public class ServiceLocator {
                                           this::getTocEntryDao,
                                           this::getLoaneeDao,
                                           this::getIdentifierDao,
+                                          this::getTagDao,
                                           this::getCalibreDao,
                                           this::getStripInfoDao,
                                           this::getFtsDao,
@@ -738,6 +743,16 @@ public class ServiceLocator {
             }
         }
         return styleDao;
+    }
+
+    @NonNull
+    public TagDao getTagDao() {
+        synchronized (this) {
+            if (tagDao == null) {
+                tagDao = new TagDaoImpl(getDb());
+            }
+        }
+        return tagDao;
     }
 
     @NonNull

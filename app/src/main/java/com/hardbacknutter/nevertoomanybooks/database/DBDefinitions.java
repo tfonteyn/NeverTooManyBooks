@@ -139,6 +139,8 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_DELETED_BOOKS;
     /** Basic table definition. */
     public static final TableDefinition TBL_IDENTIFIERS;
+    /** Basic table definition. */
+    public static final TableDefinition TBL_TAGS;
 
     /** link table. */
     public static final TableDefinition TBL_BOOK_BOOKSHELF;
@@ -154,6 +156,8 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
     /** link table. */
     public static final TableDefinition TBL_BOOK_IDENTIFIER;
+    /** link table. */
+    public static final TableDefinition TBL_BOOK_TAG;
 
     /** Map alternative names for Authors. */
     public static final TableDefinition TBL_PSEUDONYM_AUTHOR;
@@ -197,6 +201,8 @@ public final class DBDefinitions {
     public static final Domain DOM_FK_CALIBRE_LIBRARY;
     /** Foreign key. */
     public static final Domain DOM_FK_IDENTIFIER;
+    /** Foreign key. */
+    public static final Domain DOM_FK_TAG;
     /**
      * Foreign key.
      * When a style is deleted, this key will be (re)set to
@@ -224,6 +230,9 @@ public final class DBDefinitions {
     public static final Domain DOM_IDENT_TYPE;
     public static final Domain DOM_IDENT_NAME;
     public static final Domain DOM_IDENT_SID;
+
+    /** {@link #TBL_TAGS}. */
+    public static final Domain DOM_TAG;
 
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
@@ -566,6 +575,7 @@ public final class DBDefinitions {
         TBL_TOC_ENTRIES = new TableDefinition("anthology", "an");
 
         TBL_IDENTIFIERS = new TableDefinition("identifiers", "ids");
+        TBL_TAGS = new TableDefinition("tags", "tags");
 
         TBL_PSEUDONYM_AUTHOR = new TableDefinition("pseudonym_author", "ap");
 
@@ -576,6 +586,7 @@ public final class DBDefinitions {
         TBL_BOOK_LOANEE = new TableDefinition("loan", "l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology", "bat");
         TBL_BOOK_IDENTIFIER = new TableDefinition("book_identifiers", "bid");
+        TBL_BOOK_TAG = new TableDefinition("book_tags", "btgs");
 
         TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib", "clb_l");
         TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib", "clb_vl");
@@ -641,6 +652,11 @@ public final class DBDefinitions {
                         .references(TBL_IDENTIFIERS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
 
+        DOM_FK_TAG =
+                new Domain.Builder(DBKey.FK_TAG, SqLiteDataType.Integer)
+                        .notNull()
+                        .references(TBL_TAGS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
+                        .build();
         /* ======================================================================================
          *  Multi table domains
          * ====================================================================================== */
@@ -989,6 +1005,11 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.AUTO_UPDATE, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(true)
+                        .build();
+
+        DOM_TAG =
+                new Domain.Builder(DBKey.TAG, SqLiteDataType.Text)
+                        .notNull()
                         .build();
 
         /* ======================================================================================
@@ -1417,6 +1438,13 @@ public final class DBDefinitions {
                 .addIndex(DBKey.IDENT_KEY, true, DOM_IDENT_KEY);
         ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);
 
+        TBL_TAGS
+                .addDomains(DOM_PK_ID,
+                            DOM_TAG)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKey.TAG, false, DOM_TAG);
+        ALL_TABLES.put(TBL_TAGS.getName(), TBL_TAGS);
+
         TBL_AUTHORS
                 .addDomains(DOM_PK_ID,
                             DOM_AUTHOR_FAMILY_NAME,
@@ -1642,6 +1670,14 @@ public final class DBDefinitions {
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addIndex(DBKey.FK_BOOK, true, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_LOANEE.getName(), TBL_BOOK_LOANEE);
+
+        TBL_BOOK_TAG
+                .addDomains(DOM_FK_BOOK,
+                            DOM_FK_TAG)
+                .setPrimaryKey(DOM_FK_BOOK, DOM_FK_TAG)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_TAGS, DOM_FK_TAG);
+        ALL_TABLES.put(TBL_BOOK_TAG.getName(), TBL_BOOK_TAG);
 
         TBL_BOOK_IDENTIFIER
                 .addDomains(DOM_FK_BOOK,

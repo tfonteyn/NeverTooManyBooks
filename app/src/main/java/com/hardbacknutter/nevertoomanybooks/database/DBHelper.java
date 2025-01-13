@@ -87,6 +87,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
@@ -96,6 +97,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PS
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
@@ -852,6 +854,9 @@ public class DBHelper
             TBL_BOOK_IDENTIFIER.create(db, true);
             IdentifierDaoImpl.onPostCreate(context, db);
             LegacyUpgrades.migrateV35Sids(db);
+
+            TBL_TAGS.create(db, true);
+            TBL_BOOK_TAG.create(db, true);
 
             // StripInfo collection support was never finished nor activated in a release build.
             // Furthermore, it turns out each book with a "stripinfo" SID always wrote

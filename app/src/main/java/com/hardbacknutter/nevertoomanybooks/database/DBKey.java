@@ -51,6 +51,8 @@ public final class DBKey {
     public static final String FK_CALIBRE_LIBRARY = "clb_lib_id";
     /** Foreign key. */
     public static final String FK_IDENTIFIER = "ident_id";
+    /** Foreign key. */
+    public static final String FK_TAG = "tag";
 
     /*
      * ======================================================================================
@@ -259,6 +261,9 @@ public final class DBKey {
 
     /** Flag: the user can 'lock' (i.e. set 'false') a book from being automatically updated. */
     public static final String AUTO_UPDATE = "auto_update";
+
+    /** {@link DBDefinitions#TBL_TAGS}. */
+    public static final String TAG = "tag";
 
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */
     public static final String LOANEE_NAME = "loaned_to";

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,11 +34,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /** @noinspection CheckStyle */
@@ -175,6 +177,27 @@ final class Triggers {
                + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_PUBLISHER.getName()
                + " WHERE " + DBKey.FK_PUBLISHER + "=OLD." + DBKey.PK_ID + ");"
+               + " END";
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);
+        db.execSQL(CREATE_TRIGGER_ + name + ' ' + body);
+
+        /*
+         * Update a {@link Tag}
+         *
+         * Update the books last-update-date.
+         *
+         * dev note: "after_update_on" is missing a "_" at the end!
+         */
+        name = "after_update_on" + TBL_TAGS.getName();
+        body = AFTER_UPDATE_ON_ + TBL_TAGS.getName()
+               + " FOR EACH ROW"
+               + " BEGIN"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + " WHERE " + DBKey.PK_ID + " IN "
+               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_TAG.getName()
+               + " WHERE " + DBKey.FK_TAG + "=OLD." + DBKey.PK_ID + ");"
                + " END";
 
         db.execSQL(DROP_TRIGGER_IF_EXISTS_ + " " + name);

@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -127,6 +128,8 @@ public class BookDaoImpl
     @NonNull
     private final Supplier<IdentifierDao> identifierDaoSupplier;
     @NonNull
+    private final Supplier<TagDao> tagDaoSupplier;
+    @NonNull
     private final Supplier<CalibreDao> calibreDaoSupplier;
     @NonNull
     private final Supplier<StripInfoDao> stripInfoDaoSupplier;
@@ -164,6 +167,7 @@ public class BookDaoImpl
                        @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
                        @NonNull final Supplier<LoaneeDao> loaneeDaoDaoSupplier,
                        @NonNull final Supplier<IdentifierDao> identifierDaoSupplier,
+                       @NonNull final Supplier<TagDao> tagDaoSupplier,
                        @NonNull final Supplier<CalibreDao> calibreDaoSupplier,
                        @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,
                        @NonNull final Supplier<FtsDao> ftsDaoSupplier,
@@ -178,6 +182,7 @@ public class BookDaoImpl
         this.tocEntryDaoSupplier = tocEntryDaoSupplier;
         this.loaneeDaoDaoSupplier = loaneeDaoDaoSupplier;
         this.identifierDaoSupplier = identifierDaoSupplier;
+        this.tagDaoSupplier = tagDaoSupplier;
         this.calibreDaoSupplier = calibreDaoSupplier;
         this.stripInfoDaoSupplier = stripInfoDaoSupplier;
         this.ftsDaoSupplier = ftsDaoSupplier;
@@ -540,6 +545,16 @@ public class BookDaoImpl
                                                      book.getId(),
                                                      book.getToc(),
                                                      tocEntry -> bookLocale);
+        }
+
+        if (book.contains(Book.BKEY_TAG_LIST)) {
+            // Tags are two steps away; they can exist in other books
+            // Hence we will both insert new entries
+            // AND update existing ones as needed.
+            tagDaoSupplier.get().insertOrUpdate(context,
+                                                book.getId(),
+                                                book.getTags(),
+                                                tag -> bookLocale);
         }
 
         identifierDaoSupplier.get().insertOrUpdate(book);

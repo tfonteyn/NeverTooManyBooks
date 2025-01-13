@@ -161,6 +161,12 @@ public class Book
     public static final String BKEY_BOOKSHELF_LIST = "bookshelf_list";
 
     /**
+     * Bundle key for {@code ArrayList<Tag>}.
+     * <strong>Used in export/import, NEVER change the string</strong>
+     */
+    public static final String BKEY_TAG_LIST = "tag_list";
+
+    /**
      * Not (yet) used to group {@link Identifier.Value}s in a list.
      * <strong>Used in export/import, NEVER change the string</strong>
      */
@@ -351,6 +357,7 @@ public class Book
         setPublishers(serviceLocator.getPublisherDao().getByBookId(bookId));
         setToc(serviceLocator.getTocEntryDao().getByBookId(bookId));
         setIdentifiers(serviceLocator.getIdentifierDao().getByBookId(bookId));
+        setTags(serviceLocator.getTagDao().getByBookId(bookId));
 
         // do NOT preload the full Calibre library object. We hardly ever need it as such.
         // see #getCalibreLibrary
@@ -416,6 +423,9 @@ public class Book
         }
         if (duplicate.contains(BKEY_TOC_LIST)) {
             duplicate.setToc(getToc());
+        }
+        if (duplicate.contains(BKEY_TAG_LIST)) {
+            duplicate.setTags(getTags());
         }
 
         // publication data
@@ -1008,6 +1018,25 @@ public class Book
      */
     public void setToc(@NonNull final Collection<TocEntry> tocEntries) {
         putParcelableCollection(BKEY_TOC_LIST, tocEntries);
+    }
+
+    /**
+     * Get the list of tags.
+     *
+     * @return List
+     */
+    @NonNull
+    public List<Tag> getTags() {
+        return getParcelableArrayList(BKEY_TAG_LIST);
+    }
+
+    /**
+     * Set/replace the list of tags.
+     *
+     * @param tags list
+     */
+    public void setTags(@NonNull final Collection<Tag> tags) {
+        putParcelableCollection(BKEY_TAG_LIST, tags);
     }
 
     /**

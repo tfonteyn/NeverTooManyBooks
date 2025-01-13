@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
@@ -72,6 +73,7 @@ public class BookCoder
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
+    private final JsonCoder<Tag> tagCoder = new TagCoder();
     private final IdentifierCoder identifierCoder = new IdentifierCoder();
     @NonNull
     private final RealNumberParser realNumberParser;
@@ -155,6 +157,13 @@ public class BookCoder
                 final List<TocEntry> list = book.getToc();
                 if (!list.isEmpty()) {
                     out.put(key, tocEntryCoder.encode(list));
+                }
+                return;
+            }
+            case Book.BKEY_TAG_LIST: {
+                final List<Tag> list = book.getTags();
+                if (!list.isEmpty()) {
+                    out.put(key, tagCoder.encode(list));
                 }
                 return;
             }
@@ -256,6 +265,10 @@ public class BookCoder
                 }
                 case Book.BKEY_TOC_LIST: {
                     book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
+                    break;
+                }
+                case Book.BKEY_TAG_LIST: {
+                    book.setTags(tagCoder.decode(data.getJSONArray(key)));
                     break;
                 }
                 case Book.BKEY_IDENTIFIER_LIST: {

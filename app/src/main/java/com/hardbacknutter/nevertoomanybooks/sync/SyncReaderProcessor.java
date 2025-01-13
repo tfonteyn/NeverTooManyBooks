@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -142,15 +142,14 @@ public class SyncReaderProcessor {
                     case Book.BKEY_SERIES_LIST:
                     case Book.BKEY_PUBLISHER_LIST:
                     case Book.BKEY_TOC_LIST:
-                    case Book.BKEY_BOOKSHELF_LIST: {
+                    case Book.BKEY_BOOKSHELF_LIST:
+                    case Book.BKEY_TAG_LIST: {
                         if (localBook.contains(field.getKey())) {
-                            final List<Parcelable> list =
-                                    localBook.getParcelableArrayList(field.getKey());
-                            return list.isEmpty();
+                            return localBook.getParcelableArrayList(field.getKey()).isEmpty();
                         }
                         return false;
                     }
-                    default:
+                    default: {
                         // If it's a cover...
                         if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
                             final String uuid = localBook.getString(DBKey.BOOK_UUID);
@@ -170,6 +169,7 @@ public class SyncReaderProcessor {
                             final String value = localBook.getString(field.getKey(), null);
                             return value == null || value.isEmpty() || "0".equals(value);
                         }
+                    }
                 }
             }
             case Skip:
@@ -337,18 +337,20 @@ public class SyncReaderProcessor {
             case Book.BKEY_PUBLISHER_LIST:
             case Book.BKEY_TOC_LIST:
             case Book.BKEY_BOOKSHELF_LIST:
+            case Book.BKEY_TAG_LIST: {
                 if (localBook.contains(key)) {
                     return !localBook.getParcelableArrayList(key).isEmpty();
                 }
                 break;
-
-            default:
+            }
+            default: {
                 final Object o = localBook.get(key, realNumberParser);
                 if (o != null) {
                     final String value = o.toString().trim();
                     return !value.isEmpty() && !"0".equals(value);
                 }
                 break;
+            }
         }
 
         return false;
@@ -429,6 +431,13 @@ public class SyncReaderProcessor {
                 final List<TocEntry> list = remoteBook.getToc();
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getToc());
+                }
+                break;
+            }
+            case Book.BKEY_TAG_LIST: {
+                final List<Tag> list = remoteBook.getTags();
+                if (!list.isEmpty()) {
+                    list.addAll(localeBook.getTags());
                 }
                 break;
             }

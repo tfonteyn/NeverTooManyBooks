@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,6 +59,7 @@ class ResultsAccumulator {
                                                         Book.BKEY_SERIES_LIST,
                                                         Book.BKEY_PUBLISHER_LIST,
                                                         Book.BKEY_TOC_LIST,
+                                                        Book.BKEY_TAG_LIST,
                                                         Book.BKEY_BOOKSHELF_LIST,
                                                         CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0],
                                                         CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
