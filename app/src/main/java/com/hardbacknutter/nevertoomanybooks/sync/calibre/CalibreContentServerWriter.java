@@ -35,6 +35,7 @@ import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -53,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -297,6 +299,9 @@ public class CalibreContentServerWriter
                                                            .map(Publisher::getName)
                                                            .orElse(""));
 
+        changes.put(CalibreBookJsonKey.TAGS_ARRAY,
+                    collectTags(localBook));
+
         changes.put(CalibreBookJsonKey.LANGUAGES_ARRAY,
                     collectLanguages(localBook));
 
@@ -338,6 +343,12 @@ public class CalibreContentServerWriter
 
         changes.put(CalibreBookJsonKey.SERIES, seriesTitle);
         changes.put(CalibreBookJsonKey.SERIES_INDEX, number);
+    }
+
+    @NonNull
+    private JSONArray collectTags(final Book localBook) {
+        return new JSONArray(localBook.getTags().stream().map(Tag::getName)
+                                      .collect(Collectors.toList()));
     }
 
     @NonNull

@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
@@ -242,6 +243,8 @@ public class CalibreContentServerReader
                 new String[]{DBKey.DESCRIPTION});
         map.put(context.getString(R.string.lbl_publishers),
                 new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+        map.put(context.getString(R.string.lbl_tags),
+                new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
 
         map.put(context.getString(R.string.lbl_date_published),
                 new String[]{DBKey.BOOK_PUBLICATION__DATE});
@@ -632,6 +635,9 @@ public class CalibreContentServerReader
             convertLanguages(calibreBook, book);
         }
 
+        if (!calibreBook.isNull(CalibreBookJsonKey.TAGS_ARRAY)) {
+            convertTags(calibreBook, book);
+        }
         convertAuthors(context, calibreBook, book);
 
         if (!calibreBook.isNull(CalibreBookJsonKey.SERIES)) {
@@ -661,6 +667,27 @@ public class CalibreContentServerReader
         convertVirtualLibrariesToBookshelves(context, calibreBook, book);
 
         return book;
+    }
+
+    //   "tags": [
+    //    "Action & Adventure",
+    //    "Fiction",
+    //    "Hard Science Fiction",
+    //    "Science Fiction",
+    //    "Space Opera"
+    //  ],
+    private void convertTags(@NonNull final JSONObject calibreBook,
+                             @NonNull final Book book) {
+        final JSONArray calTags = calibreBook.optJSONArray(CalibreBookJsonKey.TAGS_ARRAY);
+        if (calTags != null && !calTags.isEmpty()) {
+            final List<Tag> tags = new ArrayList<>();
+            for (int i = 0; i < calTags.length(); i++) {
+                tags.add(new Tag(calTags.getString(i)));
+            }
+            if (!tags.isEmpty()) {
+                book.setTags(tags);
+            }
+        }
     }
 
     // "languages": [
