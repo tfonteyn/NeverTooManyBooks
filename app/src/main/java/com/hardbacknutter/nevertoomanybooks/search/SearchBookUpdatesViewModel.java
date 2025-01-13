@@ -199,8 +199,8 @@ public class SearchBookUpdatesViewModel
                 new String[]{DBKey.COLOR});
         map.put(context.getString(R.string.lbl_language),
                 new String[]{DBKey.LANGUAGE});
-        map.put(context.getString(R.string.lbl_genre),
-                new String[]{DBKey.GENRE});
+        map.put(context.getString(R.string.lbl_tags_genre),
+                new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
         map.put(context.getString(R.string.lbl_authors),
                 new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
         map.put(context.getString(R.string.lbl_series_multiple),
