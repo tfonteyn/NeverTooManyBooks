@@ -36,7 +36,9 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -55,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -446,14 +449,14 @@ public class GoogleBooks2SearchEngine
 
         a = volumeInfo.optJSONArray("categories");
         if (a != null && !a.isEmpty()) {
-            final StringJoiner genres = new StringJoiner(", ");
+            final List<Tag> tags = new ArrayList<>();
             for (int g = 0; g < a.length(); g++) {
-                final String genre = a.optString(g, null);
-                if (genre != null && !genre.isEmpty()) {
-                    genres.add(genre);
+                final String category = a.optString(g, null);
+                if (category != null && !category.isEmpty()) {
+                    tags.add(new Tag(category));
                 }
             }
-            book.putString(DBKey.GENRE, genres.toString());
+            book.setTags(tags);
         }
         // BOOK or MAGAZINE : ignored
         //s = volumeInfo.optString("printType", null);

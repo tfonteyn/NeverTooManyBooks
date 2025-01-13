@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -112,7 +114,6 @@ public class Parse2Test
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("216", book.getString(DBKey.PAGES, null));
-        assertEquals("Fiction", book.getString(DBKey.GENRE, null));
 
         // It's explicitly set as "isEbook=false"
         assertNull(book.getString(DBKey.FORMAT, null));
@@ -125,6 +126,11 @@ public class Parse2Test
                      + " dies, and Charlie has to face the possibility that his salvation"
                      + " was only temporary.",
                      book.getString(DBKey.DESCRIPTION, null));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(1, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Fiction"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -173,7 +179,6 @@ public class Parse2Test
         assertEquals("2012-11-22", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("441", book.getString(DBKey.PAGES, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
-        assertEquals("Fiction", book.getString(DBKey.GENRE, null));
 
         assertEquals("2020. Fueled by an insatiable curiosity, Reid Malenfant ventures"
                      + " to the far edge of the solar system, where he discovers a strange artifact"
@@ -185,6 +190,11 @@ public class Parse2Test
         assertEquals(new Money(BigDecimal.valueOf(5.49d),
                                Currency.getInstance("GBP")),
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(1, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Fiction"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
