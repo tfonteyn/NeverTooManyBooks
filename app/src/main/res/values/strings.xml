@@ -1089,6 +1089,8 @@
     <string name="lbl_language">Language</string>
     <!-- Label for the genre of the book (e.g. Romance, Crime, etc..) -->
     <string name="lbl_genre">Genre</string>
+    <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..) -->
+    <string name="lbl_tags">Tags</string>
     <!-- is this book signed by the author? -->
     <string name="lbl_signed">Signed</string>
     <!-- Single book/series/story title. Short label. -->
@@ -1928,9 +1930,6 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="lbl_text"
             translatable="false">Text</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="lbl_tags"
-            translatable="false">Tags</string>
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="lbl_tags_genre"
             translatable="false">Tags/genre</string>

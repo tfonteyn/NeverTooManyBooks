@@ -397,6 +397,7 @@
     <string name="lbl_series_multiple">Serie</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Ajustes</string>
+    <string name="lbl_tags">Etiquetas</string>
     <string name="lbl_signed">Firmado</string>
     <string name="lbl_site_book_id">ID del libro del sitio web</string>
     <string name="option_sort_and_style_ellipsis">Estilo de &amp; ordenación…</string>

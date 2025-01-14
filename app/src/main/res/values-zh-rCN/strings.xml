@@ -438,6 +438,7 @@
     <string name="lbl_series_multiple">系列</string>
     <string name="lbl_series_num">不</string>
     <string name="lbl_settings">设置</string>
+    <string name="lbl_tags">标签</string>
     <string name="lbl_signed">已签署</string>
     <string name="lbl_site_book_id">网站图书 ID</string>
     <string name="lbl_sort_ascending">升序</string>

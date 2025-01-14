@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -139,6 +139,10 @@ public class EditBookFieldsFragment
         vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
         vb.seriesTitle.setOnClickListener(v -> editSeries());
 
+        // Tags/genre editor (dialog)
+        vb.lblTags.setEndIconOnClickListener(v -> editTags());
+        vb.tags.setOnClickListener(v -> editTags());
+
         // Bookshelves editor (dialog)
         vb.lblBookshelves.setEndIconOnClickListener(v -> editBookshelves());
         vb.bookshelves.setOnClickListener(v -> editBookshelves());
@@ -231,6 +235,10 @@ public class EditBookFieldsFragment
 
     private void editSeries() {
         EditBookSeriesListDialogFragment.launch(getChildFragmentManager());
+    }
+
+    private void editTags() {
+        EditTagsDialogFragment.launch(getChildFragmentManager());
     }
 
     private void editBookshelves() {

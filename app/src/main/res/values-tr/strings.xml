@@ -400,6 +400,7 @@
     <string name="lbl_series_multiple">Dizi</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Ayarlar</string>
+    <string name="lbl_tags">Etiketler</string>
     <string name="lbl_signed">İmzalanmış</string>
     <string name="lbl_site_book_id">Web sitesi kitap kimliği</string>
     <string name="option_sort_and_style_ellipsis">Sıralama &amp; biçemi…</string>
