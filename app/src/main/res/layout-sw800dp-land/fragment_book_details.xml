@@ -196,24 +196,6 @@
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/lbl_genre"
-            style="@style/Label"
-            android:text="@string/lbl_genre"
-            app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/original_title"
-            />
-
-        <TextView
-            android:id="@+id/genre"
-            style="@style/Field.Generic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/lbl_genre"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/genre/name"
-            />
-
         <androidx.core.widget.NestedScrollView
             android:id="@+id/description_scroller"
             android:layout_width="0dp"
@@ -223,7 +205,7 @@
             app:layout_constraintBottom_toTopOf="@id/toc_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/genre">
+            app:layout_constraintTop_toBottomOf="@id/original_title">
 
             <TextView
                 android:id="@+id/description"

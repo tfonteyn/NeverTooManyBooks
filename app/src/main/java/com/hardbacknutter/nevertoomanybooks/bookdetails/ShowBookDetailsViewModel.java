@@ -296,10 +296,6 @@ public class ShowBookDetailsViewModel
                            // Do NOT replace it with "description_layout" !!!
                            .addRelatedViews(R.id.description_scroller));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.genre, DBKey.GENRE)
-                           .addRelatedViews(R.id.lbl_genre));
-
-
         fields.add(new TextViewField<>(FragmentId.Main, R.id.language, DBKey.LANGUAGE,
                                        languageFormatter)
                            .addRelatedViews(R.id.lbl_language));
