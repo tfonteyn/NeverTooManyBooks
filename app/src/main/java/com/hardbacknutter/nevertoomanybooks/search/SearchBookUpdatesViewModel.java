@@ -410,14 +410,17 @@ public class SearchBookUpdatesViewModel
                     }
 
                     if (canSearch) {
-                        // If we have a usable publisher name, set it
-                        // Not all sites will use it to search though
+                        // If we have a usable Publisher or Series, set them.
+                        // Not all sites will use them to search though.
                         currentBook.getPrimaryPublisher()
                                    .map(Publisher::getName)
                                    .filter(name -> !name.isEmpty())
                                    .ifPresent(this::setPublisherSearchText);
+                        currentBook.getPrimarySeries().ifPresent(ps -> {
+                            setSeriesSearchText(ps.getTitle());
+                            setSeriesNrSearchText(ps.getNumber());
+                        });
 
-                        // optional: whether this is used will depend on SearchEngine/Preferences
                         final boolean[] fetchCovers = new boolean[2];
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
                             fetchCovers[cIdx] = currentFieldsWanted
