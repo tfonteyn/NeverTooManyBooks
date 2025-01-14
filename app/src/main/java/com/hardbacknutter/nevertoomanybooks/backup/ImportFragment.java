@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -172,8 +172,9 @@ public class ImportFragment
             vb.rbImportAll.setEnabled(isChecked);
             vb.rbImportNewAndUpdated.setEnabled(isChecked);
 
-            updateUpdateOptionRadioButtons();
-
+            if (isChecked) {
+                updateUpdateOptionRadioButtons();
+            }
             // follow the cbxBooks status
             vb.cbxDeleteRemovedBooks.setEnabled(isChecked);
         });
